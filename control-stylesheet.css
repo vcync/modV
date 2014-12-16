@@ -1,0 +1,91 @@
+@import url(http://fonts.googleapis.com/css?family=Source+Code+Pro:300,400,700|Esteban);
+@import url(http://yui.yahooapis.com/pure/0.5.0/pure-min.css)
+
+html, body {
+	height: 100%;
+}
+
+body {
+	font-size: 14px;
+	position: relative;
+	margin: 0;
+}
+
+fieldset {
+    font-family: 'Source Code Pro';
+}
+
+fieldset img {
+	width: 100%;
+}
+
+section, section > .pure-g {
+	position: absolute;
+	top: 0;
+	right: 0;
+	bottom: 0;
+	left: 0;
+}
+
+section {
+	margin-top: 58px;
+}
+
+textarea.error, input.error {
+	border-color: #e9322d !important;
+	color: #e9322d;
+}
+
+.pure-g > div {
+	position: relative;
+	padding: 10px;
+	box-sizing: border-box;
+}
+
+header {
+	height: 60px;
+}
+
+header .pure-g > div {
+	border-bottom: 2px dotted black;
+}
+
+header .pure-g h1 {
+	font-family: 'Esteban';
+	margin: 0;
+}
+
+section .pure-g > div:nth-child(1) {
+	padding: 0;
+	overflow: hidden;
+}
+
+section .pure-g > div:nth-child(2), .pure-g > div:nth-child(3) {
+	border-left: 2px dotted black;
+	overflow-y: scroll;
+}
+
+.code .pure-form input[type="text"] {
+	display: inline-block;
+	width: 30%;
+}
+
+.code {
+	font-family: 'Source Code Pro', monospace !important;
+}
+
+div.indent {
+	margin: 0 0 0 40px;
+}
+
+input {
+	font-family: 'Source Code Pro', monospace;
+}
+
+textarea {
+	font-family: 'Source Code Pro', monospace;
+	height: 100%;
+	width: 100%;
+	box-sizing: border-box;
+	resize: vertical;
+}

@@ -1,0 +1,129 @@
+<!DOCTYPE HTML>
+<html>
+	<head>
+		<meta charset="utf-8">
+		<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+		<title>modV</title>
+		<link rel="stylesheet" href="../2xaa/arctik-font/webfont/stylesheet.css" />
+		<link rel="stylesheet" href="control-stylesheet.css" />
+		<style>
+			canvas {
+				left: 0;
+				position: fixed;
+				top: 0;
+			}
+		</style>
+	</head>
+	<body>
+		<canvas></canvas>
+		
+		<!-- Optional - used with stretch.modV -->
+<!-- 		<script src="//js.leapmotion.com/leap-0.6.4.min.js"></script> -->
+<!-- 		<script src="//js.leapmotion.com/leap-plugins-0.1.10.js"></script> -->
+		
+		<!-- Optional - used with modV remote control -->
+		
+		<script src="modV.js"></script>
+		<script src="waveform.modV.js"></script>
+		<script src="tile.modV.js"></script>
+		<script src="stretch.modV.js"></script>
+		<script src="pixelate.modV.js"></script>
+		<script src="rotate.modV.js"></script>
+		<script src="dither.modV.js"></script>
+		<script src="ball.modV.js"></script>
+		<script src="glitcher.modV.js"></script>
+		<script src="onOff.modV.js"></script>
+		<script src="starField.modV.js"></script>
+		<script src="badHold.modV.js"></script>
+		<script src="spirograph.modV.js"></script>
+		<script src="rotoZoom.modV.js"></script>
+		<script src="staticImage.modV.js"></script>
+		<script src="slide.modV.js"></script>
+		<script src="tenPrint.modV.js"></script>
+		<script src="webcam.modV.js"></script>
+		<script src="video.modV.js"></script>
+		<script src="hueRotate.modV.js"></script>
+<!-- 		<script src="jpeg.modV.js"></script> -->
+		<script>
+			var testMod = function() {
+
+				this.info = {
+					name: 'testMod',
+					author: '2xAA',
+					version: 0.1,
+					controls: [
+						{type: 'text', variable: 'text', label: 'Text'},
+						{type: 'range', variable: 'size', append: 'pt', label: 'Size'}
+					]
+				};
+
+				var hue = 0;
+				this.text = 'modV';
+				this.size = '50pt';
+
+				this.draw = function(canvas, ctx) {
+					ctx.font = this.size + ' arctik_3arctik_3';
+					ctx.textAlign = 'center';
+					ctx.fillStyle = 'hsl(' + hue + ', 100%, 50%)';
+					//var textWidth = ctx.measureText(this.text).width;
+					ctx.fillText(this.text, canvas.width/2, canvas.height/2);
+					if(hue == 360) hue = 0;
+					else hue++;
+				};
+			};
+
+			testMod = new testMod();
+		</script>
+		<script>
+			var modV = new modV({remoteControl: false, previewWindow: true});
+			modV.setCanvas(document.getElementsByTagName('canvas')[0]);
+			modV.setDimensions(window.innerWidth, window.innerHeight);
+			modV.registerMod(testMod);
+			modV.registerMod(waveform);
+			modV.registerMod(stretch);
+			modV.registerMod(tile);
+			modV.registerMod(pixelate);
+			modV.registerMod(rotate);
+			modV.registerMod(dither);
+			modV.registerMod(ball);
+			modV.registerMod(glitcher);
+			modV.registerMod(onOff);
+			modV.registerMod(starField);
+			modV.registerMod(badHold);
+			modV.registerMod(spirograph);
+			modV.registerMod(rotoZoom);
+			modV.registerMod(staticImage);
+			modV.registerMod(slide);
+			modV.registerMod(tenPrint);
+			modV.registerMod(webcam);
+			modV.registerMod(video);
+			modV.registerMod(hueRotate);
+// 			modV.registerMod(jpeg);
+
+			modV.setModOrder(staticImage.info.name, 0);
+			modV.setModOrder(testMod.info.name, 	1);
+			modV.setModOrder(stretch.info.name, 	2);
+			modV.setModOrder(onOff.info.name,		3);
+			modV.setModOrder(waveform.info.name, 	4);
+			modV.setModOrder(ball.info.name, 		5);
+			modV.setModOrder(starField.info.name,	6);
+			modV.setModOrder(dither.info.name,	 	7);
+			modV.setModOrder(tile.info.name,		8);
+			modV.setModOrder(glitcher.info.name,	9);
+			modV.setModOrder(rotate.info.name,		10);
+			modV.setModOrder(badHold.info.name,		11);
+			modV.setModOrder(spirograph.info.name,	12);
+			modV.setModOrder(pixelate.info.name, 	13);
+			modV.setModOrder(slide.info.name, 		14);
+			modV.setModOrder(tenPrint.info.name, 	15);
+			modV.setModOrder(webcam.info.name, 		16);
+			modV.setModOrder(rotoZoom.info.name, 	17);
+			modV.setModOrder(video.info.name, 		18);
+			modV.setModOrder(hueRotate.info.name,	19);
+// 			modV.setModOrder(jpeg.info.name, 		18);
+
+			modV.clearing = false;
+			modV.start();
+		</script>
+	</body>
+</html>
