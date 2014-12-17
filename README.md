@@ -22,6 +22,8 @@ Web server or local server to host the project
 Check this guide out to help you spin one up on your Mac:
 http://lifehacker.com/start-a-simple-web-server-from-any-directory-on-your-ma-496425450
 
+Or alternatively you can go here and use it without downloading: http://2xaa.github.io/modV-alpha-/
+
 ###Using
 Using modV is fairly straightforward.
 
