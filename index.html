@@ -24,26 +24,24 @@
 		<!-- Optional - used with modV remote control -->
 		
 		<script src="modV.js"></script>
-		<script src="waveform.modV.js"></script>
-		<script src="tile.modV.js"></script>
-		<script src="stretch.modV.js"></script>
-		<script src="pixelate.modV.js"></script>
-		<script src="rotate.modV.js"></script>
-		<script src="dither.modV.js"></script>
-		<script src="ball.modV.js"></script>
-		<script src="glitcher.modV.js"></script>
-		<script src="onOff.modV.js"></script>
-		<script src="starField.modV.js"></script>
-		<script src="badHold.modV.js"></script>
-		<script src="spirograph.modV.js"></script>
-		<script src="rotoZoom.modV.js"></script>
-		<script src="staticImage.modV.js"></script>
-		<script src="slide.modV.js"></script>
-		<script src="tenPrint.modV.js"></script>
-		<script src="webcam.modV.js"></script>
-		<script src="video.modV.js"></script>
-		<script src="hueRotate.modV.js"></script>
-<!-- 		<script src="jpeg.modV.js"></script> -->
+		<script src="./modules/waveform.modV.js"></script>
+		<script src="./modules/tile.modV.js"></script>
+		<script src="./modules/stretch.modV.js"></script>
+		<script src="./modules/pixelate.modV.js"></script>
+		<script src="./modules/rotate.modV.js"></script>
+		<script src="./modules/dither.modV.js"></script>
+		<script src="./modules/ball.modV.js"></script>
+		<script src="./modules/glitcher.modV.js"></script>
+		<script src="./modules/onOff.modV.js"></script>
+		<script src="./modules/starField.modV.js"></script>
+		<script src="./modules/badHold.modV.js"></script>
+		<script src="./modules/spirograph.modV.js"></script>
+		<script src="./modules/rotoZoom.modV.js"></script>
+		<script src="./modules/staticImage.modV.js"></script>
+		<script src="./modules/slide.modV.js"></script>
+		<script src="./modules/tenPrint.modV.js"></script>
+		<script src="./modules/webcam.modV.js"></script>
+		<script src="./modules/video.modV.js"></script>
 		<script>
 			var testMod = function() {
 
@@ -97,8 +95,6 @@
 			modV.registerMod(tenPrint);
 			modV.registerMod(webcam);
 			modV.registerMod(video);
-			modV.registerMod(hueRotate);
-// 			modV.registerMod(jpeg);
 
 			modV.setModOrder(staticImage.info.name, 0);
 			modV.setModOrder(testMod.info.name, 	1);
@@ -119,8 +115,6 @@
 			modV.setModOrder(webcam.info.name, 		16);
 			modV.setModOrder(rotoZoom.info.name, 	17);
 			modV.setModOrder(video.info.name, 		18);
-			modV.setModOrder(hueRotate.info.name,	19);
-// 			modV.setModOrder(jpeg.info.name, 		18);
 
 			modV.clearing = false;
 			modV.start();
