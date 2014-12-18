@@ -23,24 +23,21 @@ Check this guide out to help you spin one up on your Mac:
 http://lifehacker.com/start-a-simple-web-server-from-any-directory-on-your-ma-496425450
 
 Or alternatively you can go here and use it without downloading: http://2xaa.github.io/modV-alpha-/
+But this only allows you to use the example modules, unless you're cool with loading stuff in using the console.
 
 ###Using
 Using modV is fairly straightforward.
 
-You must allow popups and also the userMedia request to access both webcam and audio input as modV abstracts both to be used within its modules.
-
-Twiddle settings until you get the desired output.
-
-You can drag the red balls at the side to reorder the modules up and down.
-
-Some modules allow images, to change the images drag and drop a new one on.
-
-Some modules allow multiple images, such as starField.
-Hold ALT as you drag to remove the previous images and overwrite with the new images, drag normally to add onto the images previous.
+* You **must** allow popups and also the userMedia request to access both webcam and audio input as modV abstracts both to be used within its modules.
+* Twiddle settings until you get the desired output.
+* You can drag the red balls at the side to reorder the modules up and down.
+* Some modules allow images, to change the images drag and drop a new one on.
+* Some modules allow multiple images, such as starField.
+  * Hold ALT as you drag to remove the previous images and overwrite with the new images, drag normally to add onto the images previous.
 
 You can just load up the example index.html to get a good feel of how the modules have to be loaded and modV setup.
 
-*will expand at some point*
+*will expand this at some point*
 ###Developing
 The modules were built to reflect Processing, with a few quirks.
 
@@ -54,7 +51,7 @@ var modName = function() {
 		author: '2xAA'
 	};
 		
-	this.draw = function(canvas, ctx) {
+	this.draw = function(canvas, ctx, audio, video) {
 			
 	};
 };
@@ -63,4 +60,4 @@ modName = new modName();
 
 Please see the bundled modules for extra stuff.
 
-*will expand*
+*will expand this at some point*
