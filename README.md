@@ -45,15 +45,57 @@ There has to be this basic layout or your module WILL NOT work:
 
 ```JavaScript
 var modName = function() {
-
+	
+	
 	this.info = {
 		name: 'modName',
-		author: '2xAA'
+		author: '2xAA',
+		version: 0.1,
+		controls: [
+			{type: 'range', variable: 'variable1', min: 1, max: 20, label: 'Variable 1 Label'},
+			{type: 'range', variable: 'variable2', min: 1, max: 20, label: 'Variable 2 label'}
+		]
 	};
+	
+	/*
+	  this is the info object
+	  you need to include the name at least of your module will not register
+	  other things you may include are notes, version number, author and control exports
+	  
+	  control exports will be fully documented at a later stage
+	  please refer to the example modules for usage
+	*/
+	
+	// Public Variables (control exports **must** point to public variables)
+	this.variable1 = 1;
+	this.variable2 = 13;
+	
+	this.init = function(canvas) {
+		
+	};
+	
+	/*
+	  init is run when the module is registered
+	  it provides the canvas element primarily to set the size
+	  but you can use it to setup other things within your module too ahead of runtime
+	*/
 		
 	this.draw = function(canvas, ctx, audio, video) {
 			
 	};
+	
+	/*
+	  draw is run every frame
+	  it provides:
+	    the canvas element
+	    the 2d context
+	    the audio array (see the example waveform module for a good example on usage)
+	    the video from the webcam selected (see the example webcam module for a good example on usage)
+	    
+	  draw will be fully documented at a later stage
+	  please refer to the example modules for usage
+	*/
+	
 };
 modName = new modName();
 ```
