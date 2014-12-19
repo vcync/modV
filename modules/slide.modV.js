@@ -14,7 +14,7 @@ var slide = function() {
 		newCanvas2.height = canvas.height;
 	};
 
-	this.speedY = 0;
+	this.speedX = 0;
 	var offsetX = 0;
 	this.speedY = 0;
 	var offsetY = 0;
