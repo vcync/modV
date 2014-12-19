@@ -25,6 +25,26 @@ http://lifehacker.com/start-a-simple-web-server-from-any-directory-on-your-ma-49
 Or alternatively you can go here and use it without downloading: http://2xaa.github.io/modV-alpha-/
 But this only allows you to use the example modules, unless you're cool with loading stuff in using the console.
 
+####Optional (audio routing)
+Routing audio to other applications (say routing a music player as a virtual line-in) can be a bit tricky sometimes, but luckily there are some free solutions for this:
+
+Windows:
+http://vb-audio.pagesperso-orange.fr/Cable/ 
+
+* Click the orange download button and install
+* Set the output of your computer speakers to the VB-Audio cable
+* Configure the VB-Audio recording device to 'listen' through your normal output
+* Tell Chrome to use the VB-Audio cable input for modV when asked for user media
+
+Mac:
+https://rogueamoeba.com/freebies/soundflower/
+
+* Download and install SoundFlower, you will have to restart
+* After the port-install restart, launch SoundFlower
+* In the Sound pane in System Preferences set the output to SoundFlower 2ch
+* On the SoundFlower menu item set the output of the 2ch to your usual audio output
+* Tell Chrome to use the SoundFlower 2ch input for modV when asked for user media
+
 ###Using
 Using modV is fairly straightforward.
 
