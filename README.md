@@ -98,6 +98,7 @@ var modName = function() {
 	
 };
 modName = new modName();
+// you must export the module ready to be registered like this
 ```
 
 Please see the bundled modules for extra stuff.
