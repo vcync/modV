@@ -28,20 +28,25 @@ But this only allows you to use the example modules, unless you're cool with loa
 ###Using
 Using modV is fairly straightforward.
 
-The basic setup for modV is as follows, all code is in the body:
+The basic setup for modV is as follows:
 ```HTML
-<canvas></canvas>
-<script src="modV.js"></script>
-<!-- Load modules here, waveform as example -->
-<script src="./modules/waveform.modV.js"></script>
-<script>
-	var modV = new modV();
-	modV.setCanvas(document.getElementsByTagName('canvas')[0]);
-	modV.setDimensions(window.innerWidth, window.innerHeight);
-	modV.registerMod(waveform);
-	modV.setModOrder(waveform.info.name, 0); // This will change to just the base module name in future revisions
-	modV.start();
-</script>
+<head>
+	<link rel="stylesheet" href="control-stylesheet.css" />
+</head>
+<body>
+	<canvas></canvas>
+	<script src="modV.js"></script>
+	<!-- Load modules here, waveform as example -->
+	<script src="./modules/waveform.modV.js"></script>
+	<script>
+		var modV = new modV();
+		modV.setCanvas(document.getElementsByTagName('canvas')[0]);
+		modV.setDimensions(window.innerWidth, window.innerHeight);
+		modV.registerMod(waveform);
+		modV.setModOrder(waveform.info.name, 0); // This will change to just the base module name in future revisions
+		modV.start();
+	</script>
+</body>
 ```
 
 * You **must** allow popups and also the userMedia request to access both webcam and audio input as modV abstracts both to be used within its modules.
