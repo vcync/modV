@@ -47,4 +47,4 @@ var slide = function() {
 		ctx.restore();
 	};
 };
-slide = new slide();
+slide = new slide(); 
