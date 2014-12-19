@@ -25,13 +25,13 @@ var slide = function() {
 
 	this.draw = function(canvas, ctx, amplitudeArray) {
 		if(offsetY >= canvas.height) {
-			offsetY = (offsetX-canvas.height)+this.speedY;
+			offsetY = (offsetY-canvas.height)+this.speedY;
 		} else {
 			offsetY += this.speedY;
 		}
 		
 		if(offsetX >= canvas.width) {
-			offsetX = (offsetY-canvas.width)+this.speedX;
+			offsetX = (offsetX-canvas.width)+this.speedX;
 		} else {
 			offsetX += this.speedX;
 		}
