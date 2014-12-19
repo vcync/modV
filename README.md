@@ -28,14 +28,28 @@ But this only allows you to use the example modules, unless you're cool with loa
 ###Using
 Using modV is fairly straightforward.
 
+The basic setup for modV is as follows, all code is in the body:
+```HTML
+<canvas></canvas>
+<script src="modV.js"></script>
+<!-- Load modules here, waveform as example -->
+<script src="./modules/waveform.modV.js"></script>
+<script>
+	var modV = new modV();
+	modV.setCanvas(document.getElementsByTagName('canvas')[0]);
+	modV.setDimensions(window.innerWidth, window.innerHeight);
+	modV.registerMod(waveform);
+	modV.setModOrder(waveform.info.name, 0); // This will change to just the base module name in future revisions
+	modV.start();
+</script>
+```
+
 * You **must** allow popups and also the userMedia request to access both webcam and audio input as modV abstracts both to be used within its modules.
 * Twiddle settings until you get the desired output.
 * You can drag the red balls at the side to reorder the modules up and down.
 * Some modules allow images, to change the images drag and drop a new one on.
 * Some modules allow multiple images, such as starField.
   * Hold ALT as you drag to remove the previous images and overwrite with the new images, drag normally to add onto the images previous.
-
-You can just load up the example index.html to get a good feel of how the modules have to be loaded and modV setup.
 
 *will expand this at some point*
 ###Developing
@@ -45,7 +59,6 @@ There has to be this basic layout or your module WILL NOT work:
 
 ```JavaScript
 var modName = function() {
-	
 	
 	this.info = {
 		name: 'modName',
