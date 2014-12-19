@@ -4,7 +4,7 @@ var slide = function() {
 		author: '2xAA',
 		version: 0.1,
 		controls: [
-			 {type: 'range', variable: 'speedX', min: 0, max: 100, label: 'Speed X', varType: 'int'}
+			 {type: 'range', variable: 'speedX', min: 0, max: 100, label: 'Speed X', varType: 'int'},
 			 {type: 'range', variable: 'speedY', min: 0, max: 100, label: 'Speed Y', varType: 'int'}
 		]
 	};
