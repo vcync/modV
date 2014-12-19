@@ -1,0 +1,11 @@
+http://scontent-a.cdninstagram.com/hphotos-xpf1/t50.2886-16/10755269_754592894589217_2075018930_n.mp4
+http://scontent-a.cdninstagram.com/hphotos-xap1/t50.2886-16/10754139_302689799934373_971923517_n.mp4
+http://scontent-a.cdninstagram.com/hphotos-xpa1/t50.2886-16/10754084_585045528291605_1741545992_n.mp4
+http://scontent-a.cdninstagram.com/hphotos-xfa1/t50.2886-16/10541236_378251332352417_1062674886_n.mp4
+http://scontent-b.cdninstagram.com/hphotos-xpf1/t50.2886-16/10753853_592332807558861_1185450713_n.mp4
+http://scontent-b.cdninstagram.com/hphotos-xpa1/t50.2886-16/10753610_479984152144859_1501092170_n.mp4
+http://scontent-a.cdninstagram.com/hphotos-xpf1/t50.2886-16/10755599_1553293238238036_173172846_n.mp4
+http://scontent-a.cdninstagram.com/hphotos-xaf1/t50.2886-16/10755210_1482367982052632_1609686197_n.mp4
+http://scontent-b.cdninstagram.com/hphotos-xpf1/t50.2886-16/10755167_1516640051918743_1582649536_n.mp4
+http://scontent-b.cdninstagram.com/hphotos-xpa1/t50.2886-16/10724390_707274339349597_733823030_n.mp4
+http://scontent-a.cdninstagram.com/hphotos-xaf1/t50.2886-16/10725966_728905010522104_546744379_n.mp4
