@@ -25,8 +25,49 @@ http://lifehacker.com/start-a-simple-web-server-from-any-directory-on-your-ma-49
 Or alternatively you can go here and use it without downloading: http://2xaa.github.io/modV-alpha-/
 But this only allows you to use the example modules, unless you're cool with loading stuff in using the console.
 
+####Optional (audio routing)
+Routing audio to other applications (say routing a music player as a virtual line-in) can be a bit tricky sometimes, but luckily there are some free solutions for this:
+
+Windows:
+http://vb-audio.pagesperso-orange.fr/Cable/ 
+
+* Click the orange download button and install
+* Set the output of your computer speakers to the VB-Audio cable
+* Configure the VB-Audio recording device to 'listen' through your normal output
+* Tell Chrome to use the VB-Audio cable input for modV when asked for user media
+
+Mac:
+https://rogueamoeba.com/freebies/soundflower/
+
+* Download and install SoundFlower, you will have to restart
+* After the port-install restart, launch SoundFlower
+* In the Sound pane in System Preferences set the output to SoundFlower 2ch
+* On the SoundFlower menu item set the output of the 2ch to your usual audio output
+* Tell Chrome to use the SoundFlower 2ch input for modV when asked for user media
+
 ###Using
 Using modV is fairly straightforward.
+
+The basic setup for modV is as follows:
+```HTML
+<head>
+	<link rel="stylesheet" href="control-stylesheet.css" />
+</head>
+<body>
+	<canvas></canvas>
+	<script src="modV.js"></script>
+	<!-- Load modules here, waveform as example -->
+	<script src="./modules/waveform.modV.js"></script>
+	<script>
+		var modV = new modV();
+		modV.setCanvas(document.getElementsByTagName('canvas')[0]);
+		modV.setDimensions(window.innerWidth, window.innerHeight);
+		modV.registerMod(waveform);
+		modV.setModOrder(waveform.info.name, 0); // This will change to just the base module name in future revisions
+		modV.start();
+	</script>
+</body>
+```
 
 * You **must** allow popups and also the userMedia request to access both webcam and audio input as modV abstracts both to be used within its modules.
 * Twiddle settings until you get the desired output.
@@ -34,8 +75,6 @@ Using modV is fairly straightforward.
 * Some modules allow images, to change the images drag and drop a new one on.
 * Some modules allow multiple images, such as starField.
   * Hold ALT as you drag to remove the previous images and overwrite with the new images, drag normally to add onto the images previous.
-
-You can just load up the example index.html to get a good feel of how the modules have to be loaded and modV setup.
 
 *will expand this at some point*
 ###Developing
@@ -45,7 +84,6 @@ There has to be this basic layout or your module WILL NOT work:
 
 ```JavaScript
 var modName = function() {
-	
 	
 	this.info = {
 		name: 'modName',
