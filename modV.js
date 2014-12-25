@@ -23,11 +23,57 @@ var modV = function(options) {
 	            clearTimeout(id);
 	        };
 	}());
+	
+	// Helpful!
+	
+	// from here: http://stackoverflow.com/questions/18663941/finding-closest-element-without-jquery
+	function getClosest(el, tag) {
+		tag = tag.toUpperCase();
+		do {
+			if (el.nodeName === tag) {
+				return el;
+			}
+		} while (el = el.parentNode);
+		
+		return false;
+	}
+	
+	// from here: http://stackoverflow.com/questions/5223/length-of-a-javascript-object-that-is-associative-array
+	Object.size = function(obj) {
+		var size = 0, key;
+		for (key in obj) {
+			if (obj.hasOwnProperty(key)) size++;
+		}
+		return size;
+	};
+	
+	// based on: http://stackoverflow.com/questions/6116474/how-to-find-if-an-array-contains-a-specific-string-in-javascript-jquery
+	Array.contains = function(needle, arrhaystack) {
+		console.log(needle, arrhaystack);
+	    return (arrhaystack.indexOf(needle) > -1);
+	}
 
 	var modOrder = [],
 		registeredMods = {},
 		that = this,
-		video = document.createElement('video');
+		video = document.createElement('video'),
+		meydaSupport = false;
+		
+	this.meyda;
+	this.meydaFeatures = [];
+	
+	this.addMeydaFeature = function(feature) {
+		if(!Array.contains(feature, that.meydaFeatures)) {
+			that.meydaFeatures.push(feature);
+			return true;
+		} else return false;
+	};
+	
+	// Check for Meyda
+	if(typeof window.Meyda == 'function') {
+		meydaSupport = true;
+		console.info('meyda detected, expanded audio analysis available.', 'Use this.meyda to access from console.');
+	}
 	
 	video.autoplay = true;
 	video.muted = true;
@@ -36,19 +82,42 @@ var modV = function(options) {
 	if(typeof options !== 'undefined') this.options = options;
 	else this.options = {};
 	
-	// Is this running with Socket.IO?
-	if(window.io) {
-		var socket = io();
-		socket.on('connection', function() {
-			alert('We have touchdown');
-		});
-	}
-	
 	// Function to create blend mode options
 	function genBlendModeOps() {
 		var selectEl = document.createElement('select');
-		var blends = ['normal', 'multiply', 'overlay', 'darken', 'lighten', 'color-dodge', 'color-burn', 'hard-light', 'soft-light', 'difference', 'exclusion', 'hue', 'saturation', 'color', 'luminosity'];
-		var modes = ['clear', 'copy', 'destination', 'source-over', 'destination-over', 'source-in', 'destination-in', 'source-out', 'destination-out', 'source-atop', 'destination-atop', 'xor', 'lighter'];
+		var blends = [
+			'normal',
+			'multiply',
+			'overlay',
+			'darken',
+			'lighten',
+			'color-dodge',
+			'color-burn',
+			'hard-light',
+			'soft-light',
+			'difference',
+			'exclusion',
+			'hue',
+			'saturation',
+			'color',
+			'luminosity'
+		];
+		
+		var modes = [
+			'clear',
+			'copy',
+			'destination',
+			'source-over',
+			'destination-over',
+			'source-in',
+			'destination-in',
+			'source-out',
+			'destination-out',
+			'source-atop',
+			'destination-atop',
+			'xor',
+			'lighter'
+		];
 		
 		var blendsOptgroup = document.createElement('optgroup');
 		blendsOptgroup.label = 'Blend Modes';
@@ -77,23 +146,6 @@ var modV = function(options) {
 		return selectEl;
 	}
 	
-	// Helpful!
-	
-	// from here: http://stackoverflow.com/questions/18663941/finding-closest-element-without-jquery
-	function getClosest(el, tag) {
-		// this is necessary since nodeName is always in upper case
-		tag = tag.toUpperCase();
-		do {
-			if (el.nodeName === tag) {
-				// tag name is found! let's return it. :)
-				return el;
-			}
-		} while (el = el.parentNode);
-		
-		// not found :(
-		return false;
-	}
-	
 	// Setup window control
 	
 	if(!this.options.controlDomain) this.options.controlDomain = location.protocol + "//" + location.host;
@@ -102,6 +154,8 @@ var modV = function(options) {
 	
 	function receiveMessage(event) {
 		if(event.origin !== that.options.controlDomain) return;
+		
+		console.log(event.data);
 		
 		if(event.data.type == 'variable') {
 			var variable;
@@ -303,9 +357,11 @@ var modV = function(options) {
 		gainNode.gain.value = 0;
 
 		microphone = aCtx.createMediaStreamSource(stream);
-
 		microphone.connect(gainNode);
 		gainNode.connect(aCtx.destination);
+		
+		if(meydaSupport) that.meyda = new Meyda(aCtx, microphone, 512);
+
 		microphone.connect(analyser);
 		analyser.connect(javascriptNode);
 		javascriptNode.connect(aCtx.destination);
@@ -377,10 +433,17 @@ var modV = function(options) {
 	controllerWindow.document.body.appendChild(fieldset);
 	
 	this.registerMod = function(mod) {
+		mod = new mod();
 		if(typeof mod.init === 'function') mod.init(this.canvas, this.context);
 		if(!('blend' in mod.info)) mod.info.blend = 'normal';
 		if(!('alpha' in mod.info)) mod.info.alpha = 1;
 		mod.info.disabled = true;
+		
+		if(meydaSupport && ('meyda' in mod.info)) {
+			mod.info.meyda.forEach(this.addMeydaFeature);
+		} else if(!meydaSupport && ('meyda' in mod.info)) {
+			console.warn('Whilst registering the module \'' + mod.info.name + '\', modV detected it requests Meyda which has not been included on the page. You may encounter problems using this module without Meyda.');
+		}
 
 		var fieldset = document.createElement('fieldset');
 		
@@ -668,7 +731,10 @@ var modV = function(options) {
 		
 		controllerWindow.document.body.appendChild(fieldset);
 		
-		return registeredMods[mod.info.name] = mod;
+		var registered = registeredMods[mod.info.name] = mod;
+		this.setModOrder(mod.info.name, Object.size(registeredMods));
+				
+		return registered;
 	};
 
 	this.setModOrder = function(modName, order) {
@@ -689,12 +755,12 @@ var modV = function(options) {
 			});
 		}
 		
-		// Reorder DOM elements (ugh)
+		// Reorder DOM elements (ugh ;_;)
 		var list = controllerWindow.document.body;
 		var items = list.querySelectorAll('fieldset[data-name]');
 		var itemsArr = [];
 		for (var i in items) {
-			if(items[i].nodeType == 1) { // Get rid of the whitespace text nodes
+			if(items[i].nodeType == 1) { // Remove the whitespace text nodes
 				itemsArr.push(items[i]);
 			}
 		}
@@ -712,29 +778,35 @@ var modV = function(options) {
 		
 		return modOrder;
 	};
-
-	this.drawFrame = function() {
+		
+	this.drawFrame = function(meydaOutput) {
 		if(!ready) return;
-		console.time('Frame');
 		if(this.clearing) this.context.clearRect(0, 0, this.canvas.width, this.canvas.height);
 		for(var i=0; i < modOrder.length; i++) {
-			if(typeof registeredMods[modOrder[i]] == 'object') {
-				if(registeredMods[modOrder[i]].info.disabled) continue;
+			if(typeof registeredMods[modOrder[i]] === 'object') {
+				if(registeredMods[modOrder[i]].info.disabled || registeredMods[modOrder[i]].info.alpha == 0) continue;
 				this.context.save();
 				this.context.globalAlpha = registeredMods[modOrder[i]].info.alpha;
-				if(registeredMods[modOrder[i]].info.alpha == 0) continue;
 				if(registeredMods[modOrder[i]].info.blend != 'normal') this.context.globalCompositeOperation = registeredMods[modOrder[i]].info.blend;
-				registeredMods[modOrder[i]].draw(this.canvas, this.context, amplitudeArray, video);
+				registeredMods[modOrder[i]].draw(this.canvas, this.context, amplitudeArray, video, meydaOutput);
 				this.context.restore();
 			}
 		}
 		if(this.options.previewWindow) previewCtx.drawImage(this.canvas, 0, 0, previewCanvas.width, previewCanvas.height);
-		console.time('Frame');
 	};
+	
+	var myFeatures;
 
 	var animate = function() {
 		requestAnimationFrame(animate);
-		that.drawFrame();
+		if(meydaSupport && ready) {
+			try {
+				myFeatures = that.meyda.get(that.meydaFeatures);
+			} catch(e) {
+				// Do nothing!
+			}
+		}
+		that.drawFrame(myFeatures);
 	};
 
 	this.start = function() {
