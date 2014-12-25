@@ -12,13 +12,7 @@ var video = function() {
 	this.video.src = 'test.mp4';
 	this.video.muted = true;
 	
-
-	this.init = function() {
-		
-	};
-
 	this.draw = function(canvas, ctx, audio, video) {
 		ctx.drawImage(this.video, 0, 0, canvas.width, canvas.height); 
 	};
 };
-video = new video();

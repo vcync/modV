@@ -47,4 +47,3 @@ var dither = function() {
 		ctx.drawImage(tempCanvas, 0, 0);
 	};
 };
-dither = new dither();

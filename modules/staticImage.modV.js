@@ -18,4 +18,3 @@ var staticImage = function() {
 		ctx.drawImage(this.image, 0, 0, canvas.width, canvas.height);
 	};
 };
-staticImage = new staticImage();

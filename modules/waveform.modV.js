@@ -54,4 +54,3 @@ var waveform = function() {
 		} else hue = Math.floor(Math.random()*(360-1+1)+1);
 	};
 };
-waveform = new waveform();

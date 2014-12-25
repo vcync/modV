@@ -60,4 +60,3 @@ var onOff = function() {
 		ctx.restore();
 	};
 };
-onOff = new onOff();

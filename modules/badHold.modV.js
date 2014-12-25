@@ -40,4 +40,3 @@ var badHold = function() {
 		else offset+=this.speed;
 	};
 };
-badHold = new badHold();

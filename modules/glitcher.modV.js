@@ -49,4 +49,3 @@ var glitcher = function() {
 		if(this.persist) ctx.drawImage(cacheCanvas, 0, 0, cacheCanvas.width, cacheCanvas.height, 0, 0, canvas.width, canvas.height);
 	};
 };
-glitcher = new glitcher();

@@ -23,4 +23,3 @@ var rotate = function() {
 		else degree += this.speed;
 	};
 };
-rotate = new rotate();

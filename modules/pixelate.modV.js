@@ -35,4 +35,3 @@ var pixelate = function() {
 		ctx.restore();
 	};
 };
-pixelate = new pixelate();

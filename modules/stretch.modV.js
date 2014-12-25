@@ -46,4 +46,3 @@ var stretch = function() {
 		ctx.restore();
 	};
 };
-stretch = new stretch();

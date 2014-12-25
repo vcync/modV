@@ -169,4 +169,3 @@ var rotoZoom = function() {
 		else degree += 0.016;
 	};
 };
-rotoZoom = new rotoZoom();

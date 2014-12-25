@@ -115,4 +115,3 @@ var starField = function() {
 		}
 	};
 };
-starField = new starField();

@@ -76,4 +76,3 @@ var ball = function() {
 		}
 	};
 };
-ball = new ball();

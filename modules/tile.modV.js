@@ -41,4 +41,3 @@ var tile = function() {
 		}
 	};
 };
-tile = new tile();

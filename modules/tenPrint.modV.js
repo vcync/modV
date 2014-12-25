@@ -28,7 +28,6 @@ var tenPrint = function() {
 		var avgPower = sum/64;
 		
 		var powRatio = avgPower/maxPower;
-		//console.log(powRatio);
 		
 		lineWidth = this.lineWidth;
 		side = this.side;
@@ -90,4 +89,3 @@ ctx.fillStyle="white";
 		ctx.restore();
 	};
 };
-tenPrint = new tenPrint();

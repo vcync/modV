@@ -13,4 +13,3 @@ var webcam = function() {
 		ctx.drawImage(video, 0, 0, canvas.width, canvas.height); 
 	};
 };
-webcam = new webcam();
