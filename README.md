@@ -26,7 +26,7 @@ Or alternatively you can go here and use it without downloading: http://2xaa.git
 But this only allows you to use the example modules, unless you're cool with loading stuff in using the console.
 
 ####Optional
-Audio routing:
+#####Audio routing:
 Routing audio to other applications (say routing a music player as a virtual line-in) can be a bit tricky sometimes, but luckily there are some free solutions for this:
 
 Windows:
@@ -46,8 +46,8 @@ https://rogueamoeba.com/freebies/soundflower/
 * On the SoundFlower menu item set the output of the 2ch to your usual audio output
 * Tell Chrome to use the SoundFlower 2ch input for modV when asked for user media
 
-Meyda:
-If the module developer wants, they can use meyda(https://github.com/hughrawlinson/meyda) for expanded audio analysis. Ideally you'll just include meyda at all times to account for this, but modV can be run without meyda too.
+#####Meyda:
+If the module developer wants, they can use [meyda](https://github.com/hughrawlinson/meyda) for expanded audio analysis. Ideally you'll just include meyda at all times to account for this, but modV can be run without meyda too.
 
 ###Using
 Using modV is fairly straightforward.
