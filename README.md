@@ -25,7 +25,8 @@ http://lifehacker.com/start-a-simple-web-server-from-any-directory-on-your-ma-49
 Or alternatively you can go here and use it without downloading: http://2xaa.github.io/modV-alpha-/
 But this only allows you to use the example modules, unless you're cool with loading stuff in using the console.
 
-####Optional (audio routing)
+####Optional
+Audio routing:
 Routing audio to other applications (say routing a music player as a virtual line-in) can be a bit tricky sometimes, but luckily there are some free solutions for this:
 
 Windows:
@@ -45,6 +46,9 @@ https://rogueamoeba.com/freebies/soundflower/
 * On the SoundFlower menu item set the output of the 2ch to your usual audio output
 * Tell Chrome to use the SoundFlower 2ch input for modV when asked for user media
 
+Meyda:
+If the module developer wants, they can use meyda(https://github.com/hughrawlinson/meyda) for expanded audio analysis. Ideally you'll just include meyda at all times to account for this, but modV can be run without meyda too.
+
 ###Using
 Using modV is fairly straightforward.
 
@@ -63,7 +67,6 @@ The basic setup for modV is as follows:
 		modV.setCanvas(document.getElementsByTagName('canvas')[0]);
 		modV.setDimensions(window.innerWidth, window.innerHeight);
 		modV.registerMod(waveform);
-		modV.setModOrder(waveform.info.name, 0); // This will change to just the base module name in future revisions
 		modV.start();
 	</script>
 </body>
@@ -118,7 +121,7 @@ var modName = function() {
 	  but you can use it to setup other things within your module too ahead of runtime
 	*/
 		
-	this.draw = function(canvas, ctx, audio, video) {
+	this.draw = function(canvas, ctx, audio, video, meyda) {
 			
 	};
 	
@@ -135,8 +138,6 @@ var modName = function() {
 	*/
 	
 };
-modName = new modName();
-// you must export the module ready to be registered like this
 ```
 
 Please see the bundled modules for extra stuff.
