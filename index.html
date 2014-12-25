@@ -4,7 +4,7 @@
 		<meta charset="utf-8">
 		<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
 		<title>modV</title>
-		<link rel="stylesheet" href="control-stylesheet.css" />
+		<link rel="stylesheet" href="control-stylesheet.css" /> <!-- This is here to update your browser's cache upon updates to this stylesheet -->
 		<style>
 			canvas {
 				left: 0;
@@ -19,13 +19,12 @@
 		<!-- Optional - used with stretch.modV -->
 <!-- 		<script src="//js.leapmotion.com/leap-0.6.4.min.js"></script> -->
 <!-- 		<script src="//js.leapmotion.com/leap-plugins-0.1.10.js"></script> -->
-		
-		<!-- Optional - used with modV remote control -->
-		
+		<script src="./meyda/meyda.min.js"></script>
 		<script src="modV.js"></script>
 		<script src="./modules/waveform.modV.js"></script>
 		<script src="./modules/tile.modV.js"></script>
 		<script src="./modules/stretch.modV.js"></script>
+		<script src="./modules/circles.modV.js"></script>
 		<script src="./modules/pixelate.modV.js"></script>
 		<script src="./modules/rotate.modV.js"></script>
 		<script src="./modules/dither.modV.js"></script>
@@ -61,19 +60,17 @@
 					ctx.font = this.size + ' sans-serif';
 					ctx.textAlign = 'center';
 					ctx.fillStyle = 'hsl(' + hue + ', 100%, 50%)';
-					//var textWidth = ctx.measureText(this.text).width;
 					ctx.fillText(this.text, canvas.width/2, canvas.height/2);
 					if(hue == 360) hue = 0;
 					else hue++;
 				};
 			};
-
-			testMod = new testMod();
 		</script>
 		<script>
-			var modV = new modV({remoteControl: false, previewWindow: true});
+			var modV = new modV({previewWindow: false});
 			modV.setCanvas(document.getElementsByTagName('canvas')[0]);
 			modV.setDimensions(window.innerWidth, window.innerHeight);
+			
 			modV.registerMod(testMod);
 			modV.registerMod(waveform);
 			modV.registerMod(stretch);
@@ -92,25 +89,7 @@
 			modV.registerMod(tenPrint);
 			modV.registerMod(webcam);
 			modV.registerMod(video);
-
-			modV.setModOrder(staticImage.info.name, 0);
-			modV.setModOrder(testMod.info.name, 	1);
-			modV.setModOrder(stretch.info.name, 	2);
-			modV.setModOrder(onOff.info.name,		3);
-			modV.setModOrder(waveform.info.name, 	4);
-			modV.setModOrder(ball.info.name, 		5);
-			modV.setModOrder(starField.info.name,	6);
-			modV.setModOrder(dither.info.name,	 	7);
-			modV.setModOrder(tile.info.name,		8);
-			modV.setModOrder(glitcher.info.name,	9);
-			modV.setModOrder(rotate.info.name,		10);
-			modV.setModOrder(badHold.info.name,		11);
-			modV.setModOrder(pixelate.info.name, 	12);
-			modV.setModOrder(slide.info.name, 		13);
-			modV.setModOrder(tenPrint.info.name, 	14);
-			modV.setModOrder(webcam.info.name, 		15);
-			modV.setModOrder(rotoZoom.info.name, 	16);
-			modV.setModOrder(video.info.name, 		17);
+			modV.registerMod(circles);
 
 			modV.clearing = false;
 			modV.start();
