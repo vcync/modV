@@ -1,5 +1,7 @@
+/*
 @import url(http://fonts.googleapis.com/css?family=Source+Code+Pro:300,400,700|Esteban);
-@import url(http://yui.yahooapis.com/pure/0.5.0/pure-min.css)
+@import url(http://yui.yahooapis.com/pure/0.5.0/pure-min.css);
+*/
 
 html, body {
 	height: 100%;
@@ -88,4 +90,12 @@ textarea {
 	width: 100%;
 	box-sizing: border-box;
 	resize: vertical;
+}
+
+div.menu {
+	background-color: #fff;
+	border: 1px solid #000;
+	width: 100px;
+	height: 100px;
+	position: absolute;
 }
