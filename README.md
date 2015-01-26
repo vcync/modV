@@ -1,20 +1,25 @@
 # modV
 
 modV is a modular audio visualisation framework written in JavaScript.
-Some goals of this project:
 
-  - To find the fastest way to render
-  - More goals
-  - even more goals (ambitious, huh?)
+Sooo, modV is still in beta and so these docs aren't complete as of yet - but I'm working on it, promise! (there's a lot of stuff)
 
-Okay, modV is still in alpha(ish) and so these docs aren't complete as of yet - as you may be able to tell :s
+Current development goals:
+
+  - Control panel styling (hahaha, good luck waiting for that)
+  - Re-assignable variables to configurable timers in controls, and the ability to break out of presets if the user wants
+  - Colour pallete assignment and reassignment selection in controls for drawn shapes
+  - Realtime module code updating (easy enough(ish), kinda started this in a modV module builder already)
+  - Community site type thing for module demo-ing/sharing (only if interest in this takes off)
+
+This is so far a one man project. If you want to contribute, let me know! I'd love somebody to write a module or two to package with modV.
 
 ##How to run:
 ###Requirements
 
-Browser: Google Chrome desktop
+Browser: Google Chrome *desktop*
 
-OS: any that support desktop Chrome.
+OS: any that support *desktop* Chrome.
 
 Device specs: UNKNOWN. modV was developed on a Late 2011 MBP with 16GB of RAM installed - so let me know how you get on with your specs.
 
@@ -30,7 +35,7 @@ But this only allows you to use the example modules, unless you're cool with loa
 Routing audio to other applications (say routing a music player as a virtual line-in) can be a bit tricky sometimes, but luckily there are some free solutions for this:
 
 Windows:
-http://vb-audio.pagesperso-orange.fr/Cable/ 
+http://vb-audio.pagesperso-orange.fr/Cable/
 
 * Click the orange download button and install
 * Set the output of your computer speakers to the VB-Audio cable
@@ -41,13 +46,34 @@ Mac:
 https://rogueamoeba.com/freebies/soundflower/
 
 * Download and install SoundFlower, you will have to restart
-* After the restart, launch SoundFlower
+* After the port-install restart, launch SoundFlower
 * In the Sound pane in System Preferences set the output to SoundFlower 2ch
 * On the SoundFlower menu item set the output of the 2ch to your usual audio output
 * Tell Chrome to use the SoundFlower 2ch input for modV when asked for user media
 
 #####Meyda:
-If the module developer wants, they can use [meyda](https://github.com/hughrawlinson/meyda) for expanded audio analysis. Ideally you'll just include meyda at all times to account for this, but modV can be run without meyda too.
+If the module developer wants, they can use [meyda](https://github.com/hughrawlinson/meyda) for expanded audio analysis. Ideally you'll just include meyda at all times to account for this, but modV can be run without meyda too (not that you should though, it's amazing!).
+
+Please refer to the Meyda documentation on exact usage and information on all the analysis it provides.
+
+#####Remote:
+Packaged in BETA VERSION ONE (needs to be in caps, cool af) is a WebSocket server written in Python - this acts as your "VJing from the bar/toilet/smoking area" tool.
+
+Requirement for this are:
+
+ - Python 2.7
+ - Python Tornado
+
+You'll need to modify the /remote/web/index.html and /index.html files to include the correct server address.
+
+In /index.html you'll have to create a new modV instance with the remote option, e.g:
+
+``` JavaScript
+var modV = new modV({remote: 'ws://192.168.0.1:8888/ws'});
+```
+
+The WebSocket address is always: xxx.xxx.xxx.xxx:8888/ws unless you change your port number, use --help if you need help.
+
 
 ###Using
 Using modV is fairly straightforward.
@@ -95,6 +121,10 @@ var modName = function() {
 		controls: [
 			{type: 'range', variable: 'variable1', min: 1, max: 20, label: 'Variable 1 Label'},
 			{type: 'range', variable: 'variable2', min: 1, max: 20, label: 'Variable 2 label'}
+		],
+		meyda: [
+			'rms',
+			'zcr'
 		]
 	};
 	
@@ -122,7 +152,7 @@ var modName = function() {
 	*/
 		
 	this.draw = function(canvas, ctx, audio, video, meyda) {
-			
+		
 	};
 	
 	/*
@@ -140,6 +170,4 @@ var modName = function() {
 };
 ```
 
-Please see the bundled modules for extra stuff.
-
-*will expand this at some point*
+Please see the bundled modules for good examples!
