@@ -18,6 +18,8 @@ var ball = function() {
 
 	var balls = [];
 
+	var cvHeight = 0;
+
 	var ballObj = function() {
 		this.bounds = {width: 0, height: 0};
 		this.position = {x: 0, y: 0};
@@ -28,8 +30,6 @@ var ball = function() {
 		this.drawUpdate = function(canvas, ctx, amp) {
 			ctx.beginPath();
 			ctx.arc(this.position.x, this.position.y, (that.size * amp), 0, 2 * Math.PI, true);
-			//ctx.fillText(amp + ',' + that.size, this.position.x, this.position.y);
-			//ctx.fillRect(this.position.x, this.position.y, rad+this.speed*2, rad+this.speed*2)
 			ctx.fillStyle = 'hsl(' + hue + ', 50%, 50%)';
 			ctx.fill();
 			ctx.closePath();
@@ -48,6 +48,10 @@ var ball = function() {
 	};
 
 	this.init = function(canvas) {
+		cvHeight = canvas.height;
+
+		balls = [];
+
 		for(var i=0; i < 1000; i++) {
 			var newBall = new ballObj();
 			newBall.bounds.width = canvas.width;
@@ -70,7 +74,7 @@ var ball = function() {
 		all = (all*this.sensitivity);
 		
 		for(var i=0; i < this.amount; i++) {
-			var y = canvas.height - (canvas.height);
+			var y = cvHeight - (cvHeight);
 			balls[i].speed = Math.abs(y-200)/2;
 			balls[i].drawUpdate(canvas, ctx, all);
 		}

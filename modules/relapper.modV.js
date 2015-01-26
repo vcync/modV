@@ -6,18 +6,18 @@ var relapper = function() {
 		version: 0.1,
 		controls: [
 			{type: 'range', variable: 'overlaps', label: 'Overlaps', min: 0, max: 100, varType: 'int', step: 1}
-		]		
+		]
 	};
 	
 	var newCanvas2 = document.createElement('canvas');
-	var newCtx2 = newCanvas2.getContext("2d");
+	var newCtx2 = newCanvas2.getContext('2d');
 	
 	this.overlaps = 50;
 
 	this.init = function(canvas) {
 		newCanvas2.width = canvas.width;
 		newCanvas2.height = canvas.height;
-	}
+	};
 
 	this.draw = function(canvas, ctx) {
 

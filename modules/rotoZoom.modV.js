@@ -5,8 +5,8 @@ var rotoZoom = function() {
 		version: 0.1,
 		controls: [
 			{type: 'range', variable: 'zoomIntensity', min: 1, max: 100, label: 'Zoom Amplitude', varType: 'int'},
-			{type: 'range', variable: 'zoomSpeed', min: 0.0001, max: 0.5, step: 0.0001, label: 'Zoom Frequency', varType: 'float'},
-			{type: 'range', variable: 'distortSpeed', min: 0.001, max: 1, step: 0.001, label: 'Distort Speed', varType: 'float'},
+			{type: 'range', variable: 'zoomSpeed', min: 0.00001, max: 0.03, step: 0.00001, label: 'Zoom Frequency', varType: 'float'},
+			{type: 'range', variable: 'distortSpeed', min: 0.0001, max: 1, step: 0.0001, label: 'Distort Speed', varType: 'float'},
 			{type: 'checkbox', variable: 'distort', label: 'Distort'},
 			{type: 'checkbox', variable: 'srOnOff', label: 'Rotate/Swing Toggle'},
 			{type: 'checkbox', variable: 'swing', label: 'Swing / Rotate'}

@@ -16,7 +16,7 @@ var waveform = function() {
 	
 	var hue = 40;
 	this.fill = false;
-	this.rainboe = false;
+	this.rainbow = false;
 
 	this.draw = function(canvas, ctx, amplitudeArray) {
 		//if(!ready) return;
