@@ -39,6 +39,9 @@
 		<script src="./modules/tenPrint.modV.js"></script>
 		<script src="./modules/webcam.modV.js"></script>
 		<script src="./modules/video.modV.js"></script>
+		<script src="./modules/relapper.modV.js"></script>
+		<script src="./modules/slipNslide.modV.js"></script>
+		<script src="./modules/gridStretch.modV.js"></script>
 		<script>
 			var testMod = function() {
 
@@ -61,7 +64,7 @@
 					ctx.textAlign = 'center';
 					ctx.fillStyle = 'hsl(' + hue + ', 100%, 50%)';
 					ctx.fillText(this.text, canvas.width/2, canvas.height/2);
-					if(hue == 360) hue = 0;
+					if(hue === 360) hue = 0;
 					else hue++;
 				};
 			};
@@ -71,7 +74,10 @@
 			modV.setCanvas(document.getElementsByTagName('canvas')[0]);
 			modV.setDimensions(window.innerWidth, window.innerHeight);
 			
+			modV.registerMod(slipNslide);
+			modV.registerMod(relapper);
 			modV.registerMod(testMod);
+			modV.registerMod(gridStretch);
 			modV.registerMod(waveform);
 			modV.registerMod(stretch);
 			modV.registerMod(tile);
