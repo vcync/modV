@@ -46,7 +46,7 @@ Mac:
 https://rogueamoeba.com/freebies/soundflower/
 
 * Download and install SoundFlower, you will have to restart
-* After the port-install restart, launch SoundFlower
+* After the post-install restart, launch SoundFlower
 * In the Sound pane in System Preferences set the output to SoundFlower 2ch
 * On the SoundFlower menu item set the output of the 2ch to your usual audio output
 * Tell Chrome to use the SoundFlower 2ch input for modV when asked for user media
