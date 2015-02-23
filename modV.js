@@ -1250,14 +1250,12 @@ var stylesheet = document.createElement('link');
 		requestAnimationFrame(loop);
 		
 		if(meydaSupport && ready) {
-			try {
+			// try {
 				myFeatures = that.meyda.get(that.meydaFeatures);
-			} catch(e) {
+			// } catch(e) {
 				// Do nothing!
-			}
+			// }
 		}
-		
-		
 		
 		that.drawFrame(myFeatures);
 	};
