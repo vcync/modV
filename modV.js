@@ -557,15 +557,11 @@ var stylesheet = document.createElement('link');
 			};
 			
 			ws.onclose = function() {
-				console.group('WebSocket logs');
 				console.log('Connection closed');
-				console.groupEnd();
 			};
 			
 			ws.onopen = function() {
-				console.group('WebSocket logs');
 				console.log('Successful initial connection to', that.options.remote);
-				console.groupEnd();
 			};
 		} catch(e) {
 			console.error('There was an un-identified Web Socket error');
@@ -1264,10 +1260,8 @@ var stylesheet = document.createElement('link');
 
 	this.start = function() {
 		if(that.options.remote && !remoteSuccess) {
-			console.group('WebSocket Logs');
 			console.log('Websocket not connected yet, waiting for connection to start.');
 			setTimeout(this.start, 1000);
-			console.groupEnd();
 		} else if(that.options.remote) {
 			for(var mod in registeredMods) {
 				ws.send(JSON.stringify({type: 'register', payload: registeredMods[mod].info}));
