@@ -42,7 +42,7 @@ var gridStretch = function() {
 					randomMovement = Math.random() * meyda['zcr']/20;
 				} else {
 					analysed = meyda['rms'] * this.intensity;
-					randomMovement = Math.random() * meyda['rms'];
+					randomMovement = Math.random() * meyda['rms']*20;
 				}
 
 				newCtx2.drawImage(canvas,

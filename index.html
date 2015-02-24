@@ -20,6 +20,9 @@
 <!-- 		<script src="//js.leapmotion.com/leap-0.6.4.min.js"></script> -->
 <!-- 		<script src="//js.leapmotion.com/leap-plugins-0.1.10.js"></script> -->
 		<script src="./meyda/meyda.min.js"></script>
+		<script src="./threejs/Three.js"></script>
+		<script src="./threejs/Projector.js"></script>
+		<script src="./threejs/CanvasRenderer.js"></script>
 		<script src="modV.js"></script>
 		<script src="./modules/waveform.modV.js"></script>
 		<script src="./modules/tile.modV.js"></script>
@@ -42,6 +45,7 @@
 		<script src="./modules/relapper.modV.js"></script>
 		<script src="./modules/slipNslide.modV.js"></script>
 		<script src="./modules/gridStretch.modV.js"></script>
+		<script src="./modules/mirror.modV.js"></script>
 		<script>
 			var testMod = function() {
 
@@ -55,29 +59,118 @@
 					]
 				};
 
+				var getTextHeight = function(font) {
+
+					var result = {};
+
+					var text = document.createElement('span');
+						text.style.fontFamily = font;
+						text.textContent = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
+					
+					var block = document.createElement('div');
+						block.style.display = 'inline-block';
+						block.style.width = '1px';
+						block.style.height = '0px';
+						
+					var div = document.createElement('div');
+						div.appendChild(text);
+						div.appendChild(block);
+
+					document.body.appendChild(div);
+
+					//try {
+						block.style.verticalAlign = 'baseline';
+						result.ascent = block.offsetHeight - text.offsetHeight;
+
+						block.style.verticalAlign = 'bottom';
+						result.height = block.offsetHeight - text.offsetHeight;
+
+						result.descent = result.height - result.ascent;
+
+					//} finally {
+						div.remove();
+					//}
+
+					return result;
+				};
+
 				var hue = 0;
 				this.text = 'modV';
 				this.size = '50pt';
+				var font;
+				var h = getTextHeight(font);
+
+				setInterval(function() {
+					h = getTextHeight(font);
+				}, 1000);
 
 				this.draw = function(canvas, ctx) {
-					ctx.font = this.size + ' sans-serif';
-					ctx.textAlign = 'center';
+					ctx.textBaseline = 'middle';
+					font = ctx.font = this.size + ' "Helvetica", sans-serif';
+					ctx.textAlign = 'left';
 					ctx.fillStyle = 'hsl(' + hue + ', 100%, 50%)';
-					ctx.fillText(this.text, canvas.width/2, canvas.height/2);
+
+					// Canvas can tell us the width
+					var w = ctx.measureText(this.text).width;
+
+					// New function gets the other info we need
+					// --look up
+
+					ctx.fillText(this.text, canvas.width/2 - w/2, canvas.height/2 + h.height/2);
 					if(hue === 360) hue = 0;
 					else hue++;
 				};
 			};
 		</script>
 		<script>
-			var modV = new modV({previewWindow: false});
+			var threeJS = function() {
+
+				this.info = {
+					name: 'threeJS',
+					author: '2xAA',
+					version: 0.1,
+					threejs: true,
+					meyda: ['zcr']
+				};
+				var hue = 0;
+				var analysed;
+				var colour = new THREE.Color(0x000000);
+				var geometry = new THREE.BoxGeometry( 1, 1, 1 );
+				var material = new THREE.MeshBasicMaterial( { color: colour, wireframe: true } );
+				var cube = new THREE.Mesh( geometry, material );
+				modV.threejs.scene.add(cube);
+
+				modV.threejs.camera.position.z = 5;
+
+				this.draw = function(canvas, ctx, audio, video, meyda) {
+
+					analysed = meyda['zcr']/10;
+
+					cube.rotation.x += analysed/18;
+					cube.rotation.y += -analysed/18;
+
+					//cube.scale.x =  analysed/18;
+					//cube.scale.y =  analysed/18;
+
+					colour.setHSL(hue, 1, 0.5);
+					material.color = colour;
+
+					if(hue >= 1) hue = 0;
+					else hue+=0.001;
+				};
+			};
+		</script>
+		<script>
+			var modV = new modV({previewWindow: false, remote: 'ws://192.168.1.217:8888/ws'});/*178.62.28.162*/
 			modV.setCanvas(document.getElementsByTagName('canvas')[0]);
 			modV.setDimensions(window.innerWidth, window.innerHeight);
 			
+			modV.registerMod(threeJS);
 			modV.registerMod(slipNslide);
 			modV.registerMod(relapper);
-			modV.registerMod(testMod);
 			modV.registerMod(gridStretch);
+			modV.registerMod(testMod);
+			modV.registerMod(mirror);
 			modV.registerMod(waveform);
 			modV.registerMod(stretch);
 			modV.registerMod(tile);
@@ -89,9 +182,9 @@
 			modV.registerMod(onOff);
 			modV.registerMod(starField);
 			modV.registerMod(badHold);
+			modV.registerMod(slide);
 			modV.registerMod(rotoZoom);
 			modV.registerMod(staticImage);
-			modV.registerMod(slide);
 			modV.registerMod(tenPrint);
 			modV.registerMod(webcam);
 			modV.registerMod(video);

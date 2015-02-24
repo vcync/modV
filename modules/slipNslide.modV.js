@@ -10,7 +10,7 @@ var slipNslide = function() {
 	};
 	
 	var newCanvas2 = document.createElement('canvas');
-	var newCtx2 = newCanvas2.getContext("2d");
+	var newCtx2 = newCanvas2.getContext('2d');
 	
 	this.sections = 50;
 

@@ -28,10 +28,10 @@ var modV = function (options) {
 	}());
 	
 	// from here: http://stackoverflow.com/questions/18663941/finding-closest-element-without-jquery
-	function getClosest(el, tag) {
+	function getClosestWithClass(el, tag, classN) {
 		tag = tag.toUpperCase();
 		do {
-			if (el.nodeName === tag) {
+			if (el.nodeName === tag && el.classList.contains(classN)) {
 				return el;
 			}
 		} while (el = el.parentNode);
@@ -92,6 +92,20 @@ var modV = function (options) {
 	if(typeof window.Meyda === 'function') {
 		meydaSupport = true;
 		console.info('meyda detected, expanded audio analysis available.', 'Use this.meyda to access from console.');
+	}
+
+	this.threejs = {
+		scene: null,
+		camera: null,
+		renderer: null
+	};
+
+	// Check for THREE
+	if(typeof window.THREE === 'object') {
+		this.threejs.scene = new THREE.Scene();
+		this.threejs.camera = new THREE.PerspectiveCamera( 75, window.innerWidth / window.innerHeight, 0.1, 1000 );
+
+		console.log(this.threejs);
 	}
 	
 	video.autoplay = true;
@@ -192,7 +206,7 @@ var modV = function (options) {
 	
 	// Setup window control
 	
-	if(!this.options.controlDomain) this.options.controlDomain = location.protocol + "//" + location.host;
+	if(!this.options.controlDomain) this.options.controlDomain = location.protocol + '//' + location.host;
 	
 	function parseVar(varType, variable) {
 		switch(varType) {
@@ -216,9 +230,10 @@ var modV = function (options) {
 	}
 	
 	window.addEventListener('message', receiveMessage, false);
-	
+
 	function receiveMessage(event, websocket) {
 		if(event.origin !== that.options.controlDomain && !websocket) return;
+		var index;
 		if(event.data.type === 'variable') {
 			
 			// Parse Variable
@@ -278,7 +293,7 @@ var modV = function (options) {
 				controllerWindow.postMessage({
 					type: 'ui-blend',
 					modName: event.data.modName,
-					payload: event.data.payload,
+					payload: event.data.payload
 				}, that.options.controlDomain);
 				console.log(event.data);
 			}
@@ -291,14 +306,14 @@ var modV = function (options) {
 				controllerWindow.postMessage({
 					type: 'ui-opacity',
 					modName: event.data.modName,
-					payload: event.data.payload,
+					payload: event.data.payload
 				}, that.options.controlDomain);
 				console.log(event.data);
 			}
 		}
 		
 		if(event.data.type === 'setOrderUp') {
-			var index = -1;
+			index = -1;
 			modOrder.forEach(function(mod, idx) {
 				if(event.data.modName === mod) index = idx;
 			});
@@ -309,7 +324,7 @@ var modV = function (options) {
 		}
 		
 		if(event.data.type === 'setOrderFromElements') {
-			var index = -1;
+			index = -1;
 			modOrder.forEach(function(mod, idx) {
 				if(event.data.y === mod) index = idx;
 			});
@@ -330,7 +345,7 @@ var modV = function (options) {
 				controllerWindow.postMessage({
 					type: 'ui-enabled',
 					modName: event.data.modName,
-					payload: event.data.payload,
+					payload: event.data.payload
 				}, that.options.controlDomain);
 			}
 		}
@@ -362,14 +377,61 @@ var modV = function (options) {
 				that.presets[event.data.payload.name] = preset;
 				console.info('Wrote preset with name:', event.data.payload.name);
 			}
+
+			if(event.data.name === 'factory-reset') {
+
+				for(var mod in registeredMods) {
+					var m = registeredMods[mod];
+					m.defaults.forEach(function(control, idx) {
+						var val = control.currValue;
+						
+						if('append' in control) {
+							val = val.replace(control.append, '');
+						}
+
+						id = m.name + '-' + control.variable;
+
+						controllerWindow.postMessage({
+							type: 'ui',
+							varType: control.type,
+							modName: m.info.name,
+							name: control.label,
+							payload: val,
+							index: m.info.order
+						}, that.options.controlDomain);
+
+						if(control.append) {
+							val = val + control.append;
+						}
+
+						registeredMods[mod][control.variable] = val;
+
+					});
+
+				}
+
+			}
 		}
 	}
 	var controllerWindow = window.open('',
 									   '_blank',
-									   'width=' + (1440/100)*33.4 + ', height=' + screen.height + ', location=yes, menubar=yes, left=' + (screen.width/100)*66.6);
+									   'width=' + (1440/100)*33.4 +
+									   ',height=' + screen.height +
+									   ', location=yes, menubar=yes, left=' + (screen.width/100)*66.6);
 	
 	// Load presets into window (TO DO)
 	controllerWindow.window.presets = {};
+
+	var link = document.createElement('link');
+	
+	var port = 80;
+	if(window.location.port) port = window.location.port;
+	link.href = window.location.origin + ':' + port + window.location.pathname + 'control-stylesheet.css';
+	link.rel = 'stylesheet';
+
+	controllerWindow.window.document.head.appendChild(link);
+
+	controllerWindow.window.document.body.classList.add('pure-form-stacked');
 	
 	var drunkenMess = function() {
 		return 'You sure about that, you drunken mess?';
@@ -391,39 +453,6 @@ var modV = function (options) {
 	controllerWindow.onbeforeunload = drunkenMess;
 	window.onbeforeunload = drunkenMess;
 	
-	var css = new XMLHttpRequest();
-	css.open('GET', 'control-stylesheet.css', false);
-	css.onreadystatechange = function ()
-	{
-		if(css.readyState === 4)
-		{
-			if(css.status === 200 || css.status === 0)
-			{
-				var allText = css.responseText;
-				
-				var styles = allText.split('}');
-				
-				var style = document.createElement('style');
-				style.appendChild(document.createTextNode(''));
-				style = controllerWindow.window.document.head.appendChild(style);
-				
-				styles.forEach(function(rule, idx) {
-					if(idx === styles.length-1) return false;
-					style.sheet.insertRule(rule + '}', 0);
-				});
-			}
-		}
-	};
-	css.send(null);
-	
-	/*
-var stylesheet = document.createElement('link');
-	stylesheet.type = 'text/css';
-	stylesheet.rel = 'stylesheet';
-	stylesheet.href = 'http://brkbrkbrk.com/dev/modV/control-stylesheet.css';
-	
-*/
-
 	var slipJS = document.createElement('script');
 	slipJS.src = './slip/slip.js';
 	
@@ -446,14 +475,17 @@ var stylesheet = document.createElement('link');
 	
 	
 	controllerWindow.window.document.head.appendChild(slipJS);
-		
+	
+
+	// Window Controls
 	controllerWindow.window.receiveMessage = function(event) {
 		if(event.origin !== that.options.controlDomain) return;
-				
+		var id, node;
+
 		if(event.data.type === 'ui') {
-			var id = event.data.modName + '-' + event.data.name;
+			id = event.data.modName + '-' + event.data.name;
 			
-			var node = controllerWindow.window.document.getElementById(id);
+			node = controllerWindow.window.document.getElementById(id);
 			
 			controllerWindow.window.console.log(id, node, event.data.payload);
 						
@@ -465,8 +497,8 @@ var stylesheet = document.createElement('link');
 		}
 
 		if(event.data.type === 'ui-blend') {
-			var id = event.data.modName + '-blend';
-			var node = controllerWindow.window.document.getElementById(id);
+			id = event.data.modName + '-blend';
+			node = controllerWindow.window.document.getElementById(id);
 			controllerWindow.window.console.log(id, node, event.data.payload);
 
 			for (var i = 0; i < node.options.length; i++) {
@@ -478,15 +510,15 @@ var stylesheet = document.createElement('link');
 		}
 
 		if(event.data.type === 'ui-enabled') {
-			var id = event.data.modName + '-enabled';
-			var node = controllerWindow.window.document.getElementById(id);
+			id = event.data.modName + '-enabled';
+			node = controllerWindow.window.document.getElementById(id);
 			controllerWindow.window.console.log(id, node, event.data.payload);
 			node.checked = event.data.payload;
 		}
 
 		if(event.data.type === 'ui-opacity') {
-			var id = event.data.modName + '-opacity';
-			var node = controllerWindow.window.document.getElementById(id);
+			id = event.data.modName + '-opacity';
+			node = controllerWindow.window.document.getElementById(id);
 			controllerWindow.window.console.log(id, node, event.data.payload);
 			node.value = event.data.payload;
 		}
@@ -512,13 +544,11 @@ var stylesheet = document.createElement('link');
 			var ws = new WebSocket(this.options.remote);
 			
 			ws.onerror = function () {
-				remoteSuccess = true;
-				console.error('Sorry, the web socket at "%s" is un-available', url);
+				remoteSuccess = true; // Failed connection, so start anyway
 	        };
 		
 			ws.onmessage = function(e) {
 				var data = JSON.parse(e.data);
-				console.group('WebSocket logs');
 				console.log('Message received:', data);
 				
 				if(!('type' in data)) return false;
@@ -553,7 +583,6 @@ var stylesheet = document.createElement('link');
 					default:
 						receiveMessage({data: data}, true);
 				}
-				console.groupEnd();
 			};
 			
 			ws.onclose = function() {
@@ -664,7 +693,17 @@ var stylesheet = document.createElement('link');
 		}
 		this.canvas = el;
 		this.context = el.getContext('2d');
+
+		if(typeof window.THREE === 'object') {
+			this.threejs.canvas = document.createElement('canvas');
+
+			this.threejs.renderer = new THREE.CanvasRenderer({canvas: this.threejs.canvas, autoClear: false});
+			this.threejs.renderer.setSize( window.innerWidth, window.innerHeight );
+			this.threejs.renderer.setClearColor(0xff0000, 0);
+		}
+
 		window.addEventListener('resize', function() {
+			that.threejs.renderer.setSize(window.innerWidth, window.innerHeight);
 			that.canvas.width = window.innerWidth;
 			that.canvas.height = window.innerHeight;
 			for(var mod in registeredMods) {
@@ -688,47 +727,163 @@ var stylesheet = document.createElement('link');
 		if(typeof width === 'undefined' && typeof height !== 'undefined') this.canvas.width = this.canvas.height = height;
 		else if(typeof width !== 'undefined' && typeof height === 'undefined') this.canvas.width = this.canvas.height = width;
 		else {
+			if(typeof window.THREE === 'object') {
+				this.threejs.renderer.setSize(width, height);
+			}
 			this.canvas.width = width;
 			this.canvas.height = height;
 		}
 	};
 	
 	// Add global controls to UI
-	var fieldset = document.createElement('fieldset');
-	var legend = document.createElement('legend');
-	legend.textContent = 'Global';
-	fieldset.appendChild(legend);
-	
+
+	function genContainer(title, movable) {
+		var contTitle = title;
+		var thatIn = this;
+
+		this.div = document.createElement('div');
+		this.div.classList.add('module');
+		
+		var header = document.createElement('header');
+		var headerTxt = document.createTextNode(contTitle);
+
+		var mover = document.createElement('div');
+		mover.classList.add('mover');
+
+		mover.draggable = true;
+		mover.addEventListener('dragstart', function(e) {
+			
+			e.dataTransfer.setData('text', e.target.parentNode.parentNode.dataset.name);
+			
+		}, false);
+
+		header.appendChild(headerTxt);
+		if(movable) {
+			header.appendChild(mover);
+
+			this.div.addEventListener('drop', function(e) {
+				e.preventDefault();
+				var target = getClosestWithClass(e.target, 'div', 'module');
+				target.style.backgroundColor = 'white';
+				console.log(target);
+				
+				var targetdata = target.dataset.name;
+				
+				var data = e.dataTransfer.getData('text');
+				var nodeToMove = controllerWindow.document.querySelector('div.module[data-name="' + data + '"]');
+				nodeToMove.parentNode.insertBefore(nodeToMove, target);
+				
+				controllerWindow.window.opener.postMessage({type: 'setOrderFromElements', x: data, y: targetdata}, that.options.controlDomain);
+				
+				console.log(nodeToMove);
+			}, false);
+			
+			this.div.addEventListener('dragover', function(e) {
+				e.preventDefault();
+				relatedTarget = getClosestWithClass(e.target, 'div', 'module');
+				
+				try {
+					relatedTarget.style.backgroundColor = 'green';
+				} catch(err) {
+					
+				}
+			}, false);
+			
+			this.div.addEventListener('dragleave', function(e) {
+				e.preventDefault();
+				relatedTarget.style.backgroundColor = 'white';
+				
+				//elem.parentNode.insertBefore(nodeToMove, );
+			}, false);
+
+		}
+
+		this.div.appendChild(header);
+
+		var elements = [];
+
+		this.addInput = function(id, title, type, valueName, value, event, callback) {
+
+			var element = document.createElement('input');
+			element.type = type;
+
+			if(valueName instanceof Array) {
+
+				valueName.forEach(function(valueN, idx) {
+					element[valueN] = value[idx];
+				});
+
+			} else {
+				element[valueName] = value;
+			}
+
+			element.addEventListener(event, callback);
+			element.id = contTitle + '-' + id;
+
+			var container = document.createElement('div');
+			container.classList.add('pure-g');
+
+			var left = document.createElement('div');
+			left.classList.add('pure-u-1-5');
+
+			var label = document.createElement('label');
+			label.setAttribute('for', contTitle + '-' + id);
+			label.textContent = title;
+
+			left.appendChild(label);
+
+			var right = document.createElement('div');
+			right.classList.add('pure-u-4-5');
+			right.appendChild(element);
+
+			container.appendChild(left);
+			container.appendChild(right);
+
+			elements.push(container);
+
+		};
+
+		this.addSpecial = function(element) {
+
+			var container = document.createElement('div');
+			container.classList.add('pure-g');
+
+			var div = document.createElement('div');
+			div.classList.add('pure-u-1-1');
+
+			container.appendChild(div);
+			div.appendChild(element);
+
+			elements.push(container);
+
+		};
+
+		this.output = function() {
+			elements.forEach(function(block) {
+				thatIn.div.appendChild(block);
+			});
+
+			return this.div;
+		};
+	}
+
+	var container = new genContainer('Global', false);
 	
 	// - clearing
-	var label = document.createElement('label');
-	label.textContent = 'Clearing ';
-
-	var checkbox = document.createElement('input');
-	checkbox.type = 'checkbox';
-	checkbox.checked = false;
-	checkbox.addEventListener('change', function() {
+	container.addInput('clearing', 'Clearing', 'checkbox', 'checked', false, 'change', function() {
 		controllerWindow.window.opener.postMessage({type: 'global', name: 'clearing', payload: this.checked}, that.options.controlDomain);
 	});
-	label.appendChild(checkbox);
-	fieldset.appendChild(label);
-	fieldset.appendChild(document.createElement('br'));
-	
-	
-	// - mute control
-	label = document.createElement('label');
-	label.textContent = 'Mute ';
 
-	checkbox = document.createElement('input');
-	checkbox.type = 'checkbox';
-	checkbox.checked = true;
-	checkbox.addEventListener('change', function() {
+	// - mute / unmute input
+	container.addInput('mute', 'Mute', 'checkbox', 'checked', false, 'change', function() {
 		controllerWindow.window.opener.postMessage({type: 'global', name: 'mute', payload: this.checked}, that.options.controlDomain);
 	});
-	label.appendChild(checkbox);
-	fieldset.appendChild(label);
-	fieldset.appendChild(document.createElement('br'));
-	
+
+	// - factory reset button
+	container.addInput('factory-reset', 'Factory Reset', 'button', 'value', 'factory-reset', 'click', function() {
+		controllerWindow.window.opener.postMessage({type: 'global', name: 'factory-reset', payload: this.value}, that.options.controlDomain);
+		console.log('YUUHHH');
+	});
 	
 	// - save preset
 	var div = document.createElement('div');
@@ -762,12 +917,13 @@ var stylesheet = document.createElement('link');
 	});
 	div.appendChild(text);
 	div.appendChild(button);
-	fieldset.appendChild(div);
+	container.addSpecial(div);
 	
-	controllerWindow.document.body.appendChild(fieldset);
+	controllerWindow.document.body.appendChild(container.output());
 	
 	this.registerMod = function(mod) {
 		mod = new mod();
+		mod.defaults = [];
 		if(typeof mod.init === 'function') mod.init(this.canvas, this.context);
 		if(!('blend' in mod.info)) mod.info.blend = 'normal';
 		if(!('alpha' in mod.info)) mod.info.alpha = 1;
@@ -780,36 +936,38 @@ var stylesheet = document.createElement('link');
 		}
 
 		var fieldset = document.createElement('fieldset');
+
+		var container = new genContainer(mod.info.name, true);
 		
 		var relatedTarget = null;
 		
-		fieldset.addEventListener('drop', function(e) {
-			e.preventDefault();
-			var target = getClosest(e.target, 'fieldset');
-			target.style.backgroundColor = 'white';
-			console.log(target);
+		// fieldset.addEventListener('drop', function(e) {
+		// 	e.preventDefault();
+		// 	var target = getClosest(e.target, 'fieldset');
+		// 	target.style.backgroundColor = 'white';
+		// 	console.log(target);
 			
-			var targetdata = target.dataset.name;
+		// 	var targetdata = target.dataset.name;
 			
-			var data = e.dataTransfer.getData('text');
-			var nodeToMove = controllerWindow.document.querySelector('fieldset[data-name="' + data + '"]');
-			nodeToMove.parentNode.insertBefore(nodeToMove, target);
+		// 	var data = e.dataTransfer.getData('text');
+		// 	var nodeToMove = controllerWindow.document.querySelector('fieldset[data-name="' + data + '"]');
+		// 	nodeToMove.parentNode.insertBefore(nodeToMove, target);
 			
-			controllerWindow.window.opener.postMessage({type: 'setOrderFromElements', x: data, y: targetdata}, that.options.controlDomain);
+		// 	controllerWindow.window.opener.postMessage({type: 'setOrderFromElements', x: data, y: targetdata}, that.options.controlDomain);
 			
-			console.log(nodeToMove);
-		}, false);
+		// 	console.log(nodeToMove);
+		// }, false);
 		
-		fieldset.addEventListener('dragover', function(e) {
-			e.preventDefault();
-			relatedTarget = getClosest(e.target, 'fieldset');
+		// fieldset.addEventListener('dragover', function(e) {
+		// 	e.preventDefault();
+		// 	relatedTarget = getClosest(e.target, 'fieldset');
 			
-			try {
-				relatedTarget.style.backgroundColor = 'green';
-			} catch(err) {
+		// 	try {
+		// 		relatedTarget.style.backgroundColor = 'green';
+		// 	} catch(err) {
 				
-			}
-		}, false);
+		// 	}
+		// }, false);
 		
 		fieldset.addEventListener('dragleave', function(e) {
 			e.preventDefault();
@@ -817,63 +975,63 @@ var stylesheet = document.createElement('link');
 			
 			//elem.parentNode.insertBefore(nodeToMove, );
 		}, false);
+
+		container.div.dataset.name = mod.info.name;
 		
 		fieldset.dataset.name = mod.info.name;
 		fieldset.style.position = 'relative';
 		var legend = document.createElement('legend');
 		legend.textContent = mod.info.name;
-		legend.style .fontSize = '20px';
+		legend.style.fontSize = '20px';
 		fieldset.appendChild(legend);
 
-		var label = document.createElement('label');
-		label.textContent = 'Enabled ';
+		// var label = document.createElement('label');
+		// label.textContent = 'Enabled ';
 
-		var checkbox = document.createElement('input');
-		checkbox.type = 'checkbox';
-		checkbox.checked = false;
-		checkbox.addEventListener('change', function() {
+		// var checkbox = document.createElement('input');
+		// checkbox.type = 'checkbox';
+		// checkbox.checked = false;
+		// checkbox.addEventListener('change', function() {
+		// 	controllerWindow.window.opener.postMessage({type: 'check',
+		// 		modName: mod.info.name,
+		// 		payload: this.checked
+		// 	}, that.options.controlDomain);
+
+		// 	if(that.options.remote) {
+		// 		ws.send(JSON.stringify({
+		// 			type: 'ui-enabled',
+		// 			modName: mod.info.name,
+		// 			payload: this.checked
+		// 		}));
+		// 	}
+		// });
+
+		// checkbox.id = mod.info.name + '-enabled';
+
+		// label.appendChild(checkbox);
+		//fieldset.appendChild(label);
+		fieldset.appendChild(document.createElement('br'));
+
+		container.addInput('enabled', 'Enabled', 'checkbox', 'checked', false, 'change', function() {
 			controllerWindow.window.opener.postMessage({type: 'check',
 				modName: mod.info.name,
 				payload: this.checked
 			}, that.options.controlDomain);
 
 			if(that.options.remote) {
-				ws.send(JSON.stringify({
-					type: 'ui-enabled',
-					modName: mod.info.name,
-					payload: this.checked
-				}));
+				try {
+					ws.send(JSON.stringify({
+						type: 'ui-enabled',
+						modName: mod.info.name,
+						payload: this.checked
+					}));
+				} catch(e) {
+
+				}
 			}
 		});
 
-		checkbox.id = mod.info.name + '-enabled';
-
-		label.appendChild(checkbox);
-		fieldset.appendChild(label);
-		fieldset.appendChild(document.createElement('br'));
-		
-		var up = document.createElement('button');
-		up.textContent = 'UP';
-		up.addEventListener('click', function() {
-			controllerWindow.window.opener.postMessage({type: 'setOrderUp', modName: mod.info.name}, that.options.controlDomain);
-		});
-		
-		fieldset.appendChild(up);
-		fieldset.appendChild(document.createElement('br'));
-		
-		// Add Opacity control
-		var opacityInput = document.createElement('input');
-		opacityInput.type = 'range';
-		
-		label = document.createElement('label');
-		label.textContent = 'Opacity ';
-
-		opacityInput.min = 0;
-		opacityInput.max = 1;
-		opacityInput.step = 0.01;
-		opacityInput.value = mod.info.alpha;
-		
-		opacityInput.addEventListener('input', function() {
+		container.addInput('opacity', 'Opacity', 'range', ['value', 'min', 'max', 'step'], [mod.info.alpha, 0, 1, 0.01], 'input', function() {
 			controllerWindow.window.opener.postMessage({
 				type: 'modOpacity',
 				modName: mod.info.name,
@@ -888,12 +1046,6 @@ var stylesheet = document.createElement('link');
 				}));
 			}
 		});
-
-		opacityInput.id = mod.info.name + '-opacity';
-		
-		label.appendChild(opacityInput);
-		fieldset.appendChild(label);
-		fieldset.appendChild(document.createElement('br'));
 		
 		// Add Blending options
 		var blendCompSelect = genBlendModeOps();
@@ -919,8 +1071,10 @@ var stylesheet = document.createElement('link');
 		blendCompSelect.id = mod.info.name + '-blend';
 
 		label.appendChild(blendCompSelect);
-		fieldset.appendChild(label);
-		fieldset.appendChild(document.createElement('br'));
+		container.addSpecial(label);
+
+		//fieldset.appendChild(label);
+		//fieldset.appendChild(document.createElement('br'));
 		
 		var mover = document.createElement('div');
 		mover.classList.add('mover');
@@ -948,18 +1102,20 @@ var stylesheet = document.createElement('link');
 			//console.log(e.target);
 			//e.dataTransfer.setData("text", e.target.parentNode.dataset.name);
 		}, false);
-		fieldset.appendChild(mover);
+		//fieldset.appendChild(mover);
 		
 
 		// Register controls
 		if('controls' in mod.info) {
 
 			mod.info.controls.forEach(function(controlSet, idx) {
+				mod.defaults.push(JSON.parse(JSON.stringify(controlSet))); // ugly, but we need to copy the set, not ref it.
+
 				var variable = controlSet.variable;
 				var label = document.createElement('label');
 				var labelText = controlSet.label;
 				label.textContent = labelText + ' ';
-				
+
 				label.oncontextmenu = function(e) {
 					console.log(e);
 					var div = document.createElement('div');
@@ -972,22 +1128,25 @@ var stylesheet = document.createElement('link');
 				
 				
 				fieldset.appendChild(document.createElement('hr'));
-				
+				var image;
+
 				if(controlSet.type === 'video') {
-					var image = new Image();
+					image = new Image();
 					image.src = mod[variable].src;
 
-					fieldset.addEventListener('dragover', function(e) {
+					label.classList.add('filedrop');
+
+					label.addEventListener('dragover', function(e) {
 						e.preventDefault();
 						this.classList.add('dragover');
 					});
 
-					fieldset.addEventListener('dragend', function(e) {
+					label.addEventListener('dragend', function(e) {
 						e.preventDefault();
 						this.classList.remove('dragover');
 					});
 						
-					fieldset.addEventListener('drop', function(e) {
+					label.addEventListener('drop', function(e) {
 						e.preventDefault();
 						this.classList.remove('dragover');
 						var file = e.dataTransfer.files[0];
@@ -999,21 +1158,25 @@ var stylesheet = document.createElement('link');
 
 					label.appendChild(image);
 
+					container.addSpecial(label);
+
 				} else if(controlSet.type === 'image') {
-					var image = new Image();
+					image = new Image();
 					image.src = mod[variable].src;
 
-					fieldset.addEventListener('dragover', function(e) {
+					label.classList.add('filedrop');
+
+					label.addEventListener('dragover', function(e) {
 						e.preventDefault();
 						this.classList.add('dragover');
 					});
 
-					fieldset.addEventListener('dragend', function(e) {
+					label.addEventListener('dragend', function(e) {
 						e.preventDefault();
 						this.classList.remove('dragover');
 					});
 						
-					fieldset.addEventListener('drop', function(e) {
+					label.addEventListener('drop', function(e) {
 						e.preventDefault();
 						this.classList.remove('dragover');
 						var file = e.dataTransfer.files[0];
@@ -1025,22 +1188,26 @@ var stylesheet = document.createElement('link');
 
 					label.appendChild(image);
 
+					container.addSpecial(label);
+
 				} else if(controlSet.type === 'multiimage') {
 
-					var image = new Image();
+					image = new Image();
 					//image.src = mod[variable][0].src;
 
-					fieldset.addEventListener('dragover', function(e) {
+					label.classList.add('filedrop');
+
+					label.addEventListener('dragover', function(e) {
 						e.preventDefault();
 						this.classList.add('dragover');
 					});
 
-					fieldset.addEventListener('dragend', function(e) {
+					label.addEventListener('dragend', function(e) {
 						e.preventDefault();
 						this.classList.remove('dragover');
 					});
 						
-					fieldset.addEventListener('drop', function(e) {
+					label.addEventListener('drop', function(e) {
 						e.preventDefault();
 						var altPressed = e.altKey;
 						this.classList.remove('dragover');
@@ -1063,112 +1230,114 @@ var stylesheet = document.createElement('link');
 						}, that.options.controlDomain);
 					});
 
+
+
 					label.appendChild(image);
+
+					container.addSpecial(label);
 				
 				} else if(controlSet.type === 'checkbox') {
 					
-					var type = 'checkbox';
+					mod.info.controls[idx].currValue = mod[variable];
+					mod.defaults[idx].currValue = mod[variable];
 
-					var input = document.createElement('input');
-					input.type = type;
-					input.id = mod.info.name + '-' + variable;
-
-					if('checked' in controlSet) input.checked = controlSet.checked;
-
-					input.addEventListener('change', function() {
-						controllerWindow.window.opener.postMessage({
-							type: 'variable',
-							varType: type,
-							modName: mod.info.name,
-							name: variable,
-							payload: input.checked,
-							index: idx
-						}, that.options.controlDomain);
-					});
-
-					label.appendChild(input);
+					container.addInput(controlSet.label,
+						controlSet.label,
+						controlSet.type,
+						'checked',
+						controlSet.checked,
+						'change',
+						function() {
+							controllerWindow.window.opener.postMessage({
+								type: 'variable',
+								varType: controlSet.type,
+								modName: mod.info.name,
+								name: variable,
+								payload: this.checked,
+								index: idx
+							}, that.options.controlDomain);
+						}
+					);
 				
 				} else {
-					
-					var type = controlSet.type;
-
-					var input = document.createElement('input');
-					input.type = type;
-					input.id = mod.info.name + '-' + variable;
-
-					if('min' in controlSet) input.min = controlSet.min;
-					if('max' in controlSet) input.max = controlSet.max;
-					if('step' in controlSet) input.step = controlSet.step;
-					if(!('varType' in controlSet)) input.varType = 'string';
-
+					var varr;
 					if('append' in controlSet) {
-						input.value = mod[variable].replace(controlSet.append, '');
+						varr = mod[variable].replace(controlSet.append, '');
 					} else {
-						input.value = mod[variable];
+						varr = mod[variable];
 					}
 
 					mod.info.controls[idx].currValue = mod[variable];
-					console.log('cv', mod.info.controls[idx].currValue);
+					mod.defaults[idx].currValue = varr;
 
-					input.addEventListener('input', function() {
-						if('append' in controlSet) {
-							var value = (input.value + controlSet.append);
-							controllerWindow.window.opener.postMessage({
-								type: 'variable',
-								varType: controlSet.varType,
-								modName: mod.info.name,
-								name: variable,
-								payload: value,
-								index: idx,
-								append: controlSet.append
-							}, that.options.controlDomain);
+					container.addInput(controlSet.label,
+						controlSet.label,
+						controlSet.type,
+						['value', 'min', 'max', 'step'],
+						[varr, controlSet.min, controlSet.max, controlSet.step],
+						'input',
+						function() {
 
-							if(that.options.remote) {
-								ws.send(JSON.stringify({
-									type: 'ui',
+							if('append' in controlSet) {
+								var value = (this.value + controlSet.append);
+								controllerWindow.window.opener.postMessage({
+									type: 'variable',
 									varType: controlSet.varType,
 									modName: mod.info.name,
 									name: variable,
 									payload: value,
 									index: idx,
 									append: controlSet.append
-								}));
-							}
-						}
-						else {
-							controllerWindow.window.opener.postMessage({
-								type: 'variable',
-								varType: controlSet.varType,
-								modName: mod.info.name,
-								name: variable,
-								payload: input.value,
-								index: idx
-							}, that.options.controlDomain);
+								}, that.options.controlDomain);
 
-							if(that.options.remote) {
-								ws.send(JSON.stringify({
-									type: 'ui',
+								if(that.options.remote) {
+									ws.send(JSON.stringify({
+										type: 'ui',
+										varType: controlSet.varType,
+										modName: mod.info.name,
+										name: variable,
+										payload: value,
+										index: idx,
+										append: controlSet.append
+									}));
+								}
+							}
+							else {
+								controllerWindow.window.opener.postMessage({
+									type: 'variable',
 									varType: controlSet.varType,
 									modName: mod.info.name,
 									name: variable,
-									payload: input.value,
+									payload: this.value,
 									index: idx
-								}));
+								}, that.options.controlDomain);
+
+								if(that.options.remote) {
+									ws.send(JSON.stringify({
+										type: 'ui',
+										varType: controlSet.varType,
+										modName: mod.info.name,
+										name: variable,
+										payload: this.value,
+										index: idx
+									}));
+								}
 							}
 						}
-					});
-
-					label.appendChild(input);
+					);
 				}
 
-				fieldset.appendChild(label);
+				//fieldset.appendChild(label);
 				fieldset.appendChild(document.createElement('br'));
 			});
 
 		}
 		
-		controllerWindow.document.body.appendChild(fieldset);
-		
+		controllerWindow.document.body.appendChild(container.output());
+		//controllerWindow.document.body.appendChild(fieldset);
+
+		registeredMods[mod.info.name]
+
 		var registered = registeredMods[mod.info.name] = mod;
 		this.setModOrder(mod.info.name, Object.size(registeredMods));
 		
@@ -1195,8 +1364,8 @@ var stylesheet = document.createElement('link');
 			
 			modOrder.forEach(function(mod, idx) {
 				registeredMods[mod].info.order = idx;
-				var mover = controllerWindow.document.querySelector('fieldset[data-name="' + mod + '"]').getElementsByClassName('mover')[0];
-				mover.textContent = idx;
+				//var mover = controllerWindow.document.querySelector('fieldset[data-name="' + mod + '"]').getElementsByClassName('mover')[0];
+				//mover.textContent = idx;
 			});
 		}
 		
@@ -1233,7 +1402,13 @@ var stylesheet = document.createElement('link');
 				this.context.save();
 				this.context.globalAlpha = registeredMods[modOrder[i]].info.alpha;
 				if(registeredMods[modOrder[i]].info.blend !== 'normal') this.context.globalCompositeOperation = registeredMods[modOrder[i]].info.blend;
-				registeredMods[modOrder[i]].draw(this.canvas, this.context, amplitudeArray, video, meydaOutput);
+				if(!registeredMods[modOrder[i]].info.threejs) {
+					registeredMods[modOrder[i]].draw(this.canvas, this.context, amplitudeArray, video, meydaOutput);
+				} else {
+					registeredMods[modOrder[i]].draw(this.canvas, this.context, amplitudeArray, video, meydaOutput);
+					this.context.drawImage(this.threejs.canvas, 0, 0);
+					this.threejs.renderer.render(this.threejs.scene, this.threejs.camera);
+				}
 				this.context.restore();
 			}
 		}
@@ -1246,11 +1421,7 @@ var stylesheet = document.createElement('link');
 		requestAnimationFrame(loop);
 		
 		if(meydaSupport && ready) {
-			try {
-				myFeatures = that.meyda.get(that.meydaFeatures);
-			} catch(e) {
-				// Do nothing!
-			}
+			myFeatures = that.meyda.get(that.meydaFeatures);
 		}
 		
 		

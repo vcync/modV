@@ -119,7 +119,7 @@ var rotoZoom = function() {
 				);
 			}
 		}
-/*		
+/*
 		ctx.setTransform(1, 0, 0, 1, canvas.width/2, canvas.height/2);
 		//ctx.rotate(-degree);
 		ctx.scale(scaleVal, scaleVal);

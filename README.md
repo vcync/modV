@@ -23,13 +23,9 @@ OS: any that support *desktop* Chrome.
 
 Device specs: UNKNOWN. modV was developed on a Late 2011 MBP with 16GB of RAM installed - so let me know how you get on with your specs.
 
-Web server or local server to host the project.
-
+Web server or local server to host the project
 Check this guide out to help you spin one up on your Mac:
 http://lifehacker.com/start-a-simple-web-server-from-any-directory-on-your-ma-496425450
-
-Check this guide for Windows:
-http://forums.udacity.com/questions/100140840/simplehttpserver-for-windows-7
 
 Or alternatively you can go here and use it without downloading: http://2xaa.github.io/modV-alpha-/
 But this only allows you to use the example modules, unless you're cool with loading stuff in using the console.
@@ -50,7 +46,7 @@ Mac:
 https://rogueamoeba.com/freebies/soundflower/
 
 * Download and install SoundFlower, you will have to restart
-* After the post-install restart, launch SoundFlower
+* After the port-install restart, launch SoundFlower
 * In the Sound pane in System Preferences set the output to SoundFlower 2ch
 * On the SoundFlower menu item set the output of the 2ch to your usual audio output
 * Tell Chrome to use the SoundFlower 2ch input for modV when asked for user media
