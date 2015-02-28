@@ -1,8 +1,8 @@
-;(function() {
+function modVRemote(ip) {
 	var $				= document,
 		registeredMods	= {},
 		remoteSuccess 	= false,
-		wsURL 			= 'ws://192.168.1.18:8888/ws',
+		wsURL 			= 'ws://' + ip + ':8888/ws',
 		ws				= new WebSocket(wsURL),
 		uuid;
 	
@@ -528,4 +528,4 @@
 		return registered;
 	}
 	
-})();
+}

@@ -2,6 +2,7 @@ import argparse
 from collections import OrderedDict
 import json
 import pprint
+import socket
 import tornado.httpserver
 import tornado.websocket
 import tornado.ioloop
@@ -121,9 +122,16 @@ class WSHandler(tornado.websocket.WebSocketHandler):
 		clients.pop(self.uuid, None)
 		connections.pop(self.uuid, None)
 
+class MainHandler(tornado.web.RequestHandler):
+	def get(self):
+		self.render('index.html', ip=socket.gethostbyname(socket.gethostname()))
+
+
 application = tornado.web.Application([
 	(r'/ws', WSHandler),
-	(r'/(.*)', tornado.web.StaticFileHandler, {'path': './web/', 'default_filename': 'index.html'})
+#	(r'/(.*)', tornado.web.StaticFileHandler, {'path': './web/', 'default_filename': 'index.html'})
+	(r'/(.*)', MainHandler)
+
 #	(r'/(index\.html)', tornado.web.StaticFileHandler, {'path': './web/'})
 ])
 

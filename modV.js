@@ -1,32 +1,39 @@
 var modV = function (options) {
-
-	(function() {
-		var lastTime = 0;
-		var vendors = ['ms', 'moz', 'webkit', 'o'];
-		for(var x = 0; x < vendors.length && !window.requestAnimationFrame; ++x) {
-			window.requestAnimationFrame = 	window[vendors[x] + 'RequestAnimationFrame'];
-			window.cancelAnimationFrame  =	window[vendors[x] + 'CancelAnimationFrame'] ||
-											window[vendors[x] + 'CancelRequestAnimationFrame'];
-		}
-	 
-		if(!window.requestAnimationFrame) {
-			window.requestAnimationFrame = function(callback, element) {
-				var currTime = new Date().getTime();
-				var timeToCall = Math.max(0, 16 - (currTime - lastTime));
-				var id = window.setTimeout(function() { callback(currTime + timeToCall); },
-				  timeToCall);
-				lastTime = currTime + timeToCall;
-				return id;
-			};
-		}
-	 
-		if(!window.cancelAnimationFrame) {
-			window.cancelAnimationFrame = function(id) {
-				clearTimeout(id);
-			};
-		}
-	}());
 	
+	function factoryReset() {
+		for(var mod in registeredMods) {
+			var m = registeredMods[mod];
+			m.defaults.forEach(function(control, idx) {
+				var val = control.currValue;
+
+				if(control.type === 'image' || control.type === 'multiimage') return;
+				
+				if('append' in control) {
+					val = val.replace(control.append, '');
+				}
+
+				id = m.name + '-' + control.variable;
+
+				controllerWindow.postMessage({
+					type: 'ui',
+					varType: control.type,
+					modName: m.info.name,
+					name: control.label,
+					payload: val,
+					index: m.info.order
+				}, that.options.controlDomain);
+
+				if(control.append) {
+					val = val + control.append;
+				}
+
+				registeredMods[mod][control.variable] = val;
+
+			});
+
+		}
+	}
+
 	// from here: http://stackoverflow.com/questions/18663941/finding-closest-element-without-jquery
 	function getClosestWithClass(el, tag, classN) {
 		tag = tag.toUpperCase();
@@ -65,8 +72,68 @@ var modV = function (options) {
 		video = document.createElement('video'),
 		meydaSupport = false,
 		muted = true;
-	
-	this.presets = {};
+
+	this.loadPreset = function(id) {
+		console.log(id);
+		factoryReset();
+
+		for(var mod in this.presets[id]) {
+
+			console.log(this.presets[id][mod], this.presets[id], this.presets);
+			var m = this.presets[id][mod];
+			
+			if('controls' in m) {
+				m.controls.forEach(function(control, idx) {
+					var val = control.currValue;
+					
+					if('append' in control) {
+						val = val.replace(control.append, '');
+					}
+
+					if(control.type === 'image' || control.type === 'multiimage' || control.type === 'video') return;
+
+					controllerWindow.postMessage({
+						type: 'ui',
+						varType: control.type,
+						modName: m.name,
+						name: control.label,
+						payload: val,
+						index: m.order
+					}, that.options.controlDomain);
+
+					controllerWindow.postMessage({
+						type: 'ui-enabled',
+						modName: m.name,
+						payload: !m.disabled
+					}, that.options.controlDomain);
+
+					if(control.append) {
+						val = val + control.append;
+					}
+
+					registeredMods[mod][control.variable] = val;
+
+				});
+			}
+			console.log(m.name, m.disabled, m.blend);
+			//registeredMods[mod].info = m;
+			registeredMods[mod].info.blend = m.blend;
+			registeredMods[mod].info.disabled = m.disabled;
+			this.setModOrder(m.name, m.order);
+
+		}
+	};
+
+	// Lookup presets
+	if(!localStorage.getItem('presets')) {
+		localStorage.setItem('presets', JSON.stringify({}));
+		this.presets = {};
+	} else {
+		this.presets = JSON.parse(localStorage.getItem('presets'));
+		for(var presetname in this.presets) {
+			console.log('Successfuly read saved preset with name:', presetname);
+		}
+	}
 	
 	// Global Variables for Audio
 	var javascriptNode,
@@ -375,40 +442,13 @@ var modV = function (options) {
 				}
 				
 				that.presets[event.data.payload.name] = preset;
+				localStorage.setItem('presets', JSON.stringify(that.presets));
 				console.info('Wrote preset with name:', event.data.payload.name);
 			}
 
 			if(event.data.name === 'factory-reset') {
 
-				for(var mod in registeredMods) {
-					var m = registeredMods[mod];
-					m.defaults.forEach(function(control, idx) {
-						var val = control.currValue;
-						
-						if('append' in control) {
-							val = val.replace(control.append, '');
-						}
-
-						id = m.name + '-' + control.variable;
-
-						controllerWindow.postMessage({
-							type: 'ui',
-							varType: control.type,
-							modName: m.info.name,
-							name: control.label,
-							payload: val,
-							index: m.info.order
-						}, that.options.controlDomain);
-
-						if(control.append) {
-							val = val + control.append;
-						}
-
-						registeredMods[mod][control.variable] = val;
-
-					});
-
-				}
+				factoryReset();
 
 			}
 		}
@@ -426,7 +466,7 @@ var modV = function (options) {
 	
 	var port = 80;
 	if(window.location.port) port = window.location.port;
-	link.href = window.location.origin + ':' + port + window.location.pathname + 'control-stylesheet.css';
+	link.href = window.location.origin + window.location.pathname + 'control-stylesheet.css';
 	link.rel = 'stylesheet';
 
 	controllerWindow.window.document.head.appendChild(link);
@@ -486,7 +526,7 @@ var modV = function (options) {
 			id = event.data.modName + '-' + event.data.name;
 			
 			node = controllerWindow.window.document.getElementById(id);
-			
+			if(!node) return;
 			controllerWindow.window.console.log(id, node, event.data.payload);
 						
 			if(event.data.varType === 'checkbox') {
@@ -697,9 +737,9 @@ var modV = function (options) {
 		if(typeof window.THREE === 'object') {
 			this.threejs.canvas = document.createElement('canvas');
 
-			this.threejs.renderer = new THREE.CanvasRenderer({canvas: this.threejs.canvas, autoClear: false});
+			this.threejs.renderer = new THREE.CanvasRenderer({canvas: this.threejs.canvas, autoClear: false, alpha: true});
 			this.threejs.renderer.setSize( window.innerWidth, window.innerHeight );
-			this.threejs.renderer.setClearColor(0xff0000, 0);
+			this.threejs.renderer.setClearColor(0x000000, 0);
 		}
 
 		window.addEventListener('resize', function() {

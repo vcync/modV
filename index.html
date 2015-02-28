@@ -4,14 +4,7 @@
 		<meta charset="utf-8">
 		<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
 		<title>modV</title>
-		<link rel="stylesheet" href="control-stylesheet.css" /> <!-- This is here to update your browser's cache upon updates to this stylesheet -->
-		<style>
-			canvas {
-				left: 0;
-				position: fixed;
-				top: 0;
-			}
-		</style>
+		<link rel="stylesheet" href="modV-stylesheet.css" />
 	</head>
 	<body>
 		<canvas></canvas>
@@ -21,6 +14,7 @@
 <!-- 		<script src="//js.leapmotion.com/leap-plugins-0.1.10.js"></script> -->
 		<script src="./meyda/meyda.min.js"></script>
 		<script src="./threejs/Three.js"></script>
+		<script src="./threejs/IcosahedronGeometry.js"></script>
 		<script src="./threejs/Projector.js"></script>
 		<script src="./threejs/CanvasRenderer.js"></script>
 		<script src="modV.js"></script>
@@ -136,11 +130,12 @@
 				var analysed;
 				var colour = new THREE.Color(0x000000);
 				var geometry = new THREE.BoxGeometry( 1, 1, 1 );
+				//var geometry = new THREE.IcosahedronGeometry(20,0);
 				var material = new THREE.MeshBasicMaterial( { color: colour, wireframe: true } );
 				var cube = new THREE.Mesh( geometry, material );
 				modV.threejs.scene.add(cube);
 
-				modV.threejs.camera.position.z = 5;
+				modV.threejs.camera.position.z = /*40*/5;
 
 				this.draw = function(canvas, ctx, audio, video, meyda) {
 
@@ -161,7 +156,7 @@
 			};
 		</script>
 		<script>
-			var modV = new modV({previewWindow: false, remote: 'ws://192.168.1.217:8888/ws'});/*178.62.28.162*/
+			var modV = new modV({previewWindow: false/*, remote: 'ws://192.168.1.217:8888/ws'*/});/*178.62.28.162*/
 			modV.setCanvas(document.getElementsByTagName('canvas')[0]);
 			modV.setDimensions(window.innerWidth, window.innerHeight);
 			
