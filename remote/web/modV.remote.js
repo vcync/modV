@@ -5,6 +5,61 @@ function modVRemote(ip) {
 		wsURL 			= 'ws://' + ip + ':8888/ws',
 		ws				= new WebSocket(wsURL),
 		uuid;
+
+	function factoryReset() {
+
+		ws.send(JSON.stringify({
+			type: 'factory-reset',
+		}));
+
+		for(var mod in registeredMods) {
+			var m = registeredMods[mod];
+			console.log(m);
+			m.disabled = true;
+
+			uiEnabled(m.name, false);
+
+			m.defaults.forEach(function(control, idx) {
+				var val = control.currValue;
+
+				if(control.type === 'image' || control.type === 'multiimage') return;
+				
+
+				if(control.append) {
+					ui(val, m.name, control.label, control.type, control.append);
+
+					val = val + control.append;
+				} else {
+					ui(val, m.name, control.label, control.type);
+				}
+
+				registeredMods[mod][control.variable] = val;
+
+			});
+
+		}
+	}
+
+	function uiEnabled(name, payload) {
+		var id = name + '-enabled';
+		var node = document.getElementById(id);
+		node.checked = payload;
+	}
+
+	function ui(payload, modName, name, varType, append) {
+		if(append) {
+			payload = payload.replace(append, '');
+		}
+
+		var id = modName + '-' + name;
+		var node = document.getElementById(id);
+						
+		if(varType === 'checkbox') {
+			node.checked = payload;
+		} else {
+			node.value = payload;1
+		}
+	}
 	
 	ws.onmessage = function(e) {
 		var data = JSON.parse(e.data);
@@ -32,20 +87,11 @@ function modVRemote(ip) {
 				break;
 
 			case 'ui':
-				var payload = data.payload;
-				if('append' in data) {
-					payload = payload.replace(data.append, '');
-				}
 
-				var id = data.modName + '-' + data.name;
-				var node = document.getElementById(id);
-				
-				console.log(id, node, data.payload, node.value);
-						
-				if(data.varType === 'checkbox') {
-					node.checked = payload;
+				if('append' in data) {
+					ui(data.payload, data.modName, data.name, data.varType, data.append);
 				} else {
-					node.value = payload;
+					ui(data.payload, data.modName, data.name, data.varType);
 				}
 
 				break;
@@ -65,10 +111,7 @@ function modVRemote(ip) {
 				break;
 
 			case 'ui-enabled':
-				var id = data.modName + '-enabled';
-				var node = document.getElementById(id);
-				console.log(id, node, data.payload);
-				node.checked = data.payload;
+				uiEnabled(data.modName, data.payload);
 
 				break;
 
@@ -78,6 +121,18 @@ function modVRemote(ip) {
 				console.log(id, node, data.payload);
 				node.value = data.payload;
 
+				break;
+
+			case 'factory-reset':
+				factoryReset();
+				break;
+
+			case 'load-preset':
+				
+				break;
+
+			case 'save-preset':
+				
 				break;
 			
 		}
@@ -211,11 +266,27 @@ function modVRemote(ip) {
 		selectEl.appendChild(modesOptgroup);
 		return selectEl;
 	}
+
+	// Globals
+	var globalsDiv = document.getElementById('globals');
+	
+	var factoryLabel = document.createElement('label');
+	var factoryButton = document.createElement('input');
+
+	factoryLabel.textContent = 'Factory Reset ';
+	factoryButton.value = 'factory-reset';
+	factoryButton.type = 'button';
+	factoryButton.addEventListener('click', factoryReset);
+
+	factoryLabel.appendChild(factoryButton);
+	globalsDiv.appendChild(factoryLabel);
 	
 	function registerMod(mod) {
 		
 		if(mod.name in registeredMods) return mod.name;
 		
+		mod.defaults = [];
+
 		var fieldset = document.createElement('fieldset');
 		
 		fieldset.dataset.name = mod.name;
@@ -324,12 +395,14 @@ function modVRemote(ip) {
 			
 		}, false);
 		fieldset.appendChild(mover);
-		
 
 		// Register controls
 		if('controls' in mod) {
 
 			mod.controls.forEach(function(controlSet, idx) {
+				
+				mod.defaults.push(JSON.parse(JSON.stringify(controlSet))); // ugly, but we need to copy the set, not ref it.
+
 				var variable = controlSet.variable;
 				var label = document.createElement('label');
 				var labelText = controlSet.label;
@@ -445,7 +518,7 @@ function modVRemote(ip) {
 					label.appendChild(image);
 				
 				} else if(controlSet.type === 'checkbox') {
-					
+					mod.defaults[idx].currValue = mod[variable];
 					var type = 'checkbox';
 
 					var input = document.createElement('input');
@@ -484,6 +557,8 @@ function modVRemote(ip) {
 					} else {
 						input.value = mod.controls[idx].currValue;
 					}
+
+					mod.defaults[idx].currValue = input.value;
 
 					input.addEventListener('input', function() {
 						if('append' in controlSet) {

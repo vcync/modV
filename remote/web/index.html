@@ -4,14 +4,15 @@
 		<meta charset="utf-8">
 		<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
 		<title>modV Remote</title>
-		<script src="./slip.js"></script>
+		<script src="./files/slip.js"></script>
 	</head>
 	<body>
 		<h1>modV Remote</h1>
+		<div id="globals"></div>
 		<ol></ol>
-		<script src="./modV.remote.js"></script>
+		<script src="./files/modV.remote.js"></script>
 		<script>
-			modVRemote({{ ip }});
+			modVRemote(/*'{{ ip }}'*/'192.168.1.184');
 		</script>
 	</body>
 </html>

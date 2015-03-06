@@ -40,6 +40,7 @@
 		<script src="./modules/slipNslide.modV.js"></script>
 		<script src="./modules/gridStretch.modV.js"></script>
 		<script src="./modules/mirror.modV.js"></script>
+		<script src="./modules/waveHold.modV.js"></script>
 		<script>
 			var testMod = function() {
 
@@ -156,7 +157,7 @@
 			};
 		</script>
 		<script>
-			var modV = new modV({previewWindow: false/*, remote: 'ws://192.168.1.217:8888/ws'*/});/*178.62.28.162*/
+			var modV = new modV({previewWindow: false, remote: 'ws://192.168.1.184:8888/ws'});/*178.62.28.162*/
 			modV.setCanvas(document.getElementsByTagName('canvas')[0]);
 			modV.setDimensions(window.innerWidth, window.innerHeight);
 			
@@ -168,6 +169,7 @@
 			modV.registerMod(mirror);
 			modV.registerMod(waveform);
 			modV.registerMod(stretch);
+			//modV.registerMod(waveHold);
 			modV.registerMod(tile);
 			modV.registerMod(pixelate);
 			modV.registerMod(rotate);

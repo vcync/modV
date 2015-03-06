@@ -3,6 +3,15 @@ var modV = function (options) {
 	function factoryReset() {
 		for(var mod in registeredMods) {
 			var m = registeredMods[mod];
+			
+			m.info.disabled = true;
+
+			controllerWindow.postMessage({
+				type: 'ui-enabled',
+				modName: m.info.name,
+				payload: false
+			}, that.options.controlDomain);
+
 			m.defaults.forEach(function(control, idx) {
 				var val = control.currValue;
 

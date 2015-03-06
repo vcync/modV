@@ -16,7 +16,11 @@ var video = function() {
 	this.playbackRate = 1.0;
 	
 	this.draw = function(canvas, ctx, audio, video) {
-		this.video.playbackRate = this.playbackRate;
+		try{
+			this.video.playbackRate = this.playbackRate;
+		} catch(e) {
+			
+		}
 		ctx.drawImage(this.video, 0, 0, canvas.width, canvas.height); 
 	};
 };
