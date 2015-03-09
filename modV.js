@@ -584,7 +584,7 @@ var stylesheet = document.createElement('link');
 					{googHighpassFilter: false},
 					{googTypingNoiseDetection: false}
 				]
-			},
+			}/*,
 			video: {
 				optional: [
 					{googNoiseSuppression: false},
@@ -595,7 +595,7 @@ var stylesheet = document.createElement('link');
 					{googHighpassFilter: false},
 					{googTypingNoiseDetection: false}
 				]
-			}
+			}*/
 	};
 	
 	/* Ask for webcam and audio access  */
