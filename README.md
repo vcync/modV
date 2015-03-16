@@ -31,7 +31,7 @@ http://lifehacker.com/start-a-simple-web-server-from-any-directory-on-your-ma-49
 Check this guide for Windows:
 http://forums.udacity.com/questions/100140840/simplehttpserver-for-windows-7
 
-Or alternatively you can go here and use it without downloading: http://2xaa.github.io/modV-alpha-/
+Or alternatively you can go here and use it without downloading: http://2xaa.github.io/modV/
 But this only allows you to use the example modules, unless you're cool with loading stuff in using the console.
 
 ####Optional
