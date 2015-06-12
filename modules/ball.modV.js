@@ -4,9 +4,9 @@ var ball = function() {
 		author: '2xAA',
 		version: 0.1,
 		controls: [
-			{type: 'range', variable: 'amount', label: 'Amount'},
-			{type: 'range', variable: 'size', min: 1, max: 20, label: 'Base Size'},
-			{type: 'range', variable: 'sensitivity', min: 0, max: 8, label: 'Audio Sensitivity'}
+			{type: 'range', variable: 'amount', label: 'Amount', varType: 'int', min: 1, max: 50},
+			{type: 'range', variable: 'size', varType: 'float', min: 1, max: 20, label: 'Base Size'},
+			{type: 'range', variable: 'sensitivity', varType: 'float', min: 0, max: 8, label: 'Audio Sensitivity'}
 		]
 	};
 

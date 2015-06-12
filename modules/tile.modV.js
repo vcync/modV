@@ -4,8 +4,8 @@ var tile = function() {
 		author: '2xAA',
 		version: 0.1,
 		controls: [
-			{type: 'range', variable: 'tileWidth', min: 1, max: 20, label: 'Tile Width'},
-			{type: 'range', variable: 'tileHeight', min: 1, max: 20, label: 'Tile Height'}
+			{type: 'range', variable: 'tileWidth', min: 1, max: 20, label: 'Tile Width', varType: 'int'},
+			{type: 'range', variable: 'tileHeight', min: 1, max: 20, label: 'Tile Height', varType: 'int'}
 		]
 	};
 
@@ -18,8 +18,7 @@ var tile = function() {
 	this.init = function(canvas) {
 		newCanvas2.width = canvas.width;
 		newCanvas2.height = canvas.height;
-		console.log('init tile')
-	}
+	};
 
 	this.draw = function(canvas, ctx) {
 		//newCtx2.fillStyle = '#000';

@@ -4,7 +4,7 @@ var rotate = function() {
 		author: '2xAA',
 		version: 0.1,
 		controls: [
-			{type: 'range', variable: 'speed', min: -10, max: 10, step: 0.1, varType: 'float', label: 'RMS intensity'}
+			{type: 'range', variable: 'speed', min: -2, max: 2, step: 0.001, varType: 'float', label: 'RMS intensity'}
 		],
 		meyda: ['rms']
 	};
@@ -18,7 +18,7 @@ var rotate = function() {
 	this.init = function(canvas) {
 		newCanvas2.width = canvas.width;
 		newCanvas2.height = canvas.height;
-	}
+	};
 
 	this.draw = function(canvas, ctx, audio, video, meyda) {
 		
@@ -46,8 +46,5 @@ var rotate = function() {
 		ctx.translate(-canvas.width/2, -canvas.height/2);
 	
 		ctx.restore();
-
-		//if(degree == 360) degree = 0;
-		//else degree += this.speed;
 	};
 };

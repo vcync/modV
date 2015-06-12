@@ -4,7 +4,7 @@ var gridStretch = function() {
 		name: 'gridStretch',
 		author: '2xAA',
 		version: 0.1,
-		meyda: ['zcr'],
+		meyda: ['zcr', 'rms'],
 		controls: [
 			{type: 'range', variable: 'size', label: 'Grid Size', min: 1, max: 20, varType: 'int', step: 1},
 			{type: 'range', variable: 'intensity', label: 'RMS/ZCR Intensity', min: 0, max: 30, varType: 'int', step: 1},

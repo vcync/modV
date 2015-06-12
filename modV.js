@@ -43,6 +43,114 @@ var modV = function (options) {
 		}
 	}
 
+	var bots = {};
+
+	var modVBot = function(module) {
+	
+		function bpmToMs(bpm) {
+			console.log(bpm);
+			return (60000 / bpm);
+		}
+
+		function randomIntFromRange(min, max) {
+			return Math.floor(Math.random()*(max-min+1)+min);
+		}
+
+		function randomFloatFromRange(min, max) {
+			return Math.random()*(max-min+1)+min;
+		}
+
+		var interval = bpmToMs(that.bpm);
+
+		function loop() {
+			for(var cntrl in module.info.controls) {
+				var control = module.info.controls[cntrl];
+
+				if(control.type === 'checkbox') {
+
+					module[control.variable] = !Math.round(Math.random());
+
+				} else if(control.type !== 'video' && control.type !== 'image' && control.type !== 'multiimage') {
+
+					var rand;
+
+					switch(control.varType) {
+						case 'int':
+							rand = randomIntFromRange(control.min, control.max);
+
+							if('append' in control) {
+								module[control.variable] = rand + control.append;
+							} else {
+								module[control.variable] = rand;
+							}
+
+							break;
+
+						case 'float':
+							rand = randomFloatFromRange(control.min, control.max);
+
+							if('append' in control) {
+								module[control.variable] = rand + control.append;
+							} else {
+								module[control.variable] = rand;
+							}
+
+							break;
+
+						default:
+							rand = String.fromCharCode(0x30A0 + Math.random() * (0x30FF-0xFFFF+1));
+
+							if('append' in control) {
+								module[control.variable] = rand + control.append;
+							} else {
+								module[control.variable] = rand;
+							}
+
+							break;
+					}
+
+					controllerWindow.postMessage({
+					 	type: 'ui',
+					 	varType: control.varType,
+					 	modName: module.info.name,
+					 	name: control.label,
+					 	payload: rand,
+					 	index: module.info.order
+					}, that.options.controlDomain);
+				}
+
+			}
+
+			if(that.bpm === 0) {
+				interval = 1000;
+				console.log('No BPM yet', that.bpm);
+			} else {
+				interval = bpmToMs(that.bpm);
+			}
+		}
+
+		if(that.bpm === 0) interval = 1000;
+		var timer = setInterval(loop, interval);
+
+		this.removeBot = function() {
+			clearInterval(timer);
+		};
+	};
+
+	this.attachBot = function(module) {
+		var mod = registeredMods[module];
+		var bot = new modVBot(mod);
+		bots[mod.info.name] = bot;
+	};
+
+	this.removeBot = function(module) {
+		var mod = registeredMods[module];
+		if(!bots[mod.info.name]) return false; // No bot
+		bots[mod.info.name].removeBot();
+		delete bots[mod.info.name];
+		return true; // There was a bot, it has now been deleted
+	};
+
 	// from here: http://stackoverflow.com/questions/18663941/finding-closest-element-without-jquery
 	function getClosestWithClass(el, tag, classN) {
 		tag = tag.toUpperCase();
@@ -88,7 +196,6 @@ var modV = function (options) {
 
 		for(var mod in this.presets[id]) {
 
-			console.log(this.presets[id][mod], this.presets[id], this.presets);
 			var m = this.presets[id][mod];
 			
 			if('controls' in m) {
@@ -124,11 +231,12 @@ var modV = function (options) {
 
 				});
 			}
-			console.log(m.name, m.disabled, m.blend);
+			console.log(m);
 			//registeredMods[mod].info = m;
 			registeredMods[mod].info.blend = m.blend;
 			registeredMods[mod].info.disabled = m.disabled;
-			this.setModOrder(m.name, m.order);
+			
+			console.log(m.name, 'now @ ', this.setModOrder(m.name, m.order));
 
 		}
 	};
@@ -153,9 +261,8 @@ var modV = function (options) {
 		microphone,
 		gainNode,
 		ready 			= false;
-		
-	this.meyda;
-	this.meydaFeatures = [];
+
+	this.meydaFeatures = ['complexSpectrum'];
 	
 	this.addMeydaFeature = function(feature) {
 		if(!Array.contains(feature, that.meydaFeatures)) {
@@ -316,7 +423,11 @@ var modV = function (options) {
 			var variable = parseVar(event.data.varType, event.data.payload);
 			
 			// Set variable value
-			registeredMods[event.data.modName][event.data.name] = variable;
+			if('append' in event.data) {
+				registeredMods[event.data.modName][event.data.name] = variable + event.data.append;
+			} else {
+				registeredMods[event.data.modName][event.data.name] = variable;
+			}
 			
 			// Set current value for preset purposes
 			registeredMods[event.data.modName].info.controls[event.data.index].currValue = variable;
@@ -339,8 +450,6 @@ var modV = function (options) {
 					index: event.data.index
 				}, that.options.controlDomain);
 			}
-			
-			console.log(event.data.modName, event.data.name, registeredMods[event.data.modName].info.controls[event.data.index].currValue);
 		}
 		
 		if(event.data.type === 'image') {
@@ -676,7 +785,7 @@ var modV = function (options) {
 	navigator.getUserMedia(contraints, function(stream) {
 		
 		// Create video stream
-		video.src = window.webkitURL.createObjectURL(stream);
+		video.src = window.URL.createObjectURL(stream);
 		
 		// Create new Audio Context
 		aCtx = new window.AudioContext();
@@ -746,7 +855,7 @@ var modV = function (options) {
 		if(typeof window.THREE === 'object') {
 			this.threejs.canvas = document.createElement('canvas');
 
-			this.threejs.renderer = new THREE.CanvasRenderer({canvas: this.threejs.canvas, autoClear: false, alpha: true});
+			this.threejs.renderer = new THREE.WebGLRenderer({canvas: this.threejs.canvas, autoClear: false, alpha: true});
 			this.threejs.renderer.setSize( window.innerWidth, window.innerHeight );
 			this.threejs.renderer.setClearColor(0x000000, 0);
 		}
@@ -755,6 +864,25 @@ var modV = function (options) {
 			that.threejs.renderer.setSize(window.innerWidth, window.innerHeight);
 			that.canvas.width = window.innerWidth;
 			that.canvas.height = window.innerHeight;
+
+			if (window.devicePixelRatio > 1 && 'retina' in that.options) {
+				if(that.options.retina) {
+					var canvasWidth = window.innerWidth;
+					var canvasHeight = window.innerHeight;
+
+					that.canvas.width = canvasWidth * window.devicePixelRatio;
+					that.canvas.height = canvasHeight * window.devicePixelRatio;
+					that.canvas.style.width = window.innerWidth + 'px';
+					that.canvas.style.height = window.innerHeight + 'px';
+				}
+			}
+
+			if(typeof window.THREE == 'object') {
+				that.threejs.camera.aspect = window.innerWidth / window.innerHeight;
+		    	that.threejs.camera.updateProjectionMatrix();
+				that.threejs.renderer.setSize(that.canvas.width, that.canvas.height);
+			}
+
 			for(var mod in registeredMods) {
 				if(typeof registeredMods[mod].init === 'function') registeredMods[mod].init(that.canvas, that.context);
 			}
@@ -781,6 +909,19 @@ var modV = function (options) {
 			}
 			this.canvas.width = width;
 			this.canvas.height = height;
+		}
+
+		if (window.devicePixelRatio > 1 && 'retina' in this.options) {
+			if(that.options.retina) {
+				var canvasWidth = this.canvas.width;
+				var canvasHeight = this.canvas.height;
+
+				this.canvas.width = canvasWidth * window.devicePixelRatio;
+				this.canvas.height = canvasHeight * window.devicePixelRatio;
+				this.canvas.style.width = canvasWidth + 'px';
+				this.canvas.style.height = canvasHeight + 'px';
+
+			}
 		}
 	};
 	
@@ -990,34 +1131,6 @@ var modV = function (options) {
 		
 		var relatedTarget = null;
 		
-		// fieldset.addEventListener('drop', function(e) {
-		// 	e.preventDefault();
-		// 	var target = getClosest(e.target, 'fieldset');
-		// 	target.style.backgroundColor = 'white';
-		// 	console.log(target);
-			
-		// 	var targetdata = target.dataset.name;
-			
-		// 	var data = e.dataTransfer.getData('text');
-		// 	var nodeToMove = controllerWindow.document.querySelector('fieldset[data-name="' + data + '"]');
-		// 	nodeToMove.parentNode.insertBefore(nodeToMove, target);
-			
-		// 	controllerWindow.window.opener.postMessage({type: 'setOrderFromElements', x: data, y: targetdata}, that.options.controlDomain);
-			
-		// 	console.log(nodeToMove);
-		// }, false);
-		
-		// fieldset.addEventListener('dragover', function(e) {
-		// 	e.preventDefault();
-		// 	relatedTarget = getClosest(e.target, 'fieldset');
-			
-		// 	try {
-		// 		relatedTarget.style.backgroundColor = 'green';
-		// 	} catch(err) {
-				
-		// 	}
-		// }, false);
-		
 		fieldset.addEventListener('dragleave', function(e) {
 			e.preventDefault();
 			relatedTarget.style.backgroundColor = 'white';
@@ -1034,31 +1147,6 @@ var modV = function (options) {
 		legend.style.fontSize = '20px';
 		fieldset.appendChild(legend);
 
-		// var label = document.createElement('label');
-		// label.textContent = 'Enabled ';
-
-		// var checkbox = document.createElement('input');
-		// checkbox.type = 'checkbox';
-		// checkbox.checked = false;
-		// checkbox.addEventListener('change', function() {
-		// 	controllerWindow.window.opener.postMessage({type: 'check',
-		// 		modName: mod.info.name,
-		// 		payload: this.checked
-		// 	}, that.options.controlDomain);
-
-		// 	if(that.options.remote) {
-		// 		ws.send(JSON.stringify({
-		// 			type: 'ui-enabled',
-		// 			modName: mod.info.name,
-		// 			payload: this.checked
-		// 		}));
-		// 	}
-		// });
-
-		// checkbox.id = mod.info.name + '-enabled';
-
-		// label.appendChild(checkbox);
-		//fieldset.appendChild(label);
 		fieldset.appendChild(document.createElement('br'));
 
 		container.addInput('enabled', 'Enabled', 'checkbox', 'checked', false, 'change', function() {
@@ -1262,7 +1350,7 @@ var modV = function (options) {
 						this.classList.remove('dragover');
 						var files = e.dataTransfer.files;
 						var images = [];
-						for(var i = 0, file; file = files[i]; i++) {
+						for(var i = 0, file; (file = files[i]); i++) {
 							if (!file || !file.type.match(/image.*/)) continue;
 							var imageURL = window.URL.createObjectURL(file);
 							image.src = imageURL;
@@ -1385,7 +1473,7 @@ var modV = function (options) {
 		controllerWindow.document.body.appendChild(container.output());
 		//controllerWindow.document.body.appendChild(fieldset);
 
-		registeredMods[mod.info.name]
+		//registeredMods[mod.info.name];
 
 		var registered = registeredMods[mod.info.name] = mod;
 		this.setModOrder(mod.info.name, Object.size(registeredMods));
@@ -1439,10 +1527,10 @@ var modV = function (options) {
 			list.appendChild(itemsArr[i]);
 		}
 		
-		return modOrder;
+		return order;
 	};
 		
-	this.drawFrame = function(meydaOutput) {
+	this.drawFrame = function(meydaOutput, delta) {
 		if(!ready) return;
 		if(this.clearing) this.context.clearRect(0, 0, this.canvas.width, this.canvas.height);
 		for(var i=0; i < modOrder.length; i++) {
@@ -1452,9 +1540,9 @@ var modV = function (options) {
 				this.context.globalAlpha = registeredMods[modOrder[i]].info.alpha;
 				if(registeredMods[modOrder[i]].info.blend !== 'normal') this.context.globalCompositeOperation = registeredMods[modOrder[i]].info.blend;
 				if(!registeredMods[modOrder[i]].info.threejs) {
-					registeredMods[modOrder[i]].draw(this.canvas, this.context, amplitudeArray, video, meydaOutput);
+					registeredMods[modOrder[i]].draw(this.canvas, this.context, amplitudeArray, video, meydaOutput, delta);
 				} else {
-					registeredMods[modOrder[i]].draw(this.canvas, this.context, amplitudeArray, video, meydaOutput);
+					registeredMods[modOrder[i]].draw(this.canvas, this.context, amplitudeArray, video, meydaOutput, delta);
 					this.context.drawImage(this.threejs.canvas, 0, 0);
 					this.threejs.renderer.render(this.threejs.scene, this.threejs.camera);
 				}
@@ -1465,17 +1553,50 @@ var modV = function (options) {
 	};
 	
 	var myFeatures;
+	this.bpm = 0;
+	var bd_med = new BeatDetektor(85,169);
+	var reallyReady = false;
 
-	var loop = function() {
+	var loop = function(timestamp) {
 		requestAnimationFrame(loop);
 		
 		if(meydaSupport && ready) {
-			myFeatures = that.meyda.get(that.meydaFeatures);
+			
+			if(reallyReady) {
+				myFeatures = that.meyda.get(that.meydaFeatures);
+				bd_med.process((timestamp / 1000.0), myFeatures.complexSpectrum.real);
+				that.bpm = bd_med.win_bpm_int_lo;
+			} else {
+				that.context.clearRect(0, 0, that.canvas.width, that.canvas.height);
+				reallyReady = true;
+			}
+
+		} else {
+			that.context.clearRect(0, 0, that.canvas.width, that.canvas.height);
+			text = 'Please allow popups and share your media inputs.';
+			font = that.context.font =  72 + 'px "Helvetica", sans-serif';
+			that.context.textAlign = 'left';
+			that.context.fillStyle = 'hsl(' + timestamp / 10 + ', 100%, 50%)';
+			var w = that.context.measureText(text).width;
+
+			if(!that.options.retina) font = that.context.font =  36 + 'px "Helvetica", sans-serif';
+			w = that.context.measureText(text).width;
+
+			that.context.fillText(text, that.canvas.width/2 - w/2, that.canvas.height/2 + 36);
+
+			text = 'Check the docs at github.com/2xaa/modV for more info.';
+			font = that.context.font =  42 + 'px "Helvetica", sans-serif';
+			that.context.textAlign = 'left';
+			that.context.fillStyle = 'hsl(' + timestamp / 10 + ', 100%, 50%)';
+			w = that.context.measureText(text).width;
+
+			if(!that.options.retina) font = that.context.font =  20 + 'px "Helvetica", sans-serif';
+			w = that.context.measureText(text).width;
+
+			that.context.fillText(text, that.canvas.width/2 - w/2, that.canvas.height/2 + 36 + 72);
 		}
-		
-		
-		
-		that.drawFrame(myFeatures);
+
+		that.drawFrame(myFeatures, timestamp);
 	};
 
 	this.start = function() {

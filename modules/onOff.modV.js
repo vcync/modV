@@ -37,7 +37,6 @@ var onOff = function() {
 		
 		ctx.fillStyle = colours[colourPos];
 		ctx.fillRect(w*posW, h*posH, w, h);
-		ctx.fill();
 
 		if(all > this.sensitivity) {
 			if(posW == 1) {
