@@ -1,0 +1,36 @@
+{
+  "name": "modv-grunt",
+  "version": "0.0.0",
+  "description": "JavaScript audio visualiser",
+  "scripts": {
+    "start": "grunt server",
+    "ghpages": "grunt ghpages"
+  },
+  "homepage": "http://github.com/2xAA/modv-grunt",
+  "bugs": "http://github.com/2xAA/modv-grunt/issues",
+  "author": {
+    "name": "Sam Wray",
+    "email": "hello@brkbrkbrk.com",
+    "url": "https://github.com/2xAA"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git://github.com/2xAA/modv-grunt.git"
+  },
+  "dependencies": {
+
+  },
+  "devDependencies": {
+    "grunt": "~0.4.1",
+    "matchdep": "~0.1.2",
+    "grunt-contrib-clean": "~0.4.1",
+    "grunt-contrib-concat": "~0.3.0",
+    "grunt-contrib-connect": "~0.3.0",
+    "grunt-contrib-copy": "~0.4.1",
+    "grunt-contrib-watch": "~0.4.4",
+    "grunt-browserify": "~1.2.0",
+    "grunt-gh-pages": "~0.6.0",
+    "grunt-ejs": "~0.1.0",
+    "debowerify": "~0.1.3"
+  }
+}

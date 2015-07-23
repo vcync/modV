@@ -1,0 +1,115 @@
+<!doctype html>
+<html lang="en">
+<head>
+	<meta charset="utf-8">
+	<title>modV</title>
+	<link rel="stylesheet" href="style.css">
+</head>
+	<body>
+		<canvas></canvas>
+
+		<script id="live-reload" src="http://localhost:35729/livereload.js"></script>
+		<script src="./libraries/meyda.min.js"></script>
+		<script src="app.js"></script>
+
+		<script src="./modules/waveform.modV.js"></script>
+		<script src="./modules/concentrics.modV.js"></script>
+		<script src="./modules/tile.modV.js"></script>
+		<script src="./modules/stretch.modV.js"></script>
+		<script src="./modules/circles.modV.js"></script>
+		<script src="./modules/pixelate.modV.js"></script>
+		<script src="./modules/rotate.modV.js"></script>
+		<script src="./modules/dither.modV.js"></script>
+		<script src="./modules/ball.modV.js"></script>
+		<script src="./modules/glitcher.modV.js"></script>
+		<script src="./modules/onOff.modV.js"></script>
+		<script src="./modules/starField.modV.js"></script>
+		<script src="./modules/badHold.modV.js"></script>
+		<script src="./modules/rotoZoom.modV.js"></script>
+		<script src="./modules/staticImage.modV.js"></script>
+		<script src="./modules/slide.modV.js"></script>
+		<script src="./modules/tenPrint.modV.js"></script>
+		<script src="./modules/webcam.modV.js"></script>
+		<script src="./modules/video.modV.js"></script>
+		<script src="./modules/relapper.modV.js"></script>
+		<script src="./modules/slipNslide.modV.js"></script>
+		<script src="./modules/gridStretch.modV.js"></script>
+		<script src="./modules/mirror.modV.js"></script>
+		<script src="./modules/waveHold.modV.js"></script>
+		<script src="./modules/spazulator5000.modV.js"></script>
+		<script src="./modules/perl.modV.js"></script>
+		<script src="./modules/moonLine.modV.js"></script>
+		<script src="./modules/threeJS.modV.js"></script>
+		<script src="./modules/cacomixle.modV.js"></script>
+		<script src="./modules/textMod.modV.js"></script>
+
+		<script>
+			var modV = new modV({
+				canvas: document.querySelector('canvas'),
+				clearing: false,
+				modules: [
+					slipNslide,
+					relapper,
+					gridStretch,
+					textMod,
+					mirror,
+					waveform,
+					concentrics,
+					stretch,
+					cacomixle,
+					moonLine,
+					tile,
+					pixelate,
+					rotate,
+					dither,
+					ball,
+					glitcher,
+					onOff,
+					starField,
+					badHold,
+					slide,
+					rotoZoom,
+					staticImage,
+					tenPrint,
+					webcam,
+					video,
+					circles,
+					spazulator5000,
+					perl
+				],
+				remote: 'ws://localhost:8888/ws'
+			});
+
+			modV.registerMod(slipNslide);
+			modV.registerMod(relapper);
+			modV.registerMod(gridStretch);
+			modV.registerMod(textMod);
+			modV.registerMod(mirror);
+			modV.registerMod(waveform);
+			modV.registerMod(concentrics);
+			modV.registerMod(stretch);
+			modV.registerMod(cacomixle);
+			modV.registerMod(moonLine);
+			//modV.registerMod(waveHold);
+			modV.registerMod(tile);
+			modV.registerMod(pixelate);
+			modV.registerMod(rotate);
+			modV.registerMod(dither);
+			modV.registerMod(ball);
+			modV.registerMod(glitcher);
+			modV.registerMod(onOff);
+			modV.registerMod(starField);
+			modV.registerMod(badHold);
+			modV.registerMod(slide);
+			modV.registerMod(rotoZoom);
+			modV.registerMod(staticImage);
+			modV.registerMod(tenPrint);
+			modV.registerMod(webcam);
+			modV.registerMod(video);
+			modV.registerMod(circles);
+			modV.registerMod(spazulator5000);
+			modV.registerMod(perl);
+			modV.start();
+		</script>
+	</body>
+</html>
