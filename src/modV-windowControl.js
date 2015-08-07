@@ -136,14 +136,13 @@
 	});
 
 	// - mute / unmute input
-	container.addInput('mute', 'Mute', 'checkbox', 'checked', false, 'change', function() {
+	container.addInput('mute', 'Mute', 'checkbox', 'checked', true, 'change', function() {
 		modV.controllerWindow.window.opener.postMessage({type: 'global', name: 'mute', payload: this.checked}, modV.options.controlDomain);
 	});
 
 	// - factory reset button
 	container.addInput('factory-reset', 'Factory Reset', 'button', 'value', 'factory-reset', 'click', function() {
 		modV.controllerWindow.window.opener.postMessage({type: 'global', name: 'factory-reset', payload: this.value}, modV.options.controlDomain);
-		console.log('YUUHHH');
 	});
 	
 	// - save preset

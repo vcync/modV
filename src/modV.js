@@ -233,7 +233,7 @@
 						{googHighpassFilter: false},
 						{googTypingNoiseDetection: false}
 					]
-				},
+				}/*,
 				video: {
 					optional: [
 						{googNoiseSuppression: false},
@@ -244,7 +244,7 @@
 						{googHighpassFilter: false},
 						{googTypingNoiseDetection: false}
 					]
-				}
+				}*/
 		};
 
 		navigator.getUserMedia = navigator.getUserMedia 	||
