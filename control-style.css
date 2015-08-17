@@ -48,3 +48,14 @@ label.filedrop img {
     width: 100%;
     max-height: 60px;
 }
+
+div.palette div.swatch {
+    display: inline-block;
+    width: 10px;
+    height: 10px;
+    border: 1px #aaa solid;
+}
+
+div.palette div.swatch ~ div.swatch {
+    border-left: none;
+}

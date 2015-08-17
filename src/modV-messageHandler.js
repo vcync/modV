@@ -30,6 +30,8 @@
 		var index;
 		if(event.data.type === 'variable') {
 			
+			console.log(event.data);
+
 			// Parse Variable
 			var variable = parseVar(event.data.varType, event.data.payload);
 			

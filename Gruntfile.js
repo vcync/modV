@@ -54,23 +54,23 @@ module.exports = function(grunt) {
 
       html: {
         files: '<%= ejs.all.src %>',
-        tasks: ['ejs'],
+        tasks: ['ejs', 'tags'],
       },
 
       js: {
         files: '<%= browserify.all.src %>',
-        tasks: ['browserify'],
+        tasks: ['browserify', 'tags'],
       },
 
       assets: {
         files: ['assets/**/*', '*.css', '*.js', 'images/**/*', 'img/**/*', '!Gruntfile.js'],
-        tasks: ['copy'],
+        tasks: ['copy', 'tags'],
       },
 
       modules: {
         files: ['modules/**/*', '*.js'],
-        tasks: ['copy'],
-      }
+        tasks: ['copy', 'tags'],
+      },
     },
 
     'gh-pages': {
@@ -78,12 +78,27 @@ module.exports = function(grunt) {
         base: 'dist/'
       },
       src: ['**/*']
+    },
+
+    // This automatically loads modV modules if they're in the 'modules' folder
+    tags: {
+      build: {
+        options: {
+          scriptTemplate: '<script src="{{ path }}"></script>',
+          openTag: '<!-- modV modules load -->',
+          closeTag: '<!-- between these tags -->'
+        },
+        src: [
+          'modules/*.modV.js'
+        ],
+        dest: 'dist/index.html'
+      }
     }
   });
 
   require('matchdep').filterDev('grunt-*').forEach(grunt.loadNpmTasks);
   
-  grunt.registerTask('default', ['clean', 'ejs', 'browserify', 'copy']);
+  grunt.registerTask('default', ['clean', 'ejs', 'browserify', 'copy', 'tags']);
   
   grunt.registerTask('server', ['default', 'connect', 'watch']);
 

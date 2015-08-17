@@ -1,12 +1,19 @@
-var textMod = function() {
+var textModPalette = function() {
 
 	this.info = {
-		name: 'textMod',
+		name: 'textModPalette',
 		author: '2xAA',
 		version: 0.1,
 		controls: [
 			{type: 'text', variable: 'text', label: 'Text'},
-			{type: 'range', varType: 'int', min: 50, max: 200, variable: 'size', append: 'pt', label: 'Size'}
+			{type: 'range', varType: 'int', min: 50, max: 200, variable: 'size', append: 'pt', label: 'Size'},
+			{type: 'palette', variable: 'colour', colours: [
+				[122,121,120],
+				[135,203,172],
+				[144,255,220],
+				[141,228,255],
+				[138,196,255]
+			], timePeriod: 500}
 		]
 	};
 
@@ -42,9 +49,9 @@ var textMod = function() {
 		return result;
 	};
 
-	var hue = 0;
 	this.text = 'modV';
 	this.size = '50pt';
+	this.colour = 'rgb(255,255,255)';
 	var font;
 	var h;
 
@@ -56,12 +63,10 @@ var textMod = function() {
 		ctx.textBaseline = 'middle';
 		font = ctx.font = this.size + ' "Helvetica", sans-serif';
 		ctx.textAlign = 'left';
-		ctx.fillStyle = 'hsl(' + hue + ', 100%, 50%)';
+		ctx.fillStyle = this.colour;
 
 		var w = ctx.measureText(this.text).width;
 
 		ctx.fillText(this.text, canvas.width/2 - w/2, canvas.height/2 + h.height/2);
-		if(hue === 360) hue = 0;
-		else hue++;
 	};
 };

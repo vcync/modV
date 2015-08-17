@@ -78,12 +78,6 @@ var rotoZoom = function() {
 
 	this.draw = function(canvas, ctx, amplitudeArray, vid, mey, delta) {
 		
-		var all = 0;
-		for(var i=0; i<64; i++) {
-			all += amplitudeArray[i];
-		}
-		all = all/1000;
-		
 		var thisDistortVal = Math.cos(distortVal); 
 		
 		newCtx2.clearRect(0,0,canvas.width, canvas.height);
@@ -122,42 +116,42 @@ var rotoZoom = function() {
 				);
 			}
 		}
-/*
+
 		ctx.setTransform(1, 0, 0, 1, canvas.width/2, canvas.height/2);
 		//ctx.rotate(-degree);
 		ctx.scale(scaleVal, scaleVal);
 		
-		var heightSkewed = (Math.tan(thisDistortVal) * canvas.height) + canvas.height;
+		// var heightSkewed = (Math.tan(thisDistortVal) * canvas.height) + canvas.height;
 
-		var vals = boundingBox(newCanvas2.width, heightSkewed, degree);
-		ctx.fillStyle = 'rgba(0,255,255,0.3)';
-		ctx.fillRect(
-			-vals[0]/2,
-			-vals[1]/2,
-			vals[0],
-			vals[1]
-		);
-		ctx.strokeStyle = 'red';
-		ctx.lineWidth = '3px';
-		ctx.strokeRect(
-			-vals[0]/2,
-			-vals[1]/2,
-			vals[0],
-			vals[1]
-		);
-		ctx.scale(scaleVal, scaleVal);
-		ctx.translate(-canvas.width/2, -canvas.height/2);
+		// var vals = boundingBox(newCanvas2.width, heightSkewed, degree);
+		// ctx.fillStyle = 'rgba(0,255,255,0.3)';
+		// ctx.fillRect(
+		// 	-vals[0]/2,
+		// 	-vals[1]/2,
+		// 	vals[0],
+		// 	vals[1]
+		// );
+		// ctx.strokeStyle = 'red';
+		// ctx.lineWidth = '3px';
+		// ctx.strokeRect(
+		// 	-vals[0]/2,
+		// 	-vals[1]/2,
+		// 	vals[0],
+		// 	vals[1]
+		// );
+		// ctx.scale(scaleVal, scaleVal);
+		// ctx.translate(-canvas.width/2, -canvas.height/2);
 		
-		ctx.font = '24px monospace';
-		ctx.textAlign = 'left';
-		ctx.fillStyle = 'red';
-		ctx.fillText('Skew height: ' + Math.floor(heightSkewed) + 'px', 24, 24);
-		ctx.fillText('Canvas Dimensions: ' + canvas.width + 'px ' + canvas.height + 'px', 24, 48);
-		ctx.fillText('Scale: ' + parseFloat('' + scaleVal).toFixed(2), 24, 72);
-		ctx.fillText('Bounding Box: ' + Math.floor(vals[0]) + 'px ' + Math.floor(vals[1]) + 'px', 24, 96);
+		// ctx.font = '24px monospace';
+		// ctx.textAlign = 'left';
+		// ctx.fillStyle = 'red';
+		// ctx.fillText('Skew height: ' + Math.floor(heightSkewed) + 'px', 24, 24);
+		// ctx.fillText('Canvas Dimensions: ' + canvas.width + 'px ' + canvas.height + 'px', 24, 48);
+		// ctx.fillText('Scale: ' + parseFloat('' + scaleVal).toFixed(2), 24, 72);
+		// ctx.fillText('Bounding Box: ' + Math.floor(vals[0]) + 'px ' + Math.floor(vals[1]) + 'px', 24, 96);
 		
-		ctx.rotate(degree);
-*/
+		// ctx.rotate(degree);
+
 		
 		ctx.restore();
 		if(sinVal >= 100) sinVal = 0;

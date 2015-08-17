@@ -15,6 +15,15 @@
 				payload: false
 			}, modV.options.controlDomain);
 
+			// If we have a WebSocket server
+			if(modV.options.remote) {
+				modV.ws.send(JSON.stringify({
+					type: 'ui-enabled',
+					modName: m.info.name,
+					payload: false,
+				}));
+			}
+
 			m.defaults.forEach(function(control, idx) {
 				var val = control.currValue;
 
@@ -34,13 +43,13 @@
 					payload: val
 				}, modV.options.controlDomain);
 
-				// If we have a WebSocket server, send the reset
+				// If we have a WebSocket server
 				if(modV.options.remote) {
 					modV.ws.send(JSON.stringify({
 						type: 'ui',
 						varType: control.type,
 						modName: m.info.name,
-						name: control.label,
+						name: control.variable,
 						payload: val,
 						index: idx
 					}));

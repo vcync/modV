@@ -61,7 +61,6 @@
 	
 	// Window Controls
 	modV.prototype.controllerWindow.window.receiveMessage = function(event) {
-		console.log(event);
 
 		if(event.origin !== modV.options.controlDomain) return;
 		var id, node;
@@ -75,7 +74,8 @@
 		}
 
 		if(event.data.type === 'ui') {
-			id = event.data.modName + '-' + event.data.name;
+			console.log('Controller window UI update', event.data);
+			id = event.data.modName + '-' + event.data.name.toLowerCase().replace(/\s+/g, '');
 			
 			node = modV.controllerWindow.window.document.getElementById(id);
 			if(!node) return;

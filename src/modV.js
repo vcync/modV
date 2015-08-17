@@ -44,6 +44,8 @@
 		self.muted = true;
 		self.ws = undefined; // WebSocket
 
+		self.palettes = [];
+
 		self.ready = false;
 
 		self.presets = {};
@@ -117,6 +119,14 @@
 		if(typeof window.Meyda === 'function') {
 			self.meydaSupport = true;
 			console.info('meyda detected, expanded audio analysis available.', 'Use this.meyda to access from console.');
+		}
+
+		self.bpm = 0;
+		// Check for BeatDetektor
+		if(typeof window.BeatDetektor === 'function') {
+			self.beatDetektorSupport = true;
+			console.info('BeatDetektor detected, BPM analysis available.', 'modV robot now available.');
+			self.beatDetektorMed = new BeatDetektor(85,169);
 		}
 
 		// Parse user options
@@ -207,9 +217,23 @@
 
 				if(self.options.remote) {
 					for(var mod in self.registeredMods) {
+						var infoToSend = JSON.parse(JSON.stringify(self.registeredMods[mod].info)); // copy the set
+						var variables = [];
+
+						if('controls' in self.registeredMods[mod].info) {
+							self.registeredMods[mod].info.controls.forEach(function(controlSet) {
+								var variable = controlSet.variable;
+								variables.push(variable);
+							});
+
+							variables.forEach(function(v) {
+								infoToSend[v] = self.registeredMods[mod][v];
+							});
+						}
+
 						self.ws.send(JSON.stringify({
-								type: 'register',
-								payload: self.registeredMods[mod].info
+							type: 'register',
+							payload: infoToSend
 						}));
 					}
 				}

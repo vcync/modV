@@ -47,10 +47,10 @@
 			
 			if(modV.meydaSupport && modV.reallyReady) {
 				modV.myFeatures = modV.meyda.get(modV.meydaFeatures);
-				//bd_med.process((timestamp / 1000.0), modV.myFeatures.complexSpectrum.real);
-				//modV.bpm = bd_med.win_bpm_int_lo;
+				modV.beatDetektorMed.process((timestamp / 1000.0), modV.myFeatures.complexSpectrum.real);
+				modV.bpm = modV.beatDetektorMed.win_bpm_int_lo;
 			} else {
-				//modV.context.clearRect(0, 0, modV.canvas.width, modV.canvas.height);
+				modV.context.clearRect(0, 0, modV.canvas.width, modV.canvas.height);
 				modV.reallyReady = true;
 			}
 
@@ -78,6 +78,10 @@
 
 			modV.context.fillText(text, modV.canvas.width/2 - w/2, modV.canvas.height/2 + 36 + 72);
 		}
+
+		modV.palettes.forEach(function(palette) {
+			palette.nextStep();
+		});
 
 		modV.drawFrame(modV.myFeatures, timestamp);
 	};

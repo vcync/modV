@@ -31,7 +31,7 @@
 	};
 
 	modV.prototype.loadFromJSON = function(data) {
-
+		
 	};
 
 })(module);

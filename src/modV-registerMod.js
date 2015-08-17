@@ -134,6 +134,7 @@
 		}, false);
 		//fieldset.appendChild(mover);
 		
+		var variables = [];
 
 		// Register controls
 		if('controls' in mod.info) {
@@ -142,20 +143,10 @@
 				mod.defaults.push(JSON.parse(JSON.stringify(controlSet))); // ugly, but we need to copy the set, not ref it.
 
 				var variable = controlSet.variable;
+				variables.push(variable);
 				var label = document.createElement('label');
 				var labelText = controlSet.label;
 				label.textContent = labelText + ' ';
-
-				label.oncontextmenu = function(e) {
-					console.log(e);
-					var div = document.createElement('div');
-					div.classList.add('menu');
-					div.style.top = e.clientY + e.offsetY + 'px';
-					div.style.left = e.clientX + e.offsetX + 'px';
-					modV.controllerWindow.window.document.body.appendChild(div);
-					return false;
-				 };
-				
 				
 				fieldset.appendChild(document.createElement('hr'));
 				var image;
@@ -266,12 +257,41 @@
 
 					container.addSpecial(label);
 				
+				} else if(controlSet.type === 'palette') {
+
+					mod.info.controls[idx].currValue = mod[variable];
+					mod.defaults[idx].currValue = mod[variable];
+
+					var pal = modV.Palette(
+						mod.info.controls[idx].colours,
+						mod.info.controls[idx].timePeriod,
+						{
+							init: function(colours) {
+								mod.info.controls[idx].currValue = JSON.stringify(colours);
+							},
+							next: function(colour) {
+								mod[variable] = colour;
+							},
+							add: function(colours) {
+								mod.info.controls[idx].currValue = JSON.stringify(colours);
+								console.log('added', colours);
+							},
+							remove: function(colours) {
+								mod.info.controls[idx].currValue = JSON.stringify(colours);
+								console.log('removed', colours);
+							}
+						}
+					);
+
+					var palControls = pal.generateControls();
+					container.addSpecial(palControls);
+
 				} else if(controlSet.type === 'checkbox') {
 					
 					mod.info.controls[idx].currValue = mod[variable];
 					mod.defaults[idx].currValue = mod[variable];
 
-					container.addInput(controlSet.label,
+					container.addInput(controlSet.variable.toLowerCase().replace(/\s+/g, ''),
 						controlSet.label,
 						controlSet.type,
 						'checked',
@@ -287,6 +307,17 @@
 								payload: this.checked,
 								index: idx
 							}, modV.options.controlDomain);
+
+							if(modV.options.remote) {
+								modV.ws.send(JSON.stringify({
+									type: 'ui',
+									varType: controlSet.varType,
+									modName: mod.info.name,
+									name: variable,
+									payload: this.checked,
+									index: idx
+								}));
+							}
 						}
 					);
 				
@@ -301,7 +332,7 @@
 					mod.info.controls[idx].currValue = mod[variable];
 					mod.defaults[idx].currValue = varr;
 
-					container.addInput(controlSet.label,
+					container.addInput(controlSet.variable.toLowerCase().replace(/\s+/g, ''),
 						controlSet.label,
 						controlSet.type,
 						['value', 'min', 'max', 'step'],
@@ -362,18 +393,14 @@
 			});
 
 		}
-		
+
 		modV.controllerWindow.document.body.appendChild(container.output());
 
 		var registered = modV.registeredMods[mod.info.name] = mod;
 		modV.setModOrder(mod.info.name, Object.size(modV.registeredMods));
 		
-		if(this.options.remote) {
-			try {
-				modV.ws.send({type: 'register', payload: mod.info});
-			} catch(e) {
-				// Nothing to do here.
-			}
+		if(modV.options.remote && modV.ws) {
+			modV.ws.send({type: 'register', payload: mod.info});
 		}
 		
 		return registered;	

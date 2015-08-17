@@ -23,7 +23,6 @@ var xorcles = function() {
     this.init = function(canvas, ctx) {
         mCanvas.width = canvas.width;
         mCanvas.height = canvas.height;
-        console.log(canvas.width, canvas.height, canvas);
     };
     
     this.draw = function(canvas, ctx, amplitudeArray, video, meyda, delta) {
