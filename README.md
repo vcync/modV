@@ -6,6 +6,7 @@
 ## Requirements
 - [node](https://nodejs.org/download/)
 - [grunt-cli](https://github.com/gruntjs/grunt-cli)
+- [Google Chrome desktop](https://www.google.com/chrome/browser/desktop/)
 
 
 ## Usage
