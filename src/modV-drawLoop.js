@@ -6,84 +6,84 @@
 		var self = this;
 		
 
-		if(!modV.ready) return;
-		if(modV.clearing) {
+		if(!self.ready) return;
+		if(self.clearing) {
 			console.log('clearing');
-			modV.context.clearRect(0, 0, modV.canvas.width, modV.canvas.height);
+			self.context.clearRect(0, 0, self.canvas.width, self.canvas.height);
 		}
-		for(var i=0; i < modV.modOrder.length; i++) {
-			if(typeof modV.registeredMods[modV.modOrder[i]] === 'object') {
+		for(var i=0; i < self.modOrder.length; i++) {
+			if(typeof self.registeredMods[self.modOrder[i]] === 'object') {
 
-				if(modV.registeredMods[modV.modOrder[i]].info.disabled || modV.registeredMods[modV.modOrder[i]].info.alpha === 0) continue;
-				modV.context.save();
-				modV.context.globalAlpha = modV.registeredMods[modV.modOrder[i]].info.alpha;
+				if(self.registeredMods[self.modOrder[i]].info.disabled || self.registeredMods[self.modOrder[i]].info.alpha === 0) continue;
+				self.context.save();
+				self.context.globalAlpha = self.registeredMods[self.modOrder[i]].info.alpha;
 
-				if(modV.registeredMods[modV.modOrder[i]].info.blend !== 'normal') modV.context.globalCompositeOperation = modV.registeredMods[modV.modOrder[i]].info.blend;
+				if(self.registeredMods[self.modOrder[i]].info.blend !== 'normal') self.context.globalCompositeOperation = self.registeredMods[self.modOrder[i]].info.blend;
 
-				if(!modV.registeredMods[modV.modOrder[i]].info.threejs) {
+				if(!self.registeredMods[self.modOrder[i]].info.threejs) {
 
-					modV.registeredMods[modV.modOrder[i]].draw(modV.canvas, modV.context, modV.amplitudeArray, modV.video, meydaOutput, delta);
+					self.registeredMods[self.modOrder[i]].draw(self.canvas, self.context, self.amplitudeArray, self.video, meydaOutput, delta);
 
 				} else {
 
-					modV.registeredMods[modV.modOrder[i]].draw(modV.canvas, modV.context, modV.amplitudeArray, modV.video, meydaOutput, delta);
-					modV.context.drawImage(modV.threejs.canvas, 0, 0);
-					modV.threejs.renderer.render(modV.threejs.scene, modV.threejs.camera);
+					self.registeredMods[self.modOrder[i]].draw(self.canvas, self.context, self.amplitudeArray, self.video, meydaOutput, delta);
+					self.context.drawImage(self.threejs.canvas, 0, 0);
+					self.threejs.renderer.render(self.threejs.scene, self.threejs.camera);
 				}
-				modV.context.restore();
+				self.context.restore();
 			}
 		}
-		if(modV.options.previewWindow) previewCtx.drawImage(modV.canvas, 0, 0, previewCanvas.width, previewCanvas.height);
+		if(self.options.previewWindow) self.previewCtx.drawImage(self.canvas, 0, 0, self.previewCanvas.width, self.previewCanvas.height);
 	};
 
 	modV.prototype.loop = function(timestamp) {
 		var self = this;
 
-		requestAnimationFrame(modV.loop);
+		requestAnimationFrame(self.loop.bind(self)); //TODO: find out why we have to use bind here
 
-		if(!modV.meydaSupport) modV.myFeatures = [];
+		if(!self.meydaSupport) self.myFeatures = [];
 		
-		if(modV.ready) {
+		if(self.ready) {
 			
-			if(modV.meydaSupport && modV.reallyReady) {
-				modV.myFeatures = modV.meyda.get(modV.meydaFeatures);
-				modV.beatDetektorMed.process((timestamp / 1000.0), modV.myFeatures.complexSpectrum.real);
-				modV.bpm = modV.beatDetektorMed.win_bpm_int_lo;
+			if(self.meydaSupport && self.reallyReady) {
+				self.myFeatures = self.meyda.get(self.meydaFeatures);
+				self.beatDetektorMed.process((timestamp / 1000.0), self.myFeatures.complexSpectrum.real);
+				self.bpm = self.beatDetektorMed.win_bpm_int_lo;
 			} else {
-				modV.context.clearRect(0, 0, modV.canvas.width, modV.canvas.height);
-				modV.reallyReady = true;
+				self.context.clearRect(0, 0, self.canvas.width, self.canvas.height);
+				self.reallyReady = true;
 			}
 
 		} else {
-			modV.context.clearRect(0, 0, modV.canvas.width, modV.canvas.height);
+			self.context.clearRect(0, 0, self.canvas.width, self.canvas.height);
 			var text = 'Please allow popups and share your media inputs.';
-			var font = modV.context.font =  72 + 'px "Helvetica", sans-serif';
-			modV.context.textAlign = 'left';
-			modV.context.fillStyle = 'hsl(' + timestamp / 10 + ', 100%, 50%)';
-			var w = modV.context.measureText(text).width;
+			var font = self.context.font =  72 + 'px "Helvetica", sans-serif';
+			self.context.textAlign = 'left';
+			self.context.fillStyle = 'hsl(' + timestamp / 10 + ', 100%, 50%)';
+			var w = self.context.measureText(text).width;
 
-			if(!modV.options.retina) font = modV.context.font =  36 + 'px "Helvetica", sans-serif';
-			w = modV.context.measureText(text).width;
+			if(!self.options.retina) font = self.context.font =  36 + 'px "Helvetica", sans-serif';
+			w = self.context.measureText(text).width;
 
-			modV.context.fillText(text, modV.canvas.width/2 - w/2, modV.canvas.height/2 + 36);
+			self.context.fillText(text, self.canvas.width/2 - w/2, self.canvas.height/2 + 36);
 
 			text = 'Check the docs at http://modv.readme.io/ for more info.';
-			font = modV.context.font =  42 + 'px "Helvetica", sans-serif';
-			modV.context.textAlign = 'left';
-			modV.context.fillStyle = 'hsl(' + timestamp / 10 + ', 100%, 50%)';
-			w = modV.context.measureText(text).width;
+			font = self.context.font =  42 + 'px "Helvetica", sans-serif';
+			self.context.textAlign = 'left';
+			self.context.fillStyle = 'hsl(' + timestamp / 10 + ', 100%, 50%)';
+			w = self.context.measureText(text).width;
 
-			if(!modV.options.retina) font = modV.context.font =  20 + 'px "Helvetica", sans-serif';
-			w = modV.context.measureText(text).width;
+			if(!self.options.retina) font = self.context.font =  20 + 'px "Helvetica", sans-serif';
+			w = self.context.measureText(text).width;
 
-			modV.context.fillText(text, modV.canvas.width/2 - w/2, modV.canvas.height/2 + 36 + 72);
+			self.context.fillText(text, self.canvas.width/2 - w/2, self.canvas.height/2 + 36 + 72);
 		}
 
-		modV.palettes.forEach(function(palette) {
+		self.palettes.forEach(function(palette) {
 			palette.nextStep();
 		});
 
-		modV.drawFrame(modV.myFeatures, timestamp);
+		self.drawFrame(self.myFeatures, timestamp);
 	};
 
 })(module);

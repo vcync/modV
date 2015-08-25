@@ -7,20 +7,20 @@
 
 		var mod = new Mod();
 		mod.defaults = [];
-		if(typeof mod.init === 'function') mod.init(this.canvas, this.context);
+		if(typeof mod.init === 'function') mod.init(self.canvas, self.context);
 		if(!('blend' in mod.info)) mod.info.blend = 'normal';
 		if(!('alpha' in mod.info)) mod.info.alpha = 1;
 		mod.info.disabled = true;
 		
-		if(modV.meydaSupport && ('meyda' in mod.info)) {
-			mod.info.meyda.forEach(modV.addMeydaFeature);
-		} else if(!modV.meydaSupport && ('meyda' in mod.info)) {
+		if(self.meydaSupport && ('meyda' in mod.info)) {
+			mod.info.meyda.forEach(self.addMeydaFeature);
+		} else if(!self.meydaSupport && ('meyda' in mod.info)) {
 			console.warn('Whilst registering the module \'' + mod.info.name + '\', modV detected it requests Meyda which has not been included on the page. You may encounter problems using this module without Meyda.');
 		}
 
 		var fieldset = document.createElement('fieldset');
 		
-		var container = new modV.ContainerGenerator(mod.info.name, true);
+		var container = new self.ContainerGenerator(mod.info.name, true);
 		
 		var relatedTarget = null;
 		
@@ -43,14 +43,14 @@
 		fieldset.appendChild(document.createElement('br'));
 
 		container.addInput('enabled', 'Enabled', 'checkbox', 'checked', false, 'change', function() {
-			modV.controllerWindow.window.opener.postMessage({type: 'check',
+			self.controllerWindow.window.opener.postMessage({type: 'check',
 				modName: mod.info.name,
 				payload: this.checked
-			}, modV.options.controlDomain);
+			}, self.options.controlDomain);
 
-			if(modV.options.remote) {
+			if(self.options.remote) {
 				try {
-					modV.ws.send(JSON.stringify({
+					self.ws.send(JSON.stringify({
 						type: 'ui-enabled',
 						modName: mod.info.name,
 						payload: this.checked
@@ -62,14 +62,14 @@
 		});
 
 		container.addInput('opacity', 'Opacity', 'range', ['value', 'min', 'max', 'step'], [mod.info.alpha, 0, 1, 0.01], 'input', function() {
-			modV.controllerWindow.window.opener.postMessage({
+			self.controllerWindow.window.opener.postMessage({
 				type: 'modOpacity',
 				modName: mod.info.name,
 				payload: this.value
-			}, modV.options.controlDomain);
+			}, self.options.controlDomain);
 
-			if(modV.options.remote) {
-				modV.ws.send(JSON.stringify({
+			if(self.options.remote) {
+				self.ws.send(JSON.stringify({
 					type: 'ui-opacity',
 					modName: mod.info.name,
 					payload: this.value
@@ -78,19 +78,19 @@
 		});
 		
 		// Add Blending options
-		var blendCompSelect = modV.genBlendModeOps();
+		var blendCompSelect = self.genBlendModeOps();
 		var label = document.createElement('label');
 		label.textContent = 'Blending ';
 		
 		blendCompSelect.addEventListener('change', function() {
-			modV.controllerWindow.window.opener.postMessage({
+			self.controllerWindow.window.opener.postMessage({
 				type: 'modBlend',
 				modName: mod.info.name,
 				payload: this.value
-			}, modV.options.controlDomain);
+			}, self.options.controlDomain);
 
-			if(modV.options.remote) {
-				modV.ws.send(JSON.stringify({
+			if(self.options.remote) {
+				self.ws.send(JSON.stringify({
 					type: 'ui-blend',
 					modName: mod.info.name,
 					payload: this.value
@@ -173,7 +173,7 @@
 						var file = e.dataTransfer.files[0];
 						if (!file || !file.type.match(/video.*/)) return;
 						var imageURL = window.URL.createObjectURL(file);
-						modV.controllerWindow.window.opener.postMessage({type: 'video', modName: mod.info.name, name: variable, payload: imageURL, index: idx}, modV.options.controlDomain);
+						self.controllerWindow.window.opener.postMessage({type: 'video', modName: mod.info.name, name: variable, payload: imageURL, index: idx}, self.options.controlDomain);
 						mod[variable].play();
 					});
 
@@ -203,7 +203,7 @@
 						var file = e.dataTransfer.files[0];
 						if (!file || !file.type.match(/image.*/)) return;
 						var imageURL = window.URL.createObjectURL(file);
-						modV.controllerWindow.window.opener.postMessage({type: 'image', modName: mod.info.name, name: variable, payload: imageURL, index: idx}, modV.options.controlDomain);
+						self.controllerWindow.window.opener.postMessage({type: 'image', modName: mod.info.name, name: variable, payload: imageURL, index: idx}, self.options.controlDomain);
 						image.src = imageURL;
 					});
 
@@ -241,14 +241,14 @@
 							images.push(imageURL);
 						}
 						
-						modV.controllerWindow.window.opener.postMessage({
+						self.controllerWindow.window.opener.postMessage({
 							type: 'multiimage',
 							modName: mod.info.name,
 							name: variable,
 							payload: images,
 							wipe: altPressed,
 							index: idx
-						}, modV.options.controlDomain);
+						}, self.options.controlDomain);
 					});
 
 
@@ -262,7 +262,7 @@
 					mod.info.controls[idx].currValue = mod[variable];
 					mod.defaults[idx].currValue = mod[variable];
 
-					var pal = modV.Palette(
+					var pal = self.Palette(
 						mod.info.controls[idx].colours,
 						mod.info.controls[idx].timePeriod,
 						{
@@ -299,17 +299,17 @@
 						'change',
 						function() {
 							console.log('checkbox changed');
-							modV.controllerWindow.window.opener.postMessage({
+							self.controllerWindow.window.opener.postMessage({
 								type: 'variable',
 								varType: controlSet.type,
 								modName: mod.info.name,
 								name: variable,
 								payload: this.checked,
 								index: idx
-							}, modV.options.controlDomain);
+							}, self.options.controlDomain);
 
-							if(modV.options.remote) {
-								modV.ws.send(JSON.stringify({
+							if(self.options.remote) {
+								self.ws.send(JSON.stringify({
 									type: 'ui',
 									varType: controlSet.varType,
 									modName: mod.info.name,
@@ -342,7 +342,7 @@
 
 							if('append' in controlSet) {
 								var value = (this.value + controlSet.append);
-								modV.controllerWindow.window.opener.postMessage({
+								self.controllerWindow.window.opener.postMessage({
 									type: 'variable',
 									varType: controlSet.varType,
 									modName: mod.info.name,
@@ -350,10 +350,10 @@
 									payload: value,
 									index: idx,
 									append: controlSet.append
-								}, modV.options.controlDomain);
+								}, self.options.controlDomain);
 
-								if(modV.options.remote) {
-									modV.ws.send(JSON.stringify({
+								if(self.options.remote) {
+									self.ws.send(JSON.stringify({
 										type: 'ui',
 										varType: controlSet.varType,
 										modName: mod.info.name,
@@ -365,17 +365,17 @@
 								}
 							}
 							else {
-								modV.controllerWindow.window.opener.postMessage({
+								self.controllerWindow.window.opener.postMessage({
 									type: 'variable',
 									varType: controlSet.varType,
 									modName: mod.info.name,
 									name: variable,
 									payload: this.value,
 									index: idx
-								}, modV.options.controlDomain);
+								}, self.options.controlDomain);
 
-								if(modV.options.remote) {
-									modV.ws.send(JSON.stringify({
+								if(self.options.remote) {
+									self.ws.send(JSON.stringify({
 										type: 'ui',
 										varType: controlSet.varType,
 										modName: mod.info.name,
@@ -394,13 +394,13 @@
 
 		}
 
-		modV.controllerWindow.document.body.appendChild(container.output());
+		self.controllerWindow.document.body.appendChild(container.output());
 
-		var registered = modV.registeredMods[mod.info.name] = mod;
-		modV.setModOrder(mod.info.name, Object.size(modV.registeredMods));
+		var registered = self.registeredMods[mod.info.name] = mod;
+		self.setModOrder(mod.info.name, Object.size(self.registeredMods));
 		
-		if(modV.options.remote && modV.ws) {
-			modV.ws.send({type: 'register', payload: mod.info});
+		if(self.options.remote && self.ws) {
+			self.ws.send({type: 'register', payload: mod.info});
 		}
 		
 		return registered;	

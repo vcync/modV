@@ -170,9 +170,11 @@
 	};
 
 	modV.prototype.Palette = function(colours, timePeriod, callbacks) {
+		var self = this;
+		
 		var pal = new Palette(colours, timePeriod, callbacks);
-		var idx = modV.palettes.push(pal)-1;
-		return modV.palettes[idx];
+		var idx = self.palettes.push(pal)-1;
+		return self.palettes[idx];
 	};
 
 })(module);

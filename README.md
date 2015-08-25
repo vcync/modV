@@ -1,25 +1,38 @@
-# modV-grunt
+# modV dev branch
 > JavaScript audio visualiser
 
-## grunt-static-site usage:
-Initialize the git repository for the project:
+
+
+## Requirements
+- [node](https://nodejs.org/download/)
+- [grunt-cli](https://github.com/gruntjs/grunt-cli)
+
+
+## Usage
+Run:
 ```
-git init
+npm install
+```
+in the modV directory to install the required packages.
+
+Once all packages are installed run either:
+```
+grunt server
+```
+for normal usage 
+
+or 
+```
+grunt no-manager
+```
+to run without the Media Manager.
+
+modV will be available at 
+```
+http://localhost:3131
 ```
 
-Add and commit the files:
-```
-git add .
-git commit -m 'initial commit'
-```
+## Warning
+This is the **dev** branch and has only been tested on Mac OS X.
 
-[Create a new repository on github](http://github.com/new)
-
-Make sure it has the same name you entered when you generated this project: modV-grunt
-
-Edit the project files to add your content.
-
-Deploy to GitHub Pages:
-```
-grunt deploy
-```
+I'm fairly certain the media manager won't work under Windows, but you're welcome to try and file a bug and or pull request if it doesn't work.

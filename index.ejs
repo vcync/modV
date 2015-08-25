@@ -17,43 +17,44 @@
 		<!-- between these tags -->
 
 		<script>
-			var modV = new modV({
+			var modVC = new modV({
 				canvas: document.querySelector('canvas'),
 				clearing: false,
-				remote: 'ws://localhost:8888/ws'
+				// remote: 'ws://localhost:8888/ws',
+				previewWindow: true
 			});
 
-			modV.registerMod(slipNslide);
-			modV.registerMod(relapper);
-			modV.registerMod(gridStretch);
-			modV.registerMod(textMod);
-			modV.registerMod(textModPalette);
-			modV.registerMod(mirror);
-			modV.registerMod(waveform);
-			modV.registerMod(concentrics);
-			modV.registerMod(xorcles);
-			modV.registerMod(stretch);
-			modV.registerMod(cacomixle);
-			modV.registerMod(moonLine);
-			modV.registerMod(tile);
-			modV.registerMod(pixelate);
-			modV.registerMod(rotate);
-			modV.registerMod(dither);
-			modV.registerMod(ball);
-			modV.registerMod(glitcher);
-			modV.registerMod(onOff);
-			modV.registerMod(starField);
-			modV.registerMod(badHold);
-			modV.registerMod(slide);
-			modV.registerMod(rotoZoom);
-			modV.registerMod(staticImage);
-			modV.registerMod(tenPrint);
-			modV.registerMod(webcam);
-			modV.registerMod(video);
-			modV.registerMod(circles);
-			modV.registerMod(spazulator5000);
-			modV.registerMod(perl);
-			modV.start();
+			modVC.registerMod(slipNslide);
+			modVC.registerMod(relapper);
+			modVC.registerMod(gridStretch);
+			modVC.registerMod(textMod);
+			modVC.registerMod(textModPalette);
+			modVC.registerMod(mirror);
+			modVC.registerMod(waveform);
+			modVC.registerMod(concentrics);
+			modVC.registerMod(xorcles);
+			modVC.registerMod(stretch);
+			modVC.registerMod(cacomixle);
+			modVC.registerMod(moonLine);
+			modVC.registerMod(tile);
+			modVC.registerMod(pixelate);
+			modVC.registerMod(rotate);
+			modVC.registerMod(dither);
+			modVC.registerMod(ball);
+			modVC.registerMod(glitcher);
+			modVC.registerMod(onOff);
+			modVC.registerMod(starField);
+			modVC.registerMod(badHold);
+			modVC.registerMod(slide);
+			modVC.registerMod(rotoZoom);
+			modVC.registerMod(staticImage);
+			modVC.registerMod(tenPrint);
+			modVC.registerMod(webcam);
+			modVC.registerMod(video);
+			modVC.registerMod(circles);
+			modVC.registerMod(spazulator5000);
+			modVC.registerMod(perl);
+			modVC.start();
 		</script>
 	</body>
 </html>

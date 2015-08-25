@@ -1,6 +1,10 @@
 module.exports = function(grunt) {
   grunt.initConfig({
-    
+    concurrent: {
+        target1: ['coffee', 'sass'],
+        target2: ['jshint', 'mocha']
+    },
+
     clean: ['dist'],
 
     ejs: {
@@ -93,14 +97,45 @@ module.exports = function(grunt) {
         ],
         dest: 'dist/index.html'
       }
+    },
+
+    // Creates symlink to media folder in dist becayse we're not gonna copy potentially hundreds of MBs
+    symlink: {
+      options: {
+        overwrite: false
+      },
+      expanded: {
+        files: [
+          // All child files and directories in "source", starting with "foo-" will
+          // be symlinked into the "build" directory, with the leading "source"
+          // stripped off.
+          {
+            expand: true,
+            overwrite: false,
+            cwd: 'media',
+            src: ['*'],
+            dest: 'dist/media'
+          }
+        ]
+      }
+    },
+
+    // Runs media manager
+    execute: {
+        target: {
+            src: ['mediaManager.js']
+        }
     }
+
   });
 
   require('matchdep').filterDev('grunt-*').forEach(grunt.loadNpmTasks);
   
-  grunt.registerTask('default', ['clean', 'ejs', 'browserify', 'copy', 'tags']);
+  grunt.registerTask('default', ['clean', 'ejs', 'browserify', 'copy', 'tags', 'symlink']);
   
-  grunt.registerTask('server', ['default', 'connect', 'watch']);
+  grunt.registerTask('server', ['default', 'connect', 'execute', 'watch']);
+
+  grunt.registerTask('no-manager', ['default', 'connect', 'watch']);
 
   grunt.registerTask('deploy', ['default', 'gh-pages']);
 

@@ -7,15 +7,17 @@
 	modV.prototype.uuid = undefined;
 	
 	modV.prototype.initSockets = function() {
-		if(modV.options.remote) {
+		var self = this;
+		
+		if(self.options.remote) {
 			try {
-				modV.ws = new WebSocket(modV.options.remote);
+				self.ws = new WebSocket(self.options.remote);
 				
-				modV.ws.onerror = function () {
-					modV.remoteSuccess = true; // Failed connection, so start anyway
+				self.ws.onerror = function () {
+					self.remoteSuccess = true; // Failed connection, so start anyway
 		        };
 			
-				modV.ws.onmessage = function(e) {
+				self.ws.onmessage = function(e) {
 					var data = JSON.parse(e.data);
 					console.log('Message received:', data);
 					
@@ -27,17 +29,17 @@
 						
 						case 'hello':
 							console.log(pl.name, 'says hi. Server version number:', pl.version);
-							modV.remoteSuccess = true;
-							modV.uuid = pl.id;
-							modV.ws.send(JSON.stringify({type: 'declare', payload: {type: 'client', id: modV.uuid}}));
+							self.remoteSuccess = true;
+							self.uuid = pl.id;
+							self.ws.send(JSON.stringify({type: 'declare', payload: {type: 'client', id: self.uuid}}));
 							break;
 							
 						case 'registerCB':
 							// Sorta debug only - will do something with this later on.
 							console.log('Server says', pl.name, 'was registered with order number', pl.index);
 							
-							if(modV.registeredMods[pl.name].info.name === pl.name) {
-								if(modV.registeredMods[pl.name].info.order === pl.index) {
+							if(self.registeredMods[pl.name].info.name === pl.name) {
+								if(self.registeredMods[pl.name].info.order === pl.index) {
 									console.log('True!');
 								} else {
 									console.log('False!');
@@ -49,16 +51,16 @@
 							break;
 						
 						default:
-							modV.receiveMessage({data: data}, true);
+							self.receiveMessage({data: data}, true);
 					}
 				};
 				
-				modV.ws.onclose = function() {
+				self.ws.onclose = function() {
 					console.log('Connection closed');
 				};
 				
-				modV.ws.onopen = function() {
-					console.log('Successful initial connection to', modV.options.remote);
+				self.ws.onopen = function() {
+					console.log('Successful initial connection to', self.options.remote);
 				};
 			} catch(e) {
 				console.error('There was an un-identified Web Socket error', e);

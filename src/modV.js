@@ -25,6 +25,16 @@
 			microphone,
 			FFTData;
 
+		// Save user options
+		if(typeof options !== 'undefined') self.options = options;
+		else self.options = {};
+
+		// Attach message handler for sockets and windows
+		self.addMessageHandler();
+
+		// Create Windows
+		self.createWindows();
+
 		self.amplitudeArray = null;
 
 		self.gainNode = null;
@@ -42,13 +52,41 @@
 
 		self.meydaSupport = false;
 		self.muted = true;
-		self.ws = undefined; // WebSocket
 
+		// WebSocket
+		self.ws = undefined;
+
+		//Collection of palette controls
 		self.palettes = [];
 
 		self.ready = false;
 
 		self.presets = {};
+
+		self.profiles = {};
+
+		self.mediaManager = new WebSocket("ws://localhost:3132/");
+
+		self.mediaManager.onopen = function() {
+			console.info('Media Manager connected, retriveing media list');
+			self.mediaManager.send(JSON.stringify({request: 'update'}));
+		};
+
+		self.mediaManager.onmessage = function(m) {
+			var parsed = JSON.parse(m.data);
+
+			console.log('Media Manager says:', m.data);
+			console.log(parsed);
+
+			if('type' in parsed) {
+				switch(parsed.type) {
+					case 'update':
+						self.profiles = parsed.payload;
+
+					break;
+				}
+			}
+		};
 
 		self.loadPreset = function(id) {
 			console.log(id);
@@ -129,10 +167,6 @@
 			self.beatDetektorMed = new BeatDetektor(85,169);
 		}
 
-		// Parse user options
-		if(typeof options !== 'undefined') self.options = options;
-		else self.options = {};
-
 		if(!self.options.clearing) self.clearing = false;
 
 		if(!self.options.controlDomain) self.options.controlDomain = location.protocol + '//' + location.host;
@@ -211,7 +245,7 @@
 			if(self.options.remote && !self.remoteSuccess) {
 				self.initSockets();
 
-				console.log('Websocket not connected yet, waiting for connection to start.');
+				console.log('Remote server not connected yet, waiting for connection to start.');
 				setTimeout(self.start, 1000);
 			} else {
 
@@ -238,7 +272,7 @@
 					}
 				}
 
-				requestAnimationFrame(self.loop);
+				requestAnimationFrame(self.loop.bind(self)); //modV-drawLoop.js //TODO: figure out why we're using bind (I get it, but seems stupid)
 			}
 
 			return true;
@@ -327,7 +361,7 @@
 			// Create a new Uint8Array for the analysis
 			FFTData = new Uint8Array(analyser.frequencyBinCount);
 			
-			// More friendly name? (should tidy all this up at some point)
+			// TODO: More friendly name?
 			self.amplitudeArray = FFTData;
 			
 			// Tell the rest of the script we're all good.
