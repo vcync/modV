@@ -1,23 +1,23 @@
 (function(RJSmodule) {
 	'use strict';
-	/*jslint browser: true */
 
 	modV.prototype.factoryReset = function() {
-		for(var mod in modV.registeredMods) {
-			var m = modV.registeredMods[mod];
+		var self = this;
+		for(var mod in self.registeredMods) {
+			var m = self.registeredMods[mod];
 			
 			m.info.disabled = true;
 			m.info.blend = 'normal';
 
-			modV.controllerWindow.postMessage({
+			self.controllerWindow.postMessage({
 				type: 'ui-enabled',
 				modName: m.info.name,
 				payload: false
-			}, modV.options.controlDomain);
+			}, self.options.controlDomain);
 
 			// If we have a WebSocket server
-			if(modV.options.remote) {
-				modV.ws.send(JSON.stringify({
+			if(self.options.remote) {
+				self.ws.send(JSON.stringify({
 					type: 'ui-enabled',
 					modName: m.info.name,
 					payload: false,
@@ -35,17 +35,17 @@
 
 				var id = m.name + '-' + control.variable;
 
-				modV.controllerWindow.postMessage({
+				self.controllerWindow.postMessage({
 					type: 'ui',
 					varType: control.type,
 					modName: m.info.name,
 					name: control.label,
 					payload: val
-				}, modV.options.controlDomain);
+				}, self.options.controlDomain);
 
 				// If we have a WebSocket server
-				if(modV.options.remote) {
-					modV.ws.send(JSON.stringify({
+				if(self.options.remote) {
+					self.ws.send(JSON.stringify({
 						type: 'ui',
 						varType: control.type,
 						modName: m.info.name,
@@ -59,14 +59,14 @@
 					val = val + control.append;
 				}
 
-				modV.registeredMods[mod][control.variable] = val;
+				self.registeredMods[mod][control.variable] = val;
 
 			});
 
 		}
 
 		// Clear the screen
-		modV.context.clearRect(0, 0, modV.canvas.width, modV.canvas.height);
+		self.context.clearRect(0, 0, self.canvas.width, self.canvas.height);
 	};
 
 })(module);

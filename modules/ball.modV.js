@@ -2,18 +2,30 @@ var ball = function() {
 	this.info = {
 		name: 'ball',
 		author: '2xAA',
-		version: 0.1,
+		version: 0.2,
+		meyda: ['rms', 'zcr'],
 		controls: [
 			{type: 'range', variable: 'amount', label: 'Amount', varType: 'int', min: 1, max: 50},
 			{type: 'range', variable: 'size', varType: 'float', min: 1, max: 20, label: 'Base Size'},
-			{type: 'range', variable: 'sensitivity', varType: 'float', min: 0, max: 8, label: 'Audio Sensitivity'}
+			{type: 'range', variable: 'intensity', label: 'RMS/ZCR Intensity', min: 0, max: 30, varType: 'int', step: 1},
+			{type: 'checkbox', variable: 'soundType', label: 'RMS (unchecked) / ZCR (checked)'},
+			{type: 'palette', variable: 'colour', colours: [
+                [255,102,152],
+                [255,179,102],
+                [255,255,102],
+                [152,255,102],
+                [102,152,255]
+            ], timePeriod: 500}
 		]
 	};
+
+	this.soundType = false; // false RMS, true ZCR
+	this.intensity = 15; // Half max
 
 	this.amount = 10;
 	this.baseSize = 2;
 	this.size = 2;
-	this.sensitivity = 8.4;
+	this.colour = 'pink';
 	var that = this;
 
 	var balls = [];
@@ -29,8 +41,8 @@ var ball = function() {
 
 		this.drawUpdate = function(canvas, ctx, amp) {
 			ctx.beginPath();
-			ctx.arc(this.position.x, this.position.y, (that.size * amp), 0, 2 * Math.PI, true);
-			ctx.fillStyle = 'hsl(' + hue + ', 50%, 50%)';
+			ctx.arc(this.position.x, this.position.y, that.baseSize + (that.size * amp), 0, 2 * Math.PI, true);
+			ctx.fillStyle = that.colour;
 			ctx.fill();
 			ctx.closePath();
 
@@ -42,8 +54,8 @@ var ball = function() {
 
 			if(this.velocity.y === 0) this.velocity.y = -this.velocity.y+1;
 
-			if(hue == 360) hue = 0;
-			else hue+=2 + this.speed/10;
+			//if(hue == 360) hue = 0;
+			//else hue+=2 + this.speed/10;
 		};
 	};
 
@@ -64,19 +76,18 @@ var ball = function() {
 		}
 	};
 
-	this.draw = function(canvas, ctx, amplitudeArray) {
+	this.draw = function(canvas, ctx, amp, vid, meyda) {
 		
-		var all = 0;
-		for(var i=0; i<64; i++) {
-			all += amplitudeArray[i];
+		if(this.soundType) {
+			analysed = meyda.zcr/10 * this.intensity;
+		} else {
+			analysed = (meyda.rms * 10) * this.intensity;
 		}
-		all = all/1000;
-		all = (all*this.sensitivity);
 		
 		for(var i=0; i < this.amount; i++) {
 			var y = cvHeight - (cvHeight);
 			balls[i].speed = Math.abs(y-200)/2;
-			balls[i].drawUpdate(canvas, ctx, all);
+			balls[i].drawUpdate(canvas, ctx, analysed);
 		}
 	};
 };

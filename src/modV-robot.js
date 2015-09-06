@@ -8,10 +8,12 @@
 
 	var bots = {};
 
-	var modVBot = function(module) {
+	/* TODO: bind to modV scope <<< cannot at present */
+	var modVBot = function(module, modV) {
+		var self = modV;
 
 		function bpmToMs(bpm) {
-			console.log(bpm);
+			console.log('BPM', bpm);
 			return (60000 / bpm);
 		}
 
@@ -23,7 +25,7 @@
 			return Math.random()*(max-min+1)+min;
 		}
 
-		var interval = bpmToMs(modV.bpm);
+		var interval = bpmToMs(self.bpm);
 
 		function loop() {
 			for(var cntrl in module.info.controls) {
@@ -72,17 +74,17 @@
 							break;
 					}
 
-					modV.controllerWindow.postMessage({
+					self.controllerWindow.postMessage({
 					 	type: 'ui',
 					 	varType: control.varType,
 					 	modName: module.info.name,
 					 	name: control.label,
 					 	payload: rand,
 					 	index: parseInt(cntrl)
-					}, modV.options.controlDomain);
+					}, self.options.controlDomain);
 
-					if(modV.options.remote) {
-						modV.ws.send(JSON.stringify({
+					if(self.options.remote) {
+						self.ws.send(JSON.stringify({
 							type: 'ui',
 							varType: control.varType,
 							modName: module.info.name,
@@ -95,15 +97,15 @@
 
 			}
 
-			if(modV.bpm === 0) {
+			if(self.bpm === 0) {
 				interval = 1000;
-				console.log('No BPM yet', modV.bpm, 'Using 120 instead.');
+				console.log('No BPM yet', self.bpm, 'Using 120 instead.');
 			} else {
-				interval = bpmToMs(modV.bpm);
+				interval = bpmToMs(self.bpm);
 			}
 		}
 
-		if(modV.bpm === 0) interval = 1000;
+		if(self.bpm === 0) interval = 1000;
 		var timer = setInterval(loop, interval);
 
 		this.removeBot = function() {
@@ -112,17 +114,32 @@
 	};
 
 	modV.prototype.attachBot = function(module) {
-		var mod = modV.registeredMods[module];
+		var self = this;
+		var mod = self.registeredMods[module];
 		if(bots[mod.info.name]) return false; // Bot already attached
-		var bot = new modVBot(mod);
+		var bot = new modVBot(mod, self);
 		bots[mod.info.name] = bot;
+
+		self.controllerWindow.postMessage({
+			type: 'info',
+			name: 'active-bots',
+			payload: Object.keys(bots).length,
+		}, self.options.controlDomain);
 	};
 
 	modV.prototype.removeBot = function(module) {
-		var mod = modV.registeredMods[module];
+		var self = this;
+		var mod = self.registeredMods[module];
 		if(!bots[mod.info.name]) return false; // No bot
 		bots[mod.info.name].removeBot();
 		delete bots[mod.info.name];
+
+		self.controllerWindow.postMessage({
+			type: 'info',
+			name: 'active-bots',
+			payload: Object.keys(bots).length,
+		}, self.options.controlDomain);
+		
 		return true; // There was a bot, it has now been deleted
 	};
 

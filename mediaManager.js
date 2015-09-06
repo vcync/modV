@@ -102,6 +102,11 @@ server.get('/', function upgradeRoute(req, res, next) {
 
 	var shed = ws.accept(req, upgrade.socket, upgrade.head);
 
+	function update() {
+		console.log('\nSending client profiles data');
+		shed.send(JSON.stringify({type: 'update', payload: profiles}));
+	}
+
 	shed.on('text', function(msg) {
 		var parsed = JSON.parse(msg);
 		console.log('\nReceived message from websocket client: ' + msg);
@@ -110,20 +115,39 @@ server.get('/', function upgradeRoute(req, res, next) {
 
 			switch(parsed.request) {
 				case 'update':
-					console.log('\nSending client profiles data');
-					shed.send(JSON.stringify({type: 'update', payload: profiles}));
+					
+					update();
+
 				break;
 
 				case 'save-preset':
 					console.log('\nAttempting to save preset in profile:', parsed.profile);
 
-					var outputFilename = './media/' + parsed.profile + '/preset/' + parsed.name + '.json';
+					var outputPresetFilename = './media/' + parsed.profile + '/preset/' + parsed.name + '.json';
 
-					fs.writeFile(outputFilename, JSON.stringify(parsed.payload), function(err) {
+					fs.writeFile(outputPresetFilename, JSON.stringify(parsed.payload), function(err) {
 						if(err) {
 							throw err;
 						} else {
-							console.log('JSON saved to ' + outputFilename);
+							console.log('JSON saved to ' + outputPresetFilename);
+						}
+					}); 
+
+				break;
+
+				case 'save-palette':
+					console.log('\nAttempting to save palette in profile:', parsed.profile);
+
+					var outputPaletteFilename = './media/' + parsed.profile + '/palette/' + parsed.name + '.json';
+
+					fs.writeFile(outputPaletteFilename, JSON.stringify(parsed.payload), function(err) {
+						if(err) {
+							throw err;
+						} else {
+							console.log('JSON saved to ' + outputPaletteFilename);
+							console.log('Adding palette to profiles object then sending back to client.');
+							profiles[parsed.profile].palettes[parsed.name] = parsed.payload;
+							update();
 						}
 					}); 
 

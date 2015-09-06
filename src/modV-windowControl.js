@@ -33,6 +33,52 @@
 		// > binds to this scope
 		cWindow.window.addEventListener('message', cWindowReceiveMessage.bind(self), false);
 
+		// TODO: finish up info panel
+		var infoPanel = document.createElement('section');
+		infoPanel.classList.add('info-panel', 'pure-u-1-1');
+		
+		var infoPanelInner = document.createElement('div');
+		infoPanelInner.classList.add('pure-g');
+
+		var paletteCount 	= document.createElement('div');
+			paletteCount.classList.add('pure-u-1-5', 'palette-count');
+		var activeModules 	= document.createElement('div');
+			activeModules.classList.add('pure-u-1-5', 'active-modules');
+		var frameRate 		= document.createElement('div');
+			frameRate.classList.add('pure-u-1-5', 'frame-rate');
+		var detectedBPM 	= document.createElement('div');
+			detectedBPM.classList.add('pure-u-1-5', 'detected-bpm-container');
+
+		var detectedBPMValue = document.createElement('div');
+			detectedBPMValue.classList.add('detected-bpm');
+
+		var bpmHoldCheckbox = document.createElement('input');
+			bpmHoldCheckbox.type = 'checkbox';
+			bpmHoldCheckbox.checked = false;
+			bpmHoldCheckbox.addEventListener('change', function() {
+				self.bpmHold = this.checked;
+			});
+
+		var bpmHoldLabel = document.createElement('label');
+		bpmHoldLabel.textContent = 'Hold BPM';
+		bpmHoldLabel.appendChild(bpmHoldCheckbox);
+
+		detectedBPM.appendChild(detectedBPMValue);
+		detectedBPM.appendChild(bpmHoldLabel);
+
+		var activeBots 		= document.createElement('div');
+			activeBots.classList.add('pure-u-1-5', 'active-bots');
+
+		infoPanelInner.appendChild(paletteCount);
+		infoPanelInner.appendChild(activeModules);
+		infoPanelInner.appendChild(frameRate);
+		infoPanelInner.appendChild(detectedBPM);
+		infoPanelInner.appendChild(activeBots);
+
+		infoPanel.appendChild(infoPanelInner);
+
+		cWindow.document.body.appendChild(infoPanel);
+
 		// TODO: tidy up following control code
 		// Add modV controls
 		var container = new self.ContainerGenerator('Global', false);
@@ -44,12 +90,12 @@
 
 		// - mute / unmute input
 		container.addInput('mute', 'Mute', 'checkbox', 'checked', true, 'change', function() {
-			cWindow.controllerWindow.window.opener.postMessage({type: 'global', name: 'mute', payload: this.checked}, self.options.controlDomain);
+			cWindow.window.opener.postMessage({type: 'global', name: 'mute', payload: this.checked}, self.options.controlDomain);
 		});
 
 		// - factory reset button
 		container.addInput('factory-reset', 'Factory Reset', 'button', 'value', 'factory-reset', 'click', function() {
-			cWindow.controllerWindow.window.opener.postMessage({type: 'global', name: 'factory-reset', payload: this.value}, self.options.controlDomain);
+			cWindow.window.opener.postMessage({type: 'global', name: 'factory-reset', payload: this.value}, self.options.controlDomain);
 		});
 		
 		// - save preset
@@ -95,10 +141,10 @@
 		// TODO - MOVE LOADING PRESETS TO modV.js
 		// TODO - WRITE CONTROLLER MESSAGE HANDLER FOR PRESET LIST UPDATES
 		// TODO - WRITE WEBSOCKET PRESET HANDLER
-		// TODO - ADD OPTION TO (SETTINGS) FOR SAVING ENABLED MODULES ONLY
-		// TODO - PRESET EXPORT
-		// TODO - ADD PRESET KEY TO MODULE INFO (PER MODULE PRESETS)
-		// TODO - VALIDATION ON PRESET READING. CHECK NAME, AUTHOR AND VERSION
+		// TODO - ADD OPTION TO (SETTINGS) FOR SAVING ENABLED MODULES ONLY << Very important
+		// TODO - PRESET EXPORT << sort of already done (media manaer)? double check when not drunk
+		// TODO - ADD PRESET KEY TO MODULE INFO (PER MODULE PRESETS) <<< (so, preset per module - objecy key for preset name then object key of variable names and values)
+		// TODO - VALIDATION ON PRESET READING. CHECK NAME, AUTHOR AND VERSION <<< Very important (especially because of new media manager)
 
 		var loadPresetDiv = document.createElement('div');
 		loadPresetDiv.id = 'presetListContainer';
@@ -118,9 +164,6 @@
 					name: presetListContainer.querySelector('select').value
 				}
 			}, self.options.controlDomain);
-
-			console.log(cWindow.window.opener, self.options.controlDomain);	
-
 			
 		});
 
@@ -137,19 +180,75 @@
 	// > must be bound to modV's scope
 	var createPreviewWindow = function() {
 		var self = this;
+		console.log(self);
 
 		// TODO: bind this window's resize to the spect ratio of the main window
 		// http://jsfiddle.net/yUenJ/
 		// http://stackoverflow.com/a/5664172/1539303
 
-		var pWindow = window.open('', '_blank', 'width=640, height=480, location=no, menubar=no, left=0');
+		var pWindow = window.open('', '_blank', 'width=1, height=1, location=no, menubar=no, left=0');
 		var pCanvas = document.createElement('canvas');
 		var pCtx = pCanvas.getContext('2d');
 		
 		pWindow.document.body.style.margin = '0px';
-		pCanvas.width = 640;
-		pCanvas.height = 480;
+		pWindow.document.body.style.backgroundColor = 'black';
+		pCanvas.style.position = 'fixed';
+		
+		pCanvas.style.top = 
+		pCanvas.style.bottom = 
+		pCanvas.style.left = 
+		pCanvas.style.right = 0;
+
 		pWindow.onbeforeunload = drunkenMess;
+
+		var monitorResize;
+		var programedResize = false;
+
+		function resizeEnd() {
+			clearTimeout(monitorResize);
+
+			var masterWidth = self.canvas.width;
+			var masterHeight = self.canvas.height;
+			var masterRatio = masterWidth/masterHeight;
+
+			var pWindowWidth = pWindow.innerWidth;
+			var pWindowHeight = pWindow.innerHeight;
+
+			var newHeight = pWindowHeight;
+			var newWidth = Math.round(newHeight * masterRatio);
+
+		 	programedResize = true;
+			pWindow.resizeTo(newWidth, newHeight);  
+
+			pCanvas.width = newWidth;
+			pCanvas.height = newHeight;  
+
+			// TODO
+			// if (window.devicePixelRatio > 1 && 'retina' in self.options) {
+			// 	if(self.options.retina) {
+			// 		var canvasWidth = pWindow.innerWidth;
+			// 		var canvasHeight = pWindow.innerHeight;
+
+			// 		pCanvas.width = canvasWidth * window.devicePixelRatio;
+			// 		pCanvas.height = canvasHeight * window.devicePixelRatio;
+			// 		pCanvas.style.width = pWindow.innerWidth + 'px';
+			// 		pCanvas.style.height = pWindow.innerHeight + 'px';
+			// 	}
+			// }
+		}
+
+		pWindow.addEventListener('resize', function() {
+			clearTimeout(monitorResize);
+
+  			if(programedResize) {
+  				programedResize = false;
+			} else {
+				monitorResize = setTimeout(resizeEnd, 300);
+			}
+		});
+
+		resizeEnd();
+
 		pWindow.document.body.appendChild(pCanvas);
 
 		return [pWindow, pCanvas, pCtx];
@@ -181,19 +280,6 @@
 			}
 		}, false);
 	};
-	
-	// if(modV.options.previewWindow) {
-	// 	// Preview window
-	// 	var previewWindow = window.open('', '_blank', 'width=640, height=480, location=no, menubar=no, left=0');
-	// 	var previewCanvas = document.createElement('canvas');
-	// 	var previewCtx = previewCanvas.getContext('2d');
-		
-	// 	previewWindow.document.body.style.margin = '0px';
-	// 	previewCanvas.width = 640;
-	// 	previewCanvas.height = 480;
-	// 	previewWindow.onbeforeunload = drunkenMess;
-	// 	previewWindow.document.body.appendChild(previewCanvas);
-	// }
 								   	
 	// var slipJS = document.createElement('script');
 	// slipJS.src = './libraries/slip.js';
@@ -274,6 +360,37 @@
 			self.controllerWindow.window.console.log(id, node, event.data.payload);
 			node.value = event.data.payload;
 		}
+
+		if(event.data.type === 'info') {
+			var panel;
+			switch(event.data.name) {
+
+				case 'palette-count':
+					panel = self.controllerWindow.document.querySelector('.palette-count');
+					panel.textContent = '#palettes:' + event.data.payload;
+					break;
+
+				case 'active-modules':
+					panel = self.controllerWindow.document.querySelector('.active-modules');
+					panel.textContent = 'Active modules: ' + event.data.payload;
+					break;
+
+				case 'frame-rate':
+					panel = self.controllerWindow.document.querySelector('.frame-rate');
+					panel.textContent = 'Frame rate: ' + event.data.payload;
+					break;
+
+				case 'detected-bpm':
+					panel = self.controllerWindow.document.querySelector('.detected-bpm');
+					panel.textContent = 'BPM: ' + event.data.payload;
+					break;
+
+				case 'active-bots':
+					panel = self.controllerWindow.document.querySelector('.active-bots');
+					panel.textContent = 'Active bots: ' + event.data.payload;
+					break;
+			}
+		}
 		
 	};
 
@@ -281,8 +398,6 @@
 	// TODO: move this into own file
 	modV.prototype.addPresetToController = function(presetName, controlDomain) {
 		var self = this;
-
-		console.log('adding to preset list with', presetName);
 
 		self.controllerWindow.postMessage({type: 'new-preset', name: presetName}, controlDomain);
 	};

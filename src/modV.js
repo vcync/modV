@@ -29,11 +29,13 @@
 		if(typeof options !== 'undefined') self.options = options;
 		else self.options = {};
 
+		self.clearing = true;
+		if(!self.options.clearing) self.clearing = false;
+
+		if(!self.options.controlDomain) self.options.controlDomain = location.protocol + '//' + location.host;
+
 		// Attach message handler for sockets and windows
 		self.addMessageHandler();
-
-		// Create Windows
-		self.createWindows();
 
 		self.amplitudeArray = null;
 
@@ -48,28 +50,92 @@
 		self.video.muted = true;
 
 		self.canvas = undefined;
-		self.clearing = true;
 
 		self.meydaSupport = false;
 		self.muted = true;
 
+		self.ready = false;
+
 		// WebSocket
 		self.ws = undefined;
 
-		//Collection of palette controls
-		self.palettes = [];
+		// Window resize
+		function resize(e, width, height) {
+			if(e) {
+				width = window.innerWidth;
+				height = window.innerHeight;
+			}
+			self.canvas.width = width;
+			self.canvas.height = height;
 
-		self.ready = false;
+			if (window.devicePixelRatio > 1 && 'retina' in self.options) {
+				if(self.options.retina) {
+					var canvasWidth = width;
+					var canvasHeight = height;
+
+					self.canvas.width = canvasWidth * window.devicePixelRatio;
+					self.canvas.height = canvasHeight * window.devicePixelRatio;
+					self.canvas.style.width = width + 'px';
+					self.canvas.style.height = height + 'px';
+				}
+			}
+
+			if(typeof window.THREE == 'object') {
+				self.threejs.renderer.setSize(window.innerWidth, window.innerHeight);
+				self.threejs.camera.aspect = window.innerWidth / window.innerHeight;
+				self.threejs.camera.updateProjectionMatrix();
+				self.threejs.renderer.setSize(self.canvas.width, self.canvas.height);
+			}
+
+			for(var mod in self.registeredMods) {
+				if(typeof self.registeredMods[mod].init === 'function') self.registeredMods[mod].init(self.canvas, self.context);
+			}
+		}
+
+		// Create canvas
+		self.setCanvas = function(el) {
+			if(el.nodeName !== 'CANVAS') {
+				console.error('modV: setCanvas was not supplied with a CANVAS element.');
+				return false;
+			}
+			self.canvas = el;
+			self.context = el.getContext('2d');
+
+			if(typeof window.THREE === 'object') {
+				self.threejs.canvas = document.createElement('canvas');
+
+				self.threejs.renderer = new THREE.WebGLRenderer({canvas: self.threejs.canvas, autoClear: false, alpha: true});
+				self.threejs.renderer.setSize( window.innerWidth, window.innerHeight );
+				self.threejs.renderer.setClearColor(0x000000, 0);
+			}
+
+			window.addEventListener('resize', resize, false);
+			resize(false, window.innerWidth, window.innerHeight);
+
+			return true;
+		};
+
+		if(self.options.canvas) {
+			self.setCanvas(self.options.canvas);
+		}
+
+		// Create Windows
+		self.createWindows();
+
+		// Collection of palette controls
+		self.palettes = [];
 
 		self.presets = {};
 
 		self.profiles = {};
 
 		self.mediaManager = new WebSocket("ws://localhost:3132/");
-
+		self.mediaManagerAvailable = false;
+		
 		self.mediaManager.onopen = function() {
 			console.info('Media Manager connected, retriveing media list');
 			self.mediaManager.send(JSON.stringify({request: 'update'}));
+			self.mediaManagerAvailable = true;
 		};
 
 		self.mediaManager.onmessage = function(m) {
@@ -82,7 +148,18 @@
 				switch(parsed.type) {
 					case 'update':
 						self.profiles = parsed.payload;
+						self.mediaSelectors.forEach(function(ms) {
+							ms.update(self.profiles);
+						});
 
+						var arr = [];
+						for(var profile in self.profiles) {
+							arr.push(profile);
+						}
+
+						self.palettes.forEach(function(palette) {
+							palette.updateProfiles(arr);
+						});
 					break;
 				}
 			}
@@ -120,12 +197,6 @@
 							index: m.order
 						}, self.options.controlDomain);
 
-						self.controllerWindow.postMessage({
-							type: 'ui-enabled',
-							modName: m.name,
-							payload: !m.disabled
-						}, self.options.controlDomain);
-
 						if(control.append) {
 							val = val + control.append;
 						}
@@ -137,7 +208,22 @@
 				console.log(m);
 				//registeredMods[mod].info = m;
 				self.registeredMods[mod].info.blend = m.blend;
+
+				// Update blendmode UI
+				self.controllerWindow.postMessage({
+					type: 'ui-blend',
+					modName: m.name,
+					payload: m.blend
+				}, self.options.controlDomain);
+
 				self.registeredMods[mod].info.disabled = m.disabled;
+
+				// Update enabled UI
+				self.controllerWindow.postMessage({
+					type: 'ui-enabled',
+					modName: m.name,
+					payload: !m.disabled
+				}, self.options.controlDomain);
 				
 				console.log(m.name, 'now @ ', self.setModOrder(m.name, m.order));
 
@@ -160,16 +246,23 @@
 		}
 
 		self.bpm = 0;
+		self.bpmHold = false;
+		self.bpmHeldAt = 120;
+		var bpmInfoUpdater;
 		// Check for BeatDetektor
 		if(typeof window.BeatDetektor === 'function') {
 			self.beatDetektorSupport = true;
 			console.info('BeatDetektor detected, BPM analysis available.', 'modV robot now available.');
 			self.beatDetektorMed = new BeatDetektor(85,169);
+			bpmInfoUpdater = setInterval(function() {
+				self.controllerWindow.postMessage({
+					type: 'info',
+					name: 'detected-bpm',
+					payload: self.bpm,
+				}, self.options.controlDomain);
+
+			}, 1000);
 		}
-
-		if(!self.options.clearing) self.clearing = false;
-
-		if(!self.options.controlDomain) self.options.controlDomain = location.protocol + '//' + location.host;
 
 		// Lookup presets
 		if(!localStorage.getItem('presets')) {
@@ -182,59 +275,19 @@
 			}
 		}
 
-		function resize() {
-			self.canvas.width = window.innerWidth;
-			self.canvas.height = window.innerHeight;
-
-			if (window.devicePixelRatio > 1 && 'retina' in self.options) {
-				if(self.options.retina) {
-					var canvasWidth = window.innerWidth;
-					var canvasHeight = window.innerHeight;
-
-					self.canvas.width = canvasWidth * window.devicePixelRatio;
-					self.canvas.height = canvasHeight * window.devicePixelRatio;
-					self.canvas.style.width = window.innerWidth + 'px';
-					self.canvas.style.height = window.innerHeight + 'px';
-				}
+		self.setDimensions = function(width, height) {
+			if(typeof width === 'undefined' && typeof height === 'undefined') {
+				console.error('modV: setDimensions was not supplied anything!');
+			} else if(typeof width !== 'number') {
+				console.error('modV: setDimensions was not supplied with a number type.');
+				return;
+			} else if(typeof height !== 'number') {
+				console.error('modV: setDimensions was not supplied with a number type.');
+				return;
 			}
 
-			if(typeof window.THREE == 'object') {
-				self.threejs.renderer.setSize(window.innerWidth, window.innerHeight);
-				self.threejs.camera.aspect = window.innerWidth / window.innerHeight;
-				self.threejs.camera.updateProjectionMatrix();
-				self.threejs.renderer.setSize(self.canvas.width, self.canvas.height);
-			}
-
-			for(var mod in self.registeredMods) {
-				if(typeof self.registeredMods[mod].init === 'function') self.registeredMods[mod].init(self.canvas, self.context);
-			}
-		}
-
-		self.setCanvas = function(el) {
-			if(el.nodeName !== 'CANVAS') {
-				console.error('modV: setCanvas was not supplied with a CANVAS element.');
-				return false;
-			}
-			self.canvas = el;
-			self.context = el.getContext('2d');
-
-			if(typeof window.THREE === 'object') {
-				self.threejs.canvas = document.createElement('canvas');
-
-				self.threejs.renderer = new THREE.WebGLRenderer({canvas: self.threejs.canvas, autoClear: false, alpha: true});
-				self.threejs.renderer.setSize( window.innerWidth, window.innerHeight );
-				self.threejs.renderer.setClearColor(0x000000, 0);
-			}
-
-			window.addEventListener('resize', resize, false);
-			resize();
-
-			return true;
+			resize(false, width, height);
 		};
-
-		if(self.options.canvas) {
-			self.setCanvas(self.options.canvas);
-		}
 
 		self.start = function() {
 			if(typeof self.canvas !== 'object') {

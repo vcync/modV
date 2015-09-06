@@ -1,6 +1,5 @@
 (function(RJSmodule) {
 	'use strict';
-	/*jslint browser: true */
 
 	modV.prototype.registerMod = function(Mod) {
 		var self = this;
@@ -20,7 +19,7 @@
 
 		var fieldset = document.createElement('fieldset');
 		
-		var container = new self.ContainerGenerator(mod.info.name, true);
+		var container = new self.ContainerGenerator(mod.info.name, true, self.controllerWindow, self.options.controlDomain);
 		
 		var relatedTarget = null;
 		
@@ -179,6 +178,23 @@
 
 					label.appendChild(image);
 
+					// TODO
+					var videoSelector = self.MediaSelector('video', {
+						onchange: function(filePath) {
+							console.log(filePath);
+
+							self.controllerWindow.window.opener.postMessage({
+								type: 'video',
+								modName: mod.info.name,
+								name: variable,
+								payload: filePath,
+								index: idx
+							}, self.options.controlDomain);
+						}
+					});
+
+					container.addSpecial(videoSelector.returnHTML());
+
 					container.addSpecial(label);
 
 				} else if(controlSet.type === 'image') {
@@ -208,6 +224,24 @@
 					});
 
 					label.appendChild(image);
+
+					// TODO
+					var imageSelector = self.MediaSelector('image', {
+						onchange: function(filePath) {
+							console.log(filePath);
+
+							self.controllerWindow.window.opener.postMessage({
+								type: 'image',
+								modName: mod.info.name,
+								name: variable,
+								payload: filePath,
+								index: idx
+							}, self.options.controlDomain);
+						}
+					});
+
+					container.addSpecial(imageSelector.returnHTML());
+
 
 					container.addSpecial(label);
 
@@ -251,7 +285,23 @@
 						}, self.options.controlDomain);
 					});
 
+					// TODO
+					var multiImageSelector = self.MediaSelector('multiimage', {
+						onchange: function(filePaths) {
+							console.log(filePaths);
 
+							self.controllerWindow.window.opener.postMessage({
+								type: 'multiimage',
+								modName: mod.info.name,
+								name: variable,
+								payload: filePaths,
+								wipe: true,
+								index: idx
+							}, self.options.controlDomain);
+						}
+					});
+
+					container.addSpecial(multiImageSelector.returnHTML());
 
 					label.appendChild(image);
 
@@ -274,11 +324,9 @@
 							},
 							add: function(colours) {
 								mod.info.controls[idx].currValue = JSON.stringify(colours);
-								console.log('added', colours);
 							},
 							remove: function(colours) {
 								mod.info.controls[idx].currValue = JSON.stringify(colours);
-								console.log('removed', colours);
 							}
 						}
 					);
@@ -298,7 +346,6 @@
 						controlSet.checked,
 						'change',
 						function() {
-							console.log('checkbox changed');
 							self.controllerWindow.window.opener.postMessage({
 								type: 'variable',
 								varType: controlSet.type,

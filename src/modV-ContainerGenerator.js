@@ -1,6 +1,5 @@
 (function(RJSmodule) {
 	'use strict';
-	/*jslint browser: true */
 
 	// from here: http://stackoverflow.com/questions/18663941/finding-closest-element-without-jquery
 	function getClosestWithClass(el, tag, classN) {
@@ -9,16 +8,17 @@
 			if (el.nodeName === tag && el.classList.contains(classN)) {
 				return el;
 			}
-		} while (el = el.parentNode); // jshint ignore:line
+		} while (el = el.parentNode);  // jshint ignore:line
 	
 		return false;
 	}
 
-	modV.prototype.ContainerGenerator = function(title, movable) {
+	/* Constructor */
+	// TODO: figure out why I have to pass in the controllerWIndow and controlDomain instea of getting them from self.
+	modV.prototype.ContainerGenerator = function(title, movable, controllerWindow, controlDomain) {
 		var self = this;
 
 		var contTitle = title;
-		var thatIn = self;
 
 		self.div = document.createElement('div');
 		self.div.classList.add('module');
@@ -45,17 +45,14 @@
 				e.preventDefault();
 				var target = getClosestWithClass(e.target, 'div', 'module');
 				target.style.backgroundColor = 'white';
-				console.log(target);
 				
 				var targetdata = target.dataset.name;
 				
 				var data = e.dataTransfer.getData('text');
-				var nodeToMove = modV.controllerWindow.document.querySelector('div.module[data-name="' + data + '"]');
+				var nodeToMove = controllerWindow.document.querySelector('div.module[data-name="' + data + '"]');
 				nodeToMove.parentNode.insertBefore(nodeToMove, target);
 				
-				modV.controllerWindow.window.opener.postMessage({type: 'setOrderFromElements', x: data, y: targetdata}, modV.options.controlDomain);
-				
-				console.log(nodeToMove);
+				controllerWindow.window.opener.postMessage({type: 'setOrderFromElements', x: data, y: targetdata}, controlDomain);
 			}, false);
 
 			var relatedTarget;
@@ -142,7 +139,7 @@
 
 		self.output = function() {
 			elements.forEach(function(block) {
-				thatIn.div.appendChild(block);
+				self.div.appendChild(block);
 			});
 
 			return self.div;

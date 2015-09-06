@@ -7,6 +7,7 @@ html, body {
 
 body {
     background-color: #2C468C;
+    padding: 22px 0 0 0;
 }
 
 body > div {
@@ -58,4 +59,21 @@ div.palette div.swatch {
 
 div.palette div.swatch ~ div.swatch {
     border-left: none;
+}
+
+select[multiple] {
+    height: 100%;
+    display: block;
+    max-height: 224px;
+}
+
+select[multiple] optgroup {
+    display: block;
+}
+
+section.info-panel {
+    position: fixed;
+    left: 0;
+    right: 0;
+    top: 5px;
 }

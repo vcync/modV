@@ -25,18 +25,13 @@
 	
 	
 	/* Handles ALL controls, popup windows and websocket remote controls */
-	// Method must be bound to modV's scope
-	var receiveMessage = function(event, websocket) {
+	modV.prototype.receiveMessage = function(event, websocket) {
 		var self = this;
-
-		console.log('message recieved');
 
 		if(event.origin !== self.options.controlDomain && !websocket) return;
 		var index;
 		if(event.data.type === 'variable') {
 			
-			console.log(event.data);
-
 			// Parse Variable
 			var variable = parseVar(event.data.varType, event.data.payload);
 			
@@ -98,7 +93,6 @@
 					modName: event.data.modName,
 					payload: event.data.payload
 				}, self.options.controlDomain);
-				console.log(event.data);
 			}
 		}
 		
@@ -112,7 +106,6 @@
 					modName: event.data.modName,
 					payload: event.data.payload
 				}, self.options.controlDomain);
-				console.log(event.data);
 			}
 		}
 		
@@ -184,14 +177,33 @@
 				localStorage.setItem('presets', JSON.stringify(self.presets));
 				console.info('Wrote preset with name:', name);
 
-				self.mediaManager.send(JSON.stringify({
-					request: 'save-preset',
-					profile: 'harley',
-					payload: preset,
-					name: name
-				}));
+				if(self.mediaManagerAvailable) {
+					self.mediaManager.send(JSON.stringify({
+						request: 'save-preset',
+						profile: event.data.payload.profile,
+						payload: preset,
+						name: name
+					}));
+				}
 
 				// update preset list in controls window (TODO: THE SAME FOR WEBSOCKET)
+			}
+
+			if(event.data.name === 'savepalette') {
+				var paletteName = event.data.payload.name;
+				
+				console.info('Sending palette with name,', paletteName, ', to media manager to save');
+
+				if(self.mediaManagerAvailable) {
+					self.mediaManager.send(JSON.stringify({
+						request: 'save-palette',
+						profile: event.data.payload.profile,
+						payload: event.data.payload.palette,
+						name: paletteName
+					}));
+				}
+
+				// update palette list in controls window (TODO: THE SAME FOR WEBSOCKET)
 			}
 
 			if(event.data.name === 'loadpreset') {
@@ -207,7 +219,7 @@
 
 	modV.prototype.addMessageHandler = function() {
 		var self = this;
-		window.addEventListener('message', receiveMessage.bind(self), false);
+		window.addEventListener('message', self.receiveMessage.bind(self), false);
 	};
 
 })(module);

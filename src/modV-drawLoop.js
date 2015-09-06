@@ -8,7 +8,6 @@
 
 		if(!self.ready) return;
 		if(self.clearing) {
-			console.log('clearing');
 			self.context.clearRect(0, 0, self.canvas.width, self.canvas.height);
 		}
 		for(var i=0; i < self.modOrder.length; i++) {
@@ -49,6 +48,13 @@
 				self.myFeatures = self.meyda.get(self.meydaFeatures);
 				self.beatDetektorMed.process((timestamp / 1000.0), self.myFeatures.complexSpectrum.real);
 				self.bpm = self.beatDetektorMed.win_bpm_int_lo;
+
+				if(self.bpmHold) {
+					self.bpm = self.bpmHeldAt;
+				} else {
+					self.bpmHeldAt = self.bpm;
+				}
+				
 			} else {
 				self.context.clearRect(0, 0, self.canvas.width, self.canvas.height);
 				self.reallyReady = true;

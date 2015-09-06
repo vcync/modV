@@ -1,6 +1,5 @@
 (function(RJSmodule) {
 	'use strict';
-	/*jslint browser: true */
 
 	/* Setup remote control */
 	modV.prototype.remoteSuccess = false;

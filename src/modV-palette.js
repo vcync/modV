@@ -8,6 +8,9 @@
 	
 			colours = colours || [];
 
+			self.useBPM = false;
+			self.bpmDivison = 1;
+
 			if('init' in callbacks) callbacks.init(colours);
 			
 			timePeriod = Math.round((timePeriod/1000) * 60);
@@ -63,10 +66,17 @@
 					')';
 			}
 			
-			function calculateStep() {		
-				var r1 = colours[currentColour][0];
-				var g1 = colours[currentColour][1];
-				var b1 = colours[currentColour][2];
+			function calculateStep() {
+				var r1, g1, b1;
+				try {	
+					r1 = colours[currentColour][0];
+					g1 = colours[currentColour][1];
+					b1 = colours[currentColour][2];
+				} catch(e) {
+					// try catch because the user may delete the current colour which throws the array and nextIndex out of sync
+					// TODO: fix case where user deletes current colour
+					return;
+				}
 				
 				var nextColour = currentColour + 1;
 				
@@ -88,6 +98,11 @@
 			
 			self.nextStep = function() {
 				
+				if(self.useBPM) {
+					timePeriod = Math.round(callbacks.getBPM() / self.bpmDivison);
+					console.log(timePeriod, currentTime);
+				}
+
 				if(colours.length < 1) {
 					// If there are no colours, return false
 					return false;
@@ -127,15 +142,37 @@
 					var nodeList = Array.prototype.slice.call(this.parentNode.children);
     				var idx = nodeList.indexOf(this);
 
-    				console.log(idx);
-
 					self.removeAtIndex(idx);
 					this.remove();
 				});
 				return swatch;
 			}
+
+			var profilesList = [];
+			var profilesSelect = document.createElement('select');
+
+			self.updateProfiles = function(profiles) {
+
+				profilesList = profiles;
+
+				// Clear select
+				while(profilesSelect.firstChild) {
+					profilesSelect.removeChild(profilesSelect.firstChild);
+				}
+
+				profilesList.forEach(function(profile) {
+
+					var option = document.createElement('option');
+					option.textContent = option.value = profile;
+					profilesSelect.appendChild(option);
+
+				});
+
+			};
 			
 			self.generateControls = function() {
+				if(controlsGenerated) return;
+
 				var paletteDiv = document.createElement('div');
 				paletteDiv.classList.add('palette');
 				
@@ -158,10 +195,96 @@
 					paletteDiv.appendChild(swatch);
 
 				});
-				
+
+				var timerRange = document.createElement('input');
+				timerRange.type = 'range';
+				timerRange.min = 1;
+				timerRange.max = 500;
+				timerRange.value = timePeriod/1000;
+
+				timerRange.addEventListener('input', function() {
+					timePeriod = this.value;
+				});
+
+				controlsDiv.appendChild(timerRange);
+				controlsDiv.appendChild(document.createElement('br'));
+				controlsDiv.appendChild(document.createElement('br'));
 				controlsDiv.appendChild(paletteDiv);
 				controlsDiv.appendChild(colourPicker);
 				controlsDiv.appendChild(addButton);
+
+				controlsDiv.appendChild(document.createElement('hr'));
+
+				var savePaletteButton = document.createElement('button');
+				savePaletteButton.textContent = 'Save Palette to profile';
+
+				var savePaletteName = document.createElement('input');
+				savePaletteName.type = 'text';
+				savePaletteName.placeholder = 'Palette name';
+
+				savePaletteButton.addEventListener('click', function() {
+
+					if('savePalette' in callbacks) callbacks.savePalette(profilesSelect.value, savePaletteName.value, colours);
+
+				});
+
+				controlsDiv.appendChild(profilesSelect);
+				controlsDiv.appendChild(savePaletteName);
+				controlsDiv.appendChild(savePaletteButton);
+				
+				controlsDiv.appendChild(document.createElement('hr'));
+
+				var syncToBPMCheckbox = document.createElement('input');
+				syncToBPMCheckbox.type = 'checkbox';
+				syncToBPMCheckbox.checked = false;
+				syncToBPMCheckbox.addEventListener('change', function() {
+					self.useBPM = this.checked;
+				});
+
+				var syncToBPMLabel = document.createElement('label');
+				syncToBPMLabel.textContent = 'Use detected BPM ';
+				syncToBPMLabel.appendChild(syncToBPMCheckbox);
+
+				controlsDiv.appendChild(syncToBPMLabel);
+
+				var bpmDivisionSpan = document.createElement('span');
+				bpmDivisionSpan.textContent = self.bpmDivison;
+
+				var bpmDivisionRange = document.createElement('input');
+				bpmDivisionRange.type = 'range';
+				bpmDivisionRange.value = 0;
+				bpmDivisionRange.min = 0;
+				bpmDivisionRange.max = 64;
+				bpmDivisionRange.step = 4;
+
+				bpmDivisionRange.addEventListener('input', function() {
+					var val = this.value;
+					if(val === 0) val = 1;
+					self.bpmDivison = this.value;
+					bpmDivisionSpan.textContent = self.bpmDivison;
+
+				});
+
+				var bpmDivisonLabel = document.createElement('label');
+				bpmDivisonLabel.textContent = 'BPM Division ';
+
+				bpmDivisonLabel.appendChild(bpmDivisionRange);
+				bpmDivisonLabel.appendChild(bpmDivisionSpan);
+
+				controlsDiv.appendChild(bpmDivisonLabel);
+
+				var loadPaletteButton = document.createElement('button');
+				loadPaletteButton.textContent = 'Load Palette';
+				// TODO
+				loadPaletteButton.addEventListener('click', function() {
+
+					if('loadPalette' in callbacks) callbacks.savePalette(profilesSelect.value, savePaletteName.value, colours);
+
+				});
+
+				// controlsDiv.appendChild(profilesSelect);
+				// controlsDiv.appendChild(savePaletteName);
+				// controlsDiv.appendChild(savePaletteButton);
 				
 				controlsGenerated = true;
 				return controlsDiv;
@@ -171,6 +294,28 @@
 
 	modV.prototype.Palette = function(colours, timePeriod, callbacks) {
 		var self = this;
+
+		callbacks.loadPalette = function(profile, paletteName) {
+			// TODO
+		};
+
+		callbacks.savePalette = function(profile, paletteName, palette) {
+
+			self.controllerWindow.window.opener.postMessage({
+				type: 'global',
+				name: 'savepalette',
+				payload: {
+					palette: palette,
+					profile: profile,
+					name: paletteName
+				}
+			}, self.options.controlDomain);
+
+		};
+
+		callbacks.getBPM = function() {
+			return self.bpm;
+		};
 		
 		var pal = new Palette(colours, timePeriod, callbacks);
 		var idx = self.palettes.push(pal)-1;
