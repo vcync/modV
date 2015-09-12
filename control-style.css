@@ -72,6 +72,7 @@ select[multiple] optgroup {
 }
 
 section.info-panel {
+    display: none;
     position: fixed;
     left: 0;
     right: 0;

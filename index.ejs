@@ -20,11 +20,12 @@
 			var modVC = new modV({
 				canvas: document.querySelector('canvas'),
 				clearing: false,
-				//remote: 'ws://localhost:8888/ws',
+				remote: 'ws://localhost:8888/ws',
 				previewWindow: true,
 				retina: false
 			});
 
+			modVC.registerMod(demo);
 			modVC.registerMod(slipNslide);
 			modVC.registerMod(relapper);
 			modVC.registerMod(gridStretch);
@@ -45,6 +46,7 @@
 			modVC.registerMod(glitcher);
 			modVC.registerMod(onOff);
 			modVC.registerMod(starField);
+			modVC.registerMod(strobe);
 			modVC.registerMod(badHold);
 			modVC.registerMod(slide);
 			modVC.registerMod(rotoZoom);
