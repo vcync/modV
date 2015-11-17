@@ -1,39 +1,16 @@
-# modV dev branch
-> JavaScript audio visualiser
+#modV - dev branch
+This is the development branch of modV. It's the most up to date version of modV, but may not work as expected - you've been warned.
 
-
+**Forewarning: this has only been tested on Mac OS X**
 
 ## Requirements
 - [node](https://nodejs.org/download/)
 - [grunt-cli](https://github.com/gruntjs/grunt-cli)
 - [Google Chrome desktop](https://www.google.com/chrome/browser/desktop/)
 
-
-## Usage
-Run:
-```
-npm install
-```
-in the modV directory to install the required packages.
-
-Once all packages are installed run either:
-```
-grunt server
-```
-for normal usage 
-
-or 
-```
-grunt no-manager
-```
-to run without the Media Manager.
-
-modV will be available at 
-```
-http://localhost:3131
-```
-
-## Warning
-This is the **dev** branch and has only been tested on Mac OS X.
-
-I'm fairly certain the media manager won't work under Windows, but you're welcome to try and file a bug and or pull request if it doesn't work.
+## Installation
+* Download (clone or zip)
+* Open a terminal, navigate to your downloaded folder (for example; ```cd ~/Downloads/modV-dev/```)
+* Run ```npm install```, this will install modV's required packages
+* Once the installation has finished, run ```grunt server```
+* Open Chrome and go to ```http://localhost:3131```
