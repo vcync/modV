@@ -101,7 +101,7 @@ module.exports = function(grunt) {
       }
     },
 
-    // Creates symlink to media folder in dist becayse we're not gonna copy potentially hundreds of MBs
+    // Creates symlink to media folder in dist because we're not gonna copy potentially hundreds of MBs
     symlink: {
       options: {
         overwrite: false

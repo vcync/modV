@@ -17,7 +17,7 @@ var slipNslide = function() {
 	this.init = function(canvas) {
 		newCanvas2.width = canvas.width;
 		newCanvas2.height = canvas.height;
-	}
+	};
 	
 	var t=0;
 

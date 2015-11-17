@@ -9,6 +9,7 @@
 		if(!self.ready) return;
 		if(self.clearing) {
 			self.context.clearRect(0, 0, self.canvas.width, self.canvas.height);
+			if(self.options.previewWindow) self.previewCtx.clearRect(0, 0, self.previewCanvas.width, self.previewCanvas.height);
 		}
 		for(var i=0; i < self.modOrder.length; i++) {
 			if(typeof self.registeredMods[self.modOrder[i]] === 'object') {
@@ -21,11 +22,11 @@
 
 				if(!self.registeredMods[self.modOrder[i]].info.threejs) {
 
-					self.registeredMods[self.modOrder[i]].draw(self.canvas, self.context, self.amplitudeArray, self.video, meydaOutput, delta);
+					self.registeredMods[self.modOrder[i]].draw(self.canvas, self.context, self.amplitudeArray, self.video, meydaOutput, delta, self.bpm);
 
 				} else {
 
-					self.registeredMods[self.modOrder[i]].draw(self.canvas, self.context, self.amplitudeArray, self.video, meydaOutput, delta);
+					self.registeredMods[self.modOrder[i]].draw(self.canvas, self.context, self.amplitudeArray, self.video, meydaOutput, delta, self.bpm);
 					self.context.drawImage(self.threejs.canvas, 0, 0);
 					self.threejs.renderer.render(self.threejs.scene, self.threejs.camera);
 				}
