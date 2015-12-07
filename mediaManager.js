@@ -123,6 +123,16 @@ server.get('/', function upgradeRoute(req, res, next) {
 				case 'save-preset':
 					console.log('\nAttempting to save preset in profile:', parsed.profile);
 
+					if(parsed.profile.trim() === "") {
+						console.log("Could not save preset, empty name");
+						shed.send(JSON.stringify({
+							'error': 'save-preset',
+							'message': 'Could not save preset',
+							'reason': 'Empty name'
+						}));
+						return;
+					}
+
 					var outputPresetFilename = './media/' + parsed.profile + '/preset/' + parsed.name + '.json';
 
 					fs.writeFile(outputPresetFilename, JSON.stringify(parsed.payload), function(err) {
