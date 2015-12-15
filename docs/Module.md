@@ -70,17 +70,7 @@ var myModule = new modV.Module({
 		author: '2xAA',
 		version: 0.1,
 		meyda: [],
-		controls: [
-			new modV.Control({
-				type: 'range',
-				variable: 'amount', // local variable
-				label: 'Amount',
-				varType: 'int', // int, float
-				min: 1,
-				max: 50,
-				default: 25 // initiates local variable
-			})
-		],
+		controls: [],
 		type: modV.Module2D // modV.Module3D, modV.ModuleShader
 	},
 	init: function(vars) {
