@@ -8,12 +8,16 @@ var concentrics = function() {
 		controls: [
 			{type: 'checkbox', variable: 'rms', label: 'Use RMS', checked: false},
 			{type: 'range', variable: 'intensity', label: 'RMS/ZCR Intensity', min: 0, max: 30, varType: 'int', step: 1},
-
+			{type: 'range', variable: 'spacing', label: 'Circle Spacing', min: 0, max: 100, varType: 'int', step: 1, value: 5},
+			{type: 'range', variable: 'strokeWeight', label: 'Stroke Weight', min: 1, max: 20, value: 1, varType: 'int', step: 1}
 		]
 	};
+	var that = this;
 
 	this.rms = false;
 	this.intensity = 1;
+	this.spacing = 5;
+	this.strokeWeight = 1;
 
 	var Concentric = function(canvas) {
 	    this.x = canvas.width / 2;
@@ -22,10 +26,11 @@ var concentrics = function() {
 	        
 	    this.draw = function(ctx, zcr) {
 	    	ctx.strokeStyle = 'hsl(' + this.hue + ', 50%, 50%)';
+			ctx.lineWidth = that.strokeWeight;
 
 	        for(var i=0; i < zcr; i++) {
 	            ctx.beginPath();
-	            ctx.arc(this.x, this.y, 5*i, 0, 2*Math.PI);
+	            ctx.arc(this.x, this.y, i*that.spacing, 0, 2*Math.PI);
 	            ctx.closePath();
 	            ctx.stroke();
 	        }

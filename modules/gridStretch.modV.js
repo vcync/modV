@@ -44,11 +44,14 @@ var gridStretch = function() {
 
 				if(this.zcr) {
 					analysed = meyda.zcr/10 * this.intensity;
-					randomMovement = Math.random() * meyda.zcr/20;
+					//randomMovement = Math.random() * meyda.zcr/20;
 				} else {
 					analysed = (meyda.rms * 10) * this.intensity;
-					randomMovement = Math.random() * meyda.rms*10;
+					//randomMovement = Math.random() * meyda.rms*10;
 				}
+
+				var moveBackW = (i*sliceWidth/3);
+				var moveBackH = (i*sliceWidth/3);
 
 				newCtx2.drawImage(canvas,
 					i*sliceWidth,
@@ -56,10 +59,10 @@ var gridStretch = function() {
 					sliceWidth,
 					sliceHeight,
 
-					i*sliceWidth - ((analysed + randomMovement) /2),
-					j*sliceHeight - ((analysed + randomMovement) /2),
-					sliceWidth + analysed + randomMovement,
-					sliceHeight + analysed + randomMovement
+					i*sliceWidth - (analysed /2),
+					j*sliceHeight - (analysed /2),
+					sliceWidth + analysed,
+					sliceHeight + analysed
 				);
 
 			}

@@ -20,8 +20,8 @@
 			var modVC = new modV({
 				canvas: document.querySelector('canvas'),
 				clearing: false,
-				remote: 'ws://localhost:8888/ws',
-				previewWindow: true,
+				//remote: 'ws://localhost:8888/ws',
+				previewWindow: false,
 				retina: false
 			});
 
@@ -34,6 +34,7 @@
 			modVC.registerMod(mirror);
 			modVC.registerMod(waveform);
 			modVC.registerMod(concentrics);
+			modVC.registerMod(squares);
 			modVC.registerMod(xorcles);
 			modVC.registerMod(stretch);
 			modVC.registerMod(cacomixle);
