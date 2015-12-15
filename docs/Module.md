@@ -4,7 +4,7 @@ A modV Module is a file with a specific structure to create a visual effect.
 
 Modules are structured like so:
 
-```
+```JavaScript
 var moduleName = function() {
 	this.info = {
 		name: 'moduleName',
@@ -30,7 +30,7 @@ var moduleName = function() {
 ###this.info
 Contains the information about the module.
 
-```
+```JavaScript
 this.info = {
 	name: 'moduleName', 	// String: must match the variable you use for the module
 	author: '2xAA', 		// String: the module author's name
@@ -43,7 +43,7 @@ this.info = {
 ###this.init
 Function called on module registration.
 
-```
+```JavaScript
 this.init = function(canvas) {
 	canvas; // HTMLCanvasElement: the main canvas output by modV
 };
@@ -51,7 +51,7 @@ this.init = function(canvas) {
 ###this.draw
 Function called within modV's draw loop (attempts 60fps)
 
-```
+```JavaScript
 this.draw = function(canvas, ctx, audio, video, meyda) {
 	canvas; // HTMLCanvasElement: the main canvas output by modV
 	ctx;	// CanvasRenderingContext2D: the 2D rendering context for the drawing surface of modV's main canvas
@@ -63,7 +63,7 @@ this.draw = function(canvas, ctx, audio, video, meyda) {
 
 ## Proposed modV v1.0 Module spec
 
-```
+```JavaScript
 var myModule = new modV.Module({
 	info: {
 		name: 'Default Module',
