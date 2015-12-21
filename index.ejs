@@ -34,7 +34,7 @@
 			modVC.registerMod(mirror);
 			modVC.registerMod(waveform);
 			modVC.registerMod(concentrics);
-			modVC.registerMod(squares);
+			// modVC.registerMod(squares);
 			modVC.registerMod(xorcles);
 			modVC.registerMod(stretch);
 			modVC.registerMod(cacomixle);
@@ -58,6 +58,54 @@
 			modVC.registerMod(circles);
 			modVC.registerMod(spazulator5000);
 			modVC.registerMod(perl);
+
+			var myModule = new modVC.Module2D({
+				info: {
+					name: 'Default Module',
+					author: '2xAA',
+					version: 0.1,
+					meyda: ['buffer'],
+					controls: []
+				},
+				init: function() {
+			 		
+			    	this.hue = 0;
+
+			    	// map() from Processing
+					Math.map = function(value, low1, high1, low2, high2) {
+						return low2 + (high2 - low2) * (value - low1) / (high1 - low1);
+					};
+					
+				},
+				draw: function(can, ctx, vid, features, meyda, delta, bpm) {
+					if(this.hue > 360) this.hue=0;
+					this.hue++;
+
+					var ampArr = features.buffer;
+					ampArr = meyda.windowing(ampArr, 'hanning');
+
+					ctx.strokeStyle = 'hsl(' + this.hue + ', 100%, 50%)';
+					ctx.beginPath();
+					for (var i = 0; i < ampArr.length-1; i++) {
+						var width = Math.round(Math.map(i, 0, ampArr.length-1, 0, can.width));
+						var newWidth = Math.round(Math.map(i+1, 0, ampArr.length-1, 0, can.width));
+						var y = can.height/2 - (can.height * ampArr[i]) / (2);
+						y = Math.round(y);
+						var yNext = can.height/2 - (can.height * ampArr[i+1]) / (2);
+						yNext = Math.round(yNext);
+
+						ctx.moveTo(width, y);
+						ctx.lineTo(newWidth, yNext);
+					}
+					ctx.closePath();
+					ctx.stroke();
+					
+
+				}
+			});
+
+			modVC.register(myModule);
+
 			modVC.start();
 		</script>
 	</body>
