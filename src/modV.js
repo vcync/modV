@@ -1,4 +1,4 @@
-(function(RJSmodule) {
+(function(bModule) {
 	'use strict';
 	/*jslint browser: true */
 	
@@ -15,6 +15,12 @@
 	Array.contains = function(needle, arrhaystack) {
 		return (arrhaystack.indexOf(needle) > -1);
 	};
+
+	navigator.getUserMedia = navigator.getUserMedia 		||
+							 navigator.webkitGetUserMedia	||
+							 navigator.mozGetUserMedia		||
+							 navigator.msGetUserMedia		||
+							 navigator.oGetUserMedia;
 
 	var modV = function(options) {
 		var self = this,
@@ -36,8 +42,6 @@
 
 		// Attach message handler for sockets and windows
 		self.addMessageHandler();
-
-		self.amplitudeArray = null;
 
 		self.gainNode = null;
 		self.meydaSupport = false;
@@ -78,13 +82,6 @@
 					self.canvas.style.width = width + 'px';
 					self.canvas.style.height = height + 'px';
 				}
-			}
-
-			if(typeof window.THREE == 'object') {
-				self.threejs.renderer.setSize(window.innerWidth, window.innerHeight);
-				self.threejs.camera.aspect = window.innerWidth / window.innerHeight;
-				self.threejs.camera.updateProjectionMatrix();
-				self.threejs.renderer.setSize(self.canvas.width, self.canvas.height);
 			}
 
 			for(var mod in self.registeredMods) {
@@ -332,8 +329,41 @@
 		};
 
 		/* Usermedia access */
-		/* Turn all this stuff off or we'll get a really bad audio input when also using video ~~trust me~~ */
-		var contraints = {
+
+		// Store all available Media inputs
+		self.mediaStreamSources = {
+			video: [],
+			audio: []
+		};
+
+		function scanMediaStreamSources(callback) {
+
+			MediaStreamTrack.getSources(function(sources) {
+				sources.forEach(function(source) {
+
+					self.mediaStreamSources.video = [];
+					self.mediaStreamSources.audio = [];
+
+					if(source.kind == 'audio') {
+						self.mediaStreamSources.audio.push(source);
+					} else {
+						self.mediaStreamSources.video.push(source);
+					}
+
+				});
+				if(callback) callback(self.mediaStreamSources);
+			});
+
+		}
+
+		// Create function to use later on
+		self.rescanMediaStreamSources = function(callback) {
+			scanMediaStreamSources(callback);
+		};
+
+		// Scan Stream sources and setup User Media
+		scanMediaStreamSources(function() {
+			var constraints = {
 				audio: {
 					optional: [
 						{googNoiseSuppression: false},
@@ -344,8 +374,12 @@
 						{googHighpassFilter: false},
 						{googTypingNoiseDetection: false}
 					]
-				}/*,
-				video: {
+				}
+			};
+
+			/* If there is a video stream source, add the video permission */
+			if(self.mediaStreamSources.video.length > 0) {
+				constraints.video = {
 					optional: [
 						{googNoiseSuppression: false},
 						{googEchoCancellation: false},
@@ -355,18 +389,15 @@
 						{googHighpassFilter: false},
 						{googTypingNoiseDetection: false}
 					]
-				}*/
-		};
+				};
+			}
 
-		navigator.getUserMedia = navigator.getUserMedia 	||
-							 navigator.webkitGetUserMedia	||
-							 navigator.mozGetUserMedia		||
-							 navigator.msGetUserMedia		||
-							 navigator.oGetUserMedia;
-		
-		/* Ask for webcam and audio access  */
-		navigator.getUserMedia(contraints, function(stream) {
-			
+			/* Ask for user media access */
+			navigator.getUserMedia(constraints, userMediaSuccess, userMediaError);
+		});
+
+		function userMediaSuccess(stream) {
+
 			// Create video stream
 			self.video.src = window.URL.createObjectURL(stream);
 			
@@ -376,56 +407,37 @@
 			// Create new Audio Analyser
 			analyser = aCtx.createAnalyser();
 			
-			// Create a script processor
-			javascriptNode = aCtx.createScriptProcessor(sampleSize, 1, 1);
-			
-			// Tell the processor to start analysing when we have activity
-			javascriptNode.onaudioprocess = function () {
-				analyser.getByteTimeDomainData(self.amplitudeArray);
-			};
-			
 			// Create a gain node
 			self.gainNode = aCtx.createGain();
 			
 			// Mute the node
 			self.gainNode.gain.value = 0;
 			
-			// Create the audio input stream
+			// Create the audio input stream (audio)
 			microphone = aCtx.createMediaStreamSource(stream);
+
+			// Connect the audio stream to the analyser (this is a passthru) (audio->(analyser))
+			microphone.connect(analyser);
 			
-			// Connect the audio stream to the gain node (audio->gain)
+			// Connect the audio stream to the gain node (audio->(analyser)->gain)
 			microphone.connect(self.gainNode);
 			
-			// Connect the gain node to the output (audio->gain->destination)
+			// Connect the gain node to the output (audio->(analyser)->gain->destination)
 			self.gainNode.connect(aCtx.destination);
 			
 			// If meyda is about, use it
 			if(self.meydaSupport) self.meyda = new Meyda(aCtx, microphone, 512);
 			
-			// Connect the audio stream to the analyser (this is a passthru) (audio->(analyser)->gain->destination)
-			microphone.connect(analyser);
-			
-			// Connect the analyser to the JS node
-			analyser.connect(javascriptNode);
-			
-			// Connect the JS node to the destination
-			javascriptNode.connect(aCtx.destination);
-			
-			// Create a new Uint8Array for the analysis
-			FFTData = new Uint8Array(analyser.frequencyBinCount);
-			
-			// TODO: More friendly name?
-			self.amplitudeArray = FFTData;
-			
 			// Tell the rest of the script we're all good.
 			self.ready = true;
-		}, function() {
-			// o noes
+		}
+
+		function userMediaError() {
 			console.log('Error setting up WebAudio - please make sure you\'ve allowed modV access.');
-		});
+		}
 
 	};
 
-	module.exports = modV;
+	bModule.exports = modV;
 	window.modV = modV;
 })(module);
