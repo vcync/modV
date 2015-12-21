@@ -22,11 +22,11 @@
 
 				if(!self.registeredMods[self.modOrder[i]].info.threejs) {
 
-					self.registeredMods[self.modOrder[i]].draw(self.canvas, self.context, self.amplitudeArray, self.video, meydaOutput, delta, self.bpm);
+					self.registeredMods[self.modOrder[i]].draw(self.canvas, self.context, self.video, meydaOutput, self.meyda, delta, self.bpm);
 
 				} else {
 
-					self.registeredMods[self.modOrder[i]].draw(self.canvas, self.context, self.amplitudeArray, self.video, meydaOutput, delta, self.bpm);
+					self.registeredMods[self.modOrder[i]].draw(self.canvas, self.context, self.video, meydaOutput, self.meyda, delta, self.bpm);
 					self.context.drawImage(self.threejs.canvas, 0, 0);
 					self.threejs.renderer.render(self.threejs.scene, self.threejs.camera);
 				}
