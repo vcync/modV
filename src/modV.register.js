@@ -5,6 +5,7 @@
 	modV.prototype.register = function(Module) {
 		var self = this;
 		
+		// Handle Module2D
 		if(Module instanceof self.Module2D) {
 			console.info('Register: Module2D');
 
@@ -25,9 +26,12 @@
 
 			// Parse Controls
 			// Not necessary any more.
-			// New UI will parse controls on creation.
+			// New UI will parse controls on layer creation.
 
 			// Add to registry
+			// TODO: rename to 'registry'
+			// TODO: make registry an object containing Module2D,
+			// 		 Module3D and ModuleShader object stores
 			self.registeredMods[name] = Module;
 
 			// TODO: remove setModOrder and modOrder
