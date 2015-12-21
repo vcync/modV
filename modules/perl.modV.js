@@ -336,7 +336,7 @@ var perl = function() {
 	}
 
 
-	this.draw = function(canvas, ctx, amp, cam, meyda) {
+	this.draw = function(canvas, ctx, cam, meyda) {
 
 		for(var i = 0; i < numParticles; i++) {
 			particles[i].update(ctx, meyda);

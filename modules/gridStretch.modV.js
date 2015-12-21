@@ -32,7 +32,7 @@ var gridStretch = function() {
 		newCanvas2.height = canvas.height;
 	};
 
-	this.draw = function(canvas, ctx, audio, video, meyda) {
+	this.draw = function(canvas, ctx, video, meyda) {
 
 		var sliceWidth = canvas.width/this.countX,
 			sliceHeight = canvas.height/this.countY;
