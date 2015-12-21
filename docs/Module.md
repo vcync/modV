@@ -4,7 +4,7 @@ A modV Module is a file with a specific structure to create a visual effect.
 
 Modules are structured like so:
 
-```JavaScript
+```
 var moduleName = function() {
 	this.info = {
 		name: 'moduleName',
@@ -30,7 +30,7 @@ var moduleName = function() {
 ###this.info
 Contains the information about the module.
 
-```JavaScript
+```
 this.info = {
 	name: 'moduleName', 	// String: must match the variable you use for the module
 	author: '2xAA', 		// String: the module author's name
@@ -43,7 +43,7 @@ this.info = {
 ###this.init
 Function called on module registration.
 
-```JavaScript
+```
 this.init = function(canvas) {
 	canvas; // HTMLCanvasElement: the main canvas output by modV
 };
@@ -51,7 +51,7 @@ this.init = function(canvas) {
 ###this.draw
 Function called within modV's draw loop (attempts 60fps)
 
-```JavaScript
+```
 this.draw = function(canvas, ctx, audio, video, meyda) {
 	canvas; // HTMLCanvasElement: the main canvas output by modV
 	ctx;	// CanvasRenderingContext2D: the 2D rendering context for the drawing surface of modV's main canvas
@@ -61,17 +61,16 @@ this.draw = function(canvas, ctx, audio, video, meyda) {
 };
 ```
 
-## Proposed modV v1.0 Module spec
+## Proposed modV v1.0 Module2D spec (rev 3)
 
-```JavaScript
-var myModule = new modV.Module({
+```
+var myModule = new modV.Module2D({
 	info: {
 		name: 'Default Module',
 		author: '2xAA',
 		version: 0.1,
 		meyda: [],
-		controls: [],
-		type: modV.Module2D // modV.Module3D, modV.ModuleShader
+		controls: []
 	},
 	init: function(vars) {
  		// Set up local variables here
@@ -132,3 +131,37 @@ Cons:
 * More Syntax
   
 Reference: [http://jsfiddle.net/buxq312o/12/](http://jsfiddle.net/buxq312o/12/)
+
+## Proposed modV v1.0 ModuleShader spec (rev 0)
+*in progress*
+
+```
+var myModuleShader = new modV.ModuleShader({
+	info: {
+		name: 'Default Shader',
+		author: '2xAA',
+		version: 0.1,
+		meyda: [], // returned variables passed to the shader individually as uniforms
+		controls: [], // variabled passed to the shader individually as uniforms
+		uniforms: {} // Three.JS uniforms
+	},
+	shaderFile: "/Default Shader/shader.html" // path to HTML file within modules directory with shader script tags
+});
+
+modV.register(myModuleShader);
+
+```
+
+* Think about how the main modV Canvas texture will be passed to shaders
+* Do ModuleShaders need a draw/update loop?
+* Would it be wise to have more than one shader type?
+  * Shaders for 2D and 3D
+  * 2D shaders taking in the main canvas and writing back (2D shaders called ModuleShader)
+  * 3D shaders being attachable to 3D Modules (3D shaders called 3DShader)
+
+## Proposed modV v1.0 Module3D spec (rev 0)
+
+```
+// TODO
+
+```
