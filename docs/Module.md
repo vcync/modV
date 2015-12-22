@@ -84,7 +84,7 @@ var myModule = new modV.Module2D({
 	},
 	draw: function(vars) {
 		// Draw loop
-		if(this.hue > 360) hue = 0;
+		if(this.hue > 360) this.hue = 0;
 		this.hue++;
 		
 		this.customFunction();
