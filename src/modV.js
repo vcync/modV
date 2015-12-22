@@ -286,6 +286,32 @@
 			resize(false, width, height);
 		};
 
+		// Shader handling
+		self.shaderEnv = {};
+
+		if(window.THREE) {
+			self.shaderEnv.scene = new THREE.Scene();
+			self.shaderEnv.renderer = new THREE.WebGLRenderer({
+				antialias: true,
+				alpha: true
+			});
+
+			self.shaderEnv.renderer.setPixelRatio( window.devicePixelRatio );
+			self.shaderEnv.renderer.setSize(window.innerWidth, window.innerHeight);
+
+			self.shaderEnv.aspect = window.innerWidth / window.innerHeight;
+			self.shaderEnv.depth = 12;
+
+			self.shaderEnv.camera = new THREE.OrthographicCamera(
+				-self.shaderEnv.depth * self.shaderEnv.aspect,
+				self.shaderEnv.depth * self.shaderEnv.aspect,
+				self.shaderEnv.depth, - self.shaderEnv.depth,
+				1,
+				1000
+			);
+			self.shaderEnv.camera.position.z = 10;
+		}
+
 		self.start = function() {
 			if(typeof self.canvas !== 'object') {
 				console.error('modV: Canvas not set');
