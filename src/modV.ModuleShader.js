@@ -33,31 +33,14 @@
 		if(!('author' in settings.info)) throw new ModuleError('Module had no author in settings.info');
 		// Check for info.version
 		if(!('version' in settings.info)) throw new ModuleError('Module had no version in settings.info');
+		// Check for shaderFile
+		if(!('shaderFile' in settings)) throw new ModuleError('Module had no path to shader in settings.shaderFile');
 
 		// Settings passed, expose self.info
 		self.info = settings.info;
 
-		// Create uniforms
-		for(var key in self.uniforms) {
-			
-		}
-		
-		// Create material, geometry and mesh
-		var geometry = new THREE.PlaneBufferGeometry( 10, 10, 32 );
-
-		self.material = new THREE.ShaderMaterial({
-			uniforms: {
-				modVcanvas: {
-					type: "t",
-					value: texture
-				}
-			},
-			vertexShader: document.getElementById('vertexshader').textContent,
-			fragmentShader: document.getElementById('fragmentshader').textContent,
-			side: THREE.DoubleSide
-		});
-
-		self.mesh = new THREE.Mesh(geometry, shaderMaterial);
+		// Settings passed, expose self.shaderFile
+		self.shaderFile = settings.shaderFile;
 	};
 
 })(module);
