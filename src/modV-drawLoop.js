@@ -12,7 +12,22 @@
 			if(self.options.previewWindow) self.previewCtx.clearRect(0, 0, self.previewCanvas.width, self.previewCanvas.height);
 		}
 		for(var i=0; i < self.modOrder.length; i++) {
-			if(typeof self.registeredMods[self.modOrder[i]] === 'object') {
+			var Module = self.registeredMods[self.modOrder[i]];
+
+			if(Module instanceof self.ModuleShader) {
+
+				// This is a shader, render
+				self.shaderEnv.renderer.render(self.shaderEnv.scene, self.shaderEnv.camera);
+
+				// Tell texture it's due for an update
+				self.shaderEnv.texture.needsUpdate = true;
+
+				// Copy Shader canvas to main canvas
+				self.context.globalAlpha = 0.2; // TEST
+				//self.context.drawImage(self.shaderEnv.renderer.domElement, 0, 0, self.canvas.width, self.canvas.height);
+				self.context.globalAlpha = 1; // TEST
+
+			} else if(typeof self.registeredMods[self.modOrder[i]] === 'object') {
 
 				if(self.registeredMods[self.modOrder[i]].info.disabled || self.registeredMods[self.modOrder[i]].info.alpha === 0) continue;
 				self.context.save();
