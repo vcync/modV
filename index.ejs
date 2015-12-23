@@ -23,7 +23,7 @@
 				clearing: false,
 				//remote: 'ws://localhost:8888/ws',
 				previewWindow: false,
-				retina: false
+				retina: true
 			});
 
 			modVC.registerMod(demo);
@@ -70,9 +70,9 @@
 				},
 				init: function() {
 			 		
-			    	this.hue = 0;
+					this.hue = 0;
 
-			    	// map() from Processing
+					// map() from Processing
 					Math.map = function(value, low1, high1, low2, high2) {
 						return low2 + (high2 - low2) * (value - low1) / (high1 - low1);
 					};
@@ -106,6 +106,20 @@
 			});
 
 			modVC.register(myModule);
+
+			var myModuleShader = new modVC.ModuleShader({
+				info: {
+					name: 'Default Shader',
+					author: '2xAA',
+					version: 0.1,
+					meyda: [], // returned variables passed to the shader individually as uniforms
+					controls: [], // variabled passed to the shader individually as uniforms
+					uniforms: {} // Three.JS uniforms
+				},
+				shaderFile: "/Default Shader/shader.html" // path to HTML file within modules directory with shader script tags
+			});
+
+			modVC.register(myModuleShader);
 
 			modVC.start();
 		</script>
