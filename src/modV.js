@@ -16,6 +16,22 @@
 		return (arrhaystack.indexOf(needle) > -1);
 	};
 
+	// Get HTML document request
+	window.getDocument = function(url, callback) {
+
+		var xhr = new XMLHttpRequest();
+
+		xhr.onload = function() {
+			console.log('response', xhr);
+			callback(xhr.responseXML);
+		};
+
+		xhr.open("GET", url);
+		xhr.responseType = "document";
+		xhr.send();
+
+	};
+
 	navigator.getUserMedia = navigator.getUserMedia 		||
 							 navigator.webkitGetUserMedia	||
 							 navigator.mozGetUserMedia		||
@@ -97,14 +113,6 @@
 			}
 			self.canvas = el;
 			self.context = el.getContext('2d');
-
-			if(typeof window.THREE === 'object') {
-				self.threejs.canvas = document.createElement('canvas');
-
-				self.threejs.renderer = new THREE.WebGLRenderer({canvas: self.threejs.canvas, autoClear: false, alpha: true});
-				self.threejs.renderer.setSize( window.innerWidth, window.innerHeight );
-				self.threejs.renderer.setClearColor(0x000000, 0);
-			}
 
 			window.addEventListener('resize', resize, false);
 			resize(false, window.innerWidth, window.innerHeight);
@@ -300,7 +308,7 @@
 			self.shaderEnv.renderer.setSize(window.innerWidth, window.innerHeight);
 
 			self.shaderEnv.aspect = window.innerWidth / window.innerHeight;
-			self.shaderEnv.depth = 12;
+			self.shaderEnv.depth = 5.5;
 
 			self.shaderEnv.camera = new THREE.OrthographicCamera(
 				-self.shaderEnv.depth * self.shaderEnv.aspect,
@@ -310,6 +318,15 @@
 				1000
 			);
 			self.shaderEnv.camera.position.z = 10;
+
+			self.shaderEnv.texture = new THREE.Texture(self.canvas);
+			self.shaderEnv.texture.minFilter = THREE.LinearFilter;//THREE.NearestFilter;
+
+			// Create a light
+			self.shaderEnv.ambientLight = new THREE.AmbientLight( 0xffffff );
+			self.shaderEnv.scene.add( self.shaderEnv.ambientLight );
+
+			document.body.appendChild(self.shaderEnv.renderer.domElement);
 		}
 
 		self.start = function() {
