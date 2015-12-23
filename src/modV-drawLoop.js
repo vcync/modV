@@ -23,9 +23,9 @@
 				self.shaderEnv.texture.needsUpdate = true;
 
 				// Copy Shader canvas to main canvas
-				self.context.globalAlpha = 0.2; // TEST
-				//self.context.drawImage(self.shaderEnv.renderer.domElement, 0, 0, self.canvas.width, self.canvas.height);
-				self.context.globalAlpha = 1; // TEST
+				//self.context.globalAlpha = 0.2; // TEST
+				self.context.drawImage(self.shaderEnv.renderer.domElement, 0, 0, self.canvas.width, self.canvas.height);
+				//self.context.globalAlpha = 1; // TEST
 
 			} else if(typeof self.registeredMods[self.modOrder[i]] === 'object') {
 

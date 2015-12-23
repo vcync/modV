@@ -74,22 +74,33 @@
 				var frag = xhrDocument.querySelector('script[type="x-shader/x-fragment"]').textContent;
 
 				// Create material, geometry and mesh
-				var geometry = new THREE.PlaneBufferGeometry( 10, 10, 32 );
 
-				Module.material = new THREE.ShaderMaterial({
-					uniforms: Module.info.uniforms,
-					vertexShader: vert,
-					fragmentShader: frag,
-					//side: THREE.DoubleSide // Probably not needed
+				// Calculate width
+				var masterWidth = self.canvas.width;
+				var masterHeight = self.canvas.height;
+				var masterRatio = masterWidth/masterHeight;
+
+				console.log(10 * masterRatio);
+
+				var geometry = new THREE.PlaneBufferGeometry( masterRatio * 10, 10, 32 );
+
+				// Module.material = new THREE.ShaderMaterial({
+				// 	uniforms: Module.info.uniforms,
+				// 	vertexShader: vert,
+				// 	fragmentShader: frag,
+				// 	//side: THREE.DoubleSide // Probably not needed
+				// });
+
+				Module.material = new THREE.MeshPhongMaterial({
+					color: 0x156289,
+					emissive: 0x072534,
+					side: THREE.DoubleSide,
+					shading: THREE.FlatShading,
+					map: self.shaderEnv.texture,
 				});
 
-				// Module.material = new THREE.MeshPhongMaterial({
-				// 	color: 0x156289,
-				// 	emissive: 0x072534,
-				// 	side: THREE.DoubleSide,
-				// 	shading: THREE.FlatShading,
-				// 	map: self.shaderEnv.texture
-				// });
+				self.shaderEnv.texture.wrapS = self.shaderEnv.texture.wrapT = THREE.ClampToEdgeWrapping;
+            	self.shaderEnv.texture.repeat.set(1,1);
 
 				//Module.material = new THREE.MeshBasicMaterial( { map: self.shaderEnv.texture } );
 

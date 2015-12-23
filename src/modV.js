@@ -308,7 +308,7 @@
 			self.shaderEnv.renderer.setSize(window.innerWidth, window.innerHeight);
 
 			self.shaderEnv.aspect = window.innerWidth / window.innerHeight;
-			self.shaderEnv.depth = 5.5;
+			self.shaderEnv.depth = 5;
 
 			self.shaderEnv.camera = new THREE.OrthographicCamera(
 				-self.shaderEnv.depth * self.shaderEnv.aspect,
@@ -326,7 +326,7 @@
 			self.shaderEnv.ambientLight = new THREE.AmbientLight( 0xffffff );
 			self.shaderEnv.scene.add( self.shaderEnv.ambientLight );
 
-			document.body.appendChild(self.shaderEnv.renderer.domElement);
+			//document.body.appendChild(self.shaderEnv.renderer.domElement);
 		}
 
 		self.start = function() {
