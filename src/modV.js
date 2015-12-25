@@ -297,37 +297,7 @@
 		// Shader handling
 		self.shaderEnv = {};
 
-		if(window.THREE) {
-			self.shaderEnv.scene = new THREE.Scene();
-			self.shaderEnv.renderer = new THREE.WebGLRenderer({
-				antialias: true,
-				alpha: true
-			});
-
-			self.shaderEnv.renderer.setPixelRatio( window.devicePixelRatio );
-			self.shaderEnv.renderer.setSize(window.innerWidth, window.innerHeight);
-
-			self.shaderEnv.aspect = window.innerWidth / window.innerHeight;
-			self.shaderEnv.depth = 5.5;
-
-			self.shaderEnv.camera = new THREE.OrthographicCamera(
-				-self.shaderEnv.depth * self.shaderEnv.aspect,
-				self.shaderEnv.depth * self.shaderEnv.aspect,
-				self.shaderEnv.depth, - self.shaderEnv.depth,
-				1,
-				1000
-			);
-			self.shaderEnv.camera.position.z = 10;
-
-			self.shaderEnv.texture = new THREE.Texture(self.canvas);
-			self.shaderEnv.texture.minFilter = THREE.LinearFilter;//THREE.NearestFilter;
-
-			// Create a light
-			self.shaderEnv.ambientLight = new THREE.AmbientLight( 0xffffff );
-			self.shaderEnv.scene.add( self.shaderEnv.ambientLight );
-
-			document.body.appendChild(self.shaderEnv.renderer.domElement);
-		}
+		self.shaderSetup();
 
 		self.start = function() {
 			if(typeof self.canvas !== 'object') {

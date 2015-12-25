@@ -46,6 +46,11 @@
 
 		// Handle ModuleShader
 		if(Module instanceof self.ModuleShader) {
+
+			// TODO: rewrite almost all of this registration process.
+			// TODO: figure out best way to switch shaders
+			//		 gl.useProgram() probably
+
 			console.info('Register: ModuleShader');
 
 			// Set meta
