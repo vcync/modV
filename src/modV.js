@@ -296,7 +296,6 @@
 
 		// Shader handling
 		self.shaderEnv = {};
-
 		self.shaderSetup();
 
 		self.start = function() {

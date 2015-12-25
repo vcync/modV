@@ -29,6 +29,7 @@
 				// Copy Shader Canvas to Main Canvas
 				self.context.drawImage(self.shaderEnv.renderer.domElement, 0, 0, self.canvas.width, self.canvas.height);
 
+
 			} else if(typeof self.registeredMods[self.modOrder[i]] === 'object') {
 
 				if(self.registeredMods[self.modOrder[i]].info.disabled || self.registeredMods[self.modOrder[i]].info.alpha === 0) continue;
