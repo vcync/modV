@@ -14,7 +14,20 @@
 		for(var i=0; i < self.modOrder.length; i++) {
 			var Module = self.registeredMods[self.modOrder[i]];
 
+			if(Module.info.disabled || Module.info.alpha === 0) continue;
+
 			if(Module instanceof self.ModuleShader) {
+
+				console.log('looping on shader', Module.info.name);
+
+				// Switch program
+				if(Module.programIndex !== self.shaderEnv.activeProgram) {
+					console.log('switching from program' , self.shaderEnv.activeProgram, 'to', Module.programIndex);
+
+					self.shaderEnv.activeProgram = Module.programIndex;
+
+					self.shaderEnv.gl.useProgram(self.shaderEnv.programs[Module.programIndex]);
+				}
 
 				// Copy Main Canvas to Shader Canvas 
 				self.shaderEnv.texture = self.shaderEnv.gl.texImage2D(
@@ -26,13 +39,21 @@
 					self.canvas
 				);
 
+				// Render
+				self.shaderEnv.render();
+
 				// Copy Shader Canvas to Main Canvas
-				self.context.drawImage(self.shaderEnv.renderer.domElement, 0, 0, self.canvas.width, self.canvas.height);
+				self.context.drawImage(
+					self.shaderEnv.canvas,
+					0,
+					0,
+					self.canvas.width,
+					self.canvas.height
+				);
 
 
 			} else if(typeof self.registeredMods[self.modOrder[i]] === 'object') {
 
-				if(self.registeredMods[self.modOrder[i]].info.disabled || self.registeredMods[self.modOrder[i]].info.alpha === 0) continue;
 				self.context.save();
 				self.context.globalAlpha = self.registeredMods[self.modOrder[i]].info.alpha;
 

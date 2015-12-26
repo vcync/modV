@@ -47,10 +47,6 @@
 		// Handle ModuleShader
 		if(Module instanceof self.ModuleShader) {
 
-			// TODO: rewrite almost all of this registration process.
-			// TODO: figure out best way to switch shaders
-			//		 gl.useProgram() probably
-
 			console.info('Register: ModuleShader');
 
 			// Set meta
@@ -78,42 +74,42 @@
 				var vert = xhrDocument.querySelector('script[type="x-shader/x-vertex"]').textContent;
 				var frag = xhrDocument.querySelector('script[type="x-shader/x-fragment"]').textContent;
 
-				// Create material, geometry and mesh
+				var gl = self.shaderEnv.gl; // set reference to self.shaderEnv.gl
+						
+				// Compile shaders and create program
+				var vertexShader;
+				var fragmentShader;
 
-				// Calculate width
-				var masterWidth = self.canvas.width;
-				var masterHeight = self.canvas.height;
-				var masterRatio = masterWidth/masterHeight;
+				vertexShader = gl.createShader(gl.VERTEX_SHADER);
+				gl.shaderSource(vertexShader, vert);
+				gl.compileShader(vertexShader);
 
-				console.log(10 * masterRatio);
+				var compiled = gl.getShaderParameter(vertexShader, gl.COMPILE_STATUS);
+				console.log('Vertex Shader compiled successfully: ' + compiled);
+				var compilationLog = gl.getShaderInfoLog(vertexShader);
+				console.log('Vertex Shader compiler log: ' + compilationLog);
+	 
+	  			fragmentShader = gl.createShader(gl.FRAGMENT_SHADER);
+				gl.shaderSource(fragmentShader, frag);
+				gl.compileShader(fragmentShader);
 
-				var geometry = new THREE.PlaneBufferGeometry( masterRatio * 10, 10, 32 );
+				compiled = gl.getShaderParameter(fragmentShader, gl.COMPILE_STATUS);
+				console.log('Fragment Shader compiled successfully: ' + compiled);
+				compilationLog = gl.getShaderInfoLog(fragmentShader);
+				console.log('Fragment Shader compiler log: ' + compilationLog);
 
-				// Module.material = new THREE.ShaderMaterial({
-				// 	uniforms: Module.info.uniforms,
-				// 	vertexShader: vert,
-				// 	fragmentShader: frag,
-				// 	//side: THREE.DoubleSide // Probably not needed
-				// });
+				Module.program = gl.createProgram();
+				var program = Module.program;
 
-				Module.material = new THREE.MeshPhongMaterial({
-					color: 0x156289,
-					emissive: 0x072534,
-					side: THREE.DoubleSide,
-					shading: THREE.FlatShading,
-					map: self.shaderEnv.texture,
-				});
+				gl.attachShader(program, vertexShader);
+				gl.attachShader(program, fragmentShader);
+				gl.linkProgram(program);	
+				gl.useProgram(program);
 
-				self.shaderEnv.texture.wrapS = self.shaderEnv.texture.wrapT = THREE.ClampToEdgeWrapping;
-            	self.shaderEnv.texture.repeat.set(1,1);
+				Module.programIndex = self.shaderEnv.programs.push(program)-1;
 
-				//Module.material = new THREE.MeshBasicMaterial( { map: self.shaderEnv.texture } );
-
-				// Create mesh
-				Module.mesh = new THREE.Mesh(geometry, Module.material);
-
-				// Add mesh to scene
-				self.shaderEnv.scene.add(Module.mesh);
+				// TEST IMPLEMENT
+				self.shaderEnv.resize(Module.programIndex);
 
 				// Add to registry
 				// TODO: rename to 'registry'
@@ -123,6 +119,9 @@
 
 				// TODO: remove setModOrder and modOrder
 				self.setModOrder(name, Object.size(self.registeredMods));
+
+				// TEST
+				self.registeredMods[name].info.disabled = false;
 
 				console.log(Module);
 

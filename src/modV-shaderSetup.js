@@ -9,26 +9,44 @@
 		self.shaderEnv.gl = null;
 		self.shaderEnv.canvas = null;
 		self.shaderEnv.texture = null;
+		self.shaderEnv.activeProgram = 0;
 
 		var buffer;
 		var gl; // reference to self.shaderEnv.gl
+		var programs = self.shaderEnv.programs; // reference
+		var canvas; // refrence to self.shaderEnv.gl
 
-		function resize() {
+		function resize(programIndex) {
+
+			var  currentProgramIndex;
+
+			if(typeof programIndex !== 'undefined') {
+
+				currentProgramIndex = self.shaderEnv.activeProgram;
+				self.shaderEnv.activeProgram = programIndex;
+				gl.useProgram(programs[programIndex]);
+			}
 
 			// TODO: sort out dvp to work with 'retina' flag
 
 			// Set canvas width
-			canvas.width = window.innerWidth * window.devicePixelRatio;
-			canvas.height = window.innerHeight * window.devicePixelRatio;
+			canvas.width = window.innerWidth/* * window.devicePixelRatio*/;
+			canvas.height = window.innerHeight/* * window.devicePixelRatio*/;
 			
 			// Set viewport size from gl context
 			gl.viewport(0, 0, gl.drawingBufferWidth, gl.drawingBufferHeight);
 			
 			// Set u_resolution
-			if(program) {
-				var resolutionLocation = gl.getUniformLocation(program, "u_resolution");
+			if(programs[self.shaderEnv.activeProgram]) {
+				var resolutionLocation = gl.getUniformLocation(programs[self.shaderEnv.activeProgram], "u_resolution");
 				gl.uniform2f(resolutionLocation, canvas.width, canvas.height);
-				setRectangle(gl, 0, 0, window.innerWidth * window.devicePixelRatio, window.innerHeight * window.devicePixelRatio);
+				setRectangle(gl, 0, 0, canvas.width, canvas.height);
+			}
+
+			if(typeof programIndex !== 'undefined') {
+
+				self.shaderEnv.activeProgram = currentProgramIndex;
+				gl.useProgram(programs[currentProgramIndex]);
 			}
 		}
 
@@ -52,8 +70,11 @@
 
 		function init() {
 			self.shaderEnv.canvas	= document.createElement('canvas');
-			self.shaderEnv.gl		= self.shaderEnv.canvas.getContext('experimental-webgl');
-			gl = self.shaderEnv.gl; // set reference to self.shaderEnv.gl
+			self.shaderEnv.gl		= self.shaderEnv.canvas.getContext('experimental-webgl', {antialias: false});
+			gl = self.shaderEnv.gl; // set reference
+			canvas = self.shaderEnv.canvas; // set reference
+
+			document.body.appendChild(canvas);
 					
 			// Compile shaders and create program
 			var shaderSource;
@@ -75,9 +96,7 @@
 			gl.compileShader(vertexShader);
  
   			shaderSource = "" +
-				"#ifdef GL_ES" +
-					"precision mediump float;" +
-				"#endif" +
+				"precision mediump float;" +
 				"uniform sampler2D u_image;" +
 				"varying vec2 v_texCoord;" +
 				"void main() {" +
@@ -88,16 +107,15 @@
 			gl.shaderSource(fragmentShader, shaderSource);
 			gl.compileShader(fragmentShader);
 
-			var programIndex = programs.push(gl.createProgram());
-			var program = programs[programIndex]; // Create reference to programs[0]
+			programs.push(gl.createProgram());
 
-			gl.attachShader(program, vertexShader);
-			gl.attachShader(program, fragmentShader);
-			gl.linkProgram(program);	
-			gl.useProgram(program);
+			gl.attachShader(programs[self.shaderEnv.activeProgram], vertexShader);
+			gl.attachShader(programs[self.shaderEnv.activeProgram], fragmentShader);
+			gl.linkProgram(programs[self.shaderEnv.activeProgram]);	
+			gl.useProgram(programs[self.shaderEnv.activeProgram]);
 
 			// look up where the texture coordinates need to go.
-			var texCoordLocation = gl.getAttribLocation(program, "a_texCoord");
+			var texCoordLocation = gl.getAttribLocation(programs[self.shaderEnv.activeProgram], "a_texCoord");
 		 
 			// provide texture coordinates for the rectangle.
 			var texCoordBuffer = gl.createBuffer();
@@ -117,15 +135,16 @@
 		 
 			// Create a texture.
 			self.shaderEnv.texture = gl.createTexture();
+			gl.activeTexture(gl.TEXTURE0); // At Unit position 0
 			gl.bindTexture(gl.TEXTURE_2D, self.shaderEnv.texture);
 		 
 			// Set the parameters so we can render any size image.
 			gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE);
 			gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);
-			gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.NEAREST);
-			gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.NEAREST);
+			gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR); // or NEAREST
+			gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.LINEAR); // or NEAREST
 		 	
-			// Fill the texture with a 1x1 blue pixel.
+			// Fill the texture with a 1x1 transparent pixel.
 			gl.texImage2D(
 				gl.TEXTURE_2D,
 				0,
@@ -135,14 +154,14 @@
 				0,
 				gl.RGBA,
 				gl.UNSIGNED_BYTE,
-				new Uint8Array([0, 0, 255, 255])
+				new Uint8Array([0, 0, 0, 0])
 			);
 
 		 	// Set canvas and viewport sizes
 			resize();
 
 			// Get position of position attribute
-			var positionLocation = gl.getAttribLocation(program, "a_position");
+			var positionLocation = gl.getAttribLocation(programs[self.shaderEnv.activeProgram], "a_position");
 
 			// Create a buffer for the position of the rectangle corners.
 			buffer = gl.createBuffer();
@@ -150,34 +169,51 @@
 			gl.enableVertexAttribArray(positionLocation);
 			gl.vertexAttribPointer(positionLocation, 2, gl.FLOAT, false, 0, 0);
 
-			// Set Rectangle again because of the buffer creation
-			setRectangle(gl, 0, 0, window.innerWidth * window.devicePixelRatio, window.innerHeight * window.devicePixelRatio);
+			// Create modVCanvas sampler2D Uniform
+			var samplerLocation = gl.getUniformLocation(programs[self.shaderEnv.activeProgram], "u_modVCanvas");
+			gl.uniform1i(samplerLocation, 0); // Unit position 0
 
-			render(); // always loop - this is pretty efficient so we don't really need to worry about it going forever (hopefully, heh)
+			// Set Rectangle again because of the buffer creation
+			setRectangle(
+				gl,
+				0,
+				0,
+				window.innerWidth/* * window.devicePixelRatio*/,
+				window.innerHeight/* * window.devicePixelRatio*/
+			);
+
+			// render(); // always loop - this is pretty efficient so we don't really need to worry about it going forever (hopefully, heh)
 			window.addEventListener('resize', resize);
 		}
 
 		function render(delta) {
-			window.requestAnimationFrame(render);
+			// window.requestAnimationFrame(render);
 
 			// Clear WebGL canvas
-			gl.clearColor(1.0, 0.0, 0.0, 1.0);
-			gl.clear(gl.COLOR_BUFFER_BIT);
+			// gl.clearColor(0.0, 0.0, 0.0, 0.0);
+			// gl.clear(gl.COLOR_BUFFER_BIT);
 			
 			// Set position variable
-			positionLocation = gl.getAttribLocation(program, "a_position");
+			var positionLocation = gl.getAttribLocation(programs[self.shaderEnv.activeProgram], "a_position");
 			gl.enableVertexAttribArray(positionLocation);
 			gl.vertexAttribPointer(positionLocation, 2, gl.FLOAT, false, 0, 0);
 			
 			// Set delta
-			var deltaLocation = gl.getUniformLocation(program, "u_delta");
+			var deltaLocation = gl.getUniformLocation(programs[self.shaderEnv.activeProgram], "u_delta");
 			gl.uniform1f(deltaLocation, delta);
+
+			// Update texture???
+			var samplerLocation = gl.getUniformLocation(programs[self.shaderEnv.activeProgram], "u_modVCanvas");
+			gl.uniform1i(samplerLocation, 0); // Unit position 0
 
 			// TODO: setup u_time & other usual uniforms
 
 			gl.drawArrays(gl.TRIANGLES, 0, 6);
 		}
 
+		self.shaderEnv.render = render;
+
+		init();
 	};
 
 })(module);
