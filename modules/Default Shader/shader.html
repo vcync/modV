@@ -5,17 +5,21 @@
 	<body>
 		<script id="vertexshader" type="x-shader/x-vertex">
 			varying vec2 Vertex_UV;
-
+			attribute vec2 a_position, a_texCoord;
+			uniform vec2 u_resolution;
 			void main() {
-			  gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0);
-			  Vertex_UV = uv;
+				vec2 zeroToOne = a_position / u_resolution;
+				vec2 zeroToTwo = zeroToOne * 2.0;
+				vec2 clipSpace = zeroToTwo - 1.0;
+				gl_Position = vec4(clipSpace * vec2(1, -1), 0, 1);
+				Vertex_UV = a_texCoord;
 			}
 		</script>
 
 		<script id="fragmentshader" type="x-shader/x-fragment">
-
-			uniform sampler2D modVcanvas;
-			uniform float rms;
+			precision mediump float;
+			uniform sampler2D u_image;
+			//uniform float rms;
 			varying vec2 Vertex_UV;
 
 			void main() {
@@ -30,11 +34,8 @@
 				float a = atan(uv.y, uv.x);
 
 				// // distort
-				// r = sqrt(r); // pinch
+				// r = sqrt(r/2.); // pinch
 				r = r*r; // bulge
-
-				// // polar to cartesian coordinates
-				uv = r * vec2(cos(a), sin(a));
 
 				// Kaleidoscope
 
@@ -48,10 +49,10 @@
 				// a = mod(a, tau/sides);
 				// a = abs(a - tau/sides/2.);
 
-				// // polar to cartesian coordinates
-				// uv = r * vec2(cos(a), sin(a));
+				// polar to cartesian coordinates
+				uv = r * vec2(cos(a), sin(a));
 
-				vec4 c = texture2D(modVcanvas, uv + 0.5);
+				vec4 c = texture2D(u_image, uv + 0.5);
 				gl_FragColor = c;
 			}
 		</script>
