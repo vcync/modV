@@ -49,7 +49,7 @@ var demo = function() {
 		ctx.restore();
 	}
 
-	this.draw = function(canvas, ctx, audio, video, meyda, delta, bpm) {
+	this.draw = function(canvas, ctx, video, features, meyda, delta, bpm) {
 		
 		var analysed;
 		var rotate = 0;
@@ -57,9 +57,9 @@ var demo = function() {
 		if(this.rotateToggle) rotate = ((delta/1000) * this.rotateSpeed);
 
 		if(this.soundType) {
-			analysed = meyda.zcr/10 * this.intensity;
+			analysed = features.zcr/10 * this.intensity;
 		} else {
-			analysed = (meyda.rms * 10) * this.intensity;
+			analysed = (features.rms * 10) * this.intensity;
 		}
 
 		ctx.strokeStyle = ctx.fillStyle = 'hsl(' + hue + ', 80%, 80%)';

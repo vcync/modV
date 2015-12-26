@@ -6,6 +6,7 @@ var ball = function() {
 		meyda: ['rms', 'zcr'],
 		controls: [
 			{type: 'range', variable: 'amount', label: 'Amount', varType: 'int', min: 1, max: 50},
+			{type: 'range', variable: 'speed', label: 'Speed', varType: 'int', min: 1, max: 50},
 			{type: 'range', variable: 'size', varType: 'float', min: 1, max: 20, label: 'Base Size'},
 			{type: 'range', variable: 'intensity', label: 'RMS/ZCR Intensity', min: 0, max: 30, varType: 'int', step: 1},
 			{type: 'checkbox', variable: 'soundType', label: 'RMS (unchecked) / ZCR (checked)'},
@@ -26,6 +27,7 @@ var ball = function() {
 	this.baseSize = 2;
 	this.size = 2;
 	this.colour = 'pink';
+	this.speed = 5;
 	var that = this;
 
 	var balls = [];
@@ -36,8 +38,11 @@ var ball = function() {
 		this.bounds = {width: 0, height: 0};
 		this.position = {x: 0, y: 0};
 		var hue = Math.floor(Math.random()*(259-1+1)+1);
-		this.speed = 0;
+		this.speed = that.speed;
 		this.velocity = {x: 5, y: 5};
+
+		this.xReverse = false;
+		this.yReverse = false;
 
 		this.drawUpdate = function(canvas, ctx, amp) {
 			ctx.beginPath();
@@ -46,8 +51,14 @@ var ball = function() {
 			ctx.fill();
 			ctx.closePath();
 
-			if( this.position.x-that.baseSize < 1 || this.position.x+that.baseSize > this.bounds.width-1) this.velocity.x = -this.velocity.x;
-			if( this.position.y-that.baseSize < 1 || this.position.y+that.baseSize > this.bounds.height-1) this.velocity.y = -this.velocity.y;
+			if( this.position.x-that.baseSize < 1 || this.position.x+that.baseSize > this.bounds.width-1) this.xReverse = !this.xReverse;
+			if( this.position.y-that.baseSize < 1 || this.position.y+that.baseSize > this.bounds.height-1) this.yReverse= !this.yReverse;
+
+			if(this.xReverse) this.velocity.x = -this.speed;
+			else this.velocity.x = this.speed;
+
+			if(this.yReverse) this.velocity.y = -this.speed;
+			else this.velocity.y = this.speed;
 
 			this.position.x += this.velocity.x;
 			this.position.y += this.velocity.y;
@@ -76,17 +87,17 @@ var ball = function() {
 		}
 	};
 
-	this.draw = function(canvas, ctx, amp, vid, meyda) {
+    this.draw = function(canvas, ctx, video, features, meyda, delta, bpm) {
 		
 		if(this.soundType) {
-			analysed = meyda.zcr/10 * this.intensity;
+			analysed = features.zcr/10 * this.intensity;
 		} else {
-			analysed = (meyda.rms * 10) * this.intensity;
+			analysed = (features.rms * 10) * this.intensity;
 		}
 		
 		for(var i=0; i < this.amount; i++) {
 			var y = cvHeight - (cvHeight);
-			balls[i].speed = Math.abs(y-200)/2;
+			balls[i].speed = this.speed;
 			balls[i].drawUpdate(canvas, ctx, analysed);
 		}
 	};

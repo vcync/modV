@@ -4,9 +4,10 @@ var waveform = function() {
 		author: '2xAA',
 		version: 0.1,
 		controls: [
-			{type: 'checkbox', variable: 'fill', label: 'Fill (unchecked) / Line (checked)'},
+			// {type: 'checkbox', variable: 'fill', label: 'Fill (unchecked) / Line (checked)'},
 			{type: 'checkbox', variable: 'rainbow', label: 'Colour: Random (unchecked) / Rainbow (checked)'}
-		]
+		],
+		meyda: ['buffer']
 	};
 
 	// map() from Processing
@@ -14,43 +15,34 @@ var waveform = function() {
 		return low2 + (high2 - low2) * (value - low1) / (high1 - low1);
 	};
 	
-	var hue = 40;
+	this.hue = 40;
 	this.fill = false;
 	this.rainbow = false;
 
-	this.draw = function(canvas, ctx, amplitudeArray) {
-		//if(!ready) return;
-		if(this.fill) {
-			ctx.beginPath();
-			ctx.moveTo(0, canvas.height/2);
-			for (var i = 0; i < amplitudeArray.length-1; i++) {
-				var value = amplitudeArray[i] / 256;
-				var y = canvas.height - (canvas.height * Math.abs(value));
+	this.draw = function(canvas, ctx, vid, features, meyda, delta, bpm) {
 
-				ctx.lineTo(i/amplitudeArray.length*canvas.width, y);
-			}
-			ctx.lineTo(canvas.width, canvas.height/2);
-			ctx.fillStyle = 'hsl(' + hue + ', 100%, 50%)';
-			ctx.fill();
-		} else {
-			for (var i = 0; i < amplitudeArray.length-1; i++) {
-				var newWidth = Math.round(Math.map(i, 0, amplitudeArray.length, 0, canvas.width));
-				var value = amplitudeArray[i] / 256;
-				var y = canvas.height - (canvas.height * Math.abs(value));
-				var valueNext = amplitudeArray[i+1] / 256;
-				var yNext = canvas.height - (canvas.height * Math.abs(valueNext));
+		var ampArr = features.buffer;
+		ampArr = meyda.windowing(ampArr, 'hanning');
 
-				ctx.beginPath();
-				ctx.moveTo(newWidth, canvas.height - y);
-				ctx.lineTo(newWidth + 1, canvas.height - yNext);
-				ctx.strokeStyle = 'hsl(' + hue + ', 100%, 50%)';
-				ctx.stroke();
-				ctx.closePath();
-			}
+		ctx.strokeStyle = 'hsl(' + this.hue + ', 100%, 50%)';
+		ctx.beginPath();
+		for (var i = 0; i < ampArr.length-1; i++) {
+			var width = Math.round(Math.map(i, 0, ampArr.length-1, 0, canvas.width));
+			var newWidth = Math.round(Math.map(i+1, 0, ampArr.length-1, 0, canvas.width));
+			var y = canvas.height/2 - (canvas.height * ampArr[i]) / (2);
+			y = Math.round(y);
+			var yNext = canvas.height/2 - (canvas.height * ampArr[i+1]) / (2);
+			yNext = Math.round(yNext);
+
+			ctx.moveTo(width, y);
+			ctx.lineTo(newWidth, yNext);
 		}
+		ctx.closePath();
+		ctx.stroke();
+
 		if(this.rainbow) {
-			if(hue == 360) hue = 0;
-			else hue+=4;
-		} else hue = Math.floor(Math.random()*(360-1+1)+1);
+			if(this.hue == 360) this.hue = 0;
+			else this.hue+=4;
+		} else this.hue = Math.floor(Math.random()*(360-1+1)+1);
 	};
 };

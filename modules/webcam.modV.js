@@ -9,7 +9,7 @@ var webcam = function() {
 		
 	};
 
-	this.draw = function(canvas, ctx, audio, video) {
+	this.draw = function(canvas, ctx, video) {
 		ctx.drawImage(video, 0, 0, canvas.width, canvas.height); 
 	};
 };

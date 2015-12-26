@@ -50,9 +50,9 @@ var concentrics = function() {
 
 	};
 
-	this.draw = function(canvas, ctx, audio, video, meyda, delta) {
-		var zcr = meyda.zcr;
-		if(this.rms) zcr = meyda.rms;
+    this.draw = function(canvas, ctx, video, features, meyda, delta, bpm) {
+		var zcr = features.zcr;
+		if(this.rms) zcr = features.rms;
 
 		zcr = this.intensity * zcr;
 		if(this.rms) {

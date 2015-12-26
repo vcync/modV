@@ -33,7 +33,7 @@ var xorcles = function() {
         mCanvas.height = canvas.height;
     };
     
-    this.draw = function(canvas, ctx, amplitudeArray, video, meyda, delta) {
+    this.draw = function(canvas, ctx, video, features, meyda, delta, bpm) {
         
         mCtx.fillStyle = this.colour;
 
@@ -46,7 +46,7 @@ var xorcles = function() {
             mCtx.beginPath();
             mCtx.arc(canvas.width/2 - this.spread/2 * Math.sin(((i / this.circles) * 360) * Math.PI / 180)/* + (Math.sin(delta/200+i) * 80)*/,
                     canvas.height/2 - this.spread/2 * Math.cos(((i / this.circles) * 360) * Math.PI / 180)/* + (Math.cos(delta/500+i) * 80)*/,
-                    Math.abs(this.size + (Math.sin(delta/700) * meyda.rms* this.rmsIntensity)),
+                    Math.abs(this.size + (Math.sin(delta/700) * features.rms* this.rmsIntensity)),
                     0,
                     2*Math.PI);
             
