@@ -3,15 +3,59 @@ html, body {
 }
 
 body {
-	background-color: #000;
 	position: relative;
 	margin: 0;
 }
 
-canvas {
-	position: fixed;
-	top: 0;
-	left: 0;
-	right: 0;
+section {
+	height: 100%;
+    position: fixed;
+    top: 0;
+    bottom: 0;
+    right: 0;
+    left: 0;
+}
+
+section > .pure-g {
+	height: 100%;
+}
+
+section .top {
+	height: 75%;
+}
+
+section .top > .pure-g {
+	height: 100%;
+}
+
+section .top .gallery {
+
+}
+
+section .top .pure-u-4-5 {
+	position: relative;
+	overflow-y: scroll;
+}
+
+section .bottom {
+	position: absolute;
 	bottom: 0;
+	right: 0;
+	left: 0;
+	height: 25%;
+}
+
+section .bottom > .pure-g,
+section .bottom > .pure-g > div {
+	height: 100%;
+}
+
+.canvas-preview {
+	position: relative;
+}
+
+canvas {
+	background-color: #000;
+	width: 100%;
+	height: 100%;
 }

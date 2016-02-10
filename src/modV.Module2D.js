@@ -23,6 +23,28 @@
 		ModuleError.prototype = Object.create(Error.prototype);
 		ModuleError.prototype.constructor = ModuleError;
 
+		self.getSettings = function() {
+			return settings;
+		};
+
+		function add(thing) {
+			if(thing instanceof Array) {
+				for(var i=0; i < thing.length; i++) {
+					add(thing[i]);
+				}
+			} else {
+				//if(thing instanceof self.RangeControl) settings.controls.push(thing);
+				console.log(thing);
+			}
+
+		}
+
+		self.add = function(thing) {
+
+			add(thing);
+
+		};
+
 		// Check for settings Object
 		if(!settings) throw new ModuleError('Module had no settings');
 		// Check for info Object

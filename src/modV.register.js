@@ -25,7 +25,7 @@
 			}
 
 			// Initialise Module
-			Module.init();
+			Module.init(self.canvas, self.context);
 
 			// Parse Controls
 			// Not necessary any more.
@@ -41,7 +41,8 @@
 			self.setModOrder(name, Object.size(self.registeredMods));
 
 			// TEST
-			self.registeredMods[name].info.disabled = false;
+			//self.registeredMods[name].info.disabled = false;
+			self.createGalleryItem(Module);
 		}
 
 		// Handle ModuleShader
@@ -121,10 +122,7 @@
 				self.setModOrder(name, Object.size(self.registeredMods));
 
 				// TEST
-				self.registeredMods[name].info.disabled = false;
-
-				console.log(Module);
-
+				//self.registeredMods[name].info.disabled = false;
 			});
 
 		}

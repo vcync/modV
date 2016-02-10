@@ -73,8 +73,6 @@
 			self.shaderEnv.gl		= self.shaderEnv.canvas.getContext('experimental-webgl', {antialias: false});
 			gl = self.shaderEnv.gl; // set reference
 			canvas = self.shaderEnv.canvas; // set reference
-
-			document.body.appendChild(canvas);
 					
 			// Compile shaders and create program
 			var shaderSource;

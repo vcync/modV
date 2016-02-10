@@ -69,7 +69,7 @@ module.exports = function(grunt) {
       },
 
       assets: {
-        files: ['assets/**/*', '*.css', '*.js', 'images/**/*', 'img/**/*', '!Gruntfile.js'],
+        files: ['assets/**/*', '*.css', '*.html', '*.js', 'images/**/*', 'img/**/*', '!Gruntfile.js'],
         tasks: ['copy', 'tags'],
       },
 
@@ -122,6 +122,14 @@ module.exports = function(grunt) {
       }
     },
 
+    // Copies Bower components to dist
+
+    bower: {
+      dev: {
+        dest: 'dist/libraries'
+      }
+    },
+
     // Runs media manager
     execute: {
         target: {
@@ -133,7 +141,9 @@ module.exports = function(grunt) {
 
   require('matchdep').filterDev('grunt-*').forEach(grunt.loadNpmTasks);
   
-  grunt.registerTask('default', ['clean', 'ejs', 'browserify', 'copy', 'tags', 'symlink']);
+  grunt.loadNpmTasks('grunt-bower'); // ???
+
+  grunt.registerTask('default', ['clean', 'ejs', 'browserify', 'copy', 'tags', 'symlink', 'bower']);
   
   grunt.registerTask('server', ['default', 'connect', 'execute', 'watch']);
 

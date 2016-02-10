@@ -1,7 +1,12 @@
 (function(bModule) {
 	'use strict';
 	/*jslint browser: true */
-	
+
+	// map() from Processing
+	Math.map = function(value, low1, high1, low2, high2) {
+		return low2 + (high2 - low2) * (value - low1) / (high1 - low1);
+	};
+
 	// from here: http://stackoverflow.com/questions/5223/length-of-a-javascript-object-that-is-associative-array
 	Object.size = function(obj) {
 		var size = 0, key;
@@ -79,6 +84,25 @@
 		// WebSocket
 		self.ws = undefined;
 
+		// UI Templates
+		self.templates = document.querySelector('link[rel="import"]').import;
+
+		// Module Clone
+		self.cloneModule = function(obj, getSettings) {
+			var key, settings, temp;
+			if(getSettings) settings = obj.getSettings();
+			if (obj === null || typeof obj !== "object") {
+				return obj;
+			}
+			if(!getSettings) temp = new obj.constructor();
+			else temp = new obj.constructor(settings);
+
+			for (key in obj) {
+				temp[key] = self.cloneModule(obj[key], false);
+			}
+			return temp;
+		};
+
 		// Window resize
 		function resize(e, width, height) {
 			if(e) {
@@ -95,8 +119,8 @@
 
 					self.canvas.width = canvasWidth * window.devicePixelRatio;
 					self.canvas.height = canvasHeight * window.devicePixelRatio;
-					self.canvas.style.width = width + 'px';
-					self.canvas.style.height = height + 'px';
+					//self.canvas.style.width = width + 'px';
+					//self.canvas.style.height = height + 'px';
 				}
 			}
 

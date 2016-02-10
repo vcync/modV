@@ -446,6 +446,8 @@
 		var registered = self.registeredMods[mod.info.name] = mod;
 		self.setModOrder(mod.info.name, Object.size(self.registeredMods));
 		
+		self.createGalleryItem(Mod);
+
 		if(self.options.remote && self.ws) {
 			self.ws.send({type: 'register', payload: mod.info});
 		}
