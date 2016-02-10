@@ -3,3 +3,5 @@
 node_modules
 /media/*
 !/media/.keep
+/bower_components/*
+!/bower_components/.keep
