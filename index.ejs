@@ -13,7 +13,11 @@
 		<section>
 			<div class="top">
 				<div class="pure-g">
-					<div class="pure-u-1-5">
+					<div class="pure-u-1-5 active-list-wrapper">
+
+						<div class="left-top active-list pure-g">
+
+						</div>
 					
 					</div>
 					<div class="pure-u-4-5">
@@ -42,12 +46,40 @@
 
 		</section>
 
+		<div id="temp" style="display:none;"></div>
+
 		<script id="live-reload" src="http://localhost:35729/livereload.js"></script>
 		<script src="./libraries/Sortable.js"></script>
 		<script src="./libraries/three.js"></script>
 		<script src="./libraries/meyda.min.js"></script>
 		<script src="./libraries/beatdetektor.js"></script>
 		<script src="app.js"></script>
+
+		<script>
+			// DOM helper (still smaller than jQuery ;^)
+			function swapElements(obj1, obj2) {
+				// save the location of obj2
+				var parent2 = obj2.parentNode;
+				var next2 = obj2.nextSibling;
+				// special case for obj1 is the next sibling of obj2
+				if (next2 === obj1) {
+					// just put obj1 before obj2
+					parent2.insertBefore(obj1, obj2);
+				} else {
+					// insert obj2 right before obj1
+					obj1.parentNode.insertBefore(obj2, obj1);
+
+					// now insert obj1 where obj2 was
+					if (next2) {
+						// if there was an element after obj2, then insert obj1 right before that
+						parent2.insertBefore(obj1, next2);
+					} else {
+						// otherwise, just append as last child
+						parent2.appendChild(obj1);
+					}
+				}
+			}
+		</script>
 
 		<!-- modV modules load -->
 		<!-- between these tags -->

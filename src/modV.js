@@ -323,6 +323,8 @@
 		self.shaderSetup();
 
 		self.start = function() {
+			self.startUI();
+			
 			if(typeof self.canvas !== 'object') {
 				console.error('modV: Canvas not set');
 				return false;

@@ -9,3 +9,4 @@ var modV = require('./modV-palette');
 var modV = require('./modV-registerMod');
 var modV = require('./modV-factoryReset');
 var modV = require('./modV-webSockets');
+var modV = require('./modV-ui');

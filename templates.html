@@ -4,3 +4,23 @@
 		<span class="title"></span>
 	</div>
 </template>
+
+<template id="active-item">
+	<div class="pure-u-1-1 active-item" tabindex="0">
+		<div class="pure-g">
+			<!-- <canvas class="preview"></canvas> --><!-- TODO: create preview option on mouseover item -->
+			<div class="pure-u-1-1 title">
+			
+			</div>
+			<div class="pure-u-4-5 options">
+				<label>Enabled<input type="checkbox" checked="true"></label>
+				<label>Opacity<input type="range" min="0" max="1" value = "1" step="0.05"></label>
+				<label>Blending<select></select></label>
+			</div>
+			<div class="pure-u-1-5 handle-container">
+				<div class="handle"></div>
+			</div>
+		</div>
+
+	</div>
+</template>

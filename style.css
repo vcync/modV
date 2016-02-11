@@ -28,6 +28,16 @@ section .top > .pure-g {
 	height: 100%;
 }
 
+section .top .active-list {
+	overflow-x: hidden;
+    overflow-y: scroll;
+}
+
+section .top .active-list-wrapper,
+section .top .active-list {
+	height: 100%;
+}
+
 section .top .gallery {
 
 }
@@ -58,4 +68,40 @@ canvas {
 	background-color: #000;
 	width: 100%;
 	height: 100%;
+}
+
+.active-item {
+	background-color: #222;
+	box-sizing: border-box;
+	border-bottom: 1px #333 solid;
+	color: #fff;
+	display: inline-block;
+	max-height: 100px;
+	padding: 8px;
+}
+
+.active-item:nth-child(even) {
+	background-color: #000;
+}
+
+.active-item.chosen {
+	background-color: green;
+}
+
+.active-item .title {
+    font-size: 1.6em;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.active-item .options label {
+    display: block;
+    font-size: 0.8em;
+}
+
+.active-item .handle {
+	width: 60px;
+	height: 60px;
+	background-color: red;
 }

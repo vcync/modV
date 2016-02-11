@@ -57,11 +57,21 @@
 
 		var interval;
 
+
 		document.querySelector('.gallery').appendChild(galleryItem);
 
-		document.querySelector('.gallery .gallery-item:last-child');
+		// Pull back initialised node from DOM
+		galleryItem = document.querySelector('.gallery .gallery-item:last-child');
 
-		
+		// Set data
+		// TODO: make sure this follows the HTML5 attributes spec: https://html.spec.whatwg.org/multipage/syntax.html#attributes-2
+		galleryItem.dataset.moduleName = Module.info.name.replace(' ', '-');
+
+		// Draw preview
+		giMouseEnter(Module, type, previewCanvas, previewCtx, self);
+
+		// Draw name
+		giMouseOut(interval, Module, type, previewCanvas, previewCtx, self);
 
 		previewCanvas.addEventListener('mouseenter', function() {
 			var loop = giMouseEnter(Module, type, previewCanvas, previewCtx, self);
@@ -69,7 +79,7 @@
 		});
 
 		previewCanvas.addEventListener('mouseout', function() {
-			giMouseOut(interval);
+			giMouseOut(interval, Module, type, previewCanvas, previewCtx, self);
 		});
 
 /*		previewCanvas.addEventListener('mousemove', function(evt) {
@@ -102,8 +112,16 @@
 
 	}
 
-	function giMouseOut(interval) {
+	function giMouseOut(interval, Module, type, canvas, ctx, self) {
 		clearInterval(interval);
+
+		ctx.fillStyle = 'rgba(0,0,0,0.5)';
+		ctx.fillRect(0, 0, canvas.width, canvas.height);
+		ctx.fillStyle = 'white';
+
+		var textWidth = ctx.measureText(Module.info.name).width;
+		ctx.fillText(Module.info.name, canvas.width/2 - textWidth/2, canvas.height/2);
+
 		return undefined;
 	}
 
