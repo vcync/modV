@@ -23,6 +23,10 @@
 		ModuleError.prototype = Object.create(Error.prototype);
 		ModuleError.prototype.constructor = ModuleError;
 
+		self.getSettings = function() {
+			return settings;
+		};
+		
 		// Check for settings Object
 		if(!settings) throw new ModuleError('Module had no settings');
 		// Check for info Object

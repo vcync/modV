@@ -2,31 +2,13 @@
 	'use strict';
 	/*jslint browser: true */
 
-	// from here: http://stackoverflow.com/a/728400
-	// function clone(obj) {
-	// 	if(obj === null || typeof(obj) != 'object')
-	// 		return obj;	
-	// 	var temp = new obj.constructor();
-	// 	for(var key in obj) {
-
-	// 		try {
-	// 			temp[key] = clone(obj[key]);
-	// 		} catch(e) {
-
-	// 		}
-
-	// 	}
-	// 	return temp;
-	// }
-
 	modV.prototype.createGalleryItem = function(Module) {
 		var self = this;
 
-		if(!(Module instanceof self.Module2D)) return;
+		if(!(Module instanceof self.Module2D) && !(Module instanceof self.ModuleShader)) return;
 
 		// Clone module -- afaik, there is no better way than this
 		Module = self.cloneModule(Module, true);
-		console.log(Module);
 
 		//Module = new Module();
 
@@ -51,7 +33,6 @@
 
 		// init cloned Module
 		if('init' in Module) {
-			console.log(name);
 			Module.init(previewCanvas, previewCtx);
 		}
 
@@ -91,8 +72,6 @@
 	var mousePos = {x: 0, y: 0};
 
 	function giMouseEnter(Module, type, canvas, ctx, self) {
-
-		console.log('mouse enter');
 
 		return function(delta) {
 			//ctx.clearRect(0, 0, mousePos.x, canvas.height);

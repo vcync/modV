@@ -35,7 +35,6 @@
 			} else {
 				if(!settings.info.controls) settings.info.controls = [];
 				settings.info.controls.push(thing);
-				console.log(thing);
 			}
 
 		}

@@ -218,7 +218,6 @@
 			pCanvas.style.height = pWindow.innerHeight + 'px';
 
 			self.resize();
-			console.log(self.resize);
 
 		});
 

@@ -101,7 +101,7 @@
 				try {
 					temp[key] = self.cloneModule(obj[key], false);
 				} catch(e) {
-					console.error('Bumped into native code?', e);
+					
 				}
 			}
 			return temp;

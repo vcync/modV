@@ -6,6 +6,11 @@
 		var self = this;
 		var controlPanelWrapperNode = document.querySelector('.control-panel-wrapper');
 		var panelNode = document.createElement('div');
+		var titleNode = document.createElement('h1');
+
+		titleNode.textContent = Module.info.name;
+
+		panelNode.appendChild(titleNode);
 
 		panelNode.classList.add('control-panel', 'pure-u-1-1');
 		panelNode.dataset.moduleName = Module.info.safeName;

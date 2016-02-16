@@ -32,21 +32,10 @@
 			// Initialise Module
 			Module.init(self.canvas, self.context);
 
-			// Parse Controls
-			// Not necessary any more.
-			// New UI will parse controls on layer creation.
-
-			// Add to registry
-			// TODO: rename to 'registry'
-			// TODO: make registry an object containing Module2D,
-			// 		 Module3D and ModuleShader object stores
+			// Add to Registry
 			self.registeredMods[name] = Module;
 
-			// TODO: remove setModOrder and modOrder
-			// self.setModOrder(name, Object.size(self.registeredMods));
-
-			// TEST
-			//self.registeredMods[name].info.disabled = false;
+			// Create Gallery item
 			self.createGalleryItem(Module);
 		}
 
@@ -117,17 +106,11 @@
 				// TEST IMPLEMENT
 				self.shaderEnv.resize(Module.programIndex);
 
-				// Add to registry
-				// TODO: rename to 'registry'
-				// TODO: make registry an object containing Module2D,
-				// 		 Module3D and ModuleShader object stores
+				// Add to Registry
 				self.registeredMods[name] = Module;
 
-				// TODO: remove setModOrder and modOrder
-				//self.setModOrder(name, Object.size(self.registeredMods));
-
-				// TEST
-				//self.registeredMods[name].info.disabled = false;
+				// Create Gallery item
+				self.createGalleryItem(Module);
 			});
 
 		}
