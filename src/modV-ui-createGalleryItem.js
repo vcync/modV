@@ -104,10 +104,15 @@
 			var largeWidth = Math.round(Math.map(mousePos.x, 0, positionInfo.width, 0, self.canvas.width));
 			console.log(mousePos.x, positionInfo.width, largeWidth, self.canvas.width);
 
+			if(Module.info.previewWithOutput) {
+				ctx.drawImage(self.canvas, 0, 0, canvas.width, canvas.height);
+			}
+
 			//ctx.drawImage(self.canvas, largeWidth, 0, self.canvas.width, self.canvas.height, mousePos.x, 0, canvas.width, canvas.height);
 			//ctx.drawImage(self.canvas, Math.round(self.canvas.width/2), 0, self.canvas.width, self.canvas.height, Math.round(canvas.width/2), 0, canvas.width, canvas.height);
-
+			ctx.save();
 			Module.draw(canvas, ctx, self.video, self.myFeatures, self.meyda, delta, self.bpm);
+			ctx.restore();
 		};
 
 	}
@@ -118,7 +123,6 @@
 		ctx.fillStyle = 'rgba(0,0,0,0.5)';
 		ctx.fillRect(0, 0, canvas.width, canvas.height);
 		ctx.fillStyle = 'white';
-
 		var textWidth = ctx.measureText(Module.info.name).width;
 		ctx.fillText(Module.info.name, canvas.width/2 - textWidth/2, canvas.height/2);
 

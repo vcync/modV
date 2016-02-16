@@ -7,9 +7,7 @@ var gridStretch = function() {
 		meyda: ['zcr', 'rms'],
 		controls: [
 			// {type: 'range', variable: 'size', label: 'Cell Size', min: 1, max: 20, varType: 'int', step: 1},
-			{type: 'range', variable: 'countX', label: 'Grid Size X', min: 1, max: 20, varType: 'int', step: 1, altMod: function(val, e) {
-
-			}},
+			{type: 'range', variable: 'countX', label: 'Grid Size X', min: 1, max: 20, varType: 'int', step: 1},
 			{type: 'range', variable: 'countY', label: 'Grid Size Y', min: 1, max: 20, varType: 'int', step: 1},
 			{type: 'range', variable: 'intensity', label: 'RMS/ZCR Intensity', min: 0, max: 30, varType: 'int', step: 1},
 			{type: 'checkbox', variable: 'zcr', label: 'RMS (unchecked) / ZCR (checked)'}

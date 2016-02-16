@@ -444,7 +444,7 @@
 		self.controllerWindow.document.body.appendChild(container.output());
 
 		var registered = self.registeredMods[mod.info.name] = mod;
-		self.setModOrder(mod.info.name, Object.size(self.registeredMods));
+		//self.setModOrder(mod.info.name, Object.size(self.registeredMods));
 		
 		self.createGalleryItem(Mod);
 

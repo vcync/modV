@@ -101,6 +101,13 @@ controls.push(new modVC.RangeControl({
     default: 1
 }));
 
+controls.push(new modVC.CheckboxControl({
+	variable: 'rotateToggle',
+	label: 'Rotate',
+	'checked': 'false'
+}));
+
+
 controls.push(new modVC.RangeControl({
     variable: 'rotateSpeed',
     label: 'Rotate Speed',

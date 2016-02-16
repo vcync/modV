@@ -2,7 +2,7 @@
 	'use strict';
 	/*jslint browser: true */
 
-	modV.prototype.RangeControl = function(settings) {
+	modV.prototype.TextControl = function(settings) {
 		var self = this;
 		
 		//TODO: error stuff
@@ -46,22 +46,11 @@
 
 		self.makeNode = function(Module) {
 			var node = document.createElement('input');
-			node.type = 'range';
-			if('min' in settings) node.min = settings.min;
-			if('max' in settings) node.max = settings.max;
-			if('step' in settings) node.step = settings.step;
+			node.type = 'text';
 			if('default' in settings) node.value = settings.default;
 
 			node.addEventListener('input', function(e) {
-				var value;
-
-				if(settings.varType === 'int') value = parseInt(this.value);
-				else if(settings.varType === 'float') value = parseFloat(this.value);
-				else value = this.value;
-
-				if('append' in settings) value += settings.append;
-
-				Module[self.variable] = value;
+				Module[self.variable] = this.value;
 			}, false);
 			return node;
 		};

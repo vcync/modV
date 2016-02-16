@@ -60,6 +60,19 @@ section .bottom > .pure-g > div {
 	height: 100%;
 }
 
+section .bottom .control-panel-wrapper,
+section .bottom .control-panel-wrapper .control-panel {
+	height: 100%;
+}
+
+section .bottom .control-panel-wrapper .control-panel {
+	display: none;
+}
+
+section .bottom .control-panel-wrapper .control-panel.show {
+	display: block;
+}
+
 .canvas-preview {
 	position: relative;
 }

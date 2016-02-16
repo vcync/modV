@@ -98,14 +98,18 @@
 			else temp = new obj.constructor(settings);
 
 			for (key in obj) {
-				temp[key] = self.cloneModule(obj[key], false);
+				try {
+					temp[key] = self.cloneModule(obj[key], false);
+				} catch(e) {
+					console.error('Bumped into native code?', e);
+				}
 			}
 			return temp;
 		};
 
 		// Window resize
-		function resize(e, width, height) {
-			if(e) {
+		self.resize = function() {
+			/*if(e) {
 				width = window.innerWidth;
 				height = window.innerHeight;
 			}
@@ -122,12 +126,12 @@
 					//self.canvas.style.width = width + 'px';
 					//self.canvas.style.height = height + 'px';
 				}
-			}
+			}*/
 
 			for(var mod in self.registeredMods) {
-				if(typeof self.registeredMods[mod].init === 'function') self.registeredMods[mod].init(self.canvas, self.context);
+				if('resize' in self.registeredMods[mod]) self.registeredMods[mod].resize(self.canvas, self.context);
 			}
-		}
+		};
 
 		// Create canvas
 		self.setCanvas = function(el) {
@@ -138,8 +142,8 @@
 			self.canvas = el;
 			self.context = el.getContext('2d');
 
-			window.addEventListener('resize', resize, false);
-			resize(false, window.innerWidth, window.innerHeight);
+			//window.addEventListener('resize', resize, false);
+			//resize(false, window.innerWidth, window.innerHeight);
 
 			return true;
 		};
@@ -315,7 +319,7 @@
 				return;
 			}
 
-			resize(false, width, height);
+			//resize(false, width, height);
 		};
 
 		// Shader handling

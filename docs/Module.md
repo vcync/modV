@@ -70,7 +70,8 @@ var myModule = new modV.Module2D({
 		author: '2xAA',
 		version: 0.1,
 		meyda: [],
-		controls: []
+		controls: [],
+		previewWithOutput: false // Show Gallery preview with current output mixed or not
 	},
 	init: function(vars) {
  		// Set up local variables here
@@ -143,6 +144,7 @@ var myModuleShader = new modV.ModuleShader({
 		version: 0.1,
 		meyda: [], // returned variables passed to the shader individually as uniforms
 		controls: [], // variabled passed to the shader individually as uniforms
+		previewWithOutput: true, // Show Gallery preview with current output mixed or not
 		uniforms: {} // Three.JS uniforms
 	},
 	shaderFile: "/Default Shader/shader.html" // path to HTML file within modules directory with shader script tags

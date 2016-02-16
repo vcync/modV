@@ -1,6 +1,10 @@
 (function(bModule) {
 	'use strict';
 	/*jslint browser: true */
+	
+	function replaceAll(string, operator, replacement) {
+		return string.split(operator).join(replacement);
+	}
 
 	modV.prototype.register = function(Module) {
 		var self = this;
@@ -18,6 +22,7 @@
 
 			// Get name
 			name = Module.info.name;
+			Module.info.safeName = replaceAll(name, ' ', '-');
 
 			// Parse Meyda
 			if(Module.info.meyda) {
@@ -38,7 +43,7 @@
 			self.registeredMods[name] = Module;
 
 			// TODO: remove setModOrder and modOrder
-			self.setModOrder(name, Object.size(self.registeredMods));
+			// self.setModOrder(name, Object.size(self.registeredMods));
 
 			// TEST
 			//self.registeredMods[name].info.disabled = false;
@@ -119,7 +124,7 @@
 				self.registeredMods[name] = Module;
 
 				// TODO: remove setModOrder and modOrder
-				self.setModOrder(name, Object.size(self.registeredMods));
+				//self.setModOrder(name, Object.size(self.registeredMods));
 
 				// TEST
 				//self.registeredMods[name].info.disabled = false;

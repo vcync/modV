@@ -180,7 +180,6 @@
 	// > must be bound to modV's scope
 	var createPreviewWindow = function() {
 		var self = this;
-		console.log(self);
 
 		// TODO: bind this window's resize to the spect ratio of the main window
 		// http://jsfiddle.net/yUenJ/
@@ -194,60 +193,36 @@
 		pWindow.document.body.style.backgroundColor = 'black';
 		pCanvas.style.position = 'fixed';
 		
-		pCanvas.style.top = 
-		pCanvas.style.bottom = 
-		pCanvas.style.left = 
-		pCanvas.style.right = 0;
+		pCanvas.style.top = pCanvas.style.bottom = pCanvas.style.left = pCanvas.style.right = 0;
 
 		pWindow.onbeforeunload = drunkenMess;
 
-		var monitorResize;
-		var programedResize = false;
-
-		function resizeEnd() {
-			clearTimeout(monitorResize);
-
-			var masterWidth = self.canvas.width;
-			var masterHeight = self.canvas.height;
-			var masterRatio = masterWidth/masterHeight;
-
-			var pWindowWidth = pWindow.innerWidth;
-			var pWindowHeight = pWindow.innerHeight;
-
-			var newHeight = pWindowHeight;
-			var newWidth = Math.round(newHeight * masterRatio);
-
-		 	programedResize = true;
-			pWindow.resizeTo(newWidth, newHeight);  
-
-			pCanvas.width = newWidth;
-			pCanvas.height = newHeight;  
-
-			// TODO
-			// if (window.devicePixelRatio > 1 && 'retina' in self.options) {
-			// 	if(self.options.retina) {
-			// 		var canvasWidth = pWindow.innerWidth;
-			// 		var canvasHeight = pWindow.innerHeight;
-
-			// 		pCanvas.width = canvasWidth * window.devicePixelRatio;
-			// 		pCanvas.height = canvasHeight * window.devicePixelRatio;
-			// 		pCanvas.style.width = pWindow.innerWidth + 'px';
-			// 		pCanvas.style.height = pWindow.innerHeight + 'px';
-			// 	}
-			// }
-		}
-
 		pWindow.addEventListener('resize', function() {
-			clearTimeout(monitorResize);
 
-  			if(programedResize) {
-  				programedResize = false;
+			if(window.devicePixelRatio > 1 && self.options.retina) {
+
+				self.canvas.width = pWindow.innerWidth * window.devicePixelRatio;
+				self.canvas.height = pWindow.innerHeight * window.devicePixelRatio;
+				pCanvas.width = pWindow.innerWidth * window.devicePixelRatio;
+				pCanvas.height = pWindow.innerHeight * window.devicePixelRatio;
+
 			} else {
-				monitorResize = setTimeout(resizeEnd, 300);
+
+				self.canvas.width = pWindow.innerWidth;
+				self.canvas.height = pWindow.innerHeight;
+				pCanvas.width = pWindow.innerWidth;
+				pCanvas.height = pWindow.innerHeight;
+
 			}
+			pCanvas.style.width = pWindow.innerWidth + 'px';
+			pCanvas.style.height = pWindow.innerHeight + 'px';
+
+			self.resize();
+			console.log(self.resize);
+
 		});
 
-		resizeEnd();
+		//resizeEnd();
 
 		pWindow.document.body.appendChild(pCanvas);
 

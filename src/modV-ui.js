@@ -2,6 +2,10 @@
 	'use strict';
 	/*jslint browser: true */
 
+	function replaceAll(string, operator, replacement) {
+		return string.split(operator).join(replacement);
+	}
+
 	modV.prototype.startUI = function() {
 		var self = this;
 
@@ -16,43 +20,68 @@
 			handle: '.handle',
 			chosenClass: 'chosen',
 			onAdd: function(evt) {
+				console.log('drop', evt);
 				// Dragged HTMLElement
 				var itemEl = evt.item;
 				// Cloned element
 				var clone = gallery.querySelector('.gallery-item[data-module-name="' + itemEl.dataset.moduleName + '"]');
 
-				var activeItemObject = self.createActiveListItem(itemEl, clone);
-				var activeItem = activeItemObject.node;
-
-				// Replace clone
-				list.replaceChild(activeItem, clone);
-
 				// Get Module
-				var Module = self.registeredMods[itemEl.dataset.moduleName.replace('-', ' ')];
+				var Module = self.registeredMods[replaceAll(itemEl.dataset.moduleName, '-', ' ')];
 
-				if(activeItemObject.dupe > 0) {
+				// Grab dataname from cloned element
+				var name = clone.dataset.moduleName;
+				// Check for dupes
+				var dupes = list.querySelectorAll('.active-item[data-module-name|="' + name.replace(' ', '-') + '"]');
+
+				// Convert back to display name
+				name = replaceAll(name, '-', ' ');
+
+				// Add on dupe number for name if needed
+				if(dupes.length > 0) {
+					name += " (" + dupes.length + ")";
+				}
+
+				// Create new safe name
+				var safeName = replaceAll(name, ' ', '-');
+
+				if(dupes.length > 0) {
 					// Clone module -- afaik, there is no better way than this
 					Module = self.cloneModule(Module, true);
-					
+
 					// init cloned Module
 					if('init' in Module) {
 						Module.init(self.canvas, self.context);
 					}
 					
 					// update name, add to registry
-					Module.info.name = activeItemObject.name;
+					Module.info.name = name;
+					Module.info.safeName = safeName;
 					self.registeredMods[Module.info.name] = Module;
-
-					// TEST
-					// TODO: remove setModOrder and modOrder
-					self.setModOrder(activeItemObject.name, Object.size(self.registeredMods));
-
-					// turn on
-					Module.info.disabled = false;
-				} else {
-					Module.info.disabled = false;
 				}
-				activeItem.focus();
+
+				// Move back to gallery
+				swapElements(clone, itemEl);
+				console.log(Module.info);
+
+				var activeItemNode = self.createActiveListItem(Module);
+
+				// Replace clone
+				list.replaceChild(activeItemNode, clone);
+
+				self.setModOrder(name, evt.newIndex);
+
+				// Create controls
+				self.createControls(Module);
+
+				// turn on
+				// TODO: add setting to enable/disable by default
+				Module.info.disabled = false;
+
+				activeItemNode.focus();
+			},
+			onEnd: function(evt) {
+				self.setModOrder(replaceAll(evt.item.dataset.moduleName, '-', ' '), evt.newIndex);
 			}
 		});
 
@@ -69,12 +98,27 @@
 		window.addEventListener('focusin', activeElementHandler);
 		window.addEventListener('focusout', clearActiveElement);
 
-		function activeElementHandler(evt) {
-			console.log(evt.srcElement.closest('.active-item'));
+		function clearPanels() {
+			var panels = document.querySelectorAll('.control-panel');
+
+			// :^) hacks hacks hacks
+			[].forEach.call(panels, function(panel) {
+				panel.classList.remove('show');
+			});
+
 		}
 
-		function clearActiveElement() {
-			console.log('clear')
+		function activeElementHandler(evt) {
+			var eventNode = evt.srcElement.closest('.active-item');
+			var dataName = eventNode.dataset.moduleName;
+			var panel = document.querySelector('.control-panel[data-module-name="' + dataName + '"]');
+			
+			clearPanels();
+			panel.classList.add('show');
+		}
+
+		function clearActiveElement(evt) {
+			console.log('clear');
 		}
 
 	};

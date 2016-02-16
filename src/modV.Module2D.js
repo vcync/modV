@@ -33,7 +33,8 @@
 					add(thing[i]);
 				}
 			} else {
-				//if(thing instanceof self.RangeControl) settings.controls.push(thing);
+				if(!settings.info.controls) settings.info.controls = [];
+				settings.info.controls.push(thing);
 				console.log(thing);
 			}
 
@@ -67,6 +68,18 @@
 		// Expose self.init
 		if('init' in settings) {
 			self.init = settings.init;
+		}
+
+		// Expose self.resize
+		if('resize' in settings) {
+			self.resize = settings.resize;
+		}
+
+		// Expose preview option
+		if('previewWithOutput' in settings) {
+			self.previewWithOutput = settings.previewWithOutput;
+		} else {
+			self.previewWithOutput = false;
 		}
 	};
 

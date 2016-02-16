@@ -2,7 +2,7 @@
 	'use strict';
 	/*jslint browser: true */
 
-	modV.prototype.RangeControl = function(settings) {
+	modV.prototype.CheckboxControl = function(settings) {
 		var self = this;
 		
 		//TODO: error stuff
@@ -46,23 +46,13 @@
 
 		self.makeNode = function(Module) {
 			var node = document.createElement('input');
-			node.type = 'range';
-			if('min' in settings) node.min = settings.min;
-			if('max' in settings) node.max = settings.max;
-			if('step' in settings) node.step = settings.step;
-			if('default' in settings) node.value = settings.default;
+			node.type = 'checkbox';
+			if('checked' in settings) node.checked = settings.checked;
 
-			node.addEventListener('input', function(e) {
-				var value;
-
-				if(settings.varType === 'int') value = parseInt(this.value);
-				else if(settings.varType === 'float') value = parseFloat(this.value);
-				else value = this.value;
-
-				if('append' in settings) value += settings.append;
-
-				Module[self.variable] = value;
+			node.addEventListener('change', function(e) {
+				Module[self.variable] = this.checked;
 			}, false);
+
 			return node;
 		};
 	};
