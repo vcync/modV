@@ -62,7 +62,6 @@
 
 				// Move back to gallery
 				swapElements(clone, itemEl);
-				console.log(Module.info);
 
 				var activeItemNode = self.createActiveListItem(Module);
 

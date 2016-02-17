@@ -15,12 +15,11 @@ var Ball = new modVC.Module2D({
 		this.size = 2;
 		this.colour = 'pink';
 		this.speed = 5;
-		this.that = this;
 
 		this.balls = [];
 
 		for(var i=0; i < 50; i++) {
-			var newBall = new ballObj();
+			var newBall = new this.ballObj();
 			newBall.bounds.width = canvas.width;
 			newBall.bounds.height = canvas.height;
 			newBall.position.x = Math.floor(Math.random()*(newBall.bounds.width-1+1)+1);
@@ -30,6 +29,12 @@ var Ball = new modVC.Module2D({
 			this.balls.push(newBall);
 		}
 		
+	},
+	resize: function(canvas) {
+		for(var i=0; i < this.amount; i++) {
+			this.balls[i].bounds.width = canvas.width;
+			this.balls[i].bounds.height = canvas.height;
+		}
 	},
 	draw: function(canvas, ctx, vid, features, meyda, delta, bpm) {
 
@@ -50,7 +55,7 @@ var Ball = new modVC.Module2D({
 Ball.ballObj = function() {
 		this.bounds = {width: 0, height: 0};
 		this.position = {x: 0, y: 0};
-		this.speed = this.that.speed;
+		this.speed = Ball.speed;
 		this.velocity = {x: 5, y: 5};
 
 		this.xReverse = false;
@@ -58,13 +63,13 @@ Ball.ballObj = function() {
 
 		this.drawUpdate = function(canvas, ctx, amp) {
 			ctx.beginPath();
-			ctx.arc(this.position.x, this.position.y, this.that.baseSize + (this.that.size * amp), 0, 2 * Math.PI, true);
-			ctx.fillStyle = this.that.colour;
+			ctx.arc(this.position.x, this.position.y, Ball.baseSize + (Ball.size * amp), 0, 2 * Math.PI, true);
+			ctx.fillStyle = Ball.colour;
 			ctx.fill();
 			ctx.closePath();
 
-			if( this.position.x-this.that.baseSize < 1 || this.position.x+this.that.baseSize > this.bounds.width-1) this.xReverse = !this.xReverse;
-			if( this.position.y-this.that.baseSize < 1 || this.position.y+this.that.baseSize > this.bounds.height-1) this.yReverse= !this.yReverse;
+			if( this.position.x-Ball.baseSize < 1 || this.position.x+Ball.baseSize > this.bounds.width-1) this.xReverse = !this.xReverse;
+			if( this.position.y-Ball.baseSize < 1 || this.position.y+Ball.baseSize > this.bounds.height-1) this.yReverse= !this.yReverse;
 
 			if(this.xReverse) this.velocity.x = -this.speed;
 			else this.velocity.x = this.speed;
@@ -128,13 +133,15 @@ controls.push(new modVC.CheckboxControl({
 }));
 
 controls.push(new modVC.PaletteControl({
-    variable: 'speed',
-    label: 'Speed',
-    varType: 'int',
-    min: 0,
-    max: 100,
-    step: 1,
-    default: 0
+	variable: 'colour',
+	colours: [
+		[255,102,152],
+		[255,179,102],
+		[255,255,102],
+		[152,255,102],
+		[102,152,255]
+	],
+	timePeriod: 500
 }));
 
 Ball.add(controls);

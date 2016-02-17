@@ -118,3 +118,12 @@ canvas {
 	height: 60px;
 	background-color: red;
 }
+
+select.composite-operations:hover {
+    height: 68px;
+}
+
+select.composite-operations {
+    height: 18px;
+    transition: height 300ms;
+}

@@ -22,14 +22,7 @@
 
 		// Module variables
 		var previewCtx = previewCanvas.getContext('2d'),
-			name = Module.info.name,
-			type;
-
-		if(Module instanceof self.ModuleShader) {
-			type = 'ModuleShader';
-		} else if(Module instanceof self.Module2D) {
-			type = 'Module2D';
-		}
+			name = Module.info.name;
 
 		// init cloned Module
 		if('init' in Module) {
@@ -49,18 +42,18 @@
 		galleryItem.dataset.moduleName = Module.info.name.replace(' ', '-');
 
 		// Draw preview
-		giMouseEnter(Module, type, previewCanvas, previewCtx, self);
+		giMouseEnter(Module, previewCanvas, previewCtx, self);
 
 		// Draw name
-		giMouseOut(interval, Module, type, previewCanvas, previewCtx, self);
+		giMouseOut(interval, Module, previewCanvas, previewCtx, self);
 
 		previewCanvas.addEventListener('mouseenter', function() {
-			var loop = giMouseEnter(Module, type, previewCanvas, previewCtx, self);
+			var loop = giMouseEnter(Module, previewCanvas, previewCtx, self);
 			interval = setInterval(loop, 1000/60);
 		});
 
 		previewCanvas.addEventListener('mouseout', function() {
-			giMouseOut(interval, Module, type, previewCanvas, previewCtx, self);
+			giMouseOut(interval, Module, previewCanvas, previewCtx, self);
 		});
 
 /*		previewCanvas.addEventListener('mousemove', function(evt) {
@@ -71,7 +64,7 @@
 
 	var mousePos = {x: 0, y: 0};
 
-	function giMouseEnter(Module, type, canvas, ctx, self) {
+	function giMouseEnter(Module, canvas, ctx, self) {
 
 		return function(delta) {
 			//ctx.clearRect(0, 0, mousePos.x, canvas.height);
@@ -83,20 +76,56 @@
 			var largeWidth = Math.round(Math.map(mousePos.x, 0, positionInfo.width, 0, self.canvas.width));
 			console.log(mousePos.x, positionInfo.width, largeWidth, self.canvas.width);
 
-			if(Module.info.previewWithOutput) {
+			if(Module.info.previewWithOutput || Module instanceof self.ModuleShader) {
 				ctx.drawImage(self.canvas, 0, 0, canvas.width, canvas.height);
 			}
 
 			//ctx.drawImage(self.canvas, largeWidth, 0, self.canvas.width, self.canvas.height, mousePos.x, 0, canvas.width, canvas.height);
 			//ctx.drawImage(self.canvas, Math.round(self.canvas.width/2), 0, self.canvas.width, self.canvas.height, Math.round(canvas.width/2), 0, canvas.width, canvas.height);
-			ctx.save();
-			Module.draw(canvas, ctx, self.video, self.myFeatures, self.meyda, delta, self.bpm);
-			ctx.restore();
+			
+
+			if(Module instanceof self.ModuleShader) {
+
+				// Switch program
+				if(Module.programIndex !== self.shaderEnv.activeProgram) {
+
+					self.shaderEnv.activeProgram = Module.programIndex;
+
+					self.shaderEnv.gl.useProgram(self.shaderEnv.programs[Module.programIndex]);
+				}
+
+				// Copy Main Canvas to Shader Canvas 
+				self.shaderEnv.texture = self.shaderEnv.gl.texImage2D(
+					self.shaderEnv.gl.TEXTURE_2D,
+					0,
+					self.shaderEnv.gl.RGBA,
+					self.shaderEnv.gl.RGBA,
+					self.shaderEnv.gl.UNSIGNED_BYTE,
+					self.canvas
+				);
+
+				// Render
+				self.shaderEnv.render();
+
+				// Copy Shader Canvas to Main Canvas
+				ctx.drawImage(
+					self.shaderEnv.canvas,
+					0,
+					0,
+					canvas.width,
+					canvas.height
+				);
+
+			} else {
+				ctx.save();
+				Module.draw(canvas, ctx, self.video, self.myFeatures, self.meyda, delta, self.bpm);
+				ctx.restore();
+			}
 		};
 
 	}
 
-	function giMouseOut(interval, Module, type, canvas, ctx, self) {
+	function giMouseOut(interval, Module, canvas, ctx, self) {
 		clearInterval(interval);
 
 		ctx.fillStyle = 'rgba(0,0,0,0.5)';

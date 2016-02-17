@@ -12,17 +12,17 @@
 		// Shared Module variables
 		var name;
 
+		// Set meta
+		Module.info.alpha = 1;
+		Module.info.disabled = true;
+
+		// Get name
+		name = Module.info.name;
+		Module.info.safeName = replaceAll(name, ' ', '-');
+
 		// Handle Module2D
 		if(Module instanceof self.Module2D) {
 			console.info('Register: Module2D');
-
-			// Set meta
-			Module.info.alpha = 1;
-			Module.info.disabled = true;
-
-			// Get name
-			name = Module.info.name;
-			Module.info.safeName = replaceAll(name, ' ', '-');
 
 			// Parse Meyda
 			if(Module.info.meyda) {
@@ -41,15 +41,7 @@
 
 		// Handle ModuleShader
 		if(Module instanceof self.ModuleShader) {
-
 			console.info('Register: ModuleShader');
-
-			// Set meta
-			Module.info.alpha = 1;
-			Module.info.disabled = true;
-
-			// Get name
-			name = Module.info.name;
 
 			Module.info.uniforms.modVcanvas = {
 				type: "t",

@@ -16,9 +16,11 @@
 
 			if(Module.info.disabled || Module.info.alpha === 0) continue;
 
-			if(Module instanceof self.ModuleShader) {
+			self.context.save();
+			self.context.globalAlpha = self.registeredMods[self.modOrder[i]].info.alpha;
+			if(self.registeredMods[self.modOrder[i]].info.blend !== 'normal') self.context.globalCompositeOperation = self.registeredMods[self.modOrder[i]].info.blend;
 
-				console.log('looping on shader', Module.info.name);
+			if(Module instanceof self.ModuleShader) {
 
 				// Switch program
 				if(Module.programIndex !== self.shaderEnv.activeProgram) {
@@ -54,11 +56,6 @@
 
 			} else if(typeof self.registeredMods[self.modOrder[i]] === 'object') {
 
-				self.context.save();
-				self.context.globalAlpha = self.registeredMods[self.modOrder[i]].info.alpha;
-
-				if(self.registeredMods[self.modOrder[i]].info.blend !== 'normal') self.context.globalCompositeOperation = self.registeredMods[self.modOrder[i]].info.blend;
-
 				if(!self.registeredMods[self.modOrder[i]].info.threejs) {
 
 					self.registeredMods[self.modOrder[i]].draw(self.canvas, self.context, self.video, meydaOutput, self.meyda, delta, self.bpm);
@@ -69,8 +66,10 @@
 					self.context.drawImage(self.threejs.canvas, 0, 0);
 					self.threejs.renderer.render(self.threejs.scene, self.threejs.camera);
 				}
-				self.context.restore();
+				
 			}
+
+			self.context.restore();
 		}
 		if(self.options.previewWindow) self.previewCtx.drawImage(self.canvas, 0, 0, self.previewCanvas.width, self.previewCanvas.height);
 	};

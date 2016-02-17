@@ -2,43 +2,23 @@
 	'use strict';
 	/*jslint browser: true */
 
-	modV.prototype.PaletteControl = function(settings) {
+	var Palette = function(colours, timePeriod, callbacks) {
+		
 		var self = this;
+
+		colours = colours || [];
+
+		self.useBPM = false;
+		self.bpmDivison = 1;
+
+		if('init' in callbacks) callbacks.init(colours);
 		
-		//TODO: error stuff
-/*		// RangeControl error handle
-		function ControlError(message) {
-			// Grab the stack
-			this.stack = (new Error()).stack;
-
-			// Parse the stack for some helpful debug info
-			var reg = /\((.*?)\)/;    
-			var stackInfo = this.stack.split('\n').pop().trim();
-			stackInfo = reg.exec(stackInfo)[0];
-
-			// Expose name and message
-			this.name = 'modV.RangeControl Error';
-			this.message = message + ' ' + stackInfo || 'Error';  
-		}
-		// Inherit from Error
-		ModuleError.prototype = Object.create(Error.prototype);
-		ModuleError.prototype.constructor = ModuleError;
-
-		self.getSettings = function() {
-			return settings;
-		};
-
-		// Check for settings Object
-		if(!settings) throw new ModuleError('RangeControl had no settings');
-		// Check for info Object
-		if(!('info' in settings)) throw new ModuleError('RangeControl had no info in settings');
-		// Check for info.name
-		if(!('name' in settings.info)) throw new ModuleError('RangeControl had no name in settings.info');
-		// Check for info.author
-		if(!('author' in settings.info)) throw new ModuleError('RangeControl had no author in settings.info');
-		// Check for info.version
-		if(!('version' in settings.info)) throw new ModuleError('RangeControl had no version in settings.info');*/
+		timePeriod = Math.round((timePeriod/1000) * 60);
 		
+		var currentColour = 0;
+		var currentTime = 0;
+		var controlsGenerated = false;
+	   	
 		// Modified from: http://stackoverflow.com/questions/5623838/rgb-to-hex-and-hex-to-rgb
 		function hexToRgb(hex) {
 			var result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex);
@@ -48,20 +28,7 @@
 				parseInt(result[3], 16)
 			] : null;
 		}
-
-		var controlsGenerated = false;	
-		var currentColour = 0;
-		var currentTime = 0;
-
-		// Load in colours from settings
-		var colours = settings.colours || [];
-
-		// Load time period from settings
-		var timePeriod = Math.round((settings.timePeriod/1000) * 60);
-
-		self.useBPM = false;
-		self.bpmDivison = 1;
-
+		
 		self.addColour = function(colour) {
 			var rgbFromHex;
 			if(typeof colour === "string") {
@@ -202,9 +169,8 @@
 			});
 
 		};
-
-		self.makeNode = function(Module) {
-
+		
+		self.generateControls = function() {
 			if(controlsGenerated) return;
 
 			var paletteDiv = document.createElement('div');
@@ -322,6 +288,77 @@
 			
 			controlsGenerated = true;
 			return controlsDiv;
+		};
+
+	};
+
+	modV.prototype.PaletteControl = function(settings) {
+		var self = this;
+		
+		//TODO: error stuff
+/*		// RangeControl error handle
+		function ControlError(message) {
+			// Grab the stack
+			this.stack = (new Error()).stack;
+
+			// Parse the stack for some helpful debug info
+			var reg = /\((.*?)\)/;    
+			var stackInfo = this.stack.split('\n').pop().trim();
+			stackInfo = reg.exec(stackInfo)[0];
+
+			// Expose name and message
+			this.name = 'modV.RangeControl Error';
+			this.message = message + ' ' + stackInfo || 'Error';  
+		}
+		// Inherit from Error
+		ModuleError.prototype = Object.create(Error.prototype);
+		ModuleError.prototype.constructor = ModuleError;
+
+		self.getSettings = function() {
+			return settings;
+		};
+
+		// Check for settings Object
+		if(!settings) throw new ModuleError('RangeControl had no settings');
+		// Check for info Object
+		if(!('info' in settings)) throw new ModuleError('RangeControl had no info in settings');
+		// Check for info.name
+		if(!('name' in settings.info)) throw new ModuleError('RangeControl had no name in settings.info');
+		// Check for info.author
+		if(!('author' in settings.info)) throw new ModuleError('RangeControl had no author in settings.info');
+		// Check for info.version
+		if(!('version' in settings.info)) throw new ModuleError('RangeControl had no version in settings.info');*/
+
+		settings.callbacks = {};
+
+		settings.callbacks.loadPalette = function(profile, paletteName) {
+			// TODO
+		};
+
+		settings.callbacks.savePalette = function(profile, paletteName, palette) {
+
+			self.controllerWindow.window.opener.postMessage({
+				type: 'global',
+				name: 'savepalette',
+				payload: {
+					palette: palette,
+					profile: profile,
+					name: paletteName
+				}
+			}, self.options.controlDomain);
+
+		};
+
+		settings.callbacks.getBPM = function() {
+			return self.bpm;
+		};
+
+		var pal = new Palette(settings.colours, settings.timePeriod, settings.callbacks);
+
+
+		self.makeNode = function(Module) {
+			//self.palettes.push(pal);
+			return pal.generateControls();
 
 		};
 	};
