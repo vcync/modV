@@ -19,7 +19,7 @@
 		<script id="fragmentshader" type="x-shader/x-fragment">
 			precision mediump float;
 			uniform sampler2D u_image;
-			//uniform float rms;
+			uniform float amount;
 			varying vec2 Vertex_UV;
 
 			void main() {
@@ -34,7 +34,7 @@
 				float a = atan(uv.y, uv.x);
 
 				// distort
-				r = r*r; // bulge
+				r = r*(r+amount); // bulge
 
 				// polar to cartesian coordinates
 				uv = r * vec2(cos(a), sin(a));

@@ -26,6 +26,24 @@
 		self.getSettings = function() {
 			return settings;
 		};
+
+		function add(thing) {
+			if(thing instanceof Array) {
+				for(var i=0; i < thing.length; i++) {
+					add(thing[i]);
+				}
+			} else {
+				if(!settings.info.controls) settings.info.controls = [];
+				settings.info.controls.push(thing);
+			}
+
+		}
+
+		self.add = function(thing) {
+
+			add(thing);
+
+		};
 		
 		// Check for settings Object
 		if(!settings) throw new ModuleError('Module had no settings');
@@ -45,6 +63,25 @@
 
 		// Settings passed, expose self.shaderFile
 		self.shaderFile = settings.shaderFile;
+
+		// Loop through Uniforms, expose self.uniforms and create local variables
+		if('uniforms' in settings.info) {
+
+			for(var uniformKey in settings.info.uniforms) {
+				var uniform = settings.info.uniforms[uniformKey];
+
+				switch(uniform.type) {
+					case 'f':
+						self[uniformKey] = parseFloat(uniform.value);
+						break;
+
+					case 'i':
+						self[uniformKey] = parseInt(uniform.value);
+						break;
+
+				}
+			}
+		}
 	};
 
 })(module);

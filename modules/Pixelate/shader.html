@@ -20,12 +20,11 @@
 		<script id="fragmentshader" type="x-shader/x-fragment">
 			precision mediump float;
 			uniform sampler2D u_image;
-			float amount;
+			uniform float amount;
 			vec2 resolution;
 			varying vec2 Vertex_UV;
 
 			void main() {
-				amount = 90.0;
 				resolution = vec2(1920.0, 1080.0);
 
 				float d = 1.0 / amount;
