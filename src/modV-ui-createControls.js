@@ -25,11 +25,13 @@
 
 				inputNode = control.makeNode(Module);
 
+				var groupNode = document.createElement('div');
+				groupNode.classList.add('control-group');
 				var labelNode = document.createElement('label');
 				labelNode.textContent = control.label;
-				labelNode.appendChild(inputNode);
-				panelNode.appendChild(labelNode);
-				panelNode.appendChild(document.createElement('br'));
+				groupNode.appendChild(labelNode);
+				groupNode.appendChild(inputNode);
+				panelNode.appendChild(groupNode);
 			});
 
 		}

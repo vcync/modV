@@ -1,3 +1,26 @@
+<template id="global-controls">
+	<div class="pure-u-1-1 global-controls">
+		<h1>Global Controls</h1>
+		<div class="control-group clearing-group">
+			<label for="clearingGlobal">Clearing</label>
+			<input id="clearingGlobal" type="checkbox" class="enable">
+		</div>
+		<div class="control-group monitor-group">
+			<label for="monitorAudioGlobal">Monitor audio input</label>
+			<input id="monitorAudioGlobal" type="checkbox" class="enable">
+		</div>
+		<div class="control-group factory-group">
+			<label for="factoryResetGlobal">Factory Reset</label>
+			<input id="factoryResetGlobal" type="button" value="Factory Reset" class="enable">
+		</div>
+		<div class="control-group save-preset-group">
+			<label>Save preset</label>
+			<input type="text" id="savePresetName">
+			<input id="savePresetGlobal" type="button" value="Save Preset" class="enable">
+		</div>
+	</div>
+</template>
+
 <template id="gallery-item">
 	<div class="pure-u-6-24 gallery-item">
 		<canvas class="preview"></canvas>
@@ -13,9 +36,16 @@
 			
 			</div>
 			<div class="pure-u-4-5 options">
-				<label>Enabled<input type="checkbox" checked="true" class="enable"></label>
-				<label>Opacity<input type="range" min="0" max="1" value = "1" step="0.05" class="opacity"></label>
-				<label>Blending
+				<div class="control-group enable-group">
+					<label for="">Enabled</label>
+					<input id="" type="checkbox" checked="true" class="enable">
+				</div>
+				<div class="control-group opacity-group">
+					<label for="">Opacity</label>
+					<input type="range" min="0" max="1" value = "1" step="0.05" class="opacity">
+				</div>
+				<div class="control-group blending-group">
+					<label for="">Blending</label>
 					<select class="composite-operations" multiple="" style="color: black">
 						<optgroup label="Blend Modes">
 							<option value="normal">Normal</option>
@@ -51,10 +81,11 @@
 							<option value="lighter">Lighter</option>
 						</optgroup>
 					</select>
-				</label>
+				</div>
 			</div>
 			<div class="pure-u-1-5 handle-container">
-				<div class="handle"></div>
+				<span class="ibvf"></span>
+				<i class="handle fa fa-bars fa-3x"></i>
 			</div>
 		</div>
 

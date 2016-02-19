@@ -21,7 +21,7 @@ module.exports = function(grunt) {
 
     copy: {
       all: {
-        src: ['*.css', '*.html', 'images/**/*', 'img/**/*', '!Gruntfile.js'],
+        src: ['*.css', '*.html', 'images/**/*', 'img/**/*', '!Gruntfile.js', 'fonts/**/*'],
         dest: 'dist/',
       },
       main: {
@@ -143,7 +143,7 @@ module.exports = function(grunt) {
   
   grunt.loadNpmTasks('grunt-bower'); // ???
 
-  grunt.registerTask('default', ['clean', 'ejs', 'browserify', 'copy', 'tags', 'symlink', 'bower']);
+  grunt.registerTask('default', ['clean', 'ejs', 'browserify', 'copy', /*'tags',*/ 'symlink', 'bower']);
   
   grunt.registerTask('server', ['default', 'connect', 'execute', 'watch']);
 

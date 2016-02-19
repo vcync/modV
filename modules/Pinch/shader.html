@@ -19,7 +19,9 @@
 		<script id="fragmentshader" type="x-shader/x-fragment">
 			precision mediump float;
 			uniform sampler2D u_image;
-			//uniform float rms;
+			uniform float amount;
+			uniform float centerX;
+			uniform float centerY;
 			varying vec2 Vertex_UV;
 
 			void main() {
@@ -27,19 +29,23 @@
 				vec2 uv = Vertex_UV.xy;
 
 				// normalize to the center
-				uv = uv - 0.5;
+				uv.x = uv.x - centerX;
+				uv.y = uv.y - centerY;
 
 				// cartesian to polar coordinates
 				float r = length(uv);
 				float a = atan(uv.y, uv.x);
 
 				// distort
-				r = sqrt(r/2.); // pinch
+				r = sqrt(r/amount); // pinch
 
 				// polar to cartesian coordinates
 				uv = r * vec2(cos(a), sin(a));
 
-				vec4 c = texture2D(u_image, uv + 0.5);
+				uv.x = uv.x + centerX;
+				uv.y = uv.y + centerY;
+
+				vec4 c = texture2D(u_image, uv);
 				gl_FragColor = c;
 			}
 		</script>

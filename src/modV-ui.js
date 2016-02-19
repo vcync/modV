@@ -120,6 +120,29 @@
 			console.log('clear');
 		}
 
+		// Create Global Controls
+		var template = self.templates.querySelector('#global-controls');
+		var globalControlPanel = document.importNode(template.content, true);
+
+		document.querySelector('.global-control-panel-wrapper').appendChild(globalControlPanel);
+
+		// Pull back initialised node from DOM
+		globalControlPanel = document.querySelector('.global-control-panel-wrapper .global-controls');
+
+
+		globalControlPanel.querySelector('#clearingGlobal').addEventListener('change', function() {
+			self.clearing = this.checked;
+		});
+
+		globalControlPanel.querySelector('#monitorAudioGlobal').addEventListener('change', function() {
+			self.muted = this.checked;
+		});
+
+		globalControlPanel.querySelector('#factoryResetGlobal').addEventListener('click', function() {
+			self.factoryReset();
+		});
+
+
 	};
 
 })(module);

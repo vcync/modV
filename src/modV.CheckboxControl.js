@@ -48,6 +48,7 @@
 			var node = document.createElement('input');
 			node.type = 'checkbox';
 			if('checked' in settings) node.checked = settings.checked;
+			else node.checked = false;
 
 			node.addEventListener('change', function(e) {
 				Module[self.variable] = this.checked;

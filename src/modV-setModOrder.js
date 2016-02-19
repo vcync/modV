@@ -18,7 +18,7 @@
 				self.registeredMods[mod].info.order = idx;
 			});
 		}
-		
+		/*
 		// Reorder DOM elements (ugh ;_;)
 		var list = this.controllerWindow.document.body;
 		var items = list.querySelectorAll('fieldset[data-name]');
@@ -38,7 +38,7 @@
 		
 		for(i = 0; i < itemsArr.length; ++i) {
 			list.appendChild(itemsArr[i]);
-		}
+		}*/
 		
 		return order;
 	};

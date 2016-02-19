@@ -51,7 +51,6 @@
 
 						switch(uniform.type) {
 							case 'f':
-								console.log('updating', Module.info.name, 'float uniform', uniformKey, 'to', Module[uniformKey]);
 								value = parseFloat(Module[uniformKey]);
 								_gl.uniform1f(uniLoc, value);
 								break;

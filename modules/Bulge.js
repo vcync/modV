@@ -9,6 +9,14 @@ var Bulge = new modVC.ModuleShader({
 			amount: {
 				type: 'f',
 				value: 0.5
+			},
+			centerX: {
+				type: 'f',
+				value: 0.5
+			},
+			centerY: {
+				type: 'f',
+				value: 0.5
 			}
 		} // Three.JS uniforms
 	},
@@ -16,13 +24,33 @@ var Bulge = new modVC.ModuleShader({
 });
 
 Bulge.add(new modVC.RangeControl({
-    variable: 'amount',
-    label: 'Bulge Size',
-    varType: 'float',
-    min: 0.0,
-    max: 1.14,
-    step: 0.001,
-    default: 0.5
+	variable: 'amount',
+	label: 'Bulge Size',
+	varType: 'float',
+	min: 0.0,
+	max: 1.14,
+	step: 0.001,
+	default: 0.5
+}));
+
+Bulge.add(new modVC.RangeControl({
+	variable: 'centerX',
+	label: 'Center X',
+	varType: 'float',
+	min: 0.0,
+	max: 1.0,
+	step: 0.001,
+	default: 0.5
+}));
+
+Bulge.add(new modVC.RangeControl({
+	variable: 'centerY',
+	label: 'Center Y',
+	varType: 'float',
+	min: 0.0,
+	max: 1.0,
+	step: 0.001,
+	default: 0.5
 }));
 
 modVC.register(Bulge);

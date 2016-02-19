@@ -231,10 +231,6 @@
 	modV.prototype.createWindows = function() {
 		var self = this;
 
-		// Set modV.prototype.controllerWindow
-		var cWindow = createControlWindow.bind(self);
-		self.controllerWindow = cWindow();
-
 		// Set modV.prototype.previewWindow
 		if(self.options.previewWindow) {
 			var pWindow = createPreviewWindow.bind(self);
@@ -247,39 +243,16 @@
 		// OnClose
 		window.addEventListener('beforeunload', function() {
 			try {
-				self.controllerWindow.close();
 				self.previewWindow.close();
 			} catch(e) {
 				// oops window not found.
 			}
 		}, false);
 	};
-								   	
-	// var slipJS = document.createElement('script');
-	// slipJS.src = './libraries/slip.js';
-	
-	// slipJS.onload = function() {
-	
-	// 	modV.prototype.controllerWindow.window.document.body.addEventListener('slip:beforewait', function(e){
-	// 		if (e.target.className.indexOf('instant') > -1) e.preventDefault();
-	// 	}, false);
-	
-	// 	modV.prototype.controllerWindow.window.document.body.addEventListener('slip:reorder', function(e){
-	// 		e.target.parentNode.insertBefore(e.target, e.detail.insertBefore);
-	// 		return false;
-	// 	}, false);
-		
-	// 	modV.prototype.controllerWindow.window.initSlip = function() {
-	// 		new Slip(controllerWindow.window.document.body);
-	// 	};
-	// 	modV.prototype.controllerWindow.window.initSlip();
-	// };
-	
-	// modV.prototype.controllerWindow.window.document.head.appendChild(slipJS);
 	
 	// Controller Window Message Reciever
 	// > method must be bound to the modV scope
-	var cWindowReceiveMessage = function(event) {
+/*	var cWindowReceiveMessage = function(event) {
 		var self = this;
 
 		if(event.origin !== self.options.controlDomain) return;
@@ -366,14 +339,14 @@
 			}
 		}
 		
-	};
+	};*/
 
 	// - load preset
 	// TODO: move this into own file
-	modV.prototype.addPresetToController = function(presetName, controlDomain) {
+/*	modV.prototype.addPresetToController = function(presetName, controlDomain) {
 		var self = this;
 
 		self.controllerWindow.postMessage({type: 'new-preset', name: presetName}, controlDomain);
-	};
+	};*/
 
 })(module);

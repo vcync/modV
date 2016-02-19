@@ -27,7 +27,7 @@
 			uniform sampler2D u_image;
 			varying vec2 Vertex_UV;
 
-			float scale = 1.0;
+			uniform float scale;
 
 			float find_closest(int x, int y, float c0) {
 				vec4 dither[4];

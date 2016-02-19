@@ -31,7 +31,7 @@ var Ball = new modVC.Module2D({
 		
 	},
 	resize: function(canvas) {
-		for(var i=0; i < this.amount; i++) {
+		for(var i=0; i < this.balls.length; i++) {
 			this.balls[i].bounds.width = canvas.width;
 			this.balls[i].bounds.height = canvas.height;
 		}

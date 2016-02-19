@@ -7,6 +7,24 @@ body {
 	margin: 0;
 }
 
+.ibvf {
+	width: 0;
+	height: 100%;
+	vertical-align: middle;
+	display: inline-block;
+}
+
+h1,
+.title {
+	letter-spacing: -2px;
+}
+
+.control-group label {
+    display: inline-block;
+    min-width: 70px;
+    vertical-align: top;
+}
+
 section {
 	height: 100%;
     position: fixed;
@@ -53,6 +71,8 @@ section .bottom {
 	right: 0;
 	left: 0;
 	height: 25%;
+    box-sizing: border-box;
+    border-top: 1px inset white;
 }
 
 section .bottom > .pure-g,
@@ -71,6 +91,19 @@ section .bottom .control-panel-wrapper .control-panel {
 
 section .bottom .control-panel-wrapper .control-panel.show {
 	display: block;
+}
+
+section .bottom .control-panel-wrapper,
+section .bottom .global-control-panel-wrapper {
+    padding: 8px;
+    box-sizing: border-box;
+    overflow-y: scroll;
+    overflow-x: hidden;
+    height: 100%;
+}
+
+section .bottom .control-group label {
+	width: 120px;
 }
 
 .canvas-preview {
@@ -109,14 +142,19 @@ canvas {
 }
 
 .active-item .options label {
-    display: block;
     font-size: 0.8em;
 }
 
-.active-item .handle {
-	width: 60px;
-	height: 60px;
-	background-color: red;
+.active-item .handle-container {
+	text-align: right;
+}
+
+.active-item .handle-container .handle {
+/*	width: 60px;
+	height: 60px;*/
+	text-align: center;
+	vertical-align: middle;
+	display: inline-block;
 }
 
 select.composite-operations:hover {

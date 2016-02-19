@@ -221,14 +221,14 @@
 
 						if(control.type === 'image' || control.type === 'multiimage' || control.type === 'video') return;
 
-						self.controllerWindow.postMessage({
+						/*self.controllerWindow.postMessage({
 							type: 'ui',
 							varType: control.type,
 							modName: m.name,
 							name: control.label,
 							payload: val,
 							index: m.order
-						}, self.options.controlDomain);
+						}, self.options.controlDomain);*/
 
 						if(control.append) {
 							val = val + control.append;
@@ -243,20 +243,20 @@
 				self.registeredMods[mod].info.blend = m.blend;
 
 				// Update blendmode UI
-				self.controllerWindow.postMessage({
+				/*self.controllerWindow.postMessage({
 					type: 'ui-blend',
 					modName: m.name,
 					payload: m.blend
 				}, self.options.controlDomain);
-
+*/
 				self.registeredMods[mod].info.disabled = m.disabled;
 
 				// Update enabled UI
-				self.controllerWindow.postMessage({
+				/*self.controllerWindow.postMessage({
 					type: 'ui-enabled',
 					modName: m.name,
 					payload: !m.disabled
-				}, self.options.controlDomain);
+				}, self.options.controlDomain);*/
 				
 				console.log(m.name, 'now @ ', self.setModOrder(m.name, m.order));
 
@@ -287,14 +287,14 @@
 			self.beatDetektorSupport = true;
 			console.info('BeatDetektor detected, BPM analysis available.', 'modV robot now available.');
 			self.beatDetektorMed = new BeatDetektor(85,169);
-			bpmInfoUpdater = setInterval(function() {
+			/*bpmInfoUpdater = setInterval(function() {
 				self.controllerWindow.postMessage({
 					type: 'info',
 					name: 'detected-bpm',
 					payload: self.bpm,
 				}, self.options.controlDomain);
 
-			}, 1000);
+			}, 1000);*/
 		}
 
 		// Lookup presets
@@ -303,7 +303,7 @@
 		} else {
 			self.presets = JSON.parse(localStorage.getItem('presets'));
 			for(var presetname in self.presets) {
-				self.addPresetToController(presetname, self.options.controlDomain);
+				//self.addPresetToController(presetname, self.options.controlDomain);
 				console.log('Successfuly read saved preset with name:', presetname);
 			}
 		}
