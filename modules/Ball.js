@@ -15,26 +15,25 @@ var Ball = new modVC.Module2D({
 		this.size = 2;
 		this.colour = 'pink';
 		this.speed = 5;
-
 		this.balls = [];
 
-		for(var i=0; i < 50; i++) {
-			var newBall = new this.ballObj();
-			newBall.bounds.width = canvas.width;
-			newBall.bounds.height = canvas.height;
-			newBall.position.x = Math.floor(Math.random()*(newBall.bounds.width-1+1)+1);
-			newBall.position.y = Math.floor(Math.random()*(newBall.bounds.height-1+1)+1);
-			newBall.velocity.x = Math.floor(Math.random()*(10-1+1)+1);
-			newBall.velocity.y = Math.floor(Math.random()*(10-1+1)+1);
-			this.balls.push(newBall);
-		}
+		this.setupBalls = function() {
+			this.balls = [];
+			for(var i=0; i < 50; i++) {
+				var newBall = new this.ballObj();
+				newBall.bounds.width = canvas.width;
+				newBall.bounds.height = canvas.height;
+				newBall.position.x = Math.floor(Math.random()*(newBall.bounds.width-1+1)+1);
+				newBall.position.y = Math.floor(Math.random()*(newBall.bounds.height-1+1)+1);
+				newBall.velocity.x = Math.floor(Math.random()*(10-1+1)+1);
+				newBall.velocity.y = Math.floor(Math.random()*(10-1+1)+1);
+				this.balls.push(newBall);
+			}
+		};
 		
 	},
 	resize: function(canvas) {
-		for(var i=0; i < this.balls.length; i++) {
-			this.balls[i].bounds.width = canvas.width;
-			this.balls[i].bounds.height = canvas.height;
-		}
+		this.setupBalls();
 	},
 	draw: function(canvas, ctx, vid, features, meyda, delta, bpm) {
 
@@ -135,12 +134,27 @@ controls.push(new modVC.CheckboxControl({
 controls.push(new modVC.PaletteControl({
 	variable: 'colour',
 	colours: [
-		[255,102,152],
-		[255,179,102],
-		[255,255,102],
-		[152,255,102],
-		[102,152,255]
-	],
+		[199,64,163],
+		[97,214,199],
+		[222,60,75],
+		[101,151,220],
+		[213,158,151],
+		[100,132,129],
+		[154,94,218],
+		[194,211,205],
+		[201,107,152],
+		[119,98,169],
+		[214,175,208],
+		[218,57,123],
+		[196,96,98],
+		[218,74,219],
+		[138,100,121],
+		[96,118,225],
+		[132,195,223],
+		[82,127,162],
+		[209,121,211],
+		[181,152,220]
+	], // generated here: http://tools.medialab.sciences-po.fr/iwanthue/
 	timePeriod: 500
 }));
 

@@ -5,11 +5,11 @@
 	modV.prototype.shaderSetup = function() {
 		var self = this;
 		
-		self.shaderEnv.programs = [];
+		self.shaderEnv.programs = [null]; // null at position 0 because programs can't be 0
 		self.shaderEnv.gl = null;
 		self.shaderEnv.canvas = null;
 		self.shaderEnv.texture = null;
-		self.shaderEnv.activeProgram = 0;
+		self.shaderEnv.activeProgram = 1;
 
 		var buffer;
 		var gl; // reference to self.shaderEnv.gl
@@ -18,7 +18,7 @@
 
 		function resize(programIndex) {
 
-			var  currentProgramIndex;
+			var currentProgramIndex;
 
 			if(typeof programIndex !== 'undefined') {
 
@@ -44,13 +44,12 @@
 			}
 
 			if(typeof programIndex !== 'undefined') {
-
 				self.shaderEnv.activeProgram = currentProgramIndex;
 				gl.useProgram(programs[currentProgramIndex]);
 			}
 		}
 
-		self.shaderEnv.resize = resize; // TODO: is this a reference?
+		self.shaderEnv.resize = resize;
 
 		function setRectangle(gl, x, y, width, height) {
 			var x1 = x;
@@ -73,6 +72,12 @@
 			self.shaderEnv.gl		= self.shaderEnv.canvas.getContext('experimental-webgl', {antialias: false});
 			gl = self.shaderEnv.gl; // set reference
 			canvas = self.shaderEnv.canvas; // set reference
+
+			// Disable Colourspace conversion
+			gl.pixelStorei(gl.UNPACK_COLORSPACE_CONVERSION_WEBGL, gl.NONE);
+
+			// Disable pre-multiplied alpha
+			gl.pixelStorei(gl.UNPACK_PREMULTIPLY_ALPHA_WEBGL, gl.NONE);
 					
 			// Compile shaders and create program
 			var shaderSource;
@@ -136,12 +141,6 @@
 			gl.activeTexture(gl.TEXTURE0); // At Unit position 0
 			gl.bindTexture(gl.TEXTURE_2D, self.shaderEnv.texture);
 		 
-			// Set the parameters so we can render any size image.
-			gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE);
-			gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);
-			gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR); // or NEAREST
-			gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.LINEAR); // or NEAREST
-		 	
 			// Fill the texture with a 1x1 transparent pixel.
 			gl.texImage2D(
 				gl.TEXTURE_2D,
@@ -154,6 +153,12 @@
 				gl.UNSIGNED_BYTE,
 				new Uint8Array([0, 0, 0, 0])
 			);
+
+			// Set the parameters so we can render any size image.
+			gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE);
+			gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);
+			gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR); // or NEAREST
+			gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.LINEAR); // or NEAREST
 
 		 	// Set canvas and viewport sizes
 			resize();

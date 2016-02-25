@@ -2,7 +2,7 @@
 	'use strict';
 	/*jslint browser: true */
 
-	modV.prototype.createControls = function(Module) {
+	modV.prototype.createControls = function(Module, modVSelf) {
 		var self = this;
 		var controlPanelWrapperNode = document.querySelector('.control-panel-wrapper');
 		var panelNode = document.createElement('div');
@@ -23,7 +23,7 @@
 
 				console.log('createControls', control.variable);
 
-				inputNode = control.makeNode(Module);
+				inputNode = control.makeNode(Module, modVSelf);
 
 				var groupNode = document.createElement('div');
 				groupNode.classList.add('control-group');

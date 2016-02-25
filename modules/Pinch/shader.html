@@ -46,7 +46,7 @@
 				uv.y = uv.y + centerY;
 
 				vec4 c = texture2D(u_image, uv);
-				gl_FragColor = c;
+				gl_FragColor = c.bgra;
 			}
 		</script>
 	</body>

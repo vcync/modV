@@ -64,9 +64,7 @@
 			    vec4 bValue = texture2D(u_image, uv - bOffset); 
 
 			    // Combine the offset colors.
-			    gl_FragColor = vec4(rValue.r, gValue.g, bValue.b, 1.0);
-				
-
+			    gl_FragColor = vec4(bValue.b, gValue.g, rValue.r, 1.0); //BGRA because stupid stuff to do with Chrome
 
 				//gl_FragColor = c;
 			}

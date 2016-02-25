@@ -64,8 +64,6 @@
 					}
 				}
 
-				
-
 				// Render
 				self.shaderEnv.render(delta);
 
@@ -77,7 +75,6 @@
 					self.canvas.width,
 					self.canvas.height
 				);
-
 
 			} else if(typeof self.registeredMods[self.modOrder[i]] === 'object') {
 

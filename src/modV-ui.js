@@ -71,7 +71,7 @@
 				self.setModOrder(name, evt.newIndex);
 
 				// Create controls
-				self.createControls(Module);
+				self.createControls(Module, self);
 
 				// turn on
 				// TODO: add setting to enable/disable by default
