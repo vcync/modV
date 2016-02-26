@@ -349,10 +349,6 @@
 
 		};
 
-		settings.callbacks.getBPM = function() {
-			return self.bpm;
-		};
-
 		self.callbacks = settings.callbacks;
 
 		var pal = new Palette(settings.colours, settings.timePeriod, settings.callbacks);
@@ -362,6 +358,10 @@
 
 			self.callbacks.next = function(colour) {
 				Module[settings.variable] = colour;
+			};
+
+			self.callbacks.getBPM = function() {
+				return modVSelf.bpm;
 			};
 
 			modVSelf.palettes.push(pal);
