@@ -25,8 +25,6 @@
 
 				// Switch program
 				if(Module.programIndex !== self.shaderEnv.activeProgram) {
-					console.log('switching from program' , self.shaderEnv.activeProgram, 'to', Module.programIndex);
-
 					self.shaderEnv.activeProgram = Module.programIndex;
 
 					_gl.useProgram(self.shaderEnv.programs[Module.programIndex]);
