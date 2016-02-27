@@ -27,7 +27,6 @@
 		var xhr = new XMLHttpRequest();
 
 		xhr.onload = function() {
-			console.log('response', xhr);
 			callback(xhr.responseXML);
 		};
 
@@ -76,6 +75,8 @@
 
 		self.canvas = undefined;
 
+		self.soloCanvas = undefined; // TODO: implement
+
 		self.meydaSupport = false;
 		self.muted = true;
 
@@ -101,7 +102,7 @@
 				try {
 					temp[key] = self.cloneModule(obj[key], false);
 				} catch(e) {
-					
+					console.error('Cannot clone native code', e);
 				}
 			}
 			return temp;
@@ -163,6 +164,11 @@
 		self.profiles = {};
 
 		self.mediaManager = new WebSocket("ws://localhost:3132/");
+
+		self.mediaManager.onerror = function (error) {
+			console.warn('Media Manager not available - did you start modV in no-manager mode?');
+		};
+
 		self.mediaManagerAvailable = false;
 		
 		self.mediaManager.onopen = function() {
