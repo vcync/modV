@@ -171,7 +171,6 @@
 		};
 		
 		self.generateControls = function() {
-			if(controlsGenerated) return;
 
 			var paletteDiv = document.createElement('div');
 			paletteDiv.classList.add('palette');
@@ -286,7 +285,6 @@
 			// controlsDiv.appendChild(savePaletteName);
 			// controlsDiv.appendChild(savePaletteButton);
 			
-			controlsGenerated = true;
 			return controlsDiv;
 		};
 
@@ -294,6 +292,7 @@
 
 	modV.prototype.PaletteControl = function(settings) {
 		var self = this;
+		if(typeof settings === "undefined") settings = {};
 		
 		//TODO: error stuff
 /*		// RangeControl error handle
@@ -331,13 +330,18 @@
 
 		settings.callbacks = {};
 
-		settings.callbacks.loadPalette = function(profile, paletteName) {
+		// Copy settings values to local scope
+		for(var key in settings) {
+			self[key] = settings[key];
+		}
+
+		self.callbacks.loadPalette = function(profile, paletteName) {
 			// TODO
 		};
 
-		settings.callbacks.savePalette = function(profile, paletteName, palette) {
+		self.callbacks.savePalette = function(profile, paletteName, palette) {
 
-			self.controllerWindow.window.opener.postMessage({
+			window.postMessage({
 				type: 'global',
 				name: 'savepalette',
 				payload: {
@@ -349,15 +353,16 @@
 
 		};
 
-		self.callbacks = settings.callbacks;
-
-		var pal = new Palette(settings.colours, settings.timePeriod, settings.callbacks);
+		var pal = new Palette(self.colours, self.timePeriod, self.callbacks);
 
 
 		self.makeNode = function(Module, modVSelf) {
 
+			console.log('Palette makeNode called');
+
 			self.callbacks.next = function(colour) {
-				Module[settings.variable] = colour;
+				console.log(Module.info.name, 'Palette "next" called', colour);
+				Module[self.variable] = colour;
 			};
 
 			self.callbacks.getBPM = function() {
