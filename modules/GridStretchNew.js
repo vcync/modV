@@ -1,3 +1,7 @@
+function randomIntFromInterval(min, max) {
+    return Math.floor(Math.random()*(max-min+1)+min);
+}
+
 var GridStretch = new modVC.Module2D({
 	info: {
 		name: 'Grid Stretch',
@@ -33,7 +37,9 @@ var GridStretch = new modVC.Module2D({
 		this.newCtx2.clearRect(0, 0, canvas.width, canvas.height);
 
 		for(var i=this.countX; i >= 0; i--) {
-			for(var j=this.countY; j >= 0; j--) {
+		  for(var j=this.countY; j >= 0; j--) {
+		//for(var i=0; i < this.countX; i++) {
+		//	for(var j=0; j < this.countY; j++) {
 
 				if(this.zcr) {
 					this.analysed = features.zcr/10 * this.intensity;
@@ -50,10 +56,10 @@ var GridStretch = new modVC.Module2D({
 					sliceWidth,
 					sliceHeight,
 
-					i*sliceWidth - (this.analysed /2),
-					j*sliceHeight - (this.analysed /2),
-					sliceWidth + this.analysed,
-					sliceHeight + this.analysed
+					(i*sliceWidth) - this.analysed,
+					(j*sliceHeight) - this.analysed,
+					sliceWidth + ((this.analysed) * 2),
+					sliceHeight + ((this.analysed) * 2)
 				);
 
 			}
