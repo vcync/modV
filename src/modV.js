@@ -333,7 +333,13 @@
 		self.shaderSetup();
 
 		self.start = function() {
-			self.startUI();
+			// Scan Stream sources and setup User Media
+			scanMediaStreamSources(function(foundSources) {
+				self.setMediaSource(foundSources.audio[0].id, foundSources.video[0].id);
+				self.startUI();
+			});
+			
+
 			
 			if(typeof self.canvas !== 'object') {
 				console.error('modV: Canvas not set');
@@ -410,8 +416,7 @@
 			scanMediaStreamSources(callback);
 		};
 
-		// Scan Stream sources and setup User Media
-		scanMediaStreamSources(function() {
+		self.setMediaSource = function(audioSourceID, videoSourceID) {
 			var constraints = {
 				audio: {
 					optional: [
@@ -421,7 +426,8 @@
 						{googAutoGainControl: false},
 						{googNoiseSuppression2: false},
 						{googHighpassFilter: false},
-						{googTypingNoiseDetection: false}
+						{googTypingNoiseDetection: false},
+						{sourceId: audioSourceID}
 					]
 				}
 			};
@@ -436,20 +442,25 @@
 						{googAutoGainControl: false},
 						{googNoiseSuppression2: false},
 						{googHighpassFilter: false},
-						{googTypingNoiseDetection: false}
+						{googTypingNoiseDetection: false},
+						{sourceId: videoSourceID}
 					]
 				};
 			}
 
 			/* Ask for user media access */
 			navigator.getUserMedia(constraints, userMediaSuccess, userMediaError);
-		});
+		}
 
 		function userMediaSuccess(stream) {
 
 			// Create video stream
 			self.video.src = window.URL.createObjectURL(stream);
 			
+			// If we have opened a previous AudioContext, destroy it as the number of AudioContexts
+			// are limited to 6
+			if(aCtx) aCtx.close();
+
 			// Create new Audio Context
 			aCtx = new window.AudioContext();
 			
