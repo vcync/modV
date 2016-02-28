@@ -30,6 +30,7 @@ var Ball = new modVC.Module2D({
 				this.balls.push(newBall);
 			}
 		};
+		this.setupBalls();
 		
 	},
 	resize: function(canvas) {

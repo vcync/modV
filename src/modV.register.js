@@ -72,18 +72,23 @@
 				gl.compileShader(vertexShader);
 
 				var compiled = gl.getShaderParameter(vertexShader, gl.COMPILE_STATUS);
-				console.log('Vertex Shader compiled successfully: ' + compiled);
-				var compilationLog = gl.getShaderInfoLog(vertexShader);
-				console.log('Vertex Shader compiler log: ' + compilationLog);
+				var compilationLog;
+				if(!compiled) {
+					console.error(Module.info.name + "'s", 'Vertex Shader did not compile.');
+					compilationLog = gl.getShaderInfoLog(fragmentShader);
+					console.info(Module.info.name + "'s", 'Vertex Shader compiler log: ' + compilationLog);
+				}
 	 
 	  			fragmentShader = gl.createShader(gl.FRAGMENT_SHADER);
 				gl.shaderSource(fragmentShader, frag);
 				gl.compileShader(fragmentShader);
 
 				compiled = gl.getShaderParameter(fragmentShader, gl.COMPILE_STATUS);
-				console.log('Fragment Shader compiled successfully: ' + compiled);
-				compilationLog = gl.getShaderInfoLog(fragmentShader);
-				console.log('Fragment Shader compiler log: ' + compilationLog);
+				if(!compiled) {
+					console.error(Module.info.name + "'s", 'Fragment Shader did not compile.');
+					compilationLog = gl.getShaderInfoLog(fragmentShader);
+					console.info(Module.info.name + "'s", 'Fragment Shader compiler log: ' + compilationLog);
+				}
 
 				Module.program = gl.createProgram();
 				var program = Module.program;

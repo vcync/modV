@@ -69,7 +69,7 @@
 
 		function init() {
 			self.shaderEnv.canvas	= document.createElement('canvas');
-			self.shaderEnv.gl		= self.shaderEnv.canvas.getContext('experimental-webgl', {antialias: false});
+			self.shaderEnv.gl		= self.shaderEnv.canvas.getContext('experimental-webgl', {antialias: true});
 			gl = self.shaderEnv.gl; // set reference
 			canvas = self.shaderEnv.canvas; // set reference
 
