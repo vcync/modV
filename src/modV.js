@@ -381,10 +381,11 @@
 		function scanMediaStreamSources(callback) {
 
 			MediaStreamTrack.getSources(function(sources) {
-				sources.forEach(function(source) {
+				
+				self.mediaStreamSources.video = [];
+				self.mediaStreamSources.audio = [];
 
-					self.mediaStreamSources.video = [];
-					self.mediaStreamSources.audio = [];
+				sources.forEach(function(source) {
 
 					if(source.kind == 'audio') {
 						self.mediaStreamSources.audio.push(source);
