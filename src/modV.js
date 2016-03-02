@@ -53,7 +53,9 @@
 
 		// Save user options
 		if(typeof options !== 'undefined') self.options = options;
-		else self.options = {};
+		else {
+			self.loadOptions();
+		}
 
 		self.clearing = true;
 		if(!self.options.clearing) self.clearing = false;
@@ -102,7 +104,7 @@
 				try {
 					temp[key] = self.cloneModule(obj[key], false);
 				} catch(e) {
-					console.error('Cannot clone native code', e);
+					//console.error('Cannot clone native code', e);
 				}
 			}
 			return temp;
@@ -328,6 +330,18 @@
 			//resize(false, width, height);
 		};
 
+		/* Save modV's config to local storage */
+		self.saveOptions = function() {
+			localStorage.setItem('modVoptions', JSON.stringify(self.options)); 
+		};
+
+		/* Load modV's config to local storage */
+		self.loadOptions = function() {
+			if(localStorage.getItem('modVoptions')) {
+				self.options = JSON.parse(localStorage.getItem('modVoptions'));
+			}
+		};
+
 		// Shader handling
 		self.shaderEnv = {};
 		self.shaderSetup();
@@ -448,9 +462,13 @@
 				};
 			}
 
+			self.options.audioSource = audioSourceID;
+			self.options.videoSource = videoSourceID;
+			self.saveOptions();
+
 			/* Ask for user media access */
 			navigator.getUserMedia(constraints, userMediaSuccess, userMediaError);
-		}
+		};
 
 		function userMediaSuccess(stream) {
 

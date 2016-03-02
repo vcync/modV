@@ -138,26 +138,30 @@
 			self.muted = this.checked;
 		});
 
-		var optGroupAudioNode = globalControlPanel.querySelectorAll('#mediaSourceGlobal optgroup')[0];
-		var optGroupVideoNode = globalControlPanel.querySelectorAll('#mediaSourceGlobal optgroup')[1];
+		var audioSelectNode = globalControlPanel.querySelector('#audioSourceGlobal');
+		var videoSelectNode = globalControlPanel.querySelector('#videoSourceGlobal');
 
 		// Set up media sources
 		self.mediaStreamSources.audio.forEach(function(audioSource) {
 			var optionNode = document.createElement('option');
 			optionNode.value = audioSource.id;
 			optionNode.textContent = audioSource.label;
-			optGroupAudioNode.appendChild(optionNode);
+			audioSelectNode.appendChild(optionNode);
 		});
 
 		self.mediaStreamSources.video.forEach(function(videoSource) {
 			var optionNode = document.createElement('option');
 			optionNode.value = videoSource.id;
 			optionNode.textContent = videoSource.label;
-			optGroupVideoNode.appendChild(optionNode);
+			videoSelectNode.appendChild(optionNode);
 		});
 
-		globalControlPanel.querySelector('#mediaSourceGlobal').addEventListener('change', function() {
-			self.setMediaSource(this.value, 0);
+		audioSelectNode.addEventListener('change', function() {
+			self.setMediaSource(this.value, videoSelectNode.value);
+		});
+
+		videoSelectNode.addEventListener('change', function() {
+			self.setMediaSource(audioSelectNode.value, this.value);
 		});
 
 		globalControlPanel.querySelector('#factoryResetGlobal').addEventListener('click', function() {

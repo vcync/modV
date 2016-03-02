@@ -20,18 +20,18 @@ h1,
 }
 
 .control-group label {
-    display: inline-block;
-    min-width: 70px;
-    vertical-align: top;
+	display: inline-block;
+	min-width: 70px;
+	vertical-align: top;
 }
 
 section {
 	height: 100%;
-    position: fixed;
-    top: 0;
-    bottom: 0;
-    right: 0;
-    left: 0;
+	position: fixed;
+	top: 0;
+	bottom: 0;
+	right: 0;
+	left: 0;
 }
 
 section > .pure-g {
@@ -48,7 +48,12 @@ section .top > .pure-g {
 
 section .top .active-list {
 	overflow-x: hidden;
-    overflow-y: scroll;
+	overflow-y: scroll;
+}
+
+section .top .active-list-wrapper {
+	resize: horizontal;
+	overflow: auto;
 }
 
 section .top .active-list-wrapper,
@@ -71,8 +76,8 @@ section .bottom {
 	right: 0;
 	left: 0;
 	height: 25%;
-    box-sizing: border-box;
-    border-top: 1px inset white;
+	box-sizing: border-box;
+	border-top: 1px inset white;
 }
 
 section .bottom > .pure-g,
@@ -122,7 +127,7 @@ canvas {
 	border-bottom: 1px #333 solid;
 	color: #fff;
 	display: inline-block;
-	max-height: 100px;
+	max-height: 123px;
 	padding: 8px;
 }
 
@@ -135,14 +140,14 @@ canvas {
 }
 
 .active-item .title {
-    font-size: 1.6em;
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
+	font-size: 1.6em;
+	white-space: nowrap;
+	overflow: hidden;
+	text-overflow: ellipsis;
 }
 
 .active-item .options label {
-    font-size: 0.8em;
+	font-size: 0.8em;
 }
 
 .active-item .handle-container {
@@ -168,10 +173,10 @@ select.composite-operations {
 
 /* Palette Control */
 div.palette div.swatch {
-    display: inline-block;
-    width: 10px;
-    height: 10px;
-    border: 1px #aaa solid;
+	display: inline-block;
+	width: 10px;
+	height: 10px;
+	border: 1px #aaa solid;
 }
 
 div.palette div.swatch ~ div.swatch {

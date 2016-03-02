@@ -188,12 +188,19 @@
 		var pWindow = window.open('', '_blank', 'width=1, height=1, location=no, menubar=no, left=0');
 		var pCanvas = document.createElement('canvas');
 		var pCtx = pCanvas.getContext('2d');
+
+		// Solo canvas
+		var sCanvas = document.createElement('canvas');
+		var sCtx = sCanvas.getContext('2d');
 		
 		pWindow.document.body.style.margin = '0px';
 		pWindow.document.body.style.backgroundColor = 'black';
 		pCanvas.style.position = 'fixed';
 		
 		pCanvas.style.top = pCanvas.style.bottom = pCanvas.style.left = pCanvas.style.right = 0;
+
+		sCanvas.style.position = 'fixed';
+		sCanvas.style.top = sCanvas.style.bottom = sCanvas.style.left = sCanvas.style.right = 0;
 
 		pWindow.onbeforeunload = drunkenMess;
 
@@ -205,6 +212,8 @@
 				self.canvas.height = pWindow.innerHeight * window.devicePixelRatio;
 				pCanvas.width = pWindow.innerWidth * window.devicePixelRatio;
 				pCanvas.height = pWindow.innerHeight * window.devicePixelRatio;
+				sCanvas.width = pWindow.innerWidth * window.devicePixelRatio;
+				sCanvas.height = pWindow.innerHeight * window.devicePixelRatio;
 
 			} else {
 
@@ -212,10 +221,14 @@
 				self.canvas.height = pWindow.innerHeight;
 				pCanvas.width = pWindow.innerWidth;
 				pCanvas.height = pWindow.innerHeight;
+				sCanvas.width = pWindow.innerWidth;
+				sCanvas.height = pWindow.innerHeight;
 
 			}
 			pCanvas.style.width = pWindow.innerWidth + 'px';
 			pCanvas.style.height = pWindow.innerHeight + 'px';
+			sCanvas.style.width = pWindow.innerWidth + 'px';
+			sCanvas.style.height = pWindow.innerHeight + 'px';
 
 			self.resize();
 
@@ -224,8 +237,9 @@
 		//resizeEnd();
 
 		pWindow.document.body.appendChild(pCanvas);
+		pWindow.document.body.appendChild(sCanvas);
 
-		return [pWindow, pCanvas, pCtx];
+		return [pWindow, pCanvas, pCtx, sCanvas, sCtx];
 	};
 
 	modV.prototype.createWindows = function() {
@@ -237,7 +251,9 @@
 			var pOutput = pWindow();
 			self.previewWindow 	= pOutput[0];
 			self.previewCanvas 	= pOutput[1];
-			self.previewCtx 	= pOutput[2];
+			self.previewCtx 		= pOutput[2];
+			self.soloCanvas 		= pOutput[3];
+			self.soloCtx 		= pOutput[4];
 		}
 
 		// OnClose

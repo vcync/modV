@@ -15,6 +15,7 @@
 		// Set meta
 		Module.info.alpha = 1;
 		Module.info.disabled = true;
+		Module.info.solo = false;
 
 		// Get name
 		name = Module.info.name;

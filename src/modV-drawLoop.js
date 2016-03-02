@@ -7,14 +7,26 @@
 		
 
 		if(!self.ready) return;
+
+		self.soloCtx.clearRect(0, 0, self.soloCanvas.width, self.soloCanvas.height);
+		self.soloCtx.drawImage(
+			self.canvas,
+			0,
+			0,
+			self.canvas.width,
+			self.canvas.height
+		);
+		
 		if(self.clearing) {
 			self.context.clearRect(0, 0, self.canvas.width, self.canvas.height);
 			if(self.options.previewWindow) self.previewCtx.clearRect(0, 0, self.previewCanvas.width, self.previewCanvas.height);
 		}
+
 		for(var i=0; i < self.modOrder.length; i++) {
 			var Module = self.registeredMods[self.modOrder[i]];
 
 			if(Module.info.disabled || Module.info.alpha === 0) continue;
+
 
 			self.context.save();
 			self.context.globalAlpha = self.registeredMods[self.modOrder[i]].info.alpha;
@@ -65,20 +77,39 @@
 				// Render
 				self.shaderEnv.render(delta);
 
-				// Copy Shader Canvas to Main Canvas
-				self.context.drawImage(
-					self.shaderEnv.canvas,
-					0,
-					0,
-					self.canvas.width,
-					self.canvas.height
-				);
+				if(Module.info.solo) {
+
+					// Copy Shader Canvas to Main Canvas
+					self.soloCtx.drawImage(
+						self.shaderEnv.canvas,
+						0,
+						0,
+						self.soloCanvas.width,
+						self.soloCanvas.height
+					);
+
+				} else {
+
+					// Copy Shader Canvas to Main Canvas
+					self.context.drawImage(
+						self.shaderEnv.canvas,
+						0,
+						0,
+						self.canvas.width,
+						self.canvas.height
+					);
+
+				}
 
 			} else if(typeof self.registeredMods[self.modOrder[i]] === 'object') {
 
 				if(!self.registeredMods[self.modOrder[i]].info.threejs) {
 
-					self.registeredMods[self.modOrder[i]].draw(self.canvas, self.context, self.video, meydaOutput, self.meyda, delta, self.bpm);
+					if(Module.info.solo) {
+						self.registeredMods[self.modOrder[i]].draw(self.soloCanvas, self.soloCtx, self.video, meydaOutput, self.meyda, delta, self.bpm);
+					} else {
+						self.registeredMods[self.modOrder[i]].draw(self.canvas, self.context, self.video, meydaOutput, self.meyda, delta, self.bpm);
+					}
 
 				} else {
 
