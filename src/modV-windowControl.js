@@ -208,12 +208,12 @@
 
 			if(window.devicePixelRatio > 1 && self.options.retina) {
 
-				self.canvas.width = pWindow.innerWidth * window.devicePixelRatio;
-				self.canvas.height = pWindow.innerHeight * window.devicePixelRatio;
-				pCanvas.width = pWindow.innerWidth * window.devicePixelRatio;
-				pCanvas.height = pWindow.innerHeight * window.devicePixelRatio;
-				sCanvas.width = pWindow.innerWidth * window.devicePixelRatio;
-				sCanvas.height = pWindow.innerHeight * window.devicePixelRatio;
+				self.canvas.width = pWindow.innerWidth * pWindow.devicePixelRatio;
+				self.canvas.height = pWindow.innerHeight * pWindow.devicePixelRatio;
+				pCanvas.width = pWindow.innerWidth * pWindow.devicePixelRatio;
+				pCanvas.height = pWindow.innerHeight * pWindow.devicePixelRatio;
+				sCanvas.width = pWindow.innerWidth * pWindow.devicePixelRatio;
+				sCanvas.height = pWindow.innerHeight * pWindow.devicePixelRatio;
 
 			} else {
 

@@ -22,6 +22,8 @@
 			if(self.options.previewWindow) self.previewCtx.clearRect(0, 0, self.previewCanvas.width, self.previewCanvas.height);
 		}
 
+		var firstSolo = true;
+
 		for(var i=0; i < self.modOrder.length; i++) {
 			var Module = self.registeredMods[self.modOrder[i]];
 
@@ -30,6 +32,10 @@
 
 			self.context.save();
 			self.context.globalAlpha = self.registeredMods[self.modOrder[i]].info.alpha;
+
+			self.soloCtx.save();
+			if(Module.info.solo) self.soloCtx.globalAlpha = self.registeredMods[self.modOrder[i]].info.alpha;
+
 			if(self.registeredMods[self.modOrder[i]].info.blend !== 'normal') self.context.globalCompositeOperation = self.registeredMods[self.modOrder[i]].info.blend;
 
 			if(Module instanceof self.ModuleShader) {
@@ -42,15 +48,46 @@
 					_gl.useProgram(self.shaderEnv.programs[Module.programIndex]);
 				}
 
-				// Copy Main Canvas to Shader Canvas 
-				self.shaderEnv.texture = _gl.texImage2D(
-					_gl.TEXTURE_2D,
-					0,
-					_gl.RGBA,
-					_gl.RGBA,
-					_gl.UNSIGNED_BYTE,
-					self.canvas
-				);
+				if(Module.info.solo) {
+
+					if(firstSolo) {
+
+						// Copy Main Canvas to Shader Canvas 
+						self.shaderEnv.texture = _gl.texImage2D(
+							_gl.TEXTURE_2D,
+							0,
+							_gl.RGBA,
+							_gl.RGBA,
+							_gl.UNSIGNED_BYTE,
+							self.canvas
+						);
+
+						firstSolo = false;
+					} else {
+						// Copy Solo Canvas to Shader Canvas 
+						self.shaderEnv.texture = _gl.texImage2D(
+							_gl.TEXTURE_2D,
+							0,
+							_gl.RGBA,
+							_gl.RGBA,
+							_gl.UNSIGNED_BYTE,
+							self.soloCanvas
+						);
+					}
+
+				} else {
+
+					// Copy Main Canvas to Shader Canvas 
+					self.shaderEnv.texture = _gl.texImage2D(
+						_gl.TEXTURE_2D,
+						0,
+						_gl.RGBA,
+						_gl.RGBA,
+						_gl.UNSIGNED_BYTE,
+						self.canvas
+					);
+
+				}
 
 				// Set Uniforms
 				if('uniforms' in Module.info) {
@@ -79,7 +116,7 @@
 
 				if(Module.info.solo) {
 
-					// Copy Shader Canvas to Main Canvas
+					// Copy Shader Canvas to Solo Canvas
 					self.soloCtx.drawImage(
 						self.shaderEnv.canvas,
 						0,
@@ -106,7 +143,12 @@
 				if(!self.registeredMods[self.modOrder[i]].info.threejs) {
 
 					if(Module.info.solo) {
-						self.registeredMods[self.modOrder[i]].draw(self.soloCanvas, self.soloCtx, self.video, meydaOutput, self.meyda, delta, self.bpm);
+						if(firstSolo) {
+							self.registeredMods[self.modOrder[i]].draw(self.canvas, self.soloCtx, self.video, meydaOutput, self.meyda, delta, self.bpm);
+							firstSolo = false;
+						} else {
+							self.registeredMods[self.modOrder[i]].draw(self.soloCanvas, self.soloCtx, self.video, meydaOutput, self.meyda, delta, self.bpm);
+						}
 					} else {
 						self.registeredMods[self.modOrder[i]].draw(self.canvas, self.context, self.video, meydaOutput, self.meyda, delta, self.bpm);
 					}
@@ -121,6 +163,7 @@
 			}
 
 			self.context.restore();
+			self.soloCtx.restore();
 		}
 		if(self.options.previewWindow) self.previewCtx.drawImage(self.canvas, 0, 0, self.previewCanvas.width, self.previewCanvas.height);
 	};

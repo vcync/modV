@@ -77,6 +77,7 @@
 			console.log(mousePos.x, positionInfo.width, largeWidth, self.canvas.width);
 
 			if(Module.info.previewWithOutput || Module instanceof self.ModuleShader) {
+				return;
 				ctx.drawImage(self.canvas, 0, 0, canvas.width, canvas.height);
 			}
 
@@ -85,6 +86,8 @@
 			
 
 			if(Module instanceof self.ModuleShader) {
+
+
 
 				// Switch program
 				if(Module.programIndex !== self.shaderEnv.activeProgram) {

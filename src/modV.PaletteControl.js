@@ -361,7 +361,7 @@
 			console.log('Palette makeNode called');
 
 			self.callbacks.next = function(colour) {
-				console.log(Module.info.name, 'Palette "next" called', colour);
+				//console.log(Module.info.name, 'Palette "next" called', colour, Module[self.variable]);
 				Module[self.variable] = colour;
 			};
 

@@ -71,6 +71,7 @@
 				self.setModOrder(name, evt.newIndex);
 
 				// Create controls
+				console.log('Creating controls for', name, Module);
 				self.createControls(Module, self);
 
 				// turn on

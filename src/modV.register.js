@@ -63,6 +63,8 @@
 				var frag = xhrDocument.querySelector('script[type="x-shader/x-fragment"]').textContent;
 
 				var gl = self.shaderEnv.gl; // set reference to self.shaderEnv.gl
+
+				console.info('Attempting to compile', Module.info.name);
 						
 				// Compile shaders and create program
 				var vertexShader;
@@ -74,6 +76,8 @@
 
 				var compiled = gl.getShaderParameter(vertexShader, gl.COMPILE_STATUS);
 				var compilationLog;
+				console.log(gl.getShaderInfoLog(vertexShader));
+
 				if(!compiled) {
 					console.error(Module.info.name + "'s", 'Vertex Shader did not compile.');
 					compilationLog = gl.getShaderInfoLog(fragmentShader);
@@ -85,6 +89,9 @@
 				gl.compileShader(fragmentShader);
 
 				compiled = gl.getShaderParameter(fragmentShader, gl.COMPILE_STATUS);
+
+				console.log(gl.getShaderInfoLog(fragmentShader));
+
 				if(!compiled) {
 					console.error(Module.info.name + "'s", 'Fragment Shader did not compile.');
 					compilationLog = gl.getShaderInfoLog(fragmentShader);

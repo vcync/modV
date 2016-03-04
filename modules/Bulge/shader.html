@@ -18,7 +18,7 @@
 
 		<script id="fragmentshader" type="x-shader/x-fragment">
 			precision mediump float;
-			uniform sampler2D u_image;
+			uniform sampler2D u_modVCanvas;
 			uniform float amount;
 			uniform float centerX;
 			uniform float centerY;
@@ -45,7 +45,7 @@
 				uv.x = uv.x + centerX;
 				uv.y = uv.y + centerY;
 
-				vec4 c = texture2D(u_image, uv);
+				vec4 c = texture2D(u_modVCanvas, uv);
 				gl_FragColor = c;
 			}
 		</script>

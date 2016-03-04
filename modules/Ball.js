@@ -16,6 +16,7 @@ var Ball = new modVC.Module2D({
 		this.colour = 'pink';
 		this.speed = 5;
 		this.balls = [];
+		this.wrap = false;
 
 		this.setupBalls = function() {
 			this.balls = [];
@@ -46,6 +47,7 @@ var Ball = new modVC.Module2D({
 		
 		for(var i=0; i < this.amount; i++) {
 			this.balls[i].speed = this.speed;
+			this.balls[i].wrap = this.wrap;
 			this.balls[i].drawUpdate(canvas, ctx, analysed);
 		}
 
@@ -57,6 +59,7 @@ Ball.ballObj = function() {
 		this.position = {x: 0, y: 0};
 		this.speed = Ball.speed;
 		this.velocity = {x: 5, y: 5};
+		this.wrap = false;
 
 		this.xReverse = false;
 		this.yReverse = false;
@@ -68,8 +71,17 @@ Ball.ballObj = function() {
 			ctx.fill();
 			ctx.closePath();
 
-			if( this.position.x-Ball.baseSize < 1 || this.position.x+Ball.baseSize > this.bounds.width-1) this.xReverse = !this.xReverse;
-			if( this.position.y-Ball.baseSize < 1 || this.position.y+Ball.baseSize > this.bounds.height-1) this.yReverse= !this.yReverse;
+			if(this.wrap) {
+				if( this.position.x-Ball.baseSize < 1 ) this.position.x = (this.bounds.width-1) - Ball.baseSize;
+				if( this.position.y-Ball.baseSize < 1 ) this.position.y = (this.bounds.height-1) - Ball.baseSize;
+
+				if( this.position.x+Ball.baseSize > this.bounds.width-1 ) this.position.x = Ball.baseSize + 1;
+				if( this.position.y+Ball.baseSize > this.bounds.height-1 ) this.position.y = Ball.baseSize + 1;
+
+			} else {
+				if( this.position.x-Ball.baseSize < 1 || this.position.x+Ball.baseSize > this.bounds.width-1 ) this.xReverse = !this.xReverse;
+				if( this.position.y-Ball.baseSize < 1 || this.position.y+Ball.baseSize > this.bounds.height-1 ) this.yReverse= !this.yReverse;
+			}
 
 			if(this.xReverse) this.velocity.x = -this.speed;
 			else this.velocity.x = this.speed;
@@ -85,6 +97,12 @@ Ball.ballObj = function() {
 	};
 
 var controls = [];
+
+controls.push(new modVC.CheckboxControl({
+    variable: 'wrap',
+    label: 'Wrap',
+    checked: false
+}));
 
 controls.push(new modVC.RangeControl({
     variable: 'amount',

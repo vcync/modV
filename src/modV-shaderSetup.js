@@ -210,6 +210,8 @@
 			gl.uniform1i(samplerLocation, 0); // Unit position 0
 
 			// TODO: setup u_time & other usual uniforms
+			var timeLocation = gl.getUniformLocation(programs[self.shaderEnv.activeProgram], "u_time");
+			gl.uniform1f(timeLocation, delta);
 
 			gl.drawArrays(gl.TRIANGLES, 0, 6);
 		}
