@@ -60,7 +60,6 @@
 
 						if(!startSourceFound && idx === 0) {
 							startSource = image.path;
-							console.log('imageCONTROL', image.path);
 							startSourceFound = true;
 						}
 
