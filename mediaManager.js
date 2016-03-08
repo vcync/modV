@@ -8,6 +8,10 @@ var restify = require('restify'),
 
 ws = new ws.Watershed();
 
+var isWin = /^win/.test(process.platform);
+var pathSeparator = "/";
+if(isWin) pathSeparator = "\\";
+
 var profiles = {},
 	cwd = process.cwd();
 
@@ -170,7 +174,7 @@ server.get('/', function upgradeRoute(req, res, next) {
 	next(false);
 });
 
-var mediaDir = cwd + '/media';
+var mediaDir = cwd + pathSeparator + 'media';
 
 /* Slosh through media dir */
 dive(mediaDir, { all: false }, function(err, file) {
@@ -178,9 +182,9 @@ dive(mediaDir, { all: false }, function(err, file) {
 	if(err) throw err;
 	//console.log(file, file.split('.').pop());
 	var pathReplaced = file.replace(mediaDir, '');
-	pathReplaced = pathReplaced.split('/');
+	pathReplaced = pathReplaced.split(pathSeparator);
 
-	var dirSplit = file.split('/');
+	var dirSplit = file.split(pathSeparator);
 
 	var profile 	= pathReplaced[1];
 	var directory 	= pathReplaced[2];
@@ -202,6 +206,8 @@ dive(mediaDir, { all: false }, function(err, file) {
 		profiles[profile].presets[filename] = fileParsed;
 		console.log('💾  Found preset data in', profile);
 	}
+
+	console.log(profile, profiles, profiles[profile]);
 
 	if(fileExt.toLowerCase() in viableVideo) {
 
