@@ -83,6 +83,7 @@
 				var src = modVSelf.profiles[profileValue[0]].files.videos[profileValue[1]].path;
 
 				Module[self.variable].src = src;
+				Module[self.variable].play();
 			
 			}, false);
 
