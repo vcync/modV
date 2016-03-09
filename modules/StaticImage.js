@@ -7,7 +7,7 @@ var StaticImage = new modVC.Module2D({
 	},
 	init: function(canvas) {
  		
-		this.smoothing = false;
+		this.smoothing = true;
 		this.image = new Image();
 		this.image.src = '';
 		this.stretch = false;
@@ -35,9 +35,10 @@ var StaticImage = new modVC.Module2D({
 StaticImage.add(new modVC.RangeControl({
 	variable: 'k',
 	label: 'Scale',
-	min: 1,
+	min: -20,
 	max: 20,
 	varType: 'float',
+	default: 1,
 	step: 0.1
 }));
 
@@ -50,6 +51,12 @@ StaticImage.add(new modVC.CheckboxControl({
 StaticImage.add(new modVC.ImageControl({
 	variable: 'image',
 	label: 'Image'
+}));
+
+StaticImage.add(new modVC.CheckboxControl({
+	variable: 'smoothing',
+	label: 'Smoothing',
+	checked: true
 }));
 
 
