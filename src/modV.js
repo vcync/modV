@@ -77,7 +77,7 @@
 
 		self.canvas = undefined;
 
-		self.soloCanvas = undefined; // TODO: implement
+		self.soloCanvas = undefined;
 
 		self.meydaSupport = false;
 		self.muted = true;
