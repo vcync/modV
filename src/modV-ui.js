@@ -21,6 +21,7 @@
 			chosenClass: 'chosen',
 			onAdd: function(evt) {
 				console.log('drop', evt);
+
 				// Dragged HTMLElement
 				var itemEl = evt.item;
 				// Cloned element
@@ -71,10 +72,9 @@
 						Module.init(self.canvas, self.context);
 					}
 					
-					// update name, add to registry
+					// update name
 					Module.info.name = name;
 					Module.info.safeName = safeName;
-					self.registeredMods[Module.info.name] = Module;
 				}
 
 				// Move back to gallery
@@ -83,7 +83,15 @@
 				var activeItemNode = self.createActiveListItem(Module);
 
 				// Replace clone
-				list.replaceChild(activeItemNode, clone);
+				try {
+					list.replaceChild(activeItemNode, clone);	
+				} catch(e) {
+					return;
+				}
+				
+
+				// Add to registry
+				self.registeredMods[Module.info.name] = Module;
 
 				self.setModOrder(name, evt.newIndex);
 
