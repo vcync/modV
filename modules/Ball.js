@@ -48,7 +48,7 @@ var Ball = new modVC.Module2D({
 		for(var i=0; i < this.amount; i++) {
 			this.balls[i].speed = this.speed;
 			this.balls[i].wrap = this.wrap;
-			this.balls[i].drawUpdate(canvas, ctx, analysed);
+			this.balls[i].drawUpdate(canvas, ctx, analysed, this.colour);
 		}
 
 	}
@@ -64,10 +64,10 @@ Ball.ballObj = function() {
 		this.xReverse = false;
 		this.yReverse = false;
 
-		this.drawUpdate = function(canvas, ctx, amp) {
+		this.drawUpdate = function(canvas, ctx, amp, colour) {
 			ctx.beginPath();
 			ctx.arc(this.position.x, this.position.y, Ball.baseSize + (Ball.size * amp), 0, 2 * Math.PI, true);
-			ctx.fillStyle = Ball.colour;
+			ctx.fillStyle = colour;
 			ctx.fill();
 			ctx.closePath();
 
