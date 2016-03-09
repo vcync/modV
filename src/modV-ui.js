@@ -47,7 +47,24 @@
 
 				if(dupes.length > 0) {
 					// Clone module -- afaik, there is no better way than this
+					var oldModule = Module;
 					Module = self.cloneModule(Module, true);
+
+					// Create new controls from original Module to avoid scope contamination
+					if('controls' in oldModule.info) {
+
+						Module.info.controls = [];
+
+						oldModule.info.controls.forEach(function(control) {
+
+							var settings = control.getSettings();
+							var newControl = new control.constructor(settings);
+							console.log(newControl);
+							Module.info.controls.push(newControl);
+
+						});
+
+					}
 
 					// init cloned Module
 					if('init' in Module) {
