@@ -173,8 +173,8 @@ controls.push(new modVC.RangeControl({
     variable: 'zoomSpeed',
     label: 'Zoom Frequency',
     varType: 'float',
-    min: 0.0001,
-    max: 0.03,
+    min: 0,
+    max: 0.2,
     step: 0.0001,
     default: 0.01
 }));
