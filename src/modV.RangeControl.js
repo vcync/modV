@@ -5,6 +5,10 @@
 	modV.prototype.RangeControl = function(settings) {
 		var self = this;
 		
+		self.getSettings = function() {
+			return settings;
+		};
+
 		//TODO: error stuff
 /*		// RangeControl error handle
 		function ControlError(message) {
@@ -23,10 +27,6 @@
 		// Inherit from Error
 		ModuleError.prototype = Object.create(Error.prototype);
 		ModuleError.prototype.constructor = ModuleError;
-
-		self.getSettings = function() {
-			return settings;
-		};
 
 		// Check for settings Object
 		if(!settings) throw new ModuleError('RangeControl had no settings');

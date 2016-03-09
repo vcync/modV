@@ -6,7 +6,7 @@
 		
 		var self = this;
 
-		colours = colours || [];
+		colours = JSON.parse(JSON.stringify(colours)) || [];
 
 		self.useBPM = false;
 		self.bpmDivison = 1;
@@ -294,6 +294,10 @@
 		var self = this;
 		if(typeof settings === "undefined") settings = {};
 		
+		self.getSettings = function() {
+			return settings;
+		};
+
 		//TODO: error stuff
 /*		// RangeControl error handle
 		function ControlError(message) {
@@ -328,46 +332,48 @@
 		// Check for info.version
 		if(!('version' in settings.info)) throw new ModuleError('RangeControl had no version in settings.info');*/
 
-		settings.callbacks = {};
-
 		// Copy settings values to local scope
 		for(var key in settings) {
 			self[key] = settings[key];
 		}
 
-		self.callbacks.loadPalette = function(profile, paletteName) {
-			// TODO
-		};
-
-		self.callbacks.savePalette = function(profile, paletteName, palette) {
-
-			window.postMessage({
-				type: 'global',
-				name: 'savepalette',
-				payload: {
-					palette: palette,
-					profile: profile,
-					name: paletteName
-				}
-			}, self.options.controlDomain);
-
-		};
-
-		var pal = new Palette(self.colours, self.timePeriod, self.callbacks);
-
 
 		self.makeNode = function(Module, modVSelf) {
 
-			console.log('Palette makeNode called');
+			self.creationTime = Date.now();
+
+			console.log('Palette makeNode called', self.creationTime);
+
+			self.callbacks = {};
 
 			self.callbacks.next = function(colour) {
-				//console.log(Module.info.name, 'Palette "next" called', colour, Module[self.variable]);
+				//console.log(Module.info.name, self.creationTime);
 				Module[self.variable] = colour;
 			};
 
 			self.callbacks.getBPM = function() {
 				return modVSelf.bpm;
 			};
+
+			self.callbacks.loadPalette = function(profile, paletteName) {
+				// TODO
+			};
+
+			self.callbacks.savePalette = function(profile, paletteName, palette) {
+
+				window.postMessage({
+					type: 'global',
+					name: 'savepalette',
+					payload: {
+						palette: palette,
+						profile: profile,
+						name: paletteName
+					}
+				}, self.options.controlDomain);
+
+			};
+
+			var pal = new Palette(self.colours, self.timePeriod, self.callbacks);
 
 			modVSelf.palettes.push(pal);
 			return pal.generateControls();
