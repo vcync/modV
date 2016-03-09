@@ -100,7 +100,6 @@
 			
 			if(self.useBPM) {
 				timePeriod = Math.round(callbacks.getBPM() / self.bpmDivison);
-				console.log(timePeriod, currentTime);
 			}
 
 			if(colours.length < 1) {
@@ -342,12 +341,9 @@
 
 			self.creationTime = Date.now();
 
-			console.log('Palette makeNode called', self.creationTime);
-
 			self.callbacks = {};
 
 			self.callbacks.next = function(colour) {
-				//console.log(Module.info.name, self.creationTime);
 				Module[self.variable] = colour;
 			};
 
