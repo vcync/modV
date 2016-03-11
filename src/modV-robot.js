@@ -74,14 +74,14 @@
 							break;
 					}
 
-					self.controllerWindow.postMessage({
+					/*self.controllerWindow.postMessage({
 					 	type: 'ui',
 					 	varType: control.varType,
 					 	modName: module.info.name,
 					 	name: control.label,
 					 	payload: rand,
 					 	index: parseInt(cntrl)
-					}, self.options.controlDomain);
+					}, self.options.controlDomain);*/
 
 					if(self.options.remote) {
 						self.ws.send(JSON.stringify({
