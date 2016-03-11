@@ -54,12 +54,6 @@ section .top > .pure-g {
 section .top .active-list {
 	min-height: 100%;
 	overflow-x: hidden;
-	/*overflow-y: scroll;*/
-}
-
-section .top .active-list-wrapper {
-	resize: horizontal;
-	overflow: auto;
 }
 
 section .top .active-list-wrapper,
@@ -73,7 +67,6 @@ section .top .gallery {
 
 section .top .pure-u-4-5 {
 	position: relative;
-	/*overflow-y: scroll;*/
 }
 
 section .bottom {
