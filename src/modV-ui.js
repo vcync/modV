@@ -239,9 +239,11 @@
 		window.addEventListener('mousedown', function(e) {
 
 			bottomMouseDown = true;
-			setTimeout(function() {
-				bottomMouseDown = false;
-			}, 300);
+			if(e.currentTarget != bottom) {
+				setTimeout(function() {
+					bottomMouseDown = false;
+				}, 300);
+			}
 
 		});
 
@@ -249,40 +251,41 @@
 
 			bottomMouseDown = false;
 			dragging = false;
+			document.body.classList.remove('ns-resize');
 
 		});
 
 		window.addEventListener('mousemove', function(e) {
 
 			var bottomPos = getAbsoluteOffsetFromBody(bottom);
-
 			var mousePosition = getClickPosition(e);
-
-			console.log(mousePosition, bottomMouseDown);
-
 			
 			if(mousePosition.clientY > bottomPos.top-3 && mousePosition.clientY < bottomPos.top+3) {
 
-				bottom.classList.add('ns-resize');
+				document.body.classList.add('ns-resize');
 
 				if(bottomMouseDown) {
 					
 					dragging = true;
 				}
-			} else {
-				bottom.classList.remove('ns-resize');
+			} else if(!dragging) {
+				document.body.classList.remove('ns-resize');
 			}
 
 			if(dragging) {
-				var bottomHeight = 100 - ( mousePosition.clientY / window.innerHeight  ) * 100;
-					bottom.style.height = bottomHeight + '%';
-					top.style.height = (100 - bottomHeight) + '%';
-					console.log(bottomHeight);
+				document.body.classList.add('ns-resize');
+				e.preventDefault();
+				e.cancelBubble=true;
+				e.returnValue=false;
 
-					e.preventDefault();
-					e.cancelBubble=true;
-					e.returnValue=false;
-					return false;
+				var bottomHeight = 100 - ( mousePosition.clientY / window.innerHeight  ) * 100;
+
+				if(bottomHeight < 20 || bottomHeight > 75) return false;
+
+				bottom.style.height = bottomHeight + '%';
+				top.style.height = (100 - bottomHeight) + '%';
+
+				return false;
 			}
 
 		});
