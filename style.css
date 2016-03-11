@@ -19,6 +19,11 @@ h1,
 	letter-spacing: -2px;
 }
 
+/* cursor classes */
+.ns-resize {
+	cursor: ns-resize;
+}
+
 .control-group label {
 	display: inline-block;
 	min-width: 70px;
@@ -47,8 +52,9 @@ section .top > .pure-g {
 }
 
 section .top .active-list {
+	min-height: 100%;
 	overflow-x: hidden;
-	overflow-y: scroll;
+	/*overflow-y: scroll;*/
 }
 
 section .top .active-list-wrapper {
@@ -57,7 +63,7 @@ section .top .active-list-wrapper {
 }
 
 section .top .active-list-wrapper,
-section .top .active-list {
+.simplebar-content {
 	height: 100%;
 }
 
@@ -67,7 +73,7 @@ section .top .gallery {
 
 section .top .pure-u-4-5 {
 	position: relative;
-	overflow-y: scroll;
+	/*overflow-y: scroll;*/
 }
 
 section .bottom {
