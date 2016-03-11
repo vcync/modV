@@ -11,6 +11,7 @@
 
 		var gallery = document.getElementsByClassName('gallery')[0];
 		var list = document.getElementsByClassName('active-list')[0];
+
 		Sortable.create(list, {
 			group: {
 				name: 'modV',
@@ -192,6 +193,98 @@
 
 		globalControlPanel.querySelector('#factoryResetGlobal').addEventListener('click', function() {
 			self.factoryReset();
+		});
+
+		function getAbsoluteOffsetFromBody( el )
+{   // finds the offset of el from the body or html element
+    var _x = 0;
+    var _y = 0;
+    while( el && !isNaN( el.offsetLeft ) && !isNaN( el.offsetTop ) )
+    {
+        _x += el.offsetLeft - el.scrollLeft + el.clientLeft;
+        _y += el.offsetTop - el.scrollTop + el.clientTop;
+        el = el.offsetParent;
+    }
+    return { top: _y, left: _x };
+}
+
+
+		function getClickPosition(e) {
+			var parentPosition = getPosition(e.currentTarget);
+			var xPosition = e.clientX - parentPosition.x;
+			var yPosition = e.clientY - parentPosition.y;
+
+			return { x: xPosition, y: yPosition, clientX: e.clientX, clientY: e.clientY};
+		}
+
+		function getPosition(element) {
+			var xPosition = 0;
+			var yPosition = 0;
+
+			while (element) {
+				xPosition += (element.offsetLeft - element.scrollLeft + element.clientLeft);
+				yPosition += (element.offsetTop - element.scrollTop + element.clientTop);
+				element = element.offsetParent;
+			}
+
+			return { x: xPosition, y: yPosition };
+		}
+
+		// Bottom area resize handle
+		var bottom = document.querySelector('.bottom');
+		var top = document.querySelector('.top');
+		var bottomMouseDown = false;
+		var dragging = false;
+
+		window.addEventListener('mousedown', function(e) {
+
+			bottomMouseDown = true;
+			setTimeout(function() {
+				bottomMouseDown = false;
+			}, 300);
+
+		});
+
+		window.addEventListener('mouseup', function(e) {
+
+			bottomMouseDown = false;
+			dragging = false;
+
+		});
+
+		window.addEventListener('mousemove', function(e) {
+
+			var bottomPos = getAbsoluteOffsetFromBody(bottom);
+
+			var mousePosition = getClickPosition(e);
+
+			console.log(mousePosition, bottomMouseDown);
+
+			
+			if(mousePosition.clientY > bottomPos.top-3 && mousePosition.clientY < bottomPos.top+3) {
+
+				bottom.classList.add('ns-resize');
+
+				if(bottomMouseDown) {
+					
+					dragging = true;
+				}
+			} else {
+				bottom.classList.remove('ns-resize');
+			}
+
+			if(dragging) {
+				var bottomHeight = 100 - ( mousePosition.clientY / window.innerHeight  ) * 100;
+					bottom.style.height = bottomHeight + '%';
+					top.style.height = (100 - bottomHeight) + '%';
+					console.log(bottomHeight);
+
+					e.preventDefault();
+					e.cancelBubble=true;
+					e.returnValue=false;
+					return false;
+			}
+
 		});
 
 
