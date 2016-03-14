@@ -32,8 +32,11 @@
 			Module.info.alpha = parseFloat(this.value);
 		});
 
-		// Attach listener to Solo Checkbox
+		// Get Solo Checkbox
 		var soloCheckboxNode = activeItem.querySelector('input[type=checkbox].solo');
+		// Check if already soloed
+		soloCheckboxNode.checked = Module.info.solo;
+		// Attach listener to Solo Checkbox
 		soloCheckboxNode.addEventListener('change', function() {
 			Module.info.solo = this.checked;
 		});
