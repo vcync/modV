@@ -36,12 +36,12 @@
 			// Set viewport size from gl context
 			gl.viewport(0, 0, gl.drawingBufferWidth, gl.drawingBufferHeight);
 			
-			// Set u_resolution
+/*			// Set u_resolution
 			if(programs[self.shaderEnv.activeProgram]) {
 				var resolutionLocation = gl.getUniformLocation(programs[self.shaderEnv.activeProgram], "u_resolution");
 				gl.uniform2f(resolutionLocation, canvas.width, canvas.height);
 				setRectangle(gl, 0, 0, canvas.width, canvas.height);
-			}
+			}*/
 
 			if(typeof programIndex !== 'undefined') {
 				self.shaderEnv.activeProgram = currentProgramIndex;
@@ -100,10 +100,10 @@
  
   			shaderSource = "" +
 				"precision mediump float;" +
-				"uniform sampler2D u_image;" +
+				"uniform sampler2D u_modVCanvas;" +
 				"varying vec2 v_texCoord;" +
 				"void main() {" +
-					"gl_FragColor=texture2D(u_image,v_texCoord);" +
+					"gl_FragColor=texture2D(u_modVCanvas,v_texCoord);" +
 				"}";
 
 			fragmentShader = gl.createShader(gl.FRAGMENT_SHADER);
@@ -189,12 +189,12 @@
 			window.addEventListener('resize', resize);
 		}
 
-		function render(delta) {
+		function render(delta, canvas) {
 			// window.requestAnimationFrame(render);
 
 			// Clear WebGL canvas
-			// gl.clearColor(0.0, 0.0, 0.0, 0.0);
-			// gl.clear(gl.COLOR_BUFFER_BIT);
+			gl.clearColor(0.0, 0.0, 0.0, 0.0);
+			gl.clear(gl.COLOR_BUFFER_BIT);
 			
 			// Set position variable
 			var positionLocation = gl.getAttribLocation(programs[self.shaderEnv.activeProgram], "a_position");
@@ -212,6 +212,13 @@
 			// TODO: setup u_time & other usual uniforms
 			var timeLocation = gl.getUniformLocation(programs[self.shaderEnv.activeProgram], "u_time");
 			gl.uniform1f(timeLocation, delta);
+
+			// Set u_resolution
+			if(programs[self.shaderEnv.activeProgram]) {
+				var resolutionLocation = gl.getUniformLocation(programs[self.shaderEnv.activeProgram], "u_resolution");
+				gl.uniform2f(resolutionLocation, canvas.width, canvas.height);
+				setRectangle(gl, 0, 0, canvas.width, canvas.height);
+			}
 
 			gl.drawArrays(gl.TRIANGLES, 0, 6);
 		}
