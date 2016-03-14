@@ -60,22 +60,22 @@ module.exports = function(grunt) {
 
       html: {
         files: '<%= ejs.all.src %>',
-        tasks: ['ejs', 'tags'],
+        tasks: ['ejs'/*, 'tags'*/],
       },
 
       js: {
         files: '<%= browserify.all.src %>',
-        tasks: ['browserify', 'tags'],
+        tasks: ['browserify'/*, 'tags'*/],
       },
 
       assets: {
-        files: ['assets/**/*', '*.css', '*.html', '*.js', 'images/**/*', 'img/**/*', '!Gruntfile.js'],
-        tasks: ['copy', 'tags'],
+        files: ['assets/**/*', '*.css', '*.html', '*.js', 'images/**/*', 'img/**/*', '!Gruntfile.js', 'libraries/**/*'],
+        tasks: ['copy'/*, 'tags'*/],
       },
 
       modules: {
         files: ['modules/**/*', '*.js'],
-        tasks: ['copy', 'tags'],
+        tasks: ['copy'/*, 'tags'*/],
       },
     },
 
@@ -87,7 +87,7 @@ module.exports = function(grunt) {
     },
 
     // This automatically loads modV modules if they're in the 'modules' folder
-    tags: {
+/*    tags: {
       build: {
         options: {
           scriptTemplate: '<script src="{{ path }}"></script>',
@@ -99,7 +99,7 @@ module.exports = function(grunt) {
         ],
         dest: 'dist/index.html'
       }
-    },
+    },*/
 
     // Creates symlink to media folder in dist because we're not gonna copy potentially hundreds of MBs
     symlink: {
