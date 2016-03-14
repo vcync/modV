@@ -112,7 +112,7 @@
 				}
 
 				// Render
-				self.shaderEnv.render(delta);
+				self.shaderEnv.render(delta, self.canvas);
 
 				if(Module.info.solo) {
 
