@@ -78,6 +78,7 @@ controls.push(new modVC.RangeControl({
     variable: 'size',
     label: 'Size',
     append: 'pt',
+    varType: 'int',
     min: 50,
     max: 200,
     default: 50
