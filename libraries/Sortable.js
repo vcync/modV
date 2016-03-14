@@ -774,7 +774,7 @@
 							_dispatchEvent(this, rootEl, 'sort', dragEl, rootEl, oldIndex, newIndex);
 
 							// Add event
-							_dispatchEvent(null, parentEl, 'add', dragEl, rootEl, oldIndex, newIndex);
+							_dispatchEvent(null, parentEl, 'add', dragEl, rootEl, oldIndex, newIndex, evt /* Added by 2xAA */);
 
 							// Remove event
 							_dispatchEvent(this, rootEl, 'remove', dragEl, rootEl, oldIndex, newIndex);
@@ -1075,7 +1075,7 @@
 
 
 
-	function _dispatchEvent(sortable, rootEl, name, targetEl, fromEl, startIndex, newIndex) {
+	function _dispatchEvent(sortable, rootEl, name, targetEl, fromEl, startIndex, newIndex, originalEvent/* added by 2xAA */) {
 		var evt = document.createEvent('Event'),
 			options = (sortable || rootEl[expando]).options,
 			onName = 'on' + name.charAt(0).toUpperCase() + name.substr(1);
@@ -1089,6 +1089,9 @@
 
 		evt.oldIndex = startIndex;
 		evt.newIndex = newIndex;
+
+		// Added by 2xAA
+		if(originalEvent) evt.originalEvent = originalEvent;
 
 		rootEl.dispatchEvent(evt);
 
