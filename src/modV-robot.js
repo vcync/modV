@@ -6,10 +6,8 @@
 
 	};
 
-	var bots = {};
-
 	/* TODO: bind to modV scope <<< cannot at present */
-	var modVBot = function(module, modV) {
+	var modVBot = function(module, controlIndex, modV) {
 		var self = modV;
 
 		function bpmToMs(bpm) {
@@ -27,15 +25,18 @@
 
 		var interval = bpmToMs(self.bpm);
 
+		var control = module.info.controls[controlIndex];
+		var controlNode = document.getElementById(control.getID());
+
 		function loop() {
-			for(var cntrl in module.info.controls) {
-				var control = module.info.controls[cntrl];
+			//for(var cntrl in module.info.controls) {
 
-				if(control.type === 'checkbox') {
+				if(control instanceof self.CheckboxControl) {
 
-					module[control.variable] = !Math.round(Math.random());
+					controlNode.checked = module[control.variable] = !Math.round(Math.random());
 
-				} else if(control.type !== 'video' && control.type !== 'image' && control.type !== 'multiimage') {
+
+				} else if(!(control.type instanceof self.VideoControl) && !(control.type instanceof self.ImageControl)) {
 
 					var rand;
 
@@ -44,9 +45,11 @@
 							rand = randomIntFromRange(control.min, control.max);
 
 							if('append' in control) {
+								console.log('append', rand, control.append);
+								controlNode.value = rand;
 								module[control.variable] = rand + control.append;
 							} else {
-								module[control.variable] = rand;
+								controlNode.value = module[control.variable] = rand;
 							}
 
 							break;
@@ -55,9 +58,10 @@
 							rand = randomFloatFromRange(control.min, control.max);
 
 							if('append' in control) {
+								controlNode.value = rand;
 								module[control.variable] = rand + control.append;
 							} else {
-								module[control.variable] = rand;
+								controlNode.value = module[control.variable] = rand;
 							}
 
 							break;
@@ -66,36 +70,19 @@
 							rand = String.fromCharCode(0x30A0 + Math.random() * (0x30FF-0xFFFF+1));
 
 							if('append' in control) {
+								controlNode.value = rand;
 								module[control.variable] = rand + control.append;
 							} else {
-								module[control.variable] = rand;
+								controlNode.value = module[control.variable] = rand;
 							}
 
 							break;
 					}
 
-					/*self.controllerWindow.postMessage({
-					 	type: 'ui',
-					 	varType: control.varType,
-					 	modName: module.info.name,
-					 	name: control.label,
-					 	payload: rand,
-					 	index: parseInt(cntrl)
-					}, self.options.controlDomain);*/
 
-					if(self.options.remote) {
-						self.ws.send(JSON.stringify({
-							type: 'ui',
-							varType: control.varType,
-							modName: module.info.name,
-							name: control.label,
-							payload: rand,
-							index: parseInt(cntrl)
-						}));
-					}
 				}
 
-			}
+			//}
 
 			if(self.bpm === 0) {
 				interval = 1000;
@@ -113,32 +100,26 @@
 		};
 	};
 
-	modV.prototype.attachBot = function(module) {
+	modV.prototype.attachBot = function(module, controlIndex) {
 		var self = this;
 		var mod = self.registeredMods[module];
-		if(bots[mod.info.name]) return false; // Bot already attached
-		var bot = new modVBot(mod, self);
-		bots[mod.info.name] = bot;
+		var control = mod.info.controls[controlIndex];
+		var controlID = control.getID();
 
-		self.controllerWindow.postMessage({
-			type: 'info',
-			name: 'active-bots',
-			payload: Object.keys(bots).length,
-		}, self.options.controlDomain);
+		if(self.bots[controlID]) return false; // Bot already attached
+		var bot = new modVBot(mod, controlIndex, self); //jshint ignore: line
+		self.bots[controlID] = bot;
 	};
 
-	modV.prototype.removeBot = function(module) {
+	modV.prototype.removeBot = function(module, controlIndex) {
 		var self = this;
 		var mod = self.registeredMods[module];
-		if(!bots[mod.info.name]) return false; // No bot
-		bots[mod.info.name].removeBot();
-		delete bots[mod.info.name];
+		var control = mod.info.controls[controlIndex];
+		var controlID = control.getID();
 
-		self.controllerWindow.postMessage({
-			type: 'info',
-			name: 'active-bots',
-			payload: Object.keys(bots).length,
-		}, self.options.controlDomain);
+		if(!self.bots[controlID]) return false; // No bot
+		self.bots[controlID].removeBot();
+		delete self.bots[controlID];
 		
 		return true; // There was a bot, it has now been deleted
 	};
