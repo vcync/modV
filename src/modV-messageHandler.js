@@ -166,25 +166,7 @@
 			}
 			
 			if(event.data.name === 'savepreset') {
-				var preset = {};
-				var name = event.data.payload.name;
-				
-				for (var mod in self.registeredMods) {
-					preset[mod] = self.registeredMods[mod].info;
-				}
-				
-				self.presets[name] = preset;
-				localStorage.setItem('presets', JSON.stringify(self.presets));
-				console.info('Wrote preset with name:', name);
-
-				if(self.mediaManagerAvailable) {
-					self.mediaManager.send(JSON.stringify({
-						request: 'save-preset',
-						profile: event.data.payload.profile,
-						payload: preset,
-						name: name
-					}));
-				}
+				self.savePreset();
 
 				// update preset list in controls window (TODO: THE SAME FOR WEBSOCKET)
 			}
