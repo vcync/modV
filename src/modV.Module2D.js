@@ -13,7 +13,11 @@
 			// Parse the stack for some helpful debug info
 			var reg = /\((.*?)\)/;    
 			var stackInfo = this.stack.split('\n').pop().trim();
-			stackInfo = reg.exec(stackInfo)[0];
+			try {
+				stackInfo = reg.exec(stackInfo)[0];
+			} catch(e) {
+				
+			}
 
 			// Expose name and message
 			this.name = 'modV.Module Error';
