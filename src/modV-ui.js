@@ -11,6 +11,7 @@
 
 		var gallery = document.getElementsByClassName('gallery')[0];
 		var list = document.getElementsByClassName('active-list')[0];
+		var currentActiveDrag = null;
 
 		Sortable.create(list, {
 			group: {
@@ -33,8 +34,10 @@
 
 				// Grab dataname from cloned element
 				var name = clone.dataset.moduleName;
+				var originalName = clone.dataset.moduleName;
 				// Check for dupes
-				var dupes = list.querySelectorAll('.active-item[data-module-name|="' + name.replace(' ', '-') + '"]');
+				name = replaceAll(name, ' ', '-');
+				var dupes = list.querySelectorAll('.active-item[data-module-name|="' + name + '"]');
 
 				// Convert back to display name
 				name = replaceAll(name, '-', ' ');
@@ -76,6 +79,11 @@
 					// update name
 					Module.info.name = name;
 					Module.info.safeName = safeName;
+					Module.info.originalName = originalName;
+				}
+
+				if(evt.originalEvent.shiftKey) {
+					Module.info.solo = true;
 				}
 
 				// Move back to gallery
@@ -90,6 +98,16 @@
 					return;
 				}
 				
+				activeItemNode.addEventListener('dragstart',function(e) {
+					e.dataTransfer.setData('modulename', activeItemNode.dataset.moduleName);
+					console.log(e, activeItemNode.dataset.moduleName);
+					currentActiveDrag = activeItemNode;
+				});
+
+				activeItemNode.addEventListener('dragend',function(e) {
+					currentActiveDrag  = null;
+				});
+
 
 				// Add to registry
 				self.registeredMods[Module.info.name] = Module;
@@ -107,7 +125,9 @@
 				activeItemNode.focus();
 			},
 			onEnd: function(evt) {
-				self.setModOrder(replaceAll(evt.item.dataset.moduleName, '-', ' '), evt.newIndex);
+				if(!evt.item.classList.contains('deletable')) {
+					self.setModOrder(replaceAll(evt.item.dataset.moduleName, '-', ' '), evt.newIndex);
+				}
 			}
 		});
 
@@ -119,6 +139,49 @@
 			},
 			draggable: '.gallery-item',
 			sort: false
+		});
+
+		// Handle module removal (not using sortable because of api limitations with clone elements between lists)
+		gallery.addEventListener('drop', function(e) {
+			e.preventDefault();
+			var droppedModuleData = e.dataTransfer.getData('modulename');
+			var activeItemNode = list.querySelector('.active-item[data-module-name="' + droppedModuleData + '"]');
+			var panel = document.querySelector('.control-panel[data-module-name="' + droppedModuleData + '"]');
+
+			console.log('gallery drop', droppedModuleData);
+			currentActiveDrag  = null;
+
+			for(var moduleName in self.registeredMods) {
+				var Module = self.registeredMods[moduleName];
+				if(Module.info.safeName == droppedModuleData) {
+					
+					if('originalName' in Module.info) {
+						var name = replaceAll(Module.info.originalName, ' ', '-');
+
+						var dupes = list.querySelectorAll('.active-item[data-module-name|="' + name + '"]');
+						if(dupes.length > 1) {
+							console.log('deleting', moduleName);
+							delete self.registeredMods[moduleName];
+						}
+					}
+
+					list.removeChild(activeItemNode);
+					panel.parentNode.removeChild(panel);
+					self.setModOrder(moduleName, -1);
+				}
+			}
+		});
+
+		gallery.addEventListener('dragover', function(e) {
+			e.preventDefault();
+
+			currentActiveDrag.classList.add('deletable');
+		});
+
+		gallery.addEventListener('dragleave', function(e) {
+			e.preventDefault();
+
+			currentActiveDrag.classList.remove('deletable');
 		});
 
 		window.addEventListener('focusin', activeElementHandler);
@@ -134,8 +197,20 @@
 
 		}
 
+		function clearCurrent() {
+			var activeItems = document.querySelectorAll('.active-item');
+
+			// :^) hacks hacks hacks
+			[].forEach.call(activeItems, function(activeItemNode) {
+				activeItemNode.classList.remove('current');
+			});
+		}
+
 		function activeElementHandler(evt) {
 			var eventNode = evt.srcElement.closest('.active-item');
+			clearCurrent();
+			eventNode.classList.add('current');
+
 			var dataName = eventNode.dataset.moduleName;
 			var panel = document.querySelector('.control-panel[data-module-name="' + dataName + '"]');
 			
@@ -162,7 +237,11 @@
 		});
 
 		globalControlPanel.querySelector('#monitorAudioGlobal').addEventListener('change', function() {
-			self.muted = this.checked;
+				if(this.checked) {
+					self.gainNode.gain.value = 1;
+				} else {
+					self.gainNode.gain.value = 0;
+				}
 		});
 
 		var audioSelectNode = globalControlPanel.querySelector('#audioSourceGlobal');
@@ -195,18 +274,21 @@
 			self.factoryReset();
 		});
 
-		function getAbsoluteOffsetFromBody( el )
-{   // finds the offset of el from the body or html element
-    var _x = 0;
-    var _y = 0;
-    while( el && !isNaN( el.offsetLeft ) && !isNaN( el.offsetTop ) )
-    {
-        _x += el.offsetLeft - el.scrollLeft + el.clientLeft;
-        _y += el.offsetTop - el.scrollTop + el.clientTop;
-        el = el.offsetParent;
-    }
-    return { top: _y, left: _x };
-}
+		globalControlPanel.querySelector('#savePresetGlobal').addEventListener('click', function() {
+			self.savePreset(globalControlPanel.querySelector('#savePresetName').value, 'default');
+		});
+
+		// finds the offset of el from the body or html element
+		function getAbsoluteOffsetFromBody( el ) {
+			var _x = 0;
+			var _y = 0;
+			while( el && !isNaN( el.offsetLeft ) && !isNaN( el.offsetTop ) ) {
+				_x += el.offsetLeft - el.scrollLeft + el.clientLeft;
+				_y += el.offsetTop - el.scrollTop + el.clientTop;
+				el = el.offsetParent;
+			}
+			return { top: _y, left: _x };
+		}
 
 
 		function getClickPosition(e) {
@@ -230,18 +312,22 @@
 			return { x: xPosition, y: yPosition };
 		}
 
-		// Bottom area resize handle
+		// Area resize handles
 		var bottom = document.querySelector('.bottom');
 		var top = document.querySelector('.top');
-		var bottomMouseDown = false;
-		var dragging = false;
+		var activeListWrapper = document.querySelector('.active-list-wrapper');
+		var galleryWrapper = document.querySelector('.gallery-wrapper');
+
+		var mouseDown = false;
+		var draggingBottom = false;
+		var draggingGallery = false;
 
 		window.addEventListener('mousedown', function(e) {
 
-			bottomMouseDown = true;
-			if(e.currentTarget != bottom) {
+			mouseDown = true;
+			if(e.currentTarget != bottom || e.currentTarget != activeListWrapper) {
 				setTimeout(function() {
-					bottomMouseDown = false;
+					mouseDown = false;
 				}, 300);
 			}
 
@@ -249,30 +335,50 @@
 
 		window.addEventListener('mouseup', function(e) {
 
-			bottomMouseDown = false;
-			dragging = false;
+			mouseDown = false;
+			draggingBottom = false;
+			draggingGallery = false;
 			document.body.classList.remove('ns-resize');
+			document.body.classList.remove('ew-resize');
 
 		});
 
 		window.addEventListener('mousemove', function(e) {
 
 			var bottomPos = getAbsoluteOffsetFromBody(bottom);
+			var galleryPos = getAbsoluteOffsetFromBody(galleryWrapper);
 			var mousePosition = getClickPosition(e);
 			
 			if(mousePosition.clientY > bottomPos.top-3 && mousePosition.clientY < bottomPos.top+3) {
 
 				document.body.classList.add('ns-resize');
 
-				if(bottomMouseDown) {
-					
-					dragging = true;
+				if(mouseDown) {
+					draggingBottom = true;
 				}
-			} else if(!dragging) {
-				document.body.classList.remove('ns-resize');
+			} else if(
+				mousePosition.clientX > galleryPos.left-3 &&
+				mousePosition.clientX < galleryPos.left+3 &&
+				mousePosition.clientY < bottomPos.top-3 ) {
+
+				document.body.classList.add('ew-resize');
+
+				if(mouseDown) {
+					draggingGallery = true;
+				}
+
+			} else {
+
+				if(!draggingBottom) {
+					document.body.classList.remove('ns-resize');
+				}
+
+				if(!draggingGallery) {
+					document.body.classList.remove('ew-resize');
+				}
 			}
 
-			if(dragging) {
+			if(draggingBottom) {
 				document.body.classList.add('ns-resize');
 				e.preventDefault();
 				e.cancelBubble=true;
@@ -284,6 +390,22 @@
 
 				bottom.style.height = bottomHeight + '%';
 				top.style.height = (100 - bottomHeight) + '%';
+
+				return false;
+			}
+
+			if(draggingGallery) {
+				document.body.classList.add('ew-resize');
+				e.preventDefault();
+				e.cancelBubble=true;
+				e.returnValue=false;
+
+				var galleryWidth = 100 - ( mousePosition.clientX / window.innerWidth  ) * 100;
+
+				if(galleryWidth < 20 || galleryWidth > 80) return false;
+
+				galleryWrapper.style.width = galleryWidth + '%';
+				activeListWrapper.style.width = (100 - galleryWidth) + '%';
 
 				return false;
 			}
