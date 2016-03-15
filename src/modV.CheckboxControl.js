@@ -4,9 +4,14 @@
 
 	modV.prototype.CheckboxControl = function(settings) {
 		var self = this;
+		var id;
 		
 		self.getSettings = function() {
 			return settings;
+		};
+
+		self.getID = function() {
+			return id;
 		};
 		
 		//TODO: error stuff
@@ -45,16 +50,27 @@
 		}
 
 		self.makeNode = function(Module) {
-			var node = document.createElement('input');
-			node.type = 'checkbox';
-			if('checked' in settings) node.checked = settings.checked;
-			else node.checked = false;
+			id = Module.info.safeName + '-' + self.variable;
 
-			node.addEventListener('change', function(e) {
+			var inputNode = document.createElement('input');
+			inputNode.type = 'checkbox';
+			inputNode.id = id;
+			if('checked' in settings) inputNode.checked = settings.checked;
+			else inputNode.checked = false;
+
+			inputNode.addEventListener('change', function(e) {
 				Module[self.variable] = this.checked;
 			}, false);
 
-			return node;
+			var labelNode = document.createElement('label');
+			labelNode.setAttribute('for', id);
+
+			var div = document.createElement('div');
+			div.classList.add('customCheckbox');
+			div.appendChild(inputNode);
+			div.appendChild(labelNode);
+
+			return div;
 		};
 	};
 
