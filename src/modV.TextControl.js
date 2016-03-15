@@ -4,9 +4,14 @@
 
 	modV.prototype.TextControl = function(settings) {
 		var self = this;
+		var id;
 		
 		self.getSettings = function() {
 			return settings;
+		};
+
+		self.getID = function() {
+			return id;
 		};
 
 		//TODO: error stuff
@@ -45,6 +50,8 @@
 		}
 
 		self.makeNode = function(Module) {
+			id = Module.info.safeName + '-' + self.variable;
+
 			var node = document.createElement('input');
 			node.type = 'text';
 			if('default' in settings) node.value = settings.default;
@@ -52,6 +59,8 @@
 			node.addEventListener('input', function(e) {
 				Module[self.variable] = this.value;
 			}, false);
+
+			node.id = id;
 			return node;
 		};
 	};
