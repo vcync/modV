@@ -42,18 +42,24 @@
 		galleryItem.dataset.moduleName = Module.info.name.replace(' ', '-');
 
 		// Draw preview
-		giMouseEnter(Module, previewCanvas, previewCtx, self);
+		//giMouseEnter(Module, previewCanvas, previewCtx, self);
 
 		// Draw name
-		giMouseOut(interval, Module, previewCanvas, previewCtx, self);
+		giMouseOut(Module, previewCanvas, previewCtx, self);
 
 		previewCanvas.addEventListener('mouseenter', function() {
-			var loop = giMouseEnter(Module, previewCanvas, previewCtx, self);
-			interval = setInterval(loop, 1000/60);
+			/*var loop = giMouseEnter(Module, previewCanvas, previewCtx, self);
+			interval = setInterval(loop, 1000/60);*/
+			mouseOver = true;
+			activeVariables = [Module, previewCanvas, previewCtx, self];
+			raf = requestAnimationFrame(loop);
 		});
 
 		previewCanvas.addEventListener('mouseout', function() {
-			giMouseOut(interval, Module, previewCanvas, previewCtx, self);
+			giMouseOut(Module, previewCanvas, previewCtx, self);
+			cancelAnimationFrame(raf);
+			mouseOver = false;
+			activeVariables = [];
 		});
 
 /*		previewCanvas.addEventListener('mousemove', function(evt) {
@@ -63,10 +69,26 @@
 	};
 
 	var mousePos = {x: 0, y: 0};
+	var mouseOver = false;
+	var raf = null;
+	var activeVariables = [];
 
-	function giMouseEnter(Module, canvas, ctx, self) {
+	//function giMouseEnter(Module, canvas, ctx, self) {
 
-		return function(delta) {
+		function loop(delta) {
+			
+			if(mouseOver) raf = requestAnimationFrame(loop);
+			else cancelAnimationFrame(raf);
+
+			if(activeVariables.length != 4) {
+				return;
+			}
+
+			var Module = activeVariables[0],
+				canvas = activeVariables[1],
+				ctx = activeVariables[2],
+				self = activeVariables[3];
+
 			//ctx.clearRect(0, 0, mousePos.x, canvas.height);
 			//ctx.clearRect(0, 0, Math.round(canvas.width/2), canvas.height);
 			ctx.clearRect(0, 0, canvas.width, canvas.height);
@@ -74,7 +96,6 @@
 			var positionInfo = canvas.getBoundingClientRect();
 
 			var largeWidth = Math.round(Math.map(mousePos.x, 0, positionInfo.width, 0, self.canvas.width));
-			console.log(mousePos.x, positionInfo.width, largeWidth, self.canvas.width);
 
 			if(Module.info.previewWithOutput || Module instanceof self.ModuleShader) {
 				ctx.drawImage(self.canvas, 0, 0, canvas.width, canvas.height);
@@ -145,20 +166,16 @@
 				Module.draw(canvas, ctx, self.video, self.myFeatures, self.meyda, delta, self.bpm);
 				ctx.restore();
 			}
-		};
+		}
 
-	}
+	//}
 
-	function giMouseOut(interval, Module, canvas, ctx, self) {
-		clearInterval(interval);
-
+	function giMouseOut(Module, canvas, ctx, self) {
 		ctx.fillStyle = 'rgba(0,0,0,0.5)';
 		ctx.fillRect(0, 0, canvas.width, canvas.height);
 		ctx.fillStyle = 'white';
 		var textWidth = ctx.measureText(Module.info.name).width;
 		ctx.fillText(Module.info.name, canvas.width/2 - textWidth/2, canvas.height/2);
-
-		return undefined;
 	}
 
 	function getMousePos(canvas, evt, round) {
