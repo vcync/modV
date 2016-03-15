@@ -25,6 +25,16 @@
 
 				inputNode = control.makeNode(Module, modVSelf);
 
+				inputNode.addEventListener('contextmenu', function(ev) {
+					ev.preventDefault();
+
+					console.log('ctx', ev);
+					
+					self.showContextMenu('control', [control, idx, Module, inputNode], ev);
+
+					return false;
+				}, false);
+
 				var groupNode = document.createElement('div');
 				groupNode.classList.add('control-group');
 				var labelNode = document.createElement('label');
