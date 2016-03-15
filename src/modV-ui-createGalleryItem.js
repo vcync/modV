@@ -77,7 +77,6 @@
 			console.log(mousePos.x, positionInfo.width, largeWidth, self.canvas.width);
 
 			if(Module.info.previewWithOutput || Module instanceof self.ModuleShader) {
-				return;
 				ctx.drawImage(self.canvas, 0, 0, canvas.width, canvas.height);
 			}
 
@@ -87,28 +86,50 @@
 
 			if(Module instanceof self.ModuleShader) {
 
-
+				var _gl = self.shaderEnv.gl;
 
 				// Switch program
 				if(Module.programIndex !== self.shaderEnv.activeProgram) {
 
 					self.shaderEnv.activeProgram = Module.programIndex;
 
-					self.shaderEnv.gl.useProgram(self.shaderEnv.programs[Module.programIndex]);
+					_gl.useProgram(self.shaderEnv.programs[Module.programIndex]);
 				}
 
 				// Copy Main Canvas to Shader Canvas 
-				self.shaderEnv.texture = self.shaderEnv.gl.texImage2D(
+				self.shaderEnv.texture = _gl.texImage2D(
 					self.shaderEnv.gl.TEXTURE_2D,
 					0,
-					self.shaderEnv.gl.RGBA,
-					self.shaderEnv.gl.RGBA,
-					self.shaderEnv.gl.UNSIGNED_BYTE,
+					_gl.RGBA,
+					_gl.RGBA,
+					_gl.UNSIGNED_BYTE,
 					self.canvas
 				);
 
+				// Set Uniforms
+				if('uniforms' in Module.info) {
+					for(var uniformKey in Module.info.uniforms) {
+						var uniLoc = _gl.getUniformLocation(self.shaderEnv.programs[self.shaderEnv.activeProgram], uniformKey);
+						var uniform = Module.info.uniforms[uniformKey];
+						var value;
+
+						switch(uniform.type) {
+							case 'f':
+								value = parseFloat(Module[uniformKey]);
+								_gl.uniform1f(uniLoc, value);
+								break;
+
+							case 'i':
+								value = parseInt(Module[uniformKey]);
+								_gl.uniform1i(uniLoc, value);
+								break;
+
+						}
+					}
+				}
+
 				// Render
-				self.shaderEnv.render();
+				self.shaderEnv.render(delta, canvas);
 
 				// Copy Shader Canvas to Main Canvas
 				ctx.drawImage(
