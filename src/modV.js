@@ -84,6 +84,12 @@
 
 		self.ready = false;
 
+		// Copy Paste
+		self.copiedValue = null;
+
+		// Robots
+		self.bots = {};
+
 		// WebSocket
 		self.ws = undefined;
 
@@ -210,41 +216,43 @@
 			console.log(id);
 			self.factoryReset();
 
+			function updateControl(control, idx) {
+				var val = control.currValue;
+				
+				if('append' in control) {
+					if(typeof val === 'string') {
+						val = val.replace(control.append, '');
+					} else {
+						val = val.toString();
+						val = val.replace(control.append, '');
+					}
+				}
+
+				if(control.type === 'image' || control.type === 'multiimage' || control.type === 'video') return;
+
+				/*self.controllerWindow.postMessage({
+					type: 'ui',
+					varType: control.type,
+					modName: m.name,
+					name: control.label,
+					payload: val,
+					index: m.order
+				}, self.options.controlDomain);*/
+
+				if(control.append) {
+					val = val + control.append;
+				}
+
+				self.registeredMods[mod][control.variable] = val;
+
+			}
+
 			for(var mod in self.presets[id]) {
 
 				var m = self.presets[id][mod];
 				
 				if('controls' in m) {
-					m.controls.forEach(function(control, idx) {
-						var val = control.currValue;
-						
-						if('append' in control) {
-							if(typeof val === 'string') {
-								val = val.replace(control.append, '');
-							} else {
-								val = val.toString();
-								val = val.replace(control.append, '');
-							}
-						}
-
-						if(control.type === 'image' || control.type === 'multiimage' || control.type === 'video') return;
-
-						/*self.controllerWindow.postMessage({
-							type: 'ui',
-							varType: control.type,
-							modName: m.name,
-							name: control.label,
-							payload: val,
-							index: m.order
-						}, self.options.controlDomain);*/
-
-						if(control.append) {
-							val = val + control.append;
-						}
-
-						self.registeredMods[mod][control.variable] = val;
-
-					});
+					m.controls.forEach(updateControl);
 				}
 				console.log(m);
 				//registeredMods[mod].info = m;
@@ -268,6 +276,44 @@
 				
 				console.log(m.name, 'now @ ', self.setModOrder(m.name, m.order));
 
+			}
+		};
+
+		self.savePreset = function(name, profile) {
+			var preset = {
+				modOrder: self.modOrder,
+				moduleData: {}
+			};
+			
+			function extractValues(Control) {
+				preset.moduleData[mod].values[Control.variable] = Module[Control.variable];
+			}
+
+			for (var i=0; i < self.modOrder.length; i++) {
+				var mod = self.modOrder[i];
+
+				var Module = self.registeredMods[mod];
+				
+				preset.moduleData[mod] = {};
+				preset.moduleData[mod].disabled = Module.info.disabled;
+				preset.moduleData[mod].blend = Module.info.blend;
+				preset.moduleData[mod].name = Module.info.name;
+
+				preset.moduleData[mod].values = {};
+				Module.info.controls.forEach(extractValues);
+			}
+			
+			self.presets[name] = preset;
+			localStorage.setItem('presets', JSON.stringify(self.presets));
+			console.info('Wrote preset with name:', name, 'in profile', profile, preset);
+
+			if(self.mediaManagerAvailable) {
+				self.mediaManager.send(JSON.stringify({
+					request: 'save-preset',
+					profile: profile,
+					payload: preset,
+					name: name
+				}));
 			}
 		};
 
