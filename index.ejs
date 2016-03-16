@@ -1,0 +1,201 @@
+<!doctype html>
+<html lang="en">
+<head>
+	<meta charset="utf-8">
+	<title>modV</title>
+	<link rel="stylesheet"	href="./libraries/pure/pure-min.css">
+	<link rel="stylesheet"	href="./libraries/pure/grids-responsive-min.css">
+	<link rel="stylesheet"	href="./libraries/font-awesome.min.css">
+	<link rel="stylesheet"	href="./libraries/simplebar/simplebar.css">
+	<link rel="stylesheet"	href="style.css">
+	<link rel="import"	href="templates.html">
+</head>
+	<body>
+
+		<section>
+			<div class="top">
+				<div class="pure-g">
+					<div class="pure-u-1-5 active-list-wrapper" data-simplebar-direction="vertical">
+
+						<div class="left-top active-list pure-g">
+
+						</div>
+					
+					</div>
+					<div class="pure-u-4-5 gallery-wrapper" data-simplebar-direction="vertical">
+					
+						<div class="right-top gallery pure-g">
+
+						</div>
+
+					</div>
+				</div>
+			</div>
+
+			<div class="bottom">
+
+				<div class="pure-g">
+
+					<div class="pure-u-1-3"  data-simplebar-direction="vertical">
+						<div class="control-panel-wrapper pure-g"></div>
+					</div>
+
+					<div class="pure-u-1-3">
+						<div class="global-control-panel-wrapper pure-g">
+							
+						</div>
+					</div>
+
+					<div class="canvas-preview pure-u-1-3">
+						<canvas></canvas>
+					</div>
+
+				</div>
+
+			</div>
+
+		</section>
+
+		<div id="temp" style="display:none;"></div>
+
+		<script id="live-reload" src="http://localhost:35729/livereload.js"></script>
+		<script src="./libraries/jquery-2.2.1.min.js"></script>
+		<script src="./libraries/simplebar/simplebar.min.js"></script>
+		<script src="./libraries/Sortable.js"></script>
+		<script src="./libraries/three.js"></script>
+		<script src="./libraries/meyda.min.js"></script>
+		<script src="./libraries/beatdetektor.js"></script>
+		<script src="app.js"></script>
+
+		<script>
+			// DOM helper (still smaller than jQuery ;^)
+			function swapElements(obj1, obj2) {
+				// save the location of obj2
+				var parent2 = obj2.parentNode;
+				var next2 = obj2.nextSibling;
+				// special case for obj1 is the next sibling of obj2
+				if (next2 === obj1) {
+					// just put obj1 before obj2
+					parent2.insertBefore(obj1, obj2);
+				} else {
+					// insert obj2 right before obj1
+					obj1.parentNode.insertBefore(obj2, obj1);
+
+					// now insert obj1 where obj2 was
+					if (next2) {
+						// if there was an element after obj2, then insert obj1 right before that
+						parent2.insertBefore(obj1, next2);
+					} else {
+						// otherwise, just append as last child
+						parent2.appendChild(obj1);
+					}
+				}
+			}
+		</script>
+
+		<!-- modV modules load -->
+		<!-- between these tags -->
+
+		<script>
+			var modVC = new modV({
+				canvas: document.querySelector('canvas'),
+				clearing: false,
+				//remote: 'ws://localhost:8888/ws',
+				previewWindow: true,
+				retina: true
+			});
+
+			var myModule = new modVC.Module2D({
+				info: {
+					name: 'Default Module',
+					author: '2xAA',
+					version: 0.1,
+					meyda: ['buffer'],
+					controls: []
+				},
+				init: function() {
+			 		
+					this.hue = 0;
+					this.strokeWeight = 1;
+
+					// map() from Processing
+					Math.map = function(value, low1, high1, low2, high2) {
+						return low2 + (high2 - low2) * (value - low1) / (high1 - low1);
+					};
+					
+				},
+				draw: function(can, ctx, vid, features, meyda, delta, bpm) {
+					if(this.hue > 360) this.hue=0;
+					this.hue++;
+
+					var ampArr = features.buffer;
+					ampArr = meyda.windowing(ampArr, 'hanning');
+
+					ctx.strokeStyle = 'hsl(' + this.hue + ', 100%, 50%)';
+					ctx.lineWidth = this.strokeWeight;
+					ctx.beginPath();
+					for (var i = 0; i < ampArr.length-1; i+=this.strokeWeight) {
+						var width = Math.round(Math.map(i, 0, ampArr.length-1, 0, can.width));
+						var newWidth = Math.round(Math.map(i+this.strokeWeight, 0, ampArr.length-1, 0, can.width));
+						var y = can.height/2 - (can.height * ampArr[i]) / (2);
+						y = Math.round(y);
+						var yNext = can.height/2 - (can.height * ampArr[i+this.strokeWeight]) / (2);
+						yNext = Math.round(yNext);
+
+						ctx.moveTo(width, y);
+						ctx.lineTo(newWidth, yNext);
+					}
+					ctx.closePath();
+					ctx.stroke();
+					
+
+				}
+			});
+
+			myModule.add(new modVC.RangeControl({
+				variable: 'strokeWeight',
+				label: 'Stroke',
+				varType: 'int',
+				min: 1,
+				max: 30,
+				default: 1
+			}));
+
+			modVC.register(myModule);
+
+			var myModuleShader = new modVC.ModuleShader({
+				info: {
+					name: 'Default Shader',
+					author: '2xAA',
+					version: 0.1,
+					meyda: [], // returned variables passed to the shader individually as uniforms
+					controls: [], // variabled passed to the shader individually as uniforms
+					uniforms: {} // Three.JS uniforms
+				},
+				shaderFile: "/Default Shader/shader.html" // path to HTML file within modules directory with shader script tags
+			});
+
+			modVC.register(myModuleShader);
+
+			modVC.start();
+		</script>
+		<script src="./modules/DemoNew.js"></script>
+		<script src="./modules/GridStretchNew.js"></script>
+		<script src="./modules/RotoZoom.js"></script>
+		<script src="./modules/Slide.js"></script>
+		<script src="./modules/Text.js"></script>
+		<script src="./modules/SlipNSlide.js"></script>
+		<script src="./modules/Bulge.js"></script>
+		<script src="./modules/Pinch.js"></script>
+		<script src="./modules/Webcam.js"></script>
+		<script src="./modules/Dither.js"></script>
+		<script src="./modules/Ball.js"></script>
+		<script src="./modules/Pixelate.js"></script>
+		<script src="./modules/Tangent.js"></script>
+		<script src="./modules/MattiasCRT.js"></script>
+		<script src="./modules/StaticImage.js"></script>
+		<script src="./modules/Video.js"></script>
+		<script src="./modules/Kaleidoscope.js"></script>
+		<script src="./modules/Plasma.js"></script>
+	</body>
+</html>
