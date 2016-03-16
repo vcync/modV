@@ -1,0 +1,4 @@
+This is the media folder required for the media manager.
+Directory structure for profiles should be:
+
+/media/**profile name**/ **[image, palette, video, preset]**

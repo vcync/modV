@@ -1,0 +1,57 @@
+<!DOCTYPE HTML>
+<html>
+	<head>
+	</head>
+	<body>
+		<script id="vertexshader" type="x-shader/x-vertex">
+			varying vec2 vUv;
+			attribute vec2 a_position, a_texCoord;
+			uniform vec2 u_resolution;
+			
+			void main() {
+				vec2 zeroToOne = a_position / u_resolution;
+				vec2 zeroToTwo = zeroToOne * 2.0;
+				vec2 clipSpace = zeroToTwo - 1.0;
+				gl_Position = vec4(clipSpace * vec2(1, -1), 0, 1);
+				vUv = a_texCoord;
+			}
+		</script>
+
+		<script id="fragmentshader" type="x-shader/x-fragment">
+			#ifdef GL_ES
+				precision mediump float;
+			#endif
+
+			uniform sampler2D tex;
+			varying vec2 vUv;
+			uniform float amount;
+			uniform float centerX;
+			uniform float centerY;
+			uniform float spread;
+
+			void main() {
+				vec2 uv = vUv.xy;
+
+				// normalize to the center
+				uv.x = uv.x - centerX;
+				uv.y = uv.y - centerY;
+
+				// cartesian to polar coordinates
+				float r = length(uv);
+				float a = atan(uv.y, uv.x);
+
+				// distort
+				r = tan((r * spread) / amount); // pinch
+
+				// polar to cartesian coordinates
+				uv = r * vec2(cos(a), sin(a));
+
+				uv.x = uv.x + centerX;
+				uv.y = uv.y + centerY;
+
+				vec4 c = texture2D(tex, uv);
+				gl_FragColor = c;
+			}
+		</script>
+	</body>
+</html>
