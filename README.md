@@ -1,7 +1,7 @@
 #modV
 modV is a modular audio visualisation environment written in JavaScript and runs in Google Chrome.
 
-Once the UI has been overhauled, I will merge onto the dev branch and then back to the master.
+Docs to come! (promise)
 
 ## Requirements
 - [node](https://nodejs.org/download/) (v0.12.7)
