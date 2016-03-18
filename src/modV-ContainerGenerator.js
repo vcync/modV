@@ -1,4 +1,4 @@
-(function(RJSmodule) {
+(function() {
 	'use strict';
 
 	// from here: http://stackoverflow.com/questions/18663941/finding-closest-element-without-jquery
@@ -146,4 +146,4 @@
 		};
 	};
 
-})(module);
+})();

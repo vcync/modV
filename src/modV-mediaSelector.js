@@ -1,4 +1,4 @@
-(function(RJSmodule) {
+(function() {
 	'use strict';
 
 	/* * * * * * * * * * * * * * * *
@@ -26,7 +26,7 @@
 
 			var image, images, i, option;
 
-			if(type == 'image') {
+			if(type === 'image') {
 
 				for(key in profiles) {
 					profile = profiles[key];
@@ -52,7 +52,7 @@
 					select.appendChild(optGroup);
 				}
 
-			} else if(type == 'multiimage') {
+			} else if(type === 'multiimage') {
 				select.multiple = true;
 
 				for(key in profiles) {
@@ -79,7 +79,7 @@
 					select.appendChild(optGroup);
 				}
 
-			} else if(type == 'video') {
+			} else if(type === 'video') {
 				for(key in profiles) {
 					profile = profiles[key];
 
@@ -106,10 +106,10 @@
 			}
 		};
 
-		function selectChanged(e) {
+		function selectChanged() {
 			if(!('onchange' in callbacks)) return;
 
-			if(type == 'multiimage') {
+			if(type === 'multiimage') {
 				var arr = [];
 
 				// For the future...
@@ -147,4 +147,4 @@
 		return self.mediaSelectors[idx];
 	};
 
-})(module);
+})();

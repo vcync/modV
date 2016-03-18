@@ -1,4 +1,4 @@
-(function(RJSmodule) {
+(function() {
 	'use strict';
 	/*jslint browser: true */
 
@@ -178,7 +178,8 @@
 		if(self.ready) {
 			
 			if(self.meydaSupport && self.reallyReady) {
-				self.myFeatures = self.meyda.get(self.meydaFeatures);
+				if(self.meydaFeatures.length > 0) self.myFeatures = self.meyda.get(self.meydaFeatures);
+				
 				self.beatDetektorMed.process((timestamp / 1000.0), self.myFeatures.complexSpectrum.real);
 				self.bpm = self.beatDetektorMed.win_bpm_int_lo;
 
@@ -225,4 +226,4 @@
 		self.drawFrame(self.myFeatures, timestamp);
 	};
 
-})(module);
+})();

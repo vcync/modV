@@ -1,4 +1,4 @@
-(function(bModule) {
+(function() {
 	'use strict';
 	/*jslint browser: true */
 
@@ -17,7 +17,6 @@
 		
 		var currentColour = 0;
 		var currentTime = 0;
-		var controlsGenerated = false;
 	   	
 		// Modified from: http://stackoverflow.com/questions/5623838/rgb-to-hex-and-hex-to-rgb
 		function hexToRgb(hex) {
@@ -174,7 +173,7 @@
 			var paletteDiv = document.createElement('div');
 			paletteDiv.classList.add('palette');
 			
-			colours.forEach(function(colour, i) {
+			colours.forEach(function(colour) {
 				var swatch = makeColourSwatch(colour);
 				paletteDiv.appendChild(swatch);
 			});
@@ -333,7 +332,9 @@
 
 		// Copy settings values to local scope
 		for(var key in settings) {
-			self[key] = settings[key];
+			if(settings.hasOwnProperty(key)) {
+				self[key] = settings[key];
+			}
 		}
 
 

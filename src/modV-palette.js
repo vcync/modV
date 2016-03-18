@@ -1,4 +1,4 @@
-(function(RJSmodule) {
+(function() {
 	'use strict';
 	/*jslint browser: true */
 
@@ -176,7 +176,7 @@
 				var paletteDiv = document.createElement('div');
 				paletteDiv.classList.add('palette');
 				
-				colours.forEach(function(colour, i) {
+				colours.forEach(function(colour) {
 					var swatch = makeColourSwatch(colour);
 					paletteDiv.appendChild(swatch);
 				});
@@ -322,4 +322,4 @@
 		return self.palettes[idx];
 	};
 
-})(module);
+})();

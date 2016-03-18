@@ -1,4 +1,4 @@
-(function(bModule) {
+(function() {
 	'use strict';
 	/*jslint browser: true */
 
@@ -49,7 +49,9 @@
 
 		// Copy settings values to local scope
 		for(var key in settings) {
-			self[key] = settings[key];
+			if(settings.hasOwnProperty(key)) {
+				self[key] = settings[key];
+			}
 		}
 
 		self.makeNode = function(Module) {
@@ -63,7 +65,7 @@
 			if('step' in settings) node.step = settings.step;
 			if('default' in settings) node.value = settings.default;
 
-			node.addEventListener('input', function(e) {
+			node.addEventListener('input', function() {
 				var value;
 
 				if(settings.varType === 'int') value = parseInt(this.value);

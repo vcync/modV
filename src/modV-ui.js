@@ -1,4 +1,5 @@
-(function(bModule) {
+/* globals Sortable, swapElements */
+(function() {
 	'use strict';
 	/*jslint browser: true */
 
@@ -104,7 +105,7 @@
 					currentActiveDrag = activeItemNode;
 				});
 
-				activeItemNode.addEventListener('dragend',function(e) {
+				activeItemNode.addEventListener('dragend',function() {
 					currentActiveDrag  = null;
 				});
 
@@ -153,7 +154,7 @@
 
 			for(var moduleName in self.registeredMods) {
 				var Module = self.registeredMods[moduleName];
-				if(Module.info.safeName == droppedModuleData) {
+				if(Module.info.safeName === droppedModuleData) {
 					
 					if('originalName' in Module.info) {
 						var name = replaceAll(Module.info.originalName, ' ', '-');
@@ -218,7 +219,7 @@
 			panel.classList.add('show');
 		}
 
-		function clearActiveElement(evt) {
+		function clearActiveElement() {
 			console.log('clear');
 		}
 
@@ -325,7 +326,7 @@
 		window.addEventListener('mousedown', function(e) {
 
 			mouseDown = true;
-			if(e.currentTarget != bottom || e.currentTarget != activeListWrapper) {
+			if(e.currentTarget !== bottom || e.currentTarget !== activeListWrapper) {
 				setTimeout(function() {
 					mouseDown = false;
 				}, 300);
@@ -333,7 +334,7 @@
 
 		});
 
-		window.addEventListener('mouseup', function(e) {
+		window.addEventListener('mouseup', function() {
 
 			mouseDown = false;
 			draggingBottom = false;

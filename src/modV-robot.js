@@ -1,4 +1,4 @@
-(function(RJSmodule) {
+(function() {
 	'use strict';
 	/*jslint browser: true */
 
@@ -124,4 +124,4 @@
 		return true; // There was a bot, it has now been deleted
 	};
 
-})(module);
+})();

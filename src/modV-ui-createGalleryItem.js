@@ -1,4 +1,4 @@
-(function(bModule) {
+(function() {
 	'use strict';
 	/*jslint browser: true */
 
@@ -18,19 +18,14 @@
 		var galleryItem = document.importNode(template.content, true);
 
 		var previewCanvas = galleryItem.querySelector('canvas');
-		var titleElement = galleryItem.querySelector('span.title');
 
 		// Module variables
-		var previewCtx = previewCanvas.getContext('2d'),
-			name = Module.info.name;
+		var previewCtx = previewCanvas.getContext('2d');
 
 		// init cloned Module
 		if('init' in Module) {
 			Module.init(previewCanvas, previewCtx);
 		}
-
-		var interval;
-
 
 		document.querySelector('.gallery').appendChild(galleryItem);
 
@@ -80,7 +75,7 @@
 			if(mouseOver) raf = requestAnimationFrame(loop);
 			else cancelAnimationFrame(raf);
 
-			if(activeVariables.length != 4) {
+			if(activeVariables.length !== 4) {
 				return;
 			}
 
@@ -170,7 +165,7 @@
 
 	//}
 
-	function giMouseOut(Module, canvas, ctx, self) {
+	function giMouseOut(Module, canvas, ctx) {
 		ctx.fillStyle = 'rgba(0,0,0,0.5)';
 		ctx.fillRect(0, 0, canvas.width, canvas.height);
 		ctx.fillStyle = 'white';

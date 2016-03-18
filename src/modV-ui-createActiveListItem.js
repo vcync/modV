@@ -1,11 +1,9 @@
-(function(bModule) {
+(function() {
 	'use strict';
 	/*jslint browser: true */
 
 	modV.prototype.createActiveListItem = function(Module) {
 		var self = this;
-		var gallery = document.getElementsByClassName('gallery')[0];
-		var list = document.getElementsByClassName('active-list')[0];
 
 		// Temp container (TODO: don't do this)
 		var temp = document.getElementById('temp');
@@ -15,8 +13,6 @@
 		var activeItem = document.importNode(template.content, true);
 
 		var titleNode = activeItem.querySelector('.title');
-		var optionsContainerNode = activeItem.querySelector('.options');
-		var enabledContainerNode = activeItem.querySelector('.enabled');
 
 		titleNode.textContent = Module.info.name;
 		
@@ -43,13 +39,13 @@
 
 		// Attach listener to Blending Select
 		var compositeSelectNode = activeItem.querySelector('.composite-operations');
-		compositeSelectNode.addEventListener('change', function(e) {
+		compositeSelectNode.addEventListener('change', function() {
 			Module.info.blend = this.value;
 		});
 
 		// Attach listener to Enable Checkbox
 		var enableCheckboxNode = activeItem.querySelector('input[type=checkbox].enable');
-		enableCheckboxNode.addEventListener('change', function(e) {
+		enableCheckboxNode.addEventListener('change', function() {
 			Module.info.disabled = !this.checked;
 		});
 
@@ -58,4 +54,4 @@
 		return activeItem;
 	};
 
-})(module);
+})();

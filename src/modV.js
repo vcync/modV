@@ -1,3 +1,4 @@
+/* globals BeatDetektor, Meyda, MediaStreamTrack */
 (function(bModule) {
 	'use strict';
 	/*jslint browser: true */
@@ -43,13 +44,18 @@
 							 navigator.oGetUserMedia;
 
 	var modV = function(options) {
+
+		console.log('      modV Copyright  (C)  2016 Sam Wray      '+ "\n" +
+					'----------------------------------------------'+ "\n" +
+					'      modV is licensed  under GNU GPL V3      '+ "\n" +
+					'This program comes with ABSOLUTELY NO WARRANTY'+ "\n" +
+					'For details, see http://localhost:3131/LICENSE'+ "\n" +
+					'----------------------------------------------');
+
 		var self = this,
 			aCtx, // Audio Context
 			analyser, // Analyser Node 
-			sampleSize,
-			javascriptNode,
-			microphone,
-			FFTData;
+			microphone;
 
 		// Save user options
 		if(typeof options !== 'undefined') self.options = options;
@@ -173,7 +179,7 @@
 
 		self.mediaManager = new WebSocket("ws://localhost:3132/");
 
-		self.mediaManager.onerror = function (error) {
+		self.mediaManager.onerror = function() {
 			console.warn('Media Manager not available - did you start modV in no-manager mode?');
 		};
 
@@ -216,7 +222,7 @@
 			console.log(id);
 			self.factoryReset();
 
-			function updateControl(control, idx) {
+			function updateControl(control) {
 				var val = control.currValue;
 				
 				if('append' in control) {
@@ -327,6 +333,7 @@
 		};
 
 		// Check for Meyda
+		//if(typeof window.Meyda === 'object') {
 		if(typeof window.Meyda === 'function') {
 			self.meydaSupport = true;
 			console.info('meyda detected, expanded audio analysis available.', 'Use this.meyda to access from console.');
@@ -335,7 +342,6 @@
 		self.bpm = 0;
 		self.bpmHold = false;
 		self.bpmHeldAt = 120;
-		var bpmInfoUpdater;
 		// Check for BeatDetektor
 		if(typeof window.BeatDetektor === 'function') {
 			self.beatDetektorSupport = true;
@@ -459,7 +465,7 @@
 
 				sources.forEach(function(source) {
 
-					if(source.kind == 'audio') {
+					if(source.kind === 'audio') {
 						self.mediaStreamSources.audio.push(source);
 					} else {
 						self.mediaStreamSources.video.push(source);
@@ -549,8 +555,17 @@
 			// Connect the gain node to the output (audio->(analyser)->gain->destination)
 			self.gainNode.connect(aCtx.destination);
 			
+			console.log(typeof aCtx, typeof microphone);
+
 			// If meyda is about, use it
-			if(self.meydaSupport) self.meyda = new Meyda(aCtx, microphone, 512);
+			if(self.meydaSupport) {
+				/*self.meyda = new Meyda.createMeydaAnalyzer({
+					audioContext: aCtx,
+					source: microphone,
+					bufferSize: 512
+				});*/
+				self.meyda = new Meyda(aCtx, microphone, 512);
+			}
 			
 			// Tell the rest of the script we're all good.
 			self.ready = true;

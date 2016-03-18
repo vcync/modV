@@ -1,4 +1,4 @@
-(function(bModule) {
+(function() {
 	'use strict';
 	/*jslint browser: true */
 
@@ -228,4 +228,4 @@
 		init();
 	};
 
-})(module);
+})();

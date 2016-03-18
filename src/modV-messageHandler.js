@@ -1,4 +1,4 @@
-(function(RJSmodule) {
+(function() {
 	'use strict';
 	/*jslint browser: true */
 
@@ -204,4 +204,4 @@
 		window.addEventListener('message', self.receiveMessage.bind(self), false);
 	};
 
-})(module);
+})();

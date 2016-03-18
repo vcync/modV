@@ -1,4 +1,4 @@
-(function(RJSmodule) {
+(function() {
 	'use strict';
 
 	modV.prototype.factoryReset = function() {
@@ -32,8 +32,6 @@
 				if('append' in control) {
 					val = val.replace(control.append, '');
 				}
-
-				var id = m.name + '-' + control.variable;
 
 				self.controllerWindow.postMessage({
 					type: 'ui',
@@ -69,4 +67,4 @@
 		self.context.clearRect(0, 0, self.canvas.width, self.canvas.height);
 	};
 
-})(module);
+})();

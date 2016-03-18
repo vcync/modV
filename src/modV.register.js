@@ -1,4 +1,5 @@
-(function(bModule) {
+/* globals getDocument */
+(function() {
 	'use strict';
 	/*jslint browser: true */
 	
@@ -44,7 +45,7 @@
 				Module.info.loadedScripts = [];
 			}
 
-			if(Module.info.loadedScripts.length != Module.info.scripts.length) {
+			if(Module.info.loadedScripts.length !== Module.info.scripts.length) {
 				Module.info.scripts.forEach(function(script, idx) {
 					loadJS('/modules/' + script, document.body, function() {
 						Module.info.loadedScripts[idx] = true;

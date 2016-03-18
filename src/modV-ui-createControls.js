@@ -1,4 +1,4 @@
-(function(bModule) {
+(function() {
 	'use strict';
 	/*jslint browser: true */
 
@@ -50,4 +50,4 @@
 
 	};
 
-})(module);
+})();

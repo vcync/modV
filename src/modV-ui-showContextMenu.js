@@ -1,6 +1,5 @@
-(function(bModule) {
+(function() {
 	'use strict';
-	/*jslint browser: true */
 
 	modV.prototype.showContextMenu = function(type, variables, e) {
 		var self = this;
@@ -27,7 +26,7 @@
 
 		function menuNextClickHandler(e) {
 
-			if(e.currentTarget != menuNode) {
+			if(e.currentTarget !== menuNode) {
 				menuNode.parentNode.removeChild(menuNode);
 			}
 			document.removeEventListener('click', menuNextClickHandler, false);
@@ -68,6 +67,12 @@
 		self.title = settings.title;
 		self.callback = settings.callback;
 		self.enabled = settings.enabled;
+
+	};
+
+	var SubMenuItem = function(items) {
+
+		this.items = items;
 
 	};
 

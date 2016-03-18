@@ -1,4 +1,4 @@
-(function(RJSmodule) {
+(function() {
 	'use strict';
 
 	/* Setup remote control */
@@ -67,4 +67,4 @@
 		}
 	};
 
-})(module);
+})();

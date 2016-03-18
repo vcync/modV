@@ -1,4 +1,4 @@
-(function(RJSmodule) {
+(function() {
 	'use strict';
 	/*jslint browser: true */
 
@@ -65,4 +65,4 @@
 		return selectEl;
 	};
 
-})(module);
+})();
