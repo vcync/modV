@@ -20,6 +20,7 @@
   "dependencies": {
     "dive": "^0.4.0",
     "grunt-bower": "^0.20.0",
+    "meyda": "^3.0.4",
     "restify": "^4.0.0",
     "watershed": "^0.3.0"
   },
