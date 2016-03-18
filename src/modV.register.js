@@ -6,6 +6,24 @@
 		return string.split(operator).join(replacement);
 	}
 
+	var loadJS = function(url, location, implementationCode){
+		//url is URL of external file, implementationCode is the code
+		//to be called from the file, location is the location to 
+		//insert the <script> element
+
+		var scriptTag = document.createElement('script');
+
+		if(typeof implementationCode === "function") {
+			scriptTag.onload = implementationCode;
+			scriptTag.onreadystatechange = implementationCode;
+		}
+
+		scriptTag.src = url;
+
+		location.appendChild(scriptTag);
+	};
+
+
 	modV.prototype.register = function(Module) {
 		var self = this;
 		
@@ -20,6 +38,23 @@
 		// Get name
 		name = Module.info.name;
 		Module.info.safeName = replaceAll(name, ' ', '-');
+
+		if('scripts' in Module.info) {
+			if(!('loadedScripts' in Module.info)) {
+				Module.info.loadedScripts = [];
+			}
+
+			if(Module.info.loadedScripts.length != Module.info.scripts.length) {
+				Module.info.scripts.forEach(function(script, idx) {
+					loadJS('/modules/' + script, document.body, function() {
+						Module.info.loadedScripts[idx] = true;
+						self.register(Module);
+					});
+				});
+
+				return;
+			}
+		}
 
 		// Handle Module2D
 		if(Module instanceof self.Module2D) {
