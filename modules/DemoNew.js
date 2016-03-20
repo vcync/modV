@@ -42,6 +42,7 @@ var DemoPoly = new modVC.Module2D({
 			3 + Math.round(analysed / 10),
 			-Math.PI/2 + rotate
 		);
+		ctx.closePath();
 		ctx.stroke();
 
 		if(this.hue === 360) this.hue = 0;
