@@ -1,3 +1,9 @@
+console.log('      modV Copyright  (C)  2016 Sam Wray      '+ "\n" +
+            '----------------------------------------------'+ "\n" +
+            '      modV is licensed  under GNU GPL V3      '+ "\n" +
+            'This program comes with ABSOLUTELY NO WARRANTY'+ "\n" +
+            'For details, see LICENSE within this directory'+ "\n" +
+            '----------------------------------------------');
 module.exports = function(grunt) {
   grunt.initConfig({
     concurrent: {
@@ -27,7 +33,9 @@ module.exports = function(grunt) {
       main: {
         files: [
           {expand: true, src: ['modules/**'], dest: 'dist/'},
-          {expand: true, src: ['libraries/**'], dest: 'dist/'}
+          {expand: true, src: ['libraries/**'], dest: 'dist/'},
+          {expand: false, src: ['node_modules/meyda/dist/web/meyda.js'], dest: 'dist/libraries/meyda.min.js'},
+          {expand: false, src: ['LICENSE'], dest: 'dist/LICENSE'}
         ]
       }
     },
