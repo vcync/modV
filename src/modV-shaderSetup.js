@@ -21,7 +21,6 @@
 			var currentProgramIndex;
 
 			if(typeof programIndex !== 'undefined') {
-
 				currentProgramIndex = self.shaderEnv.activeProgram;
 				self.shaderEnv.activeProgram = programIndex;
 				gl.useProgram(programs[programIndex]);
