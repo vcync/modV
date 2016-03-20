@@ -1,3 +1,4 @@
+/* globals Giphy */
 var GiphyModV = new modVC.Module2D({
 	info: {
 		name: 'Giphy',
@@ -8,7 +9,7 @@ var GiphyModV = new modVC.Module2D({
 			'giphy/giphy.min.js'
 		]
 	},
-	init: function(canvas) {
+	init: function() {
 		
 		this.add(new modVC.CustomControl(this.createControls));
 
@@ -30,7 +31,7 @@ var GiphyModV = new modVC.Module2D({
 		this.playbackRate = 1.0;
 		
 	},
-	draw: function(canvas, ctx, vid, features, meyda, delta, bpm) {
+	draw: function(canvas, ctx) {
 
 		try {
 			this.video.playbackRate = this.playbackRate;
@@ -57,7 +58,7 @@ GiphyModV.createControls = function(Module) {
 
 	console.log(Module.video);
 
-	if(typeof Module.giphy == "undefined") {
+	if(typeof Module.giphy === "undefined") {
 		console.log('creating new giphy');
 		Module.initGiphy();
 	}
