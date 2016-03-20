@@ -66,8 +66,8 @@ Ball.ballObj = function() {
 
 		this.drawUpdate = function(canvas, ctx, amp, colour) {
 			ctx.beginPath();
-			ctx.arc(this.position.x, this.position.y, Ball.baseSize + (Ball.size * amp), 0, 2 * Math.PI, true);
 			ctx.fillStyle = colour;
+			ctx.arc(this.position.x, this.position.y, Ball.baseSize + (Ball.size * amp), 0, 2 * Math.PI, true);
 			ctx.fill();
 			ctx.closePath();
 
