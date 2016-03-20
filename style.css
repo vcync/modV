@@ -60,6 +60,32 @@ section .top .active-list-wrapper,
 	height: 100%;
 }
 
+section .top .active-list-wrapper .module-menu {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    height: 32px;
+    background-color: grey;
+    padding: 5px;
+    box-sizing: border-box;
+}
+
+section .top .active-list-wrapper .module-menu .icon {
+    height: 22px;
+    background-color: rebeccapurple;
+    width: 22px;
+    display: inline-block;
+    cursor: pointer;
+    border-radius: 3px;
+    vertical-align: top;
+    text-align: center;
+}
+
+section .top .active-list-wrapper .module-menu .icon:not(:last-child) {
+    margin: 0 5px 0 0;
+}
+
 section .top .gallery {
 
 }
