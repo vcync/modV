@@ -90,6 +90,7 @@
     "globals"       : {
         "module": true,
         "modV": true,
-        "modVC": true
-    }        // additional predefined global variables
+        "modVC": true,
+        "rgbToString": true
+    }   
 }
