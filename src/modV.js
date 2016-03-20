@@ -347,14 +347,9 @@
 			self.beatDetektorSupport = true;
 			console.info('BeatDetektor detected, BPM analysis available.', 'modV robot now available.');
 			self.beatDetektorMed = new BeatDetektor(85,169);
-			/*bpmInfoUpdater = setInterval(function() {
-				self.controllerWindow.postMessage({
-					type: 'info',
-					name: 'detected-bpm',
-					payload: self.bpm,
-				}, self.options.controlDomain);
 
-			}, 1000);*/
+			self.beatDetektorKick = new BeatDetektor.modules.vis.BassKick();
+			self.kick = false;
 		}
 
 		// Lookup presets

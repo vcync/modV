@@ -144,18 +144,18 @@
 
 					if(Module.info.solo) {
 						if(firstSolo) {
-							self.registeredMods[self.modOrder[i]].draw(self.canvas, self.soloCtx, self.video, meydaOutput, self.meyda, delta, self.bpm);
+							self.registeredMods[self.modOrder[i]].draw(self.canvas, self.soloCtx, self.video, meydaOutput, self.meyda, delta, self.bpm, self.kick);
 							firstSolo = false;
 						} else {
-							self.registeredMods[self.modOrder[i]].draw(self.soloCanvas, self.soloCtx, self.video, meydaOutput, self.meyda, delta, self.bpm);
+							self.registeredMods[self.modOrder[i]].draw(self.soloCanvas, self.soloCtx, self.video, meydaOutput, self.meyda, delta, self.bpm, self.kick);
 						}
 					} else {
-						self.registeredMods[self.modOrder[i]].draw(self.canvas, self.context, self.video, meydaOutput, self.meyda, delta, self.bpm);
+						self.registeredMods[self.modOrder[i]].draw(self.canvas, self.context, self.video, meydaOutput, self.meyda, delta, self.bpm, self.kick);
 					}
 
 				} else {
 
-					self.registeredMods[self.modOrder[i]].draw(self.canvas, self.context, self.video, meydaOutput, self.meyda, delta, self.bpm);
+					self.registeredMods[self.modOrder[i]].draw(self.canvas, self.context, self.video, meydaOutput, self.meyda, delta, self.bpm, self.kick);
 					self.context.drawImage(self.threejs.canvas, 0, 0);
 					self.threejs.renderer.render(self.threejs.scene, self.threejs.camera);
 				}
@@ -170,7 +170,6 @@
 
 	modV.prototype.loop = function(timestamp) {
 		var self = this;
-
 		requestAnimationFrame(self.loop.bind(self)); //TODO: find out why we have to use bind here
 
 		if(!self.meydaSupport) self.myFeatures = [];
@@ -182,6 +181,11 @@
 				
 				self.beatDetektorMed.process((timestamp / 1000.0), self.myFeatures.complexSpectrum.real);
 				self.bpm = self.beatDetektorMed.win_bpm_int_lo;
+
+				self.beatDetektorKick.process(self.beatDetektorMed);
+			
+				if(self.beatDetektorKick.isKick()) self.kick = true;
+				else self.kick = false;
 
 				if(self.bpmHold) {
 					self.bpm = self.bpmHeldAt;
