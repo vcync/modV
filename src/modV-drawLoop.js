@@ -31,12 +31,12 @@
 
 
 			self.context.save();
-			self.context.globalAlpha = self.registeredMods[self.modOrder[i]].info.alpha;
+			self.context.globalAlpha = Module.info.alpha;
 
 			self.soloCtx.save();
-			if(Module.info.solo) self.soloCtx.globalAlpha = self.registeredMods[self.modOrder[i]].info.alpha;
+			if(Module.info.solo) self.soloCtx.globalAlpha = Module.info.alpha;
 
-			if(self.registeredMods[self.modOrder[i]].info.blend !== 'normal') self.context.globalCompositeOperation = self.registeredMods[self.modOrder[i]].info.blend;
+			if(Module.info.blend !== 'normal') self.context.globalCompositeOperation = Module.info.blend;
 
 			if(Module instanceof self.ModuleShader) {
 				var _gl = self.shaderEnv.gl;
@@ -138,32 +138,61 @@
 
 				}
 
-			} else if(typeof self.registeredMods[self.modOrder[i]] === 'object') {
+			} else if(Module instanceof self.Module2D) {
 
-				if(!self.registeredMods[self.modOrder[i]].info.threejs) {
-
-					if(Module.info.solo) {
-						if(firstSolo) {
-							self.registeredMods[self.modOrder[i]].draw(self.canvas, self.soloCtx, self.video, meydaOutput, self.meyda, delta, self.bpm, self.kick);
-							firstSolo = false;
-						} else {
-							self.registeredMods[self.modOrder[i]].draw(self.soloCanvas, self.soloCtx, self.video, meydaOutput, self.meyda, delta, self.bpm, self.kick);
-						}
+				if(Module.info.solo) {
+					if(firstSolo) {
+						Module.draw(self.canvas, self.soloCtx, self.video, meydaOutput, self.meyda, delta, self.bpm, self.kick);
+						firstSolo = false;
 					} else {
-						self.registeredMods[self.modOrder[i]].draw(self.canvas, self.context, self.video, meydaOutput, self.meyda, delta, self.bpm, self.kick);
+						Module.draw(self.soloCanvas, self.soloCtx, self.video, meydaOutput, self.meyda, delta, self.bpm, self.kick);
 					}
-
 				} else {
-
-					self.registeredMods[self.modOrder[i]].draw(self.canvas, self.context, self.video, meydaOutput, self.meyda, delta, self.bpm, self.kick);
-					self.context.drawImage(self.threejs.canvas, 0, 0);
-					self.threejs.renderer.render(self.threejs.scene, self.threejs.camera);
+					Module.draw(self.canvas, self.context, self.video, meydaOutput, self.meyda, delta, self.bpm, self.kick);
 				}
 				
+			} else if(Module instanceof self.Module3D) {
+				let texture = self.THREE.texture;
+
+				if(Module.info.solo) {
+					if(!firstSolo) {
+						texture = self.THREE.soloTexture;
+						self.THREE.material.map = texture;
+						self.THREE.material.map.needsUpdate = true;
+					} else {
+						self.THREE.material.map = texture;
+						self.THREE.material.map.needsUpdate = true;
+						firstSolo = false;
+					}
+				}
+
+				Module.draw(Module.getScene(), Module.getCamera(), self.THREE.material, texture, meydaOutput);
+				self.THREE.renderer.render(Module.getScene(), Module.getCamera());
+
+				if(Module.info.solo) {
+					self.soloCtx.drawImage(
+						self.THREE.canvas,
+						0,
+						0,
+						self.soloCanvas.width,
+						self.soloCanvas.height
+					);
+				} else {
+					self.context.drawImage(
+						self.THREE.canvas,
+						0,
+						0,
+						self.canvas.width,
+						self.canvas.height
+					);
+				}
 			}
 
 			self.context.restore();
 			self.soloCtx.restore();
+			self.THREE.texture.needsUpdate = true;
+			self.THREE.soloTexture.needsUpdate = true;
+			
 		}
 		if(self.options.previewWindow) self.previewCtx.drawImage(self.canvas, 0, 0, self.previewCanvas.width, self.previewCanvas.height);
 	};

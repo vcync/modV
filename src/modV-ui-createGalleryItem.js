@@ -5,7 +5,7 @@
 	modV.prototype.createGalleryItem = function(Module) {
 		var self = this;
 
-		if(!(Module instanceof self.Module2D) && !(Module instanceof self.ModuleShader)) return;
+		if(!(Module instanceof self.Module2D) && !(Module instanceof self.ModuleShader) && !(Module instanceof self.Module3D)) return;
 
 		// Clone module -- afaik, there is no better way than this
 		Module = self.cloneModule(Module, true);
@@ -23,7 +23,7 @@
 		var previewCtx = previewCanvas.getContext('2d');
 
 		// init cloned Module
-		if('init' in Module) {
+		if('init' in Module && Module instanceof self.Module2D) {
 			Module.init(previewCanvas, previewCtx);
 		}
 
