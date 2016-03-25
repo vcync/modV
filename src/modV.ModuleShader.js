@@ -7,7 +7,7 @@
 
 		// Experimental (better) function clone
 		self.clone = function() {
-			return jQuery.extend(true, {}, this);
+			return jQuery.extend(true, this.constructor(settings), this);
 		};
 
 		// Module error handle

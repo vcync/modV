@@ -7,7 +7,23 @@
 		
 		// Experimental (better) function clone
 		self.clone = function() {
-			return jQuery.extend(true, {}, this);
+
+/*			var ModuleClone = new this.constructor(settings);
+
+			for(var key in this) {
+				if(this.hasOwnProperty(key)) {
+					ModuleClone[key] = ModuleClone[key];
+				}
+			}
+
+			ModuleClone.info.controls.forEach(function(Control) {
+				ModuleClone.add(Control);
+			});
+*/
+
+			return jQuery.extend(true, this.constructor(settings), this);
+			//return ModuleClone;
+
 		};
 
 		// Module error handle
