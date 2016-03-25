@@ -1,18 +1,13 @@
-#modV
-modV is a modular audio visualisation environment written in JavaScript and runs in Google Chrome.
+#modV-dev
 
-All documentation so far is available in [this repo's Wiki](https://github.com/2xAA/modV/wiki). There's more to come!
+This is the dev branch for modV. Please note that by using this branch to use modV, you have no guarantee of anything working.  
+If you are looking to use modV, please switch to the main branch.
 
-## Requirements
-- [node](https://nodejs.org/download/) (v0.12.7) - A nice way of managing your node versions is by installing [n](https://github.com/tj/n).
-- [grunt-cli](https://github.com/gruntjs/grunt-cli)
-- [Google Chrome desktop](https://www.google.com/chrome/browser/desktop/)
+## Current Aims
 
-## Installation
-1. Download (clone or zip)
-* Open a terminal, navigate to your downloaded folder (for example; ```cd ~/Downloads/modV/```)
-* Make sure you're running node 0.12.7 (**very important**) by typing ```node -v```
-	* If you're not running 0.12.7, use [n](https://github.com/tj/n) to install 0.12.7 by running ```n 0.12.7```
-* Run ```npm install```, this will install modV's required packages
-* Once the installation has finished, run ```grunt server``` (or run ```grunt no-manager``` to start without the media manager)
-* Open Chrome and go to ```http://localhost:3131```
+The current aim of the branch is to re-work how Modules are handled within modV.
+
+Currently, if you want to add more than one instance of a Module to the active list, the Module's function is cloned.
+This is bad for memory efficiency and general performance, especially when it comes to the experimental Module3D where all of THREE.js seems to be cloned (yes, I know...).
+
+What I would like to achieve is a store of a Module's local variables and they are assigned (such as uniforms per program in WebGL) per Module call. Modules can then be effectively duplicated in the global active list and local 'state' variables assigned to the Module, therefore no functions will have to be cloned nor will any extra memory (apart from the stored variables) will be used.
