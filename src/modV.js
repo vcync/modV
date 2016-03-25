@@ -104,7 +104,7 @@
 
 		// Module Clone
 		self.cloneModule = function(obj, getSettings) {
-/*			var key, settings, temp;
+			var key, settings, temp;
 			if(getSettings) settings = obj.getSettings();
 			if (obj === null || typeof obj !== "object") {
 				return obj;
@@ -118,9 +118,9 @@
 				} catch(e) {
 					//console.error('Cannot clone native code', e);
 				}
-			}*/
+			}
 
-			var temp = obj.clone();
+			//var temp = obj.clone();
 
 			return temp;
 		};
