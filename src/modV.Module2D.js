@@ -5,6 +5,27 @@
 	modV.prototype.Module2D = function(settings) {
 		var self = this;
 		
+		// Experimental (better) function clone
+		self.clone = function() {
+
+/*			var ModuleClone = new this.constructor(settings);
+
+			for(var key in this) {
+				if(this.hasOwnProperty(key)) {
+					ModuleClone[key] = ModuleClone[key];
+				}
+			}
+
+			ModuleClone.info.controls.forEach(function(Control) {
+				ModuleClone.add(Control);
+			});
+*/
+
+			return jQuery.extend(true, this.constructor(settings), this);
+			//return ModuleClone;
+
+		};
+
 		// Module error handle
 		function ModuleError(message) {
 			// Grab the stack

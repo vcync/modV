@@ -4,7 +4,12 @@
 
 	modV.prototype.ModuleShader = function(settings) {
 		var self = this;
-		
+
+		// Experimental (better) function clone
+		self.clone = function() {
+			return jQuery.extend(true, this.constructor(settings), this);
+		};
+
 		// Module error handle
 		function ModuleError(message) {
 			// Grab the stack

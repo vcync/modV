@@ -86,6 +86,36 @@ section .top .active-list-wrapper .module-menu .icon:not(:last-child) {
     margin: 0 5px 0 0;
 }
 
+section .top .active-list .module-group {
+    height: 18px;
+    background-color: deepskyblue;
+}
+
+section .top .active-list .module-group .icon {
+	text-align: center;
+}
+
+section .top .active-list .module-group .title {
+	cursor: default;
+	letter-spacing: -1px;
+}
+
+section .top .active-list .module-group .title::selection {
+	background-color: #FC4414;
+}
+
+section .top .active-list .module-group .title:focus {
+	box-shadow: 0 0 8px #FF9800;
+	border: 1px solid #FF9800;
+	outline: none;
+	box-sizing: border-box;
+	height: 18px;
+}
+
+section .top .active-list .module-group .title.editable {
+	cursor: text;
+}
+
 section .top .gallery {
 
 }
