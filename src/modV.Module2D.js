@@ -5,6 +5,11 @@
 	modV.prototype.Module2D = function(settings) {
 		var self = this;
 		
+		// Experimental (better) function clone
+		self.clone = function() {
+			return jQuery.extend(true, {}, this);
+		};
+
 		// Module error handle
 		function ModuleError(message) {
 			// Grab the stack
