@@ -4,7 +4,7 @@
 	</head>
 	<body>
 		<script id="vertexshader" type="x-shader/x-vertex">
-			varying vec2 Vertex_UV;
+			varying vec2 vUv;
 			attribute vec2 a_position, a_texCoord;
 			uniform vec2 u_resolution;
 			void main() {
@@ -12,13 +12,13 @@
 				vec2 zeroToTwo = zeroToOne * 2.0;
 				vec2 clipSpace = zeroToTwo - 1.0;
 				gl_Position = vec4(clipSpace * vec2(1, -1), 0, 1);
-				Vertex_UV = a_texCoord;
+				vUv = a_texCoord;
 			}
 		</script>
 
 		<script id="fragmentshader" type="x-shader/x-fragment">
 			precision mediump float;
-			uniform sampler2D u_modVCanvas;
+/*			uniform sampler2D u_modVCanvas;
 			uniform float amount;
 			uniform float centerX;
 			uniform float centerY;
@@ -47,6 +47,34 @@
 
 				vec4 c = texture2D(u_modVCanvas, uv);
 				gl_FragColor = c;
+			}*/
+
+			uniform float aperture;
+			varying vec2 vUv;
+			const float PI = 3.1415926535;
+			uniform sampler2D u_modVCanvas;
+
+			void main() {
+				//float aperture = 178.0;
+				float apertureHalf = 0.5 * aperture * (PI / 180.0);
+				float maxFactor = sin(apertureHalf);
+			  
+				vec2 uv;
+				vec2 xy = 2.0 * vUv.xy - 1.0;
+				float d = length(xy);
+				if (d < (2.0-maxFactor)) {
+					d = length(xy * maxFactor);
+					float z = sqrt(1.0 - d * d);
+					float r = atan(d, z) / PI;
+					float phi = atan(xy.y, xy.x);
+			    		
+					uv.x = r * cos(phi) + 0.5;
+					uv.y = r * sin(phi) + 0.5;
+				} else {
+					uv = vUv.xy;
+				}
+			  	vec4 c = texture2D(u_modVCanvas, uv);
+			  	gl_FragColor = c;
 			}
 		</script>
 	</body>

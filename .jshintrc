@@ -92,6 +92,7 @@
         "modV": true,
         "modVC": true,
         "rgbToString": true,
+        "THREE": true,
         "jQuery": true
     }   
 }
