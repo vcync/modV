@@ -6,10 +6,10 @@ var Bulge = new modVC.ModuleShader({
 		meyda: [], // returned variables passed to the shader individually as uniforms
 		controls: [], // variabled passed to the shader individually as uniforms
 		uniforms: {
-			amount: {
+			aperture: {
 				type: 'f',
-				value: 0.5
-			},
+				value: 180.0
+			}/*,
 			centerX: {
 				type: 'f',
 				value: 0.5
@@ -17,23 +17,23 @@ var Bulge = new modVC.ModuleShader({
 			centerY: {
 				type: 'f',
 				value: 0.5
-			}
+			}*/
 		} // Three.JS uniforms
 	},
 	shaderFile: "/Bulge/shader.html" // path to HTML file within modules directory with shader script tags
 });
 
 Bulge.add(new modVC.RangeControl({
-	variable: 'amount',
-	label: 'Bulge Size',
+	variable: 'aperture',
+	label: 'Aperture',
 	varType: 'float',
 	min: 0.0,
-	max: 1.14,
-	step: 0.001,
-	default: 0.5
+	max: 180.0,
+	step: 1.0,
+	default: 180.0
 }));
 
-Bulge.add(new modVC.RangeControl({
+/*Bulge.add(new modVC.RangeControl({
 	variable: 'centerX',
 	label: 'Center X',
 	varType: 'float',
@@ -51,6 +51,6 @@ Bulge.add(new modVC.RangeControl({
 	max: 1.0,
 	step: 0.001,
 	default: 0.5
-}));
+}));*/
 
 modVC.register(Bulge);
