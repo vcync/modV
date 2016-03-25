@@ -91,6 +91,7 @@
         "module": true,
         "modV": true,
         "modVC": true,
-        "rgbToString": true
+        "rgbToString": true,
+        "jQuery": true
     }   
 }
