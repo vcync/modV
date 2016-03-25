@@ -413,6 +413,47 @@
 
 		});
 
+		// Module Grouping
+
+		var moduleMenu = document.querySelector('.module-menu');
+		var addGroupButton = document.querySelectorAll('.module-menu .icon')[0];
+		addGroupButton.addEventListener('click', function() {
+			
+			// Create active list item
+			var template = self.templates.querySelector('#module-group');
+			var group = document.importNode(template.content, true);
+
+			// Temp container (TODO: don't do this)
+			var temp = document.getElementById('temp');
+
+			// Init node in temp (TODO: don't do this)
+			temp.innerHTML = '';
+			temp.appendChild(group);
+			// Grab initialised node
+			group = temp.querySelector('div');
+
+			var titleNode = group.querySelector('.title');
+
+			titleNode.addEventListener('dblclick', function() {
+				this.contentEditable = true;
+				this.focus();
+				this.classList.add('editable');
+			});
+
+			titleNode.addEventListener('blur', function() {
+				this.contentEditable = false;
+				this.classList.remove('editable');
+			});
+
+			titleNode.addEventListener('keypress', function(evt) {
+				if(evt.which === 13) evt.preventDefault();
+			});
+
+			titleNode.textContent = 'New Group';
+			
+			list.appendChild(group);
+
+		});
 
 	};
 
