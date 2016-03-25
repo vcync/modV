@@ -112,11 +112,10 @@
 
 				var compiled = gl.getShaderParameter(vertexShader, gl.COMPILE_STATUS);
 				var compilationLog;
-				console.log(gl.getShaderInfoLog(vertexShader));
 
 				if(!compiled) {
 					console.error(Module.info.name + "'s", 'Vertex Shader did not compile.');
-					compilationLog = gl.getShaderInfoLog(fragmentShader);
+					compilationLog = gl.getShaderInfoLog(vertexShader);
 					console.info(Module.info.name + "'s", 'Vertex Shader compiler log: ' + compilationLog);
 				}
 	 
@@ -125,8 +124,6 @@
 				gl.compileShader(fragmentShader);
 
 				compiled = gl.getShaderParameter(fragmentShader, gl.COMPILE_STATUS);
-
-				console.log(gl.getShaderInfoLog(fragmentShader));
 
 				if(!compiled) {
 					console.error(Module.info.name + "'s", 'Fragment Shader did not compile.');
@@ -154,6 +151,27 @@
 				self.createGalleryItem(Module);
 			});
 
+		}
+
+		// Handle Module3D
+		if(Module instanceof self.Module3D) {
+
+			console.info('Register: Module3D');
+
+			// Parse Meyda
+			if(Module.info.meyda) {
+				Module.info.meyda.forEach(self.addMeydaFeature);
+			}
+
+			// Initialise Module
+			Module.init(self.canvas, Module.getScene(), Module.getCamera(), self.THREE.material, self.THREE.texture);
+
+			// Add to Registry
+			self.registeredMods[name] = Module;
+
+			// Create Gallery item
+			self.createGalleryItem(Module);
+			
 		}
 	};
 

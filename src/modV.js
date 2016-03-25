@@ -114,6 +114,7 @@
 
 			for (key in obj) {
 				try {
+					if(obj[key] === THREE[key]) temp[key] = new obj.constructor();
 					temp[key] = self.cloneModule(obj[key], false);
 				} catch(e) {
 					//console.error('Cannot clone native code', e);
@@ -124,27 +125,18 @@
 
 		// Window resize
 		self.resize = function() {
-			/*if(e) {
-				width = window.innerWidth;
-				height = window.innerHeight;
-			}
-			self.canvas.width = width;
-			self.canvas.height = height;
-
-			if (window.devicePixelRatio > 1 && 'retina' in self.options) {
-				if(self.options.retina) {
-					var canvasWidth = width;
-					var canvasHeight = height;
-
-					self.canvas.width = canvasWidth * window.devicePixelRatio;
-					self.canvas.height = canvasHeight * window.devicePixelRatio;
-					//self.canvas.style.width = width + 'px';
-					//self.canvas.style.height = height + 'px';
-				}
-			}*/
+			self.THREE.renderer.setSize(self.canvas.width, self.canvas.height);
 
 			for(var mod in self.registeredMods) {
-				if('resize' in self.registeredMods[mod]) self.registeredMods[mod].resize(self.canvas, self.context);
+				var Module = self.registeredMods[mod];
+
+				if('resize' in Module) {
+					if(Module instanceof self.Module3D) {
+						Module.resize(self.canvas, Module.getScene(), Module.getCamera(), self.THREE.material, self.THREE.texture);
+					} else {
+						Module.resize(self.canvas, self.context);	
+					}
+				}
 			}
 		};
 
@@ -336,7 +328,7 @@
 		//if(typeof window.Meyda === 'object') {
 		if(typeof window.Meyda === 'function') {
 			self.meydaSupport = true;
-			console.info('meyda detected, expanded audio analysis available.', 'Use this.meyda to access from console.');
+			console.info('meyda detected, expanded audio analysis available.');
 		}
 
 		self.bpm = 0;
@@ -350,6 +342,36 @@
 
 			self.beatDetektorKick = new BeatDetektor.modules.vis.BassKick();
 			self.kick = false;
+		}
+
+		// Check for THREE
+		if(typeof window.THREE === 'object') {
+			console.info('THREE.js detected.', 'Revision:', THREE.REVISION);
+			self.THREE = {};
+
+			self.THREE.texture = new THREE.Texture(self.canvas);
+			self.THREE.texture.minFilter = THREE.LinearFilter;
+
+			self.THREE.material = new THREE.MeshBasicMaterial({
+				map: self.THREE.texture,
+				side: THREE.DoubleSide
+			});
+
+			self.THREE.soloTexture = new THREE.Texture(self.soloCanvas);
+			self.THREE.soloTexture.minFilter = THREE.LinearFilter;
+
+			self.THREE.soloMaterial = new THREE.MeshBasicMaterial({
+				map: self.THREE.soloTexture,
+				side: THREE.DoubleSide
+			});
+
+			self.THREE.renderer = new THREE.WebGLRenderer({
+				antialias: true,
+				alpha: true
+			});
+			self.THREE.renderer.setPixelRatio( window.devicePixelRatio );
+
+			self.THREE.canvas = self.THREE.renderer.domElement;
 		}
 
 		// Lookup presets
