@@ -76,6 +76,8 @@
 
 		self.modOrder = [];
 		self.registeredMods = {};
+		self.galleryModules = {};
+		self.ModuleReferences = {};
 
 		self.video = document.createElement('video');
 		self.video.autoplay = true;
@@ -101,30 +103,6 @@
 
 		// UI Templates
 		self.templates = document.querySelector('link[rel="import"]').import;
-
-		// Module Clone
-		self.cloneModule = function(obj, getSettings) {
-			var key, settings, temp;
-			if(getSettings) settings = obj.getSettings();
-			if (obj === null || typeof obj !== "object") {
-				return obj;
-			}
-			if(!getSettings) temp = new obj.constructor();
-			else temp = new obj.constructor(settings);
-
-			for (key in obj) {
-				try {
-					if(obj[key] === THREE[key]) temp[key] = new obj.constructor();
-					temp[key] = self.cloneModule(obj[key], false);
-				} catch(e) {
-					//console.error('Cannot clone native code', e);
-				}
-			}
-
-			//var temp = obj.clone();
-
-			return temp;
-		};
 
 		// Window resize
 		self.resize = function() {

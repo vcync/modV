@@ -46,7 +46,7 @@
 			}
 		}
 
-		self.makeNode = function(Module, modVSelf) {
+		self.makeNode = function(ModuleRef, modVSelf) {
 			var selectNode = document.createElement('select');
 			var startSource;
 			var startSourceFound = false;
@@ -84,11 +84,11 @@
 
 				var src = modVSelf.profiles[profileValue[0]].files.images[profileValue[1]].path;
 
-				Module[self.variable].src = src;
+				ModuleRef.controlVariables[self.variable].value.src = src;
 			
 			}, false);
 
-			if(startSourceFound) Module[self.variable].src = startSource;
+			if(startSourceFound) ModuleRef.localKeys[self.variable].value.src = startSource;
 
 			return selectNode;
 		};

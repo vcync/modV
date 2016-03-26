@@ -338,14 +338,14 @@
 		}
 
 
-		self.makeNode = function(Module, modVSelf) {
+		self.makeNode = function(ModuleRef, modVSelf) {
 
 			self.creationTime = Date.now();
 
 			self.callbacks = {};
 
 			self.callbacks.next = function(colour) {
-				Module[self.variable] = colour;
+				ModuleRef.controlVariables[self.variable].value = colour;
 			};
 
 			self.callbacks.getBPM = function() {

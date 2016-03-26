@@ -51,8 +51,8 @@
 			}
 		}
 
-		self.makeNode = function(Module) {
-			id = Module.info.safeName + '-' + self.variable;
+		self.makeNode = function(ModuleRef) {
+			id = ModuleRef.safeName + '-' + self.variable;
 
 			var inputNode = document.createElement('input');
 			inputNode.type = 'checkbox';
@@ -60,8 +60,8 @@
 			if('checked' in settings) inputNode.checked = settings.checked;
 			else inputNode.checked = false;
 
-			inputNode.addEventListener('change', function(e) {
-				Module[self.variable] = this.checked;
+			inputNode.addEventListener('change', function() {
+				ModuleRef.controlVariables[self.variable].value = this.checked;
 			}, false);
 
 			var labelNode = document.createElement('label');

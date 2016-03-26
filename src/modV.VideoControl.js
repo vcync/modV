@@ -46,7 +46,7 @@
 			}
 		}
 
-		self.makeNode = function(Module, modVSelf) {
+		self.makeNode = function(ModuleRef, modVSelf) {
 			var selectNode = document.createElement('select');
 			var startSource;
 			var startSourceFound = false;
@@ -84,14 +84,14 @@
 
 				var src = modVSelf.profiles[profileValue[0]].files.videos[profileValue[1]].path;
 
-				Module[self.variable].src = src;
-				Module[self.variable].play();
+				ModuleRef.controlVariables[self.variable].value.src = src;
+				ModuleRef.controlVariables[self.variable].value.play();
 			
 			}, false);
 
 			if(startSourceFound) {
-				Module[self.variable].src = startSource;
-				Module[self.variable].play();
+				ModuleRef.controlVariables[self.variable].value.src = startSource;
+				ModuleRef.controlVariables[self.variable].value.play();
 			}
 
 			return selectNode;

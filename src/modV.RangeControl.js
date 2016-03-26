@@ -54,8 +54,8 @@
 			}
 		}
 
-		self.makeNode = function(Module) {
-			id = Module.info.safeName + '-' + self.variable;
+		self.makeNode = function(ModuleRef) {
+			id = ModuleRef.safeName + '-' + self.variable;
 			
 
 			var node = document.createElement('input');
@@ -74,7 +74,7 @@
 
 				if('append' in settings) value += settings.append;
 
-				Module[self.variable] = value;
+				ModuleRef.controlVariables[self.variable].value = value;
 			}, false);
 			
 			node.id = id;

@@ -40,6 +40,9 @@
 		name = Module.info.name;
 		Module.info.safeName = replaceAll(name, ' ', '-');
 
+		// Load external scripts
+		// -- this will prevent the rest of 'register' from being completed
+		// -- until scripts are loaded
 		if('scripts' in Module.info) {
 			if(!('loadedScripts' in Module.info)) {
 				Module.info.loadedScripts = [];

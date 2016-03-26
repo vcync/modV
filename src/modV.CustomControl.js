@@ -54,10 +54,10 @@
 			}
 		}
 
-		self.makeNode = function(Module) {
-			id = Module.info.safeName + '-' + Date.now();
+		self.makeNode = function(ModuleRef) {
+			id = ModuleRef.safeName + '-' + Date.now();
 			
-			var node = settings(Module);
+			var node = settings(ModuleRef);
 			
 			console.log(node);
 

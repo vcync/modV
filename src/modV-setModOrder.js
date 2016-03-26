@@ -3,7 +3,7 @@
 	/*jslint browser: true */
 
 	modV.prototype.setModOrder = function(modName, order) {
-		var self = this;
+		//var self = this;
 
 		if(order < 0) {
 			console.log('attempting splice', this.modOrder);
@@ -25,9 +25,9 @@
 			if(index > -1) this.modOrder.splice(index, 1);
 			this.modOrder.splice(order, 0, modName);
 			
-			this.modOrder.forEach(function(mod, idx) {
+			/*this.modOrder.forEach(function(mod, idx) {
 				self.registeredMods[mod].info.order = idx;
-			});
+			});*/
 		}
 		
 		return order;

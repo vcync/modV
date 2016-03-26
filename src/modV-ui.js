@@ -33,9 +33,14 @@
 				// Get Module
 				var Module = self.registeredMods[replaceAll(itemEl.dataset.moduleName, '-', ' ')];
 
+				// Create new Module Reference
+				var ModuleRef = Module.getReference();
+
+				var originalName = ModuleRef.name;
+
 				// Grab dataname from cloned element
 				var name = clone.dataset.moduleName;
-				var originalName = clone.dataset.moduleName;
+
 				// Check for dupes
 				name = replaceAll(name, ' ', '-');
 				var dupes = list.querySelectorAll('.active-item[data-module-name|="' + name + '"]');
@@ -47,14 +52,19 @@
 				if(dupes.length > 0) {
 					name += " (" + dupes.length + ")";
 				}
-
 				// Create new safe name
 				var safeName = replaceAll(name, ' ', '-');
 
-				if(dupes.length > 0) {
+				ModuleRef.name = name;
+				ModuleRef.safeName = safeName;
+
+				console.dir(ModuleRef);
+
+
+/*				if(dupes.length > 0) {
 					// Clone module -- afaik, there is no better way than this
 					var oldModule = Module;
-					Module = self.cloneModule(Module, true);
+					//Module = self.cloneModule(Module, true);
 
 					// Create new controls from original Module to avoid scope contamination
 					if('controls' in oldModule.info) {
@@ -81,20 +91,22 @@
 					Module.info.name = name;
 					Module.info.safeName = safeName;
 					Module.info.originalName = originalName;
-				}
+				}*/
+
+				ModuleRef.originalName = originalName;
 
 				if(evt.originalEvent.shiftKey) {
-					Module.info.solo = true;
+					ModuleRef.solo = true;
 				}
 
 				// Move back to gallery
 				swapElements(clone, itemEl);
 
-				var activeItemNode = self.createActiveListItem(Module);
+				var activeItemNode = self.createActiveListItem(ModuleRef);
 
 				// Replace clone
 				try {
-					list.replaceChild(activeItemNode, clone);	
+					list.replaceChild(activeItemNode, clone);
 				} catch(e) {
 					return;
 				}
@@ -111,17 +123,19 @@
 
 
 				// Add to registry
-				self.registeredMods[Module.info.name] = Module;
+				//self.registeredMods[ModuleRef.name] = Module;
 
 				self.setModOrder(name, evt.newIndex);
 
 				// Create controls
 				console.log('Creating controls for', name, Module);
-				self.createControls(Module, self);
+				self.createControls(ModuleRef, self);
 
 				// turn on
 				// TODO: add setting to enable/disable by default
-				Module.info.disabled = false;
+				ModuleRef.disabled = false;
+
+				self.ModuleReferences[name] = ModuleRef;
 
 				activeItemNode.focus();
 			},
@@ -152,17 +166,17 @@
 			console.log('gallery drop', droppedModuleData);
 			currentActiveDrag  = null;
 
-			for(var moduleName in self.registeredMods) {
-				var Module = self.registeredMods[moduleName];
-				if(Module.info.safeName === droppedModuleData) {
+			for(var moduleName in self.ModuleReferences) {
+				var ModuleRef = self.ModuleReferences[moduleName];
+				if(ModuleRef.safeName === droppedModuleData) {
 					
-					if('originalName' in Module.info) {
-						var name = replaceAll(Module.info.originalName, ' ', '-');
+					if('originalName' in ModuleRef) {
+						var name = replaceAll(ModuleRef.originalName, ' ', '-');
 
 						var dupes = list.querySelectorAll('.active-item[data-module-name|="' + name + '"]');
 						if(dupes.length > 1) {
 							console.log('deleting', moduleName);
-							delete self.registeredMods[moduleName];
+							delete self.ModuleReferences[moduleName];
 						}
 					}
 

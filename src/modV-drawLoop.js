@@ -25,20 +25,24 @@
 		var firstSolo = true;
 
 		for(var i=0; i < self.modOrder.length; i++) {
-			var Module = self.registeredMods[self.modOrder[i]];
+			//var Module = self.registeredMods[self.modOrder[i]];
 
-			if(Module.info.disabled || Module.info.alpha === 0) continue;
+			var ModuleRef = self.ModuleReferences[self.modOrder[i]];
+			var Module = ModuleRef.Module;
+
+			if(ModuleRef.disabled || ModuleRef.alpha === 0) continue;
 
 
 			self.context.save();
-			self.context.globalAlpha = Module.info.alpha;
+			self.context.globalAlpha = ModuleRef.alpha;
 
 			self.soloCtx.save();
-			if(Module.info.solo) self.soloCtx.globalAlpha = Module.info.alpha;
+			if(ModuleRef.solo) self.soloCtx.globalAlpha = ModuleRef.alpha;
 
-			if(Module.info.blend !== 'normal') self.context.globalCompositeOperation = Module.info.blend;
+			if(ModuleRef.blend !== 'normal') self.context.globalCompositeOperation = ModuleRef.blend;
 
 			if(Module instanceof self.ModuleShader) {
+				
 				var _gl = self.shaderEnv.gl;
 
 				// Switch program
@@ -48,7 +52,7 @@
 					_gl.useProgram(self.shaderEnv.programs[Module.programIndex]);
 				}
 
-				if(Module.info.solo) {
+				if(ModuleRef.solo) {
 
 					if(firstSolo) {
 
@@ -90,7 +94,7 @@
 				}
 
 				// Set Uniforms
-				if('uniforms' in Module.info) {
+				if('uniforms' in Module.info) { //TODO ModuleRef
 					for(var uniformKey in Module.info.uniforms) {
 						var uniLoc = _gl.getUniformLocation(self.shaderEnv.programs[self.shaderEnv.activeProgram], uniformKey);
 						var uniform = Module.info.uniforms[uniformKey];
@@ -114,7 +118,7 @@
 				// Render
 				self.shaderEnv.render(delta, self.canvas);
 
-				if(Module.info.solo) {
+				if(ModuleRef.solo) {
 
 					// Copy Shader Canvas to Solo Canvas
 					self.soloCtx.drawImage(
@@ -140,7 +144,9 @@
 
 			} else if(Module instanceof self.Module2D) {
 
-				if(Module.info.solo) {
+				Module.applyReference(ModuleRef);
+
+				if(ModuleRef.solo) {
 					if(firstSolo) {
 						Module.draw(self.canvas, self.soloCtx, self.video, meydaOutput, self.meyda, delta, self.bpm, self.kick);
 						firstSolo = false;
@@ -152,9 +158,12 @@
 				}
 				
 			} else if(Module instanceof self.Module3D) {
+				
+				Module.applyReference(ModuleRef);
+				
 				let texture = self.THREE.texture;
 
-				if(Module.info.solo) {
+				if(ModuleRef.solo) {
 					if(!firstSolo) {
 						texture = self.THREE.soloTexture;
 						self.THREE.material.map = texture;
@@ -169,7 +178,7 @@
 				Module.draw(Module.getScene(), Module.getCamera(), self.THREE.material, texture, meydaOutput);
 				self.THREE.renderer.render(Module.getScene(), Module.getCamera());
 
-				if(Module.info.solo) {
+				if(ModuleRef.solo) {
 					self.soloCtx.drawImage(
 						self.THREE.canvas,
 						0,

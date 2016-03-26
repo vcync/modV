@@ -51,15 +51,15 @@
 			}
 		}
 
-		self.makeNode = function(Module) {
-			id = Module.info.safeName + '-' + self.variable;
+		self.makeNode = function(ModuleRef) {
+			id = ModuleRef.safeName + '-' + self.variable;
 
 			var node = document.createElement('input');
 			node.type = 'color';
 			if('default' in settings) node.value = settings.default;
 
 			node.addEventListener('input', function() {
-				Module[self.variable] = this.value;
+				ModuleRef.controlVariables[self.variable].value = this.value;
 			}, false);
 
 			node.id = id;

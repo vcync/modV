@@ -2,8 +2,10 @@
 	'use strict';
 	/*jslint browser: true */
 
-	modV.prototype.createActiveListItem = function(Module) {
+	modV.prototype.createActiveListItem = function(ModuleRef) {
 		var self = this;
+
+		console.log('Active item create', ModuleRef);
 
 		// Temp container (TODO: don't do this)
 		var temp = document.getElementById('temp');
@@ -14,7 +16,7 @@
 
 		var titleNode = activeItem.querySelector('.title');
 
-		titleNode.textContent = Module.info.name;
+		titleNode.textContent = ModuleRef.name;
 		
 		// Init node in temp (TODO: don't do this)
 		temp.innerHTML = '';
@@ -25,31 +27,31 @@
 		// Attach listener to Opacity Range
 		var opacityRangeNode = activeItem.querySelector('input[type=range].opacity');
 		opacityRangeNode.addEventListener('input', function() {
-			Module.info.alpha = parseFloat(this.value);
+			ModuleRef.alpha = parseFloat(this.value);
 		});
 
 		// Get Solo Checkbox
 		var soloCheckboxNode = activeItem.querySelector('input[type=checkbox].solo');
 		// Check if already soloed
-		soloCheckboxNode.checked = Module.info.solo;
+		soloCheckboxNode.checked = ModuleRef.solo;
 		// Attach listener to Solo Checkbox
 		soloCheckboxNode.addEventListener('change', function() {
-			Module.info.solo = this.checked;
+			ModuleRef.solo = this.checked;
 		});
 
 		// Attach listener to Blending Select
 		var compositeSelectNode = activeItem.querySelector('.composite-operations');
 		compositeSelectNode.addEventListener('change', function() {
-			Module.info.blend = this.value;
+			ModuleRef.blend = this.value;
 		});
 
 		// Attach listener to Enable Checkbox
 		var enableCheckboxNode = activeItem.querySelector('input[type=checkbox].enable');
 		enableCheckboxNode.addEventListener('change', function() {
-			Module.info.disabled = !this.checked;
+			ModuleRef.disabled = !this.checked;
 		});
 
-		activeItem.dataset.moduleName = Module.info.safeName;
+		activeItem.dataset.moduleName = ModuleRef.safeName;
 
 		return activeItem;
 	};

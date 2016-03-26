@@ -7,12 +7,10 @@
 
 		if(!(Module instanceof self.Module2D) && !(Module instanceof self.ModuleShader) && !(Module instanceof self.Module3D)) return;
 
-		// Clone module -- afaik, there is no better way than this
-		Module = self.cloneModule(Module, true);
+		var ModuleRef = Module.getReference();
+		console.log(ModuleRef);
 
-		//Module = new Module();
-
-		self.galleryModules = [];
+		self.galleryModules[Module.name] = ModuleRef;
 		
 		var template = self.templates.querySelector('#gallery-item');
 		var galleryItem = document.importNode(template.content, true);
@@ -46,7 +44,7 @@
 			/*var loop = giMouseEnter(Module, previewCanvas, previewCtx, self);
 			interval = setInterval(loop, 1000/60);*/
 			mouseOver = true;
-			activeVariables = [Module, previewCanvas, previewCtx, self];
+			activeVariables = [Module, previewCanvas, previewCtx, self, ModuleRef];
 			raf = requestAnimationFrame(loop);
 		});
 
@@ -71,18 +69,19 @@
 	//function giMouseEnter(Module, canvas, ctx, self) {
 
 		function loop(delta) {
-			
+
 			if(mouseOver) raf = requestAnimationFrame(loop);
 			else cancelAnimationFrame(raf);
 
-			if(activeVariables.length !== 4) {
+			if(activeVariables.length !== 5) {
 				return;
 			}
 
 			var Module = activeVariables[0],
 				canvas = activeVariables[1],
 				ctx = activeVariables[2],
-				self = activeVariables[3];
+				self = activeVariables[3],
+				ModuleRef = activeVariables[4];
 
 			//ctx.clearRect(0, 0, mousePos.x, canvas.height);
 			//ctx.clearRect(0, 0, Math.round(canvas.width/2), canvas.height);
@@ -91,6 +90,8 @@
 			var positionInfo = canvas.getBoundingClientRect();
 
 			var largeWidth = Math.round(Math.map(mousePos.x, 0, positionInfo.width, 0, self.canvas.width));
+
+			Module.applyReference(ModuleRef);
 
 			if(Module.info.previewWithOutput || Module instanceof self.ModuleShader) {
 				ctx.drawImage(self.canvas, 0, 0, canvas.width, canvas.height);

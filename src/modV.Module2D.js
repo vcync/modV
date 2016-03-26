@@ -5,24 +5,38 @@
 	modV.prototype.Module2D = function(settings) {
 		var self = this;
 		
-		// Experimental (better) function clone
-		self.clone = function() {
+		self.getReference = function() {
 
-/*			var ModuleClone = new this.constructor(settings);
+			var localKeys = {};
 
-			for(var key in this) {
-				if(this.hasOwnProperty(key)) {
-					ModuleClone[key] = ModuleClone[key];
-				}
+			if('controls' in settings.info) {
+				settings.info.controls.forEach(function(Control) {
+					localKeys[Control.variable] = {
+						key: Control.variable,
+						value: self[Control.variable]
+					};
+				});
 			}
 
-			ModuleClone.info.controls.forEach(function(Control) {
-				ModuleClone.add(Control);
-			});
-*/
+			return {
+				Module: this,
+				controlVariables: localKeys,
+				solo: settings.info.solo || false,
+				alpha: settings.info.alpha || 1,
+				disabled: settings.info.disabled || false,
+				blend: settings.info.blend || "normal",
+				name: settings.info.name,
+				safeName: null
+			};
+		};
 
-			return jQuery.extend(true, this.constructor(settings), this);
-			//return ModuleClone;
+		self.applyReference = function(ModuleRef) {
+
+			for(var key in ModuleRef.controlVariables) {
+				if(self.hasOwnProperty(key)) {
+					self[key] = ModuleRef.controlVariables[key].value;
+				}
+			}
 
 		};
 

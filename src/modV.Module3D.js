@@ -8,6 +8,41 @@
 		var scene = new THREE.Scene();
 		var camera;
 		
+		self.getReference = function() {
+
+			var localKeys = {};
+
+			if('controls' in settings.info) {
+				settings.info.controls.forEach(function(Control) {
+					localKeys[Control.variable] = {
+						key: Control.variable,
+						value: self[Control.variable]
+					};
+				});
+			}
+
+			return {
+				Module: this,
+				controlVariables: localKeys,
+				solo: settings.info.solo || false,
+				alpha: settings.info.alpha || 1,
+				disabled: settings.info.disabled || false,
+				blend: settings.info.blend || "normal",
+				name: settings.info.name,
+				safeName: null
+			};
+		};
+
+		self.applyReference = function(ModuleRef) {
+
+			for(var key in ModuleRef.controlVariables) {
+				if(self.hasOwnProperty(key)) {
+					self[key] = ModuleRef.controlVariables[key].value;
+				}
+			}
+
+		};
+
 		// Module error handle
 		function ModuleError(message) {
 			// Grab the stack
