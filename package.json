@@ -3,8 +3,8 @@
   "version": "0.0.0",
   "description": "JavaScript audio visualiser",
   "scripts": {
-    "start": "grunt server",
-    "ghpages": "grunt ghpages"
+    "start": "./node_modules/.bin/grunt server",
+    "ghpages": "./node_modules/.bin/grunt ghpages"
   },
   "homepage": "http://github.com/2xAA/modv",
   "bugs": "http://github.com/2xAA/modv/issues",
@@ -30,6 +30,7 @@
     "fluent-ffmpeg": "^2.0.1",
     "grunt": "~0.4.1",
     "grunt-browserify": "~1.2.0",
+    "grunt-cli": "^1.1.0",
     "grunt-concurrent": "^2.0.1",
     "grunt-contrib-clean": "~0.4.1",
     "grunt-contrib-concat": "~0.3.0",
