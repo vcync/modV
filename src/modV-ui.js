@@ -253,6 +253,10 @@
 			var optionNode = document.createElement('option');
 			optionNode.value = audioSource.id;
 			optionNode.textContent = audioSource.label;
+
+			if(audioSource.id === self.options.audioSource) {
+				optionNode.selected = true;
+			}
 			audioSelectNode.appendChild(optionNode);
 		});
 
@@ -260,6 +264,10 @@
 			var optionNode = document.createElement('option');
 			optionNode.value = videoSource.id;
 			optionNode.textContent = videoSource.label;
+			
+			if(videoSource.id === self.options.videoSource) {
+				optionNode.selected = true;
+			}
 			videoSelectNode.appendChild(optionNode);
 		});
 

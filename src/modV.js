@@ -57,11 +57,8 @@
 			analyser, // Analyser Node 
 			microphone;
 
-		// Save user options
+		// Load user options
 		if(typeof options !== 'undefined') self.options = options;
-		else {
-			self.loadOptions();
-		}
 
 		self.clearing = true;
 		if(!self.options.clearing) self.clearing = false;
@@ -408,10 +405,17 @@
 		};
 
 		/* Load modV's config to local storage */
-		self.loadOptions = function() {
+		self.loadOptions = function(callback) {
 			if(localStorage.getItem('modVoptions')) {
-				self.options = JSON.parse(localStorage.getItem('modVoptions'));
+				var loadedOptions = JSON.parse(localStorage.getItem('modVoptions'));
+				for(var key in loadedOptions) {
+					if(!(key in self.options)) {
+						self.options[key] = loadedOptions[key];
+					}
+				}
 			}
+
+			if(callback) callback();
 		};
 
 		// Shader handling
@@ -419,53 +423,73 @@
 		self.shaderSetup();
 
 		self.start = function() {
-			// Scan Stream sources and setup User Media
-			scanMediaStreamSources(function(foundSources) {
-				self.setMediaSource(foundSources.audio[0].id, foundSources.video[0].id);
-				self.startUI();
-			});
-			
 
-			
-			if(typeof self.canvas !== 'object') {
-				console.error('modV: Canvas not set');
-				return false;
-			}
+			// Load Options
+			self.loadOptions(function() {
 
-			if(self.options.remote && !self.remoteSuccess) {
-				self.initSockets();
+				// Scan Stream sources and setup User Media
+				scanMediaStreamSources(function(foundSources) {
 
-				console.log('Remote server not connected yet, waiting for connection to start.');
-				setTimeout(self.start, 1000);
-			} else {
+					var audioSource;
+					var videoSource;
 
-				if(self.options.remote) {
-					for(var mod in self.registeredMods) {
-						var infoToSend = JSON.parse(JSON.stringify(self.registeredMods[mod].info)); // copy the set
-						var variables = [];
-
-						if('controls' in self.registeredMods[mod].info) {
-							self.registeredMods[mod].info.controls.forEach(function(controlSet) {
-								var variable = controlSet.variable;
-								variables.push(variable);
-							});
-
-							variables.forEach(function(v) {
-								infoToSend[v] = self.registeredMods[mod][v];
-							});
+					foundSources.audio.forEach(function(audioSrc) {
+						if(audioSrc.id === self.options.audioSource) {
+							audioSource = audioSrc.id;
 						}
+					});
 
-						self.ws.send(JSON.stringify({
-							type: 'register',
-							payload: infoToSend
-						}));
-					}
+					foundSources.video.forEach(function(videoSrc) {
+						if(videoSrc.id === self.options.videoSource) {
+							videoSource = videoSrc.id;
+						}
+					});
+					console.log(foundSources);
+
+					self.setMediaSource(audioSource || foundSources.audio[0].id, videoSource || foundSources.video[0].id);
+					self.startUI();
+				});
+				
+
+				
+				if(typeof self.canvas !== 'object') {
+					console.error('modV: Canvas not set');
+					return false;
 				}
 
-				requestAnimationFrame(self.loop.bind(self)); //modV-drawLoop.js //TODO: figure out why we're using bind (I get it, but seems stupid)
-			}
+				if(self.options.remote && !self.remoteSuccess) {
+					self.initSockets();
 
-			return true;
+					console.log('Remote server not connected yet, waiting for connection to start.');
+					setTimeout(self.start, 1000);
+				} else {
+
+					if(self.options.remote) {
+						for(var mod in self.registeredMods) {
+							var infoToSend = JSON.parse(JSON.stringify(self.registeredMods[mod].info)); // copy the set
+							var variables = [];
+
+							if('controls' in self.registeredMods[mod].info) {
+								self.registeredMods[mod].info.controls.forEach(function(controlSet) {
+									var variable = controlSet.variable;
+									variables.push(variable);
+								});
+
+								variables.forEach(function(v) {
+									infoToSend[v] = self.registeredMods[mod][v];
+								});
+							}
+
+							self.ws.send(JSON.stringify({
+								type: 'register',
+								payload: infoToSend
+							}));
+						}
+					}
+
+					requestAnimationFrame(self.loop.bind(self)); //modV-drawLoop.js //TODO: figure out why we're using bind (I get it, but seems stupid)
+				}
+			});
 		};
 
 		/* Usermedia access */
