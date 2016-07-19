@@ -12,17 +12,27 @@ var Video = new modVC.Module2D({
 		this.video.muted = true;
 		this.video.loop = true;
 		this.playbackRate = 1.0;
+
+		this.canvas2 = document.createElement('canvas');
+		this.ctx2 = this.canvas2.getContext('2d');
+
+		this.canvas2.width = canvas.width;
+		this.canvas2.height = canvas.height;
 		
 	},
-	draw: function(canvas, ctx, vid, features, meyda, delta, bpm) {
+	resize: function(canvas) {
+		this.canvas2.width = canvas.width;
+		this.canvas2.height = canvas.height;
+	},
+	draw: function(canvas, ctx) {
 
 		try {
 			this.video.playbackRate = this.playbackRate;
 		} catch(e) {
 			
 		}
-		ctx.drawImage(this.video, 0, 0, canvas.width, canvas.height); 
-
+		this.ctx2.drawImage(this.video, 0, 0, canvas.width, canvas.height); 
+		ctx.drawImage(this.canvas2, 0, 0, canvas.width, canvas.height);
 	}
 });
 

@@ -1,3 +1,4 @@
+//jshint node:true
 var restify = require('restify'),
 	dive = require('dive'),
 	ws = require('watershed'),

@@ -3,7 +3,8 @@ var SlipNSlide = new modVC.Module2D({
 		name: 'Slip \'n\' Slide',
 		author: '2xAA',
 		version: 0.1,
-		previewWithOutput: true
+		previewWithOutput: true,
+		meyda: ['rms']
 	},
 	init: function(canvas) {
  		
@@ -15,6 +16,8 @@ var SlipNSlide = new modVC.Module2D({
 
 		this.newCanvas2.width = canvas.width;
 		this.newCanvas2.height = canvas.height;
+
+		this.useRMS = false;
 		
 	},
 	resize: function(canvas, ctx) {
@@ -33,6 +36,10 @@ var SlipNSlide = new modVC.Module2D({
 		if(this.t < 360) this.t+=0.01;
 		else this.t = 0;
 
+		if(this.useRMS) {
+			t += features.rms / 100;
+		}
+
 	}
 });
 
@@ -43,6 +50,12 @@ SlipNSlide.add(new modVC.RangeControl({
 	max: 100,
 	varType: 'int',
 	step: 1
+}));
+
+SlipNSlide.add(new modVC.CheckboxControl({
+	variable: 'useRMS',
+	label: 'Use RMS',
+	checked: false
 }));
 
 modVC.register(SlipNSlide);

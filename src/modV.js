@@ -206,7 +206,7 @@
 						}
 
 						self.palettes.forEach(function(palette) {
-							palette.updateProfiles(arr);
+							palette.updateProfiles(self.profiles);
 						});
 					break;
 				}

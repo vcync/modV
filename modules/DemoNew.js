@@ -15,9 +15,11 @@ var DemoPoly = new modVC.Module2D({
 		this.intensity = 15;
 		this.shapeSize = 10;
 		this.hue = 0;
-		
+
+		this.colour = 'pink';
+
 	},
-	draw: function(canvas, ctx, vid, features, meyda, delta, bpm) {
+	draw: function(canvas, ctx, vid, features, meyda, delta) {
 
 		var analysed;
 		var rotate = 0;
@@ -30,7 +32,7 @@ var DemoPoly = new modVC.Module2D({
 			analysed = (features.rms * 10) * this.intensity;
 		}
 
-		ctx.strokeStyle = ctx.fillStyle = 'hsl(' + this.hue + ', 80%, 80%)';
+		ctx.strokeStyle = ctx.fillStyle = this.colour;
 		ctx.lineWidth = this.strokeWeight;
 
 		ctx.beginPath();
@@ -45,8 +47,8 @@ var DemoPoly = new modVC.Module2D({
 		ctx.closePath();
 		ctx.stroke();
 
-		if(this.hue === 360) this.hue = 0;
-		else this.hue++;		
+		/*if(this.hue === 360) this.hue = 0;
+		else this.hue++;	*/	
 
 	}
 });
@@ -117,6 +119,33 @@ controls.push(new modVC.RangeControl({
     max: 10.0,
     step: 0.1,
     default: 5.0
+}));
+
+controls.push(new modVC.PaletteControl({
+	variable: 'colour',
+	colours: [
+		[199,64,163],
+		[97,214,199],
+		[222,60,75],
+		[101,151,220],
+		[213,158,151],
+		[100,132,129],
+		[154,94,218],
+		[194,211,205],
+		[201,107,152],
+		[119,98,169],
+		[214,175,208],
+		[218,57,123],
+		[196,96,98],
+		[218,74,219],
+		[138,100,121],
+		[96,118,225],
+		[132,195,223],
+		[82,127,162],
+		[209,121,211],
+		[181,152,220]
+	], // generated here: http://tools.medialab.sciences-po.fr/iwanthue/
+	timePeriod: 500
 }));
 
 DemoPoly.add(controls);

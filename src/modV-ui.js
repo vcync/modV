@@ -423,6 +423,11 @@
 			var template = self.templates.querySelector('#module-group');
 			var group = document.importNode(template.content, true);
 
+			// Create Group
+			var Group = new self.Group();
+			var groupIndex = self.groups.push(Group)-1;
+			Group = self.groups[groupIndex];
+
 			// Temp container (TODO: don't do this)
 			var temp = document.getElementById('temp');
 

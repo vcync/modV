@@ -2,7 +2,7 @@
 	'use strict';
 	/*jslint browser: true */
 
-	var Palette = function(colours, timePeriod, callbacks) {
+	var Palette = function(colours, timePeriod, callbacks, modV) {
 		
 		var self = this;
 
@@ -148,6 +148,8 @@
 
 		var profilesList = [];
 		var profilesSelect = document.createElement('select');
+		var loadProfileListSelect = document.createElement('select');
+		var loadPaletteListSelect = document.createElement('select');
 
 		self.updateProfiles = function(profiles) {
 
@@ -156,25 +158,48 @@
 			// Clear select
 			while(profilesSelect.firstChild) {
 				profilesSelect.removeChild(profilesSelect.firstChild);
+				loadProfileListSelect.remove(loadProfileListSelect.firstChild);
 			}
 
-			profilesList.forEach(function(profile) {
+			loadPaletteListSelect.innerHTML = '';
 
+			for(var profile in profilesList) { //jshint ignore:line
 				var option = document.createElement('option');
 				option.textContent = option.value = profile;
 				profilesSelect.appendChild(option);
+				option = document.createElement('option');
+				option.textContent = option.value = profile;
+				loadProfileListSelect.appendChild(option);
 
+				for(var palette in profilesList[profile].palettes) {
+					option = document.createElement('option');
+					option.textContent = option.value = palette;
+					loadPaletteListSelect.appendChild(option);
+				}
+			}
+
+
+
+		};
+
+		self.makePalette = function(colours) {
+			var swatches = [];
+			colours.forEach(function(colour) {
+				var swatch = makeColourSwatch(colour);
+				swatches.push(swatch);
 			});
 
+			return swatches;
 		};
 		
 		self.generateControls = function() {
 
+			self.updateProfiles(modV.profiles);
+
 			var paletteDiv = document.createElement('div');
 			paletteDiv.classList.add('palette');
 			
-			colours.forEach(function(colour) {
-				var swatch = makeColourSwatch(colour);
+			self.makePalette(colours).forEach(function(swatch) {
 				paletteDiv.appendChild(swatch);
 			});
 			
@@ -221,7 +246,9 @@
 
 			savePaletteButton.addEventListener('click', function() {
 
-				if('savePalette' in callbacks) callbacks.savePalette(profilesSelect.value, savePaletteName.value, colours);
+				var profilesSelectValue = profilesSelect.options[profilesSelect.selectedIndex].value;
+
+				if('savePalette' in callbacks) callbacks.savePalette(profilesSelectValue, savePaletteName.value, colours);
 
 			});
 
@@ -270,14 +297,32 @@
 
 			controlsDiv.appendChild(bpmDivisonLabel);
 
+			controlsDiv.appendChild(document.createElement('hr'));
+			controlsDiv.appendChild(loadProfileListSelect);
+			controlsDiv.appendChild(loadPaletteListSelect);
+
+
 			var loadPaletteButton = document.createElement('button');
 			loadPaletteButton.textContent = 'Load Palette';
 			// TODO
 			loadPaletteButton.addEventListener('click', function() {
 
-				if('loadPalette' in callbacks) callbacks.savePalette(profilesSelect.value, savePaletteName.value, colours);
+				var selectedProfile = loadProfileListSelect.options[loadProfileListSelect.selectedIndex].value;
+				var selectedPalette = loadPaletteListSelect.options[loadPaletteListSelect.selectedIndex].value;
+
+				var loadedColours = profilesList[selectedProfile].palettes[selectedPalette];
+
+				colours = loadedColours;
+
+				paletteDiv.innerHTML = '';
+				self.makePalette(colours).forEach(function(swatch) {
+					paletteDiv.appendChild(swatch);
+				});
 
 			});
+
+			controlsDiv.appendChild(loadPaletteButton);
+
 
 			// controlsDiv.appendChild(profilesSelect);
 			// controlsDiv.appendChild(savePaletteName);
@@ -339,7 +384,6 @@
 
 
 		self.makeNode = function(Module, modVSelf) {
-
 			self.creationTime = Date.now();
 
 			self.callbacks = {};
@@ -352,10 +396,6 @@
 				return modVSelf.bpm;
 			};
 
-			self.callbacks.loadPalette = function(profile, paletteName) {
-				// TODO
-			};
-
 			self.callbacks.savePalette = function(profile, paletteName, palette) {
 
 				window.postMessage({
@@ -366,11 +406,11 @@
 						profile: profile,
 						name: paletteName
 					}
-				}, self.options.controlDomain);
+				}, modVSelf.options.controlDomain);
 
 			};
 
-			var pal = new Palette(self.colours, self.timePeriod, self.callbacks);
+			var pal = new Palette(self.colours, self.timePeriod, self.callbacks, modVSelf);
 
 			modVSelf.palettes.push(pal);
 			return pal.generateControls();
