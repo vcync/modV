@@ -11,6 +11,7 @@ var Concentrics = new modVC.Module2D({
 		this.intensity = 1;
 		this.spacing = 5;
 		this.strokeWeight = 1;
+		this.objectDistance = 40;
 
 		this.circle1 = new this.Concentric(canvas);
 		this.circle2 = new this.Concentric(canvas);
@@ -26,12 +27,12 @@ var Concentrics = new modVC.Module2D({
 			zcr = zcr * 50;
 		}
 
-		this.circle1.x = canvas.width/2 + Math.sin(delta / 1000) * 40;
-	    this.circle1.y = canvas.height/2 + Math.cos(delta / 1000) * 10;
+		this.circle1.x = canvas.width/2 + Math.sin(delta / 1000) * this.objectDistance;
+	    this.circle1.y = canvas.height/2 + Math.cos(delta / 1000) * this.objectDistance / 2;
 	    this.circle1.draw(ctx, zcr, this.strokeWeight, this.spacing);
 	    
-	    this.circle2.x = canvas.width/2 + -Math.sin(delta / 1000) * 40;
-	    this.circle2.y = canvas.height/2 + -Math.cos(delta / 1000) * 30;
+	    this.circle2.x = canvas.width/2 + -Math.sin(delta / 1000) * this.objectDistance;
+	    this.circle2.y = canvas.height/2 + -Math.cos(delta / 1000) * this.objectDistance / 2;
 	    this.circle2.draw(ctx, zcr, this.strokeWeight, this.spacing);
 
 	}
@@ -39,7 +40,7 @@ var Concentrics = new modVC.Module2D({
 
 Concentrics.Concentric = function(canvas) {
 	this.x = canvas.width / 2;
-	this.y = canvas.height /2;
+	this.y = canvas.height / 2;
 	this.hue = Math.round(Math.random() * 360);
 		
 	this.draw = function(ctx, zcr, strokeWeight, spacing) {
@@ -84,6 +85,16 @@ controls.push(new modVC.RangeControl({
 	max: 100,
 	step: 1,
 	default: 5
+}));
+
+controls.push(new modVC.RangeControl({
+	variable: 'objectDistance',
+	label: 'Object Distance',
+	varType: 'int',
+	min: 0,
+	max: 200,
+	step: 1,
+	default: 40
 }));
 
 controls.push(new modVC.RangeControl({
