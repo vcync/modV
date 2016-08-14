@@ -21,7 +21,7 @@ gulp.task('lint', function() {
 		//.pipe(jshint.reporter('fail'));
 });
 
-gulp.task('webpack', ['clean'], function() {
+gulp.task('webpack', ['clean', 'lint'], function() {
 	return gulp.src('src/**/*.js')
 		.pipe(webpack({
 			output: {
@@ -83,7 +83,7 @@ gulp.task('connect', function() {
 
 gulp.task('copy', ['copy:modules', 'copy:html', 'copy:css', 'copy:library', 'copy:fonts']);
 
-gulp.task('build', ['clean', 'lint', 'ejs', 'webpack', 'copy', 'symlink']);
+gulp.task('build', ['clean', 'ejs', 'webpack', 'copy', 'symlink']);
 
 gulp.task('watch', ['build', 'connect', 'media-manager'], function() {
 	gulp.watch('./src/**/*.js', ['build']);
