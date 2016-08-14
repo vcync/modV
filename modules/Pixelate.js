@@ -26,7 +26,7 @@ var Pixelate = new modVC.Module2D({
 		this.newCanvas2.width = canvas.width;
 		this.newCanvas2.height = canvas.height;
 	},
-	draw: function(canvas, ctx, vid, features, meyda, delta, bpm) {
+	draw: function(canvas, ctx, vid, features) {
 
 		var w, h, analysed;
 
