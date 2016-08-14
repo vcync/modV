@@ -71,7 +71,8 @@ gulp.task('media-manager', function() {
 gulp.task('connect', function() {
 	connect.server({
 		root: './dist/',
-		livereload: true
+		livereload: true,
+		port: 3131
 	});
 });
 
