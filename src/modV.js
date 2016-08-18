@@ -130,7 +130,7 @@ var modV = function(options) {
 	self.resize = function() {
 		self.THREE.renderer.setSize(self.canvas.width, self.canvas.height);
 
-		forIn(self.registeredModsvar, (mod, Module) => {
+		forIn(self.registeredMods, (mod, Module) => {
 			if('resize' in Module) {
 				if(Module instanceof self.Module3D) {
 					Module.resize(self.canvas, Module.getScene(), Module.getCamera(), self.THREE.material, self.THREE.texture);
