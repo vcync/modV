@@ -56,6 +56,11 @@ gulp.task('copy:fonts', ['clean'], function() {
 		.pipe(gulp.dest('dist'));
 });
 
+gulp.task('copy:license', ['clean'], function() {
+	return gulp.src('./LICENSE', {base: './'})
+		.pipe(gulp.dest('dist'));
+});
+
 gulp.task('symlink', ['clean'], function() {
 	return gulp.src('./media', {base: './'})
 		.pipe(symlink('dist/media'));
@@ -81,7 +86,7 @@ gulp.task('connect', function() {
 	});
 });
 
-gulp.task('copy', ['copy:modules', 'copy:html', 'copy:css', 'copy:library', 'copy:fonts']);
+gulp.task('copy', ['copy:modules', 'copy:html', 'copy:css', 'copy:library', 'copy:fonts', 'copy:license']);
 
 gulp.task('build', ['clean', 'ejs', 'webpack', 'copy', 'symlink']);
 
