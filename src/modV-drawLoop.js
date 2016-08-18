@@ -107,6 +107,14 @@
 								_gl.uniform1i(uniLoc, value);
 								break;
 
+							case 'b':
+								value = Module[uniformKey];
+								if(value) value = 1;
+								else value = 0;
+								
+								_gl.uniform1i(uniLoc, value);
+								break;
+
 						}
 					}
 				}

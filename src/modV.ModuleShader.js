@@ -84,6 +84,10 @@
 						self[uniformKey] = parseInt(uniform.value);
 						break;
 
+					case 'b':
+						self[uniformKey] = uniform.value;
+						break;
+
 				}
 			}
 		}
