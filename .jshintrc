@@ -93,6 +93,9 @@
         "modVC": true,
         "rgbToString": true,
         "THREE": true,
-        "jQuery": true
+        "jQuery": true,
+        "MediaStreamTrack": true,
+        "BeatDetektor": true,
+        "Meyda": true
     }   
 }
