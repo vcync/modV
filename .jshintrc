@@ -96,6 +96,7 @@
         "jQuery": true,
         "MediaStreamTrack": true,
         "BeatDetektor": true,
-        "Meyda": true
+        "Meyda": true,
+        "forIn": true
     }   
 }
