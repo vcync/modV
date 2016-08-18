@@ -1,5 +1,12 @@
 //jshint node:true
 
+console.log('      modV Copyright  (C)  2016 Sam Wray      '+ "\n" +
+            '----------------------------------------------'+ "\n" +
+            '      modV is licensed  under GNU GPL V3      '+ "\n" +
+            'This program comes with ABSOLUTELY NO WARRANTY'+ "\n" +
+            'For details, see LICENSE within this directory'+ "\n" +
+            '----------------------------------------------');
+
 var webpack = require('webpack-stream');
 var connect = require('gulp-connect');
 var jshint = require('gulp-jshint');
@@ -8,6 +15,8 @@ var clean = require('gulp-clean');
 var ejs = require("gulp-ejs");
 var run = require("gulp-run");
 var gulp = require('gulp');
+
+var allSources = ['./src/**/*.js', './**/*.ejs', './modules/**/*.js', './modules/**/*.html', './*.html'];
 
 gulp.task('clean', function() {
 	return gulp.src('./dist', {read: false})
@@ -86,10 +95,18 @@ gulp.task('connect', function() {
 	});
 });
 
+gulp.task('reload', ['build'], function() {
+	gulp.src(allSources)
+    	.pipe(connect.reload());
+});
+
+gulp.task('set-watcher', ['build'], function() {
+	console.log('watching');
+	gulp.watch(allSources, ['build', 'reload']);
+});
+
 gulp.task('copy', ['copy:modules', 'copy:html', 'copy:css', 'copy:library', 'copy:fonts', 'copy:license']);
 
 gulp.task('build', ['clean', 'ejs', 'webpack', 'copy', 'symlink']);
 
-gulp.task('watch', ['build', 'connect', 'media-manager'], function() {
-	gulp.watch('./src/**/*.js', ['build']);
-});
+gulp.task('watch', ['build', 'connect', 'set-watcher', 'media-manager']);
