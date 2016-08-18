@@ -1,6 +1,5 @@
 (function() {
 	'use strict';
-	/*jslint browser: true */
 
 	modV.prototype.createGalleryItem = function(Module) {
 		var self = this;
@@ -63,7 +62,7 @@
 
 	};
 
-	var mousePos = {x: 0, y: 0};
+	//var mousePos = {x: 0, y: 0};
 	var mouseOver = false;
 	var raf = null;
 	var activeVariables = [];
@@ -88,9 +87,9 @@
 			//ctx.clearRect(0, 0, Math.round(canvas.width/2), canvas.height);
 			ctx.clearRect(0, 0, canvas.width, canvas.height);
 
-			var positionInfo = canvas.getBoundingClientRect();
+			//var positionInfo = canvas.getBoundingClientRect();
 
-			var largeWidth = Math.round(Math.map(mousePos.x, 0, positionInfo.width, 0, self.canvas.width));
+			//var largeWidth = Math.round(Math.map(mousePos.x, 0, positionInfo.width, 0, self.canvas.width));
 
 			if(Module.info.previewWithOutput || Module instanceof self.ModuleShader) {
 				ctx.drawImage(self.canvas, 0, 0, canvas.width, canvas.height);
@@ -124,9 +123,8 @@
 
 				// Set Uniforms
 				if('uniforms' in Module.info) {
-					for(var uniformKey in Module.info.uniforms) {
+					forIn(Module.info.uniforms, (uniformKey, uniform) => {
 						var uniLoc = _gl.getUniformLocation(self.shaderEnv.programs[self.shaderEnv.activeProgram], uniformKey);
-						var uniform = Module.info.uniforms[uniformKey];
 						var value;
 
 						switch(uniform.type) {
@@ -141,7 +139,7 @@
 								break;
 
 						}
-					}
+					});
 				}
 
 				// Render
@@ -173,7 +171,7 @@
 		ctx.fillText(Module.info.name, canvas.width/2 - textWidth/2, canvas.height/2);
 	}
 
-	function getMousePos(canvas, evt, round) {
+/*	function getMousePos(canvas, evt, round) {
 		var rect = canvas.getBoundingClientRect();
 		if(round) {
 			return {
@@ -186,6 +184,6 @@
 				y: evt.clientY - rect.top
 			};
 		}
-	}
+	}*/
 
 })(module);

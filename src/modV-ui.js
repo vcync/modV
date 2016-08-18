@@ -152,8 +152,7 @@
 			console.log('gallery drop', droppedModuleData);
 			currentActiveDrag  = null;
 
-			for(var moduleName in self.registeredMods) {
-				var Module = self.registeredMods[moduleName];
+			forIn(self.registeredMods, (moduleName, Module) => {
 				if(Module.info.safeName === droppedModuleData) {
 					
 					if('originalName' in Module.info) {
@@ -170,7 +169,7 @@
 					panel.parentNode.removeChild(panel);
 					self.setModOrder(moduleName, -1);
 				}
-			}
+			});
 		});
 
 		gallery.addEventListener('dragover', function(e) {
@@ -203,7 +202,7 @@
 
 			// :^) hacks hacks hacks
 			[].forEach.call(activeItems, function(activeItemNode) {
-				activeItemNode.classList.remove('current');
+				if(activeItemNode) activeItemNode.classList.remove('current');
 			});
 		}
 
@@ -423,7 +422,6 @@
 
 		// Module Grouping
 
-		var moduleMenu = document.querySelector('.module-menu');
 		var addGroupButton = document.querySelectorAll('.module-menu .icon')[0];
 		addGroupButton.addEventListener('click', function() {
 			

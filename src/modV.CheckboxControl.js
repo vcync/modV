@@ -60,7 +60,7 @@
 			if('checked' in settings) inputNode.checked = settings.checked;
 			else inputNode.checked = false;
 
-			inputNode.addEventListener('change', function(e) {
+			inputNode.addEventListener('change', function() {
 				Module[self.variable] = this.checked;
 			}, false);
 

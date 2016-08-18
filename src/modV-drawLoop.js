@@ -91,9 +91,9 @@
 
 				// Set Uniforms
 				if('uniforms' in Module.info) {
-					for(var uniformKey in Module.info.uniforms) {
+					forIn(Module.info.uniforms, (uniformKey, uniform) => {
+
 						var uniLoc = _gl.getUniformLocation(self.shaderEnv.programs[self.shaderEnv.activeProgram], uniformKey);
-						var uniform = Module.info.uniforms[uniformKey];
 						var value;
 
 						switch(uniform.type) {
@@ -116,7 +116,7 @@
 								break;
 
 						}
-					}
+					});
 				}
 
 				// Render

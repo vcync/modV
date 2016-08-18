@@ -32,6 +32,14 @@ window.getDocument = function(url, callback) {
 	xhr.send();
 };
 
+window.forIn = function(item, filter) {
+	for(var name in item) {
+		if(item.hasOwnProperty(name)) {
+			filter(name, item[name]);
+		}
+	}
+};
+
 navigator.getUserMedia = navigator.getUserMedia 		||
 						 navigator.webkitGetUserMedia	||
 						 navigator.mozGetUserMedia		||
@@ -82,7 +90,7 @@ var modV = function(options) {
 
 	self.ready = false;
 
-	// Copy Paste
+	// Clipboard store
 	self.copiedValue = null;
 
 	// Robots
@@ -96,7 +104,7 @@ var modV = function(options) {
 
 	// Module Clone
 	self.cloneModule = function(obj, getSettings) {
-		var key, settings, temp;
+		var settings, temp;
 		if(getSettings) settings = obj.getSettings();
 		if (obj === null || typeof obj !== "object") {
 			return obj;
@@ -104,14 +112,14 @@ var modV = function(options) {
 		if(!getSettings) temp = new obj.constructor();
 		else temp = new obj.constructor(settings);
 
-		for (key in obj) {
+		forIn(obj, key => {
 			try {
 				if(obj[key] === THREE[key]) temp[key] = new obj.constructor();
 				temp[key] = self.cloneModule(obj[key], false);
 			} catch(e) {
 				//console.error('Cannot clone native code', e);
 			}
-		}
+		});
 
 		//var temp = obj.clone();
 
@@ -122,9 +130,7 @@ var modV = function(options) {
 	self.resize = function() {
 		self.THREE.renderer.setSize(self.canvas.width, self.canvas.height);
 
-		for(var mod in self.registeredMods) {
-			var Module = self.registeredMods[mod];
-
+		forIn(self.registeredModsvar, (mod, Module) => {
 			if('resize' in Module) {
 				if(Module instanceof self.Module3D) {
 					Module.resize(self.canvas, Module.getScene(), Module.getCamera(), self.THREE.material, self.THREE.texture);
@@ -132,7 +138,7 @@ var modV = function(options) {
 					Module.resize(self.canvas, self.context);	
 				}
 			}
-		}
+		});
 	};
 
 	// Create canvas
@@ -193,9 +199,9 @@ var modV = function(options) {
 					});
 
 					var arr = [];
-					for(var profile in self.profiles) {
+					forIn(self.profiles, profile => {
 						arr.push(profile);
-					}
+					});
 
 					self.palettes.forEach(function(palette) {
 						palette.updateProfiles(self.profiles);
@@ -209,7 +215,7 @@ var modV = function(options) {
 		console.log(id);
 		self.factoryReset();
 
-		function updateControl(control) {
+		function updateControl(control, mod) {
 			var val = control.currValue;
 			
 			if('append' in control) {
@@ -240,12 +246,13 @@ var modV = function(options) {
 
 		}
 
-		for(var mod in self.presets[id]) {
-
+		forIn(self.presets[id], mod => {
 			var m = self.presets[id][mod];
 			
 			if('controls' in m) {
-				m.controls.forEach(updateControl);
+				m.controls.forEach(function(control) {
+					updateControl(control, mod);
+				});
 			}
 			console.log(m);
 			//registeredMods[mod].info = m;
@@ -269,7 +276,7 @@ var modV = function(options) {
 			
 			console.log(m.name, 'now @ ', self.setModOrder(m.name, m.order));
 
-		}
+		});
 	};
 
 	self.savePreset = function(name, profile) {
@@ -374,10 +381,10 @@ var modV = function(options) {
 		localStorage.setItem('presets', JSON.stringify({}));
 	} else {
 		self.presets = JSON.parse(localStorage.getItem('presets'));
-		for(var presetname in self.presets) {
+		forIn(self.presets, presetname => {
 			//self.addPresetToController(presetname, self.options.controlDomain);
 			console.log('Successfuly read saved preset with name:', presetname);
-		}
+		});
 	}
 
 	self.setDimensions = function(width, height) {
@@ -403,11 +410,11 @@ var modV = function(options) {
 	self.loadOptions = function(callback) {
 		if(localStorage.getItem('modVoptions')) {
 			var loadedOptions = JSON.parse(localStorage.getItem('modVoptions'));
-			for(var key in loadedOptions) {
+			forIn(loadedOptions, key => {
 				if(!(key in self.options)) {
 					self.options[key] = loadedOptions[key];
 				}
-			}
+			});
 		}
 
 		if(callback) callback();
@@ -460,7 +467,7 @@ var modV = function(options) {
 			} else {
 
 				if(self.options.remote) {
-					for(var mod in self.registeredMods) {
+					forIn(self.registeredMods, mod => {
 						var infoToSend = JSON.parse(JSON.stringify(self.registeredMods[mod].info)); // copy the set
 						var variables = [];
 
@@ -479,7 +486,7 @@ var modV = function(options) {
 							type: 'register',
 							payload: infoToSend
 						}));
-					}
+					});
 				}
 
 				requestAnimationFrame(self.loop.bind(self)); //modV-drawLoop.js //TODO: figure out why we're using bind (I get it, but seems stupid)

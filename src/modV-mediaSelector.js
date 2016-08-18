@@ -16,7 +16,6 @@
 		self.update = function(profiles) {
 			var key,
 				profile,
-				optGroups = [],
 				optGroup;
 
 			// Clear select
@@ -29,79 +28,88 @@
 			if(type === 'image') {
 
 				for(key in profiles) {
-					profile = profiles[key];
+					// we can't use forIn in this case as we have continues to deal with
+					if(profiles.hasOwnProperty(key)) {
+						profile = profiles[key];
 
-					// Skip if we have no images
-					if(!('images' in profile.files)) continue;
+						// Skip if we have no images
+						if(!('images' in profile.files)) continue;
 
-					images = profile.files.images;
+						images = profile.files.images;
 
-					optGroup = document.createElement('optgroup');
-					optGroup.label = key;
+						optGroup = document.createElement('optgroup');
+						optGroup.label = key;
 
-					for(i=0; i < images.length; i++) {
-						image = images[i];
+						for(i=0; i < images.length; i++) {
+							image = images[i];
 
-						option = document.createElement('option');
-						option.value = image.path;
-						option.textContent = image.name;
+							option = document.createElement('option');
+							option.value = image.path;
+							option.textContent = image.name;
 
-						optGroup.appendChild(option);
+							optGroup.appendChild(option);
+						}
+
+						select.appendChild(optGroup);
 					}
-
-					select.appendChild(optGroup);
 				}
 
 			} else if(type === 'multiimage') {
 				select.multiple = true;
 
 				for(key in profiles) {
-					profile = profiles[key];
+					// we can't use forIn in this case as we have continues to deal with
+					if(profiles.hasOwnProperty(key)) {
+						profile = profiles[key];
 
-					// Skip if we have no images
-					if(!('images' in profile.files)) continue;
+						// Skip if we have no images
+						if(!('images' in profile.files)) continue;
 
-					images = profile.files.images;
+						images = profile.files.images;
 
-					optGroup = document.createElement('optgroup');
-					optGroup.label = key;
+						optGroup = document.createElement('optgroup');
+						optGroup.label = key;
 
-					for(i=0; i < images.length; i++) {
-						image = images[i];
+						for(i=0; i < images.length; i++) {
+							image = images[i];
 
-						option = document.createElement('option');
-						option.value = image.path;
-						option.textContent = image.name;
+							option = document.createElement('option');
+							option.value = image.path;
+							option.textContent = image.name;
 
-						optGroup.appendChild(option);
+							optGroup.appendChild(option);
+						}
+
+						select.appendChild(optGroup);
 					}
-
-					select.appendChild(optGroup);
 				}
 
 			} else if(type === 'video') {
 				for(key in profiles) {
-					profile = profiles[key];
+					// we can't use forIn in this case as we have continues to deal with
+					if(profiles.hasOwnProperty(key)) {
+						profile = profiles[key];
 
-					// Skip if we have no videos
-					if(!('videos' in profile.files)) continue;
+						// Skip if we have no videos
+						if(!('videos' in profile.files)) continue;
 
-					var videos = profile.files.videos;
+						var videos = profile.files.videos;
 
-					optGroup = document.createElement('optgroup');
-					optGroup.label = key;
+						optGroup = document.createElement('optgroup');
+						optGroup.label = key;
 
-					for(i=0; i < videos.length; i++) {
-						var video = videos[i];
+						for(i=0; i < videos.length; i++) {
+							var video = videos[i];
 
-						option = document.createElement('option');
-						option.value = video.path;
-						option.textContent = video.name;
+							option = document.createElement('option');
+							option.value = video.path;
+							option.textContent = video.name;
 
-						optGroup.appendChild(option);
+							optGroup.appendChild(option);
+						}
+
+						select.appendChild(optGroup);
 					}
-
-					select.appendChild(optGroup);
 				}
 			}
 		};

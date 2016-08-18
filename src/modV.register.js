@@ -85,13 +85,6 @@
 				value: self.shaderEnv.texture
 			};
 
-			// Create uniforms
-			for(var key in Module.info.uniforms) {
-				
-				// Create local variables
-
-			}
-
 			// Read shader document
 			getDocument('/modules/' + Module.shaderFile, function(xhrDocument) {
 				
