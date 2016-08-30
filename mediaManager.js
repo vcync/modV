@@ -192,13 +192,12 @@ function mediaSearch(callback) {
 	dive(mediaDir, { all: false }, function(err, file) {
 
 		if(err) throw err;
-		//console.log(file, file.split('.').pop());
 		var pathReplaced = file.replace(mediaDir, '');
 		pathReplaced = pathReplaced.split(pathSeparator);
 
 		var dirSplit = file.split(pathSeparator);
 
-		var profile 	= pathReplaced[1];
+		var profile 		= pathReplaced[1];
 		var directory 	= pathReplaced[2];
 		var filename 	= dirSplit[dirSplit.length-1].split('.')[0];
 		var fileExt		= file.split('.').pop();
