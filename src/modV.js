@@ -212,70 +212,26 @@ var modV = function(options) {
 	};
 
 	self.loadPreset = function(id) {
-		console.log(id);
-		self.factoryReset();
+		//self.factoryReset();
 
-		function updateControl(control, mod) {
-			var val = control.currValue;
-			
-			if('append' in control) {
-				if(typeof val === 'string') {
-					val = val.replace(control.append, '');
-				} else {
-					val = val.toString();
-					val = val.replace(control.append, '');
-				}
+		self.presets[id].modOrder.forEach(mod => {
+			var presetModuleData = self.presets[id].moduleData[mod];
+			var Module;
+
+			if(presetModuleData.clone) {
+				Module = self.cloneModule(self.registeredMods[presetModuleData.originalName], true);
+			} else {
+				Module = self.cloneModule(self.registeredMods[presetModuleData.name], true);
 			}
 
-			if(control.type === 'image' || control.type === 'multiimage' || control.type === 'video') return;
+			var activeItemNode = self.createActiveListItem(Module, function(node) {
+				self.currentActiveDrag = node;
+			}, function() {
+				self.currentActiveDrag  = null;
+			});
 
-			/*self.controllerWindow.postMessage({
-				type: 'ui',
-				varType: control.type,
-				modName: m.name,
-				name: control.label,
-				payload: val,
-				index: m.order
-			}, self.options.controlDomain);*/
-
-			if(control.append) {
-				val = val + control.append;
-			}
-
-			self.registeredMods[mod][control.variable] = val;
-
-		}
-
-		forIn(self.presets[id], mod => {
-			var m = self.presets[id][mod];
-			
-			if('controls' in m) {
-				m.controls.forEach(function(control) {
-					updateControl(control, mod);
-				});
-			}
-			console.log(m);
-			//registeredMods[mod].info = m;
-			self.registeredMods[mod].info.blend = m.blend;
-
-			// Update blendmode UI
-			/*self.controllerWindow.postMessage({
-				type: 'ui-blend',
-				modName: m.name,
-				payload: m.blend
-			}, self.options.controlDomain);
-*/
-			self.registeredMods[mod].info.disabled = m.disabled;
-
-			// Update enabled UI
-			/*self.controllerWindow.postMessage({
-				type: 'ui-enabled',
-				modName: m.name,
-				payload: !m.disabled
-			}, self.options.controlDomain);*/
-			
-			console.log(m.name, 'now @ ', self.setModOrder(m.name, m.order));
-
+			var list = document.getElementsByClassName('active-list')[0];
+			list.appendChild(activeItemNode);
 		});
 	};
 
@@ -298,6 +254,14 @@ var modV = function(options) {
 			preset.moduleData[mod].disabled = Module.info.disabled;
 			preset.moduleData[mod].blend = Module.info.blend;
 			preset.moduleData[mod].name = Module.info.name;
+			preset.moduleData[mod].clone = false;
+			preset.moduleData[mod].originalName = null;
+			preset.moduleData[mod].safeName = Module.info.safeName;
+
+			if('originalName' in Module.info) {
+				preset.moduleData[mod].clone = true;
+				preset.moduleData[mod].originalName = Module.info.originalName;
+			}
 
 			preset.moduleData[mod].values = {};
 			Module.info.controls.forEach(extractValues);

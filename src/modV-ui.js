@@ -12,7 +12,7 @@
 
 		var gallery = document.getElementsByClassName('gallery')[0];
 		var list = document.getElementsByClassName('active-list')[0];
-		var currentActiveDrag = null;
+		self.currentActiveDrag = null;
 
 		Sortable.create(list, {
 			group: {
@@ -35,7 +35,7 @@
 
 				// Grab dataname from cloned element
 				var name = clone.dataset.moduleName;
-				var originalName = clone.dataset.moduleName;
+				var originalName = replaceAll(clone.dataset.moduleName, '-', ' ');
 				// Check for dupes
 				name = replaceAll(name, ' ', '-');
 				var dupes = list.querySelectorAll('.active-item[data-module-name|="' + name + '"]');
@@ -90,7 +90,11 @@
 				// Move back to gallery
 				swapElements(clone, itemEl);
 
-				var activeItemNode = self.createActiveListItem(Module);
+				var activeItemNode = self.createActiveListItem(Module, function(node) {
+					self.currentActiveDrag = node;
+				}, function() {
+					self.currentActiveDrag  = null;
+				});
 
 				// Replace clone
 				try {
@@ -98,17 +102,6 @@
 				} catch(e) {
 					return;
 				}
-				
-				activeItemNode.addEventListener('dragstart',function(e) {
-					e.dataTransfer.setData('modulename', activeItemNode.dataset.moduleName);
-					console.log(e, activeItemNode.dataset.moduleName);
-					currentActiveDrag = activeItemNode;
-				});
-
-				activeItemNode.addEventListener('dragend',function() {
-					currentActiveDrag  = null;
-				});
-
 
 				// Add to registry
 				self.registeredMods[Module.info.name] = Module;
