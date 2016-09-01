@@ -12,9 +12,10 @@ var connect = require('gulp-connect');
 var jshint = require('gulp-jshint');
 var symlink = require('gulp-sym');
 var clean = require('gulp-clean');
-var ejs = require("gulp-ejs");
-var run = require("gulp-run");
+var ejs = require('gulp-ejs');
 var gulp = require('gulp');
+
+var exec = require('child_process').exec;
 
 var allSources = ['./src/**/*.js', './**/*.ejs', './modules/**/*.js', './modules/**/*.html', './*.html'];
 
@@ -31,7 +32,7 @@ gulp.task('lint', function() {
 });
 
 gulp.task('webpack', ['clean', 'lint'], function() {
-	return gulp.src('src/**/*.js')
+	return gulp.src('./src/**/*.js')
 		.pipe(webpack({
 			output: {
 				filename: 'app.js'
@@ -83,8 +84,15 @@ gulp.task('ejs', ['clean'], function() {
 		.pipe(gulp.dest('dist'));
 });
 
-gulp.task('media-manager', function() {
-	return run('node ./mediaManager.js').exec();
+gulp.task('media-manager', function(cb) {
+
+	exec('node ./mediaManager.js', function (err, stdout, stderr) {
+		console.log(stdout);
+		console.log(stderr);
+		cb(err);
+	});
+
+	//return run('node ./mediaManager.js').exec();
 });
 
 gulp.task('connect', function() {
