@@ -214,15 +214,49 @@ var modV = function(options) {
 	self.loadPreset = function(id) {
 		//self.factoryReset();
 
-		self.presets[id].modOrder.forEach(mod => {
+		self.presets[id].modOrder.forEach((mod, idx) => {
 			var presetModuleData = self.presets[id].moduleData[mod];
 			var Module;
 
 			if(presetModuleData.clone) {
 				Module = self.cloneModule(self.registeredMods[presetModuleData.originalName], true);
+
+				var originalModule = self.registeredMods[presetModuleData.originalName];
+
+				// Create new controls from original Module to avoid scope contamination
+				if('controls' in originalModule.info) {
+					Module.info.controls = [];
+
+					originalModule.info.controls.forEach(function(control) {
+						var settings = control.getSettings();
+						var newControl = new control.constructor(settings);
+						Module.info.controls.push(newControl);
+					});
+				}
+
+				Module.info.name = presetModuleData.name;
+				Module.info.originalName = presetModuleData.originalName;
+				Module.info.safeName = presetModuleData.safeName;
+
 			} else {
-				Module = self.cloneModule(self.registeredMods[presetModuleData.name], true);
+				Module = self.registeredMods[presetModuleData.name];
 			}
+
+			// Set Module values
+			Module.info.disabled = presetModuleData.disabled;
+
+			forIn(presetModuleData.values, value => {
+				Module[value] = presetModuleData.values[value];
+			});
+
+			// Create UI controls
+			self.createControls(Module, self);
+
+			// Add to registry
+			self.registeredMods[Module.info.name] = Module;
+
+			// Set mod Order
+			self.setModOrder(Module.info.name, idx);
 
 			var activeItemNode = self.createActiveListItem(Module, function(node) {
 				self.currentActiveDrag = node;

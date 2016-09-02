@@ -34,22 +34,13 @@
 				var Module = self.registeredMods[replaceAll(itemEl.dataset.moduleName, '-', ' ')];
 
 				// Grab dataname from cloned element
-				var name = clone.dataset.moduleName;
-				var originalName = replaceAll(clone.dataset.moduleName, '-', ' ');
-				// Check for dupes
-				name = replaceAll(name, ' ', '-');
-				var dupes = list.querySelectorAll('.active-item[data-module-name|="' + name + '"]');
-
-				// Convert back to display name
-				name = replaceAll(name, '-', ' ');
-
-				// Add on dupe number for name if needed
-				if(dupes.length > 0) {
-					name += " (" + dupes.length + ")";
-				}
-
+				var name = Module.info.name;
+				var originalName = Module.info.name;
 				// Create new safe name
 				var safeName = replaceAll(name, ' ', '-');
+				
+				// Get number of same modules in active list
+				var dupes = self.getNumberOfModuleDupes(name);
 
 				if(dupes.length > 0) {
 					// Clone module -- afaik, there is no better way than this
@@ -58,24 +49,22 @@
 
 					// Create new controls from original Module to avoid scope contamination
 					if('controls' in oldModule.info) {
-
 						Module.info.controls = [];
 
 						oldModule.info.controls.forEach(function(control) {
-
 							var settings = control.getSettings();
 							var newControl = new control.constructor(settings);
-							console.log(newControl);
 							Module.info.controls.push(newControl);
-
 						});
-
 					}
 
 					// init cloned Module
 					if('init' in Module) {
 						Module.init(self.canvas, self.context);
 					}
+
+					// new name
+					name += " (" + dupes.length + ")";
 					
 					// update name
 					Module.info.name = name;
@@ -143,7 +132,7 @@
 			var panel = document.querySelector('.control-panel[data-module-name="' + droppedModuleData + '"]');
 
 			console.log('gallery drop', droppedModuleData);
-			currentActiveDrag  = null;
+			self.currentActiveDrag  = null;
 
 			forIn(self.registeredMods, (moduleName, Module) => {
 				if(Module.info.safeName === droppedModuleData) {
@@ -168,13 +157,13 @@
 		gallery.addEventListener('dragover', function(e) {
 			e.preventDefault();
 
-			currentActiveDrag.classList.add('deletable');
+			self.currentActiveDrag.classList.add('deletable');
 		});
 
 		gallery.addEventListener('dragleave', function(e) {
 			e.preventDefault();
 
-			currentActiveDrag.classList.remove('deletable');
+			self.currentActiveDrag.classList.remove('deletable');
 		});
 
 		window.addEventListener('focusin', activeElementHandler);
