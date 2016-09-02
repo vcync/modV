@@ -129,9 +129,6 @@
 					
 				},
 				draw: function(can, ctx, vid, features, meyda, delta, bpm) {
-					/*if(this.hue > 360) this.hue=0;
-					this.hue++;*/
-
 					var ampArr = features.buffer;
 					ampArr = meyda.windowing(ampArr, 'hanning');
 
@@ -202,7 +199,7 @@
 					version: 0.1,
 					meyda: [], // returned variables passed to the shader individually as uniforms
 					controls: [], // variabled passed to the shader individually as uniforms
-					uniforms: {} // Three.JS uniforms
+					uniforms: {} // Three.JS style uniforms
 				},
 				shaderFile: "/Default Shader/shader.html" // path to HTML file within modules directory with shader script tags
 			});
