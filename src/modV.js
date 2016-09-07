@@ -133,9 +133,9 @@ var modV = function(options) {
 		forIn(self.registeredMods, (mod, Module) => {
 			if('resize' in Module) {
 				if(Module instanceof self.Module3D) {
-					Module.resize(self.canvas, Module.getScene(), Module.getCamera(), self.THREE.material, self.THREE.texture);
+					Module.resize(self.previewCanvas, Module.getScene(), Module.getCamera(), self.THREE.material, self.THREE.texture);
 				} else {
-					Module.resize(self.canvas, self.context);	
+					Module.resize(self.previewCanvas, self.previewCtx);	
 				}
 			}
 		});
@@ -149,9 +149,6 @@ var modV = function(options) {
 		}
 		self.canvas = el;
 		self.context = el.getContext('2d');
-
-		//window.addEventListener('resize', resize, false);
-		//resize(false, window.innerWidth, window.innerHeight);
 
 		return true;
 	};
@@ -244,6 +241,7 @@ var modV = function(options) {
 
 			// Set Module values
 			Module.info.disabled = presetModuleData.disabled;
+			Module.info.blend = presetModuleData.blend;
 
 			forIn(presetModuleData.values, value => {
 				Module[value] = presetModuleData.values[value];
