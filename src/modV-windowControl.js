@@ -38,18 +38,12 @@
 		pWindow.addEventListener('resize', function() {
 
 			if(window.devicePixelRatio > 1 && self.options.retina) {
-
-				self.canvas.width = pWindow.innerWidth * pWindow.devicePixelRatio;
-				self.canvas.height = pWindow.innerHeight * pWindow.devicePixelRatio;
 				pCanvas.width = pWindow.innerWidth * pWindow.devicePixelRatio;
 				pCanvas.height = pWindow.innerHeight * pWindow.devicePixelRatio;
 				sCanvas.width = pWindow.innerWidth * pWindow.devicePixelRatio;
 				sCanvas.height = pWindow.innerHeight * pWindow.devicePixelRatio;
 
 			} else {
-
-				self.canvas.width = pWindow.innerWidth;
-				self.canvas.height = pWindow.innerHeight;
 				pCanvas.width = pWindow.innerWidth;
 				pCanvas.height = pWindow.innerHeight;
 				sCanvas.width = pWindow.innerWidth;
@@ -77,15 +71,13 @@
 		var self = this;
 
 		// Set modV.prototype.previewWindow
-		if(self.options.previewWindow) {
-			var pWindow = createPreviewWindow.bind(self);
-			var pOutput = pWindow();
-			self.previewWindow 	= pOutput[0];
-			self.previewCanvas 	= pOutput[1];
-			self.previewCtx 		= pOutput[2];
-			self.soloCanvas 		= pOutput[3];
-			self.soloCtx 		= pOutput[4];
-		}
+		var pWindow = createPreviewWindow.bind(self);
+		var pOutput = pWindow();
+		self.previewWindow 	= pOutput[0];
+		self.previewCanvas 	= pOutput[1];
+		self.previewCtx 	= pOutput[2];
+		self.soloCanvas 	= pOutput[3];
+		self.soloCtx 		= pOutput[4];
 
 		// OnClose
 		window.addEventListener('beforeunload', function() {

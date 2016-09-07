@@ -10,6 +10,10 @@
 	modV.prototype.startUI = function() {
 		var self = this;
 
+		// set canvas size
+		self.canvas.width = self.canvas.getBoundingClientRect().width;
+		self.canvas.height = self.canvas.getBoundingClientRect().height;
+
 		var gallery = document.getElementsByClassName('gallery')[0];
 		var list = document.getElementsByClassName('active-list')[0];
 		self.currentActiveDrag = null;
@@ -156,13 +160,15 @@
 
 		gallery.addEventListener('dragover', function(e) {
 			e.preventDefault();
+			if(!self.currentActiveDrag) return;
 
 			self.currentActiveDrag.classList.add('deletable');
 		});
 
 		gallery.addEventListener('dragleave', function(e) {
 			e.preventDefault();
-
+			if(!self.currentActiveDrag) return;
+			
 			self.currentActiveDrag.classList.remove('deletable');
 		});
 
@@ -190,6 +196,8 @@
 
 		function activeElementHandler(evt) {
 			var eventNode = evt.srcElement.closest('.active-item');
+			if(!eventNode) return;
+
 			clearCurrent();
 			eventNode.classList.add('current');
 
@@ -201,7 +209,7 @@
 		}
 
 		function clearActiveElement() {
-			console.log('clear');
+			// empty
 		}
 
 		// Create Global Controls
@@ -380,6 +388,9 @@
 
 				bottom.style.height = bottomHeight + '%';
 				top.style.height = (100 - bottomHeight) + '%';
+
+				self.canvas.width = self.canvas.getBoundingClientRect().width;
+				self.canvas.height = self.canvas.getBoundingClientRect().height;
 
 				return false;
 			}

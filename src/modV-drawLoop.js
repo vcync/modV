@@ -10,16 +10,15 @@
 
 		self.soloCtx.clearRect(0, 0, self.soloCanvas.width, self.soloCanvas.height);
 		self.soloCtx.drawImage(
-			self.canvas,
+			self.previewCanvas,
 			0,
 			0,
-			self.canvas.width,
-			self.canvas.height
+			self.previewCanvas.width,
+			self.previewCanvas.height
 		);
 		
 		if(self.clearing) {
-			self.context.clearRect(0, 0, self.canvas.width, self.canvas.height);
-			if(self.options.previewWindow) self.previewCtx.clearRect(0, 0, self.previewCanvas.width, self.previewCanvas.height);
+			self.previewCtx.clearRect(0, 0, self.previewCanvas.width, self.previewCanvas.height);
 		}
 
 		var firstSolo = true;
@@ -30,13 +29,13 @@
 			if(Module.info.disabled || Module.info.alpha === 0) continue;
 
 
-			self.context.save();
-			self.context.globalAlpha = Module.info.alpha;
+			self.previewCtx.save();
+			self.previewCtx.globalAlpha = Module.info.alpha;
 
 			self.soloCtx.save();
 			if(Module.info.solo) self.soloCtx.globalAlpha = Module.info.alpha;
 
-			if(Module.info.blend !== 'normal') self.context.globalCompositeOperation = Module.info.blend;
+			if(Module.info.blend !== 'normal') self.previewCtx.globalCompositeOperation = Module.info.blend;
 
 			if(Module instanceof self.ModuleShader) {
 				var _gl = self.shaderEnv.gl;
@@ -59,7 +58,7 @@
 							_gl.RGBA,
 							_gl.RGBA,
 							_gl.UNSIGNED_BYTE,
-							self.canvas
+							self.previewCanvas
 						);
 
 						firstSolo = false;
@@ -84,7 +83,7 @@
 						_gl.RGBA,
 						_gl.RGBA,
 						_gl.UNSIGNED_BYTE,
-						self.canvas
+						self.previewCanvas
 					);
 
 				}
@@ -120,7 +119,7 @@
 				}
 
 				// Render
-				self.shaderEnv.render(delta, self.canvas);
+				self.shaderEnv.render(delta, self.previewCanvas);
 
 				if(Module.info.solo) {
 
@@ -136,12 +135,12 @@
 				} else {
 
 					// Copy Shader Canvas to Main Canvas
-					self.context.drawImage(
+					self.previewCtx.drawImage(
 						self.shaderEnv.canvas,
 						0,
 						0,
-						self.canvas.width,
-						self.canvas.height
+						self.previewCanvas.width,
+						self.previewCanvas.height
 					);
 
 				}
@@ -150,13 +149,13 @@
 
 				if(Module.info.solo) {
 					if(firstSolo) {
-						Module.draw(self.canvas, self.soloCtx, self.video, meydaOutput, self.meyda, delta, self.bpm, self.kick);
+						Module.draw(self.previewCanvas, self.soloCtx, self.video, meydaOutput, self.meyda, delta, self.bpm, self.kick);
 						firstSolo = false;
 					} else {
 						Module.draw(self.soloCanvas, self.soloCtx, self.video, meydaOutput, self.meyda, delta, self.bpm, self.kick);
 					}
 				} else {
-					Module.draw(self.canvas, self.context, self.video, meydaOutput, self.meyda, delta, self.bpm, self.kick);
+					Module.draw(self.previewCanvas, self.previewCtx, self.video, meydaOutput, self.meyda, delta, self.bpm, self.kick);
 				}
 				
 			} else if(Module instanceof self.Module3D) {
@@ -186,23 +185,45 @@
 						self.soloCanvas.height
 					);
 				} else {
-					self.context.drawImage(
+					self.previewCtx.drawImage(
 						self.THREE.canvas,
 						0,
 						0,
-						self.canvas.width,
-						self.canvas.height
+						self.previewCanvas.width,
+						self.previewCanvas.height
 					);
 				}
 			}
 
-			self.context.restore();
+			self.previewCtx.restore();
 			self.soloCtx.restore();
 			self.THREE.texture.needsUpdate = true;
 			self.THREE.soloTexture.needsUpdate = true;
 			
 		}
-		if(self.options.previewWindow) self.previewCtx.drawImage(self.canvas, 0, 0, self.previewCanvas.width, self.previewCanvas.height);
+
+		// thanks to http://ninolopezweb.com/2016/05/18/how-to-preserve-html5-canvas-aspect-ratio/
+		// for great aspect ratio advice!
+
+		var widthToHeight = self.previewCanvas.width / self.previewCanvas.height;
+		var newWidth = self.canvas.width,
+			newHeight = self.canvas.height;
+
+		var newWidthToHeight = newWidth / newHeight;
+	
+		if (newWidthToHeight > widthToHeight) {
+			newWidth = Math.round(newHeight * widthToHeight);
+		} else {
+			newHeight = Math.round(newWidth / widthToHeight);
+		}
+
+		var x = Math.round((self.canvas.width/2) - (newWidth/2));
+		var y = Math.round((self.canvas.height/2) - (newHeight/2));
+
+		self.context.clearRect(0, 0, self.canvas.width, self.canvas.height);
+
+		self.context.drawImage(self.previewCanvas, x, y, newWidth, newHeight);
+		self.context.drawImage(self.soloCanvas, x, y, newWidth, newHeight);
 	};
 
 	modV.prototype.loop = function(timestamp) {

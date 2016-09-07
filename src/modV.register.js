@@ -67,7 +67,7 @@
 			}
 
 			// Initialise Module
-			Module.init(self.canvas, self.context);
+			Module.init(self.previewCanvas, self.previewCtx);
 
 			// Add to Registry
 			self.registeredMods[name] = Module;
