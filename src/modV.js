@@ -194,8 +194,7 @@ var modV = function(options) {
 	self.mediaManager.onmessage = function(m) {
 		var parsed = JSON.parse(m.data);
 
-		console.log('Media Manager says:', m.data);
-		console.log(parsed);
+		console.log('Media Manager says:', parsed);
 
 		if('type' in parsed) {
 			switch(parsed.type) {
@@ -392,20 +391,6 @@ var modV = function(options) {
 			console.log('Successfuly read saved preset with name:', presetname);
 		});
 	}
-
-	self.setDimensions = function(width, height) {
-		if(typeof width === 'undefined' && typeof height === 'undefined') {
-			console.error('modV: setDimensions was not supplied anything!');
-		} else if(typeof width !== 'number') {
-			console.error('modV: setDimensions was not supplied with a number type.');
-			return;
-		} else if(typeof height !== 'number') {
-			console.error('modV: setDimensions was not supplied with a number type.');
-			return;
-		}
-
-		//resize(false, width, height);
-	};
 
 	/* Save modV's config to local storage */
 	self.saveOptions = function() {
