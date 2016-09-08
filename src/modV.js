@@ -141,6 +141,16 @@ var modV = function(options) {
 		});
 	};
 
+	self.mainWindowResize = function() {
+
+		// set canvas size
+		var boundingRect = self.canvas.getBoundingClientRect();
+		self.canvas.width = boundingRect.width;
+		self.canvas.height = boundingRect.height;
+	};
+
+	window.addEventListener('resize', self.mainWindowResize);
+
 	// Create canvas
 	self.setCanvas = function(el) {
 		if(el.nodeName !== 'CANVAS') {
