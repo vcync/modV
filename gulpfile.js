@@ -17,7 +17,7 @@ var gulp = require('gulp');
 
 var exec = require('child_process').exec;
 
-var allSources = ['./src/**/*.js', './**/*.ejs', './modules/**/*.js', './modules/**/*.html', './*.html'];
+var allSources = ['./src/**/*.js', './**/*.ejs', './modules/**/*.js', './modules/**/*.html', './*.html', './**/*.css'];
 
 gulp.task('clean', function() {
 	return gulp.src('./dist', {read: false})
@@ -114,7 +114,13 @@ gulp.task('reload', ['build'], function() {
 });
 
 gulp.task('set-watcher', ['build'], function() {
-	console.log('watching');
+	var sources = '';
+	allSources.forEach((source, idx) => {
+		sources += source;
+		if(idx < allSources.length-1) sources += ", ";
+	});
+	
+	console.log('Watching', sources);
 	gulp.watch(allSources, ['build', 'reload']);
 });
 
