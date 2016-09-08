@@ -35,7 +35,10 @@
 			self.soloCtx.save();
 			if(Module.info.solo) self.soloCtx.globalAlpha = Module.info.alpha;
 
-			if(Module.info.blend !== 'normal') self.previewCtx.globalCompositeOperation = Module.info.blend;
+			if(Module.info.blend !== 'normal') {
+				self.previewCtx.globalCompositeOperation = Module.info.blend;
+				if(Module.info.solo) self.soloCtx.globalCompositeOperation = Module.info.blend;
+			}
 
 			if(Module instanceof self.ModuleShader) {
 				var _gl = self.shaderEnv.gl;
