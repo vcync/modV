@@ -97,6 +97,7 @@
         "MediaStreamTrack": true,
         "BeatDetektor": true,
         "Meyda": true,
-        "forIn": true
+        "forIn": true,
+        "rangeRanger": true
     }   
 }
