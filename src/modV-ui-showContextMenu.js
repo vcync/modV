@@ -70,7 +70,8 @@
 
 	};
 
-	var SubMenuItem = function(items) {
+	// TODO:
+	var SubMenuItem = function(items) { //jshint ignore:line
 
 		this.items = items;
 

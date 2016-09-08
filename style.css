@@ -154,7 +154,7 @@ section .bottom .control-panel-wrapper .control-panel.show {
 
 section .bottom .control-panel-wrapper,
 section .bottom .global-control-panel-wrapper {
-	padding: 8px;
+	/*padding: 8px;*/
 	box-sizing: border-box;
 }
 
@@ -172,7 +172,18 @@ section .bottom .global-control-panel-wrapper {
 .control-group > label {
 	display: inline-block;
 	min-width: 70px;
-	vertical-align: top;
+	vertical-align: middle;
+}
+
+.control-panel .control-group,
+.global-controls .control-group {
+	padding: 12px 8px;
+	border-bottom: 1px rgba(0,0,0,0.1) solid;
+	box-sizing: border-box;
+}
+
+.control-panel-wrapper h1, .global-control-panel-wrapper h1 {
+	padding: 0 8px;
 }
 
 section .bottom .control-group > label {

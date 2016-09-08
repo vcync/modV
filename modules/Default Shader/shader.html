@@ -19,54 +19,22 @@
 		<script id="fragmentshader" type="x-shader/x-fragment">
 			precision mediump float;
 			uniform sampler2D u_image;
-			//uniform float rms;
+			uniform float rOffset;
+			uniform float gOffset;
+			uniform float bOffset;
 			varying vec2 Vertex_UV;
 
 			void main() {
-
 				vec2 uv = Vertex_UV.xy;
 
-				// normalize to the center
-				//uv = uv - 0.5;
-
-				// cartesian to polar coordinates
-				float r = length(uv);
-				float a = atan(uv.y, uv.x);
-
-				// // distort
-				// r = sqrt(r/2.); // pinch
-				//r = r*r; // bulge
-
-				// Kaleidoscope
-
-				// cartesian to polar coordinates
-				// float r = length(uv);
-				// float a = atan(uv.y, uv.x);
-
-				// kaleidoscope
-				float sides = 5.;
-				float tau = 2. * 3.1416;
-				a = mod(a, tau/sides);
-				a = abs(a - tau/sides/2.);
-
-				// polar to cartesian coordinates
-				//uv = r * vec2(cos(a), sin(a));
-
 				vec4 c = texture2D(u_image, uv + 0.5);
-
 				
-				float rOffset = -0.001;
-				float gOffset = 0.0;
-				float bOffset = 0.001;
-
 			    vec4 rValue = texture2D(u_image, uv - rOffset);  
 			    vec4 gValue = texture2D(u_image, uv - gOffset);
-			    vec4 bValue = texture2D(u_image, uv - bOffset); 
+			    vec4 bValue = texture2D(u_image, uv - bOffset);
 
 			    // Combine the offset colors.
-			    gl_FragColor = vec4(rValue.r, gValue.g, bValue.b, 1.0);
-
-				//gl_FragColor = c;
+				gl_FragColor = vec4(rValue.r, gValue.g, bValue.b, texture2D(u_image, uv).a);
 			}
 		</script>
 	</body>

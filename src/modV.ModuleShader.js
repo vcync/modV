@@ -72,9 +72,7 @@
 		// Loop through Uniforms, expose self.uniforms and create local variables
 		if('uniforms' in settings.info) {
 
-			for(var uniformKey in settings.info.uniforms) {
-				var uniform = settings.info.uniforms[uniformKey];
-
+			forIn(settings.info.uniforms, (uniformKey, uniform) => {
 				switch(uniform.type) {
 					case 'f':
 						self[uniformKey] = parseFloat(uniform.value);
@@ -84,8 +82,12 @@
 						self[uniformKey] = parseInt(uniform.value);
 						break;
 
+					case 'b':
+						self[uniformKey] = uniform.value;
+						break;
+
 				}
-			}
+			});
 		}
 	};
 

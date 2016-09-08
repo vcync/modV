@@ -2,7 +2,7 @@
 	'use strict';
 	/*jslint browser: true */
 
-	modV.prototype.createActiveListItem = function(Module) {
+	modV.prototype.createActiveListItem = function(Module, dragStartCB, dragEndCB) {
 		var self = this;
 
 		// Temp container (TODO: don't do this)
@@ -50,6 +50,19 @@
 		});
 
 		activeItem.dataset.moduleName = Module.info.safeName;
+
+		activeItem.addEventListener('dragstart', function(e) {
+			e.dataTransfer.setData('modulename', activeItem.dataset.moduleName);
+			if(typeof dragStartCB === 'function') {
+				dragStartCB(activeItem);
+			}
+		});
+
+		activeItem.addEventListener('dragend', function() {
+			if(typeof dragEndCB === 'function') {
+				dragEndCB(activeItem);
+			}
+		});
 
 		return activeItem;
 	};

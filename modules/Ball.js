@@ -18,7 +18,7 @@ var Ball = new modVC.Module2D({
 		this.balls = [];
 		this.wrap = false;
 
-		this.setupBalls = function() {
+		this.setupBalls = function(canvas) {
 			this.balls = [];
 			for(var i=0; i < 50; i++) {
 				var newBall = new this.ballObj();
@@ -31,13 +31,14 @@ var Ball = new modVC.Module2D({
 				this.balls.push(newBall);
 			}
 		};
-		this.setupBalls();
+		this.setupBalls(canvas);
 		
 	},
 	resize: function(canvas) {
-		this.setupBalls();
+		this.setupBalls(canvas);
 	},
-	draw: function(canvas, ctx, vid, features, meyda, delta, bpm) {
+	draw: function(canvas, ctx, vid, features) {
+		var analysed;
 
 		if(this.soundType) {
 			analysed = features.zcr/10 * this.intensity;

@@ -67,7 +67,7 @@
 			}
 
 			// Initialise Module
-			Module.init(self.canvas, self.context);
+			Module.init(self.previewCanvas, self.previewCtx);
 
 			// Add to Registry
 			self.registeredMods[name] = Module;
@@ -84,13 +84,6 @@
 				type: "t",
 				value: self.shaderEnv.texture
 			};
-
-			// Create uniforms
-			for(var key in Module.info.uniforms) {
-				
-				// Create local variables
-
-			}
 
 			// Read shader document
 			getDocument('/modules/' + Module.shaderFile, function(xhrDocument) {

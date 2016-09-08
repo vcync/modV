@@ -21,8 +21,6 @@
 				if(!control.makeNode) return;
 				var inputNode;
 
-				console.log('createControls', control.variable);
-
 				inputNode = control.makeNode(Module, modVSelf);
 
 				inputNode.addEventListener('contextmenu', function(ev) {

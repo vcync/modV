@@ -10,9 +10,11 @@
 	modV.prototype.startUI = function() {
 		var self = this;
 
+		self.mainWindowResize();
+
 		var gallery = document.getElementsByClassName('gallery')[0];
 		var list = document.getElementsByClassName('active-list')[0];
-		var currentActiveDrag = null;
+		self.currentActiveDrag = null;
 
 		Sortable.create(list, {
 			group: {
@@ -34,22 +36,13 @@
 				var Module = self.registeredMods[replaceAll(itemEl.dataset.moduleName, '-', ' ')];
 
 				// Grab dataname from cloned element
-				var name = clone.dataset.moduleName;
-				var originalName = clone.dataset.moduleName;
-				// Check for dupes
-				name = replaceAll(name, ' ', '-');
-				var dupes = list.querySelectorAll('.active-item[data-module-name|="' + name + '"]');
-
-				// Convert back to display name
-				name = replaceAll(name, '-', ' ');
-
-				// Add on dupe number for name if needed
-				if(dupes.length > 0) {
-					name += " (" + dupes.length + ")";
-				}
-
+				var name = Module.info.name;
+				var originalName = Module.info.name;
 				// Create new safe name
 				var safeName = replaceAll(name, ' ', '-');
+				
+				// Get number of same modules in active list
+				var dupes = self.getNumberOfModuleDupes(name);
 
 				if(dupes.length > 0) {
 					// Clone module -- afaik, there is no better way than this
@@ -58,24 +51,23 @@
 
 					// Create new controls from original Module to avoid scope contamination
 					if('controls' in oldModule.info) {
-
 						Module.info.controls = [];
 
 						oldModule.info.controls.forEach(function(control) {
-
 							var settings = control.getSettings();
 							var newControl = new control.constructor(settings);
-							console.log(newControl);
 							Module.info.controls.push(newControl);
-
 						});
-
 					}
 
 					// init cloned Module
 					if('init' in Module) {
 						Module.init(self.canvas, self.context);
 					}
+
+					// new name
+					name += " (" + dupes.length + ")";
+					safeName = replaceAll(name, ' ', '-');
 					
 					// update name
 					Module.info.name = name;
@@ -90,7 +82,11 @@
 				// Move back to gallery
 				swapElements(clone, itemEl);
 
-				var activeItemNode = self.createActiveListItem(Module);
+				var activeItemNode = self.createActiveListItem(Module, function(node) {
+					self.currentActiveDrag = node;
+				}, function() {
+					self.currentActiveDrag  = null;
+				});
 
 				// Replace clone
 				try {
@@ -98,17 +94,6 @@
 				} catch(e) {
 					return;
 				}
-				
-				activeItemNode.addEventListener('dragstart',function(e) {
-					e.dataTransfer.setData('modulename', activeItemNode.dataset.moduleName);
-					console.log(e, activeItemNode.dataset.moduleName);
-					currentActiveDrag = activeItemNode;
-				});
-
-				activeItemNode.addEventListener('dragend',function() {
-					currentActiveDrag  = null;
-				});
-
 
 				// Add to registry
 				self.registeredMods[Module.info.name] = Module;
@@ -150,10 +135,9 @@
 			var panel = document.querySelector('.control-panel[data-module-name="' + droppedModuleData + '"]');
 
 			console.log('gallery drop', droppedModuleData);
-			currentActiveDrag  = null;
+			self.currentActiveDrag  = null;
 
-			for(var moduleName in self.registeredMods) {
-				var Module = self.registeredMods[moduleName];
+			forIn(self.registeredMods, (moduleName, Module) => {
 				if(Module.info.safeName === droppedModuleData) {
 					
 					if('originalName' in Module.info) {
@@ -170,19 +154,21 @@
 					panel.parentNode.removeChild(panel);
 					self.setModOrder(moduleName, -1);
 				}
-			}
+			});
 		});
 
 		gallery.addEventListener('dragover', function(e) {
 			e.preventDefault();
+			if(!self.currentActiveDrag) return;
 
-			currentActiveDrag.classList.add('deletable');
+			self.currentActiveDrag.classList.add('deletable');
 		});
 
 		gallery.addEventListener('dragleave', function(e) {
 			e.preventDefault();
-
-			currentActiveDrag.classList.remove('deletable');
+			if(!self.currentActiveDrag) return;
+			
+			self.currentActiveDrag.classList.remove('deletable');
 		});
 
 		window.addEventListener('focusin', activeElementHandler);
@@ -203,12 +189,14 @@
 
 			// :^) hacks hacks hacks
 			[].forEach.call(activeItems, function(activeItemNode) {
-				activeItemNode.classList.remove('current');
+				if(activeItemNode) activeItemNode.classList.remove('current');
 			});
 		}
 
 		function activeElementHandler(evt) {
 			var eventNode = evt.srcElement.closest('.active-item');
+			if(!eventNode) return;
+
 			clearCurrent();
 			eventNode.classList.add('current');
 
@@ -220,7 +208,7 @@
 		}
 
 		function clearActiveElement() {
-			console.log('clear');
+			// empty
 		}
 
 		// Create Global Controls
@@ -400,6 +388,8 @@
 				bottom.style.height = bottomHeight + '%';
 				top.style.height = (100 - bottomHeight) + '%';
 
+				self.mainWindowResize();
+
 				return false;
 			}
 
@@ -423,7 +413,6 @@
 
 		// Module Grouping
 
-		var moduleMenu = document.querySelector('.module-menu');
 		var addGroupButton = document.querySelectorAll('.module-menu .icon')[0];
 		addGroupButton.addEventListener('click', function() {
 			

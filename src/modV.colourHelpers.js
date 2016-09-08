@@ -48,5 +48,6 @@
 
 	window.rgbToString = rgbToString;
 	window.rgbaToString = rgbaToString;
+	window.hslToRgb = hslToRgb;
 
 })();

@@ -56,13 +56,17 @@
 		};
 		
 		function colourToRGBString(colour) {
-			return 'rgb(' +
-				colour[0] +
-				', ' +
-				colour[1] +
-				', ' +
-				colour[2] +
-				')';
+			try {
+				return 'rgb(' +
+					colour[0] +
+					', ' +
+					colour[1] +
+					', ' +
+					colour[2] +
+					')';
+			} catch(e) {
+				return 'rgb(0,0,0)';
+			}
 		}
 		
 		function calculateStep() {
@@ -171,11 +175,11 @@
 				option.textContent = option.value = profile;
 				loadProfileListSelect.appendChild(option);
 
-				for(var palette in profilesList[profile].palettes) {
+				forIn(profilesList[profile].palettes, palette => {
 					option = document.createElement('option');
 					option.textContent = option.value = palette;
 					loadPaletteListSelect.appendChild(option);
-				}
+				});
 			}
 
 
