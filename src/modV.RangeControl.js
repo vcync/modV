@@ -65,6 +65,49 @@
 			if('step' in settings) node.step = settings.step;
 			if('default' in settings) node.value = settings.default;
 
+			rangeRanger(node, {
+				alt: {
+					use: true,
+					useCombo: true,
+					modifier: 4,
+					priority: 2
+				},
+				shift: {
+					use: true,
+					useCombo: true,
+					modifier: 8,
+					priority: 1
+				},
+				ctrl: {
+					use: false,
+					useCombo: false
+				},
+				meta: {
+					use: false,
+					useCombo: false
+				},
+				combo: {
+					use: true,
+					modifier: 16
+				}
+			});
+
+			var modKey;
+
+			if((navigator.appVersion.indexOf("Mac") !== -1)) {
+				modKey = 'metaKey';
+			} else {
+				modKey = 'ctrlKey';
+			}
+
+			node.addEventListener('mousedown', function(e) {
+				if(e[modKey]) {
+					e.preventDefault();
+					node.value = 0;
+					Module[self.variable] = settings.default || 0;
+				}
+			});
+
 			node.addEventListener('input', function() {
 				var value;
 

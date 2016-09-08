@@ -10,9 +10,7 @@
 	modV.prototype.startUI = function() {
 		var self = this;
 
-		// set canvas size
-		self.canvas.width = self.canvas.getBoundingClientRect().width;
-		self.canvas.height = self.canvas.getBoundingClientRect().height;
+		self.mainWindowResize();
 
 		var gallery = document.getElementsByClassName('gallery')[0];
 		var list = document.getElementsByClassName('active-list')[0];
@@ -69,6 +67,7 @@
 
 					// new name
 					name += " (" + dupes.length + ")";
+					safeName = replaceAll(name, ' ', '-');
 					
 					// update name
 					Module.info.name = name;
@@ -389,8 +388,7 @@
 				bottom.style.height = bottomHeight + '%';
 				top.style.height = (100 - bottomHeight) + '%';
 
-				self.canvas.width = self.canvas.getBoundingClientRect().width;
-				self.canvas.height = self.canvas.getBoundingClientRect().height;
+				self.mainWindowResize();
 
 				return false;
 			}
