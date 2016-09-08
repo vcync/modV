@@ -2,7 +2,8 @@ var Tile = new modVC.Module2D({
 	info: {
 		name: 'Tile',
 		author: '2xAA',
-		version: 0.2
+		version: 0.2,
+		previewWithOutput: true
 	},
 	init: function(canvas) {
 		this.canvas2 = document.createElement('canvas');
@@ -49,7 +50,8 @@ controls.push(new modVC.RangeControl({
     varType: 'int',
     min: 1,
     max: 20,
-    step: 1
+    step: 1,
+    default: 2
 }));
 
 controls.push(new modVC.RangeControl({
@@ -58,7 +60,8 @@ controls.push(new modVC.RangeControl({
     varType: 'int',
     min: 1,
     max: 20,
-    step: 1
+    step: 1,
+    default: 2
 }));
 
 Tile.add(controls);
