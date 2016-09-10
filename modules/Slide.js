@@ -1,11 +1,34 @@
-var Slide = new modVC.Module2D({
-	info: {
-		name: 'Slide',
-		author: '2xAA',
-		version: 0.1,
-		previewWithOutput: true
-	},
-	init: function(canvas) {
+class Slide extends modV.Module2D {
+
+	constructor() {
+		super({
+			info: {
+				name: 'Slide',
+				author: '2xAA',
+				version: 0.1,
+				previewWithOutput: true,
+				previewValues: {
+					speed: 3
+				}
+			}
+		});
+
+		var controls = [];
+
+		controls.push(new modV.RangeControl({
+			variable: 'speed',
+			label: 'Speed',
+			varType: 'int',
+			min: 0,
+			max: 100,
+			step: 1,
+			default: 0
+		}));
+
+		this.add(controls);
+	}
+
+	init(canvas) {
  		
 		this.speed = 0;
 		this.offset = 0;
@@ -17,12 +40,14 @@ var Slide = new modVC.Module2D({
 		this.newCanvas2.width = canvas.width;
 		this.newCanvas2.height = canvas.height;
 		
-	},
-	resize: function(canvas, ctx) {
+	}
+
+	resize(canvas) {
 		this.newCanvas2.width = canvas.width;
 		this.newCanvas2.height = canvas.height;
-	},
-	draw: function(canvas, ctx, vid, features, meyda, delta, bpm) {
+	}
+
+	draw(canvas, ctx) {
 
 		if(this.offset >= canvas.height) {
 			this.offset = (this.offset-canvas.height)+this.speed;
@@ -41,20 +66,6 @@ var Slide = new modVC.Module2D({
 		ctx.restore();	
 
 	}
-});
+}
 
-var controls = [];
-
-controls.push(new modVC.RangeControl({
-    variable: 'speed',
-    label: 'Speed',
-    varType: 'int',
-    min: 0,
-    max: 100,
-    step: 1,
-    default: 0
-}));
-
-Slide.add(controls);
-
-modVC.register(Slide);
+modV.register(Slide);

@@ -25,17 +25,25 @@
 	};
 
 
-	modV.prototype.register = function(Module) {
+	modV.prototype.register = function(Module, instantiated) {
 		var self = this;
 		var originalModule = Module;
 
-		Module = new Module();
+		if(originalModule.name in self.moduleStore) {
+			throw new STError("Already registered a Module with the name " + originalModule.name + ". Could not register duplicately named module");
+		}
+
+		// check if already instantiated for the script loader
+		if(!instantiated) {
+			self.moduleStore[originalModule.name] = originalModule;
+			Module = new Module();
+			Module.info.originalModuleName = originalModule.name;
+		}
 		
 		// Shared Module variables
 		var name;
 
 		// Set meta
-		Module.info.originalModule = originalModule;
 		Module.info.alpha = 1;
 		Module.info.disabled = true;
 		Module.info.solo = false;
@@ -44,6 +52,8 @@
 		name = Module.info.name;
 		Module.info.safeName = replaceAll(name, ' ', '-');
 
+		// Super hacky way of loading scripts
+		// TODO: use promises?
 		if('scripts' in Module.info) {
 			if(!('loadedScripts' in Module.info)) {
 				Module.info.loadedScripts = [];
@@ -53,7 +63,7 @@
 				Module.info.scripts.forEach(function(script, idx) {
 					loadJS('/modules/' + script, document.body, function() {
 						Module.info.loadedScripts[idx] = true;
-						self.register(Module);
+						self.register(Module, true);
 					});
 				});
 
@@ -63,7 +73,7 @@
 
 		// Handle Module2D
 		if(Module instanceof self.Module2D) {
-			console.info('Register: Module2D');
+			console.info('Register: Module2D', Module.info.originalModuleName, '(' + name + ')');
 
 			// Parse Meyda
 			if(Module.info.meyda) {
@@ -82,7 +92,7 @@
 
 		// Handle ModuleShader
 		if(Module instanceof self.ModuleShader) {
-			console.info('Register: ModuleShader');
+			console.info('Register: ModuleShader', Module.info.originalModuleName, '(' + name + ')');
 
 			Module.info.uniforms.modVcanvas = {
 				type: "t",
@@ -152,8 +162,7 @@
 
 		// Handle Module3D
 		if(Module instanceof self.Module3D) {
-
-			console.info('Register: Module3D');
+			console.info('Register: Module3D', Module.info.originalModuleName, '(' + name + ')');
 
 			// Parse Meyda
 			if(Module.info.meyda) {

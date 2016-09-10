@@ -1,11 +1,40 @@
-var Tile = new modVC.Module2D({
-	info: {
-		name: 'Tile',
-		author: '2xAA',
-		version: 0.2,
-		previewWithOutput: true
-	},
-	init: function(canvas) {
+class Tile extends modV.Module2D {
+	constructor() {
+		super({
+			info: {
+				name: 'Tile',
+				author: '2xAA',
+				version: 0.2,
+				previewWithOutput: true
+			}
+		});
+
+		var controls = [];
+
+		controls.push(new modV.RangeControl({
+			variable: 'tileWidth',
+			label: 'Tile Width',
+			varType: 'int',
+			min: 1,
+			max: 20,
+			step: 1,
+			default: 2
+		}));
+
+		controls.push(new modV.RangeControl({
+			variable: 'tileHeight',
+			label: 'Tile Height',
+			varType: 'int',
+			min: 1,
+			max: 20,
+			step: 1,
+			default: 2
+		}));
+
+		this.add(controls);
+	}
+	
+	init(canvas) {
 		this.canvas2 = document.createElement('canvas');
 		this.ctx2 = this.canvas2.getContext("2d");
 		this.tileWidth = 2;
@@ -13,12 +42,14 @@ var Tile = new modVC.Module2D({
 
 		this.canvas2.width = canvas.width;
 		this.canvas2.height = canvas.height;
-	},
-	resize: function(canvas) {
+	}
+
+	resize(canvas) {
 		this.canvas2.width = canvas.width;
 		this.canvas2.height = canvas.height;
-	},
-	draw: function(canvas, ctx) {
+	}
+
+	draw(canvas, ctx) {
 		var canvas2 = this.canvas2;
 		var ctx2 = this.ctx2;
 
@@ -40,30 +71,6 @@ var Tile = new modVC.Module2D({
 		}	
 
 	}
-});
+}
 
-var controls = [];
-
-controls.push(new modVC.RangeControl({
-    variable: 'tileWidth',
-    label: 'Tile Width',
-    varType: 'int',
-    min: 1,
-    max: 20,
-    step: 1,
-    default: 2
-}));
-
-controls.push(new modVC.RangeControl({
-    variable: 'tileHeight',
-    label: 'Tile Height',
-    varType: 'int',
-    min: 1,
-    max: 20,
-    step: 1,
-    default: 2
-}));
-
-Tile.add(controls);
-
-modVC.register(Tile);
+modV.register(Tile);

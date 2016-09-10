@@ -1,21 +1,68 @@
-var TenPrint = new modVC.Module2D({
-	info: {
-		name: 'tenPrint',
-		author: 'Lazer Sausage',
-		version: 0.2,
-		meyda: ['amplitudeSpectrum', 'rms']
-	},
-	init: function(canvas) {
-		
+class TenPrint extends modV.Module2D {
+	constructor() {
+		super({
+			info: {
+				name: 'tenPrint',
+				author: 'Lazer Sausage',
+				version: 0.2,
+				meyda: ['amplitudeSpectrum', 'rms']
+			}
+		});
+
+		var controls = [];
+
+			controls.push(new modV.RangeControl({
+			variable: 'side',
+			min: 1,
+			max: 40,
+			label: 'grid size',
+			varType: 'int'
+		}));
+
+		controls.push(new modV.RangeControl({
+			variable: 'lineWidth',
+			min: 1,
+			max: 20,
+			label: 'line width',
+			varType: 'int'
+		}));
+
+		controls.push(new modV.RangeControl({
+			variable: 'threshold',
+			min: 0,
+			max: 1,
+			label: 'random threshold',
+			varType: 'float',
+			step: 0.01
+		}));
+
+		controls.push(new modV.ColorControl({
+			variable: 'colour1',
+			label: 'Colour On',
+			varType: 'string',
+			step: 0.01
+		}));
+
+		controls.push(new modV.ColorControl({
+			variable: 'colour2',
+			label: 'Colour Off',
+			varType: 'string',
+			step: 0.01
+		}));
+
+		this.add(controls);
+	}
+
+	
+	init() {
 		this.side = 16;
 		this.lineWidth = 10;
 		this.threshold = 0.5;
 		this.colour1 = 'red';
 		this.colour2 = 'black';
-		
-	},
-	draw: function(canvas, ctx, vid, features, meyda, delta, bpm) {
-		
+	}
+	
+	draw(canvas, ctx, vid, features) {
 		var w, h, cw, ch, index, lineWidth, side;
 		var factor = 1.39;
 
@@ -27,7 +74,7 @@ var TenPrint = new modVC.Module2D({
 			if(ampArr[i] > maxPower) maxPower = ampArr[i];
 			sum += ampArr[i];
 		}
-		var avgPower = sum/64;
+		//var avgPower = sum/64;
 		
 		//var powRatio = avgPower/maxPower;
 		var powRatio = features.rms;
@@ -53,7 +100,7 @@ var TenPrint = new modVC.Module2D({
 		while (index < (side*side)) {
 
 			x = (index % side);
-			y = (index / side) | 0;
+			y = (index / side) | 0; //jshint ignore:line
 		
 			var x1 = Math.round((side + x * w) - lineWidth/factor);
 			var x2 = Math.round((x1 + w) + lineWidth/factor);
@@ -87,49 +134,6 @@ var TenPrint = new modVC.Module2D({
 		ctx.restore();
 
 	}
-});
+}
 
-var controls = [];
-
-controls.push(new modVC.RangeControl({
-	variable: 'side',
-	min: 1,
-	max: 40,
-	label: 'grid size',
-	varType: 'int'
-}));
-
-controls.push(new modVC.RangeControl({
-	variable: 'lineWidth',
-	min: 1,
-	max: 20,
-	label: 'line width',
-	varType: 'int'
-}));
-
-controls.push(new modVC.RangeControl({
-	variable: 'threshold',
-	min: 0,
-	max: 1,
-	label: 'random threshold',
-	varType: 'float',
-	step: 0.01
-}));
-
-controls.push(new modVC.ColorControl({
-	variable: 'colour1',
-	label: 'Colour On',
-	varType: 'string',
-	step: 0.01
-}));
-
-controls.push(new modVC.ColorControl({
-	variable: 'colour2',
-	label: 'Colour Off',
-	varType: 'string',
-	step: 0.01
-}));
-
-TenPrint.add(controls);
-
-modVC.register(TenPrint);
+modV.register(TenPrint);

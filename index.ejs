@@ -108,171 +108,40 @@
 				//remote: 'ws://localhost:8888/ws',
 				retina: true
 			});
-		</script>
-		<script>
-			class Waveform extends modV.Module2D {
 
-				constructor() {
-					super({
-						info: {
-							name: 'Waveform',
-							author: '2xAA',
-							version: 0.1,
-							meyda: ['buffer']
-						}
-					});
-
-					this.add(new modV.RangeControl({
-						variable: 'strokeWeight',
-						label: 'Stroke',
-						varType: 'int',
-						min: 1,
-						max: 30,
-						default: 1
-					}));
-
-					this.add(new modV.PaletteControl({
-						variable: 'colour',
-						colours: [
-							[199,64,163],
-							[97,214,199],
-							[222,60,75],
-							[101,151,220],
-							[213,158,151],
-							[100,132,129],
-							[154,94,218],
-							[194,211,205],
-							[201,107,152],
-							[119,98,169],
-							[214,175,208],
-							[218,57,123],
-							[196,96,98],
-							[218,74,219],
-							[138,100,121],
-							[96,118,225],
-							[132,195,223],
-							[82,127,162],
-							[209,121,211],
-							[181,152,220]
-						], // generated here: http://tools.medialab.sciences-po.fr/iwanthue/
-						timePeriod: 500
-					}));
-				}
-
-				init() {
-					this.colour = 'red';
-					this.strokeWeight = 1;
-				}
-
-				draw(can, ctx, vid, features, meyda) {
-					var ampArr = features.buffer;
-					ampArr = meyda.windowing(ampArr, 'hanning');
-
-					ctx.strokeStyle = this.colour;
-					ctx.lineWidth = this.strokeWeight;
-					ctx.beginPath();
-					for (var i = 0; i < ampArr.length-1; i+=this.strokeWeight) {
-						var width = Math.round(Math.map(i, 0, ampArr.length-1, 0, can.width));
-						var newWidth = Math.round(Math.map(i+this.strokeWeight, 0, ampArr.length-1, 0, can.width));
-						var y = can.height/2 - (can.height * ampArr[i]) / (2);
-						y = Math.round(y);
-						var yNext = can.height/2 - (can.height * ampArr[i+this.strokeWeight]) / (2);
-						yNext = Math.round(yNext);
-
-						ctx.moveTo(width, y);
-						ctx.lineTo(newWidth, yNext);
-					}
-					ctx.closePath();
-					ctx.stroke();
-				}
-			}
-
-			modV.register(Waveform);
-
-/*			var myModuleShader = new modVC.ModuleShader({
-				info: {
-					name: 'Default Shader',
-					author: '2xAA',
-					version: 0.1,
-					meyda: [], // returned variables passed to the shader individually as uniforms
-					controls: [], // variabled passed to the shader individually as uniforms
-					uniforms: {
-						rOffset: {
-							type: 'f',
-							value: -0.001
-						},
-						gOffset: {
-							type: 'f',
-							value: 0.0
-						},
-						bOffset: {
-							type: 'f',
-							value: 0.001
-						}
-					} // Three.JS style uniforms
-				},
-				shaderFile: "/Default Shader/shader.html" // path to HTML file within modules directory with shader script tags
-			});
-
-			myModuleShader.add(new modVC.RangeControl({
-				variable: 'rOffset',
-				label: 'Red Offset',
-				varType: 'float',
-				min: -0.5,
-				max: 0.5,
-				step: 0.001,
-				default: -0.001
-			}));
-
-			myModuleShader.add(new modVC.RangeControl({
-				variable: 'gOffset',
-				label: 'Green Offset',
-				varType: 'float',
-				min: -0.5,
-				max: 0.5,
-				step: 0.001,
-				default: 0.0
-			}));
-
-			myModuleShader.add(new modVC.RangeControl({
-				variable: 'bOffset',
-				label: 'Blue Offset',
-				varType: 'float',
-				min: -0.5,
-				max: 0.5,
-				step: 0.001,
-				default: 0.001
-			}));
-
-			modVC.register(myModuleShader);
-*/
 			modV.start();
 		</script>
+		<script src="./modules/Waveform.js"></script>
 		<script src="./modules/Polygon.js"></script>
-		<!-- <script src="./modules/GridStretchNew.js"></script>
-		<script src="./modules/RotoZoom.js"></script>
-		<script src="./modules/Slide.js"></script>
-		<script src="./modules/Text.js"></script>
-		<script src="./modules/SlipNSlide.js"></script>
-		<script src="./modules/Bulge.js"></script>
-		<script src="./modules/Pinch.js"></script>
-		<script src="./modules/Webcam.js"></script>
-		<script src="./modules/Dither.js"></script>
+		<script src="./modules/Concentrics.js"></script>
 		<script src="./modules/Ball.js"></script>
-		<script src="./modules/Pixelate.js"></script>
-		<script src="./modules/Tangent.js"></script>
-		<script src="./modules/MattiasCRT.js"></script>
+		<script src="./modules/Text.js"></script>
+		<script src="./modules/Xorcles.js"></script>
+		<script src="./modules/Perl.js"></script>
+		<script src="./modules/TenPrint.js"></script>
 		<script src="./modules/StaticImage.js"></script>
 		<script src="./modules/Video.js"></script>
-		<script src="./modules/Kaleidoscope.js"></script>
-		<script src="./modules/Plasma.js"></script>
-		<script src="./modules/Pong.js"></script>
-		<script src="./modules/TenPrint.js"></script>
+		<script src="./modules/Webcam.js"></script>
 		<script src="./modules/Giphy.js"></script>
 		<script src="./modules/KickDemo.js"></script>
 		<script src="./modules/Glitch.js"></script>
-		<script src="./modules/Concentrics.js"></script>
+		
 		<script src="./modules/Tile.js"></script>
-		<script src="./modules/Puke.js"></script> -->
+		<script src="./modules/GridStretchNew.js"></script>
+		<script src="./modules/SlipNSlide.js"></script>
+		<script src="./modules/Relapper.js"></script>
+		<script src="./modules/Slide.js"></script>
+		<script src="./modules/RotoZoom.js"></script>
+		<script src="./modules/Pixelate.js"></script>
+
+		<script src="./modules/ChrAbberation.js"></script>
+		<script src="./modules/Puke.js"></script>
+		<script src="./modules/Bulge.js"></script>
+		<script src="./modules/Pinch.js"></script>
+		<script src="./modules/Tangent.js"></script>
+		<script src="./modules/Dither.js"></script>
+		<script src="./modules/Kaleidoscope.js"></script>
+		<script src="./modules/Plasma.js"></script>
+		<script src="./modules/MattiasCRT.js"></script>
 	</body>
 </html>

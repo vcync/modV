@@ -1,16 +1,21 @@
-var Webcam = new modVC.Module2D({
-	info: {
-		name: 'Webcam',
-		author: '2xAA',
-		version: 0.1
-	},
-	init: function(canvas) {
-		
-	}, draw: function(canvas, ctx, vid, features, meyda, delta, bpm) {
-
-		ctx.drawImage(vid, 0, 0, canvas.width, canvas.height); 
-
+class Webcam extends modV.Module2D {
+	constructor() {
+		super({
+			info: {
+				name: 'Webcam',
+				author: '2xAA',
+				version: 0.1
+			}
+		});
 	}
-});
+	
+	init() {
+		
+	}
 
-modVC.register(Webcam);
+	draw(canvas, ctx, vid) {
+		ctx.drawImage(vid, 0, 0, canvas.width, canvas.height); 
+	}
+}
+
+modV.register(Webcam);

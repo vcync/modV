@@ -1,12 +1,32 @@
-var SlipNSlide = new modVC.Module2D({
-	info: {
-		name: 'Slip \'n\' Slide',
-		author: '2xAA',
-		version: 0.1,
-		previewWithOutput: true,
-		meyda: ['rms']
-	},
-	init: function(canvas) {
+class SlipNSlide extends modV.Module2D {
+	constructor() {
+		super({
+			info: {
+				name: 'Slip \'n\' Slide',
+				author: '2xAA',
+				version: 0.1,
+				previewWithOutput: true,
+				meyda: ['rms']
+			}
+		});
+
+		this.add(new modV.RangeControl({
+			variable: 'sections',
+			label: 'Sections',
+			min: 0,
+			max: 100,
+			varType: 'int',
+			step: 1
+		}));
+
+		this.add(new modV.CheckboxControl({
+			variable: 'useRMS',
+			label: 'Use RMS',
+			checked: false
+		}));
+	}
+	
+	init(canvas) {
  		
 		this.sections = 50;
 		this.t = 0;
@@ -19,12 +39,14 @@ var SlipNSlide = new modVC.Module2D({
 
 		this.useRMS = false;
 		
-	},
-	resize: function(canvas, ctx) {
+	}
+	
+	resize(canvas) {
 		this.newCanvas2.width = canvas.width;
 		this.newCanvas2.height = canvas.height;
-	},
-	draw: function(canvas, ctx, vid, features, meyda, delta, bpm) {
+	}
+
+	draw(canvas, ctx, vid, features) {
 
 		this.newCtx2.clearRect(0, 0, canvas.width, canvas.height);
 		this.newCtx2.drawImage(canvas, 0, 0, canvas.width, canvas.height, 0, 0, this.newCanvas2.width, this.newCanvas2.height);
@@ -37,25 +59,10 @@ var SlipNSlide = new modVC.Module2D({
 		else this.t = 0;
 
 		if(this.useRMS) {
-			t += features.rms / 100;
+			this.t += features.rms / 100;
 		}
 
 	}
-});
+}
 
-SlipNSlide.add(new modVC.RangeControl({
-	variable: 'sections',
-	label: 'Sections',
-	min: 0,
-	max: 100,
-	varType: 'int',
-	step: 1
-}));
-
-SlipNSlide.add(new modVC.CheckboxControl({
-	variable: 'useRMS',
-	label: 'Use RMS',
-	checked: false
-}));
-
-modVC.register(SlipNSlide);
+modV.register(SlipNSlide);

@@ -8,8 +8,34 @@
 
 		// Clone module -- afaik, there is no better way than this
 		//Module = self.cloneModule(Module, true);
+		
+		var oldModule = Module;
+		Module = new self.moduleStore[Module.info.originalModuleName]();
 
-		//Module = new Module();
+		if(Module instanceof self.ModuleShader) {
+			Module.programIndex = oldModule.programIndex;
+			
+			// Loop through Uniforms, expose self.uniforms and create local variables
+			if('uniforms' in Module.settings.info) {
+
+				forIn(Module.settings.info.uniforms, (uniformKey, uniform) => {
+					switch(uniform.type) {
+						case 'f':
+							Module[uniformKey] = parseFloat(uniform.value);
+							break;
+
+						case 'i':
+							Module[uniformKey] = parseInt(uniform.value);
+							break;
+
+						case 'b':
+							Module[uniformKey] = uniform.value;
+							break;
+
+					}
+				});
+			}
+		}
 
 		self.galleryModules = [];
 		
@@ -21,9 +47,17 @@
 		// Module variables
 		var previewCtx = previewCanvas.getContext('2d');
 
-		// init cloned Module
+		// init Module
 		if('init' in Module && Module instanceof self.Module2D) {
 			Module.init(previewCanvas, previewCtx);
+		}
+
+		// Setup any preview settings for gallery item
+		if('previewValues' in Module.settings.info) {
+			forIn(Module.settings.info.previewValues, (key, value) => {
+				Module[key] = value;
+				console.log(key, value, Module);
+			});
 		}
 
 		document.querySelector('.gallery').appendChild(galleryItem);

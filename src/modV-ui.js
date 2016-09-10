@@ -46,9 +46,9 @@
 
 				if(dupes.length > 0) {
 					var oldModule = Module;
-					Module = new Module.info.originalModule();
+					Module = new self.moduleStore[Module.info.originalModuleName]();
 
-					// Create new controls from original Module to avoid scope contamination
+					/*// Create new controls from original Module to avoid scope contamination
 					if('controls' in oldModule.info) {
 						Module.info.controls = [];
 
@@ -57,6 +57,31 @@
 							var newControl = new control.constructor(settings);
 							Module.info.controls.push(newControl);
 						});
+					}*/
+
+					if(Module instanceof self.ModuleShader) {
+						Module.programIndex = oldModule.programIndex;
+						
+						// Loop through Uniforms, expose self.uniforms and create local variables
+						if('uniforms' in Module.settings.info) {
+
+							forIn(Module.settings.info.uniforms, (uniformKey, uniform) => {
+								switch(uniform.type) {
+									case 'f':
+										Module[uniformKey] = parseFloat(uniform.value);
+										break;
+
+									case 'i':
+										Module[uniformKey] = parseInt(uniform.value);
+										break;
+
+									case 'b':
+										Module[uniformKey] = uniform.value;
+										break;
+
+								}
+							});
+						}
 					}
 
 					// init cloned Module
@@ -412,7 +437,7 @@
 
 		// Module Grouping
 
-		var addGroupButton = document.querySelectorAll('.module-menu .icon')[0];
+		/*var addGroupButton = document.querySelectorAll('.module-menu .icon')[0];
 		addGroupButton.addEventListener('click', function() {
 			
 			// Create active list item
@@ -454,7 +479,7 @@
 			
 			list.appendChild(group);
 
-		});
+		});*/
 
 	};
 

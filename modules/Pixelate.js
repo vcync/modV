@@ -1,13 +1,54 @@
-var Pixelate = new modVC.Module2D({
-	info: {
-		name: 'Pixelate',
-		author: '2xAA',
-		version: 0.1,
-		previewWithOutput: true,
-		meyda: ['rms', 'zcr'],
-		controls: []
-	},
-	init: function(canvas) {
+class Pixelate extends modV.Module2D {
+
+	constructor() {
+		super({
+			info: {
+				name: 'Pixelate',
+				author: '2xAA',
+				version: 0.1,
+				previewWithOutput: true,
+				meyda: ['rms', 'zcr']
+			}
+		});
+
+		var controls = [];
+
+		controls.push(new modV.RangeControl({
+			variable: 'pixelAmount',
+			label: 'Amount',
+			varType: 'int',
+			min: 2,
+			max: 30,
+			step: 1,
+			default: 5
+		}));
+
+		controls.push(new modV.CheckboxControl({
+			variable: 'soundReactive',
+			label: 'Sound Reactive',
+			checked: false
+		}));
+
+		controls.push(new modV.RangeControl({
+			variable: 'intensity',
+			label: 'RMS/ZCR Intensity',
+			varType: 'int',
+			min: 0,
+			max: 30,
+			step: 1,
+			default: 15
+		}));
+
+		controls.push(new modV.CheckboxControl({
+			variable: 'soundType',
+			label: 'RMS (unchecked) / ZCR (checked)',
+			checked: false
+		}));
+
+		this.add(controls);
+	}
+	
+	init(canvas) {
 
 		this.soundReactive = false;
 		this.soundType = false; // false RMS, true ZCR
@@ -21,12 +62,14 @@ var Pixelate = new modVC.Module2D({
 		this.newCanvas2.width = canvas.width;
 		this.newCanvas2.height = canvas.height;
 		
-	},
-	resize: function(canvas) {
+	}
+
+	resize(canvas) {
 		this.newCanvas2.width = canvas.width;
 		this.newCanvas2.height = canvas.height;
-	},
-	draw: function(canvas, ctx, vid, features) {
+	}
+
+	draw(canvas, ctx, vid, features) {
 
 		var w, h, analysed;
 
@@ -53,42 +96,6 @@ var Pixelate = new modVC.Module2D({
 		ctx.restore();		
 
 	}
-});
+}
 
-var controls = [];
-
-controls.push(new modVC.RangeControl({
-    variable: 'pixelAmount',
-    label: 'Amount',
-    varType: 'int',
-    min: 2,
-    max: 30,
-    step: 1,
-    default: 5
-}));
-
-controls.push(new modVC.CheckboxControl({
-	variable: 'soundReactive',
-	label: 'Sound Reactive',
-	checked: false
-}));
-
-controls.push(new modVC.RangeControl({
-    variable: 'intensity',
-    label: 'RMS/ZCR Intensity',
-    varType: 'int',
-    min: 0,
-    max: 30,
-    step: 1,
-    default: 15
-}));
-
-controls.push(new modVC.CheckboxControl({
-	variable: 'soundType',
-	label: 'RMS (unchecked) / ZCR (checked)',
-	checked: false
-}));
-
-Pixelate.add(controls);
-
-modVC.register(Pixelate);
+modV.register(Pixelate);
