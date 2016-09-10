@@ -75,6 +75,7 @@ var modV = function(options) {
 	self.meydaSupport = false;
 
 	self.modOrder = [];
+	self.moduleStore = [];
 	self.registeredMods = {};
 
 	self.video = document.createElement('video');

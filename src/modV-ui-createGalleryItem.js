@@ -7,7 +7,7 @@
 		if(!(Module instanceof self.Module2D) && !(Module instanceof self.ModuleShader) && !(Module instanceof self.Module3D)) return;
 
 		// Clone module -- afaik, there is no better way than this
-		Module = self.cloneModule(Module, true);
+		//Module = self.cloneModule(Module, true);
 
 		//Module = new Module();
 

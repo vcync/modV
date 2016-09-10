@@ -27,11 +27,15 @@
 
 	modV.prototype.register = function(Module) {
 		var self = this;
+		var originalModule = Module;
+
+		Module = new Module();
 		
 		// Shared Module variables
 		var name;
 
 		// Set meta
+		Module.info.originalModule = originalModule;
 		Module.info.alpha = 1;
 		Module.info.disabled = true;
 		Module.info.solo = false;

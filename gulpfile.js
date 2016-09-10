@@ -17,7 +17,7 @@ var gulp = require('gulp');
 
 var exec = require('child_process').exec;
 
-var allSources = ['./src/**/*.js', './**/*.ejs', './modules/**/*.js', './modules/**/*.html', './*.html', './**/*.css'];
+var allSources = ['./src/**/*.js', './**/*.ejs', './modules/**/*.js', './modules/**/*.html', './*.html']; // , './**/*.css'
 
 gulp.task('clean', function() {
 	return gulp.src('./dist', {read: false})

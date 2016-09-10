@@ -224,7 +224,7 @@
 
 			var timerRange = document.createElement('input');
 			timerRange.type = 'range';
-			timerRange.min = 1;
+			timerRange.min = 2;
 			timerRange.max = 500;
 			timerRange.value = timePeriod/1000;
 

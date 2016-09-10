@@ -45,9 +45,8 @@
 				var dupes = self.getNumberOfModuleDupes(name);
 
 				if(dupes.length > 0) {
-					// Clone module -- afaik, there is no better way than this
 					var oldModule = Module;
-					Module = self.cloneModule(Module, true);
+					Module = new Module.info.originalModule();
 
 					// Create new controls from original Module to avoid scope contamination
 					if('controls' in oldModule.info) {
