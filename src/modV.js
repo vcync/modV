@@ -60,8 +60,12 @@ var modV = function(options) {
 		analyser, // Analyser Node 
 		microphone;
 
+	self.version = "1.2b";
+
 	// Load user options
 	if(typeof options !== 'undefined') self.options = options;
+
+	self.options.user = "please set username";
 
 	self.clearing = true;
 	if(!self.options.clearing) self.clearing = false;
@@ -103,28 +107,10 @@ var modV = function(options) {
 	// UI Templates
 	self.templates = document.querySelector('link[rel="import"]').import;
 
-	// Module Clone
-	self.cloneModule = function(obj, getSettings) {
-		var settings, temp;
-		if(getSettings) settings = obj.getSettings();
-		if (obj === null || typeof obj !== "object") {
-			return obj;
-		}
-		if(!getSettings) temp = new obj.constructor();
-		else temp = new obj.constructor(settings);
-
-		forIn(obj, key => {
-			try {
-				if(obj[key] === THREE[key]) temp[key] = new obj.constructor();
-				temp[key] = self.cloneModule(obj[key], false);
-			} catch(e) {
-				//console.error('Cannot clone native code', e);
-			}
-		});
-
-		//var temp = obj.clone();
-
-		return temp;
+	// Set name
+	self.setName = function(name) {
+		self.options.user = name;
+		self.saveOptions();
 	};
 
 	// Window resize
@@ -226,24 +212,20 @@ var modV = function(options) {
 			var Module;
 
 			if(presetModuleData.clone) {
-				Module = self.cloneModule(self.registeredMods[presetModuleData.originalName], true);
+				Module = new self.moduleStore[presetModuleData.originalModuleName]();
 
 				var originalModule = self.registeredMods[presetModuleData.originalName];
 
-				// Create new controls from original Module to avoid scope contamination
-				if('controls' in originalModule.info) {
-					Module.info.controls = [];
-
-					originalModule.info.controls.forEach(function(control) {
-						var settings = control.getSettings();
-						var newControl = new control.constructor(settings);
-						Module.info.controls.push(newControl);
-					});
-				}
-
+				Module.info.originalModuleName = originalModule.info.originalModuleName;
+				
 				Module.info.name = presetModuleData.name;
 				Module.info.originalName = presetModuleData.originalName;
 				Module.info.safeName = presetModuleData.safeName;
+
+				// init cloned Module
+				if('init' in Module) {
+					Module.init(self.previewCanvas, self.previewCtx);
+				}
 
 			} else {
 				Module = self.registeredMods[presetModuleData.name];
@@ -252,6 +234,7 @@ var modV = function(options) {
 			// Set Module values
 			Module.info.disabled = presetModuleData.disabled;
 			Module.info.blend = presetModuleData.blend;
+			Module.info.solo = presetModuleData.solo;
 
 			forIn(presetModuleData.values, value => {
 				Module[value] = presetModuleData.values[value];
@@ -280,7 +263,12 @@ var modV = function(options) {
 	self.savePreset = function(name, profile) {
 		var preset = {
 			modOrder: self.modOrder,
-			moduleData: {}
+			moduleData: {},
+			presetInfo: {
+				datetime: Date.now(),
+				modVVersion: self.version,
+				author: self.options.user
+			}
 		};
 		
 		function extractValues(Control) {
@@ -299,6 +287,8 @@ var modV = function(options) {
 			preset.moduleData[mod].clone = false;
 			preset.moduleData[mod].originalName = null;
 			preset.moduleData[mod].safeName = Module.info.safeName;
+			preset.moduleData[mod].originalModuleName = Module.info.originalModuleName;
+			preset.moduleData[mod].solo = Module.info.solo;
 
 			if('originalName' in Module.info) {
 				preset.moduleData[mod].clone = true;
