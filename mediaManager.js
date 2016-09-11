@@ -1,15 +1,13 @@
 //jshint node:true
 
-var restify = require('restify'),
+var ws = require('nodejs-websocket'),
+	mkdirp = require('mkdirp'),
 	dive = require('dive'),
-	ws = require('watershed'),
 	fs = require('fs'),
 	path = require('path'),
 	animated = require('animated-gif-detector'),
 	ffmpeg = require('fluent-ffmpeg'),
 	watch = require('node-watch');
-
-ws = new ws.Watershed();
 
 var isWin = /^win/.test(process.platform);
 var pathSeparator = "/";
@@ -95,11 +93,6 @@ function createDirectories(callback) {
 }
 
 /* Server */
-var server = restify.createServer({
-	handleUpgrades: true,
-	name: 'modV profile manager'
-});
-
 var clients = [];
 
 function update(shed) {
@@ -107,18 +100,10 @@ function update(shed) {
 	shed.send(JSON.stringify({type: 'update', payload: profiles}));
 }
 
-server.get('/', function upgradeRoute(req, res, next) {
-	if (!res.claimUpgrade) {
-		next(new Error('Connection Must Upgrade For WebSockets'));
-		return;
-	}
-
+var server = ws.createServer(function (conn) {
 	console.log('_New ws client_');
 
-	var upgrade = res.claimUpgrade();
-
-	var shed = ws.accept(req, upgrade.socket, upgrade.head);
-	clients.push(shed);
+	var shed = conn;
 
 	update(shed);
 
@@ -149,6 +134,9 @@ server.get('/', function upgradeRoute(req, res, next) {
 					}
 
 					var outputPresetFilename = './media/' + parsed.profile + '/preset/' + parsed.name + '.json';
+					var dir = './media/' + parsed.profile + '/preset/';
+
+					mkdirp.sync(dir);
 
 					fs.writeFile(outputPresetFilename, JSON.stringify(parsed.payload), function(err) {
 						if(err) {
@@ -156,7 +144,7 @@ server.get('/', function upgradeRoute(req, res, next) {
 						} else {
 							console.log('JSON saved to ' + outputPresetFilename);
 						}
-					}); 
+					});
 
 				break;
 
@@ -181,8 +169,6 @@ server.get('/', function upgradeRoute(req, res, next) {
 
 		}
 	});
-
-	next(false);
 });
 
 var mediaDir = cwd + pathSeparator + 'media';
@@ -197,7 +183,7 @@ function mediaSearch(callback) {
 
 		var dirSplit = file.split(pathSeparator);
 
-		var profile 		= pathReplaced[1];
+		var profile 	= pathReplaced[1];
 		var directory 	= pathReplaced[2];
 		var filename 	= dirSplit[dirSplit.length-1].split('.')[0];
 		var fileExt		= file.split('.').pop();
