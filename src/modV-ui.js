@@ -47,6 +47,7 @@
 				if(dupes.length > 0) {
 					var oldModule = Module;
 					Module = new self.moduleStore[Module.info.originalModuleName]();
+					Module.info.originalModuleName = oldModule.info.originalModuleName;
 
 					/*// Create new controls from original Module to avoid scope contamination
 					if('controls' in oldModule.info) {
@@ -86,7 +87,7 @@
 
 					// init cloned Module
 					if('init' in Module) {
-						Module.init(self.canvas, self.context);
+						Module.init(self.previewCanvas, self.previewCtx);
 					}
 
 					// new name
@@ -297,6 +298,12 @@
 
 		globalControlPanel.querySelector('#savePresetGlobal').addEventListener('click', function() {
 			self.savePreset(globalControlPanel.querySelector('#savePresetName').value, 'default');
+		});
+
+		globalControlPanel.querySelector('#setUsername').value = self.options.user;
+
+		globalControlPanel.querySelector('#setUsernameGlobal').addEventListener('click', function() {
+			self.setName(globalControlPanel.querySelector('#setUsername').value);
 		});
 
 		// finds the offset of el from the body or html element
