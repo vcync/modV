@@ -129,3 +129,5 @@ gulp.task('copy', ['copy:modules', 'copy:html', 'copy:css', 'copy:library', 'cop
 gulp.task('build', ['clean', 'ejs', 'webpack', 'copy', 'symlink']);
 
 gulp.task('watch', ['build', 'connect', 'set-watcher', 'media-manager']);
+
+gulp.task('watch-only', ['build', 'connect', 'set-watcher']);
