@@ -115,7 +115,7 @@ var modV = function(options) {
 
 	// Window resize
 	self.resize = function() {
-		self.THREE.renderer.setSize(self.canvas.width, self.canvas.height);
+		self.THREE.renderer.setSize(self.previewCanvas.width, self.previewCanvas.height);
 
 		forIn(self.registeredMods, (mod, Module) => {
 			if('resize' in Module) {
@@ -347,7 +347,7 @@ var modV = function(options) {
 		console.info('THREE.js detected.', 'Revision:', THREE.REVISION);
 		self.THREE = {};
 
-		self.THREE.texture = new THREE.Texture(self.canvas);
+		self.THREE.texture = new THREE.Texture(self.previewCanvas);
 		self.THREE.texture.minFilter = THREE.LinearFilter;
 
 		self.THREE.material = new THREE.MeshBasicMaterial({

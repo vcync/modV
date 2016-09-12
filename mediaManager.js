@@ -52,11 +52,11 @@ function createDirectories(callback) {
 					videos: []
 				}
 			}; // Create new profile
-			console.log('New profile created: ', dir);
+			console.log('Profile found: ', dir);
 		} else {
 			// This should never error
 			// If it does, we're screwed
-			throw 'Somehow two directories with the same name in the same directory were discovered.\nPlease check this and try again.';
+			throw 'Somehow two directories with the same name in the same directory were discovered. Please check this and try again.';
 		}
 
 		// Create folders that need to exist
@@ -96,7 +96,7 @@ function createDirectories(callback) {
 var clients = [];
 
 function update(shed) {
-	console.log('\nSending client profiles data');
+	console.log('Sending client profiles data');
 	shed.send(JSON.stringify({type: 'update', payload: profiles}));
 }
 
@@ -109,7 +109,7 @@ var server = ws.createServer(function (conn) {
 
 	shed.on('text', function(msg) {
 		var parsed = JSON.parse(msg);
-		console.log('\nReceived message from websocket client: ' + msg);
+		console.log('Received message from websocket client: ' + msg);
 
 		if('request' in parsed) {
 
@@ -121,7 +121,7 @@ var server = ws.createServer(function (conn) {
 				break;
 
 				case 'save-preset':
-					console.log('\nAttempting to save preset in profile:', parsed.profile);
+					console.log('Attempting to save preset in profile:', parsed.profile);
 
 					if(parsed.profile.trim() === "") {
 						console.log("Could not save preset, empty name");
@@ -149,7 +149,7 @@ var server = ws.createServer(function (conn) {
 				break;
 
 				case 'save-palette':
-					console.log('\nAttempting to save palette in profile:', parsed.profile);
+					console.log('Attempting to save palette in profile:', parsed.profile);
 
 					var outputPaletteFilename = './media/' + parsed.profile + '/palette/' + parsed.name + '.json';
 
@@ -194,25 +194,23 @@ function mediaSearch(callback) {
 		if(directory === 'palette') {
 			fileParsed = JSON.parse(fs.readFileSync(file, 'utf8')); // sync because we don't want to finish before reading has occurred
 			profiles[profile].palettes[filename] = fileParsed;
-			console.log('🎨  Found palette in', profile);
+			console.log('🎨  Found palette in', profile + ':', filename);
 		}
 
 		if(directory === 'preset') {
 			fileParsed = JSON.parse(fs.readFileSync(file, 'utf8')); // sync because we don't want to finish before reading has occurred
 			profiles[profile].presets[filename] = fileParsed;
-			console.log('💾  Found preset data in', profile);
+			console.log('💾  Found preset data in', profile + ':', filename);
 		}
-
-		console.log(profile, profiles, profiles[profile]);
-
+		
 		if(fileExt.toLowerCase() in viableVideo) {
 
 			profiles[profile].files.videos.push({'name': filename, 'path': filePath});
-			console.log('📼  Found video in', profile);
+			console.log('📼  Found video in', profile + ':', filename);
 		}
 
 		if(fileExt.toLowerCase() in viableImage) {
-			console.log('📷  Found image in', profile);
+			console.log('📷  Found image in', profile + ':', filename);
 
 			if(fileExt.toLowerCase() === 'gif' && animated(fs.readFileSync(filePath))) {
 
@@ -250,18 +248,21 @@ function mediaSearch(callback) {
 		//profiles[profile]
 
 	}, function() {
-		console.log('\n👍  Finished sloshing through media, here\'s what I got: \n');
-		console.log(require('util').inspect(profiles, true, 10));
+		console.log('👍  Finished sloshing through media'/*, here\'s what I got: '*/);
+		//console.log(require('util').inspect(profiles, true, 10));
 		callback();
 	});
 }
 
+var port = 3132;
+
 createDirectories(function() {
 	mediaSearch(function() {
-		server.listen(3132, function() {
-			console.log('\n_%s listening at %s_', server.name, server.url);
+		server.listen(port, function() {
 
+			console.log('modV Media Manager listening on port', port);
 			console.log('Watching ./media/ for changes...');
+
 			watch('./media/', { recursive: true, followSymLinks: true }, function(filepath) {
 
 				if(path.parse(filepath).base !== '.DS_Store') {

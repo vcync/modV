@@ -89,12 +89,14 @@ gulp.task('ejs', ['clean'], function() {
 		.pipe(gulp.dest('dist'));
 });
 
-gulp.task('media-manager', function(cb) {
+gulp.task('media-manager', ['set-watcher'], function(cb) {
 
-	exec('node ./mediaManager.js', function (err, stdout, stderr) {
-		console.log(stdout);
-		console.log(stderr);
-		cb(err);
+	var mediaManager = exec('node ./mediaManager.js', function(err) {
+		if(err) cb(err);
+	});
+
+	mediaManager.stdout.on('data', function(data) {
+	    console.log(data.toString()); 
 	});
 
 	//return run('node ./mediaManager.js').exec();
