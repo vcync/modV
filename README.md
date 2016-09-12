@@ -11,7 +11,7 @@ All documentation so far is available in [this repo's Wiki](https://github.com/2
 1. Download (clone or zip)
 * Open a terminal, navigate to your downloaded folder (for example; ```cd ~/Downloads/modV/```)
 * Run ```npm install```, this will install modV's required packages
-* Once the installation has finished, run ```gulp watch```
+* Once the installation has finished, run ```npm start```
 * Open Chrome and go to ```http://localhost:3131```
 
 ## OS Specifics
