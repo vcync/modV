@@ -85,9 +85,13 @@
 						}
 					}
 
-					// init cloned Module
-					if('init' in Module) {
+					// init Module
+					if('init' in Module && Module instanceof self.Module2D) {
 						Module.init(self.previewCanvas, self.previewCtx);
+					}
+
+					if('init' in Module && Module instanceof self.Module3D) {
+						Module.init(self.previewCanvas, Module.getScene(), Module.getCamera(), self.THREE.material, self.THREE.texture);
 					}
 
 					// new name

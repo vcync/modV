@@ -170,7 +170,7 @@
 			}
 
 			// Initialise Module
-			Module.init(self.canvas, Module.getScene(), Module.getCamera(), self.THREE.material, self.THREE.texture);
+			Module.init(self.previewCanvas, Module.getScene(), Module.getCamera(), self.THREE.material, self.THREE.texture);
 
 			// Add to Registry
 			self.registeredMods[name] = Module;

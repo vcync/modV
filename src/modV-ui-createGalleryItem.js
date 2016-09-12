@@ -52,6 +52,10 @@
 			Module.init(previewCanvas, previewCtx);
 		}
 
+		if('init' in Module && Module instanceof self.Module3D) {
+			Module.init(previewCanvas, Module.getScene(), Module.getCamera(), self.THREE.material, self.THREE.texture);
+		}
+
 		// Setup any preview settings for gallery item
 		if('previewValues' in Module.settings.info) {
 			forIn(Module.settings.info.previewValues, (key, value) => {
