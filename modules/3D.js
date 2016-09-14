@@ -28,12 +28,23 @@ class iiiD extends modV.Module3D {
 			step: 1,
 			default: 0
 		}));
+
+		this.add(new modV.SelectControl({
+			variable: 'objectType',
+			label: 'Object Type',
+			enum: [
+				{label: 'Icosahedron', value: 'ico', default: true},
+				{label: 'Cube', value: 'cube'},
+				{label: 'Sphere', value: 'sphere'}
+			]
+		}));
 	}
 	
 	init(canvas, scene, camera, material, texture) {
 
 		this.size = 1;
 		this.speed = 0;
+		this.objectType = 'ico';
 
 		var aspect = canvas.width / canvas.height;
 		var d = 12;
@@ -56,6 +67,14 @@ class iiiD extends modV.Module3D {
 		this.ico = new THREE.Mesh(this.geometry, material);
 		scene.add(this.ico);
 
+		this.geometry = new THREE.BoxGeometry( 1, 1, 1 );
+		this.cube = new THREE.Mesh(this.geometry, material);
+		scene.add(this.cube);
+
+		this.geometry = new THREE.SphereGeometry( 5, 32, 32 );
+		this.sphere = new THREE.Mesh(this.geometry, material);
+		scene.add(this.sphere);
+
 		this.setScene(scene);
 		this.setCamera(camera);
 	}
@@ -69,10 +88,23 @@ class iiiD extends modV.Module3D {
 	}
 
 	draw(scene, camera, material, texture, features) {
-		this.ico.rotation.x += this.speed * 0.005;
-		this.ico.rotation.y += this.speed * 0.01;
+
+		var obj;
+		if(this.objectType === 'sphere') obj = this.sphere;
+		else this.sphere.visible = false;
+
+		if(this.objectType === 'ico') obj = this.ico;
+		else this.ico.visible = false;
+
+		if(this.objectType === 'cube') obj = this.cube;
+		else this.cube.visible = false;
+
+		obj.visible = true;
+
+		obj.rotation.x += this.speed * 0.005;
+		obj.rotation.y += this.speed * 0.01;
 		var scale = this.size + features.rms;
-		this.ico.scale.set(scale, scale, scale);
+		obj.scale.set(scale, scale, scale);
 	}
 }
 
