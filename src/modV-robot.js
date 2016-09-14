@@ -11,7 +11,6 @@
 		var self = modV;
 
 		function bpmToMs(bpm) {
-			console.log('BPM', bpm);
 			return (60000 / bpm);
 		}
 
@@ -45,7 +44,6 @@
 							rand = randomIntFromRange(control.min, control.max);
 
 							if('append' in control) {
-								console.log('append', rand, control.append);
 								controlNode.value = rand;
 								module[control.variable] = rand + control.append;
 							} else {
@@ -102,7 +100,7 @@
 
 	modV.prototype.attachBot = function(module, controlIndex) {
 		var self = this;
-		var mod = self.registeredMods[module];
+		var mod = self.activeModules[module];
 		var control = mod.info.controls[controlIndex];
 		var controlID = control.getID();
 
@@ -113,7 +111,7 @@
 
 	modV.prototype.removeBot = function(module, controlIndex) {
 		var self = this;
-		var mod = self.registeredMods[module];
+		var mod = self.activeModules[module];
 		var control = mod.info.controls[controlIndex];
 		var controlID = control.getID();
 

@@ -25,8 +25,6 @@
 			handle: '.handle',
 			chosenClass: 'chosen',
 			onAdd: function(evt) {
-				console.log('drop', evt);
-
 				// Dragged HTMLElement
 				var itemEl = evt.item;
 				// Cloned element
@@ -34,75 +32,66 @@
 
 				// Get Module
 				var Module = self.registeredMods[replaceAll(itemEl.dataset.moduleName, '-', ' ')];
+				var oldModule = Module;
 
 				// Grab dataname from cloned element
+				var originalName = Module.info.originalModuleName;
+
+				Module = new self.moduleStore[originalName]();
+				
 				var name = Module.info.name;
-				var originalName = Module.info.name;
-				// Create new safe name
+
+				// Get instances of modules in active list
+				var instances = self.detectInstancesOf(originalName);
+				Module.info.originalModuleName = oldModule.info.originalModuleName;
+
+				if(instances.length > 0) {
+					// make new name
+					name = self.generateName(Module.info.name);
+				}
+				
+				if(Module instanceof self.ModuleShader) {
+					Module.programIndex = oldModule.programIndex;
+					
+					// Loop through Uniforms, expose self.uniforms and create local variables
+					if('uniforms' in Module.settings.info) {
+
+						forIn(Module.settings.info.uniforms, (uniformKey, uniform) => {
+							switch(uniform.type) {
+								case 'f':
+									Module[uniformKey] = parseFloat(uniform.value);
+									break;
+
+								case 'i':
+									Module[uniformKey] = parseInt(uniform.value);
+									break;
+
+								case 'b':
+									Module[uniformKey] = uniform.value;
+									break;
+
+							}
+						});
+					}
+				}
+
+				// init Module
+				if('init' in Module && Module instanceof self.Module2D) {
+					Module.init(self.previewCanvas, self.previewCtx);
+				}
+
+				if('init' in Module && Module instanceof self.Module3D) {
+					Module.init(self.previewCanvas, Module.getScene(), Module.getCamera(), self.THREE.material, self.THREE.texture);
+				}
+
+				// new safe name
 				var safeName = replaceAll(name, ' ', '-');
 				
-				// Get number of same modules in active list
-				var dupes = self.getNumberOfModuleDupes(name);
+				// update name
+				Module.info.name = name;
+				Module.info.safeName = safeName;
+				Module.info.originalName = originalName;
 
-				if(dupes.length > 0) {
-					var oldModule = Module;
-					Module = new self.moduleStore[Module.info.originalModuleName]();
-					Module.info.originalModuleName = oldModule.info.originalModuleName;
-
-					/*// Create new controls from original Module to avoid scope contamination
-					if('controls' in oldModule.info) {
-						Module.info.controls = [];
-
-						oldModule.info.controls.forEach(function(control) {
-							var settings = control.getSettings();
-							var newControl = new control.constructor(settings);
-							Module.info.controls.push(newControl);
-						});
-					}*/
-
-					if(Module instanceof self.ModuleShader) {
-						Module.programIndex = oldModule.programIndex;
-						
-						// Loop through Uniforms, expose self.uniforms and create local variables
-						if('uniforms' in Module.settings.info) {
-
-							forIn(Module.settings.info.uniforms, (uniformKey, uniform) => {
-								switch(uniform.type) {
-									case 'f':
-										Module[uniformKey] = parseFloat(uniform.value);
-										break;
-
-									case 'i':
-										Module[uniformKey] = parseInt(uniform.value);
-										break;
-
-									case 'b':
-										Module[uniformKey] = uniform.value;
-										break;
-
-								}
-							});
-						}
-					}
-
-					// init Module
-					if('init' in Module && Module instanceof self.Module2D) {
-						Module.init(self.previewCanvas, self.previewCtx);
-					}
-
-					if('init' in Module && Module instanceof self.Module3D) {
-						Module.init(self.previewCanvas, Module.getScene(), Module.getCamera(), self.THREE.material, self.THREE.texture);
-					}
-
-					// new name
-					name += " (" + dupes.length + ")";
-					safeName = replaceAll(name, ' ', '-');
-					
-					// update name
-					Module.info.name = name;
-					Module.info.safeName = safeName;
-					Module.info.originalName = originalName;
-				}
 
 				if(evt.originalEvent.shiftKey) {
 					Module.info.solo = true;
@@ -125,12 +114,11 @@
 				}
 
 				// Add to registry
-				self.registeredMods[Module.info.name] = Module;
+				self.activeModules[Module.info.name] = Module;
 
 				self.setModOrder(name, evt.newIndex);
 
 				// Create controls
-				console.log('Creating controls for', name, Module);
 				self.createControls(Module, self);
 
 				// turn on
@@ -163,22 +151,14 @@
 			var activeItemNode = list.querySelector('.active-item[data-module-name="' + droppedModuleData + '"]');
 			var panel = document.querySelector('.control-panel[data-module-name="' + droppedModuleData + '"]');
 
-			console.log('gallery drop', droppedModuleData);
 			self.currentActiveDrag  = null;
 
-			forIn(self.registeredMods, (moduleName, Module) => {
+			forIn(self.activeModules, (moduleName, Module) => {
 				if(Module.info.safeName === droppedModuleData) {
 					
-					if('originalName' in Module.info) {
-						var name = replaceAll(Module.info.originalName, ' ', '-');
-
-						var dupes = list.querySelectorAll('.active-item[data-module-name|="' + name + '"]');
-						if(dupes.length > 1) {
-							console.log('deleting', moduleName);
-							delete self.registeredMods[moduleName];
-						}
-					}
-
+					console.info('Deleting', moduleName);
+					delete self.activeModules[moduleName];
+					
 					list.removeChild(activeItemNode);
 					panel.parentNode.removeChild(panel);
 					self.setModOrder(moduleName, -1);

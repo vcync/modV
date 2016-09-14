@@ -81,6 +81,7 @@ var modV = function(options) {
 	self.modOrder = [];
 	self.moduleStore = {};
 	self.registeredMods = {};
+	self.activeModules = {};
 
 	self.video = document.createElement('video');
 	self.video.autoplay = true;
@@ -117,7 +118,7 @@ var modV = function(options) {
 	self.resize = function() {
 		self.THREE.renderer.setSize(self.previewCanvas.width, self.previewCanvas.height);
 
-		forIn(self.registeredMods, (mod, Module) => {
+		forIn(self.activeModules, (mod, Module) => {
 			if('resize' in Module) {
 				if(Module instanceof self.Module3D) {
 					Module.resize(self.previewCanvas, Module.getScene(), Module.getCamera(), self.THREE.material, self.THREE.texture);
@@ -211,9 +212,9 @@ var modV = function(options) {
 			var presetModuleData = self.presets[id].moduleData[mod];
 			var Module;
 
-			if(presetModuleData.clone) {
-				Module = new self.moduleStore[presetModuleData.originalModuleName]();
+			Module = new self.moduleStore[presetModuleData.originalModuleName]();
 
+			if(presetModuleData.clone) {
 				var originalModule = self.registeredMods[presetModuleData.originalName];
 
 				Module.info.originalModuleName = originalModule.info.originalModuleName;
@@ -227,8 +228,6 @@ var modV = function(options) {
 					Module.init(self.previewCanvas, self.previewCtx);
 				}
 
-			} else {
-				Module = self.registeredMods[presetModuleData.name];
 			}
 
 			// Set Module values
@@ -243,8 +242,8 @@ var modV = function(options) {
 			// Create UI controls
 			self.createControls(Module, self);
 
-			// Add to registry
-			self.registeredMods[Module.info.name] = Module;
+			// Add to active modules
+			self.activeModules[Module.info.name] = Module;
 
 			// Set mod Order
 			self.setModOrder(Module.info.name, idx);
@@ -278,7 +277,7 @@ var modV = function(options) {
 		for (var i=0; i < self.modOrder.length; i++) {
 			var mod = self.modOrder[i];
 
-			var Module = self.registeredMods[mod];
+			var Module = self.activeModules[mod];
 			
 			preset.moduleData[mod] = {};
 			preset.moduleData[mod].disabled = Module.info.disabled;
@@ -428,7 +427,6 @@ var modV = function(options) {
 						videoSource = videoSrc.id;
 					}
 				});
-				console.log(foundSources);
 
 				self.setMediaSource(audioSource || foundSources.audio[0].id, videoSource || foundSources.video[0].id);
 				self.startUI();
@@ -448,28 +446,28 @@ var modV = function(options) {
 				setTimeout(self.start, 1000);
 			} else {
 
-				if(self.options.remote) {
-					forIn(self.registeredMods, mod => {
-						var infoToSend = JSON.parse(JSON.stringify(self.registeredMods[mod].info)); // copy the set
-						var variables = [];
+				// if(self.options.remote) {
+				// 	forIn(self.registeredMods, mod => {
+				// 		var infoToSend = JSON.parse(JSON.stringify(self.registeredMods[mod].info)); // copy the set
+				// 		var variables = [];
 
-						if('controls' in self.registeredMods[mod].info) {
-							self.registeredMods[mod].info.controls.forEach(function(controlSet) {
-								var variable = controlSet.variable;
-								variables.push(variable);
-							});
+				// 		if('controls' in self.registeredMods[mod].info) {
+				// 			self.registeredMods[mod].info.controls.forEach(function(controlSet) {
+				// 				var variable = controlSet.variable;
+				// 				variables.push(variable);
+				// 			});
 
-							variables.forEach(function(v) {
-								infoToSend[v] = self.registeredMods[mod][v];
-							});
-						}
+				// 			variables.forEach(function(v) {
+				// 				infoToSend[v] = self.registeredMods[mod][v];
+				// 			});
+				// 		}
 
-						self.ws.send(JSON.stringify({
-							type: 'register',
-							payload: infoToSend
-						}));
-					});
-				}
+				// 		self.ws.send(JSON.stringify({
+				// 			type: 'register',
+				// 			payload: infoToSend
+				// 		}));
+				// 	});
+				// }
 
 				requestAnimationFrame(self.loop.bind(self)); //modV-drawLoop.js //TODO: figure out why we're using bind (I get it, but seems stupid)
 			}
@@ -583,8 +581,6 @@ var modV = function(options) {
 		// Connect the gain node to the output (audio->(analyser)->gain->destination)
 		self.gainNode.connect(aCtx.destination);
 		
-		console.log(typeof aCtx, typeof microphone);
-
 		// If meyda is about, use it
 		if(self.meydaSupport) {
 			/*self.meyda = new Meyda.createMeydaAnalyzer({

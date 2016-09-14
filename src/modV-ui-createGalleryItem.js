@@ -60,7 +60,6 @@
 		if('previewValues' in Module.settings.info) {
 			forIn(Module.settings.info.previewValues, (key, value) => {
 				Module[key] = value;
-				console.log(key, value, Module);
 			});
 		}
 
