@@ -214,20 +214,47 @@ var modV = function(options) {
 
 			Module = new self.moduleStore[presetModuleData.originalModuleName]();
 
-			if(presetModuleData.clone) {
-				var originalModule = self.registeredMods[presetModuleData.originalName];
+			var originalModule = self.registeredMods[presetModuleData.originalName];
 
-				Module.info.originalModuleName = originalModule.info.originalModuleName;
+			Module.info.originalModuleName = originalModule.info.originalModuleName;
+			
+			Module.info.name = presetModuleData.name;
+			Module.info.originalName = presetModuleData.originalName;
+			Module.info.safeName = presetModuleData.safeName;
+
+			// init Module
+			if(Module instanceof self.ModuleShader) {
+				Module.programIndex = originalModule.programIndex;
 				
-				Module.info.name = presetModuleData.name;
-				Module.info.originalName = presetModuleData.originalName;
-				Module.info.safeName = presetModuleData.safeName;
+				// Loop through Uniforms, expose self.uniforms and create local variables
+				if('uniforms' in Module.settings.info) {
 
-				// init cloned Module
-				if('init' in Module) {
-					Module.init(self.previewCanvas, self.previewCtx);
+					forIn(Module.settings.info.uniforms, (uniformKey, uniform) => {
+						switch(uniform.type) {
+							case 'f':
+								Module[uniformKey] = parseFloat(uniform.value);
+								break;
+
+							case 'i':
+								Module[uniformKey] = parseInt(uniform.value);
+								break;
+
+							case 'b':
+								Module[uniformKey] = uniform.value;
+								break;
+
+						}
+					});
 				}
+			}
 
+			// init Module
+			if('init' in Module && Module instanceof self.Module2D) {
+				Module.init(self.previewCanvas, self.previewCtx);
+			}
+
+			if('init' in Module && Module instanceof self.Module3D) {
+				Module.init(self.previewCanvas, Module.getScene(), Module.getCamera(), self.THREE.material, self.THREE.texture);
 			}
 
 			// Set Module values
@@ -284,14 +311,13 @@ var modV = function(options) {
 			preset.moduleData[mod].blend = Module.info.blend;
 			preset.moduleData[mod].name = Module.info.name;
 			preset.moduleData[mod].clone = false;
-			preset.moduleData[mod].originalName = null;
+			preset.moduleData[mod].originalName = Module.info.originalName;
 			preset.moduleData[mod].safeName = Module.info.safeName;
 			preset.moduleData[mod].originalModuleName = Module.info.originalModuleName;
 			preset.moduleData[mod].solo = Module.info.solo;
 
 			if('originalName' in Module.info) {
 				preset.moduleData[mod].clone = true;
-				preset.moduleData[mod].originalName = Module.info.originalName;
 			}
 
 			preset.moduleData[mod].values = {};

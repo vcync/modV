@@ -38,6 +38,7 @@
 			self.moduleStore[originalModule.name] = originalModule;
 			Module = new Module();
 			Module.info.originalModuleName = originalModule.name;
+			Module.info.originalName = Module.info.name;
 		}
 		
 		// Shared Module variables

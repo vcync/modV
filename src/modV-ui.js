@@ -35,21 +35,21 @@
 				var oldModule = Module;
 
 				// Grab dataname from cloned element
-				var originalName = Module.info.originalModuleName;
+				var originalModuleName = Module.info.originalModuleName;
 
-				Module = new self.moduleStore[originalName]();
-				
+				Module = new self.moduleStore[originalModuleName]();
+
 				var name = Module.info.name;
 
 				// Get instances of modules in active list
-				var instances = self.detectInstancesOf(originalName);
+				var instances = self.detectInstancesOf(originalModuleName);
 				Module.info.originalModuleName = oldModule.info.originalModuleName;
 
 				if(instances.length > 0) {
 					// make new name
 					name = self.generateName(Module.info.name);
 				}
-				
+
 				if(Module instanceof self.ModuleShader) {
 					Module.programIndex = oldModule.programIndex;
 					
@@ -90,7 +90,7 @@
 				// update name
 				Module.info.name = name;
 				Module.info.safeName = safeName;
-				Module.info.originalName = originalName;
+				Module.info.originalName = oldModule.info.name;
 
 
 				if(evt.originalEvent.shiftKey) {
@@ -148,20 +148,12 @@
 		gallery.addEventListener('drop', function(e) {
 			e.preventDefault();
 			var droppedModuleData = e.dataTransfer.getData('modulename');
-			var activeItemNode = list.querySelector('.active-item[data-module-name="' + droppedModuleData + '"]');
-			var panel = document.querySelector('.control-panel[data-module-name="' + droppedModuleData + '"]');
-
+			
 			self.currentActiveDrag  = null;
 
 			forIn(self.activeModules, (moduleName, Module) => {
 				if(Module.info.safeName === droppedModuleData) {
-					
-					console.info('Deleting', moduleName);
-					delete self.activeModules[moduleName];
-					
-					list.removeChild(activeItemNode);
-					panel.parentNode.removeChild(panel);
-					self.setModOrder(moduleName, -1);
+					self.deleteActiveModule(Module);
 				}
 			});
 		});
