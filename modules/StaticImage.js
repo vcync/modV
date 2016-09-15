@@ -46,7 +46,7 @@ class StaticImage extends modV.Module2D {
 	}
 
 	draw(canvas, ctx) {
-		if(!this.smoothing) ctx.webkitImageSmoothingEnabled = false;
+		if(!this.smoothing) ctx.imageSmoothingEnabled = false;
 
 		if(this.stretch) {
 			ctx.drawImage(this.image, 0, 0, canvas.width, canvas.height);
