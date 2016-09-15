@@ -74,7 +74,6 @@
 			}
 
 			inputNode.addEventListener('change', function() {
-				console.log('change!!');
 				Module[self.variable] = inputNode.options[inputNode.selectedIndex].value;
 			}, false);
 
