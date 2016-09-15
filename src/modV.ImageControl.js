@@ -60,12 +60,14 @@
 
 					modVSelf.profiles[profile].files.images.forEach(function(image, idx) {
 
+						var optionNode = document.createElement('option');
+
 						if(!startSourceFound && idx === 0) {
 							startSource = image.path;
 							startSourceFound = true;
+							optionNode.selected = true;
 						}
 
-						var optionNode = document.createElement('option');
 						optionNode.value = profile + ',' + idx;
 						optionNode.textContent = image.name;
 
@@ -89,6 +91,8 @@
 			}, false);
 
 			if(startSourceFound) Module[self.variable].src = startSource;
+
+
 
 			return selectNode;
 		};
