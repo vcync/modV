@@ -11,6 +11,14 @@ modV.prototype.deleteActiveModule = function(Module) {
 	forIn(self.activeModules, (moduleName, Module) => {
 		if(Module.info.safeName === safeName) {
 			
+			Module.info.controls.forEach(control => {
+				
+				// remove palette from global palette store
+				if(control instanceof self.PaletteControl) {
+					self.palettes.splice(control.paletteIndex, 1);
+				}
+			});
+
 			console.info('Deleting', moduleName);
 			delete self.activeModules[moduleName];
 			
