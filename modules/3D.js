@@ -67,7 +67,7 @@ class iiiD extends modV.Module3D {
 		this.ico = new THREE.Mesh(this.geometry, material);
 		scene.add(this.ico);
 
-		this.geometry = new THREE.BoxGeometry( 1, 1, 1 );
+		this.geometry = new THREE.BoxGeometry( 7, 7, 7 );
 		this.cube = new THREE.Mesh(this.geometry, material);
 		scene.add(this.cube);
 
@@ -82,8 +82,6 @@ class iiiD extends modV.Module3D {
 	resize(canvas, scene, camera, material, texture) {
 		var WIDTH = canvas.width,
 			HEIGHT = canvas.height;
-
-		console.log(camera);
 
 		var ratio = WIDTH / HEIGHT;
 		var zoom = camera.top;
