@@ -103,7 +103,7 @@ class GiphyModV extends modV.Module2D {
 
 	}
 	
-	init() {
+	init(canvas) {
 		
 		this.add(new modV.CustomControl(this.createControls));
 
@@ -123,7 +123,15 @@ class GiphyModV extends modV.Module2D {
 		this.video.muted = true;
 		this.video.loop = true;
 		this.playbackRate = 1.0;
-		
+		this.giphyCanvas = document.createElement('canvas');
+		this.giphyCtx = this.giphyCanvas.getContext('2d');
+		this.giphyCanvas.width = canvas.width;
+		this.giphyCanvas.height = canvas.height;
+	}
+
+	resize(canvas) {
+		this.giphyCanvas.width = canvas.width;
+		this.giphyCanvas.height = canvas.height;
 	}
 
 	draw(canvas, ctx) {
@@ -133,7 +141,11 @@ class GiphyModV extends modV.Module2D {
 		} catch(e) {
 			
 		}
-		ctx.drawImage(this.video, 0, 0, canvas.width, canvas.height); 
+
+		// use as a frame buffer as HTML5 video cannot loop seamlessly 100% of the time (or even 1% :^( )
+		this.giphyCtx.drawImage(this.video, 0, 0, this.giphyCanvas.width, this.giphyCanvas.height); 
+
+		ctx.drawImage(this.giphyCanvas, 0, 0, canvas.width, canvas.height); 
 
 	}
 }
