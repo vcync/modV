@@ -5,7 +5,7 @@ class iiiD extends modV.Module3D {
 				name: '3D',
 				author: '2xAA',
 				version: 0.1,
-				previewWithOutput: false
+				previewWithOutput: true
 			}
 		});
 
@@ -54,13 +54,13 @@ class iiiD extends modV.Module3D {
 			NEAR = 0.1,
 			FAR = 10000;
 
-		camera = new THREE.PerspectiveCamera(VIEW_ANGLE,
+		/*camera = new THREE.PerspectiveCamera(VIEW_ANGLE,
 			ASPECT,
 			NEAR,
 			FAR
-		);
+		);*/
 
-		/*camera = new THREE.OrthographicCamera( - d * aspect, d * aspect, d, - d, 1, 1000 );*/
+		camera = new THREE.OrthographicCamera( - d * aspect, d * aspect, d, - d, 1, 1000 );
 		camera.position.z = 30;
 
 		this.geometry = new THREE.IcosahedronGeometry( 5, 0 );
@@ -82,8 +82,17 @@ class iiiD extends modV.Module3D {
 	resize(canvas, scene, camera, material, texture) {
 		var WIDTH = canvas.width,
 			HEIGHT = canvas.height;
+
+		console.log(camera);
+
+		var ratio = WIDTH / HEIGHT;
+		var zoom = camera.top;
+		var newWidth = zoom * ratio;
+		camera.left = -Math.abs(newWidth);
+		camera.right = newWidth;
+		camera.bottom = -Math.abs(zoom);
 		
-		camera.aspect = WIDTH / HEIGHT;
+		//camera.aspect = WIDTH / HEIGHT;
 		camera.updateProjectionMatrix();
 	}
 
