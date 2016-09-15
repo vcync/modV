@@ -15,14 +15,7 @@ class GiphyModV extends modV.Module2D {
 	}
 
 	initGiphy() {
-		console.log('called init giphy');
 		this.giphy = new Giphy('dc6zaTOxFJmzC');
-
-		this.video = document.createElement('video');
-		this.video.src = '';
-		this.video.muted = true;
-		this.video.loop = true;
-		this.playbackRate = 1.0;
 	}
 
 	createControls(Module) {
