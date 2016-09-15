@@ -4,6 +4,7 @@ var ws = require('nodejs-websocket'),
 	mkdirp = require('mkdirp'),
 	dive = require('dive'),
 	fs = require('fs'),
+	fsp = require('fs-promise'),
 	path = require('path'),
 	animated = require('animated-gif-detector'),
 	ffmpeg = require('fluent-ffmpeg'),
@@ -95,19 +96,22 @@ function createDirectories(callback) {
 /* Server */
 var clients = [];
 
-function update(shed) {
+function update(conn) {
 	console.log('Sending client profiles data');
-	shed.send(JSON.stringify({type: 'update', payload: profiles}));
+	conn.send(JSON.stringify({type: 'update', payload: profiles}));
 }
 
-var server = ws.createServer(function (conn) {
+var server = ws.createServer(function(conn) {
 	console.log('_New ws client_');
 
-	var shed = conn;
+	var clientIndex = clients.push(conn)-1;
+	conn.clientIndex = clientIndex;
 
-	update(shed);
+	conn.on('close', function() {
+		clients.splice(conn.clientIndex, 1);
+	});
 
-	shed.on('text', function(msg) {
+	conn.on('text', function(msg) {
 		var parsed = JSON.parse(msg);
 		console.log('Received message from websocket client: ' + msg);
 
@@ -115,8 +119,7 @@ var server = ws.createServer(function (conn) {
 
 			switch(parsed.request) {
 				case 'update':
-					
-					update(shed);
+					update(conn);
 
 				break;
 
@@ -125,7 +128,7 @@ var server = ws.createServer(function (conn) {
 
 					if(parsed.profile.trim() === "") {
 						console.log("Could not save preset, empty name");
-						shed.send(JSON.stringify({
+						conn.send(JSON.stringify({
 							'error': 'save-preset',
 							'message': 'Could not save preset',
 							'reason': 'Empty name'
@@ -160,7 +163,7 @@ var server = ws.createServer(function (conn) {
 							console.log('JSON saved to ' + outputPaletteFilename);
 							console.log('Adding palette to profiles object then sending back to client.');
 							profiles[parsed.profile].palettes[parsed.name] = parsed.payload;
-							update();
+							update(conn);
 						}
 					}); 
 
@@ -192,21 +195,33 @@ function mediaSearch(callback) {
 
 
 		if(directory === 'palette') {
-			fileParsed = JSON.parse(fs.readFileSync(file, 'utf8')); // sync because we don't want to finish before reading has occurred
-			profiles[profile].palettes[filename] = fileParsed;
-			console.log('🎨  Found palette in', profile + ':', filename);
+			fsp.readFile(file, 'utf8').then(contents => {
+				fileParsed = JSON.parse(contents);
+				profiles[profile].palettes[filename] = fileParsed;
+				console.log('🎨  Found palette in', profile + ':', filename);
+				clients.forEach(client => {
+					update(client);
+				});
+			});
 		}
 
 		if(directory === 'preset') {
-			fileParsed = JSON.parse(fs.readFileSync(file, 'utf8')); // sync because we don't want to finish before reading has occurred
-			profiles[profile].presets[filename] = fileParsed;
-			console.log('💾  Found preset data in', profile + ':', filename);
+			fsp.readFile(file, 'utf8').then(contents => {
+				fileParsed = JSON.parse(contents);
+				profiles[profile].presets[filename] = fileParsed;
+				console.log('💾  Found preset data in', profile + ':', filename);
+				clients.forEach(client => {
+					update(client);
+				});
+			});
 		}
 		
 		if(fileExt.toLowerCase() in viableVideo) {
-
 			profiles[profile].files.videos.push({'name': filename, 'path': filePath});
 			console.log('📼  Found video in', profile + ':', filename);
+			clients.forEach(client => {
+				update(client);
+			});
 		}
 
 		if(fileExt.toLowerCase() in viableImage) {
@@ -248,8 +263,7 @@ function mediaSearch(callback) {
 		//profiles[profile]
 
 	}, function() {
-		console.log('👍  Finished sloshing through media'/*, here\'s what I got: '*/);
-		//console.log(require('util').inspect(profiles, true, 10));
+		console.log('👍  Finished sloshing through media');
 		callback();
 	});
 }
@@ -266,12 +280,14 @@ createDirectories(function() {
 			watch('./media/', { recursive: true, followSymLinks: true }, function(filepath) {
 
 				if(path.parse(filepath).base !== '.DS_Store') {
-					console.log(filepath, ' changed - updating media and seding to clients');
+					console.log(filepath, ' changed - updating media and sending to clients');
 					
 					profiles = {};
 					createDirectories(function() {
 						mediaSearch(function() {
-							clients.forEach(update);
+							clients.forEach(client => {
+								update(client);
+							});
 						});
 					});
 				}
