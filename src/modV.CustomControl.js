@@ -58,9 +58,6 @@
 			id = Module.info.safeName + '-' + Date.now();
 			
 			var node = settings(Module);
-			
-			console.log(node);
-
 			node.id = id;
 
 			return node;
