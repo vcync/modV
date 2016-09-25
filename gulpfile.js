@@ -7,20 +7,27 @@ console.log('      modV Copyright  (C)  2016 Sam Wray      '+ "\n" +
             'For details, see LICENSE within this directory'+ "\n" +
             '----------------------------------------------');
 
-var webpack = require('webpack-stream');
-var connect = require('gulp-connect');
-var jshint = require('gulp-jshint');
-var symlink = require('gulp-sym');
-var clean = require('gulp-clean');
-var ejs = require('gulp-ejs');
-var gulp = require('gulp');
+const webpack = require('webpack-stream');
+const connect = require('gulp-connect');
+const jshint = require('gulp-jshint');
+const symlink = require('gulp-sym');
+const clean = require('gulp-clean');
+const ejs = require('gulp-ejs');
+const gulp = require('gulp');
 
-var exec = require('child_process').exec;
+const exec = require('child_process').exec;
+
+const NwBuilder = require('nw-builder');
 
 var allSources = ['./src/**/*.js', './**/*.ejs', './modules/**/*.js', './modules/**/*.html', './*.html']; // , './**/*.css'
 
 gulp.task('clean', function() {
 	return gulp.src('./dist', {read: false})
+		.pipe(clean());
+});
+
+gulp.task('clean:nwjs', function() {
+	return gulp.src('./nwjs/build', {read: false})
 		.pipe(clean());
 });
 
@@ -76,6 +83,11 @@ gulp.task('copy:license', ['clean'], function() {
 		.pipe(gulp.dest('dist'));
 });
 
+gulp.task('copy:nwjs', ['clean'], function() {
+	return gulp.src('./nwjs/package.json')
+		.pipe(gulp.dest('dist'));
+});
+
 gulp.task('symlink', ['clean'], function() {
 	return gulp.src('./media', {base: './'})
 		.pipe(symlink('dist/media'));
@@ -126,9 +138,27 @@ gulp.task('set-watcher', ['build'], function() {
 	gulp.watch(allSources, ['build', 'reload']);
 });
 
+gulp.task('nwjs', ['clean', 'ejs', 'webpack', 'copy', 'copy:nwjs', 'clean:nwjs'], function() {
+	var nw = new NwBuilder({
+		files: './dist/**/**',
+		platforms: ['osx64'],
+		flavor: 'normal',
+		cacheDir: './nwjs/cache',
+		buildDir: './nwjs/build'
+	});
+
+	nw.build().then(function () {
+		console.log('NWJS build done!');
+	}).catch(function (error) {
+		console.error(error);
+	});
+});
+
 gulp.task('copy', ['copy:modules', 'copy:html', 'copy:css', 'copy:library', 'copy:meyda', 'copy:fonts', 'copy:license']);
 
 gulp.task('build', ['clean', 'ejs', 'webpack', 'copy', 'symlink']);
+
+gulp.task('build-nwjs', ['clean', 'ejs', 'webpack', 'copy', 'nwjs']);
 
 gulp.task('watch', ['build', 'connect', 'set-watcher', 'media-manager']);
 
