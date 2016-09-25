@@ -6,8 +6,7 @@
 
 		if(!(Module instanceof self.Module2D) && !(Module instanceof self.ModuleShader) && !(Module instanceof self.Module3D)) return;
 
-		// Clone module -- afaik, there is no better way than this
-		//Module = self.cloneModule(Module, true);
+		// Clone module
 		
 		var oldModule = Module;
 		Module = new self.moduleStore[Module.info.originalModuleName]();
@@ -67,6 +66,8 @@
 
 		// Pull back initialised node from DOM
 		galleryItem = document.querySelector('.gallery .gallery-item:last-child');
+		var galleryItemTitle = galleryItem.querySelector('span.title');
+		galleryItemTitle.textContent = Module.info.name;
 
 		// Set data
 		// TODO: make sure this follows the HTML5 attributes spec: https://html.spec.whatwg.org/multipage/syntax.html#attributes-2
@@ -209,11 +210,11 @@
 	//}
 
 	function giMouseOut(Module, canvas, ctx) {
-		ctx.fillStyle = 'rgba(0,0,0,0.5)';
-		ctx.fillRect(0, 0, canvas.width, canvas.height);
-		ctx.fillStyle = 'white';
-		var textWidth = ctx.measureText(Module.info.name).width;
-		ctx.fillText(Module.info.name, canvas.width/2 - textWidth/2, canvas.height/2);
+		//ctx.fillStyle = 'rgba(0,0,0,0.5)';
+		//ctx.fillRect(0, 0, canvas.width, canvas.height);
+		//ctx.fillStyle = 'white';
+		//var textWidth = ctx.measureText(Module.info.name).width;
+		//ctx.fillText(Module.info.name, canvas.width/2 - textWidth/2, canvas.height/2);
 	}
 
 /*	function getMousePos(canvas, evt, round) {
