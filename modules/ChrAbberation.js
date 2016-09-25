@@ -10,15 +10,15 @@ class ChrAbberation extends modV.ModuleShader {
 				uniforms: {
 					rOffset: {
 						type: 'f',
-						value: -0.001
+						value: 1.0
 					},
 					gOffset: {
 						type: 'f',
-						value: 0.0
+						value: 1.015
 					},
 					bOffset: {
 						type: 'f',
-						value: 0.001
+						value: 1.03
 					}
 				} // Three.JS style uniforms
 			},
@@ -29,30 +29,30 @@ class ChrAbberation extends modV.ModuleShader {
 			variable: 'rOffset',
 			label: 'Red Offset',
 			varType: 'float',
-			min: -0.5,
-			max: 0.5,
+			min: 1.0,
+			max: 2.0,
 			step: 0.001,
-			default: -0.001
+			default: 1.0
 		}));
 
 		this.add(new modV.RangeControl({
 			variable: 'gOffset',
 			label: 'Green Offset',
 			varType: 'float',
-			min: -0.5,
-			max: 0.5,
+			min: 1.0,
+			max: 2.0,
 			step: 0.001,
-			default: 0.0
+			default: 1.015
 		}));
 
 		this.add(new modV.RangeControl({
 			variable: 'bOffset',
 			label: 'Blue Offset',
 			varType: 'float',
-			min: -0.5,
-			max: 0.5,
+			min: 1.0,
+			max: 2.0,
 			step: 0.001,
-			default: 0.001
+			default: 1.03
 		}));
 	}
 }
