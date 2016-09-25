@@ -348,8 +348,8 @@ var modV = function(options) {
 	};
 
 	// Check for Meyda
-	//if(typeof window.Meyda === 'object') {
-	if(typeof window.Meyda === 'function') {
+	if(typeof window.Meyda === 'object') {
+	//if(typeof window.Meyda === 'function') {
 		self.meydaSupport = true;
 		console.info('meyda detected, expanded audio analysis available.');
 	}
@@ -609,12 +609,13 @@ var modV = function(options) {
 		
 		// If meyda is about, use it
 		if(self.meydaSupport) {
-			/*self.meyda = new Meyda.createMeydaAnalyzer({
+			self.meyda = new Meyda.createMeydaAnalyzer({
 				audioContext: aCtx,
 				source: microphone,
 				bufferSize: 512
-			});*/
-			self.meyda = new Meyda(aCtx, microphone, 512);
+			});
+			//self.meydaInst = new Meyda(aCtx, microphone, 512);
+			//self.meyda = Meyda;
 		}
 		
 		// Tell the rest of the script we're all good.
