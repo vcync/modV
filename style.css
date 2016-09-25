@@ -183,6 +183,7 @@ section .top .gallery {
 	top: 8px;
 	left: 8px;
 	font-size: 25.6px;
+	letter-spacing: -2px;
 }
 
 .active-list .gallery-item.sortable-ghost .title-wrapper {
