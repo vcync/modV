@@ -69,8 +69,8 @@ gulp.task('copy:library', ['clean'], function() {
 });
 
 gulp.task('copy:meyda', ['clean'], function() {
-	return gulp.src('node_modules/meyda/dist/web/meyda.js', {base: './libraries/'})
-		.pipe(gulp.dest('dist'));
+	return gulp.src('node_modules/meyda/dist/web/meyda.js')
+		.pipe(gulp.dest('dist/libraries'));
 });
 
 gulp.task('copy:fonts', ['clean'], function() {
