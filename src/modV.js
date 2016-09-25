@@ -72,6 +72,8 @@ var modV = function(options) {
 
 	if(!self.options.controlDomain) self.options.controlDomain = location.protocol + '//' + location.host;
 
+	self.baseURL = self.options.baseURL || '';
+
 	// Attach message handler for sockets and windows
 	self.addMessageHandler();
 
