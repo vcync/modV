@@ -60,7 +60,9 @@
 		</section>
 
 		<div id="temp" style="display:none;"></div>
-
+		<% if (nwjs) { %>
+		<script src="nwjs-include.js"></script>
+		<% } %>
 		<script id="live-reload" src="http://localhost:35729/livereload.js"></script>
 		<script src="./libraries/jquery-2.2.1.min.js"></script>
 		<script src="./libraries/simplebar/simplebar.min.js"></script>

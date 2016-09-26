@@ -1,6 +1,6 @@
 //jshint node:true
 
-var ws = require('nodejs-websocket'),
+const ws = require('nodejs-websocket'),
 	mkdirp = require('mkdirp'),
 	dive = require('dive'),
 	fs = require('fs'),
@@ -8,7 +8,8 @@ var ws = require('nodejs-websocket'),
 	path = require('path'),
 	animated = require('animated-gif-detector'),
 	ffmpeg = require('fluent-ffmpeg'),
-	watch = require('node-watch');
+	watch = require('node-watch'),
+	open = require("open");
 
 var isWin = /^win/.test(process.platform);
 var pathSeparator = "/";
@@ -297,3 +298,7 @@ createDirectories(function() {
 		});
 	});
 });
+
+exports.openMediaFolder = function() {
+	open(process.cwd() + '/media');
+};
