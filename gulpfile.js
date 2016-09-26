@@ -138,7 +138,7 @@ gulp.task('set-watcher', ['build'], function() {
 	gulp.watch(allSources, ['build', 'reload']);
 });
 
-gulp.task('nwjs', ['clean', 'ejs', 'webpack', 'copy', 'copy:nwjs', 'clean:nwjs'], function() {
+gulp.task('nwjs', ['clean', 'ejs', 'webpack', 'copy', 'copy:nwjs', 'clean:nwjs'], function(cb) {
 	var nw = new NwBuilder({
 		files: './dist/**/**',
 		platforms: ['osx64'],
@@ -147,10 +147,12 @@ gulp.task('nwjs', ['clean', 'ejs', 'webpack', 'copy', 'copy:nwjs', 'clean:nwjs']
 		buildDir: './nwjs/build'
 	});
 
-	nw.build().then(function () {
+	nw.on('log', console.log);
+
+	return nw.build().then(function () {
 		console.log('NWJS build done!');
-	}).catch(function (error) {
-		console.error(error);
+	}).catch(function(error) {
+		cb(error);
 	});
 });
 
