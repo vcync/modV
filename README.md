@@ -26,3 +26,11 @@ To do this, find either cmd or PowerShell in your start menu, right click and se
 
 ### Linux
 - Jack may be the way to go for audio routing to the browser, but I have not tested this. Please submit a PR for this README if you have any information on this.
+
+## Building standalone application
+modV can also be built using [NWJS](http://nwjs.io/) as a standalone application.
+
+To build modV make sure you have already run ```npm install``` and then run ```gulp build-nwjs```. After it has finished building your application should appear in ./nwjs/build/modV.
+
+By default the build script will build for OS X 64-bit and Windows 64-bit. To change this, edit the ```build-nwjs``` task in ```gulpfile.js``` and modify the platform target array.  
+For more information, please read [the nw-builder documentation](https://github.com/nwjs/nw-builder).
