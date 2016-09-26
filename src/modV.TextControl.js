@@ -56,7 +56,8 @@
 
 			var node = document.createElement('input');
 			node.type = 'text';
-			if('default' in settings) node.value = settings.default;
+			if(Module[self.variable] !== undefined) node.value = Module[self.variable];
+			else if('default' in settings) node.value = settings.default;
 
 			node.addEventListener('input', function() {
 				Module[self.variable] = this.value;

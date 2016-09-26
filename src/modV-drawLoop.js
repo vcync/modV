@@ -24,7 +24,7 @@
 		var firstSolo = true;
 
 		for(var i=0; i < self.modOrder.length; i++) {
-			var Module = self.registeredMods[self.modOrder[i]];
+			var Module = self.activeModules[self.modOrder[i]];
 
 			if(Module.info.disabled || Module.info.alpha === 0) continue;
 

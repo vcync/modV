@@ -60,13 +60,19 @@ var modV = function(options) {
 		analyser, // Analyser Node 
 		microphone;
 
+	self.version = "1.2b";
+
 	// Load user options
 	if(typeof options !== 'undefined') self.options = options;
+
+	self.options.user = "please set username";
 
 	self.clearing = true;
 	if(!self.options.clearing) self.clearing = false;
 
 	if(!self.options.controlDomain) self.options.controlDomain = location.protocol + '//' + location.host;
+
+	self.baseURL = self.options.baseURL || '';
 
 	// Attach message handler for sockets and windows
 	self.addMessageHandler();
@@ -75,7 +81,9 @@ var modV = function(options) {
 	self.meydaSupport = false;
 
 	self.modOrder = [];
+	self.moduleStore = {};
 	self.registeredMods = {};
+	self.activeModules = {};
 
 	self.video = document.createElement('video');
 	self.video.autoplay = true;
@@ -102,35 +110,17 @@ var modV = function(options) {
 	// UI Templates
 	self.templates = document.querySelector('link[rel="import"]').import;
 
-	// Module Clone
-	self.cloneModule = function(obj, getSettings) {
-		var settings, temp;
-		if(getSettings) settings = obj.getSettings();
-		if (obj === null || typeof obj !== "object") {
-			return obj;
-		}
-		if(!getSettings) temp = new obj.constructor();
-		else temp = new obj.constructor(settings);
-
-		forIn(obj, key => {
-			try {
-				if(obj[key] === THREE[key]) temp[key] = new obj.constructor();
-				temp[key] = self.cloneModule(obj[key], false);
-			} catch(e) {
-				//console.error('Cannot clone native code', e);
-			}
-		});
-
-		//var temp = obj.clone();
-
-		return temp;
+	// Set name
+	self.setName = function(name) {
+		self.options.user = name;
+		self.saveOptions();
 	};
 
 	// Window resize
 	self.resize = function() {
-		self.THREE.renderer.setSize(self.canvas.width, self.canvas.height);
+		self.THREE.renderer.setSize(self.previewCanvas.width, self.previewCanvas.height);
 
-		forIn(self.registeredMods, (mod, Module) => {
+		forIn(self.activeModules, (mod, Module) => {
 			if('resize' in Module) {
 				if(Module instanceof self.Module3D) {
 					Module.resize(self.previewCanvas, Module.getScene(), Module.getCamera(), self.THREE.material, self.THREE.texture);
@@ -224,33 +214,55 @@ var modV = function(options) {
 			var presetModuleData = self.presets[id].moduleData[mod];
 			var Module;
 
-			if(presetModuleData.clone) {
-				Module = self.cloneModule(self.registeredMods[presetModuleData.originalName], true);
+			Module = new self.moduleStore[presetModuleData.originalModuleName]();
 
-				var originalModule = self.registeredMods[presetModuleData.originalName];
+			var originalModule = self.registeredMods[presetModuleData.originalName];
 
-				// Create new controls from original Module to avoid scope contamination
-				if('controls' in originalModule.info) {
-					Module.info.controls = [];
+			Module.info.originalModuleName = originalModule.info.originalModuleName;
+			
+			Module.info.name = presetModuleData.name;
+			Module.info.originalName = presetModuleData.originalName;
+			Module.info.safeName = presetModuleData.safeName;
 
-					originalModule.info.controls.forEach(function(control) {
-						var settings = control.getSettings();
-						var newControl = new control.constructor(settings);
-						Module.info.controls.push(newControl);
+			// init Module
+			if(Module instanceof self.ModuleShader) {
+				Module.programIndex = originalModule.programIndex;
+				
+				// Loop through Uniforms, expose self.uniforms and create local variables
+				if('uniforms' in Module.settings.info) {
+
+					forIn(Module.settings.info.uniforms, (uniformKey, uniform) => {
+						switch(uniform.type) {
+							case 'f':
+								Module[uniformKey] = parseFloat(uniform.value);
+								break;
+
+							case 'i':
+								Module[uniformKey] = parseInt(uniform.value);
+								break;
+
+							case 'b':
+								Module[uniformKey] = uniform.value;
+								break;
+
+						}
 					});
 				}
+			}
 
-				Module.info.name = presetModuleData.name;
-				Module.info.originalName = presetModuleData.originalName;
-				Module.info.safeName = presetModuleData.safeName;
+			// init Module
+			if('init' in Module && Module instanceof self.Module2D) {
+				Module.init(self.previewCanvas, self.previewCtx);
+			}
 
-			} else {
-				Module = self.registeredMods[presetModuleData.name];
+			if('init' in Module && Module instanceof self.Module3D) {
+				Module.init(self.previewCanvas, Module.getScene(), Module.getCamera(), self.THREE.material, self.THREE.texture);
 			}
 
 			// Set Module values
 			Module.info.disabled = presetModuleData.disabled;
 			Module.info.blend = presetModuleData.blend;
+			Module.info.solo = presetModuleData.solo;
 
 			forIn(presetModuleData.values, value => {
 				Module[value] = presetModuleData.values[value];
@@ -259,8 +271,8 @@ var modV = function(options) {
 			// Create UI controls
 			self.createControls(Module, self);
 
-			// Add to registry
-			self.registeredMods[Module.info.name] = Module;
+			// Add to active modules
+			self.activeModules[Module.info.name] = Module;
 
 			// Set mod Order
 			self.setModOrder(Module.info.name, idx);
@@ -279,7 +291,12 @@ var modV = function(options) {
 	self.savePreset = function(name, profile) {
 		var preset = {
 			modOrder: self.modOrder,
-			moduleData: {}
+			moduleData: {},
+			presetInfo: {
+				datetime: Date.now(),
+				modVVersion: self.version,
+				author: self.options.user
+			}
 		};
 		
 		function extractValues(Control) {
@@ -289,19 +306,20 @@ var modV = function(options) {
 		for (var i=0; i < self.modOrder.length; i++) {
 			var mod = self.modOrder[i];
 
-			var Module = self.registeredMods[mod];
+			var Module = self.activeModules[mod];
 			
 			preset.moduleData[mod] = {};
 			preset.moduleData[mod].disabled = Module.info.disabled;
 			preset.moduleData[mod].blend = Module.info.blend;
 			preset.moduleData[mod].name = Module.info.name;
 			preset.moduleData[mod].clone = false;
-			preset.moduleData[mod].originalName = null;
+			preset.moduleData[mod].originalName = Module.info.originalName;
 			preset.moduleData[mod].safeName = Module.info.safeName;
+			preset.moduleData[mod].originalModuleName = Module.info.originalModuleName;
+			preset.moduleData[mod].solo = Module.info.solo;
 
 			if('originalName' in Module.info) {
 				preset.moduleData[mod].clone = true;
-				preset.moduleData[mod].originalName = Module.info.originalName;
 			}
 
 			preset.moduleData[mod].values = {};
@@ -332,8 +350,8 @@ var modV = function(options) {
 	};
 
 	// Check for Meyda
-	//if(typeof window.Meyda === 'object') {
-	if(typeof window.Meyda === 'function') {
+	if(typeof window.Meyda === 'object') {
+	//if(typeof window.Meyda === 'function') {
 		self.meydaSupport = true;
 		console.info('meyda detected, expanded audio analysis available.');
 	}
@@ -356,7 +374,7 @@ var modV = function(options) {
 		console.info('THREE.js detected.', 'Revision:', THREE.REVISION);
 		self.THREE = {};
 
-		self.THREE.texture = new THREE.Texture(self.canvas);
+		self.THREE.texture = new THREE.Texture(self.previewCanvas);
 		self.THREE.texture.minFilter = THREE.LinearFilter;
 
 		self.THREE.material = new THREE.MeshBasicMaterial({
@@ -437,7 +455,6 @@ var modV = function(options) {
 						videoSource = videoSrc.id;
 					}
 				});
-				console.log(foundSources);
 
 				self.setMediaSource(audioSource || foundSources.audio[0].id, videoSource || foundSources.video[0].id);
 				self.startUI();
@@ -457,28 +474,28 @@ var modV = function(options) {
 				setTimeout(self.start, 1000);
 			} else {
 
-				if(self.options.remote) {
-					forIn(self.registeredMods, mod => {
-						var infoToSend = JSON.parse(JSON.stringify(self.registeredMods[mod].info)); // copy the set
-						var variables = [];
+				// if(self.options.remote) {
+				// 	forIn(self.registeredMods, mod => {
+				// 		var infoToSend = JSON.parse(JSON.stringify(self.registeredMods[mod].info)); // copy the set
+				// 		var variables = [];
 
-						if('controls' in self.registeredMods[mod].info) {
-							self.registeredMods[mod].info.controls.forEach(function(controlSet) {
-								var variable = controlSet.variable;
-								variables.push(variable);
-							});
+				// 		if('controls' in self.registeredMods[mod].info) {
+				// 			self.registeredMods[mod].info.controls.forEach(function(controlSet) {
+				// 				var variable = controlSet.variable;
+				// 				variables.push(variable);
+				// 			});
 
-							variables.forEach(function(v) {
-								infoToSend[v] = self.registeredMods[mod][v];
-							});
-						}
+				// 			variables.forEach(function(v) {
+				// 				infoToSend[v] = self.registeredMods[mod][v];
+				// 			});
+				// 		}
 
-						self.ws.send(JSON.stringify({
-							type: 'register',
-							payload: infoToSend
-						}));
-					});
-				}
+				// 		self.ws.send(JSON.stringify({
+				// 			type: 'register',
+				// 			payload: infoToSend
+				// 		}));
+				// 	});
+				// }
 
 				requestAnimationFrame(self.loop.bind(self)); //modV-drawLoop.js //TODO: figure out why we're using bind (I get it, but seems stupid)
 			}
@@ -592,16 +609,15 @@ var modV = function(options) {
 		// Connect the gain node to the output (audio->(analyser)->gain->destination)
 		self.gainNode.connect(aCtx.destination);
 		
-		console.log(typeof aCtx, typeof microphone);
-
 		// If meyda is about, use it
 		if(self.meydaSupport) {
-			/*self.meyda = new Meyda.createMeydaAnalyzer({
+			self.meyda = new Meyda.createMeydaAnalyzer({
 				audioContext: aCtx,
 				source: microphone,
 				bufferSize: 512
-			});*/
-			self.meyda = new Meyda(aCtx, microphone, 512);
+			});
+			//self.meydaInst = new Meyda(aCtx, microphone, 512);
+			//self.meyda = Meyda;
 		}
 		
 		// Tell the rest of the script we're all good.

@@ -7,26 +7,43 @@
 		return string.split(operator).join(replacement);
 	}
 
-	var loadJS = function(url, location, implementationCode){
+	var loadJS = function(url, location, Module){
 		//url is URL of external file, implementationCode is the code
 		//to be called from the file, location is the location to 
 		//insert the <script> element
 
-		var scriptTag = document.createElement('script');
+		var loaderPromise = new Promise(resolve => {
+			var scriptTag = document.createElement('script');
+			scriptTag.onload = function() {
+				resolve(Module);
+			};
+			scriptTag.onreadystatechange = function() {
+				resolve(Module);
+			};
 
-		if(typeof implementationCode === "function") {
-			scriptTag.onload = implementationCode;
-			scriptTag.onreadystatechange = implementationCode;
-		}
+			scriptTag.src = url;
 
-		scriptTag.src = url;
+			location.appendChild(scriptTag);
+		});
 
-		location.appendChild(scriptTag);
+		return loaderPromise;
 	};
 
 
-	modV.prototype.register = function(Module) {
+	modV.prototype.register = function(Module, instantiated) {
 		var self = this;
+		var originalModule = Module;
+
+		if(originalModule.name in self.moduleStore) {
+			throw new STError("Already registered a Module with the name " + originalModule.name + ". Could not register duplicately named module");
+		}
+
+		// check if already instantiated for the script loader
+		if(!instantiated) {
+			self.moduleStore[originalModule.name] = originalModule;
+			Module = new Module();
+			Module.info.originalModuleName = originalModule.name;
+		}
 		
 		// Shared Module variables
 		var name;
@@ -40,26 +57,31 @@
 		name = Module.info.name;
 		Module.info.safeName = replaceAll(name, ' ', '-');
 
+		// Super hacky way of loading scripts
+		// TODO: use promises?
 		if('scripts' in Module.info) {
 			if(!('loadedScripts' in Module.info)) {
 				Module.info.loadedScripts = [];
 			}
 
 			if(Module.info.loadedScripts.length !== Module.info.scripts.length) {
-				Module.info.scripts.forEach(function(script, idx) {
-					loadJS('/modules/' + script, document.body, function() {
-						Module.info.loadedScripts[idx] = true;
-						self.register(Module);
+				Module.info.scripts.forEach(function(script) {
+					loadJS('/modules/' + script, document.body, Module).then(function(Module) {
+						Module.info.loadedScripts.push(true);
+
+						if(Module.info.loadedScripts.length === Module.info.scripts.length) {
+							self.register(Module, true);
+						}
+
 					});
 				});
-
 				return;
 			}
 		}
 
 		// Handle Module2D
 		if(Module instanceof self.Module2D) {
-			console.info('Register: Module2D');
+			console.info('Register: Module2D', Module.info.originalModuleName, '(' + name + ')');
 
 			// Parse Meyda
 			if(Module.info.meyda) {
@@ -78,7 +100,7 @@
 
 		// Handle ModuleShader
 		if(Module instanceof self.ModuleShader) {
-			console.info('Register: ModuleShader');
+			console.info('Register: ModuleShader', Module.info.originalModuleName, '(' + name + ')');
 
 			Module.info.uniforms.modVcanvas = {
 				type: "t",
@@ -86,7 +108,7 @@
 			};
 
 			// Read shader document
-			getDocument('/modules/' + Module.shaderFile, function(xhrDocument) {
+			getDocument(self.baseURL + '/modules/' + Module.shaderFile, function(xhrDocument) {
 				
 				var vert = xhrDocument.querySelector('script[type="x-shader/x-vertex"]').textContent;
 				var frag = xhrDocument.querySelector('script[type="x-shader/x-fragment"]').textContent;
@@ -148,8 +170,7 @@
 
 		// Handle Module3D
 		if(Module instanceof self.Module3D) {
-
-			console.info('Register: Module3D');
+			console.info('Register: Module3D', Module.info.originalModuleName, '(' + name + ')');
 
 			// Parse Meyda
 			if(Module.info.meyda) {
@@ -157,7 +178,7 @@
 			}
 
 			// Initialise Module
-			Module.init(self.canvas, Module.getScene(), Module.getCamera(), self.THREE.material, self.THREE.texture);
+			Module.init(self.previewCanvas, Module.getScene(), Module.getCamera(), self.THREE.material, self.THREE.texture);
 
 			// Add to Registry
 			self.registeredMods[name] = Module;

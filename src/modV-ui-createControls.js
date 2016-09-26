@@ -25,8 +25,6 @@
 
 				inputNode.addEventListener('contextmenu', function(ev) {
 					ev.preventDefault();
-
-					console.log('ctx', ev);
 					
 					self.showContextMenu('control', [control, idx, Module, inputNode], ev);
 

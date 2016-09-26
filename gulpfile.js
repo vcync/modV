@@ -7,20 +7,29 @@ console.log('      modV Copyright  (C)  2016 Sam Wray      '+ "\n" +
             'For details, see LICENSE within this directory'+ "\n" +
             '----------------------------------------------');
 
-var webpack = require('webpack-stream');
-var connect = require('gulp-connect');
-var jshint = require('gulp-jshint');
-var symlink = require('gulp-sym');
-var clean = require('gulp-clean');
-var ejs = require('gulp-ejs');
-var gulp = require('gulp');
+const webpack = require('webpack-stream');
+const connect = require('gulp-connect');
+const jshint = require('gulp-jshint');
+const symlink = require('gulp-sym');
+const mkdirp = require('mkdirp');
+const clean = require('gulp-clean');
+const ejs = require('gulp-ejs');
+const gulp = require('gulp');
+const fs = require('fs');
 
-var exec = require('child_process').exec;
+const exec = require('child_process').exec;
 
-var allSources = ['./src/**/*.js', './**/*.ejs', './modules/**/*.js', './modules/**/*.html', './*.html', './**/*.css'];
+const NwBuilder = require('nw-builder');
+
+var allSources = ['./src/**/*.js', './**/*.ejs', './modules/**/*.js', './modules/**/*.html', './*.html']; // , './**/*.css'
 
 gulp.task('clean', function() {
 	return gulp.src('./dist', {read: false})
+		.pipe(clean());
+});
+
+gulp.task('clean:nwjs', function() {
+	return gulp.src('./nwjs/build', {read: false})
 		.pipe(clean());
 });
 
@@ -62,8 +71,8 @@ gulp.task('copy:library', ['clean'], function() {
 });
 
 gulp.task('copy:meyda', ['clean'], function() {
-	return gulp.src('node_modules/meyda/dist/web/meyda.js', {base: './libraries/'})
-		.pipe(gulp.dest('dist'));
+	return gulp.src('node_modules/meyda/dist/web/meyda.js')
+		.pipe(gulp.dest('dist/libraries'));
 });
 
 gulp.task('copy:fonts', ['clean'], function() {
@@ -76,6 +85,38 @@ gulp.task('copy:license', ['clean'], function() {
 		.pipe(gulp.dest('dist'));
 });
 
+gulp.task('copy:nwjs:include', ['clean'], function() {
+	return gulp.src('./nwjs/nwjs-include.js')
+		.pipe(gulp.dest('dist'));
+});
+
+gulp.task('copy:nwjs:package', ['clean'], function() {
+	return gulp.src('./nwjs/package.json')
+		.pipe(gulp.dest('dist'));
+});
+
+gulp.task('copy:nwjs:mediamanager', ['clean'], function() {
+	return gulp.src('./mediaManager.js')
+		.pipe(gulp.dest('dist'));
+});
+
+gulp.task('copy:nwjs:mediamanagermodules', ['clean'], function(cb) {
+
+	// read npm package and copy mediaManager dependancies to dist, for nwjs build
+	var package = JSON.parse(fs.readFileSync('package.json', 'utf8'));
+			
+	var foldersToCopy = [];
+
+	for(var dep in package.dependencies) {
+
+		foldersToCopy.push('./node_modules/' + dep + '/**/*');
+	
+	}
+
+	return gulp.src(foldersToCopy, {base: './'})
+		.pipe(gulp.dest('dist'));
+});
+
 gulp.task('symlink', ['clean'], function() {
 	return gulp.src('./media', {base: './'})
 		.pipe(symlink('dist/media'));
@@ -83,18 +124,28 @@ gulp.task('symlink', ['clean'], function() {
 
 gulp.task('ejs', ['clean'], function() {
 	return gulp.src('./*.ejs', {base: './'})
-		.pipe(ejs({}, {
+		.pipe(ejs({nwjs: false}, {
 			ext: '.html'
 		}))
 		.pipe(gulp.dest('dist'));
 });
 
-gulp.task('media-manager', function(cb) {
+gulp.task('ejs:nwjs', ['clean'], function() {
+	return gulp.src('./*.ejs', {base: './'})
+		.pipe(ejs({nwjs: true}, {
+			ext: '.html'
+		}))
+		.pipe(gulp.dest('dist'));
+});
 
-	exec('node ./mediaManager.js', function (err, stdout, stderr) {
-		console.log(stdout);
-		console.log(stderr);
-		cb(err);
+gulp.task('media-manager', ['set-watcher'], function(cb) {
+
+	var mediaManager = exec('node ./mediaManager.js', function(err) {
+		if(err) cb(err);
+	});
+
+	mediaManager.stdout.on('data', function(data) {
+	    console.log(data.toString()); 
 	});
 
 	//return run('node ./mediaManager.js').exec();
@@ -124,8 +175,32 @@ gulp.task('set-watcher', ['build'], function() {
 	gulp.watch(allSources, ['build', 'reload']);
 });
 
+gulp.task('nwjs', ['clean', 'ejs:nwjs', 'webpack', 'copy', 'copy:nwjs:include', 'copy:nwjs:package', 'copy:nwjs:mediamanager', 'copy:nwjs:mediamanagermodules', 'clean:nwjs'], function(cb) {
+	mkdirp.sync('./dist/media/');
+
+	var nw = new NwBuilder({
+		files: './dist/**/**',
+		platforms: ['osx64', 'win64'],
+		flavor: 'normal',
+		cacheDir: './nwjs/cache',
+		buildDir: './nwjs/build'
+	});
+
+	nw.on('log', console.log);
+
+	return nw.build().then(function () {
+		console.log('NWJS build done!');
+	}).catch(function(error) {
+		cb(error);
+	});
+});
+
 gulp.task('copy', ['copy:modules', 'copy:html', 'copy:css', 'copy:library', 'copy:meyda', 'copy:fonts', 'copy:license']);
 
 gulp.task('build', ['clean', 'ejs', 'webpack', 'copy', 'symlink']);
 
+gulp.task('build-nwjs', ['clean', 'ejs:nwjs', 'webpack', 'copy', 'nwjs']);
+
 gulp.task('watch', ['build', 'connect', 'set-watcher', 'media-manager']);
+
+gulp.task('watch-only', ['build', 'connect', 'set-watcher']);

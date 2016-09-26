@@ -2,93 +2,79 @@
 	'use strict';
 	/*jslint browser: true */
 
-	modV.prototype.ModuleShader = function(settings) {
-		var self = this;
+	modV.prototype.ModuleShader = class ModuleShader {
 
-		// Experimental (better) function clone
-		self.clone = function() {
-			return jQuery.extend(true, this.constructor(settings), this);
-		};
+		constructor(settings) {
+			this.settings = settings;
 
-		// Module error handle
-		function ModuleError(message) {
-			// Grab the stack
-			this.stack = (new Error()).stack;
+			// Set up error reporting
+			var ModuleError = modV.ModuleError;
+			ModuleError.prototype = Object.create(Error.prototype);
+			ModuleError.prototype.constructor = ModuleError;
 
-			// Parse the stack for some helpful debug info
-			var reg = /\((.*?)\)/;    
-			var stackInfo = this.stack.split('\n').pop().trim();
-			stackInfo = reg.exec(stackInfo)[0];
+			// Check for settings Object
+			if(!settings) throw new ModuleError('Module had no settings');
+			// Check for info Object
+			if(!('info' in settings)) throw new ModuleError('Module had no info in settings');
+			// Check for info.name
+			if(!('name' in settings.info)) throw new ModuleError('Module had no name in settings.info');
+			// Check for info.author
+			if(!('author' in settings.info)) throw new ModuleError('Module had no author in settings.info');
+			// Check for info.version
+			if(!('version' in settings.info)) throw new ModuleError('Module had no version in settings.info');
+			// Check for shaderFile
+			if(!('shaderFile' in settings)) throw new ModuleError('Module had no path to shader in settings.shaderFile');
 
-			// Expose name and message
-			this.name = 'modV.Module Error';
-			this.message = message + ' ' + stackInfo || 'Error';  
-		}
-		// Inherit from Error
-		ModuleError.prototype = Object.create(Error.prototype);
-		ModuleError.prototype.constructor = ModuleError;
+			// Create control Array
+			if(!settings.info.controls) settings.info.controls = [];
 
-		self.getSettings = function() {
-			return settings;
-		};
+			// Settings passed, expose this.info
+			this.info = settings.info;
 
-		function add(thing) {
-			if(thing instanceof Array) {
-				for(var i=0; i < thing.length; i++) {
-					add(thing[i]);
-				}
+			// Expose preview option
+			if('previewWithOutput' in settings) {
+				this.previewWithOutput = settings.previewWithOutput;
 			} else {
-				if(!settings.info.controls) settings.info.controls = [];
-				settings.info.controls.push(thing);
+				this.previewWithOutput = false;
 			}
 
+			// Settings passed, expose self.shaderFile
+			this.shaderFile = settings.shaderFile;
+
+			// Loop through Uniforms, expose self.uniforms and create local variables
+			if('uniforms' in settings.info) {
+
+				forIn(settings.info.uniforms, (uniformKey, uniform) => {
+					switch(uniform.type) {
+						case 'f':
+							this[uniformKey] = parseFloat(uniform.value);
+							break;
+
+						case 'i':
+							this[uniformKey] = parseInt(uniform.value);
+							break;
+
+						case 'b':
+							this[uniformKey] = uniform.value;
+							break;
+
+					}
+				});
+			}
 		}
 
-		self.add = function(thing) {
+		add(item) {
+			if(item instanceof Array) {
+				item.forEach(thing => {
+					this.add(thing);
+				});
+			} else {
+				this.settings.info.controls.push(item);
+			}
+		}
 
-			add(thing);
-
-		};
 		
-		// Check for settings Object
-		if(!settings) throw new ModuleError('Module had no settings');
-		// Check for info Object
-		if(!('info' in settings)) throw new ModuleError('Module had no info in settings');
-		// Check for info.name
-		if(!('name' in settings.info)) throw new ModuleError('Module had no name in settings.info');
-		// Check for info.author
-		if(!('author' in settings.info)) throw new ModuleError('Module had no author in settings.info');
-		// Check for info.version
-		if(!('version' in settings.info)) throw new ModuleError('Module had no version in settings.info');
-		// Check for shaderFile
-		if(!('shaderFile' in settings)) throw new ModuleError('Module had no path to shader in settings.shaderFile');
-
-		// Settings passed, expose self.info
-		self.info = settings.info;
-
-		// Settings passed, expose self.shaderFile
-		self.shaderFile = settings.shaderFile;
-
-		// Loop through Uniforms, expose self.uniforms and create local variables
-		if('uniforms' in settings.info) {
-
-			forIn(settings.info.uniforms, (uniformKey, uniform) => {
-				switch(uniform.type) {
-					case 'f':
-						self[uniformKey] = parseFloat(uniform.value);
-						break;
-
-					case 'i':
-						self[uniformKey] = parseInt(uniform.value);
-						break;
-
-					case 'b':
-						self[uniformKey] = uniform.value;
-						break;
-
-				}
-			});
-		}
+		
 	};
 
 })(module);

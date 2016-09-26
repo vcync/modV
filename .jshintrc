@@ -98,6 +98,9 @@
         "BeatDetektor": true,
         "Meyda": true,
         "forIn": true,
-        "rangeRanger": true
+        "rangeRanger": true,
+        "STError": true,
+        "awesomeText": true,
+        "awesomeTextMeasure": true
     }   
 }

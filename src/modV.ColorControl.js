@@ -56,6 +56,8 @@
 
 			var node = document.createElement('input');
 			node.type = 'color';
+			console.log('color control', Module[self.variable]);
+			if(Module[self.variable] !== undefined) node.value = Module[self.variable];
 			if('default' in settings) node.value = settings.default;
 
 			node.addEventListener('input', function() {

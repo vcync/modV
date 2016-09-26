@@ -1,15 +1,15 @@
 //jshint node:true
 
-var restify = require('restify'),
+const ws = require('nodejs-websocket'),
+	mkdirp = require('mkdirp'),
 	dive = require('dive'),
-	ws = require('watershed'),
 	fs = require('fs'),
+	fsp = require('fs-promise'),
 	path = require('path'),
 	animated = require('animated-gif-detector'),
 	ffmpeg = require('fluent-ffmpeg'),
-	watch = require('node-watch');
-
-ws = new ws.Watershed();
+	watch = require('node-watch'),
+	open = require("open");
 
 var isWin = /^win/.test(process.platform);
 var pathSeparator = "/";
@@ -54,11 +54,11 @@ function createDirectories(callback) {
 					videos: []
 				}
 			}; // Create new profile
-			console.log('New profile created: ', dir);
+			console.log('Profile found: ', dir);
 		} else {
 			// This should never error
 			// If it does, we're screwed
-			throw 'Somehow two directories with the same name in the same directory were discovered.\nPlease check this and try again.';
+			throw 'Somehow two directories with the same name in the same directory were discovered. Please check this and try again.';
 		}
 
 		// Create folders that need to exist
@@ -95,52 +95,41 @@ function createDirectories(callback) {
 }
 
 /* Server */
-var server = restify.createServer({
-	handleUpgrades: true,
-	name: 'modV profile manager'
-});
-
 var clients = [];
 
-function update(shed) {
-	console.log('\nSending client profiles data');
-	shed.send(JSON.stringify({type: 'update', payload: profiles}));
+function update(conn) {
+	console.log('Sending client profiles data');
+	conn.send(JSON.stringify({type: 'update', payload: profiles}));
 }
 
-server.get('/', function upgradeRoute(req, res, next) {
-	if (!res.claimUpgrade) {
-		next(new Error('Connection Must Upgrade For WebSockets'));
-		return;
-	}
-
+var server = ws.createServer(function(conn) {
 	console.log('_New ws client_');
 
-	var upgrade = res.claimUpgrade();
+	var clientIndex = clients.push(conn)-1;
+	conn.clientIndex = clientIndex;
 
-	var shed = ws.accept(req, upgrade.socket, upgrade.head);
-	clients.push(shed);
+	conn.on('close', function() {
+		clients.splice(conn.clientIndex, 1);
+	});
 
-	update(shed);
-
-	shed.on('text', function(msg) {
+	conn.on('text', function(msg) {
 		var parsed = JSON.parse(msg);
-		console.log('\nReceived message from websocket client: ' + msg);
+		console.log('Received message from websocket client: ' + msg);
 
 		if('request' in parsed) {
 
 			switch(parsed.request) {
 				case 'update':
-					
-					update(shed);
+					update(conn);
 
 				break;
 
 				case 'save-preset':
-					console.log('\nAttempting to save preset in profile:', parsed.profile);
+					console.log('Attempting to save preset in profile:', parsed.profile);
 
 					if(parsed.profile.trim() === "") {
 						console.log("Could not save preset, empty name");
-						shed.send(JSON.stringify({
+						conn.send(JSON.stringify({
 							'error': 'save-preset',
 							'message': 'Could not save preset',
 							'reason': 'Empty name'
@@ -149,6 +138,9 @@ server.get('/', function upgradeRoute(req, res, next) {
 					}
 
 					var outputPresetFilename = './media/' + parsed.profile + '/preset/' + parsed.name + '.json';
+					var dir = './media/' + parsed.profile + '/preset/';
+
+					mkdirp.sync(dir);
 
 					fs.writeFile(outputPresetFilename, JSON.stringify(parsed.payload), function(err) {
 						if(err) {
@@ -156,12 +148,12 @@ server.get('/', function upgradeRoute(req, res, next) {
 						} else {
 							console.log('JSON saved to ' + outputPresetFilename);
 						}
-					}); 
+					});
 
 				break;
 
 				case 'save-palette':
-					console.log('\nAttempting to save palette in profile:', parsed.profile);
+					console.log('Attempting to save palette in profile:', parsed.profile);
 
 					var outputPaletteFilename = './media/' + parsed.profile + '/palette/' + parsed.name + '.json';
 
@@ -172,7 +164,7 @@ server.get('/', function upgradeRoute(req, res, next) {
 							console.log('JSON saved to ' + outputPaletteFilename);
 							console.log('Adding palette to profiles object then sending back to client.');
 							profiles[parsed.profile].palettes[parsed.name] = parsed.payload;
-							update();
+							update(conn);
 						}
 					}); 
 
@@ -181,8 +173,6 @@ server.get('/', function upgradeRoute(req, res, next) {
 
 		}
 	});
-
-	next(false);
 });
 
 var mediaDir = cwd + pathSeparator + 'media';
@@ -197,7 +187,7 @@ function mediaSearch(callback) {
 
 		var dirSplit = file.split(pathSeparator);
 
-		var profile 		= pathReplaced[1];
+		var profile 	= pathReplaced[1];
 		var directory 	= pathReplaced[2];
 		var filename 	= dirSplit[dirSplit.length-1].split('.')[0];
 		var fileExt		= file.split('.').pop();
@@ -206,27 +196,37 @@ function mediaSearch(callback) {
 
 
 		if(directory === 'palette') {
-			fileParsed = JSON.parse(fs.readFileSync(file, 'utf8')); // sync because we don't want to finish before reading has occurred
-			profiles[profile].palettes[filename] = fileParsed;
-			console.log('🎨  Found palette in', profile);
+			fsp.readFile(file, 'utf8').then(contents => {
+				fileParsed = JSON.parse(contents);
+				profiles[profile].palettes[filename] = fileParsed;
+				console.log('🎨  Found palette in', profile + ':', filename);
+				clients.forEach(client => {
+					update(client);
+				});
+			});
 		}
 
 		if(directory === 'preset') {
-			fileParsed = JSON.parse(fs.readFileSync(file, 'utf8')); // sync because we don't want to finish before reading has occurred
-			profiles[profile].presets[filename] = fileParsed;
-			console.log('💾  Found preset data in', profile);
+			fsp.readFile(file, 'utf8').then(contents => {
+				fileParsed = JSON.parse(contents);
+				profiles[profile].presets[filename] = fileParsed;
+				console.log('💾  Found preset data in', profile + ':', filename);
+				clients.forEach(client => {
+					update(client);
+				});
+			});
 		}
-
-		console.log(profile, profiles, profiles[profile]);
-
+		
 		if(fileExt.toLowerCase() in viableVideo) {
-
 			profiles[profile].files.videos.push({'name': filename, 'path': filePath});
-			console.log('📼  Found video in', profile);
+			console.log('📼  Found video in', profile + ':', filename);
+			clients.forEach(client => {
+				update(client);
+			});
 		}
 
 		if(fileExt.toLowerCase() in viableImage) {
-			console.log('📷  Found image in', profile);
+			console.log('📷  Found image in', profile + ':', filename);
 
 			if(fileExt.toLowerCase() === 'gif' && animated(fs.readFileSync(filePath))) {
 
@@ -264,27 +264,31 @@ function mediaSearch(callback) {
 		//profiles[profile]
 
 	}, function() {
-		console.log('\n👍  Finished sloshing through media, here\'s what I got: \n');
-		console.log(require('util').inspect(profiles, true, 10));
+		console.log('👍  Finished sloshing through media');
 		callback();
 	});
 }
 
+var port = 3132;
+
 createDirectories(function() {
 	mediaSearch(function() {
-		server.listen(3132, function() {
-			console.log('\n_%s listening at %s_', server.name, server.url);
+		server.listen(port, function() {
 
+			console.log('modV Media Manager listening on port', port);
 			console.log('Watching ./media/ for changes...');
+
 			watch('./media/', { recursive: true, followSymLinks: true }, function(filepath) {
 
 				if(path.parse(filepath).base !== '.DS_Store') {
-					console.log(filepath, ' changed - updating media and seding to clients');
+					console.log(filepath, ' changed - updating media and sending to clients');
 					
 					profiles = {};
 					createDirectories(function() {
 						mediaSearch(function() {
-							clients.forEach(update);
+							clients.forEach(client => {
+								update(client);
+							});
 						});
 					});
 				}
@@ -294,3 +298,7 @@ createDirectories(function() {
 		});
 	});
 });
+
+exports.openMediaFolder = function() {
+	open(process.cwd() + '/media');
+};

@@ -63,7 +63,9 @@
 			if('min' in settings) node.min = settings.min;
 			if('max' in settings) node.max = settings.max;
 			if('step' in settings) node.step = settings.step;
-			if('default' in settings) node.value = settings.default;
+
+			if(Module[self.variable] !== undefined) node.value = Module[self.variable];
+			else if('default' in settings) node.value = settings.default;
 
 			rangeRanger(node, {
 				alt: {

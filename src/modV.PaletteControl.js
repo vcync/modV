@@ -224,7 +224,7 @@
 
 			var timerRange = document.createElement('input');
 			timerRange.type = 'range';
-			timerRange.min = 1;
+			timerRange.min = 2;
 			timerRange.max = 500;
 			timerRange.value = timePeriod/1000;
 
@@ -416,7 +416,8 @@
 
 			var pal = new Palette(self.colours, self.timePeriod, self.callbacks, modVSelf);
 
-			modVSelf.palettes.push(pal);
+			var paletteIndex = modVSelf.palettes.push(pal)-1;
+			pal.paletteIndex = paletteIndex;
 			return pal.generateControls();
 
 		};

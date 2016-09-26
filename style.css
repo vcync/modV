@@ -55,29 +55,27 @@ section .top .active-list {
 	border-right: 3px solid grey;
 }
 
-section .top .active-list .sortable-ghost {
-	height: 133px;
-	width: 100%;
-	overflow: hidden;
-}
-
-section .top .active-list .sortable-ghost canvas {
-	height: auto;
-	position: relative;
-	top: -10%;
-}
-
-section .top .active-list-wrapper:before {
-	position: absolute;
-	top: 50%;
-	width: 100%;
-	height: auto;
-	text-align: center;
-	font-size: 2em;
-	color: rgba(210, 210, 210, 0.8);
-	text-shadow: 1px 4px 6px #fff, 0 0 0 #000, 1px 4px 6px #fff;
-	opacity: 0.7;
-	pointer-events: none;
+section .top .active-list .sortable-ghost {		
+	height: 133px;		
+	width: 100%;		
+	overflow: hidden;		
+}		
+section .top .active-list .sortable-ghost canvas {		
+	height: auto;		
+	position: relative;		
+	top: -10%;		
+}		
+section .top .active-list-wrapper:before {		
+	position: absolute;		
+	top: 50%;		
+	width: 100%;		
+	height: auto;		
+	text-align: center;		
+	font-size: 2em;		
+	color: rgba(210, 210, 210, 0.8);		
+	text-shadow: 1px 4px 6px #fff, 0 0 0 #000, 1px 4px 6px #fff;		
+	opacity: 0.7;		
+	pointer-events: none;		
 	content: 'Drag Modules Here';
 }
 
@@ -87,34 +85,34 @@ section .top .active-list-wrapper,
 }
 
 section .top .active-list-wrapper .module-menu {
-    position: absolute;
-    bottom: 0;
-    left: 0;
-    right: 0;
-    height: 32px;
-    background-color: grey;
-    padding: 5px;
-    box-sizing: border-box;
+	position: absolute;
+	bottom: 0;
+	left: 0;
+	right: 0;
+	height: 32px;
+	background-color: grey;
+	padding: 5px;
+	box-sizing: border-box;
 }
 
 section .top .active-list-wrapper .module-menu .icon {
-    height: 22px;
-    background-color: rebeccapurple;
-    width: 22px;
-    display: inline-block;
-    cursor: pointer;
-    border-radius: 3px;
-    vertical-align: top;
-    text-align: center;
+	height: 22px;
+	background-color: rebeccapurple;
+	width: 22px;
+	display: inline-block;
+	cursor: pointer;
+	border-radius: 3px;
+	vertical-align: top;
+	text-align: center;
 }
 
 section .top .active-list-wrapper .module-menu .icon:not(:last-child) {
-    margin: 0 5px 0 0;
+	margin: 0 5px 0 0;
 }
 
 section .top .active-list .module-group {
-    height: 18px;
-    background-color: deepskyblue;
+	height: 18px;
+	background-color: deepskyblue;
 }
 
 section .top .active-list .module-group .icon {
@@ -144,6 +142,52 @@ section .top .active-list .module-group .title.editable {
 
 section .top .gallery {
 
+}
+
+.gallery-item {
+	position: relative;
+	overflow: hidden;
+}
+
+.gallery-item .title-wrapper {
+	background-color: rgba(0,0,0,0.5);
+	position: absolute;
+	top: 0;
+	left: 0;
+	right: 0;
+	bottom: 0;
+	text-align: center;
+	pointer-events: none;
+	transition: all 300ms;
+	font-size: 0;
+}
+
+.gallery-item .title-wrapper .title {
+	color: #fff;
+	vertical-align: middle;
+	transition: all 300ms;
+	font-size: 18px;
+	letter-spacing: -1px;
+}
+
+.gallery .gallery-item:hover .title-wrapper {
+	background-color: rgba(0,0,0,0);
+}
+
+.gallery .gallery-item:hover .title {
+	color: rgba(255,255,255,0);
+}
+
+.active-list .gallery-item.sortable-ghost .title {
+	position: absolute;
+	top: 8px;
+	left: 8px;
+	font-size: 25.6px;
+	letter-spacing: -2px;
+}
+
+.active-list .gallery-item.sortable-ghost .title-wrapper {
+	background-color: rgba(0,0,0,0);
 }
 
 section .top .pure-u-4-5 {
@@ -191,8 +235,8 @@ section .bottom .global-control-panel-wrapper {
 }
 
 .bottom > .pure-g .pure-u-1-3:nth-of-type(1) {
-    border-right: 1px solid;
-    box-sizing: border-box;
+	border-right: 1px solid;
+	box-sizing: border-box;
 }
 
 .control-group > label {
@@ -242,8 +286,8 @@ canvas {
 }
 
 .active-item.current {
-    background-color: aliceblue;
-    color: black;
+	background-color: aliceblue;
+	color: black;
 }
 
 .active-item.chosen {
@@ -302,12 +346,12 @@ canvas {
 }
 
 select.composite-operations:hover {
-    height: 68px;
+	height: 68px;
 }
 
 select.composite-operations {
-    height: 18px;
-    transition: height 300ms;
+	height: 18px;
+	transition: height 300ms;
 }
 
 /* Palette Control */
@@ -319,7 +363,7 @@ div.palette div.swatch {
 }
 
 div.palette div.swatch ~ div.swatch {
-    border-left: none;
+	border-left: none;
 }
 
 /* Range styles */
@@ -414,7 +458,7 @@ input[disabled][type="range"]::-webkit-slider-runnable-track{
 	background: transparent;
 	opacity: 0;
 	-webkit-transform: rotate(-45deg);
-	      transform: rotate(-45deg);
+		  transform: rotate(-45deg);
 	transition: all 50ms;
 }
 .customCheckbox input[type=checkbox] + label:hover::after {

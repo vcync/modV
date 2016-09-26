@@ -1,11 +1,76 @@
-var RotoZoom = new modVC.Module2D({
-	info: {
-		name: 'Roto Zoom',
-		author: '2xAA',
-		version: 0.1,
-		previewWithOutput: true
-	},
-	init: function(canvas) {
+class RotoZoom extends modV.Module2D {
+
+	constructor() {
+		super({
+			info: {
+				name: 'Roto Zoom',
+				author: '2xAA',
+				version: 0.1,
+				previewWithOutput: true
+			}
+		});
+
+		var controls = [];
+
+		controls.push(new modV.RangeControl({
+		    variable: 'zoomIntensity',
+		    label: 'Zoom Amplitude',
+		    varType: 'int',
+		    min: 1,
+		    max: 100,
+		    step: 1,
+		    default: 50
+		}));
+
+		controls.push(new modV.RangeControl({
+		    variable: 'zoomSpeed',
+		    label: 'Zoom Frequency',
+		    varType: 'float',
+		    min: 0,
+		    max: 0.2,
+		    step: 0.0001,
+		    default: 0.01
+		}));
+
+		controls.push(new modV.RangeControl({
+		    variable: 'distortSpeed',
+		    label: 'Distort Speed',
+		    varType: 'float',
+			min: 0.0001,
+			max: 0.5,
+			step: 0.0001,
+		    default: 0.01
+		}));
+
+		controls.push(new modV.CheckboxControl({
+			variable: 'distort',
+			label: 'Distort'
+		}));
+
+		controls.push(new modV.CheckboxControl({
+			variable: 'srOnOff',
+			label: 'Rotate/Swing Toggle'
+		}));
+
+		controls.push(new modV.CheckboxControl({
+			variable: 'swing',
+			label: 'Swing / Rotate'
+		}));
+
+		controls.push(new modV.RangeControl({
+			type: 'range',
+			variable: 'rotSpeed',
+			min: 50,
+			max: 10000,
+			step: 1,
+			label: 'Rotate Speed',
+			varType: 'int'
+		}));
+
+		this.add(controls);
+	}
+
+	init(canvas) {
  	
 		this.newCanvas2 = document.createElement('canvas');
 		this.newCtx2 = this.newCanvas2.getContext('2d');
@@ -56,20 +121,20 @@ var RotoZoom = new modVC.Module2D({
 			var x_min = Math.min(x11,x21,x31,x41),
 				x_max = Math.max(x11,x21,x31,x41);
 
-			var y_min = Math.min(y11,y21,y31,y41);
+			var y_min = Math.min(y11,y21,y31,y41),
 				y_max = Math.max(y11,y21,y31,y41);
 
 			return [x_max-x_min,y_max-y_min];
 		};
 		
-	},
-	resize: function(canvas, ctx) {
+	}
+
+	resize(canvas) {
 		this.newCanvas2.width = canvas.width;
 		this.newCanvas2.height = canvas.height;
-	},
-	draw: function(canvas, ctx, vid, features, meyda, delta, bpm) {
+	}
 
-	
+	draw(canvas, ctx, vid, features, meyda, delta) {
 		var thisDistortVal = Math.cos(this.distortVal); 
 		
 		this.newCtx2.clearRect(0,0,canvas.width, canvas.height);
@@ -143,7 +208,6 @@ var RotoZoom = new modVC.Module2D({
 		// ctx.fillText('Bounding Box: ' + Math.floor(vals[0]) + 'px ' + Math.floor(vals[1]) + 'px', 24, 96);
 		
 		// ctx.rotate(this.degree);
-
 		
 		ctx.restore();
 		if(this.sinVal >= 100) this.sinVal = 0;
@@ -155,65 +219,6 @@ var RotoZoom = new modVC.Module2D({
 		}	
 
 	}
-});
+}
 
-var controls = [];
-
-controls.push(new modVC.RangeControl({
-    variable: 'zoomIntensity',
-    label: 'Zoom Amplitude',
-    varType: 'int',
-    min: 1,
-    max: 100,
-    step: 1,
-    default: 50
-}));
-
-controls.push(new modVC.RangeControl({
-    variable: 'zoomSpeed',
-    label: 'Zoom Frequency',
-    varType: 'float',
-    min: 0,
-    max: 0.2,
-    step: 0.0001,
-    default: 0.01
-}));
-
-controls.push(new modVC.RangeControl({
-    variable: 'distortSpeed',
-    label: 'Distort Speed',
-    varType: 'float',
-	min: 0.0001,
-	max: 0.5,
-	step: 0.0001,
-    default: 0.01
-}));
-
-controls.push(new modVC.CheckboxControl({
-	variable: 'distort',
-	label: 'Distort'
-}));
-
-controls.push(new modVC.CheckboxControl({
-	variable: 'srOnOff',
-	label: 'Rotate/Swing Toggle'
-}));
-
-controls.push(new modVC.CheckboxControl({
-	variable: 'swing',
-	label: 'Swing / Rotate'
-}));
-
-controls.push(new modVC.RangeControl({
-	type: 'range',
-	variable: 'rotSpeed',
-	min: 50,
-	max: 10000,
-	step: 1,
-	label: 'Rotate Speed',
-	varType: 'int'
-}));
-
-RotoZoom.add(controls);
-
-modVC.register(RotoZoom);
+modV.register(RotoZoom);
