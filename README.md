@@ -16,7 +16,7 @@ If you can help with any of these, please submit a PR and/or contact me at sam(a
 
 ## Requirements
 - [node](https://nodejs.org/) (LTS is usually fine, this branch was built with 4.4.7 and has been confirmed to work with 4.5.0)
-- [Google Chrome desktop](https://www.google.com/chrome/browser/desktop/)
+- [Google Chrome desktop](https://www.google.com/chrome/browser/desktop/) (not required for [standalone build](https://github.com/2xAA/modV#building-standalone-application))
 
 ## Installation
 1. Download (clone or zip)
