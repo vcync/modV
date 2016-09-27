@@ -40,7 +40,7 @@ class iiiD extends modV.Module3D {
 		}));
 	}
 	
-	init(canvas, scene, camera, material, texture) {
+	init(canvas, scene, material, texture) {
 
 		this.size = 1;
 		this.speed = 0;
@@ -60,7 +60,7 @@ class iiiD extends modV.Module3D {
 			FAR
 		);*/
 
-		camera = new THREE.OrthographicCamera( - d * aspect, d * aspect, d, - d, 1, 1000 );
+		var camera = new THREE.OrthographicCamera( - d * aspect, d * aspect, d, - d, 1, 1000 );
 		camera.position.z = 30;
 
 		this.geometry = new THREE.IcosahedronGeometry( 5, 0 );
