@@ -53,6 +53,7 @@ section .top .active-list {
 	min-height: 100%;
 	box-sizing: border-box;
 	border-right: 3px solid grey;
+	position: relative;
 }
 
 section .top .active-list .sortable-ghost {		
