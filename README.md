@@ -11,6 +11,7 @@ modV is open to contribution. Currently the project needs (in order of priority)
 * layers (proposal to be written)
 * full re-write for ES6
 * more Modules
+
 If you can help with any of these, please submit a PR and/or contact me as sam(at)wray.pro or on any of my socials.
 
 ## Requirements
