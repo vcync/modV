@@ -12,7 +12,7 @@ modV is open to contribution. Currently the project needs (in order of priority)
 * full re-write for ES6
 * more Modules
 
-If you can help with any of these, please submit a PR and/or contact me as sam(at)wray.pro or on any of my socials.
+If you can help with any of these, please submit a PR and/or contact me at sam(at)wray.pro or on any of my socials.
 
 ## Requirements
 - [node](https://nodejs.org/) (LTS is usually fine, this branch was built with 4.4.7 and has been confirmed to work with 4.5.0)
