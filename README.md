@@ -3,6 +3,16 @@ modV is a modular audio visualisation environment written in JavaScript and runs
 
 All documentation so far is available in [this repo's Wiki](https://github.com/2xAA/modV/wiki). There's more to come!
 
+## Sample images
+[![](https://github.com/2xAA/modV/raw/master/docs/example-images/1.jpg)](https://github.com/2xAA/modV/raw/master/docs/example-images/1.png)
+[![](https://github.com/2xAA/modV/raw/master/docs/example-images/2.jpg)](https://github.com/2xAA/modV/raw/master/docs/example-images/2.png)
+[![](https://github.com/2xAA/modV/raw/master/docs/example-images/3.jpg)](https://github.com/2xAA/modV/raw/master/docs/example-images/3.png)
+[![](https://github.com/2xAA/modV/raw/master/docs/example-images/4.jpg)](https://github.com/2xAA/modV/raw/master/docs/example-images/4.png)
+[![](https://github.com/2xAA/modV/raw/master/docs/example-images/5.jpg)](https://github.com/2xAA/modV/raw/master/docs/example-images/5.png)
+[![](https://github.com/2xAA/modV/raw/master/docs/example-images/6.jpg)](https://github.com/2xAA/modV/raw/master/docs/example-images/6.png)
+[![](https://github.com/2xAA/modV/raw/master/docs/example-images/7.jpg)](https://github.com/2xAA/modV/raw/master/docs/example-images/7.png)
+
+
 ## Contribution
 modV is open to contribution. Currently the project needs (in order of priority):  
 * a better UI
