@@ -99,7 +99,13 @@ var modV = function(options) {
 	self.canvas = self.options.canvas || document.createElement('canvas');
 	self.context = self.canvas.getContext('2d');
 
+	self.outputCanvas = document.createElement('canvas');
+	self.outputContext = self.outputCanvas.getContext('2d');
+
 	self.soloCanvas = undefined;
+
+	// Layers store
+	self.layers = [self.canvas, self.soloCanvas];
 
 	self.meydaSupport = false;
 	self.muted = true;

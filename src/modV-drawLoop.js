@@ -227,6 +227,8 @@
 
 		self.context.drawImage(self.previewCanvas, x, y, newWidth, newHeight);
 		self.context.drawImage(self.soloCanvas, x, y, newWidth, newHeight);
+
+		self.mux();
 	};
 
 	modV.prototype.loop = function(timestamp) {

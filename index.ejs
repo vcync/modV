@@ -11,7 +11,7 @@
 	<link rel="import"	href="templates.html">
 </head>
 	<body>
-
+<!-- 
 		<section>
 			<div class="top">
 				<div class="pure-g">
@@ -20,10 +20,7 @@
 						<div class="left-top active-list pure-g">
 
 						</div>
-						<!-- <div class="module-menu">
-							<div class="icon">+</div>
-							<div class="icon"></div>
-						</div> -->
+						
 					</div>
 					<div class="pure-u-4-5 gallery-wrapper" data-simplebar-direction="vertical">
 					
@@ -58,7 +55,7 @@
 			</div>
 
 		</section>
-
+ -->
 		<div id="temp" style="display:none;"></div>
 		<% if (nwjs) { %>
 		<script src="nwjs-include.js"></script>
@@ -107,10 +104,12 @@
 				canvas: document.querySelector('canvas'),
 				clearing: false,
 				retina: true,
-				headless: false
+				headless: true
 			});
 
 			modV.start();
+			document.body.appendChild(modV.previewCanvas);
+
 		</script>
 		<script src="./modules/Waveform.js"></script>
 		<script src="./modules/Polygon.js"></script>
