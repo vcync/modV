@@ -75,7 +75,6 @@
 		<script src="app.js"></script>
 
 		<script>
-			// DOM helper (still smaller than jQuery ;^)
 			function swapElements(obj1, obj2) { //jshint ignore: line
 				// save the location of obj2
 				var parent2 = obj2.parentNode;
@@ -107,8 +106,8 @@
 			var modV = new modV({ //jshint ignore:line
 				canvas: document.querySelector('canvas'),
 				clearing: false,
-				//remote: 'ws://localhost:8888/ws',
-				retina: true
+				retina: true,
+				headless: false
 			});
 
 			modV.start();

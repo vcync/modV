@@ -70,6 +70,13 @@ var modV = function(options) {
 	self.clearing = true;
 	if(!self.options.clearing) self.clearing = false;
 
+	if(!self.options.headless) {
+		self.headless = false;
+		self.options.headless = false;
+	} else {
+		self.headless = true;
+	}
+
 	if(!self.options.controlDomain) self.options.controlDomain = location.protocol + '//' + location.host;
 
 	self.baseURL = self.options.baseURL || '';
@@ -89,7 +96,8 @@ var modV = function(options) {
 	self.video.autoplay = true;
 	self.video.muted = true;
 
-	self.canvas = undefined;
+	self.canvas = self.options.canvas || document.createElement('canvas');
+	self.context = self.canvas.getContext('2d');
 
 	self.soloCanvas = undefined;
 
@@ -457,7 +465,7 @@ var modV = function(options) {
 				});
 
 				self.setMediaSource(audioSource || foundSources.audio[0].id, videoSource || foundSources.video[0].id);
-				self.startUI();
+				if(!self.headless) self.startUI();
 			});
 			
 
