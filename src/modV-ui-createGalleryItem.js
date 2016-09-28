@@ -1,40 +1,12 @@
 (function() {
 	'use strict';
 
-	modV.prototype.createGalleryItem = function(Module) {
+	modV.prototype.createGalleryItem = function(oldModule) {
 		var self = this;
 
-		if(!(Module instanceof self.Module2D) && !(Module instanceof self.ModuleShader) && !(Module instanceof self.Module3D)) return;
+		if(!(oldModule instanceof self.Module2D) && !(oldModule instanceof self.ModuleShader) && !(oldModule instanceof self.Module3D)) return;
 
-		// Clone module
-		
-		var oldModule = Module;
-		Module = new self.moduleStore[Module.info.originalModuleName]();
-
-		if(Module instanceof self.ModuleShader) {
-			Module.programIndex = oldModule.programIndex;
-			
-			// Loop through Uniforms, expose self.uniforms and create local variables
-			if('uniforms' in Module.settings.info) {
-
-				forIn(Module.settings.info.uniforms, (uniformKey, uniform) => {
-					switch(uniform.type) {
-						case 'f':
-							Module[uniformKey] = parseFloat(uniform.value);
-							break;
-
-						case 'i':
-							Module[uniformKey] = parseInt(uniform.value);
-							break;
-
-						case 'b':
-							Module[uniformKey] = uniform.value;
-							break;
-
-					}
-				});
-			}
-		}
+		if(self.headless) return;		
 
 		self.galleryModules = [];
 		
@@ -45,15 +17,9 @@
 
 		// Module variables
 		var previewCtx = previewCanvas.getContext('2d');
-
-		// init Module
-		if('init' in Module && Module instanceof self.Module2D) {
-			Module.init(previewCanvas, previewCtx);
-		}
-
-		if('init' in Module && Module instanceof self.Module3D) {
-			Module.init(previewCanvas, Module.getScene(), Module.getCamera(), self.THREE.material, self.THREE.texture);
-		}
+		
+		// Clone module
+		var Module = self.createModule(oldModule, previewCanvas, previewCtx);
 
 		// Setup any preview settings for gallery item
 		if('previewValues' in Module.settings.info) {

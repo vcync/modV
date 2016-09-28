@@ -31,67 +31,9 @@
 				var clone = gallery.querySelector('.gallery-item[data-module-name="' + itemEl.dataset.moduleName + '"]');
 
 				// Get Module
-				var Module = self.registeredMods[replaceAll(itemEl.dataset.moduleName, '-', ' ')];
-				var oldModule = Module;
+				var oldModule = self.registeredMods[replaceAll(itemEl.dataset.moduleName, '-', ' ')];
 
-				// Grab dataname from cloned element
-				var originalModuleName = Module.info.originalModuleName;
-
-				Module = new self.moduleStore[originalModuleName]();
-
-				var name = Module.info.name;
-
-				// Get instances of modules in active list
-				var instances = self.detectInstancesOf(originalModuleName);
-				Module.info.originalModuleName = oldModule.info.originalModuleName;
-
-				if(instances.length > 0) {
-					// make new name
-					name = self.generateName(Module.info.name);
-				}
-
-				if(Module instanceof self.ModuleShader) {
-					Module.programIndex = oldModule.programIndex;
-					
-					// Loop through Uniforms, expose self.uniforms and create local variables
-					if('uniforms' in Module.settings.info) {
-
-						forIn(Module.settings.info.uniforms, (uniformKey, uniform) => {
-							switch(uniform.type) {
-								case 'f':
-									Module[uniformKey] = parseFloat(uniform.value);
-									break;
-
-								case 'i':
-									Module[uniformKey] = parseInt(uniform.value);
-									break;
-
-								case 'b':
-									Module[uniformKey] = uniform.value;
-									break;
-
-							}
-						});
-					}
-				}
-
-				// init Module
-				if('init' in Module && Module instanceof self.Module2D) {
-					Module.init(self.previewCanvas, self.previewCtx);
-				}
-
-				if('init' in Module && Module instanceof self.Module3D) {
-					Module.init(self.previewCanvas, Module.getScene(), Module.getCamera(), self.THREE.material, self.THREE.texture);
-				}
-
-				// new safe name
-				var safeName = replaceAll(name, ' ', '-');
-				
-				// update name
-				Module.info.name = name;
-				Module.info.safeName = safeName;
-				Module.info.originalName = oldModule.info.name;
-
+				var Module = self.createModule(oldModule);
 
 				if(evt.originalEvent.shiftKey) {
 					Module.info.solo = true;
@@ -116,14 +58,10 @@
 				// Add to registry
 				self.activeModules[Module.info.name] = Module;
 
-				self.setModOrder(name, evt.newIndex);
+				self.setModOrder(Module.info.name, evt.newIndex);
 
 				// Create controls
 				self.createControls(Module, self);
-
-				// turn on
-				// TODO: add setting to enable/disable by default
-				Module.info.disabled = false;
 
 				activeItemNode.focus();
 			},
