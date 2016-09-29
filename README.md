@@ -29,9 +29,9 @@ Thank you to:
 
 * Hugh Rawlinson, Nevo Segal and Jakub Fiala for the incredible audio analysis engine, [meyda](https://github.com/hughrawlinson/meyda)
 * [Dario Villanueva](http://alolo.co) for his advice and introduction to live visuals which inspired this whole project
-* mrdoob for [THREE.js](https://threejs.org/)
 * Lebedev Konstantin for [Sortable](https://github.com/RubaXa/Sortable)
-* Charles J. Cliffe for [BeatDetktor](https://github.com/cjcliffe/beatdetektor)
+* Charles J. Cliffe for [BeatDetektor](https://github.com/cjcliffe/beatdetektor)
+* mrdoob for [THREE.js](https://threejs.org/)
 
 
 ## Requirements
