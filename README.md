@@ -24,6 +24,16 @@ modV is open to contribution. Currently the project needs (in order of priority)
 
 If you can help with any of these, please submit a PR and/or contact me at sam(at)wray.pro or on any of my socials.
 
+## Acknowledgements
+Thank you to:
+
+* Hugh Rawlinson, Nevo Segal and Jakub Fiala for the incredible audio analysis engine, [meyda](https://github.com/hughrawlinson/meyda)
+* [Dario Villanueva](http://alolo.co) for his advice and introduction to live visuals which inspired this whole project
+* mrdoob for [THREE.js](https://threejs.org/)
+* Lebedev Konstantin for [Sortable](https://github.com/RubaXa/Sortable)
+* Charles J. Cliffe for [BeatDetktor](https://github.com/cjcliffe/beatdetektor)
+
+
 ## Requirements
 - [node](https://nodejs.org/) (LTS is usually fine, this branch was built with 4.4.7 and has been confirmed to work with 4.5.0)
 - [Google Chrome desktop](https://www.google.com/chrome/browser/desktop/) (not required for [standalone build](https://github.com/2xAA/modV#building-standalone-application))
