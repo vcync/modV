@@ -56,12 +56,12 @@ section .top .active-list {
 	position: relative;
 }
 
-section .top .active-list .sortable-ghost {		
+.active-list .gallery-item.sortable-ghost {		
 	height: 115px;		
 	width: 100%;		
 	overflow: hidden;		
 }		
-section .top .active-list .sortable-ghost canvas {		
+.active-list .gallery-item.sortable-ghost canvas {		
 	height: auto;		
 	position: relative;		
 	top: -10%;		
@@ -87,62 +87,6 @@ section .top .active-list-wrapper {
 section .top .active-list-wrapper,
 .simplebar-content {
 	height: 100%;
-}
-
-section .top .active-list-wrapper .module-menu {
-	position: absolute;
-	bottom: 0;
-	left: 0;
-	right: 0;
-	height: 32px;
-	background-color: grey;
-	padding: 5px;
-	box-sizing: border-box;
-}
-
-section .top .active-list-wrapper .module-menu .icon {
-	height: 22px;
-	background-color: rebeccapurple;
-	width: 22px;
-	display: inline-block;
-	cursor: pointer;
-	border-radius: 3px;
-	vertical-align: top;
-	text-align: center;
-}
-
-section .top .active-list-wrapper .module-menu .icon:not(:last-child) {
-	margin: 0 5px 0 0;
-}
-
-section .top .active-list .module-group {
-	height: 18px;
-	background-color: deepskyblue;
-}
-
-section .top .active-list .module-group .icon {
-	text-align: center;
-}
-
-section .top .active-list .module-group .title {
-	cursor: default;
-	letter-spacing: -1px;
-}
-
-section .top .active-list .module-group .title::selection {
-	background-color: #FC4414;
-}
-
-section .top .active-list .module-group .title:focus {
-	box-shadow: 0 0 8px #FF9800;
-	border: 1px solid #FF9800;
-	outline: none;
-	box-sizing: border-box;
-	height: 18px;
-}
-
-section .top .active-list .module-group .title.editable {
-	cursor: text;
 }
 
 section .top .gallery {
@@ -527,8 +471,61 @@ input[disabled][type="range"]::-webkit-slider-runnable-track{
 	background-color: greenyellow;
 	padding: 2px 2px;
 	height: 18px;
+	position: relative;
+}
+
+.layer-item .title {
+	display: inline-block;
+	min-width: 100px;
 }
 
 .layer-item .title.editable {
 	cursor: text;
+}
+
+.layer-item .collapse {
+	width: 18px;
+	height: 18px;
+	position: absolute;
+	right: 2px;
+	top: 2px;
+	background-color: darkcyan;
+}
+
+.layer-item.collapsed .module-list {
+	height: 0;
+	overflow: hidden;
+	min-height: 0;
+	padding: 0;
+}
+
+.layer-item.collapsed {
+	min-height: 0;
+}
+
+/* layer menu */
+.layer-menu {
+	position: absolute;
+	bottom: 0;
+	left: 0;
+	right: 0;
+	height: 32px;
+	background-color: grey;
+	padding: 5px;
+	box-sizing: border-box;
+}
+
+.layer-menu .icon {
+	height: 22px;
+	background-color: rebeccapurple;
+	width: 22px;
+	display: inline-block;
+	cursor: pointer;
+	border-radius: 3px;
+	vertical-align: top;
+	text-align: center;
+}
+
+.layer-menu .icon:not(:last-child) {
+	margin: 0 5px 0 0;
 }

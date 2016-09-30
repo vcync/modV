@@ -358,51 +358,12 @@
 		galleryWrapper.style.width = (100 - (306/ window.innerWidth) * 100) + '%';
 		//activeListWrapper.style.width = (100 - galleryWidth) + '%';
 
-		// Module Grouping
+		// Layer menu
 
-		/*var addGroupButton = document.querySelectorAll('.module-menu .icon')[0];
-		addGroupButton.addEventListener('click', function() {
-			
-			// Create active list item
-			var template = self.templates.querySelector('#module-group');
-			var group = document.importNode(template.content, true);
-
-			// Create Group
-			var Group = new self.Group();
-			var groupIndex = self.groups.push(Group)-1;
-			Group = self.groups[groupIndex];
-
-			// Temp container (TODO: don't do this)
-			var temp = document.getElementById('temp');
-
-			// Init node in temp (TODO: don't do this)
-			temp.innerHTML = '';
-			temp.appendChild(group);
-			// Grab initialised node
-			group = temp.querySelector('div');
-
-			var titleNode = group.querySelector('.title');
-
-			titleNode.addEventListener('dblclick', function() {
-				this.contentEditable = true;
-				this.focus();
-				this.classList.add('editable');
-			});
-
-			titleNode.addEventListener('blur', function() {
-				this.contentEditable = false;
-				this.classList.remove('editable');
-			});
-
-			titleNode.addEventListener('keypress', function(evt) {
-				if(evt.which === 13) evt.preventDefault();
-			});
-
-			titleNode.textContent = 'New Group';
-			
-			list.appendChild(group);
-
-		});*/
+		var addLayerButton = document.querySelectorAll('.layer-menu .icon')[0];
+		addLayerButton.addEventListener('click', function() {
+			self.addLayer();			
+		});
 
 	};
 
