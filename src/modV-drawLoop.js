@@ -1,6 +1,10 @@
 (function() {
 	'use strict';
 	/*jslint browser: true */
+	
+	//TODO: move these elsewhere
+	var bufferCan = document.createElement('canvas');
+	var bufferCtx = bufferCan.getContext('2d');
 
 	modV.prototype.drawFrame = function(meydaOutput, delta) {
 		var self = this;
@@ -16,6 +20,13 @@
 			var alpha = layer.alpha;
 			var enabled = layer.enabled;
 			var inherit = layer.inherit;
+
+			var pipeline = layer.pipeline;
+			if(pipeline) {
+				bufferCan.width = canvas.width;
+				bufferCan.height = canvas.height;
+				bufferCtx.clearRect(0,0,canvas.width,canvas.height);
+			}
 
 			if(clearing) {
 				context.clearRect(0, 0, canvas.width, canvas.height);
@@ -36,6 +47,8 @@
 
 				context.save();
 				context.globalAlpha = Module.info.alpha || 1;
+
+				if(pipeline) canvas = bufferCan;
 
 				if(Module instanceof self.ModuleShader) {
 					var _gl = self.shaderEnv.gl;
@@ -99,13 +112,25 @@
 					}
 
 					// Copy Shader Canvas to Main Canvas
-					context.drawImage(
-						self.shaderEnv.canvas,
-						0,
-						0,
-						canvas.width,
-						canvas.height
-					);
+					if(pipeline) {
+						bufferCtx.clearRect(0,0,canvas.width,canvas.height);
+						bufferCtx.drawImage(
+							self.shaderEnv.canvas,
+							0,
+							0,
+							canvas.width,
+							canvas.height
+						);
+
+					} else {
+						context.drawImage(
+							self.shaderEnv.canvas,
+							0,
+							0,
+							canvas.width,
+							canvas.height
+						);
+					}
 
 				} else if(Module instanceof self.Module2D) {
 
@@ -113,7 +138,36 @@
 						context.globalCompositeOperation = Module.info.blend;
 					}
 
-					Module.draw(canvas, context, self.video, meydaOutput, self.meyda, delta, self.bpm, self.kick);
+					if(pipeline) {
+
+						// copy buffer to layer canvas, clear first
+						context.clearRect(0,0,canvas.width,canvas.height);
+						context.drawImage(
+							bufferCan,
+							0,
+							0,
+							canvas.width,
+							canvas.height
+						);
+
+						// draw 2d operations
+						Module.draw(layer.canvas, context, self.video, meydaOutput, self.meyda, delta, self.bpm, self.kick);
+
+						//copy layer back to buffer, clear first
+						bufferCtx.clearRect(0,0,canvas.width,canvas.height);
+						bufferCtx.drawImage(
+							layer.canvas,
+							0,
+							0,
+							canvas.width,
+							canvas.height
+						);
+
+					} else {
+
+						Module.draw(canvas, context, self.video, meydaOutput, self.meyda, delta, self.bpm, self.kick);
+
+					}
 					
 				} else if(Module instanceof self.Module3D) {
 					let texture = self.THREE.texture;
@@ -138,17 +192,40 @@
 						context.globalCompositeOperation = Module.info.blend;
 					}
 
-					context.drawImage(
-						self.THREE.canvas,
-						0,
-						0,
-						canvas.width,
-						canvas.height
-					);
+					if(pipeline) {
+						bufferCtx.clearRect(0,0,canvas.width,canvas.height);
+						bufferCtx.drawImage(
+							self.THREE.canvas,
+							0,
+							0,
+							canvas.width,
+							canvas.height
+						);
+
+					} else {
+						context.drawImage(
+							self.THREE.canvas,
+							0,
+							0,
+							canvas.width,
+							canvas.height
+						);
+					}
 				}
 
 				context.restore();
 				self.THREE.texture.needsUpdate = true;
+			}
+
+			if(pipeline) {
+				context.clearRect(0,0,canvas.width,canvas.height);
+				context.drawImage(
+					bufferCan,
+					0,
+					0,
+					canvas.width,
+					canvas.height
+				);
 			}
 		}
 

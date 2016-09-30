@@ -2,15 +2,16 @@
 
 modV.prototype.Layer = class Layer {
 
-	constructor(canvas, context, clearing, modV) {
+	constructor(name, canvas, context, clearing, modV) {
 		this.canvas = canvas || document.createElement('canvas');
 		this.context = context || this.canvas.getContext('2d');
 		this.clearing = clearing || false;
 		this.alpha = 1;
 		this.enabled = true;
 		this.inherit = true;
+		this.pipeline = false; // EXPERIMENT
 		this.blending = 'normal';
-		this.name = 'New Layer';
+		this.name = name || 'New Layer';
 		this.modules = {};
 		this.moduleOrder = [];
 		this.modV = modV;
@@ -96,6 +97,16 @@ modV.prototype.Layer = class Layer {
 		let titleNode = document.createElement('div');
 		titleNode.classList.add('title');
 		titleNode.textContent = this.name;
+
+		let collapseNode = document.createElement('div');
+		collapseNode.classList.add('collapse');
+		collapseNode.textContent = "C";
+
+		collapseNode.addEventListener('click', function() {
+			self.node.classList.toggle('collapsed');
+		});
+
+		controlBar.appendChild(collapseNode);
 
 		let oldName;
 
