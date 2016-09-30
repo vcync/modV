@@ -28,15 +28,6 @@
 			Module.info.alpha = parseFloat(this.value);
 		});
 
-		// Get Solo Checkbox
-		var soloCheckboxNode = activeItem.querySelector('input[type=checkbox].solo');
-		// Check if already soloed
-		soloCheckboxNode.checked = Module.info.solo;
-		// Attach listener to Solo Checkbox
-		soloCheckboxNode.addEventListener('change', function() {
-			Module.info.solo = this.checked;
-		});
-
 		// Attach listener to Blending Select
 		var compositeSelectNode = activeItem.querySelector('.composite-operations');
 		compositeSelectNode.addEventListener('change', function() {

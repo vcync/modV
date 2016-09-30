@@ -19,6 +19,10 @@ Array.contains = function(needle, arrhaystack) {
 	return (arrhaystack.indexOf(needle) > -1);
 };
 
+window.replaceAll = function(string, operator, replacement) {
+	return string.split(operator).join(replacement);
+};
+
 // Get HTML document request
 window.getDocument = function(url, callback) {
 	var xhr = new XMLHttpRequest();
@@ -96,16 +100,23 @@ var modV = function(options) {
 	self.video.autoplay = true;
 	self.video.muted = true;
 
+	// Layers store
+	self.layers = [];
+
 	self.canvas = self.options.canvas || document.createElement('canvas');
 	self.context = self.canvas.getContext('2d');
+
+	self.previewCanvas = document.createElement('canvas');
+	self.previewContext = self.previewCanvas.getContext('2d');
+
+	document.querySelector('.canvas-preview').appendChild(self.previewCanvas);
 
 	self.outputCanvas = document.createElement('canvas');
 	self.outputContext = self.outputCanvas.getContext('2d');
 
-	self.soloCanvas = undefined;
+	self.addLayer(self.canvas, self.context, false);
 
-	// Layers store
-	self.layers = [self.canvas, self.soloCanvas];
+	self.soloCanvas = undefined;
 
 	self.meydaSupport = false;
 	self.muted = true;
@@ -132,25 +143,52 @@ var modV = function(options) {
 
 	// Window resize
 	self.resize = function() {
-		self.THREE.renderer.setSize(self.previewCanvas.width, self.previewCanvas.height);
+		self.THREE.renderer.setSize(self.outputCanvas.width, self.outputCanvas.height);
+
+		if(window.devicePixelRatio > 1 && self.options.retina) {
+			self.outputCanvas.width = self.previewWindow.innerWidth * self.previewWindow.devicePixelRatio;
+			self.outputCanvas.height = self.previewWindow.innerHeight * self.previewWindow.devicePixelRatio;
+
+			self.THREE.textureCanvas.width = self.previewWindow.innerWidth * self.previewWindow.devicePixelRatio;
+			self.THREE.textureCanvas.height =  self.previewWindow.innerHeight * self.previewWindow.devicePixelRatio;
+
+			self.layers.forEach(canvas => {
+				canvas.width = self.previewWindow.innerWidth * self.previewWindow.devicePixelRatio;
+				canvas.height = self.previewWindow.innerHeight * self.previewWindow.devicePixelRatio;
+			});
+
+		} else {
+			self.outputCanvas.width = self.previewWindow.innerWidth;
+			self.outputCanvas.height = self.previewWindow.innerHeight;
+
+			self.THREE.textureCanvas.width = self.previewWindow.innerWidth;
+			self.THREE.textureCanvas.height =  self.previewWindow.innerHeight;
+
+			self.layers.forEach(layer => {
+				let canvas = layer.canvas;
+				canvas.width = self.previewWindow.innerWidth;
+				canvas.height = self.previewWindow.innerHeight;
+			});
+		}
 
 		forIn(self.activeModules, (mod, Module) => {
 			if('resize' in Module) {
+				let layer = self.layers[Module.getLayer()];
+
 				if(Module instanceof self.Module3D) {
-					Module.resize(self.previewCanvas, Module.getScene(), Module.getCamera(), self.THREE.material, self.THREE.texture);
+					Module.resize(layer.canvas, Module.getScene(), Module.getCamera(), self.THREE.material, self.THREE.texture);
 				} else {
-					Module.resize(self.previewCanvas, self.previewCtx);	
+					Module.resize(layer.canvas, layer.context);
 				}
 			}
 		});
 	};
 
 	self.mainWindowResize = function() {
-
 		// set canvas size
-		var boundingRect = self.canvas.getBoundingClientRect();
-		self.canvas.width = boundingRect.width;
-		self.canvas.height = boundingRect.height;
+		var boundingRect = self.previewCanvas.getBoundingClientRect();
+		self.previewCanvas.width = boundingRect.width;
+		self.previewCanvas.height = boundingRect.height;
 	};
 
 	window.addEventListener('resize', self.mainWindowResize);
@@ -166,10 +204,6 @@ var modV = function(options) {
 
 		return true;
 	};
-
-	if(self.options.canvas) {
-		self.setCanvas(self.options.canvas);
-	}
 
 	// Create Windows
 	self.createWindows();
@@ -388,19 +422,14 @@ var modV = function(options) {
 		console.info('THREE.js detected.', 'Revision:', THREE.REVISION);
 		self.THREE = {};
 
-		self.THREE.texture = new THREE.Texture(self.previewCanvas);
+		self.THREE.textureCanvas = document.createElement('canvas');
+		self.THREE.textureCanvasContext = self.THREE.textureCanvas.getContext('2d');
+
+		self.THREE.texture = new THREE.Texture(self.THREE.textureCanvas);
 		self.THREE.texture.minFilter = THREE.LinearFilter;
 
 		self.THREE.material = new THREE.MeshBasicMaterial({
 			map: self.THREE.texture,
-			side: THREE.DoubleSide
-		});
-
-		self.THREE.soloTexture = new THREE.Texture(self.soloCanvas);
-		self.THREE.soloTexture.minFilter = THREE.LinearFilter;
-
-		self.THREE.soloMaterial = new THREE.MeshBasicMaterial({
-			map: self.THREE.soloTexture,
 			side: THREE.DoubleSide
 		});
 

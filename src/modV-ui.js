@@ -3,10 +3,6 @@
 	'use strict';
 	/*jslint browser: true */
 
-	function replaceAll(string, operator, replacement) {
-		return string.split(operator).join(replacement);
-	}
-
 	modV.prototype.startUI = function() {
 		var self = this;
 
@@ -18,17 +14,19 @@
 
 		Sortable.create(list, {
 			group: {
-				name: 'modV',
+				name: 'layers',
 				pull: true,
 				put: true
 			},
 			handle: '.handle',
 			chosenClass: 'chosen',
 			onAdd: function(evt) {
-				// Dragged HTMLElement
+				/*// Dragged HTMLElement
 				var itemEl = evt.item;
 				// Cloned element
 				var clone = gallery.querySelector('.gallery-item[data-module-name="' + itemEl.dataset.moduleName + '"]');
+
+				var layer = 0;
 
 				// Get Module
 				var oldModule = self.registeredMods[replaceAll(itemEl.dataset.moduleName, '-', ' ')];
@@ -55,20 +53,21 @@
 					return;
 				}
 
-				// Add to registry
+				// Add to active registry
 				self.activeModules[Module.info.name] = Module;
 
-				self.setModOrder(Module.info.name, evt.newIndex);
+				// Add to layer
+				self.layers[layer].addModule(Module, evt.newIndex);
+
+				//self.setModOrder(Module.info.name, evt.newIndex);
 
 				// Create controls
 				self.createControls(Module, self);
 
-				activeItemNode.focus();
+				activeItemNode.focus();*/
 			},
 			onEnd: function(evt) {
-				if(!evt.item.classList.contains('deletable')) {
-					self.setModOrder(replaceAll(evt.item.dataset.moduleName, '-', ' '), evt.newIndex);
-				}
+				self.swapLayers(evt.oldIndex, evt.newIndex);
 			}
 		});
 
@@ -90,7 +89,7 @@
 			self.currentActiveDrag  = null;
 
 			forIn(self.activeModules, (moduleName, Module) => {
-				if(Module.info.safeName === droppedModuleData) {
+				if(Module.info.safeName === droppedModuleData) {					
 					self.deleteActiveModule(Module);
 				}
 			});
@@ -346,7 +345,7 @@
 
 				var galleryWidth = 100 - ( mousePosition.clientX / window.innerWidth  ) * 100;
 
-				if(galleryWidth < 20 || galleryWidth > 80) return false;
+				if(galleryWidth < 20 || galleryWidth > (100 - (306/ window.innerWidth) * 100)) return false;
 
 				galleryWrapper.style.width = galleryWidth + '%';
 				activeListWrapper.style.width = (100 - galleryWidth) + '%';
@@ -355,6 +354,9 @@
 			}
 
 		});
+
+		galleryWrapper.style.width = (100 - (306/ window.innerWidth) * 100) + '%';
+		//activeListWrapper.style.width = (100 - galleryWidth) + '%';
 
 		// Module Grouping
 

@@ -41,6 +41,9 @@
 			// Settings passed, expose self.shaderFile
 			this.shaderFile = settings.shaderFile;
 
+			// Always start on layer 0
+			this.settings.info.layer = 0;
+
 			// Loop through Uniforms, expose self.uniforms and create local variables
 			if('uniforms' in settings.info) {
 
@@ -73,7 +76,13 @@
 			}
 		}
 
-		
+		getLayer() {
+			return this.settings.info.layer;
+		}
+
+		setLayer(layer) {
+			this.settings.info.layer = layer;
+		}
 		
 	};
 

@@ -57,7 +57,7 @@ section .top .active-list {
 }
 
 section .top .active-list .sortable-ghost {		
-	height: 133px;		
+	height: 115px;		
 	width: 100%;		
 	overflow: hidden;		
 }		
@@ -78,6 +78,10 @@ section .top .active-list-wrapper:before {
 	opacity: 0.7;		
 	pointer-events: none;		
 	content: 'Drag Modules Here';
+}
+
+section .top .active-list-wrapper {
+	min-width: 306px;
 }
 
 section .top .active-list-wrapper,
@@ -277,7 +281,7 @@ canvas {
 	border-bottom: 1px #333 solid;
 	color: #fff;
 	display: inline-block;
-	max-height: 133px;
+	max-height: 115px;
 	padding: 8px;
 	transition: background 150ms;
 }
@@ -501,4 +505,30 @@ input[disabled][type="range"]::-webkit-slider-runnable-track{
 
 .context-menu-item.disabled:hover {
 	background-color: transparent;
+}
+
+/* layer item */
+.layer-item {
+	width: 100%;
+	min-height: 115px;
+	background-color: aqua;
+	height: 100%;
+}
+
+.layer-item .module-list {
+	background-color: red;
+	padding: 0 0 10px 0;
+	display: block;
+	min-height: 133px;
+}
+
+.layer-item .control-bar {
+	letter-spacing: 0px;
+	background-color: greenyellow;
+	padding: 2px 2px;
+	height: 18px;
+}
+
+.layer-item .title.editable {
+	cursor: text;
 }

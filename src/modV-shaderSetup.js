@@ -68,7 +68,7 @@
 
 		function init() {
 			self.shaderEnv.canvas	= document.createElement('canvas');
-			self.shaderEnv.gl		= self.shaderEnv.canvas.getContext('experimental-webgl', {antialias: true});
+			self.shaderEnv.gl		= self.shaderEnv.canvas.getContext('experimental-webgl', {antialias: false, premultipliedAlpha: false});
 			gl = self.shaderEnv.gl; // set reference
 			canvas = self.shaderEnv.canvas; // set reference
 
@@ -77,7 +77,7 @@
 
 			// Disable pre-multiplied alpha
 			gl.pixelStorei(gl.UNPACK_PREMULTIPLY_ALPHA_WEBGL, gl.NONE);
-					
+			
 			// Compile shaders and create program
 			var shaderSource;
 			var vertexShader;
@@ -96,8 +96,8 @@
 			vertexShader = gl.createShader(gl.VERTEX_SHADER);
 			gl.shaderSource(vertexShader, shaderSource);
 			gl.compileShader(vertexShader);
- 
-  			shaderSource = "" +
+
+			shaderSource = "" +
 				"precision mediump float;" +
 				"uniform sampler2D u_modVCanvas;" +
 				"varying vec2 v_texCoord;" +
@@ -118,7 +118,7 @@
 
 			// look up where the texture coordinates need to go.
 			var texCoordLocation = gl.getAttribLocation(programs[self.shaderEnv.activeProgram], "a_texCoord");
-		 
+			
 			// provide texture coordinates for the rectangle.
 			var texCoordBuffer = gl.createBuffer();
 			gl.bindBuffer(gl.ARRAY_BUFFER, texCoordBuffer);
@@ -134,12 +134,12 @@
 			);
 			gl.enableVertexAttribArray(texCoordLocation);
 			gl.vertexAttribPointer(texCoordLocation, 2, gl.FLOAT, false, 0, 0);
-		 
+			
 			// Create a texture.
 			self.shaderEnv.texture = gl.createTexture();
 			gl.activeTexture(gl.TEXTURE0); // At Unit position 0
 			gl.bindTexture(gl.TEXTURE_2D, self.shaderEnv.texture);
-		 
+			
 			// Fill the texture with a 1x1 transparent pixel.
 			gl.texImage2D(
 				gl.TEXTURE_2D,
@@ -159,7 +159,7 @@
 			gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR); // or NEAREST
 			gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.LINEAR); // or NEAREST
 
-		 	// Set canvas and viewport sizes
+			// Set canvas and viewport sizes
 			resize();
 
 			// Get position of position attribute
@@ -226,5 +226,4 @@
 
 		init();
 	};
-
 })();
