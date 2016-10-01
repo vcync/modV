@@ -9,7 +9,7 @@ modV.prototype.Layer = class Layer {
 		this.alpha = 1;
 		this.enabled = true;
 		this.inherit = true;
-		this.pipeline = false; // EXPERIMENT
+		this.pipeline = false;
 		this.blending = 'normal';
 		this.name = name || 'New Layer';
 		this.modules = {};
@@ -87,26 +87,29 @@ modV.prototype.Layer = class Layer {
 
 	makeNode() {
 		let self = this;
+		let modV = this.modV;
 
-		let layerItem = document.createElement('div');
-		layerItem.classList.add('layer-item');
+			// Create active list item
+		let template = modV.templates.querySelector('#layer-item');
+		let layerItem = document.importNode(template.content, true);
+		
+		// Init node in temp (TODO: don't do this)
+		let temp = document.getElementById('temp');
+		temp.innerHTML = '';
+		temp.appendChild(layerItem);
 
-		let controlBar = document.createElement('div');
-		controlBar.classList.add('control-bar', 'handle');
+		// Grab initialised node
+		layerItem = temp.querySelector('.layer-item');
 
-		let titleNode = document.createElement('div');
-		titleNode.classList.add('title');
+		let titleNode = layerItem.querySelector('.title');
+		let collapseNode = layerItem.querySelector('.collapse');
+		let moduleList = layerItem.querySelector('.module-list');
+
 		titleNode.textContent = this.name;
-
-		let collapseNode = document.createElement('div');
-		collapseNode.classList.add('collapse');
-		collapseNode.textContent = "C";
 
 		collapseNode.addEventListener('click', function() {
 			self.node.classList.toggle('collapsed');
 		});
-
-		controlBar.appendChild(collapseNode);
 
 		let oldName;
 
@@ -149,18 +152,12 @@ modV.prototype.Layer = class Layer {
 
 		titleNode.addEventListener('blur', stopEdit);
 
-		controlBar.appendChild(titleNode);
-
-		let moduleList = document.createElement('div');
-		moduleList.classList.add('module-list');
-
-		layerItem.appendChild(controlBar);
-		layerItem.appendChild(moduleList);
+		console.log(layerItem.nodeType);
 
 		this.node = layerItem;
 		this.moduleListNode = moduleList;
 
-		return this.node;
+		return layerItem;
 	}
 
 	getNode() {

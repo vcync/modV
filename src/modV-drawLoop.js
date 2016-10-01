@@ -32,8 +32,13 @@
 				context.clearRect(0, 0, canvas.width, canvas.height);
 			}
 
-			if(inherit && layerIndex-1 > -1) {
-				var lastCanvas = self.layers[layerIndex-1].canvas;
+			if(inherit) {
+				var lastCanvas;
+				if(layerIndex-1 > -1) {
+					lastCanvas = self.layers[layerIndex-1].canvas;
+				} else {
+					lastCanvas = self.outputCanvas;
+				}
 				context.drawImage(lastCanvas, 0, 0, lastCanvas.width, lastCanvas.height);
 			}
 
