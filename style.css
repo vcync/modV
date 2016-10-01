@@ -54,6 +54,11 @@ section .top .active-list {
 	box-sizing: border-box;
 	border-right: 3px solid grey;
 	position: relative;
+	background-color: hsla(70,8%,4%,1);
+}
+
+.active-list .simplebar-track {
+	bottom: 23px;
 }
 
 .active-list .gallery-item.sortable-ghost {		
@@ -228,6 +233,7 @@ canvas {
 	max-height: 115px;
 	padding: 8px;
 	transition: background 150ms;
+	position: relative;
 }
 
 .active-item:nth-child(even) {
@@ -455,15 +461,30 @@ input[disabled][type="range"]::-webkit-slider-runnable-track{
 .layer-item {
 	width: 100%;
 	min-height: 115px;
-	background-color: aqua;
 	height: 100%;
+	border-bottom: 1px solid rgba(255, 255, 255, 0.5);
 }
 
 .layer-item .module-list {
 	background-color: red;
-	padding: 0 0 10px 0;
 	display: block;
-	min-height: 133px;
+	min-height: 115px;
+	position: relative;
+}
+
+.layer-item .module-list:before {
+	position: absolute;
+	top: 35%;
+	width: 100%;
+	height: auto;
+	text-align: center;
+	font-size: 2em;
+	color: rgb(53, 27, 27);
+	text-shadow: hsla(0,100%,74%,1) 1px 1px 0;
+	opacity: 0.7;
+	pointer-events: none;
+	content: 'Drag Modules Here';
+	letter-spacing: -0.04em;
 }
 
 .layer-item .control-bar {
@@ -472,6 +493,7 @@ input[disabled][type="range"]::-webkit-slider-runnable-track{
 	padding: 2px 2px;
 	height: 18px;
 	position: relative;
+	background-color: hsla(70,0%,22%,1);
 }
 
 .layer-item .title {
@@ -508,11 +530,12 @@ input[disabled][type="range"]::-webkit-slider-runnable-track{
 	position: absolute;
 	bottom: 0;
 	left: 0;
-	right: 0;
+	right: 3px;
 	height: 32px;
-	background-color: grey;
+	background-color: hsla(70,0%,22%,1);;
 	padding: 5px;
 	box-sizing: border-box;
+	border-top: 1px solid rgba(255, 255, 255, 0.5);
 }
 
 .layer-menu .icon {

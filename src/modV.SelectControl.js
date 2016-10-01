@@ -64,7 +64,7 @@
 					optionNode.value = option.value;
 					if('default' in option) {
 						if(option.default) {
-							optionNode.default = true;
+							optionNode.selected = true;
 							Module[self.variable] = option.value;
 						}
 					}

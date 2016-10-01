@@ -1,10 +1,13 @@
-/* globals Sortable, swapElements */
+/* globals Sortable, $ */
 (function() {
 	'use strict';
 	/*jslint browser: true */
 
 	modV.prototype.startUI = function() {
 		var self = this;
+
+		// simplebar
+		$('.active-list-wrapper').simplebar({ wrapContent: false });
 
 		self.mainWindowResize();
 
@@ -67,7 +70,7 @@
 				activeItemNode.focus();*/
 			},
 			onEnd: function(evt) {
-				self.swapLayers(evt.oldIndex, evt.newIndex);
+				self.moveLayerToIndex(evt.oldIndex, evt.newIndex);
 			}
 		});
 

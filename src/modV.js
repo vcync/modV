@@ -657,7 +657,8 @@ var modV = function(options) {
 			self.meyda = new Meyda.createMeydaAnalyzer({
 				audioContext: aCtx,
 				source: microphone,
-				bufferSize: 512
+				bufferSize: 512,
+				windowingFunction: 'rect'
 			});
 			//self.meydaInst = new Meyda(aCtx, microphone, 512);
 			//self.meyda = Meyda;

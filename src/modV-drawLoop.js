@@ -48,7 +48,9 @@
 				context.save();
 				context.globalAlpha = Module.info.alpha || 1;
 
-				if(pipeline) canvas = bufferCan;
+				// for inheritance
+				if(pipeline && i !== 0) canvas = bufferCan;
+				else if(pipeline) canvas = layer.canvas;
 
 				if(Module instanceof self.ModuleShader) {
 					var _gl = self.shaderEnv.gl;
@@ -62,7 +64,7 @@
 
 					context.globalCompositeOperation = 'copy';
 
-					// Copy Main Canvas to Shader Canvas 
+					// Copy Main Canvas to Shader texture
 					self.shaderEnv.texture = _gl.texImage2D(
 						_gl.TEXTURE_2D,
 						0,
@@ -172,7 +174,8 @@
 				} else if(Module instanceof self.Module3D) {
 					let texture = self.THREE.texture;
 
-					// copy current canvas to our textureCanvas
+					// copy current canvas to our textureCanvas, clear first
+					self.THREE.textureCanvasContext.clearRect(0, 0, canvas.width, canvas.height);
 
 					self.THREE.textureCanvasContext.drawImage(
 						canvas,
