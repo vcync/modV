@@ -206,7 +206,11 @@ modV.prototype.Layer = class Layer {
 					try {
 						this.moduleListNode.replaceChild(activeItemNode, clone);
 					} catch(e) {
-						throw new STError(e);
+						// fail gracefully, remove clone in gallery
+						let clone = evt.clone;
+						clone.parentNode.removeChild(clone);
+						
+						return;
 					}
 
 					// Add to active registry

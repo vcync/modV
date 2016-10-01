@@ -23,52 +23,6 @@
 			},
 			handle: '.handle',
 			chosenClass: 'chosen',
-			onAdd: function(evt) {
-				/*// Dragged HTMLElement
-				var itemEl = evt.item;
-				// Cloned element
-				var clone = gallery.querySelector('.gallery-item[data-module-name="' + itemEl.dataset.moduleName + '"]');
-
-				var layer = 0;
-
-				// Get Module
-				var oldModule = self.registeredMods[replaceAll(itemEl.dataset.moduleName, '-', ' ')];
-
-				var Module = self.createModule(oldModule);
-
-				if(evt.originalEvent.shiftKey) {
-					Module.info.solo = true;
-				}
-
-				// Move back to gallery
-				swapElements(clone, itemEl);
-
-				var activeItemNode = self.createActiveListItem(Module, function(node) {
-					self.currentActiveDrag = node;
-				}, function() {
-					self.currentActiveDrag  = null;
-				});
-
-				// Replace clone
-				try {
-					list.replaceChild(activeItemNode, clone);	
-				} catch(e) {
-					return;
-				}
-
-				// Add to active registry
-				self.activeModules[Module.info.name] = Module;
-
-				// Add to layer
-				self.layers[layer].addModule(Module, evt.newIndex);
-
-				//self.setModOrder(Module.info.name, evt.newIndex);
-
-				// Create controls
-				self.createControls(Module, self);
-
-				activeItemNode.focus();*/
-			},
 			onEnd: function(evt) {
 				self.moveLayerToIndex(evt.oldIndex, evt.newIndex);
 			}
