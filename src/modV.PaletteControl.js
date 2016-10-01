@@ -417,7 +417,8 @@
 			var pal = new Palette(self.colours, self.timePeriod, self.callbacks, modVSelf);
 
 			var paletteIndex = modVSelf.palettes.push(pal)-1;
-			pal.paletteIndex = paletteIndex;
+			self.paletteIndex = paletteIndex;
+			
 			return pal.generateControls();
 
 		};
