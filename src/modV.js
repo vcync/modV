@@ -64,7 +64,10 @@ var modV = function(options) {
 		analyser, // Analyser Node 
 		microphone;
 
-	self.version = "1.2b";
+	self.version = "1.3";
+
+	// UI Templates
+	self.templates = document.querySelector('link[rel="import"]').import;
 
 	// Load user options
 	if(typeof options !== 'undefined') self.options = options;
@@ -132,9 +135,6 @@ var modV = function(options) {
 	// WebSocket
 	self.ws = undefined;
 
-	// UI Templates
-	self.templates = document.querySelector('link[rel="import"]').import;
-
 	// Set name
 	self.setName = function(name) {
 		self.options.user = name;
@@ -146,30 +146,27 @@ var modV = function(options) {
 		self.THREE.renderer.setSize(self.outputCanvas.width, self.outputCanvas.height);
 
 		if(window.devicePixelRatio > 1 && self.options.retina) {
-			self.outputCanvas.width = self.previewWindow.innerWidth * self.previewWindow.devicePixelRatio;
-			self.outputCanvas.height = self.previewWindow.innerHeight * self.previewWindow.devicePixelRatio;
-
-			self.THREE.textureCanvas.width = self.previewWindow.innerWidth * self.previewWindow.devicePixelRatio;
-			self.THREE.textureCanvas.height =  self.previewWindow.innerHeight * self.previewWindow.devicePixelRatio;
-
-			self.layers.forEach(canvas => {
-				canvas.width = self.previewWindow.innerWidth * self.previewWindow.devicePixelRatio;
-				canvas.height = self.previewWindow.innerHeight * self.previewWindow.devicePixelRatio;
-			});
+			self.width = self.previewWindow.innerWidth * self.previewWindow.devicePixelRatio;
+			self.height = self.previewWindow.innerHeight * self.previewWindow.devicePixelRatio;
 
 		} else {
-			self.outputCanvas.width = self.previewWindow.innerWidth;
-			self.outputCanvas.height = self.previewWindow.innerHeight;
-
-			self.THREE.textureCanvas.width = self.previewWindow.innerWidth;
-			self.THREE.textureCanvas.height =  self.previewWindow.innerHeight;
-
-			self.layers.forEach(layer => {
-				let canvas = layer.canvas;
-				canvas.width = self.previewWindow.innerWidth;
-				canvas.height = self.previewWindow.innerHeight;
-			});
+			self.width = self.previewWindow.innerWidth;
+			self.height = self.previewWindow.innerHeight;
 		}
+
+		self.outputCanvas.width = self.width;
+		self.outputCanvas.height = self.height;
+
+		self.THREE.textureCanvas.width = self.width;
+		self.THREE.textureCanvas.height =  self.height;
+
+		self.shaderEnv.resize(self.width, self.height);
+
+		self.layers.forEach(layer => {
+			let canvas = layer.canvas;
+			canvas.width = self.width;
+			canvas.height = self.height;
+		});
 
 		forIn(self.activeModules, (mod, Module) => {
 			if('resize' in Module) {
