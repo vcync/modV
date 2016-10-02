@@ -317,9 +317,34 @@
 
 		// Layer menu
 
-		var addLayerButton = document.querySelectorAll('.layer-menu .icon')[0];
+		var addLayerButton = document.querySelector('.add-layer');
 		addLayerButton.addEventListener('click', function() {
 			self.addLayer();			
+		});
+
+
+
+
+		function findAncestor (el, cls) {
+			while ((el = el.parentElement) && !el.classList.contains(cls));
+			return el;
+		}
+
+		list.addEventListener('mousedown', e => {
+			// find ancestor
+			let ancestor = findAncestor(e.target, 'layer-item');
+
+			if(e.target.classList.contains('layer-item') || ancestor) return;
+			self.layers.forEach(Layer => {
+				Layer.getNode().classList.remove('active');
+			});
+		});
+
+		var trashLayerButton = document.querySelector('.trash-layer');
+		trashLayerButton.addEventListener('click', function() {
+			let Layer = self.layers[self.activeLayer];
+			let activeLayer = document.querySelector('.layer-item.active');
+			if(Layer && activeLayer) self.removeLayer(Layer);
 		});
 
 	};

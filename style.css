@@ -465,10 +465,10 @@ input[disabled][type="range"]::-webkit-slider-runnable-track{
 	min-height: 115px;
 	height: 100%;
 	border-bottom: 1px solid rgba(255, 255, 255, 0.5);
+	background-color: hsla(70,0%,22%,1);
 }
 
 .layer-item .module-list {
-	background-color: #383838;
 	display: block;
 	min-height: 115px;
 	position: relative;
@@ -492,11 +492,9 @@ input[disabled][type="range"]::-webkit-slider-runnable-track{
 
 .layer-item .control-bar {
 	letter-spacing: 0px;
-	background-color: greenyellow;
 	padding: 2px 2px;
 	height: 18px;
 	position: relative;
-	background-color: hsla(70,0%,22%,1);
 	color: #fff;
 }
 
@@ -507,6 +505,24 @@ input[disabled][type="range"]::-webkit-slider-runnable-track{
 
 .layer-item .title.editable {
 	cursor: text;
+}
+
+.layer-item.active {
+	background-color: hsla(199,92%,92%,1);
+	border-bottom: 1px solid rgba(0, 0, 0, 0.5);
+}
+
+.layer-item.active .control-bar {
+	color: #000;
+}
+
+.layer-item.active .module-list {
+	border-top: 1px solid rgba(0, 0, 0, 0.5);
+}
+
+.layer-item.active .module-list:before {
+	color: hsla(199,92%,86%,1);
+	text-shadow: 1px 1px hsla(208,100%,100%,1), -1px -1px hsla(208,100%,73%,1);
 }
 
 .layer-item .collapse {

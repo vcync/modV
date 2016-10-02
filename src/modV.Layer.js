@@ -105,9 +105,21 @@ modV.prototype.Layer = class Layer {
 		let collapseNode = layerItem.querySelector('.collapse');
 		let moduleList = layerItem.querySelector('.module-list');
 
+		layerItem.addEventListener('mousedown', e => {
+			// ignore collapse button
+			if(e.target.className.search('.fa-toggle-') > -1) return;
+
+			modV.activeLayer = modV.layers.indexOf(this);
+			modV.layers.forEach(Layer => {
+				Layer.getNode().classList.remove('active');
+			});
+
+			layerItem.classList.add('active');
+		});
+
 		titleNode.textContent = this.name;
 
-		collapseNode.addEventListener('click', function() {
+		collapseNode.addEventListener('mousedown', function() {
 			self.node.classList.toggle('collapsed');
 		});
 
@@ -209,7 +221,7 @@ modV.prototype.Layer = class Layer {
 						// fail gracefully, remove clone in gallery
 						let clone = evt.clone;
 						clone.parentNode.removeChild(clone);
-						
+
 						return;
 					}
 

@@ -105,6 +105,7 @@ var modV = function(options) {
 
 	// Layers store
 	self.layers = [];
+	self.activeLayer = 0;
 
 	self.canvas = self.options.canvas || document.createElement('canvas');
 	self.context = self.canvas.getContext('2d');
