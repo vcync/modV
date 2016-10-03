@@ -2,7 +2,6 @@ modV.prototype.removeLayer = function(Layer) {
 	
 	// remove modules from global lsit
 	forIn(Layer.modules, (key, Module) => {
-		console.log(Module);
 		this.deleteActiveModule(Module);
 	});
 
@@ -12,4 +11,8 @@ modV.prototype.removeLayer = function(Layer) {
 	let layerIndex = this.layers.indexOf(Layer);
 
 	this.layers.splice(layerIndex, 1);
+
+	this.layers.forEach((Layer, index) => {
+		Layer.updateIndex(index);
+	});
 };
