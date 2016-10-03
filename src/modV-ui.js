@@ -1,7 +1,6 @@
 /* globals Sortable, $ */
 (function() {
 	'use strict';
-	/*jslint browser: true */
 
 	modV.prototype.startUI = function() {
 		var self = this;
@@ -300,11 +299,14 @@
 				e.cancelBubble=true;
 				e.returnValue=false;
 
-				var galleryWidth = 100 - ( mousePosition.clientX / window.innerWidth  ) * 100;
+				var galleryWidth = (100 - ( mousePosition.clientX / window.innerWidth  ) * 100);
 
-				if(galleryWidth < 20 || galleryWidth > (100 - (306/ window.innerWidth) * 100)) return false;
+				if(galleryWidth < 20 || galleryWidth > (100 - (306 / window.innerWidth) * 100)) {
+					console.log('nooooo');
+					return false;
+				}
 
-				galleryWrapper.style.width = galleryWidth + '%';
+				//galleryWrapper.style.width = galleryWidth + '%';
 				activeListWrapper.style.width = (100 - galleryWidth) + '%';
 
 				return false;
@@ -312,7 +314,9 @@
 
 		});
 
-		galleryWrapper.style.width = (100 - (306/ window.innerWidth) * 100) + '%';
+		//let galleryWidth = Math.floor(100 - (306 / window.innerWidth) * 100);
+
+		//galleryWrapper.style.width = galleryWidth + '%';
 		//activeListWrapper.style.width = (100 - galleryWidth) + '%';
 
 		// Layer menu

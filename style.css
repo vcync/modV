@@ -96,7 +96,8 @@ section .top .active-list-wrapper,
 }
 
 section .top .gallery {
-
+	min-width: 600px;
+    overflow: hidden;
 }
 
 .gallery-item {
@@ -145,8 +146,18 @@ section .top .gallery {
 	background-color: rgba(0,0,0,0);
 }
 
-section .top .pure-u-4-5 {
-	position: relative;
+.top > .pure-g {
+    display: flex;
+    flex-direction: row;
+    flex-wrap: nowrap;
+    justify-content: flex-start;
+    align-content: stretch;
+    width: 100%;
+}
+
+.gallery-wrapper {
+    flex: 1;
+    position: relative;
 }
 
 section .bottom {
@@ -590,6 +601,7 @@ input[disabled][type="range"]::-webkit-slider-runnable-track{
 .layer-menu .icon i.fa {
 	font-size: 18px;
 	vertical-align: middle;
+	letter-spacing: 0;
 }
 
 .layer-menu .icon:not(:last-child) {
