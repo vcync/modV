@@ -26,7 +26,8 @@
     "mkdirp": "^0.5.1",
     "node-watch": "^0.4.0",
     "nodejs-websocket": "^1.7.0",
-    "open": "0.0.5"
+    "open": "0.0.5",
+    "ws": "^1.1.1"
   },
   "devDependencies": {
     "debowerify": "~0.1.3",
