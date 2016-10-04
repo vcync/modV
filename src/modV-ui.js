@@ -133,10 +133,10 @@
 		// Set up media sources
 		self.mediaStreamSources.audio.forEach(function(audioSource) {
 			var optionNode = document.createElement('option');
-			optionNode.value = audioSource.id;
+			optionNode.value = audioSource.deviceId;
 			optionNode.textContent = audioSource.label;
 
-			if(audioSource.id === self.options.audioSource) {
+			if(audioSource.deviceId === self.options.audioSource) {
 				optionNode.selected = true;
 			}
 			audioSelectNode.appendChild(optionNode);
@@ -144,10 +144,10 @@
 
 		self.mediaStreamSources.video.forEach(function(videoSource) {
 			var optionNode = document.createElement('option');
-			optionNode.value = videoSource.id;
+			optionNode.value = videoSource.deviceId;
 			optionNode.textContent = videoSource.label;
 			
-			if(videoSource.id === self.options.videoSource) {
+			if(videoSource.deviceId === self.options.videoSource) {
 				optionNode.selected = true;
 			}
 			videoSelectNode.appendChild(optionNode);

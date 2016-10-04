@@ -353,18 +353,18 @@ var modV = function(options) {
 				var videoSource;
 
 				foundSources.audio.forEach(function(audioSrc) {
-					if(audioSrc.id === self.options.audioSource) {
-						audioSource = audioSrc.id;
+					if(audioSrc.deviceId === self.options.audioSource) {
+						audioSource = audioSrc.deviceId;
 					}
 				});
 
 				foundSources.video.forEach(function(videoSrc) {
-					if(videoSrc.id === self.options.videoSource) {
-						videoSource = videoSrc.id;
+					if(videoSrc.deviceId === self.options.videoSource) {
+						videoSource = videoSrc.deviceId;
 					}
 				});
 
-				self.setMediaSource(audioSource || foundSources.audio[0].id, videoSource || foundSources.video[0].id);
+				self.setMediaSource(audioSource || foundSources.audio[0].deviceId, videoSource || foundSources.video[0].deviceId);
 				if(!self.headless) self.startUI();
 			});
 			
@@ -419,24 +419,22 @@ var modV = function(options) {
 	};
 
 	function scanMediaStreamSources(callback) {
-
-		MediaStreamTrack.getSources(function(sources) {
-			
+		navigator.mediaDevices.enumerateDevices().then(function(devices) {
 			self.mediaStreamSources.video = [];
 			self.mediaStreamSources.audio = [];
 
-			sources.forEach(function(source) {
-
-				if(source.kind === 'audio') {
-					self.mediaStreamSources.audio.push(source);
-				} else {
-					self.mediaStreamSources.video.push(source);
+			devices.forEach(function(device) {
+				
+				if(device.kind === 'audioinput') {
+					self.mediaStreamSources.audio.push(device);
+				} else if(device.kind === 'videoinput') {
+					self.mediaStreamSources.video.push(device);
 				}
 
 			});
-			if(callback) callback(self.mediaStreamSources);
-		});
 
+			return self.mediaStreamSources;
+		}).then(callback);
 	}
 
 	// Create function to use later on
