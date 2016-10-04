@@ -103,6 +103,9 @@ var modV = function(options) {
 	self.video.autoplay = true;
 	self.video.muted = true;
 
+	// Remote
+	self.remoteConnect();
+
 	// Layers store
 	self.layers = [];
 	self.activeLayer = 0;
@@ -375,38 +378,7 @@ var modV = function(options) {
 				return false;
 			}
 
-			if(self.options.remote && !self.remoteSuccess) {
-				self.initSockets();
-
-				console.log('Remote server not connected yet, waiting for connection to start.');
-				setTimeout(self.start, 1000);
-			} else {
-
-				// if(self.options.remote) {
-				// 	forIn(self.registeredMods, mod => {
-				// 		var infoToSend = JSON.parse(JSON.stringify(self.registeredMods[mod].info)); // copy the set
-				// 		var variables = [];
-
-				// 		if('controls' in self.registeredMods[mod].info) {
-				// 			self.registeredMods[mod].info.controls.forEach(function(controlSet) {
-				// 				var variable = controlSet.variable;
-				// 				variables.push(variable);
-				// 			});
-
-				// 			variables.forEach(function(v) {
-				// 				infoToSend[v] = self.registeredMods[mod][v];
-				// 			});
-				// 		}
-
-				// 		self.ws.send(JSON.stringify({
-				// 			type: 'register',
-				// 			payload: infoToSend
-				// 		}));
-				// 	});
-				// }
-
-				requestAnimationFrame(self.loop.bind(self)); //modV-drawLoop.js //TODO: figure out why we're using bind (I get it, but seems stupid)
-			}
+			requestAnimationFrame(self.loop.bind(self));
 		});
 	};
 

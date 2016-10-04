@@ -54,7 +54,7 @@
 			}
 		}
 
-		self.makeNode = function(Module) {
+		self.makeNode = function(Module, modV) {
 			id = Module.info.safeName + '-' + self.variable;
 			
 
@@ -119,7 +119,7 @@
 
 				if('append' in settings) value += settings.append;
 
-				Module[self.variable] = value;
+				Module.updateVariable(self.variable, value, modV);
 			}, false);
 			
 			node.id = id;

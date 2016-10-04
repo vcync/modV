@@ -4,5 +4,11 @@ modV.prototype.addLayer = function(canvas, context, clearing) {
 
 	list.appendChild(Layer.getNode());
 
-	return this.layers.push(Layer)-1;
+	let layerIndex = this.layers.push(Layer)-1;
+
+	this.remote.update('addlayer', {
+		index: layerIndex
+	});
+
+	return layerIndex;
 };

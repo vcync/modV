@@ -1,24 +1,41 @@
-//jshint esversion:6
+//jshint node:true
+'use strict';
 
-let forIn = (object, filter) => {
-	for(let key in object) {
-        filter(object[key], key);
-    }
-};
+const ws = require('nodejs-websocket');
+const port = 3133;
+let clients = [];
 
-var WebSocketServer = require('ws').Server;
-var wss = new WebSocketServer({server: httpsServer});
+var server = ws.createServer(client => {
+    var clientIndex = clients.push(client)-1;
+    client.clientIndex = clientIndex;
 
-wss.on('connection', function(ws) {
-    ws.on('message', function(message) {
-        // Broadcast any received message to all clients
-        console.log('received: %s', message);
-        wss.broadcast(message);
+    console.log('New remote client', clientIndex);
+
+
+    client.send(JSON.stringify({
+        type: 'hello'
+    }));
+
+    client.on('close', () => {
+        console.log('Lost remote client', client.clientIndex);
+        clients.splice(client.clientIndex, 1);
+    });
+
+    client.on('text', data => {
+
+        console.log('From', client.clientIndex);
+        console.log(JSON.stringify(JSON.parse(data), null, 4));
+
+        clients.forEach(client => {
+            try {
+                client.send(data);
+            } catch(e) {
+                console.error(e);
+            }
+        });
     });
 });
 
-wss.broadcast = function(data) {
-    forIn(this.clients, (client) => {
-        client.send(data);
-    });
-};
+server.listen(port, () => {
+    console.log('remote server listening on port', port);
+});

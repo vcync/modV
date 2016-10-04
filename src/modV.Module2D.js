@@ -1,8 +1,6 @@
 modV.prototype.Module2D = class Module2D {
 
 	constructor(settings) {
-		this.settings = settings;
-
 		// Set up error reporting
 		var ModuleError = modV.ModuleError;
 		ModuleError.prototype = Object.create(Error.prototype);
@@ -26,7 +24,7 @@ modV.prototype.Module2D = class Module2D {
 		this.info = settings.info;
 
 		// Always start on layer 0
-		this.settings.info.layer = 0;
+		this.info.layer = 0;
 
 		// Expose preview option
 		if('previewWithOutput' in settings) {
@@ -43,15 +41,25 @@ modV.prototype.Module2D = class Module2D {
 				this.add(thing);
 			});
 		} else {
-			this.settings.info.controls.push(item);
+			this.info.controls.push(item);
 		}
 	}
 
 	getLayer() {
-		return this.settings.info.layer;
+		return this.info.layer;
 	}
 
 	setLayer(layer) {
-		this.settings.info.layer = layer;
+		this.info.layer = layer;
+	}
+
+	updateVariable(variable, value, modV) {
+		this[variable] = value;
+
+		modV.remote.update('moduleValueChange', {
+			variable: variable,
+			value: value,
+			name: this.info.name
+		});
 	}
 };

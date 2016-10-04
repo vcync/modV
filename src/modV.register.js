@@ -31,6 +31,44 @@
 
 
 	modV.prototype.register = function(Module, instantiated) {
+
+		function finish(Module, type) {
+			// Add to Registry
+			self.registeredMods[Module.info.name] = Module;
+
+			// List controls/variables for remote
+			let controls = [];
+
+			Module.info.controls.forEach(Control => {
+				let type = 'unknown';
+
+				if(Control instanceof self.RangeControl) 	type = 'range';
+				if(Control instanceof self.CheckboxControl) type = 'checkbox';
+				if(Control instanceof self.SelectControl) 	type = 'select';
+				if(Control instanceof self.TextControl) 	type = 'text';
+				if(Control instanceof self.ColorControl) 	type = 'color';
+				if(Control instanceof self.PaletteControl) 	type = 'palette';
+				if(Control instanceof self.ImageControl) 	type = 'image';
+				if(Control instanceof self.VideoControl) 	type = 'video';
+				if(Control instanceof self.CustomControl) 	type = 'custom';
+
+				controls.push({
+					type: type,
+					settings: Control.getSettings()
+				});
+			});
+
+			// Send to remote
+			self.remote.update('addRegistered', {
+				name: name,
+				type: type,
+				controls: controls
+			});
+
+			// Create Gallery item
+			self.createGalleryItem(Module);
+		}
+
 		var self = this;
 		var originalModule = Module;
 
@@ -47,6 +85,8 @@
 		
 		// Shared Module variables
 		var name;
+		let type = 'unknown';
+
 
 		// Set meta
 		Module.info.alpha = 1;
@@ -81,6 +121,7 @@
 
 		// Handle Module2D
 		if(Module instanceof self.Module2D) {
+			type = 'Module2D';
 			console.info('Register: Module2D', Module.info.originalModuleName, '(' + name + ')');
 
 			// Parse Meyda
@@ -91,15 +132,13 @@
 			// Initialise Module
 			Module.init(self.layers[0].canvas, self.layers[0].context);
 
-			// Add to Registry
-			self.registeredMods[name] = Module;
-
-			// Create Gallery item
-			self.createGalleryItem(Module);
+			// finish up
+			finish(Module, type);
 		}
 
 		// Handle ModuleShader
 		if(Module instanceof self.ModuleShader) {
+			type = 'ModuleShader';
 			console.info('Register: ModuleShader', Module.info.originalModuleName, '(' + name + ')');
 
 			Module.info.uniforms.modVcanvas = {
@@ -159,17 +198,15 @@
 				// TEST IMPLEMENT
 				self.shaderEnv.resize(Module.programIndex);
 
-				// Add to Registry
-				self.registeredMods[name] = Module;
-
-				// Create Gallery item
-				self.createGalleryItem(Module);
+				// finish up
+				finish(Module, type);
 			});
 
 		}
 
 		// Handle Module3D
 		if(Module instanceof self.Module3D) {
+			type = 'Module3D';
 			console.info('Register: Module3D', Module.info.originalModuleName, '(' + name + ')');
 
 			// Parse Meyda
@@ -180,12 +217,8 @@
 			// Initialise Module
 			Module.init(self.layers[0].canvas, Module.getScene(), self.THREE.material, self.THREE.texture);
 
-			// Add to Registry
-			self.registeredMods[name] = Module;
-
-			// Create Gallery item
-			self.createGalleryItem(Module);
-			
+			// finish up
+			finish(Module, type);
 		}
 	};
 

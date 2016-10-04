@@ -83,6 +83,16 @@
 		setLayer(layer) {
 			this.settings.info.layer = layer;
 		}
+
+		updateVariable(variable, value, modV) {
+			this[variable] = value;
+
+			modV.remote.update('moduleValueChange', {
+				variable: variable,
+				value: value,
+				name: this.info.name
+			});
+		}
 		
 	};
 
