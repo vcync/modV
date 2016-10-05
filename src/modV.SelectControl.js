@@ -51,7 +51,7 @@
 			}
 		}
 
-		self.makeNode = function(Module) {
+		self.makeNode = function(Module, modV) {
 			id = Module.info.safeName + '-' + self.variable;
 
 			var inputNode = document.createElement('select');
@@ -65,7 +65,7 @@
 					if('default' in option) {
 						if(option.default) {
 							optionNode.selected = true;
-							Module[self.variable] = option.value;
+							Module.updateVariable(self.variable, option.value, modV);
 						}
 					}
 
@@ -74,7 +74,7 @@
 			}
 
 			inputNode.addEventListener('change', function() {
-				Module[self.variable] = inputNode.options[inputNode.selectedIndex].value;
+				Module.updateVariable(self.variable, inputNode.options[inputNode.selectedIndex].value, modV);
 			}, false);
 
 			return inputNode;

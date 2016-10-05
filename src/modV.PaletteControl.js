@@ -394,6 +394,7 @@
 
 			self.callbacks.next = function(colour) {
 				Module[self.variable] = colour;
+				//Module.updateVariable(self.variable, colour, modVSelf);
 			};
 
 			self.callbacks.getBPM = function() {

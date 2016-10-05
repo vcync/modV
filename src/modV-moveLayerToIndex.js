@@ -5,4 +5,10 @@ modV.prototype.moveLayerToIndex = function(oldIndex, newIndex) {
 	this.layers.forEach((Layer, index) => {
 		Layer.updateIndex(index);
 	});
+
+	// Send to remote
+	modV.remote.update('layerOrder', {
+		oldIndex: oldIndex,
+		newIndex: newIndex
+	});
 };

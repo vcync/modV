@@ -5,66 +5,102 @@
 	modV.prototype.remoteSuccess = false;
 	modV.prototype.uuid = undefined;
 	
-	modV.prototype.initSockets = function() {
-		var self = this;
-		
-		if(self.options.remote) {
-			try {
-				self.ws = new WebSocket(self.options.remote);
-				
-				self.ws.onerror = function () {
-					self.remoteSuccess = true; // Failed connection, so start anyway
-		        };
-			
-				self.ws.onmessage = function(e) {
-					var data = JSON.parse(e.data);
-					console.log('Message received:', data);
-					
-					if(!('type' in data)) return false;
-					
-					var pl = data.payload;
-					
-					switch(data.type) {
-						
-						case 'hello':
-							console.log(pl.name, 'says hi. Server version number:', pl.version);
-							self.remoteSuccess = true;
-							self.uuid = pl.id;
-							self.ws.send(JSON.stringify({type: 'declare', payload: {type: 'client', id: self.uuid}}));
-							break;
-							
-						case 'registerCB':
-							// Sorta debug only - will do something with this later on.
-							console.log('Server says', pl.name, 'was registered with order number', pl.index);
-							
-							if(self.registeredMods[pl.name].info.name === pl.name) {
-								if(self.registeredMods[pl.name].info.order === pl.index) {
-									console.log('True!');
-								} else {
-									console.log('False!');
-								}
-							} else {
-								console.log('False!');
-							}
-							
-							break;
-						
-						default:
-							self.receiveMessage({data: data}, true);
-					}
-				};
-				
-				self.ws.onclose = function() {
-					console.log('Connection closed');
-				};
-				
-				self.ws.onopen = function() {
-					console.log('Successful initial connection to', self.options.remote);
-				};
-			} catch(e) {
-				console.error('There was an un-identified Web Socket error', e);
-			}
-		}
-	};
+	modV.prototype.remoteConnect = function() {
+		if(!this.options.remote.use) return false;
 
+		this.remote = {};
+
+		let remote = new WebSocket(this.options.remote.address || 'ws://localhost:3133');
+
+		remote.sendJSON = function(data) {
+			this.send(JSON.stringify(data));
+		};
+
+		remote.onError = function(e) {
+			console.error(e);
+		};
+
+		remote.onmessage = e => {
+			var data = JSON.parse(e.data);
+			console.log('Remote sent', data);
+					
+			if(!('type' in data)) return false;
+					
+			switch(data.type) {
+				case 'hello':
+					remote.sendJSON({
+						type: 'declare',
+						payload: {
+							type: 'client'
+						}
+					});
+
+					this.remote.sendCurrent();
+
+					break;
+			}
+		};
+
+		this.remote.socket = remote;
+
+		this.remote.sendCurrent = () => {
+
+			let payload = this.generatePreset(Date.now());
+			delete payload.presetInfo;
+
+			payload.registeredModules = [];
+
+			forIn(this.registeredMods, (key, Module) => {
+				let controls = [];
+				let type = 'unknown';
+				if(Module instanceof this.Module2D) 	type = 'Module2D';
+				if(Module instanceof this.Module3D)		type = 'Module3D';
+				if(Module instanceof this.ModuleShader) type = 'ModuleShader';
+
+				Module.info.controls.forEach(Control => {
+					let type = 'unknown';
+
+					if(Control instanceof this.RangeControl) 	type = 'range';
+					if(Control instanceof this.CheckboxControl) type = 'checkbox';
+					if(Control instanceof this.SelectControl) 	type = 'select';
+					if(Control instanceof this.TextControl) 	type = 'text';
+					if(Control instanceof this.ColorControl) 	type = 'color';
+					if(Control instanceof this.PaletteControl) 	type = 'palette';
+					if(Control instanceof this.ImageControl) 	type = 'image';
+					if(Control instanceof this.VideoControl) 	type = 'video';
+					if(Control instanceof this.CustomControl) 	type = 'custom';
+
+					controls.push({
+						type: type,
+						settings: Control.getSettings()
+					});
+				});
+
+				payload.registeredModules.push({
+					name: Module.info.name,
+					type: type,
+					controls: controls
+				});
+			});
+
+			this.remote.socket.sendJSON({
+				type: 'current',
+				payload: payload
+			});
+		};
+
+		this.remote.update = (type, data) => {
+			if(!this.options.remote.use) return false;
+
+			try {
+				this.remote.socket.sendJSON({
+					type: 'update.' + type,
+					payload: data
+				});
+			} catch(e) {
+				console.log(e);
+			}
+		};
+
+	};
 })();

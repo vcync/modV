@@ -22,8 +22,8 @@
 		var Module = self.createModule(oldModule, previewCanvas, previewCtx);
 
 		// Setup any preview settings for gallery item
-		if('previewValues' in Module.settings.info) {
-			forIn(Module.settings.info.previewValues, (key, value) => {
+		if('previewValues' in Module.info) {
+			forIn(Module.info.previewValues, (key, value) => {
 				Module[key] = value;
 			});
 		}

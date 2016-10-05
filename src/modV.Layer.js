@@ -24,25 +24,41 @@ modV.prototype.Layer = class Layer {
 	}
 
 	addModule(Module, order) {
+		let modV = this.modV;
 		let name = Module.info.name;
 		this.modules[Module.info.name] = Module;
 
 		if(order !== "undefined") {
-			this.setOrder(Module, order);
+			this.setOrder(Module, order, true);
 		} else {
 			order = this.moduleOrder.push(name)-1;
 		}
+
+		// Send to remote
+		modV.remote.update('addModule', {
+			name: name,
+			layer: Module.getLayer(),
+			order: order
+		});
 		
 		return order;
 	}
 
-	removeModule(Module) {
+	removeModule(Module, sentToRemote) {
 		let name = Module.info.name;
 
 		// Remove from order array
 		let index = this.moduleOrder.indexOf(name);
 		if(index > -1) this.moduleOrder.splice(index, 1);
 		else new STError('Module was not found in Layer module array');
+
+		// Send to remote
+		if(!sentToRemote) {
+			modV.remote.update('removeModule', {
+				name: name,
+				layerIndex: Module.getLayer()
+			});
+		}
 
 		// Remove from module store
 		delete this.modules[name];
@@ -54,7 +70,7 @@ modV.prototype.Layer = class Layer {
 		});
 	}
 
-	setOrder(Module, order) {
+	setOrder(Module, order, sentToRemote) {
 		let name = Module.info.name;
 
 		if(this.moduleOrder[order] === 'undefined') this.moduleOrder[order] = name;
@@ -71,6 +87,15 @@ modV.prototype.Layer = class Layer {
 			
 			this.moduleOrder.forEach((mod, idx) => {
 				this.modules[mod].info.order = idx;
+			});
+		}
+
+		// Send to remote
+		if(!sentToRemote) {
+			modV.remote.update('moduleOrder', {
+				name: name,
+				layer: Module.getLayer(),
+				order: order
 			});
 		}
 	}
@@ -228,11 +253,11 @@ modV.prototype.Layer = class Layer {
 					// Add to active registry
 					modV.activeModules[Module.info.name] = Module;
 
-					// Add to layer
-					this.addModule(Module, evt.newIndex);
-
 					// Set Module's layer
 					Module.setLayer(modV.layers.indexOf(this));
+
+					// Add to layer
+					this.addModule(Module, evt.newIndex);
 
 					// Create controls
 					modV.createControls(Module);
@@ -241,21 +266,28 @@ modV.prototype.Layer = class Layer {
 				} else if(itemEl.classList.contains('active-item')) {
 					let name = replaceAll(itemEl.dataset.moduleName, '-', ' ');
 					let Module = modV.activeModules[name];
-					let Layer = modV.layers[Module.getLayer()];
 
+					let oldIndex = Module.getLayer();
+					let newIndex = modV.layers.indexOf(this);
+
+					let Layer = modV.layers[oldIndex];
+
+					// Layer = old layer
+					// this.Layer = new layer
+					
 					this.modules[name] = Layer.modules[name];
-
-					this.setOrder(Module, evt.newIndex);
-
-					Layer.removeModule(Module);
 
 					Module.setLayer(modV.layers.indexOf(this));
 
-					// 1. find parent layer ✔︎
-					// 2. reference existing Module in new Layer's modules object ✔︎
-					// 3. insert new moduleOrder index ✔︎
-					// 4. delete existing Module from old Layer's modules object ✔︎
-					// 5. update Module's layer ✔︎
+					this.setOrder(Module, evt.newIndex, true);
+
+					Layer.removeModule(Module, true);
+
+					modV.remote.update('moduleLayerMove', {
+						oldLayerIndex: oldIndex,
+						newLayerIndex: newIndex,
+						order: evt.newIdex
+					});
 				}
 			},
 			onEnd: evt => {

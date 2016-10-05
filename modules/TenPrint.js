@@ -58,8 +58,8 @@ class TenPrint extends modV.Module2D {
 		this.side = 16;
 		this.lineWidth = 10;
 		this.threshold = 0.5;
-		this.colour1 = 'red';
-		this.colour2 = 'black';
+		this.colour1 = 'black';
+		this.colour2 = 'red';
 	}
 	
 	draw(canvas, ctx, vid, features) {

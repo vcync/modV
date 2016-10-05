@@ -73,4 +73,14 @@ modV.prototype.Module3D = class Module3D {
 	setCamera(camera) {
 		this._camera = camera;
 	}
+
+	updateVariable(variable, value, modV) {
+		this[variable] = value;
+
+		modV.remote.update('moduleValueChange', {
+			variable: variable,
+			value: value,
+			name: this.info.name
+		});
+	}
 };

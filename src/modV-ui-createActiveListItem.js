@@ -26,18 +26,42 @@
 		var opacityRangeNode = activeItem.querySelector('input[type=range].opacity');
 		opacityRangeNode.addEventListener('input', function() {
 			Module.info.alpha = parseFloat(this.value);
+
+			// Send to remote
+			self.remote.update('moduleInfoUpdate', {
+				value: Module.info.alpha,
+				variable: 'alpha',
+				name: Module.info.name,
+				layerIndex: Module.getLayer()
+			});
 		});
 
 		// Attach listener to Blending Select
 		var compositeSelectNode = activeItem.querySelector('.composite-operations');
 		compositeSelectNode.addEventListener('change', function() {
 			Module.info.blend = this.value;
+
+			// Send to remote
+			self.remote.update('moduleInfoUpdate', {
+				value: Module.info.blend,
+				variable: 'blend',
+				name: Module.info.name,
+				layerIndex: Module.getLayer()
+			});
 		});
 
 		// Attach listener to Enable Checkbox
 		var enableCheckboxNode = activeItem.querySelector('input[type=checkbox].enable');
 		enableCheckboxNode.addEventListener('change', function() {
 			Module.info.disabled = !this.checked;
+
+			// Send to remote
+			self.remote.update('moduleInfoUpdate', {
+				value: Module.info.disabled,
+				variable: 'disabled',
+				name: Module.info.name,
+				layerIndex: Module.getLayer()
+			});
 		});
 
 		activeItem.dataset.moduleName = Module.info.safeName;

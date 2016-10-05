@@ -51,7 +51,7 @@
 			}
 		}
 
-		self.makeNode = function(Module) {
+		self.makeNode = function(Module, modV) {
 			id = Module.info.safeName + '-' + self.variable;
 
 			var inputNode = document.createElement('input');
@@ -61,7 +61,7 @@
 			else inputNode.checked = false;
 
 			inputNode.addEventListener('change', function() {
-				Module[self.variable] = this.checked;
+				Module.updateVariable(self.variable, this.checked, modV);
 			}, false);
 
 			var labelNode = document.createElement('label');
