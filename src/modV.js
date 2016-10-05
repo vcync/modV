@@ -19,6 +19,10 @@ Array.contains = function(needle, arrhaystack) {
 	return (arrhaystack.indexOf(needle) > -1);
 };
 
+window.replaceAll = function(string, operator, replacement) {
+	return string.split(operator).join(replacement);
+};
+
 // Get HTML document request
 window.getDocument = function(url, callback) {
 	var xhr = new XMLHttpRequest();
@@ -60,7 +64,10 @@ var modV = function(options) {
 		analyser, // Analyser Node 
 		microphone;
 
-	self.version = "1.2b";
+	self.version = "1.3";
+
+	// UI Templates
+	self.templates = document.querySelector('link[rel="import"]').import;
 
 	// Load user options
 	if(typeof options !== 'undefined') self.options = options;
@@ -96,8 +103,22 @@ var modV = function(options) {
 	self.video.autoplay = true;
 	self.video.muted = true;
 
+	// Layers store
+	self.layers = [];
+	self.activeLayer = 0;
+
 	self.canvas = self.options.canvas || document.createElement('canvas');
 	self.context = self.canvas.getContext('2d');
+
+	self.previewCanvas = document.createElement('canvas');
+	self.previewContext = self.previewCanvas.getContext('2d');
+
+	document.querySelector('.canvas-preview').appendChild(self.previewCanvas);
+
+	self.outputCanvas = document.createElement('canvas');
+	self.outputContext = self.outputCanvas.getContext('2d');
+
+	self.addLayer(self.canvas, self.context, false);
 
 	self.soloCanvas = undefined;
 
@@ -115,9 +136,6 @@ var modV = function(options) {
 	// WebSocket
 	self.ws = undefined;
 
-	// UI Templates
-	self.templates = document.querySelector('link[rel="import"]').import;
-
 	// Set name
 	self.setName = function(name) {
 		self.options.user = name;
@@ -126,25 +144,49 @@ var modV = function(options) {
 
 	// Window resize
 	self.resize = function() {
-		self.THREE.renderer.setSize(self.previewCanvas.width, self.previewCanvas.height);
+		self.THREE.renderer.setSize(self.outputCanvas.width, self.outputCanvas.height);
+
+		if(window.devicePixelRatio > 1 && self.options.retina) {
+			self.width = self.previewWindow.innerWidth * self.previewWindow.devicePixelRatio;
+			self.height = self.previewWindow.innerHeight * self.previewWindow.devicePixelRatio;
+
+		} else {
+			self.width = self.previewWindow.innerWidth;
+			self.height = self.previewWindow.innerHeight;
+		}
+
+		self.outputCanvas.width = self.width;
+		self.outputCanvas.height = self.height;
+
+		self.THREE.textureCanvas.width = self.width;
+		self.THREE.textureCanvas.height =  self.height;
+
+		self.shaderEnv.resize(self.width, self.height);
+
+		self.layers.forEach(layer => {
+			let canvas = layer.canvas;
+			canvas.width = self.width;
+			canvas.height = self.height;
+		});
 
 		forIn(self.activeModules, (mod, Module) => {
 			if('resize' in Module) {
+				let layer = self.layers[Module.getLayer()];
+
 				if(Module instanceof self.Module3D) {
-					Module.resize(self.previewCanvas, Module.getScene(), Module.getCamera(), self.THREE.material, self.THREE.texture);
+					Module.resize(layer.canvas, Module.getScene(), Module.getCamera(), self.THREE.material, self.THREE.texture);
 				} else {
-					Module.resize(self.previewCanvas, self.previewCtx);	
+					Module.resize(layer.canvas, layer.context);
 				}
 			}
 		});
 	};
 
 	self.mainWindowResize = function() {
-
 		// set canvas size
-		var boundingRect = self.canvas.getBoundingClientRect();
-		self.canvas.width = boundingRect.width;
-		self.canvas.height = boundingRect.height;
+		var boundingRect = self.previewCanvas.getBoundingClientRect();
+		self.previewCanvas.width = boundingRect.width;
+		self.previewCanvas.height = boundingRect.height;
 	};
 
 	window.addEventListener('resize', self.mainWindowResize);
@@ -160,10 +202,6 @@ var modV = function(options) {
 
 		return true;
 	};
-
-	if(self.options.canvas) {
-		self.setCanvas(self.options.canvas);
-	}
 
 	// Create Windows
 	self.createWindows();
@@ -215,139 +253,6 @@ var modV = function(options) {
 		}
 	};
 
-	self.loadPreset = function(id) {
-		//self.factoryReset();
-
-		self.presets[id].modOrder.forEach((mod, idx) => {
-			var presetModuleData = self.presets[id].moduleData[mod];
-			var Module;
-
-			Module = new self.moduleStore[presetModuleData.originalModuleName]();
-
-			var originalModule = self.registeredMods[presetModuleData.originalName];
-
-			Module.info.originalModuleName = originalModule.info.originalModuleName;
-			
-			Module.info.name = presetModuleData.name;
-			Module.info.originalName = presetModuleData.originalName;
-			Module.info.safeName = presetModuleData.safeName;
-
-			// init Module
-			if(Module instanceof self.ModuleShader) {
-				Module.programIndex = originalModule.programIndex;
-				
-				// Loop through Uniforms, expose self.uniforms and create local variables
-				if('uniforms' in Module.settings.info) {
-
-					forIn(Module.settings.info.uniforms, (uniformKey, uniform) => {
-						switch(uniform.type) {
-							case 'f':
-								Module[uniformKey] = parseFloat(uniform.value);
-								break;
-
-							case 'i':
-								Module[uniformKey] = parseInt(uniform.value);
-								break;
-
-							case 'b':
-								Module[uniformKey] = uniform.value;
-								break;
-
-						}
-					});
-				}
-			}
-
-			// init Module
-			if('init' in Module && Module instanceof self.Module2D) {
-				Module.init(self.previewCanvas, self.previewCtx);
-			}
-
-			if('init' in Module && Module instanceof self.Module3D) {
-				Module.init(self.previewCanvas, Module.getScene(), Module.getCamera(), self.THREE.material, self.THREE.texture);
-			}
-
-			// Set Module values
-			Module.info.disabled = presetModuleData.disabled;
-			Module.info.blend = presetModuleData.blend;
-			Module.info.solo = presetModuleData.solo;
-
-			forIn(presetModuleData.values, value => {
-				Module[value] = presetModuleData.values[value];
-			});
-
-			// Create UI controls
-			self.createControls(Module, self);
-
-			// Add to active modules
-			self.activeModules[Module.info.name] = Module;
-
-			// Set mod Order
-			self.setModOrder(Module.info.name, idx);
-
-			var activeItemNode = self.createActiveListItem(Module, function(node) {
-				self.currentActiveDrag = node;
-			}, function() {
-				self.currentActiveDrag  = null;
-			});
-
-			var list = document.getElementsByClassName('active-list')[0];
-			list.appendChild(activeItemNode);
-		});
-	};
-
-	self.savePreset = function(name, profile) {
-		var preset = {
-			modOrder: self.modOrder,
-			moduleData: {},
-			presetInfo: {
-				datetime: Date.now(),
-				modVVersion: self.version,
-				author: self.options.user
-			}
-		};
-		
-		function extractValues(Control) {
-			preset.moduleData[mod].values[Control.variable] = Module[Control.variable];
-		}
-
-		for (var i=0; i < self.modOrder.length; i++) {
-			var mod = self.modOrder[i];
-
-			var Module = self.activeModules[mod];
-			
-			preset.moduleData[mod] = {};
-			preset.moduleData[mod].disabled = Module.info.disabled;
-			preset.moduleData[mod].blend = Module.info.blend;
-			preset.moduleData[mod].name = Module.info.name;
-			preset.moduleData[mod].clone = false;
-			preset.moduleData[mod].originalName = Module.info.originalName;
-			preset.moduleData[mod].safeName = Module.info.safeName;
-			preset.moduleData[mod].originalModuleName = Module.info.originalModuleName;
-			preset.moduleData[mod].solo = Module.info.solo;
-
-			if('originalName' in Module.info) {
-				preset.moduleData[mod].clone = true;
-			}
-
-			preset.moduleData[mod].values = {};
-			Module.info.controls.forEach(extractValues);
-		}
-		
-		self.presets[name] = preset;
-		localStorage.setItem('presets', JSON.stringify(self.presets));
-		console.info('Wrote preset with name:', name, 'in profile', profile, preset);
-
-		if(self.mediaManagerAvailable) {
-			self.mediaManager.send(JSON.stringify({
-				request: 'save-preset',
-				profile: profile,
-				payload: preset,
-				name: name
-			}));
-		}
-	};
-
 	self.meydaFeatures = ['complexSpectrum'];
 
 	self.addMeydaFeature = function(feature) {
@@ -382,19 +287,14 @@ var modV = function(options) {
 		console.info('THREE.js detected.', 'Revision:', THREE.REVISION);
 		self.THREE = {};
 
-		self.THREE.texture = new THREE.Texture(self.previewCanvas);
+		self.THREE.textureCanvas = document.createElement('canvas');
+		self.THREE.textureCanvasContext = self.THREE.textureCanvas.getContext('2d');
+
+		self.THREE.texture = new THREE.Texture(self.THREE.textureCanvas);
 		self.THREE.texture.minFilter = THREE.LinearFilter;
 
 		self.THREE.material = new THREE.MeshBasicMaterial({
 			map: self.THREE.texture,
-			side: THREE.DoubleSide
-		});
-
-		self.THREE.soloTexture = new THREE.Texture(self.soloCanvas);
-		self.THREE.soloTexture.minFilter = THREE.LinearFilter;
-
-		self.THREE.soloMaterial = new THREE.MeshBasicMaterial({
-			map: self.THREE.soloTexture,
 			side: THREE.DoubleSide
 		});
 
@@ -453,18 +353,18 @@ var modV = function(options) {
 				var videoSource;
 
 				foundSources.audio.forEach(function(audioSrc) {
-					if(audioSrc.id === self.options.audioSource) {
-						audioSource = audioSrc.id;
+					if(audioSrc.deviceId === self.options.audioSource) {
+						audioSource = audioSrc.deviceId;
 					}
 				});
 
 				foundSources.video.forEach(function(videoSrc) {
-					if(videoSrc.id === self.options.videoSource) {
-						videoSource = videoSrc.id;
+					if(videoSrc.deviceId === self.options.videoSource) {
+						videoSource = videoSrc.deviceId;
 					}
 				});
 
-				self.setMediaSource(audioSource || foundSources.audio[0].id, videoSource || foundSources.video[0].id);
+				self.setMediaSource(audioSource || foundSources.audio[0].deviceId, videoSource || foundSources.video[0].deviceId);
 				if(!self.headless) self.startUI();
 			});
 			
@@ -519,24 +419,22 @@ var modV = function(options) {
 	};
 
 	function scanMediaStreamSources(callback) {
-
-		MediaStreamTrack.getSources(function(sources) {
-			
+		navigator.mediaDevices.enumerateDevices().then(function(devices) {
 			self.mediaStreamSources.video = [];
 			self.mediaStreamSources.audio = [];
 
-			sources.forEach(function(source) {
-
-				if(source.kind === 'audio') {
-					self.mediaStreamSources.audio.push(source);
-				} else {
-					self.mediaStreamSources.video.push(source);
+			devices.forEach(function(device) {
+				
+				if(device.kind === 'audioinput') {
+					self.mediaStreamSources.audio.push(device);
+				} else if(device.kind === 'videoinput') {
+					self.mediaStreamSources.video.push(device);
 				}
 
 			});
-			if(callback) callback(self.mediaStreamSources);
-		});
 
+			return self.mediaStreamSources;
+		}).then(callback);
 	}
 
 	// Create function to use later on
@@ -622,7 +520,8 @@ var modV = function(options) {
 			self.meyda = new Meyda.createMeydaAnalyzer({
 				audioContext: aCtx,
 				source: microphone,
-				bufferSize: 512
+				bufferSize: 512,
+				windowingFunction: 'rect'
 			});
 			//self.meydaInst = new Meyda(aCtx, microphone, 512);
 			//self.meyda = Meyda;

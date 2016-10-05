@@ -1,216 +1,249 @@
 (function() {
 	'use strict';
 	/*jslint browser: true */
+	
+	//TODO: move these elsewhere
+	var bufferCan = document.createElement('canvas');
+	var bufferCtx = bufferCan.getContext('2d');
 
 	modV.prototype.drawFrame = function(meydaOutput, delta) {
 		var self = this;
-		
 
 		if(!self.ready) return;
 
-		self.soloCtx.clearRect(0, 0, self.soloCanvas.width, self.soloCanvas.height);
-		self.soloCtx.drawImage(
-			self.previewCanvas,
-			0,
-			0,
-			self.previewCanvas.width,
-			self.previewCanvas.height
-		);
-		
-		if(self.clearing) {
-			self.previewCtx.clearRect(0, 0, self.previewCanvas.width, self.previewCanvas.height);
-		}
+		for(var layerIndex=0; layerIndex < self.layers.length; layerIndex++) {
 
-		var firstSolo = true;
+			var layer = self.layers[layerIndex];
+			var canvas = layer.canvas;
+			var context = layer.context;
+			var clearing = layer.clearing;
+			var alpha = layer.alpha;
+			var enabled = layer.enabled;
+			var inherit = layer.inherit;
 
-		for(var i=0; i < self.modOrder.length; i++) {
-			var Module = self.activeModules[self.modOrder[i]];
-
-			if(Module.info.disabled || Module.info.alpha === 0) continue;
-
-
-			self.previewCtx.save();
-			self.previewCtx.globalAlpha = Module.info.alpha;
-
-			self.soloCtx.save();
-			if(Module.info.solo) self.soloCtx.globalAlpha = Module.info.alpha;
-
-			if(Module.info.blend !== 'normal') {
-				self.previewCtx.globalCompositeOperation = Module.info.blend;
-				if(Module.info.solo) self.soloCtx.globalCompositeOperation = Module.info.blend;
+			var pipeline = layer.pipeline;
+			if(pipeline) {
+				bufferCan.width = canvas.width;
+				bufferCan.height = canvas.height;
+				bufferCtx.clearRect(0,0,canvas.width,canvas.height);
 			}
 
-			if(Module instanceof self.ModuleShader) {
-				var _gl = self.shaderEnv.gl;
+			if(clearing) {
+				context.clearRect(0, 0, canvas.width, canvas.height);
+			}
 
-				// Switch program
-				if(Module.programIndex !== self.shaderEnv.activeProgram) {
-					self.shaderEnv.activeProgram = Module.programIndex;
-
-					_gl.useProgram(self.shaderEnv.programs[Module.programIndex]);
+			if(inherit) {
+				var lastCanvas;
+				if(layerIndex-1 > -1) {
+					lastCanvas = self.layers[layerIndex-1].canvas;
+				} else {
+					lastCanvas = self.outputCanvas;
 				}
+				context.drawImage(lastCanvas, 0, 0, lastCanvas.width, lastCanvas.height);
+			}
 
-				if(Module.info.solo) {
+			if(!enabled || alpha === 0) continue;
 
-					if(firstSolo) {
+			for(var i=0; i < layer.moduleOrder.length; i++) {
 
-						// Copy Main Canvas to Shader Canvas 
-						self.shaderEnv.texture = _gl.texImage2D(
-							_gl.TEXTURE_2D,
-							0,
-							_gl.RGBA,
-							_gl.RGBA,
-							_gl.UNSIGNED_BYTE,
-							self.previewCanvas
-						);
+				var Module = layer.modules[layer.moduleOrder[i]];
 
-						firstSolo = false;
-					} else {
-						// Copy Solo Canvas to Shader Canvas 
-						self.shaderEnv.texture = _gl.texImage2D(
-							_gl.TEXTURE_2D,
-							0,
-							_gl.RGBA,
-							_gl.RGBA,
-							_gl.UNSIGNED_BYTE,
-							self.soloCanvas
-						);
+				if(Module.info.disabled || Module.info.alpha === 0) continue;
+
+				context.save();
+				context.globalAlpha = Module.info.alpha || 1;
+
+				// for inheritance
+				if(pipeline && i !== 0) canvas = bufferCan;
+				else if(pipeline) canvas = layer.canvas;
+
+				if(Module instanceof self.ModuleShader) {
+					var _gl = self.shaderEnv.gl;
+
+					// Switch program
+					if(Module.programIndex !== self.shaderEnv.activeProgram) {
+						self.shaderEnv.activeProgram = Module.programIndex;
+
+						_gl.useProgram(self.shaderEnv.programs[Module.programIndex]);
 					}
 
-				} else {
+					context.globalCompositeOperation = 'copy';
 
-					// Copy Main Canvas to Shader Canvas 
+					// Copy Main Canvas to Shader texture
 					self.shaderEnv.texture = _gl.texImage2D(
 						_gl.TEXTURE_2D,
 						0,
 						_gl.RGBA,
 						_gl.RGBA,
 						_gl.UNSIGNED_BYTE,
-						self.previewCanvas
+						canvas
 					);
 
-				}
+					context.globalCompositeOperation = 'normal';
 
-				// Set Uniforms
-				if('uniforms' in Module.info) {
-					forIn(Module.info.uniforms, (uniformKey, uniform) => {
+					// Set Uniforms
+					if('uniforms' in Module.info) {
+						forIn(Module.info.uniforms, (uniformKey, uniform) => {
 
-						var uniLoc = _gl.getUniformLocation(self.shaderEnv.programs[self.shaderEnv.activeProgram], uniformKey);
-						var value;
+							var uniLoc = _gl.getUniformLocation(self.shaderEnv.programs[self.shaderEnv.activeProgram], uniformKey);
+							var value;
 
-						switch(uniform.type) {
-							case 'f':
-								value = parseFloat(Module[uniformKey]);
-								_gl.uniform1f(uniLoc, value);
-								break;
+							switch(uniform.type) {
+								case 'f':
+									value = parseFloat(Module[uniformKey]);
+									_gl.uniform1f(uniLoc, value);
+									break;
 
-							case 'i':
-								value = parseInt(Module[uniformKey]);
-								_gl.uniform1i(uniLoc, value);
-								break;
+								case 'i':
+									value = parseInt(Module[uniformKey]);
+									_gl.uniform1i(uniLoc, value);
+									break;
 
-							case 'b':
-								value = Module[uniformKey];
-								if(value) value = 1;
-								else value = 0;
-								
-								_gl.uniform1i(uniLoc, value);
-								break;
+								case 'b':
+									value = Module[uniformKey];
+									if(value) value = 1;
+									else value = 0;
+									
+									_gl.uniform1i(uniLoc, value);
+									break;
 
-						}
-					});
-				}
+							}
+						});
+					}
 
-				// Render
-				self.shaderEnv.render(delta, self.previewCanvas);
+					// Render
+					self.shaderEnv.render(delta, canvas);
 
-				if(Module.info.solo) {
-
-					// Copy Shader Canvas to Solo Canvas
-					self.soloCtx.drawImage(
-						self.shaderEnv.canvas,
-						0,
-						0,
-						self.soloCanvas.width,
-						self.soloCanvas.height
-					);
-
-				} else {
+					if(Module.info.blend !== 'normal') {
+						context.globalCompositeOperation = Module.info.blend;
+					}
 
 					// Copy Shader Canvas to Main Canvas
-					self.previewCtx.drawImage(
-						self.shaderEnv.canvas,
-						0,
-						0,
-						self.previewCanvas.width,
-						self.previewCanvas.height
-					);
+					if(pipeline) {
+						bufferCtx.clearRect(0,0,canvas.width,canvas.height);
+						bufferCtx.drawImage(
+							self.shaderEnv.canvas,
+							0,
+							0,
+							canvas.width,
+							canvas.height
+						);
 
-				}
-
-			} else if(Module instanceof self.Module2D) {
-
-				if(Module.info.solo) {
-					if(firstSolo) {
-						Module.draw(self.previewCanvas, self.soloCtx, self.video, meydaOutput, self.meyda, delta, self.bpm, self.kick);
-						firstSolo = false;
 					} else {
-						Module.draw(self.soloCanvas, self.soloCtx, self.video, meydaOutput, self.meyda, delta, self.bpm, self.kick);
+						context.drawImage(
+							self.shaderEnv.canvas,
+							0,
+							0,
+							canvas.width,
+							canvas.height
+						);
 					}
-				} else {
-					Module.draw(self.previewCanvas, self.previewCtx, self.video, meydaOutput, self.meyda, delta, self.bpm, self.kick);
-				}
-				
-			} else if(Module instanceof self.Module3D) {
-				let texture = self.THREE.texture;
 
-				if(Module.info.solo) {
-					if(!firstSolo) {
-						texture = self.THREE.soloTexture;
-						self.THREE.material.map = texture;
-						self.THREE.material.map.needsUpdate = true;
+				} else if(Module instanceof self.Module2D) {
+
+					if(Module.info.blend !== 'normal') {
+						context.globalCompositeOperation = Module.info.blend;
+					}
+
+					if(pipeline) {
+
+						// copy buffer to layer canvas, clear first
+						context.clearRect(0,0,canvas.width,canvas.height);
+						context.drawImage(
+							bufferCan,
+							0,
+							0,
+							canvas.width,
+							canvas.height
+						);
+
+						// draw 2d operations
+						Module.draw(layer.canvas, context, self.video, meydaOutput, self.meyda, delta, self.bpm, self.kick);
+
+						//copy layer back to buffer, clear first
+						bufferCtx.clearRect(0,0,canvas.width,canvas.height);
+						bufferCtx.drawImage(
+							layer.canvas,
+							0,
+							0,
+							canvas.width,
+							canvas.height
+						);
+
 					} else {
-						self.THREE.material.map = texture;
-						self.THREE.material.map.needsUpdate = true;
-						firstSolo = false;
+
+						Module.draw(canvas, context, self.video, meydaOutput, self.meyda, delta, self.bpm, self.kick);
+
+					}
+					
+				} else if(Module instanceof self.Module3D) {
+					let texture = self.THREE.texture;
+
+					// copy current canvas to our textureCanvas, clear first
+					self.THREE.textureCanvasContext.clearRect(0, 0, canvas.width, canvas.height);
+
+					self.THREE.textureCanvasContext.drawImage(
+						canvas,
+						0,
+						0,
+						canvas.width,
+						canvas.height
+					);
+					
+					//self.THREE.material.map = self.THREE.texture;
+					self.THREE.material.map.needsUpdate = true;
+
+					Module.draw(Module.getScene(), Module.getCamera(), self.THREE.material, texture, meydaOutput);
+					self.THREE.renderer.render(Module.getScene(), Module.getCamera());
+
+					if(Module.info.blend !== 'normal') {
+						context.globalCompositeOperation = Module.info.blend;
+					}
+
+					if(pipeline) {
+						bufferCtx.clearRect(0,0,canvas.width,canvas.height);
+						bufferCtx.drawImage(
+							self.THREE.canvas,
+							0,
+							0,
+							canvas.width,
+							canvas.height
+						);
+
+					} else {
+						context.drawImage(
+							self.THREE.canvas,
+							0,
+							0,
+							canvas.width,
+							canvas.height
+						);
 					}
 				}
 
-				Module.draw(Module.getScene(), Module.getCamera(), self.THREE.material, texture, meydaOutput);
-				self.THREE.renderer.render(Module.getScene(), Module.getCamera());
-
-				if(Module.info.solo) {
-					self.soloCtx.drawImage(
-						self.THREE.canvas,
-						0,
-						0,
-						self.soloCanvas.width,
-						self.soloCanvas.height
-					);
-				} else {
-					self.previewCtx.drawImage(
-						self.THREE.canvas,
-						0,
-						0,
-						self.previewCanvas.width,
-						self.previewCanvas.height
-					);
-				}
+				context.restore();
+				self.THREE.texture.needsUpdate = true;
 			}
 
-			self.previewCtx.restore();
-			self.soloCtx.restore();
-			self.THREE.texture.needsUpdate = true;
-			self.THREE.soloTexture.needsUpdate = true;
-			
+			if(pipeline) {
+				context.clearRect(0,0,canvas.width,canvas.height);
+				context.drawImage(
+					bufferCan,
+					0,
+					0,
+					canvas.width,
+					canvas.height
+				);
+			}
 		}
+
+		self.mux();
 
 		// thanks to http://ninolopezweb.com/2016/05/18/how-to-preserve-html5-canvas-aspect-ratio/
 		// for great aspect ratio advice!
-
-		var widthToHeight = self.previewCanvas.width / self.previewCanvas.height;
-		var newWidth = self.canvas.width,
-			newHeight = self.canvas.height;
+		var widthToHeight = self.outputCanvas.width / self.outputCanvas.height;
+		var newWidth = self.previewCanvas.width,
+			newHeight = self.previewCanvas.height;
 
 		var newWidthToHeight = newWidth / newHeight;
 	
@@ -220,13 +253,11 @@
 			newHeight = Math.round(newWidth / widthToHeight);
 		}
 
-		var x = Math.round((self.canvas.width/2) - (newWidth/2));
-		var y = Math.round((self.canvas.height/2) - (newHeight/2));
+		var x = Math.round((self.previewCanvas.width/2) - (newWidth/2));
+		var y = Math.round((self.previewCanvas.height/2) - (newHeight/2));
 
-		self.context.clearRect(0, 0, self.canvas.width, self.canvas.height);
-
-		self.context.drawImage(self.previewCanvas, x, y, newWidth, newHeight);
-		self.context.drawImage(self.soloCanvas, x, y, newWidth, newHeight);
+		self.previewContext.clearRect(0, 0, self.previewCanvas.width, self.previewCanvas.height);
+		self.previewContext.drawImage(self.outputCanvas, x, y, newWidth, newHeight);
 	};
 
 	modV.prototype.loop = function(timestamp) {

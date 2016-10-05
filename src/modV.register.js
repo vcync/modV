@@ -89,7 +89,7 @@
 			}
 
 			// Initialise Module
-			Module.init(self.previewCanvas, self.previewCtx);
+			Module.init(self.layers[0].canvas, self.layers[0].context);
 
 			// Add to Registry
 			self.registeredMods[name] = Module;
@@ -178,7 +178,7 @@
 			}
 
 			// Initialise Module
-			Module.init(self.previewCanvas, Module.getScene(), self.THREE.material, self.THREE.texture);
+			Module.init(self.layers[0].canvas, Module.getScene(), self.THREE.material, self.THREE.texture);
 
 			// Add to Registry
 			self.registeredMods[name] = Module;

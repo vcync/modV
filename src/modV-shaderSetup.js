@@ -14,41 +14,20 @@
 		var buffer;
 		var gl; // reference to self.shaderEnv.gl
 		var programs = self.shaderEnv.programs; // reference
-		var canvas; // refrence to self.shaderEnv.gl
+		var canvas; // reference to self.shaderEnv.gl
 
-		function resize(programIndex) {
-
-			var currentProgramIndex;
-
-			if(typeof programIndex !== 'undefined') {
-				currentProgramIndex = self.shaderEnv.activeProgram;
-				self.shaderEnv.activeProgram = programIndex;
-				gl.useProgram(programs[programIndex]);
-			}
-
-			// TODO: sort out dvp to work with 'retina' flag
-
+		function resize(width, height) {
 			// Set canvas width
-			canvas.width = window.innerWidth/* * window.devicePixelRatio*/;
-			canvas.height = window.innerHeight/* * window.devicePixelRatio*/;
+			canvas.width = width;
+			canvas.height = height;
 			
 			// Set viewport size from gl context
-			gl.viewport(0, 0, gl.drawingBufferWidth, gl.drawingBufferHeight);
-			
-/*			// Set u_resolution
-			if(programs[self.shaderEnv.activeProgram]) {
-				var resolutionLocation = gl.getUniformLocation(programs[self.shaderEnv.activeProgram], "u_resolution");
-				gl.uniform2f(resolutionLocation, canvas.width, canvas.height);
-				setRectangle(gl, 0, 0, canvas.width, canvas.height);
-			}*/
-
-			if(typeof programIndex !== 'undefined') {
-				self.shaderEnv.activeProgram = currentProgramIndex;
-				gl.useProgram(programs[currentProgramIndex]);
-			}
+			gl.viewport(0, 0, width, height);
 		}
 
-		self.shaderEnv.resize = resize;
+		self.shaderEnv.resize = function(width, height) {
+			resize(width, height);
+		};
 
 		function setRectangle(gl, x, y, width, height) {
 			var x1 = x;
@@ -68,7 +47,10 @@
 
 		function init() {
 			self.shaderEnv.canvas	= document.createElement('canvas');
-			self.shaderEnv.gl		= self.shaderEnv.canvas.getContext('experimental-webgl', {antialias: true});
+			self.shaderEnv.gl		= self.shaderEnv.canvas.getContext('experimental-webgl', {
+				antialias: false,
+				premultipliedAlpha: false
+			});
 			gl = self.shaderEnv.gl; // set reference
 			canvas = self.shaderEnv.canvas; // set reference
 
@@ -77,7 +59,7 @@
 
 			// Disable pre-multiplied alpha
 			gl.pixelStorei(gl.UNPACK_PREMULTIPLY_ALPHA_WEBGL, gl.NONE);
-					
+			
 			// Compile shaders and create program
 			var shaderSource;
 			var vertexShader;
@@ -96,8 +78,8 @@
 			vertexShader = gl.createShader(gl.VERTEX_SHADER);
 			gl.shaderSource(vertexShader, shaderSource);
 			gl.compileShader(vertexShader);
- 
-  			shaderSource = "" +
+
+			shaderSource = "" +
 				"precision mediump float;" +
 				"uniform sampler2D u_modVCanvas;" +
 				"varying vec2 v_texCoord;" +
@@ -118,7 +100,7 @@
 
 			// look up where the texture coordinates need to go.
 			var texCoordLocation = gl.getAttribLocation(programs[self.shaderEnv.activeProgram], "a_texCoord");
-		 
+			
 			// provide texture coordinates for the rectangle.
 			var texCoordBuffer = gl.createBuffer();
 			gl.bindBuffer(gl.ARRAY_BUFFER, texCoordBuffer);
@@ -134,12 +116,12 @@
 			);
 			gl.enableVertexAttribArray(texCoordLocation);
 			gl.vertexAttribPointer(texCoordLocation, 2, gl.FLOAT, false, 0, 0);
-		 
+			
 			// Create a texture.
 			self.shaderEnv.texture = gl.createTexture();
 			gl.activeTexture(gl.TEXTURE0); // At Unit position 0
 			gl.bindTexture(gl.TEXTURE_2D, self.shaderEnv.texture);
-		 
+			
 			// Fill the texture with a 1x1 transparent pixel.
 			gl.texImage2D(
 				gl.TEXTURE_2D,
@@ -159,8 +141,8 @@
 			gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR); // or NEAREST
 			gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.LINEAR); // or NEAREST
 
-		 	// Set canvas and viewport sizes
-			resize();
+			// Set canvas and viewport sizes
+			resize(self.width, self.height);
 
 			// Get position of position attribute
 			var positionLocation = gl.getAttribLocation(programs[self.shaderEnv.activeProgram], "a_position");
@@ -180,17 +162,12 @@
 				gl,
 				0,
 				0,
-				window.innerWidth/* * window.devicePixelRatio*/,
-				window.innerHeight/* * window.devicePixelRatio*/
+				self.width,
+				self.height
 			);
-
-			// render(); // always loop - this is pretty efficient so we don't really need to worry about it going forever (hopefully, heh)
-			window.addEventListener('resize', resize);
 		}
 
 		function render(delta, canvas) {
-			// window.requestAnimationFrame(render);
-
 			// Clear WebGL canvas
 			gl.clearColor(0.0, 0.0, 0.0, 0.0);
 			gl.clear(gl.COLOR_BUFFER_BIT);
@@ -226,5 +203,4 @@
 
 		init();
 	};
-
 })();

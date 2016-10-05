@@ -4,8 +4,8 @@ function replaceAll(string, operator, replacement) {
 
 modV.prototype.createModule = function(originalModule, canvas, context) {
 
-	if(!canvas) canvas = this.previewCanvas;
-	if(!context) context = this.previewContext;
+	if(!canvas) canvas = this.layers[0].canvas;
+	if(!context) context = this.layers[0].context;
 
 	let originalModuleName = originalModule.info.originalModuleName;
 	let Module = new this.moduleStore[originalModuleName]();

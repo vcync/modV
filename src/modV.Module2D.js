@@ -25,6 +25,9 @@ modV.prototype.Module2D = class Module2D {
 		// Settings passed, expose this.info
 		this.info = settings.info;
 
+		// Always start on layer 0
+		this.settings.info.layer = 0;
+
 		// Expose preview option
 		if('previewWithOutput' in settings) {
 			this.previewWithOutput = settings.previewWithOutput;
@@ -42,5 +45,13 @@ modV.prototype.Module2D = class Module2D {
 		} else {
 			this.settings.info.controls.push(item);
 		}
+	}
+
+	getLayer() {
+		return this.settings.info.layer;
+	}
+
+	setLayer(layer) {
+		this.settings.info.layer = layer;
 	}
 };

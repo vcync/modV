@@ -19,6 +19,18 @@ class Waveform extends modV.Module2D {
 			default: 1
 		}));
 
+		this.add(new modV.SelectControl({
+			variable: 'windowing',
+			label: 'Windowing',
+			enum: [
+				{label: 'Rectangular (no window)', value: 'rect'},
+				{label: 'Hanning', value: 'hanning', default: true},
+				{label: 'Hamming', value: 'hamming'},
+				{label: 'Blackman', value: 'blackman'},
+				{label: 'Sine', value: 'sine'}
+			]
+		}));
+
 		this.add(new modV.PaletteControl({
 			variable: 'colour',
 			colours: [
@@ -50,11 +62,12 @@ class Waveform extends modV.Module2D {
 	init() {
 		this.colour = 'red';
 		this.strokeWeight = 1;
+		this.windowing = 'hanning';
 	}
 
 	draw(can, ctx, vid, features) {
 		var ampArr = features.buffer;
-		ampArr = Meyda.windowing(ampArr, 'hanning');
+		ampArr = Meyda.windowing(ampArr, this.windowing);
 
 		ctx.strokeStyle = this.colour;
 		ctx.lineWidth = this.strokeWeight;

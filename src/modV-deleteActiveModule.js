@@ -11,17 +11,20 @@ modV.prototype.deleteActiveModule = function(Module) {
 		if(Module.info.safeName === safeName) {
 			
 			Module.info.controls.forEach(control => {
-				
 				// remove palette from global palette store
 				if(control instanceof this.PaletteControl) {
 					this.palettes.splice(control.paletteIndex, 1);
 				}
 			});
 
+			let Layer = this.layers[Module.getLayer()];
+
+			Layer.removeModule(Module);
+
 			console.info('Deleting', moduleName);
 			delete this.activeModules[moduleName];
 			
-			list.removeChild(activeItemNode);
+			Layer.moduleListNode.removeChild(activeItemNode);
 			panel.parentNode.removeChild(panel);
 			this.setModOrder(moduleName, -1);
 		}

@@ -1,14 +1,12 @@
-/* globals Sortable, swapElements */
+/* globals Sortable, $ */
 (function() {
 	'use strict';
-	/*jslint browser: true */
-
-	function replaceAll(string, operator, replacement) {
-		return string.split(operator).join(replacement);
-	}
 
 	modV.prototype.startUI = function() {
 		var self = this;
+
+		// simplebar
+		$('.active-list-wrapper').simplebar({ wrapContent: false });
 
 		self.mainWindowResize();
 
@@ -18,57 +16,14 @@
 
 		Sortable.create(list, {
 			group: {
-				name: 'modV',
+				name: 'layers',
 				pull: true,
 				put: true
 			},
 			handle: '.handle',
 			chosenClass: 'chosen',
-			onAdd: function(evt) {
-				// Dragged HTMLElement
-				var itemEl = evt.item;
-				// Cloned element
-				var clone = gallery.querySelector('.gallery-item[data-module-name="' + itemEl.dataset.moduleName + '"]');
-
-				// Get Module
-				var oldModule = self.registeredMods[replaceAll(itemEl.dataset.moduleName, '-', ' ')];
-
-				var Module = self.createModule(oldModule);
-
-				if(evt.originalEvent.shiftKey) {
-					Module.info.solo = true;
-				}
-
-				// Move back to gallery
-				swapElements(clone, itemEl);
-
-				var activeItemNode = self.createActiveListItem(Module, function(node) {
-					self.currentActiveDrag = node;
-				}, function() {
-					self.currentActiveDrag  = null;
-				});
-
-				// Replace clone
-				try {
-					list.replaceChild(activeItemNode, clone);	
-				} catch(e) {
-					return;
-				}
-
-				// Add to registry
-				self.activeModules[Module.info.name] = Module;
-
-				self.setModOrder(Module.info.name, evt.newIndex);
-
-				// Create controls
-				self.createControls(Module, self);
-
-				activeItemNode.focus();
-			},
 			onEnd: function(evt) {
-				if(!evt.item.classList.contains('deletable')) {
-					self.setModOrder(replaceAll(evt.item.dataset.moduleName, '-', ' '), evt.newIndex);
-				}
+				self.moveLayerToIndex(evt.oldIndex, evt.newIndex);
 			}
 		});
 
@@ -90,7 +45,7 @@
 			self.currentActiveDrag  = null;
 
 			forIn(self.activeModules, (moduleName, Module) => {
-				if(Module.info.safeName === droppedModuleData) {
+				if(Module.info.safeName === droppedModuleData) {					
 					self.deleteActiveModule(Module);
 				}
 			});
@@ -178,10 +133,10 @@
 		// Set up media sources
 		self.mediaStreamSources.audio.forEach(function(audioSource) {
 			var optionNode = document.createElement('option');
-			optionNode.value = audioSource.id;
+			optionNode.value = audioSource.deviceId;
 			optionNode.textContent = audioSource.label;
 
-			if(audioSource.id === self.options.audioSource) {
+			if(audioSource.deviceId === self.options.audioSource) {
 				optionNode.selected = true;
 			}
 			audioSelectNode.appendChild(optionNode);
@@ -189,10 +144,10 @@
 
 		self.mediaStreamSources.video.forEach(function(videoSource) {
 			var optionNode = document.createElement('option');
-			optionNode.value = videoSource.id;
+			optionNode.value = videoSource.deviceId;
 			optionNode.textContent = videoSource.label;
 			
-			if(videoSource.id === self.options.videoSource) {
+			if(videoSource.deviceId === self.options.videoSource) {
 				optionNode.selected = true;
 			}
 			videoSelectNode.appendChild(optionNode);
@@ -344,11 +299,14 @@
 				e.cancelBubble=true;
 				e.returnValue=false;
 
-				var galleryWidth = 100 - ( mousePosition.clientX / window.innerWidth  ) * 100;
+				var galleryWidth = (100 - ( mousePosition.clientX / window.innerWidth  ) * 100);
 
-				if(galleryWidth < 20 || galleryWidth > 80) return false;
+				if(galleryWidth < 20 || galleryWidth > (100 - (306 / window.innerWidth) * 100)) {
+					console.log('nooooo');
+					return false;
+				}
 
-				galleryWrapper.style.width = galleryWidth + '%';
+				//galleryWrapper.style.width = galleryWidth + '%';
 				activeListWrapper.style.width = (100 - galleryWidth) + '%';
 
 				return false;
@@ -356,51 +314,42 @@
 
 		});
 
-		// Module Grouping
+		//let galleryWidth = Math.floor(100 - (306 / window.innerWidth) * 100);
 
-		/*var addGroupButton = document.querySelectorAll('.module-menu .icon')[0];
-		addGroupButton.addEventListener('click', function() {
-			
-			// Create active list item
-			var template = self.templates.querySelector('#module-group');
-			var group = document.importNode(template.content, true);
+		//galleryWrapper.style.width = galleryWidth + '%';
+		//activeListWrapper.style.width = (100 - galleryWidth) + '%';
 
-			// Create Group
-			var Group = new self.Group();
-			var groupIndex = self.groups.push(Group)-1;
-			Group = self.groups[groupIndex];
+		// Layer menu
 
-			// Temp container (TODO: don't do this)
-			var temp = document.getElementById('temp');
+		var addLayerButton = document.querySelector('.add-layer');
+		addLayerButton.addEventListener('click', function() {
+			self.addLayer();			
+		});
 
-			// Init node in temp (TODO: don't do this)
-			temp.innerHTML = '';
-			temp.appendChild(group);
-			// Grab initialised node
-			group = temp.querySelector('div');
 
-			var titleNode = group.querySelector('.title');
 
-			titleNode.addEventListener('dblclick', function() {
-				this.contentEditable = true;
-				this.focus();
-				this.classList.add('editable');
+
+		function findAncestor (el, cls) {
+			while ((el = el.parentElement) && !el.classList.contains(cls));
+			return el;
+		}
+
+		list.addEventListener('mousedown', e => {
+			// find ancestor
+			let ancestor = findAncestor(e.target, 'layer-item');
+
+			if(e.target.classList.contains('layer-item') || ancestor) return;
+			self.layers.forEach(Layer => {
+				Layer.getNode().classList.remove('active');
 			});
+		});
 
-			titleNode.addEventListener('blur', function() {
-				this.contentEditable = false;
-				this.classList.remove('editable');
-			});
-
-			titleNode.addEventListener('keypress', function(evt) {
-				if(evt.which === 13) evt.preventDefault();
-			});
-
-			titleNode.textContent = 'New Group';
-			
-			list.appendChild(group);
-
-		});*/
+		var trashLayerButton = document.querySelector('.trash-layer');
+		trashLayerButton.addEventListener('click', function() {
+			let Layer = self.layers[self.activeLayer];
+			let activeLayer = document.querySelector('.layer-item.active');
+			if(Layer && activeLayer) self.removeLayer(Layer);
+		});
 
 	};
 

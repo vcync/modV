@@ -29,6 +29,9 @@ modV.prototype.Module3D = class Module3D {
 		// Settings passed, expose self.info
 		this.info = settings.info;
 
+		// Always start on layer 0
+		this.settings.info.layer = 0;
+
 		// Expose preview option
 		if('previewWithOutput' in settings) {
 			this.previewWithOutput = settings.previewWithOutput;
@@ -45,6 +48,14 @@ modV.prototype.Module3D = class Module3D {
 		} else {
 			this.settings.info.controls.push(item);
 		}
+	}
+
+	getLayer() {
+		return this.settings.info.layer;
+	}
+
+	setLayer(layer) {
+		this.settings.info.layer = layer;
 	}
 
 	setScene(scene) {
