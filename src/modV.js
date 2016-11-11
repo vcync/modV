@@ -252,6 +252,24 @@ var modV = function(options) {
 						arr.push(profile);
 					});
 
+
+					let presetSelectNode = document.querySelector('#loadPresetSelect');
+					if(presetSelectNode) presetSelectNode.innerHTML = '';
+
+					forIn(self.profiles, (profileName, profile) => {
+						forIn(profile.presets, (presetName, preset) => {
+							if(presetSelectNode) {
+								var optionNode = document.createElement('option');
+								optionNode.value = presetName;
+								optionNode.textContent = presetName;
+
+								presetSelectNode.appendChild(optionNode);
+							}
+							
+							self.presets[presetName] = preset;
+						});
+					});
+
 					self.palettes.forEach(function(palette) {
 						palette.updateProfiles(self.profiles);
 					});
@@ -259,6 +277,10 @@ var modV = function(options) {
 			}
 		}
 	};
+
+	window.addEventListener('beforeunload', () => {
+		self.mediaManager.close();
+	});
 
 	self.meydaFeatures = ['complexSpectrum'];
 

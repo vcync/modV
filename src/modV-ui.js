@@ -378,13 +378,15 @@
 
 		let presetSelectNode = presetControlPanel.querySelector('#loadPresetSelect');
 
-		// Set up media sources
-		forIn(self.presets, presetName => {
-			var optionNode = document.createElement('option');
-			optionNode.value = presetName;
-			optionNode.textContent = presetName;
+		// Set up loaded presets
+		forIn(this.profiles, (profileName, profile) => {
+			forIn(profile.presets, presetName => {
+				var optionNode = document.createElement('option');
+				optionNode.value = presetName;
+				optionNode.textContent = presetName;
 
-			presetSelectNode.appendChild(optionNode);
+				presetSelectNode.appendChild(optionNode);
+			});
 		});
 
 		presetControlPanel.querySelector('#loadPreset').addEventListener('click', function() {

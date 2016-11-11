@@ -3,8 +3,18 @@ modV.prototype.savePreset = function(name, profile) {
 		let preset = this.generatePreset(name);
 		
 		this.presets[name] = preset;
-		localStorage.setItem('presets', JSON.stringify(this.presets));
-		console.info('Wrote preset with name:', name, 'in profile', profile, preset);
+		console.info(preset, this.presets[name]);
+
+		let presetSelectNode = document.querySelector('#loadPresetSelect');
+		presetSelectNode.innerHTML = '';
+
+		forIn(this.presets, presetName => {
+			var optionNode = document.createElement('option');
+			optionNode.value = presetName;
+			optionNode.textContent = presetName;
+
+			presetSelectNode.appendChild(optionNode);
+		});
 
 		if(this.mediaManagerAvailable) {
 			this.mediaManager.send(JSON.stringify({
