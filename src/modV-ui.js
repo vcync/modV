@@ -165,10 +165,6 @@
 			self.factoryReset();
 		});
 
-		globalControlPanel.querySelector('#savePresetGlobal').addEventListener('click', function() {
-			self.savePreset(globalControlPanel.querySelector('#savePresetName').value, 'default');
-		});
-
 		globalControlPanel.querySelector('#setUsername').value = self.options.user;
 
 		globalControlPanel.querySelector('#setUsernameGlobal').addEventListener('click', function() {
@@ -371,13 +367,40 @@
 
 		this.updateLayerControls();
 
+		// Create Preset Controls
+		let presetTemplate = self.templates.querySelector('#preset-controls');
+		let presetControlPanel = document.importNode(presetTemplate.content, true);
+
+		document.querySelector('.preset-control-panel-wrapper').appendChild(presetControlPanel);
+
+		// Pull back initialised node from DOM
+		presetControlPanel = document.querySelector('.preset-control-panel-wrapper .preset-controls');
+
+		let presetSelectNode = presetControlPanel.querySelector('#loadPresetSelect');
+
+		// Set up media sources
+		forIn(self.presets, presetName => {
+			var optionNode = document.createElement('option');
+			optionNode.value = presetName;
+			optionNode.textContent = presetName;
+
+			presetSelectNode.appendChild(optionNode);
+		});
+
+		presetControlPanel.querySelector('#loadPreset').addEventListener('click', function() {
+			self.loadPreset(presetControlPanel.querySelector('#loadPresetSelect').value);
+		});
+
+		presetControlPanel.querySelector('#savePreset').addEventListener('click', function() {
+			self.savePreset(presetControlPanel.querySelector('#savePresetName').value, 'default');
+		});
 
 		// Tabs for right-side controls
 		let rightTabs = this.TabController();
 		rightTabs = new rightTabs(); //jshint ignore:line
 		rightTabs.add('Layers', document.querySelector('.layer-control-panel-wrapper'), true);
 		rightTabs.add('Global', document.querySelector('.global-control-panel-wrapper'));
-		rightTabs.add('Presets', document.querySelector('.global-control-panel-wrapper'));
+		rightTabs.add('Presets', document.querySelector('.preset-control-panel-wrapper'));
 
 		let rightControls = document.querySelector('.right-controls');
 

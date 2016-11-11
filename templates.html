@@ -31,12 +31,6 @@
 			<input type="text" id="setUsername">
 			<input id="setUsernameGlobal" type="button" value="Save Name" class="enable">
 		</div>
-
-		<div class="control-group save-preset-group">
-			<label>Save preset</label>
-			<input type="text" id="savePresetName">
-			<input id="savePresetGlobal" type="button" value="Save Preset" class="enable">
-		</div>
 	</div>
 </template>
 
@@ -55,6 +49,26 @@
 		<div class="control-group pipeline-group">
 			<label for="pipeLineLayers">Pipline</label>
 			<input id="pipeLineLayers" type="checkbox" class="enable">
+		</div>
+	</div>
+</template>
+
+<template id="preset-controls">
+	<div class="pure-u-1-1 preset-controls right-controls">
+		<h1>Preset Controls</h1>
+
+		<div class="control-group load-preset-group">
+			<label for="loadPresetSelect">Load Preset</label>
+			<select id="loadPresetSelect">
+
+			</select>
+			<input id="loadPreset" type="button" value="Load Preset" class="enable">
+		</div>
+
+		<div class="control-group save-preset-group">
+			<label>Save preset</label>
+			<input type="text" id="savePresetName">
+			<input id="savePreset" type="button" value="Save Preset" class="enable">
 		</div>
 	</div>
 </template>
