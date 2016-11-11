@@ -1,4 +1,4 @@
-modV.prototype.buildMIDIContextMenu = function(Control, Module, inputNode) {
+modV.prototype.buildMIDIContextMenu = function(controlIndex, Module, inputNode) {
 	let items = [];
 
 	let assigned = false;
@@ -16,7 +16,8 @@ modV.prototype.buildMIDIContextMenu = function(Control, Module, inputNode) {
 			
 			this.MIDIInstance.learning = true;
 			this.MIDIInstance.currentNode = inputNode;
-			this.MIDIInstance.currentControl = Control;
+			this.MIDIInstance.currentControlIndex = controlIndex;
+			this.MIDIInstance.currentModuleName = Module.info.name;
 		}
 	}));
 

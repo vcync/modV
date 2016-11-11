@@ -17,6 +17,18 @@ modV.prototype.deleteActiveModule = function(Module) {
 				}
 			});
 
+
+			this.MIDIInstance.assignments.forEach(MIDIDevice => {
+				let toRemove = [];
+				forIn(MIDIDevice, (MIDIChannel, assignment) => {
+					if(assignment.moduleName === Module.info.name) toRemove.push(MIDIChannel);
+				});
+				
+				toRemove.forEach(key => {
+					delete MIDIDevice[key];
+				});
+			});
+
 			let Layer = this.layers[Module.getLayer()];
 
 			Layer.removeModule(Module);

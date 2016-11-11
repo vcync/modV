@@ -6,7 +6,8 @@ modV.prototype.MIDI = class {
 		this.inputs = null;
 		this.learning = false;
 		this.currentNode = null;
-		this.currentControl = null;
+		this.currentModuleName = null;
+		this.currentControlIndex = null;
 
 		this.assignments = new Map();
 	}
@@ -29,7 +30,7 @@ modV.prototype.MIDI = class {
 		// loop over all available inputs and listen for any MIDI input
 		for (let input of inputs.values()) {
 
-			if(!this.assignments.get(input.id)) this.assignments.set(input.id, new Map());
+			if(!this.assignments.get(input.id)) this.assignments.set(input.id, {});
 
 			// each time there is a midi message call the onMIDIMessage function
 			input.addEventListener('midimessage', this.handleInput.bind(this));
@@ -40,17 +41,22 @@ modV.prototype.MIDI = class {
 		let data = message.data;
 		let midiChannel = parseInt(data[1]);
 		let inputMap = this.assignments.get(message.currentTarget.id);
-		let Control = inputMap.get(midiChannel);
+		let Control;
+
+		let assignment = inputMap[midiChannel];
+
+		if(assignment) {
+			let moduleName = assignment.moduleName;
+			let controlIndex = assignment.controlIndex;
+			Control = modV.activeModules[moduleName].info.controls[controlIndex];
+		}
 
 		if(this.learning) {
-			let inputNode = this.currentNode;
-			
-			inputNode.dataset.midichannel = midiChannel;
-			inputNode.dataset.midideviceid = message.currentTarget.id;
+			inputMap[midiChannel] = this.createAssignment(this.currentNode, message.currentTarget.id, midiChannel, this.currentModuleName, this.currentControlIndex);
 
-			inputMap.set(midiChannel, this.currentControl);
+			this.currentControlIndex = null;
+			this.currentModuleName = null;
 
-			this.currentControl = null;
 			this.currentNode = null;
 			this.learning = false;
 		}
@@ -59,10 +65,40 @@ modV.prototype.MIDI = class {
 		if(midiNode && Control) {
 			let calculatedValue = Math.map(parseInt(data[2]), 0, 127, parseFloat(midiNode.min), parseFloat(midiNode.max));
 
-			console.log(calculatedValue);
 			midiNode.value = calculatedValue;
-			Control.writeValue(Math.round(calculatedValue));
+			Control.writeValue(calculatedValue);
 		}
+	}
+
+	importAssignments(assignments) {
+
+		assignments.forEach((channels, deviceID)  => {
+
+			if(!this.assignments.get(deviceID)) this.assignments.set(deviceID, {});
+			let inputMap = this.assignments.get(deviceID);
+
+			forIn(channels, (channel, assignment) => {
+				let moduleName = assignment.moduleName;
+				let controlIndex = assignment.controlIndex;
+				let Control = modV.activeModules[moduleName].info.controls[controlIndex];
+				let inputNode = Control.node;
+
+				inputMap[channel] = this.createAssignment(inputNode, deviceID, channel, moduleName, controlIndex);
+			});
+
+		});
+	}
+
+	createAssignment(node, id, channel, name, controlIndex) {
+		let inputNode = node;
+		
+		inputNode.dataset.midichannel = channel;
+		inputNode.dataset.midideviceid = id;
+
+		return {
+			controlIndex: controlIndex,
+			moduleName: name
+		};
 	}
 
 	start() {

@@ -125,4 +125,10 @@ modV.prototype.loadPreset = function(id) {
 			Layer.moduleListNode.appendChild(activeItemNode);
 		});
 	});
+
+	let assignments = new Map(this.presets[id].MIDIAssignments);
+	
+	console.log(this.presets[id].MIDIAssignments, assignments);
+
+	modV.MIDIInstance.importAssignments(assignments);
 };

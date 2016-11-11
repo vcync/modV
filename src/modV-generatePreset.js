@@ -2,6 +2,7 @@ modV.prototype.generatePreset = function(name) {
 	var preset = {
 		layers: [],
 		moduleData: {},
+		MIDIAssignments: [],
 		presetInfo: {
 			name: name,
 			datetime: Date.now(),
@@ -13,6 +14,14 @@ modV.prototype.generatePreset = function(name) {
 	function extractValues(Control, Module, key) {
 		preset.moduleData[key].values[Control.variable] = Module[Control.variable];
 	}
+
+	let MIDIAssignmentsObject = [];
+
+	modV.MIDIInstance.assignments.forEach((value, key) => {
+		MIDIAssignmentsObject.push([key, value]);
+	});
+
+	preset.MIDIAssignments = MIDIAssignmentsObject;
 
 	this.layers.forEach(Layer => {
 		let layerDetails = {

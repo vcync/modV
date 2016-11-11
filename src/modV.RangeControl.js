@@ -16,6 +16,13 @@
 		};
 
 		self.writeValue = function(value) {
+
+			if(settings.varType === 'int') value = parseInt(value);
+			else if(settings.varType === 'float') value = parseFloat(value);
+			else value = this.value;
+
+			if('append' in settings) value += settings.append;
+	
 			Module[self.variable] = value;
 		};
 
@@ -129,6 +136,8 @@
 			}, false);
 			
 			node.id = id;
+			
+			this.node = node;
 
 			return node;
 		};
