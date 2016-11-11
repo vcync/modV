@@ -81,11 +81,11 @@ modV.prototype.loadPreset = function(id) {
 
 			// init Module
 			if('init' in Module && Module instanceof this.Module2D) {
-				Module.init(this.previewCanvas, this.previewCtx);
+				Module.init(this.outputCanvas, this.outputContext);
 			}
 
 			if('init' in Module && Module instanceof this.Module3D) {
-				Module.init(this.previewCanvas, Module.getScene(), Module.getCamera(), this.THREE.material, this.THREE.texture);
+				Module.init(this.outputCanvas, Module.getScene(), Module.getCamera(), this.THREE.material, this.THREE.texture);
 			}
 
 			// Set Module values
