@@ -103,6 +103,10 @@ var modV = function(options) {
 	self.video.autoplay = true;
 	self.video.muted = true;
 
+	// MIDI
+	this.MIDIInstance = new this.MIDI();
+	this.MIDIInstance.start();
+
 	// Remote
 	self.remoteConnect();
 

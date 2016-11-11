@@ -1,5 +1,5 @@
 <template id="global-controls">
-	<div class="pure-u-1-1 global-controls">
+	<div class="pure-u-1-1 global-controls right-controls">
 		<h1>Global Controls</h1>
 		<div class="control-group clearing-group">
 			<label for="clearingGlobal">Clearing</label>
@@ -36,6 +36,25 @@
 			<label>Save preset</label>
 			<input type="text" id="savePresetName">
 			<input id="savePresetGlobal" type="button" value="Save Preset" class="enable">
+		</div>
+	</div>
+</template>
+
+<template id="layer-controls">
+	<div class="pure-u-1-1 layer-controls right-controls">
+		<h1>Layer Controls</h1>
+		<h2>Layer #</h2>
+		<div class="control-group clearing-group">
+			<label for="clearingLayers">Clearing</label>
+			<input id="clearingLayers" type="checkbox" class="enable">
+		</div>
+		<div class="control-group inherit-group">
+			<label for="inheritLayers">Inherit</label>
+			<input id="inheritLayers" type="checkbox" class="enable">
+		</div>
+		<div class="control-group pipeline-group">
+			<label for="pipeLineLayers">Pipline</label>
+			<input id="pipeLineLayers" type="checkbox" class="enable">
 		</div>
 	</div>
 </template>

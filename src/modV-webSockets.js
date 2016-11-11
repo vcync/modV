@@ -6,42 +6,44 @@
 	modV.prototype.uuid = undefined;
 	
 	modV.prototype.remoteConnect = function() {
-		if(!this.options.remote.use) return false;
+		//if(!this.options.remote.use) return false;
 
 		this.remote = {};
 
-		let remote = new WebSocket(this.options.remote.address || 'ws://localhost:3133');
+		if(this.options.remote.use) {
+			let remote = new WebSocket(this.options.remote.address || 'ws://localhost:3133');
 
-		remote.sendJSON = function(data) {
-			this.send(JSON.stringify(data));
-		};
+			remote.sendJSON = function(data) {
+				this.send(JSON.stringify(data));
+			};
 
-		remote.onError = function(e) {
-			console.error(e);
-		};
+			remote.onError = function(e) {
+				console.error(e);
+			};
 
-		remote.onmessage = e => {
-			var data = JSON.parse(e.data);
-			console.log('Remote sent', data);
-					
-			if(!('type' in data)) return false;
-					
-			switch(data.type) {
-				case 'hello':
-					remote.sendJSON({
-						type: 'declare',
-						payload: {
-							type: 'client'
-						}
-					});
+			remote.onmessage = e => {
+				var data = JSON.parse(e.data);
+				console.log('Remote sent', data);
+						
+				if(!('type' in data)) return false;
+						
+				switch(data.type) {
+					case 'hello':
+						remote.sendJSON({
+							type: 'declare',
+							payload: {
+								type: 'client'
+							}
+						});
 
-					this.remote.sendCurrent();
+						this.remote.sendCurrent();
 
-					break;
-			}
-		};
+						break;
+				}
+			};
 
-		this.remote.socket = remote;
+			this.remote.socket = remote;
+		}
 
 		this.remote.sendCurrent = () => {
 

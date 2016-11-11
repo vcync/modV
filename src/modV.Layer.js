@@ -135,6 +135,7 @@ modV.prototype.Layer = class Layer {
 			if(e.target.className.search('.fa-toggle-') > -1) return;
 
 			modV.activeLayer = modV.layers.indexOf(this);
+			modV.updateLayerControls();
 			modV.layers.forEach(Layer => {
 				Layer.getNode().classList.remove('active');
 			});

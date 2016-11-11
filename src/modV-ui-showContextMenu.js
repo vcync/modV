@@ -17,6 +17,7 @@
 
 				menuItems.push(buildControlMenu(variables[0], variables[1], variables[2], self));
 				menuItems.push(buildCopyPasteMenu(variables[0], variables[2], variables[3], self));
+				menuItems.push(this.buildMIDIContextMenu(variables[0], variables[2], variables[3]));
 				break;
 		}
 
@@ -37,19 +38,7 @@
 		menuItems.forEach(function(menuItemGroup) {
 
 			menuItemGroup.forEach(function(menuItem) {
-				var menuItemNode = document.createElement('div');
-				menuItemNode.classList.add('context-menu-item');
-				menuItemNode.textContent = menuItem.title;
-				menuItemNode.addEventListener('click', function() {
-					menuItem.callback();
-					menuNode.parentNode.removeChild(menuNode);
-					document.removeEventListener('click', menuNextClickHandler, false);
-				});
-
-				if(!menuItem.enabled) {
-					menuItemNode.classList.add('disabled');
-				}
-
+				let menuItemNode = menuItem.makeNode(menuNode, menuNextClickHandler);
 				menuNode.appendChild(menuItemNode);
 			});
 		});
@@ -58,16 +47,6 @@
 		menuNode.style.top = e.clientY + 'px';
 
 		document.body.appendChild(menuNode);
-	};
-
-	var MenuItem = function(settings) {
-
-		var self = this;
-
-		self.title = settings.title;
-		self.callback = settings.callback;
-		self.enabled = settings.enabled;
-
 	};
 
 	// TODO:
@@ -105,8 +84,8 @@
 			attatchRobotSettings.enabled = true;
 		}
 
-		items.push(new MenuItem(attatchRobotSettings));
-		items.push(new MenuItem(detatchRobotSettings));
+		items.push(new modVSelf.MenuItem(attatchRobotSettings));
+		items.push(new modVSelf.MenuItem(detatchRobotSettings));
 
 		return items;
 
@@ -116,7 +95,7 @@
 
 		var items = [];
 
-		items.push(new MenuItem({
+		items.push(new modVSelf.MenuItem({
 			title: 'Copy Value',
 			enabled: true,
 			callback: function() {
@@ -160,7 +139,7 @@
 			pasteItemSettings.enabled = false;
 		} 
 
-		items.push(new MenuItem(pasteItemSettings));
+		items.push(new modVSelf.MenuItem(pasteItemSettings));
 
 		return items;
 

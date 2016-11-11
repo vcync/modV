@@ -326,9 +326,6 @@
 			self.addLayer();			
 		});
 
-
-
-
 		function findAncestor (el, cls) {
 			while ((el = el.parentElement) && !el.classList.contains(cls));
 			return el;
@@ -351,6 +348,40 @@
 			if(Layer && activeLayer) self.removeLayer(Layer);
 		});
 
+		// Create Layer Controls
+		let layerTemplate = self.templates.querySelector('#layer-controls');
+		let layerControlPanel = document.importNode(layerTemplate.content, true);
+
+		document.querySelector('.layer-control-panel-wrapper').appendChild(layerControlPanel);
+
+		// Pull back initialised node from DOM
+		layerControlPanel = document.querySelector('.layer-control-panel-wrapper .layer-controls');
+
+		layerControlPanel.querySelector('#clearingLayers').addEventListener('click', function() {
+			self.layers[self.activeLayer].clearing = this.checked;
+		});
+
+		layerControlPanel.querySelector('#inheritLayers').addEventListener('click', function() {
+			self.layers[self.activeLayer].inherit = this.checked;
+		});
+
+		layerControlPanel.querySelector('#pipeLineLayers').addEventListener('click', function() {
+			self.layers[self.activeLayer].pipeline = this.checked;
+		});
+
+		this.updateLayerControls();
+
+
+		// Tabs for right-side controls
+		let rightTabs = this.TabController();
+		rightTabs = new rightTabs(); //jshint ignore:line
+		rightTabs.add('Layers', document.querySelector('.layer-control-panel-wrapper'), true);
+		rightTabs.add('Global', document.querySelector('.global-control-panel-wrapper'));
+		rightTabs.add('Presets', document.querySelector('.global-control-panel-wrapper'));
+
+		let rightControls = document.querySelector('.right-controls');
+
+		rightControls.insertBefore(rightTabs.tabBar(), rightControls.firstChild);
 	};
 
 })(module);

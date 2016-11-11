@@ -5,6 +5,7 @@
 	modV.prototype.RangeControl = function(settings) {
 		var self = this;
 		var id;
+		var Module;
 		
 		self.getSettings = function() {
 			return settings;
@@ -12,6 +13,10 @@
 
 		self.getID = function() {
 			return id;
+		};
+
+		self.writeValue = function(value) {
+			Module[self.variable] = value;
 		};
 
 		//TODO: error stuff
@@ -54,7 +59,8 @@
 			}
 		}
 
-		self.makeNode = function(Module, modV) {
+		self.makeNode = function(ModuleRef, modV) {
+			Module = ModuleRef;
 			id = Module.info.safeName + '-' + self.variable;
 			
 
