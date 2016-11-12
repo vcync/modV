@@ -331,7 +331,7 @@ var modV = function(options) {
 			antialias: true,
 			alpha: true
 		});
-		self.THREE.renderer.setPixelRatio( window.devicePixelRatio );
+		self.THREE.renderer.setPixelRatio(window.devicePixelRatio);
 
 		self.THREE.canvas = self.THREE.renderer.domElement;
 	}
