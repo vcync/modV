@@ -36,6 +36,14 @@
 			});
 		});
 
+		opacityRangeNode.addEventListener('contextmenu', function(ev) {
+			ev.preventDefault();
+			
+			self.showContextMenu('opacity', [Module, this], ev);
+
+			return false;
+		}, false);
+
 		// Attach listener to Blending Select
 		var compositeSelectNode = activeItem.querySelector('.composite-operations');
 		compositeSelectNode.addEventListener('change', function() {
@@ -63,6 +71,12 @@
 				layerIndex: Module.getLayer()
 			});
 		});
+
+		var id = Module.info.safeName + '-' + Date.now();
+		var enableLabelNode = activeItem.querySelector('.customCheckbox label');
+		enableLabelNode.setAttribute('for', id);
+		enableCheckboxNode.setAttribute('id', id);
+
 
 		activeItem.dataset.moduleName = Module.info.safeName;
 
