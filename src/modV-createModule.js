@@ -2,7 +2,7 @@ function replaceAll(string, operator, replacement) {
 	return string.split(operator).join(replacement);
 }
 
-modV.prototype.createModule = function(originalModule, canvas, context) {
+modV.prototype.createModule = function(originalModule, canvas, context, galleryItem) {
 
 	if(!canvas) canvas = this.layers[0].canvas;
 	if(!context) context = this.layers[0].context;
@@ -17,6 +17,8 @@ modV.prototype.createModule = function(originalModule, canvas, context) {
 		// make new name
 		name = this.generateName(Module.info.name);
 	}
+
+	Module.info.galleryItem = galleryItem;
 
 	if(Module instanceof this.ModuleShader) {
 		Module.programIndex = originalModule.programIndex;

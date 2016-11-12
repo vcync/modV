@@ -13,7 +13,6 @@ modV.prototype.buildMIDIContextMenu = function(controlIndex, Module, inputNode) 
 		title: 'Learn Assignment',
 		enabled: !assigned,
 		callback: () => {
-			
 			this.MIDIInstance.learning = true;
 			this.MIDIInstance.currentNode = inputNode;
 			this.MIDIInstance.currentControlIndex = controlIndex;

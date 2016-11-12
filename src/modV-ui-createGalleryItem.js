@@ -19,7 +19,7 @@
 		var previewCtx = previewCanvas.getContext('2d');
 		
 		// Clone module
-		var Module = self.createModule(oldModule, previewCanvas, previewCtx);
+		var Module = self.createModule(oldModule, previewCanvas, previewCtx, true);
 
 		// Setup any preview settings for gallery item
 		if('previewValues' in Module.info) {
@@ -27,7 +27,7 @@
 				Module[key] = value;
 			});
 		}
-
+		
 		document.querySelector('.gallery').appendChild(galleryItem);
 
 		// Pull back initialised node from DOM
