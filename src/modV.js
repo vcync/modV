@@ -64,7 +64,7 @@ var modV = function(options) {
 		analyser, // Analyser Node 
 		microphone;
 
-	self.version = "1.3";
+	self.version = "1.4";
 
 	// UI Templates
 	self.templates = document.querySelector('link[rel="import"]').import;

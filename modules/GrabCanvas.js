@@ -9,7 +9,7 @@ class GrabCanvas extends modV.Module2D {
 			}
 		});
 
-		this.divsor = 3;
+		this.divsor = 4;
 	}
 
 	createControls(Module) {
@@ -38,13 +38,15 @@ class GrabCanvas extends modV.Module2D {
 		this.canvas2.height = Math.round(canvas.height / this.divsor);
 	}
 
-	draw(canvas, ctx, a, b, c, delta) {
+	draw(canvas, ctx) {
 		if(this.info.galleryItem) return;
-
+		ctx.save();
+		ctx.imageSmoothingEnabled = false;
 		this.ctx2.clearRect(0, 0, this.canvas2.width, this.canvas2.height);
 		this.ctx2.drawImage(canvas, 0, 0, this.canvas2.width, this.canvas2.height);
+		ctx.restore();
 
-		this.worker.postMessage(this.ctx2.getImageData(0, 0, this.canvas2.width, this.canvas2.height));
+		this.worker.postMessage([this.canvas2.width, this.canvas2.height, this.ctx2.getImageData(0, 0, this.canvas2.width, this.canvas2.height)]);
 	}
 }
 

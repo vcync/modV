@@ -103,13 +103,18 @@ function update(conn) {
 }
 
 var server = ws.createServer(function(conn) {
-	console.log('_New ws client_');
+	console.log('New client!');
 
 	var clientIndex = clients.push(conn)-1;
 	conn.clientIndex = clientIndex;
 
 	conn.on('close', function() {
-		clients.splice(conn.clientIndex, 1);
+		clients.splice(clients.indexOf(conn), 1);
+		//clients.splice(conn.clientIndex, 1);
+	});
+
+	conn.on('error', function(err) {
+		console.error(err);
 	});
 
 	conn.on('text', function(msg) {
