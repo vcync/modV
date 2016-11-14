@@ -19,34 +19,32 @@ class GrabCanvas extends modV.Module2D {
 	}
 	
 	init(canvas) {
-		
 		if(this.info.galleryItem) return;
 
 		this.worker = new Worker('./modules/GrabCanvas/worker.js');
-
-		this.canvas2 = document.createElement('canvas');
-		this.ctx2 = this.canvas2.getContext("2d");
-		this.ctx2.imageSmoothingEnabled = false;
-
-		this.canvas2.width = Math.round(canvas.width / this.divsor);
-		this.canvas2.height = Math.round(canvas.height / this.divsor);
+		this.worker.postMessage({type: 'setup', payload: {
+			width: canvas.width,
+			height: canvas.height,
+			devicePixelRatio: window.devicePixelRatio
+		}});
 
 	}
 
 	resize(canvas) {
-		this.canvas2.width = Math.round(canvas.width / this.divsor);
-		this.canvas2.height = Math.round(canvas.height / this.divsor);
+		this.worker.postMessage({type: 'setup', payload: {
+			width: canvas.width,
+			height: canvas.height,
+			devicePixelRatio: window.devicePixelRatio
+		}});
 	}
 
-	draw(canvas, ctx) {
-		if(this.info.galleryItem) return;
-		ctx.save();
-		ctx.imageSmoothingEnabled = false;
-		this.ctx2.clearRect(0, 0, this.canvas2.width, this.canvas2.height);
-		this.ctx2.drawImage(canvas, 0, 0, this.canvas2.width, this.canvas2.height);
-		ctx.restore();
+	draw(canvas, ctx, video, meyda, meydaFeatures, delta, bpm, kick, _gl) {
 
-		this.worker.postMessage([this.canvas2.width, this.canvas2.height, this.ctx2.getImageData(0, 0, this.canvas2.width, this.canvas2.height)]);
+		var pixels = new Uint8Array(_gl.drawingBufferWidth * _gl.drawingBufferHeight * 4);
+		_gl.readPixels(0, 0, _gl.drawingBufferWidth, _gl.drawingBufferHeight, _gl.RGBA, _gl.UNSIGNED_BYTE, pixels);
+		//console.log(pixels); // Uint8Array
+
+		this.worker.postMessage({type: 'data', payload: pixels});
 	}
 }
 

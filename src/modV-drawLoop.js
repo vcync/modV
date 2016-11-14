@@ -13,6 +13,8 @@
 
 		for(var layerIndex=0; layerIndex < self.layers.length; layerIndex++) {
 
+			var _gl = self.shaderEnv.gl;
+
 			var layer = self.layers[layerIndex];
 			var canvas = layer.canvas;
 			var context = layer.context;
@@ -58,7 +60,6 @@
 				else if(pipeline) canvas = layer.canvas;
 
 				if(Module instanceof self.ModuleShader) {
-					var _gl = self.shaderEnv.gl;
 
 					// Switch program
 					if(Module.programIndex !== self.shaderEnv.activeProgram) {
@@ -158,7 +159,7 @@
 						);
 
 						// draw 2d operations
-						Module.draw(layer.canvas, context, self.video, meydaOutput, self.meyda, delta, self.bpm, self.kick);
+						Module.draw(layer.canvas, context, self.video, meydaOutput, self.meyda, delta, self.bpm, self.kick, _gl);
 
 						//copy layer back to buffer, clear first
 						bufferCtx.clearRect(0,0,canvas.width,canvas.height);
@@ -172,7 +173,7 @@
 
 					} else {
 
-						Module.draw(canvas, context, self.video, meydaOutput, self.meyda, delta, self.bpm, self.kick);
+						Module.draw(canvas, context, self.video, meydaOutput, self.meyda, delta, self.bpm, self.kick, _gl);
 
 					}
 					
