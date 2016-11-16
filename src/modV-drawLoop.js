@@ -61,6 +61,30 @@
 
 				if(Module instanceof self.ModuleScript) {
 
+					// Update GL texture
+
+					// Switch program to default passthrough
+					if(1 !== self.shaderEnv.activeProgram) {
+						self.shaderEnv.activeProgram = 1;
+						_gl.useProgram(self.shaderEnv.programs[1]);
+					}
+
+					context.globalCompositeOperation = 'copy';
+
+					// Copy Main Canvas to Shader texture
+					self.shaderEnv.texture = _gl.texImage2D(
+						_gl.TEXTURE_2D,
+						0,
+						_gl.RGBA,
+						_gl.RGBA,
+						_gl.UNSIGNED_BYTE,
+						canvas
+					);
+
+					context.globalCompositeOperation = 'normal';
+
+					self.shaderEnv.render(delta, canvas);
+
 					if(pipeline) {
 						// copy buffer to layer canvas, clear first
 						context.clearRect(0,0,canvas.width,canvas.height);
@@ -275,6 +299,7 @@
 
 		// thanks to http://ninolopezweb.com/2016/05/18/how-to-preserve-html5-canvas-aspect-ratio/
 		// for great aspect ratio advice!
+		// TODO: move these calculations to the resize event handler
 		var widthToHeight = self.outputCanvas.width / self.outputCanvas.height;
 		var newWidth = self.previewCanvas.width,
 			newHeight = self.previewCanvas.height;
@@ -296,7 +321,7 @@
 
 	modV.prototype.loop = function(timestamp) {
 		var self = this;
-		requestAnimationFrame(self.loop.bind(self)); //TODO: find out why we have to use bind here
+		requestAnimationFrame(self.loop.bind(self));
 
 		if(!self.meydaSupport) self.myFeatures = [];
 		
@@ -325,6 +350,7 @@
 			}
 
 		} else {
+			// TODO: clear this up
 			self.context.clearRect(0, 0, self.canvas.width, self.canvas.height);
 			var text = 'Please allow popups and share your media inputs.';
 			var font = self.context.font =  72 + 'px "Helvetica", sans-serif';
