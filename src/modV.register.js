@@ -220,6 +220,23 @@
 			// finish up
 			finish(Module, type);
 		}
+
+		// Handle ModuleScript
+		if(Module instanceof self.ModuleScript) {
+			type = 'ModuleScript';
+			console.info('Register: ModuleScript', Module.info.originalModuleName, '(' + name + ')');
+
+			// Parse Meyda
+			if(Module.info.meyda) {
+				Module.info.meyda.forEach(self.addMeydaFeature);
+			}
+
+			// Initialise Module
+			Module.init(self.layers[0].canvas, self.layers[0].context);
+
+			// finish up
+			finish(Module, type);
+		}
 	};
 
 })(module);

@@ -1,4 +1,4 @@
-class GrabCanvas extends modV.Module2D {
+class GrabCanvas extends modV.ModuleScript {
 	constructor() {
 		super({
 			info: {
@@ -62,7 +62,7 @@ class GrabCanvas extends modV.Module2D {
 		let halfHeight = Math.floor(height/2);
 
 		this.Candy.reset();
-		
+
 		for (var x = 0; x < 8; x++) {
 			for (var y = 0; y < 8; y++) {
 				var spacing = height / 12;
@@ -74,8 +74,8 @@ class GrabCanvas extends modV.Module2D {
 		}
 	}
 
-	draw(canvas, ctx, video, meyda, meydaFeatures, delta, bpm, kick, _gl) {
-		
+	loop(canvas, ctx, video, meyda, meydaFeatures, delta, bpm, kick, _gl) {
+
 		var pixels = new Uint8Array(_gl.drawingBufferWidth * _gl.drawingBufferHeight * 4);
 		_gl.readPixels(0, 0, _gl.drawingBufferWidth, _gl.drawingBufferHeight, _gl.RGBA, _gl.UNSIGNED_BYTE, pixels);
 		//console.log(pixels); // Uint8Array

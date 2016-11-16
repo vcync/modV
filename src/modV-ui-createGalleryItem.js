@@ -4,7 +4,12 @@
 	modV.prototype.createGalleryItem = function(oldModule) {
 		var self = this;
 
-		if(!(oldModule instanceof self.Module2D) && !(oldModule instanceof self.ModuleShader) && !(oldModule instanceof self.Module3D)) return;
+		if(
+			!(oldModule instanceof self.Module2D) &&
+			!(oldModule instanceof self.ModuleShader) &&
+			!(oldModule instanceof self.Module3D) &&
+			!(oldModule instanceof self.ModuleScript)
+		) return;
 
 		if(self.headless) return;		
 

@@ -80,7 +80,9 @@ modV.prototype.loadPreset = function(id) {
 			}
 
 			// init Module
-			if('init' in Module && Module instanceof this.Module2D) {
+			if( 'init' in Module &&
+				(Module instanceof this.Module2D || Module instanceof this.ModuleScript)) {
+
 				Module.init(this.outputCanvas, this.outputContext);
 			}
 
@@ -128,7 +130,5 @@ modV.prototype.loadPreset = function(id) {
 
 	let assignments = new Map(this.presets[id].MIDIAssignments);
 	
-	console.log(this.presets[id].MIDIAssignments, assignments);
-
 	modV.MIDIInstance.importAssignments(assignments);
 };

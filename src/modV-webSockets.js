@@ -58,6 +58,7 @@
 				if(Module instanceof this.Module2D) 	type = 'Module2D';
 				if(Module instanceof this.Module3D)		type = 'Module3D';
 				if(Module instanceof this.ModuleShader) type = 'ModuleShader';
+				if(Module instanceof this.ModuleScript) type = 'ModuleScript';
 
 				Module.info.controls.forEach(Control => {
 					let type = 'unknown';
