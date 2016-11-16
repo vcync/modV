@@ -13,7 +13,7 @@ class Perl extends modV.Module2D {
 		this.add(new modV.RangeControl({
 			variable: 'numActiveParticles',
 			min: 1,
-			max: 100,
+			max: 4000,
 			varType: 'int',
 			label: 'Number of Particles',
 			default: 50
@@ -50,7 +50,7 @@ class Perl extends modV.Module2D {
 		this.add(new modV.RangeControl({
 			variable: 'size',
 			min: 1,
-			max: 500,
+			max: 50,
 			varType: 'int',
 			label: 'Size',
 			default: 10
@@ -72,6 +72,11 @@ class Perl extends modV.Module2D {
 			variable: 'affectDirection',
 			label: 'Use RMS/ZCR to affect direction',
 			checked: true
+		}));
+
+		this.add(new modV.ColorControl({
+			variable: 'color',
+			label: 'Color'
 		}));
 	}
 
@@ -98,7 +103,7 @@ class Perl extends modV.Module2D {
 		this.affectSize = false;
 		this.affectDirection = true;
 		this.particles = [];
-		this.numParticles=100;
+		this.numParticles=4000;
 		this.numActiveParticles=50;
 		this.fadeAmount=0;
 		this.maxLen=0;
@@ -108,6 +113,8 @@ class Perl extends modV.Module2D {
 		this.intensity = 0;
 		this.rms = false;
 		this.size = 10;
+
+		this.color = 'blue';
 
 		this.noise = this.PerlinGenerator();
 
@@ -183,8 +190,8 @@ class Perl extends modV.Module2D {
 				
 
 				ctx.lineWidth = (maxLen - len) * strokeAmount;
-				ctx.fillStyle = ctx.strokeStyle = 'hsl('+sColor+', 80%, 80%)';
-
+				//ctx.fillStyle = ctx.strokeStyle = 'hsl('+sColor+', 80%, 80%)';
+				ctx.fillStyle = that.color;
 				
 				ctx.beginPath();
 
