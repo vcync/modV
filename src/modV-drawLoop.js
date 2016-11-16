@@ -59,6 +59,39 @@
 				if(pipeline && i !== 0) canvas = bufferCan;
 				else if(pipeline) canvas = layer.canvas;
 
+				if(Module instanceof self.ModuleScript) {
+
+					if(pipeline) {
+						// copy buffer to layer canvas, clear first
+						context.clearRect(0,0,canvas.width,canvas.height);
+						context.drawImage(
+							bufferCan,
+							0,
+							0,
+							canvas.width,
+							canvas.height
+						);
+
+						// draw 2d operations
+						Module.loop(layer.canvas, context, self.video, meydaOutput, self.meyda, delta, self.bpm, self.kick, _gl);
+
+						//copy layer back to buffer, clear first
+						bufferCtx.clearRect(0,0,canvas.width,canvas.height);
+						bufferCtx.drawImage(
+							layer.canvas,
+							0,
+							0,
+							canvas.width,
+							canvas.height
+						);
+
+					} else {
+
+						Module.loop(canvas, context, self.video, meydaOutput, self.meyda, delta, self.bpm, self.kick, _gl);
+
+					}
+				}
+
 				if(Module instanceof self.ModuleShader) {
 
 					// Switch program
@@ -159,7 +192,7 @@
 						);
 
 						// draw 2d operations
-						Module.draw(layer.canvas, context, self.video, meydaOutput, self.meyda, delta, self.bpm, self.kick, _gl);
+						Module.draw(layer.canvas, context, self.video, meydaOutput, self.meyda, delta, self.bpm, self.kick);
 
 						//copy layer back to buffer, clear first
 						bufferCtx.clearRect(0,0,canvas.width,canvas.height);
@@ -173,7 +206,7 @@
 
 					} else {
 
-						Module.draw(canvas, context, self.video, meydaOutput, self.meyda, delta, self.bpm, self.kick, _gl);
+						Module.draw(canvas, context, self.video, meydaOutput, self.meyda, delta, self.bpm, self.kick);
 
 					}
 					
