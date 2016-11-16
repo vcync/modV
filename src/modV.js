@@ -393,7 +393,8 @@ var modV = function(options) {
 					}
 				});
 
-				self.setMediaSource(audioSource || foundSources.audio[0].deviceId, videoSource || foundSources.video[0].deviceId);
+				if(foundSources.video.length > 0) self.setMediaSource(audioSource || foundSources.audio[0].deviceId, videoSource || foundSources.video[0].deviceId);
+				else self.setMediaSource(audioSource || foundSources.audio[0].deviceId, undefined);
 				if(!self.headless) self.startUI();
 			});
 			
