@@ -3,7 +3,6 @@
 
 importScripts('./SweetCandy.js'); // jshint ignore:line
 let Candy = new SweetCandy('ws://192.168.0.9:7890'); // jshint ignore:line
-console.log(Candy);
 
 onmessage = function(e) { //jshint ignore:line
     let message = e.data;
@@ -13,10 +12,24 @@ onmessage = function(e) { //jshint ignore:line
 		case 'setup':
 			let width = message.payload.width;
 			let height = message.payload.height;
+			let halfWidth = Math.floor(width/2);
+			let halfHeight = Math.floor(height/2);
+
             let DPR = message.payload.devicePixelRatio;
             Candy.devicePixelRatio = DPR;
             Candy.reset();
-			Candy.LEDGrid8x8(0, Math.floor(width/2), Math.floor(height/2), Math.floor(width/12), 0, false, width);
+            Candy.setDimensions(width, height);
+			
+			for (var y = 0; y < 8; y++) {
+				for (var x = 0; x < 8; x++) {
+					var spacing = height / 12;
+					var pointX = Math.floor(halfWidth/4) + (spacing * (x - 3.5));
+					var pointY = Math.floor(halfHeight/4) + (spacing * (y - 3.5));
+
+					Candy.addLED(new LED(pointX, pointY)); //jshint ignore:line
+				}
+			}
+
 		break;
 
         case 'data':
@@ -28,7 +41,7 @@ onmessage = function(e) { //jshint ignore:line
 function process(pixels) {
     // Convert Uint8Array to Array
     let pixelsArray = Array.from(pixels);
-    Candy.drawFrame(null, null, pixelsArray, false);
+    Candy.drawFrame(null, null, pixelsArray);
 }
 
 // let socket = new WebSocket("ws://localhost:3132");
@@ -61,38 +74,6 @@ function process(pixels) {
 
 // 	let length = data.length;
 
-// 	let width = Math.floor(canvasWidth / strips);
-// 	let height = Math.floor(canvasHeight / stripSize);
-
-//	 let count = 0;
-// 	let count2 = 0;
-	
-// 	let count3 = 0;
-	
-// 	let LEDsArray = [];
-	
-// 	for(let pixel=0; pixel < length; pixel+=4) {
-		
-// 		if(count3 === width || count3 === 0) {
-// 			count3 = 0;
-			
-// 			LEDsArray.push(data[pixel]);
-// 			LEDsArray.push(data[pixel+1]);
-//			 LEDsArray.push(data[pixel+2]);
-			
-// 			count++;
-// 		}
-		
-// 		if(count === strips) {
-// 			count = 0;
-// 			pixel = ((canvasWidth * count2) * 4);
-// 			pixel += (height * (canvasWidth * count2)) * 4;
-// 			count2++;
-// 		}
-		
-// 		count3++;
-// 	}
-
 // 	while ( (i += blockSize * 4) < length ) {
 // 		++avCount;
 // 		rgb[0] += data[i];
@@ -116,12 +97,3 @@ function process(pixels) {
 // 	}
 
 // 	DMXArray += ']';
-
-	
-// 	try {
-// 		socket.send(JSON.stringify(LEDsArray));
-//		 //socket.send(JSON.stringify(DMXArray));
-// 	} catch(e) {
-// 		//socket.close();
-// 	}
-// };
