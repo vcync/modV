@@ -418,7 +418,7 @@ var modV = function(options) {
 	};
 
 	function scanMediaStreamSources(callback) {
-		navigator.mediaDevices.enumerateDevices().then(function(devices) {
+		navigator.mediaDevices.enumerateDevices().then((devices) => {
 			self.mediaStreamSources.video = [];
 			self.mediaStreamSources.audio = [];
 
@@ -431,6 +431,8 @@ var modV = function(options) {
 				}
 
 			});
+
+			self.enumerateSourceSelects();
 
 			return self.mediaStreamSources;
 		}).then(callback);
@@ -483,6 +485,8 @@ var modV = function(options) {
 
 	function userMediaSuccess(stream) {
 
+		self.rescanMediaStreamSources();
+
 		// Create video stream
 		self.video.src = window.URL.createObjectURL(stream);
 		
@@ -532,6 +536,7 @@ var modV = function(options) {
 
 	function userMediaError() {
 		console.log('Error setting up WebAudio - please make sure you\'ve allowed modV access.');
+		alert('Please allow modV access to your webcam and microphone.');
 	}
 
 };
