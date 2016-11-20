@@ -98,7 +98,6 @@
 		Module.info.safeName = replaceAll(name, ' ', '-');
 
 		// Super hacky way of loading scripts
-		// TODO: use promises?
 		if('scripts' in Module.info) {
 			if(!('loadedScripts' in Module.info)) {
 				Module.info.loadedScripts = [];

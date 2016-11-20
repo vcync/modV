@@ -98,6 +98,7 @@ var modV = function(options) {
 	self.moduleStore = {};
 	self.registeredMods = {};
 	self.activeModules = {};
+	self.mediaSelectors = [];
 
 	self.video = document.createElement('video');
 	self.video.autoplay = true;

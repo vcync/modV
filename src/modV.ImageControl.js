@@ -47,54 +47,60 @@
 		}
 
 		self.makeNode = function(Module, modVSelf) {
-			var selectNode = document.createElement('select');
+			//var selectNode = document.createElement('select');
 			var startSource;
 			var startSourceFound = false;
 
-			for(var profile in modVSelf.profiles) {
+			// for(var profile in modVSelf.profiles) {
 
-				if( modVSelf.profiles[profile].files.images.length > 0 ) {
+			// 	if( modVSelf.profiles[profile].files.images.length > 0 ) {
 
-					var optGroupNode = document.createElement('optgroup');
-					optGroupNode.label = profile;
+			// 		var optGroupNode = document.createElement('optgroup');
+			// 		optGroupNode.label = profile;
 
-					modVSelf.profiles[profile].files.images.forEach(function(image, idx) {
+			// 		modVSelf.profiles[profile].files.images.forEach(function(image, idx) {
 
-						var optionNode = document.createElement('option');
+			// 			var optionNode = document.createElement('option');
 
-						if(!startSourceFound && idx === 0) {
-							startSource = image.path;
-							startSourceFound = true;
-							optionNode.selected = true;
-						}
+			// 			if(!startSourceFound && idx === 0) {
+			// 				startSource = image.path;
+			// 				startSourceFound = true;
+			// 				optionNode.selected = true;
+			// 			}
 
-						optionNode.value = profile + ',' + idx;
-						optionNode.textContent = image.name;
+			// 			optionNode.value = profile + ',' + idx;
+			// 			optionNode.textContent = image.name;
 
-						optGroupNode.appendChild(optionNode);
-					});
+			// 			optGroupNode.appendChild(optionNode);
+			// 		});
 
 					
-					selectNode.appendChild(optGroupNode);
-				}
+			// 		selectNode.appendChild(optGroupNode);
+			// 	}
 
-			}
+			// }
 
-			selectNode.addEventListener('change', function() {
 
-				var profileValue = this.value.split(',');
 
-				var src = modVSelf.profiles[profileValue[0]].files.images[profileValue[1]].path;
+			// selectNode.addEventListener('change', function() {
 
-				Module[self.variable].src = src;
+			// 	var profileValue = this.value.split(',');
+
+			// 	var src = modVSelf.profiles[profileValue[0]].files.images[profileValue[1]].path;
+
+			// 	Module[self.variable].src = src;
 			
-			}, false);
+			// }, false);
 
-			if(startSourceFound) Module[self.variable].src = startSource;
+			let Media = modVSelf.MediaSelector('image', {
+				onchange: path => {
+					Module[self.variable].src = path;
+				}
+			});
 
+			Module[self.variable].src = Media.currentFile.path;
 
-
-			return selectNode;
+			return Media.returnHTML();
 		};
 	};
 
