@@ -121,10 +121,20 @@ var modV = function(options) {
 	self.previewCanvas = document.createElement('canvas');
 	self.previewContext = self.previewCanvas.getContext('2d');
 
+	self.bufferCanvas = document.createElement('canvas');
+	self.bufferContext = self.bufferCanvas.getContext('2d');
+
 	document.querySelector('.canvas-preview').appendChild(self.previewCanvas);
 
 	self.outputCanvas = document.createElement('canvas');
 	self.outputContext = self.outputCanvas.getContext('2d');
+
+	self.previewCanvasImageValues = {
+		x: 0,
+		y: 0,
+		width: 0,
+		height: 0
+	};
 
 	self.addLayer(self.canvas, self.context, false);
 
@@ -166,10 +176,15 @@ var modV = function(options) {
 		self.outputCanvas.width = self.width;
 		self.outputCanvas.height = self.height;
 
+		self.bufferCanvas.width = self.width;
+		self.bufferCanvas.height = self.height;
+
 		self.THREE.textureCanvas.width = self.width;
 		self.THREE.textureCanvas.height =  self.height;
 
 		self.shaderEnv.resize(self.width, self.height);
+
+		self.calculatePreviewCanvasValues();
 
 		self.layers.forEach(layer => {
 			let canvas = layer.canvas;
@@ -195,6 +210,30 @@ var modV = function(options) {
 		var boundingRect = self.previewCanvas.getBoundingClientRect();
 		self.previewCanvas.width = boundingRect.width;
 		self.previewCanvas.height = boundingRect.height;
+
+		self.calculatePreviewCanvasValues();
+	};
+
+	self.calculatePreviewCanvasValues = () => {
+
+		// thanks to http://ninolopezweb.com/2016/05/18/how-to-preserve-html5-canvas-aspect-ratio/
+		// for great aspect ratio advice!
+		var widthToHeight = self.width / self.height;
+		var newWidth = self.previewCanvas.width,
+			newHeight = self.previewCanvas.height;
+
+		var newWidthToHeight = newWidth / newHeight;
+	
+		if (newWidthToHeight > widthToHeight) {
+			newWidth = Math.round(newHeight * widthToHeight);
+		} else {
+			newHeight = Math.round(newWidth / widthToHeight);
+		}
+
+		self.previewCanvasImageValues.x = Math.round((self.previewCanvas.width/2) - (newWidth/2));
+		self.previewCanvasImageValues.y = Math.round((self.previewCanvas.height/2) - (newHeight/2));
+		self.previewCanvasImageValues.width = newWidth;
+		self.previewCanvasImageValues.height = newHeight;
 	};
 
 	window.addEventListener('resize', self.mainWindowResize);
@@ -294,7 +333,6 @@ var modV = function(options) {
 
 	// Check for Meyda
 	if(typeof window.Meyda === 'object') {
-	//if(typeof window.Meyda === 'function') {
 		self.meydaSupport = true;
 		console.info('meyda detected, expanded audio analysis available.');
 	}
@@ -302,6 +340,7 @@ var modV = function(options) {
 	self.bpm = 0;
 	self.bpmHold = false;
 	self.bpmHeldAt = 120;
+
 	// Check for BeatDetektor
 	if(typeof window.BeatDetektor === 'function') {
 		self.beatDetektorSupport = true;
@@ -527,8 +566,6 @@ var modV = function(options) {
 				bufferSize: 512,
 				windowingFunction: 'rect'
 			});
-			//self.meydaInst = new Meyda(aCtx, microphone, 512);
-			//self.meyda = Meyda;
 		}
 		
 		// Tell the rest of the script we're all good.
@@ -537,7 +574,7 @@ var modV = function(options) {
 
 	function userMediaError() {
 		console.log('Error setting up WebAudio - please make sure you\'ve allowed modV access.');
-		alert('Please allow modV access to your webcam and microphone.');
+		alert('Please allow modV access to your webcam and/or microphone.');
 	}
 
 };

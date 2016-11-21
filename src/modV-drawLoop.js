@@ -1,10 +1,6 @@
 (function() {
 	'use strict';
 	/*jslint browser: true */
-	
-	//TODO: move these elsewhere
-	var bufferCan = document.createElement('canvas');
-	var bufferCtx = bufferCan.getContext('2d');
 
 	modV.prototype.drawFrame = function(meydaOutput, delta) {
 		var self = this;
@@ -23,10 +19,11 @@
 			var enabled = layer.enabled;
 			var inherit = layer.inherit;
 
+			var bufferCan = this.bufferCanvas;
+			var bufferCtx = this.bufferContext;
+
 			var pipeline = layer.pipeline;
 			if(pipeline) {
-				bufferCan.width = canvas.width;
-				bufferCan.height = canvas.height;
 				bufferCtx.clearRect(0,0,canvas.width,canvas.height);
 			}
 
@@ -297,26 +294,14 @@
 
 		self.mux();
 
-		// thanks to http://ninolopezweb.com/2016/05/18/how-to-preserve-html5-canvas-aspect-ratio/
-		// for great aspect ratio advice!
-		// TODO: move these calculations to the resize event handler
-		var widthToHeight = self.outputCanvas.width / self.outputCanvas.height;
-		var newWidth = self.previewCanvas.width,
-			newHeight = self.previewCanvas.height;
-
-		var newWidthToHeight = newWidth / newHeight;
-	
-		if (newWidthToHeight > widthToHeight) {
-			newWidth = Math.round(newHeight * widthToHeight);
-		} else {
-			newHeight = Math.round(newWidth / widthToHeight);
-		}
-
-		var x = Math.round((self.previewCanvas.width/2) - (newWidth/2));
-		var y = Math.round((self.previewCanvas.height/2) - (newHeight/2));
-
 		self.previewContext.clearRect(0, 0, self.previewCanvas.width, self.previewCanvas.height);
-		self.previewContext.drawImage(self.outputCanvas, x, y, newWidth, newHeight);
+		self.previewContext.drawImage(
+			self.outputCanvas,
+			self.previewCanvasImageValues.x,
+			self.previewCanvasImageValues.y,
+			self.previewCanvasImageValues.width,
+			self.previewCanvasImageValues.height
+		);
 	};
 
 	modV.prototype.loop = function(timestamp) {
