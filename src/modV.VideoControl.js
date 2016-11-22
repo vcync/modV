@@ -47,54 +47,18 @@
 		}
 
 		self.makeNode = function(Module, modVSelf) {
-			var selectNode = document.createElement('select');
-			var startSource;
-			var startSourceFound = false;
-
-			for(var profile in modVSelf.profiles) {
-
-				if( modVSelf.profiles[profile].files.videos.length > 0 ) {
-
-					var optGroupNode = document.createElement('optgroup');
-					optGroupNode.label = profile;
-
-					modVSelf.profiles[profile].files.videos.forEach(function(video, idx) {
-
-						if(!startSourceFound && idx === 0) {
-							startSource = video.path;
-							startSourceFound = true;
-						}
-
-						var optionNode = document.createElement('option');
-						optionNode.value = profile + ',' + idx;
-						optionNode.textContent = video.name;
-
-						optGroupNode.appendChild(optionNode);
-					});
-
-					
-					selectNode.appendChild(optGroupNode);
+			let Media = modVSelf.MediaSelector('video', {
+				onchange: path => {
+					Module[self.variable].src = path;
 				}
+			});
 
-			}
-
-			selectNode.addEventListener('change', function() {
-
-				var profileValue = this.value.split(',');
-
-				var src = modVSelf.profiles[profileValue[0]].files.videos[profileValue[1]].path;
-
-				Module[self.variable].src = src;
-				Module[self.variable].play();
-			
-			}, false);
-
-			if(startSourceFound) {
-				Module[self.variable].src = startSource;
+			if(Media.currentFile) {
+				Module[self.variable].src = Media.currentFile.path;
 				Module[self.variable].play();
 			}
 
-			return selectNode;
+			return Media.returnHTML();
 		};
 	};
 

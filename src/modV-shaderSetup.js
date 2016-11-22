@@ -189,6 +189,9 @@
 			var timeLocation = gl.getUniformLocation(programs[self.shaderEnv.activeProgram], "u_time");
 			gl.uniform1f(timeLocation, delta);
 
+			var timeSecondsLocation = gl.getUniformLocation(programs[self.shaderEnv.activeProgram], "u_timeSeconds");
+			gl.uniform1f(timeSecondsLocation, delta / 1000);
+
 			// Set u_resolution
 			if(programs[self.shaderEnv.activeProgram]) {
 				var resolutionLocation = gl.getUniformLocation(programs[self.shaderEnv.activeProgram], "u_resolution");

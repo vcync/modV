@@ -38,7 +38,10 @@
 				} else {
 					lastCanvas = self.outputCanvas;
 				}
+
 				context.drawImage(lastCanvas, 0, 0, lastCanvas.width, lastCanvas.height);
+
+				if(pipeline) bufferCtx.drawImage(lastCanvas, 0, 0, lastCanvas.width, lastCanvas.height);
 			}
 
 			if(!enabled || alpha === 0) continue;
@@ -164,6 +167,20 @@
 
 							}
 						});
+					}
+
+					// Set Meyda Uniforms
+					// TODO: support all meyda feature types
+					if('meyda' in Module.info) {
+						if(Module.info.meyda.length > 0) {
+							Module.info.meyda.forEach((feature) => {
+								let uniLoc = _gl.getUniformLocation(self.shaderEnv.programs[self.shaderEnv.activeProgram], feature);
+
+								let value = parseFloat(meydaOutput[feature]);
+								_gl.uniform1f(uniLoc, value);
+							});
+
+						}
 					}
 
 					// Render
