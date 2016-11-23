@@ -26,6 +26,7 @@
 		}
 
 		self.shaderEnv.resize = function(width, height) {
+			console.log(canvas);
 			resize(width, height);
 		};
 
@@ -53,6 +54,8 @@
 			});
 			gl = self.shaderEnv.gl; // set reference
 			canvas = self.shaderEnv.canvas; // set reference
+
+			resize(self.width, self.height);
 
 			// Disable Colourspace conversion
 			gl.pixelStorei(gl.UNPACK_COLORSPACE_CONVERSION_WEBGL, gl.NONE);

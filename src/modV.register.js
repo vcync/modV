@@ -194,9 +194,6 @@
 
 				Module.programIndex = self.shaderEnv.programs.push(program)-1;
 
-				// TEST IMPLEMENT
-				self.shaderEnv.resize(Module.programIndex);
-
 				// finish up
 				finish(Module, type);
 			});
