@@ -376,17 +376,6 @@ var modV = function(options) {
 		self.THREE.canvas = self.THREE.renderer.domElement;
 	}
 
-	// Lookup presets
-	if(!localStorage.getItem('presets')) {
-		localStorage.setItem('presets', JSON.stringify({}));
-	} else {
-		self.presets = JSON.parse(localStorage.getItem('presets'));
-		forIn(self.presets, presetname => {
-			//self.addPresetToController(presetname, self.options.controlDomain);
-			console.log('Successfuly read saved preset with name:', presetname);
-		});
-	}
-
 	/* Save modV's config to local storage */
 	self.saveOptions = function() {
 		localStorage.setItem('modVoptions', JSON.stringify(self.options)); 

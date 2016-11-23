@@ -150,6 +150,18 @@
 			self.setName(globalControlPanel.querySelector('#setUsername').value);
 		});
 
+		let chooser = globalControlPanel.querySelector('#selectMediaFolderGlobal');
+
+		chooser.addEventListener('change', function() {
+			if(this.value.trim().length > 0) {
+				self.mediaManager.send(JSON.stringify({request: 'save-option', key: 'mediaDirectory', value: this.value.trim()}));
+			}
+		}, false);
+
+		globalControlPanel.querySelector('#selectMediaFolderButtonGlobal').addEventListener('click', function() {
+			chooser.click();
+		});
+
 		// finds the offset of el from the body or html element
 		function getAbsoluteOffsetFromBody( el ) {
 			var _x = 0;

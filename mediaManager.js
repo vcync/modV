@@ -9,7 +9,7 @@ const ws = require('nodejs-websocket'),
 	animated = require('animated-gif-detector'),
 	ffmpeg = require('fluent-ffmpeg'),
 	watch = require('node-watch'),
-	open = require("open");
+	open = require('open');
 
 var isWin = /^win/.test(process.platform);
 var pathSeparator = "/";
@@ -40,7 +40,31 @@ function getDirectories(srcpath) {
 	});
 }
 
-var directories = getDirectories(path.resolve('./media'));
+// Get options
+
+var options = {mediaDirectory: './media'};
+
+try {
+	let data = fs.readFileSync('./options.json', 'utf8');
+	options = JSON.parse(data);
+} catch(err) {
+	if(err.code === 'ENOENT') {
+		console.warn('Options file for Media Manager not found, creating blank');
+		fs.writeFile('./options.json', JSON.stringify(options), function(err) {
+			if(err) throw err;
+		});
+	} else {
+		throw err;
+	}
+}
+
+try {
+	fs.accessSync(options.mediaDirectory, fs.R_OK | fs.W_OK);
+} catch(e) {
+	fs.mkdirSync(options.mediaDirectory);
+}
+
+var directories = getDirectories(path.resolve(options.mediaDirectory));
 
 function createDirectories(callback) {
 	directories.forEach(function(dir) {
@@ -66,27 +90,27 @@ function createDirectories(callback) {
 		   to check if a directory exists (i.e. just go for it and
 	   	catch the errors) */
 
-		fs.open(cwd + '/media/' + dir + '/image', 'r', function(err) {
+		fs.open(options.mediaDirectory + '/' + dir + '/image', 'r', function(err) {
 			if(err && err.code === 'ENOENT') {
-				fs.mkdir(cwd + '/media/' + dir + '/image');
+				fs.mkdir(options.mediaDirectory + '/' + dir + '/image');
 			}
 		});
 
-		fs.open(cwd + '/media/' + dir + '/video', 'r', function(err) {
+		fs.open(options.mediaDirectory + '/' + dir + '/video', 'r', function(err) {
 			if(err && err.code === 'ENOENT') {
-				fs.mkdir(cwd + '/media/' + dir + '/video');
+				fs.mkdir(options.mediaDirectory + '/' + dir + '/video');
 			}
 		});
 
-		fs.open(cwd + '/media/' + dir + '/preset', 'r', function(err) {
+		fs.open(options.mediaDirectory + '/' + dir + '/preset', 'r', function(err) {
 			if(err && err.code === 'ENOENT') {
-				fs.mkdir(cwd + '/media/' + dir + '/preset');
+				fs.mkdir(options.mediaDirectory + '/' + dir + '/preset');
 			}
 		});
 
-		fs.open(cwd + '/media/' + dir + '/palette', 'r', function(err) {
+		fs.open(options.mediaDirectory + '/' + dir + '/palette', 'r', function(err) {
 			if(err && err.code === 'ENOENT') {
-				fs.mkdir(cwd + '/media/' + dir + '/palette');
+				fs.mkdir(options.mediaDirectory + '/' + dir + '/palette');
 			}
 		});
 
@@ -129,6 +153,19 @@ var server = ws.createServer(function(conn) {
 
 				break;
 
+				case 'save-option': 
+					options[parsed.key] = parsed.value;
+
+					fs.writeFile('./options.json', JSON.stringify(options), function(err) {
+						if(err) {
+							throw err;
+						} else {
+							console.log('Media Manager options saved');
+						}
+					});
+
+				break;
+
 				case 'save-preset':
 					console.log('Attempting to save preset in profile:', parsed.profile);
 
@@ -142,8 +179,8 @@ var server = ws.createServer(function(conn) {
 						return;
 					}
 
-					var outputPresetFilename = './media/' + parsed.profile + '/preset/' + parsed.name + '.json';
-					var dir = './media/' + parsed.profile + '/preset/';
+					var outputPresetFilename = options.mediaDirectory + '/' + parsed.profile + '/preset/' + parsed.name + '.json';
+					var dir = options.mediaDirectory + '/' + parsed.profile + '/preset/';
 
 					mkdirp.sync(dir);
 
@@ -160,7 +197,7 @@ var server = ws.createServer(function(conn) {
 				case 'save-palette':
 					console.log('Attempting to save palette in profile:', parsed.profile);
 
-					var outputPaletteFilename = './media/' + parsed.profile + '/palette/' + parsed.name + '.json';
+					var outputPaletteFilename = options.mediaDirectory + '/' + parsed.profile + '/palette/' + parsed.name + '.json';
 
 					fs.writeFile(outputPaletteFilename, JSON.stringify(parsed.payload), function(err) {
 						if(err) {
@@ -180,14 +217,12 @@ var server = ws.createServer(function(conn) {
 	});
 });
 
-var mediaDir = cwd + pathSeparator + 'media';
-
 /* Slosh through media dir */
 function mediaSearch(callback) {
-	dive(mediaDir, { all: false }, function(err, file) {
+	dive(options.mediaDirectory, { all: false }, function(err, file) {
 
 		if(err) throw err;
-		var pathReplaced = file.replace(mediaDir, '');
+		var pathReplaced = file.replace(options.mediaDirectory, '');
 		pathReplaced = pathReplaced.split(pathSeparator);
 
 		var dirSplit = file.split(pathSeparator);
@@ -236,7 +271,7 @@ function mediaSearch(callback) {
 			if(fileExt.toLowerCase() === 'gif' && animated(fs.readFileSync(filePath))) {
 
 				console.log('Animated GIF detected:', filePath);
-				var outputFile = cwd + '/media/' + profile + '/video/' + filename + '.mp4';
+				var outputFile = options.mediaDirectory + '/' + profile + '/video/' + filename + '.mp4';
 
 				// Check if we need to convert
 				fs.open(outputFile, 'r', function(err) {
@@ -281,9 +316,9 @@ createDirectories(function() {
 		server.listen(port, function() {
 
 			console.log('modV Media Manager listening on port', port);
-			console.log('Watching ./media/ for changes...');
+			console.log('Watching ' + options.mediaDirectory + ' for changes...');
 
-			watch('./media/', { recursive: true, followSymLinks: true }, function(filepath) {
+			watch(options.mediaDirectory, { recursive: true, followSymLinks: true }, function(filepath) {
 
 				if(path.parse(filepath).base !== '.DS_Store') {
 					console.log(filepath, ' changed - updating media and sending to clients');
