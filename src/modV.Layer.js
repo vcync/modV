@@ -243,6 +243,7 @@ modV.prototype.Layer = class Layer {
 					Module.info.internalControls = {};
 					Module.info.internalControls.alpha = activeItemElements.controls.alpha;
 					Module.info.internalControls.disabled = activeItemElements.controls.disabled;
+					Module.info.internalControls.blend = activeItemElements.controls.blend;
 
 					// Replace clone
 					try {

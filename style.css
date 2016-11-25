@@ -322,6 +322,7 @@ select.composite-operations:hover {
 }
 
 select.composite-operations {
+	color: #000;
 	height: 18px;
 	transition: height 300ms;
 }

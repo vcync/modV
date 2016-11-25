@@ -3,9 +3,9 @@
 	/*jslint browser: true */
 
 	modV.prototype.CheckboxControl = function(settings) {
-		var self = this;
-		var Module;
-		var id;
+		let self = this;
+		let Module;
+		let id;
 		
 		self.getSettings = function() {
 			return settings;
@@ -51,7 +51,7 @@
 		if(!('version' in settings.info)) throw new ModuleError('RangeControl had no version in settings.info');*/
 
 		// Copy settings values to local scope
-		for(var key in settings) {
+		for(let key in settings) {
 			if(settings.hasOwnProperty(key)) {
 				self[key] = settings[key];
 			}
@@ -65,7 +65,7 @@
 				id = ModuleRef;
 			}
 
-			var inputNode = document.createElement('input');
+			let inputNode = document.createElement('input');
 			inputNode.type = 'checkbox';
 			inputNode.id = id;
 			if('checked' in settings) inputNode.checked = settings.checked;
@@ -78,12 +78,10 @@
 				}
 			}, false);
 
-
-
-			var labelNode = document.createElement('label');
+			let labelNode = document.createElement('label');
 			labelNode.setAttribute('for', id);
 
-			var div = document.createElement('div');
+			let div = document.createElement('div');
 			div.classList.add('customCheckbox');
 			div.appendChild(inputNode);
 			div.appendChild(labelNode);

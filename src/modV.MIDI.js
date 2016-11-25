@@ -48,7 +48,6 @@ modV.prototype.MIDI = class {
 		let assignment = inputMap[midiChannel];
 
 		if(this.learning) {
-			console.log(this.currentControlKey);
 			inputMap[midiChannel] = this.createAssignment(this.currentNode, message.currentTarget.id, midiChannel, this.currentModuleName, this.currentControlKey);
 
 			this.currentControlKey = null;
@@ -96,13 +95,19 @@ modV.prototype.MIDI = class {
 					}
 				}
 
-				if(Control instanceof modV.SelectControl) {
+				if(Control instanceof modV.SelectControl || Control instanceof modV.CompositeOperationControl) {
 					let node = Control.node;
 					let calculatedIndex = Math.floor(Math.map(parseInt(data[2]), 0, 127, 0, node.length-1));
 
 					if(parseInt(Control.node.selectedIndex) === calculatedIndex) return;
 
-					Control.writeValue(calculatedIndex);
+					if(isReserved < 0) Control.writeValue(calculatedIndex);
+					else {
+						Control.node.selectedIndex = calculatedIndex;
+						let selectValue = Control.node.options[calculatedIndex].value;
+
+						modV.activeModules[moduleName].info[controlKey.substring(reservedKey.length)] = selectValue;
+					}
 				}
 			}
 		}

@@ -24,17 +24,6 @@
 
 		// // Attach listener to Opacity Range
 		var opacityRangeNode = activeItem.querySelector('input[type=range].opacity');
-		// opacityRangeNode.addEventListener('input', function() {
-		// 	Module.info.alpha = parseFloat(this.value);
-
-		// 	// Send to remote
-		// 	self.remote.update('moduleInfoUpdate', {
-		// 		value: Module.info.alpha,
-		// 		variable: 'alpha',
-		// 		name: Module.info.name,
-		// 		layerIndex: Module.getLayer()
-		// 	});
-		// });
 
 		var AlphaRangeControl = new modV.RangeControl({
 			label: 'Opacity',
@@ -74,31 +63,52 @@
 
 		// Attach listener to Blending Select
 		var compositeSelectNode = activeItem.querySelector('.composite-operations');
-		compositeSelectNode.addEventListener('change', function() {
-			Module.info.blend = this.value;
-
-			// Send to remote
-			self.remote.update('moduleInfoUpdate', {
-				value: Module.info.blend,
-				variable: 'blend',
-				name: Module.info.name,
-				layerIndex: Module.getLayer()
-			});
-		});
-
-		// Attach listener to Enable Checkbox
-		var enableCheckboxNode = activeItem.querySelector('.enable-group .customCheckbox');
-		// enableCheckboxNode.addEventListener('change', function() {
-		// 	Module.info.disabled = !this.checked;
+		// compositeSelectNode.addEventListener('change', function() {
+		// 	Module.info.blend = this.value;
 
 		// 	// Send to remote
 		// 	self.remote.update('moduleInfoUpdate', {
-		// 		value: Module.info.disabled,
-		// 		variable: 'disabled',
+		// 		value: Module.info.blend,
+		// 		variable: 'blend',
 		// 		name: Module.info.name,
 		// 		layerIndex: Module.getLayer()
 		// 	});
 		// });
+
+		var BlendingControl = new modV.CompositeOperationControl({
+			label: 'Blending',
+			useInternalValue: true,
+			variable: 'modVReserved:blend',
+			oninput: (value) => {
+				Module.info.blend = value;
+
+				// Send to remote
+				self.remote.update('moduleInfoUpdate', {
+					value: Module.info.blend,
+					variable: 'blend',
+					name: Module.info.name,
+					layerIndex: Module.getLayer()
+				});
+			}
+		});
+
+		let BlendingControlNode = BlendingControl.makeNode(
+			Module.info.safeName + '-' + 'ListItemEnable', self
+		);
+
+		compositeSelectNode.parentNode.replaceChild(BlendingControlNode, compositeSelectNode);
+
+		BlendingControlNode.addEventListener('contextmenu', function(ev) {
+			ev.preventDefault();
+			
+			self.showContextMenu('opacity', [BlendingControl, Module, BlendingControlNode], ev);
+
+			return false;
+		}, false);
+
+
+		// Attach listener to Enable Checkbox
+		var enableCheckboxNode = activeItem.querySelector('.enable-group .customCheckbox');
 
 		var EnableCheckboxControl = new modV.CheckboxControl({
 			label: 'Enabled',
@@ -132,12 +142,6 @@
 			return false;
 		}, false);
 
-		// var id = Module.info.safeName + '-' + Date.now();
-		// var enableLabelNode = activeItem.querySelector('.customCheckbox label');
-		// enableLabelNode.setAttribute('for', id);
-		// enableCheckboxNode.setAttribute('id', id);
-
-
 		activeItem.dataset.moduleName = Module.info.safeName;
 
 		activeItem.addEventListener('dragstart', function(e) {
@@ -157,7 +161,7 @@
 			node: activeItem,
 			controls: {
 				alpha: AlphaRangeControl,
-				compositing: null,
+				blend: BlendingControl,
 				disabled: EnableCheckboxControl
 			}
 		};

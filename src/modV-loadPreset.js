@@ -80,7 +80,7 @@ modV.prototype.loadPreset = function(id) {
 			}
 
 			// init Module
-			if( 'init' in Module &&
+			if('init' in Module &&
 				(Module instanceof this.Module2D || Module instanceof this.ModuleScript)) {
 
 				Module.init(this.outputCanvas, this.outputContext);
@@ -116,6 +116,12 @@ modV.prototype.loadPreset = function(id) {
 			});
 
 			let activeItemNode = activeItemElements.node;
+
+			// Add internal Controls
+			Module.info.internalControls = {};
+			Module.info.internalControls.alpha = activeItemElements.controls.alpha;
+			Module.info.internalControls.disabled = activeItemElements.controls.disabled;
+			Module.info.internalControls.blend = activeItemElements.controls.blend;
 
 			// Add to active registry
 			this.activeModules[Module.info.name] = Module;
