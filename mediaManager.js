@@ -1,5 +1,7 @@
 //jshint node:true
 
+'use strict';
+
 const ws = require('nodejs-websocket'),
 	mkdirp = require('mkdirp'),
 	dive = require('dive'),

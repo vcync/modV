@@ -94,6 +94,7 @@ modV.prototype.loadPreset = function(id) {
 			Module.info.disabled = presetModuleData.disabled;
 			Module.info.blend = presetModuleData.blend;
 			Module.info.solo = presetModuleData.solo;
+			Module.info.alpha = presetModuleData.alpha;
 
 			forIn(presetModuleData.values, value => {
 				Module[value] = presetModuleData.values[value];
@@ -108,11 +109,13 @@ modV.prototype.loadPreset = function(id) {
 			// Set mod Order
 			this.setModOrder(Module.info.name, idx);
 
-			var activeItemNode = this.createActiveListItem(Module, node => {
+			let activeItemElements = this.createActiveListItem(Module, node => {
 				this.currentActiveDrag = node;
 			}, () => {
 				this.currentActiveDrag  = null;
 			});
+
+			let activeItemNode = activeItemElements.node;
 
 			// Add to active registry
 			this.activeModules[Module.info.name] = Module;

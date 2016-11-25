@@ -15,16 +15,16 @@
 		switch(type) {
 			case 'control':
 
-				menuItems.push(buildControlMenu(variables[0], variables[1], variables[2], self));
-				menuItems.push(buildCopyPasteMenu(variables[0], variables[2], variables[3], self));
-				menuItems.push(this.buildMIDIContextMenu(variables[1], variables[2], variables[3]));
+				menuItems.push(buildControlMenu(variables[0], variables[1], self));
+				menuItems.push(buildCopyPasteMenu(variables[0], variables[1], variables[2], self));
+				menuItems.push(this.buildMIDIContextMenu(variables[0], variables[1], variables[2]));
 				break;
 
 			case 'opacity':
 
 				//menuItems.push(buildControlMenu(variables[0], variables[1], variables[2], self));
 				//menuItems.push(buildCopyPasteMenu(variables[0], variables[2], variables[3], self));
-				menuItems.push(this.buildMIDIContextMenu(variables[1], variables[2], variables[3]));
+				menuItems.push(this.buildMIDIContextMenu(variables[0], variables[1], variables[2]));
 				break;
 		}
 
@@ -63,15 +63,14 @@
 
 	};
 
-	function buildControlMenu(Control, controlIndex, Module, modVSelf) {
-
+	function buildControlMenu(Control, Module, modVSelf) {
 		var items = [];
 
 		var attatchRobotSettings = {
 			title: 'Attach Robot',
 			enabled: true,
 			callback: function() {
-				modVSelf.attachBot(Module.info.name, controlIndex);
+				modVSelf.attachBot(Module.info.name, Control.variable);
 			}
 		};
 
@@ -79,7 +78,7 @@
 			title: 'Detatch Robot',
 			enabled: true,
 			callback: function() {
-				modVSelf.removeBot(Module.info.name, controlIndex);
+				modVSelf.removeBot(Module.info.name, Control.variable);
 			}
 		};
 
@@ -95,7 +94,6 @@
 		items.push(new modVSelf.MenuItem(detatchRobotSettings));
 
 		return items;
-
 	}
 
 	function buildCopyPasteMenu(Control, Module, inputNode, modVSelf) {
@@ -107,7 +105,7 @@
 			enabled: true,
 			callback: function() {
 				if(Control instanceof modVSelf.CheckboxControl) {
-					modVSelf.copiedValue = inputNode.querySelector('input[type="checkbox"]').checked;
+					modVSelf.copiedValue = Control.node.checked;
 				} else {
 					modVSelf.copiedValue = inputNode.value;
 				}

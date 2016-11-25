@@ -190,8 +190,6 @@ modV.prototype.Layer = class Layer {
 
 		titleNode.addEventListener('blur', stopEdit);
 
-		console.log(layerItem.nodeType);
-
 		this.node = layerItem;
 		this.moduleListNode = moduleList;
 
@@ -234,11 +232,17 @@ modV.prototype.Layer = class Layer {
 					// Move back to gallery
 					swapElements(clone, itemEl);
 
-					let activeItemNode = modV.createActiveListItem(Module, function(node) {
+					let activeItemElements = modV.createActiveListItem(Module, function(node) {
 						modV.currentActiveDrag = node;
 					}, function() {
 						modV.currentActiveDrag  = null;
 					});
+
+					let activeItemNode = activeItemElements.node;
+
+					Module.info.internalControls = {};
+					Module.info.internalControls.alpha = activeItemElements.controls.alpha;
+					Module.info.internalControls.disabled = activeItemElements.controls.disabled;
 
 					// Replace clone
 					try {

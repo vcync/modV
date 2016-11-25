@@ -41,14 +41,15 @@ modV.prototype.generatePreset = function(name) {
 	forIn(this.activeModules, (key, Module) => {
 		
 		preset.moduleData[key] = {};
-		preset.moduleData[key].disabled = Module.info.disabled;
-		preset.moduleData[key].blend = Module.info.blend || 'normal';
-		preset.moduleData[key].name = Module.info.name;
-		preset.moduleData[key].clone = false;
-		preset.moduleData[key].originalName = Module.info.originalName;
-		preset.moduleData[key].safeName = Module.info.safeName;
+		preset.moduleData[key].disabled = 			Module.info.disabled;
+		preset.moduleData[key].blend = 				Module.info.blend || 'normal';
+		preset.moduleData[key].name = 				Module.info.name;
+		preset.moduleData[key].clone = 				false;
+		preset.moduleData[key].originalName = 		Module.info.originalName;
+		preset.moduleData[key].safeName = 			Module.info.safeName;
 		preset.moduleData[key].originalModuleName = Module.info.originalModuleName;
-		preset.moduleData[key].solo = Module.info.solo;
+		preset.moduleData[key].solo = 				Module.info.solo;
+		preset.moduleData[key].alpha = 				Module.info.alpha;
 
 		if('originalName' in Module.info) {
 			preset.moduleData[key].clone = true;

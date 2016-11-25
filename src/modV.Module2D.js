@@ -18,7 +18,7 @@ modV.prototype.Module2D = class Module2D {
 		if(!('version' in settings.info)) throw new ModuleError('Module had no version in settings.info');
 
 		// Create control Array
-		if(!settings.info.controls) settings.info.controls = [];
+		if(!settings.info.controls) settings.info.controls = {};
 
 		// Settings passed, expose this.info
 		this.info = settings.info;
@@ -41,7 +41,7 @@ modV.prototype.Module2D = class Module2D {
 				this.add(thing);
 			});
 		} else {
-			this.info.controls.push(item);
+			this.info.controls[item.variable] = item;
 		}
 	}
 

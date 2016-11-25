@@ -22,24 +22,52 @@
 		// Grab initialised node
 		activeItem = temp.querySelector('div');
 
-		// Attach listener to Opacity Range
+		// // Attach listener to Opacity Range
 		var opacityRangeNode = activeItem.querySelector('input[type=range].opacity');
-		opacityRangeNode.addEventListener('input', function() {
-			Module.info.alpha = parseFloat(this.value);
+		// opacityRangeNode.addEventListener('input', function() {
+		// 	Module.info.alpha = parseFloat(this.value);
 
-			// Send to remote
-			self.remote.update('moduleInfoUpdate', {
-				value: Module.info.alpha,
-				variable: 'alpha',
-				name: Module.info.name,
-				layerIndex: Module.getLayer()
-			});
+		// 	// Send to remote
+		// 	self.remote.update('moduleInfoUpdate', {
+		// 		value: Module.info.alpha,
+		// 		variable: 'alpha',
+		// 		name: Module.info.name,
+		// 		layerIndex: Module.getLayer()
+		// 	});
+		// });
+
+		var AlphaRangeControl = new modV.RangeControl({
+			label: 'Opacity',
+			min: 0,
+			max: 1,
+			varType: 'float',
+			step: 0.02,
+			default: 1,
+			useInternalValue: true,
+			variable: 'modVReserved:alpha',
+			oninput: (value) => {
+				Module.info.alpha = parseFloat(value);
+
+				// Send to remote
+				self.remote.update('moduleInfoUpdate', {
+					value: Module.info.alpha,
+					variable: 'alpha',
+					name: Module.info.name,
+					layerIndex: Module.getLayer()
+				});
+			}
 		});
 
-		opacityRangeNode.addEventListener('contextmenu', function(ev) {
+		let AlphaRangeControlNode = AlphaRangeControl.makeNode(
+			Module.info.safeName + '-' + 'ListItemOpacity', self
+		);
+
+		opacityRangeNode.parentNode.replaceChild(AlphaRangeControlNode, opacityRangeNode);
+
+		AlphaRangeControlNode.addEventListener('contextmenu', function(ev) {
 			ev.preventDefault();
 			
-			self.showContextMenu('opacity', [Module, this], ev);
+			self.showContextMenu('opacity', [AlphaRangeControl, Module, AlphaRangeControlNode], ev);
 
 			return false;
 		}, false);
@@ -59,23 +87,55 @@
 		});
 
 		// Attach listener to Enable Checkbox
-		var enableCheckboxNode = activeItem.querySelector('input[type=checkbox].enable');
-		enableCheckboxNode.addEventListener('change', function() {
-			Module.info.disabled = !this.checked;
+		var enableCheckboxNode = activeItem.querySelector('.enable-group .customCheckbox');
+		// enableCheckboxNode.addEventListener('change', function() {
+		// 	Module.info.disabled = !this.checked;
 
-			// Send to remote
-			self.remote.update('moduleInfoUpdate', {
-				value: Module.info.disabled,
-				variable: 'disabled',
-				name: Module.info.name,
-				layerIndex: Module.getLayer()
-			});
+		// 	// Send to remote
+		// 	self.remote.update('moduleInfoUpdate', {
+		// 		value: Module.info.disabled,
+		// 		variable: 'disabled',
+		// 		name: Module.info.name,
+		// 		layerIndex: Module.getLayer()
+		// 	});
+		// });
+
+		var EnableCheckboxControl = new modV.CheckboxControl({
+			label: 'Enabled',
+			checked: true,
+			useInternalValue: true,
+			variable: 'modVReserved:disabled',
+			oninput: (value) => {
+				Module.info.disabled = !value;
+
+				// Send to remote
+				self.remote.update('moduleInfoUpdate', {
+					value: Module.info.disabled,
+					variable: 'disabled',
+					name: Module.info.name,
+					layerIndex: Module.getLayer()
+				});
+			}
 		});
 
-		var id = Module.info.safeName + '-' + Date.now();
-		var enableLabelNode = activeItem.querySelector('.customCheckbox label');
-		enableLabelNode.setAttribute('for', id);
-		enableCheckboxNode.setAttribute('id', id);
+		let EnableCheckboxControlNode = EnableCheckboxControl.makeNode(
+			Module.info.safeName + '-' + 'ListItemEnable', self
+		);
+
+		enableCheckboxNode.parentNode.replaceChild(EnableCheckboxControlNode, enableCheckboxNode);
+
+		EnableCheckboxControlNode.addEventListener('contextmenu', function(ev) {
+			ev.preventDefault();
+			
+			self.showContextMenu('opacity', [EnableCheckboxControl, Module, EnableCheckboxControlNode], ev);
+
+			return false;
+		}, false);
+
+		// var id = Module.info.safeName + '-' + Date.now();
+		// var enableLabelNode = activeItem.querySelector('.customCheckbox label');
+		// enableLabelNode.setAttribute('for', id);
+		// enableCheckboxNode.setAttribute('id', id);
 
 
 		activeItem.dataset.moduleName = Module.info.safeName;
@@ -93,7 +153,14 @@
 			}
 		});
 
-		return activeItem;
+		return {
+			node: activeItem,
+			controls: {
+				alpha: AlphaRangeControl,
+				compositing: null,
+				disabled: EnableCheckboxControl
+			}
+		};
 	};
 
 })();

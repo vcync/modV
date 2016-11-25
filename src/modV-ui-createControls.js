@@ -17,16 +17,17 @@
 
 		if('controls' in Module.info) { 
 
-			Module.info.controls.forEach(function(control, idx) {
-				if(!control.makeNode) return;
+			forIn(Module.info.controls, (key, Control) => {
+
+				if(!Control.makeNode) return;
 				var inputNode;
 
-				inputNode = control.makeNode(Module, self);
+				inputNode = Control.makeNode(Module, self);
 
 				inputNode.addEventListener('contextmenu', function(ev) {
 					ev.preventDefault();
 					
-					self.showContextMenu('control', [control, idx, Module, inputNode], ev);
+					self.showContextMenu('control', [Control, Module, inputNode], ev);
 
 					return false;
 				}, false);
@@ -34,7 +35,7 @@
 				var groupNode = document.createElement('div');
 				groupNode.classList.add('control-group');
 				var labelNode = document.createElement('label');
-				labelNode.textContent = control.label;
+				labelNode.textContent = Control.label;
 				groupNode.appendChild(labelNode);
 				groupNode.appendChild(inputNode);
 				panelNode.appendChild(groupNode);

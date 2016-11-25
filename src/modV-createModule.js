@@ -66,6 +66,7 @@ modV.prototype.createModule = function(originalModule, canvas, context, galleryI
 	Module.info.originalModuleName = originalModule.info.originalModuleName;
 	Module.info.disabled = false;
 	Module.info.solo = false;
+	Module.info.alpha = 1;
 
 	return Module;
 };

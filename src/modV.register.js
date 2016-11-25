@@ -39,7 +39,7 @@
 			// List controls/variables for remote
 			let controls = [];
 
-			Module.info.controls.forEach(Control => {
+			forIn(Module.info.controls, (key, Control) => {
 				let type = 'unknown';
 
 				if(Control instanceof self.RangeControl) 	type = 'range';

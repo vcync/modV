@@ -4,6 +4,7 @@
 
 	modV.prototype.CheckboxControl = function(settings) {
 		var self = this;
+		var Module;
 		var id;
 		
 		self.getSettings = function() {
@@ -12,6 +13,11 @@
 
 		self.getID = function() {
 			return id;
+		};
+
+		self.writeValue = function(value) {
+			this.node.checked = value;
+			Module[self.variable] = value;
 		};
 		
 		//TODO: error stuff
@@ -51,8 +57,13 @@
 			}
 		}
 
-		self.makeNode = function(Module, modV) {
-			id = Module.info.safeName + '-' + self.variable;
+		self.makeNode = function(ModuleRef, modV) {
+			if(!settings.useInternalValue) {
+				Module = ModuleRef;
+				id = Module.info.safeName + '-' + self.variable;
+			} else {
+				id = ModuleRef;
+			}
 
 			var inputNode = document.createElement('input');
 			inputNode.type = 'checkbox';
@@ -61,8 +72,13 @@
 			else inputNode.checked = false;
 
 			inputNode.addEventListener('change', function() {
-				Module.updateVariable(self.variable, this.checked, modV);
+				if(!settings.useInternalValue) Module.updateVariable(self.variable, this.checked, modV);
+				else {
+					settings.oninput(this.checked);
+				}
 			}, false);
+
+
 
 			var labelNode = document.createElement('label');
 			labelNode.setAttribute('for', id);
@@ -71,6 +87,8 @@
 			div.classList.add('customCheckbox');
 			div.appendChild(inputNode);
 			div.appendChild(labelNode);
+
+			this.node = inputNode;
 
 			return div;
 		};
