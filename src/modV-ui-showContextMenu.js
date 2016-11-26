@@ -18,6 +18,7 @@
 				menuItems.push(buildControlMenu(variables[0], variables[1], self));
 				menuItems.push(buildCopyPasteMenu(variables[0], variables[1], variables[2], self));
 				menuItems.push(this.buildMIDIContextMenu(variables[0], variables[1], variables[2]));
+				menuItems.push(this.buildLFOContextMenu(variables[0], variables[1]));
 				break;
 
 			case 'opacity':

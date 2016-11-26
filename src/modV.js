@@ -99,6 +99,7 @@ var modV = function(options) {
 	self.registeredMods = {};
 	self.activeModules = {};
 	self.mediaSelectors = [];
+	self.LFOs = [];
 
 	self.video = document.createElement('video');
 	self.video.autoplay = true;

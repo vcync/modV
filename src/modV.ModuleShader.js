@@ -26,7 +26,7 @@
 			if(!('shaderFile' in settings)) throw new ModuleError('Module had no path to shader in settings.shaderFile');
 
 			// Create control Array
-			if(!settings.info.controls) settings.info.controls = [];
+			if(!settings.info.controls) settings.info.controls = {};
 
 			// Settings passed, expose this.info
 			this.info = settings.info;
@@ -72,7 +72,7 @@
 					this.add(thing);
 				});
 			} else {
-				this.settings.info.controls.push(item);
+				this.info.controls[item.variable] = item;
 			}
 		}
 

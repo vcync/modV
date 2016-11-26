@@ -56,7 +56,7 @@ modV.prototype.generatePreset = function(name) {
 		}
 
 		preset.moduleData[key].values = {};
-		Module.info.controls.forEach((Control) => {
+		forIn(Module.info.controls, (k, Control) => {
 			extractValues(Control, Module, key);
 		});
 	});

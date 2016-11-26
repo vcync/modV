@@ -381,6 +381,10 @@
 			palette.nextStep();
 		});
 
+		self.LFOs.forEach(function(LFO) {
+			LFO.update();
+		});
+
 		self.drawFrame(self.myFeatures, timestamp);
 	};
 
