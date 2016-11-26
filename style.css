@@ -456,10 +456,15 @@ input[disabled][type="range"]::-webkit-slider-runnable-track{
 	border-radius: 4px;
 }
 
+.context-menu-submenu {
+	position: absolute;
+}
+
 .context-menu-item {
 	padding: 2px 5px;
 	box-sizing: border-box;
 	cursor: default;
+	position: relative;
 }
 
 .context-menu-item:hover {
