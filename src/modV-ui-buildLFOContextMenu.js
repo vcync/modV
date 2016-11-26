@@ -2,6 +2,26 @@ modV.prototype.buildLFOContextMenu = function(Control, Module) {
 	let items = [];
 
 	let controlTitle = 'Add LFO';
+	let id = Module.info.safeName + '-LFO-' + Control.variable;
+
+	let LFO = this.LFOs.find((LFO) => {
+		return LFO.id === id;
+	});
+
+	if(LFO) {
+		controlTitle = 'Remove LFO';
+
+		items.push(new this.MenuItem({
+			title: controlTitle,
+			enabled: true,
+			callback: () => {
+					this.LFOs.splice(this.LFOs.indexOf(LFO), 1);
+				}
+			})
+		);
+
+		return items;
+	}
 
 	items.push(new this.MenuItem({
 		title: controlTitle,
