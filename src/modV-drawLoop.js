@@ -333,7 +333,9 @@
 				if(self.meydaFeatures.length > 0) self.myFeatures = self.meyda.get(self.meydaFeatures);
 				
 				self.beatDetektorMed.process((timestamp / 1000.0), self.myFeatures.complexSpectrum.real);
-				self.bpm = self.beatDetektorMed.win_bpm_int_lo;
+				if(self.useDetectedBPM) {
+					self.updateBPM(self.beatDetektorMed.win_bpm_int_lo);
+				}
 
 				self.beatDetektorKick.process(self.beatDetektorMed);
 			

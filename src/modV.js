@@ -341,6 +341,7 @@ var modV = function(options) {
 	self.bpm = 0;
 	self.bpmHold = false;
 	self.bpmHeldAt = 120;
+	self.useDetectedBPM = true;
 
 	// Check for BeatDetektor
 	if(typeof window.BeatDetektor === 'function') {

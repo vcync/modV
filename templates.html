@@ -1,9 +1,12 @@
 <template id="global-controls">
 	<div class="pure-u-1-1 global-controls right-controls">
 		<h1>Global Controls</h1>
-		<div class="control-group clearing-group">
-			<label for="clearingGlobal">Clearing</label>
-			<input id="clearingGlobal" type="checkbox" class="enable">
+		<div class="control-group bpm-group">
+			<label for="detectBPMGlobal">Detect BPM</label>
+			<input id="detectBPMGlobal" type="checkbox" class="enable" checked="true"><br>
+			<label>BPM Tapper</label>
+			<input id="BPMtapperGlobal" type="button" value="Tap BPM" class="enable pure-button">
+			<span id="BPMDisplayGlobal"></span>
 		</div>
 		<div class="control-group audioSource-group">
 			<label for="audioSourceGlobal">Set audio input</label>
@@ -23,13 +26,13 @@
 		</div>
 		<div class="control-group factory-group">
 			<label for="factoryResetGlobal">Factory Reset</label>
-			<input id="factoryResetGlobal" type="button" value="Factory Reset" class="enable">
+			<input id="factoryResetGlobal" type="button" value="Factory Reset" class="enable pure-button">
 		</div>
 
 		<div class="control-group set-username-group">
 			<label>Set Name</label>
 			<input type="text" id="setUsername">
-			<input id="setUsernameGlobal" type="button" value="Save Name" class="enable">
+			<input id="setUsernameGlobal" type="button" value="Save Name" class="enable pure-button">
 		</div>
 
 		<div class="control-group set-mediapath">

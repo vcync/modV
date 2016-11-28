@@ -114,9 +114,16 @@
 		// Pull back initialised node from DOM
 		globalControlPanel = document.querySelector('.global-control-panel-wrapper .global-controls');
 
+		globalControlPanel.querySelector('#detectBPMGlobal').addEventListener('change', function() {
+			self.useDetectedBPM = this.checked;
+		});
 
-		globalControlPanel.querySelector('#clearingGlobal').addEventListener('change', function() {
-			self.clearing = this.checked;
+		tapTempo.on('tempo', function(tempo){
+			self.updateBPM(tempo);
+		});
+
+		globalControlPanel.querySelector('#BPMtapperGlobal').addEventListener('click', function() {
+			tapTempo.tap();
 		});
 
 		globalControlPanel.querySelector('#monitorAudioGlobal').addEventListener('change', function() {
