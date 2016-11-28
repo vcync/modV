@@ -126,6 +126,16 @@
 			tapTempo.tap();
 		});
 
+		let retinaCheckbox = globalControlPanel.querySelector('#retinaGlobal');
+
+		retinaCheckbox.checked = self.options.retina;
+
+		retinaCheckbox.addEventListener('change', function() {
+			self.options.retina = this.checked;
+			self.resize();
+			self.mainWindowResize();
+		});
+
 		globalControlPanel.querySelector('#monitorAudioGlobal').addEventListener('change', function() {
 				if(this.checked) {
 					self.gainNode.gain.value = 1;
