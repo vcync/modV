@@ -14,7 +14,7 @@ All documentation so far is available in [this repo's Wiki](https://github.com/2
 
 
 ## Contribution
-modV is open to contrib ution. Currently the project needs (in order of priority):  
+modV is open to contribution. Currently the project needs (in order of priority):  
 * full re-write for ES6
 * a better UI
 * work on the mediaManager and loading/saving Modules
