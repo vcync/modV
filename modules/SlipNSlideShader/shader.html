@@ -1,0 +1,45 @@
+<!DOCTYPE HTML>
+<html>
+	<head>
+	</head>
+	<body>
+		<script id="vertexshader" type="x-shader/x-vertex">
+			varying vec2 Vertex_UV;
+			attribute vec2 a_position, a_texCoord;
+			uniform vec2 u_resolution;
+			void main() {
+				vec2 zeroToOne = a_position / u_resolution;
+				vec2 zeroToTwo = zeroToOne * 2.0;
+				vec2 clipSpace = zeroToTwo - 1.0;
+				gl_Position = vec4(clipSpace * vec2(1, -1), 0, 1);
+				Vertex_UV = a_texCoord;
+			}
+		</script>
+
+		<script id="fragmentshader" type="x-shader/x-fragment">
+			// from here: https://getmosh.io/
+
+			precision mediump float;
+
+			uniform sampler2D u_modVCanvas;
+			uniform float slices;
+			uniform float offset;
+			uniform float u_timeSeconds;
+			uniform float timeMultiplier; // 1.0
+			varying vec2 Vertex_UV;
+
+			float rand(vec2 co){
+				return fract(sin(dot(co.xy ,vec2(12.9898,78.233))) * 43758.5453);
+			}
+
+			void main() {
+				vec2 p = Vertex_UV;
+				float yInt = floor(Vertex_UV.y * slices)/slices;
+				float rnd = rand(vec2(yInt,yInt));
+				p.x += sin((u_timeSeconds * timeMultiplier) * rnd/5.0) * offset - offset/2.0;
+				p.x = fract(p.x);
+				gl_FragColor = texture2D(u_modVCanvas, p);
+			}
+		</script>
+	</body>
+</html>
