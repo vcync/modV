@@ -5,3 +5,4 @@ node_modules
 !/media/.keep
 /nwjs/build
 /nwjs/cache
+npm-debug.log
