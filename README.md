@@ -14,13 +14,10 @@ All documentation so far is available in [this repo's Wiki](https://github.com/2
 
 
 ## Contribution
-modV is open to contribution. Currently the project needs (in order of priority):  
+modV is open to contrib ution. Currently the project needs (in order of priority):  
+* full re-write for ES6
 * a better UI
 * work on the mediaManager and loading/saving Modules
-* Module grouping (see [ModuleGroup (proposal)](https://github.com/2xAA/modV/wiki/ModuleGroup))
-* layers (proposal to be written)
-* full re-write for ES6
-* more Modules
 
 If you can help with any of these, please submit a PR and/or contact me at sam(at)wray.pro or on any of my socials.
 
