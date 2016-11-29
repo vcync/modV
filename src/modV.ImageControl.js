@@ -47,54 +47,15 @@
 		}
 
 		self.makeNode = function(Module, modVSelf) {
-			var selectNode = document.createElement('select');
-			var startSource;
-			var startSourceFound = false;
-
-			for(var profile in modVSelf.profiles) {
-
-				if( modVSelf.profiles[profile].files.images.length > 0 ) {
-
-					var optGroupNode = document.createElement('optgroup');
-					optGroupNode.label = profile;
-
-					modVSelf.profiles[profile].files.images.forEach(function(image, idx) {
-
-						var optionNode = document.createElement('option');
-
-						if(!startSourceFound && idx === 0) {
-							startSource = image.path;
-							startSourceFound = true;
-							optionNode.selected = true;
-						}
-
-						optionNode.value = profile + ',' + idx;
-						optionNode.textContent = image.name;
-
-						optGroupNode.appendChild(optionNode);
-					});
-
-					
-					selectNode.appendChild(optGroupNode);
+			let Media = modVSelf.MediaSelector('image', {
+				onchange: path => {
+					Module[self.variable].src = path;
 				}
+			});
 
-			}
+			Module[self.variable].src = Media.currentFile.path;
 
-			selectNode.addEventListener('change', function() {
-
-				var profileValue = this.value.split(',');
-
-				var src = modVSelf.profiles[profileValue[0]].files.images[profileValue[1]].path;
-
-				Module[self.variable].src = src;
-			
-			}, false);
-
-			if(startSourceFound) Module[self.variable].src = startSource;
-
-
-
-			return selectNode;
+			return Media.returnHTML();
 		};
 	};
 

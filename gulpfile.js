@@ -181,7 +181,8 @@ gulp.task('nwjs', ['clean', 'ejs:nwjs', 'webpack', 'copy', 'copy:nwjs:include', 
 	var nw = new NwBuilder({
 		files: './dist/**/**',
 		platforms: ['osx64', 'win64'],
-		flavor: 'normal',
+		//flavor: 'normal',
+		flavor: 'sdk',
 		cacheDir: './nwjs/cache',
 		buildDir: './nwjs/build'
 	});

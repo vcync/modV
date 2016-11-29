@@ -394,6 +394,7 @@
 
 			self.callbacks.next = function(colour) {
 				Module[self.variable] = colour;
+				//Module.updateVariable(self.variable, colour, modVSelf);
 			};
 
 			self.callbacks.getBPM = function() {
@@ -417,7 +418,8 @@
 			var pal = new Palette(self.colours, self.timePeriod, self.callbacks, modVSelf);
 
 			var paletteIndex = modVSelf.palettes.push(pal)-1;
-			pal.paletteIndex = paletteIndex;
+			self.paletteIndex = paletteIndex;
+			
 			return pal.generateControls();
 
 		};

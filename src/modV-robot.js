@@ -7,7 +7,7 @@
 	};
 
 	/* TODO: bind to modV scope <<< cannot at present */
-	var modVBot = function(module, controlIndex, modV) {
+	var modVBot = function(module, controlKey, modV) {
 		var self = modV;
 
 		function bpmToMs(bpm) {
@@ -24,7 +24,7 @@
 
 		var interval = bpmToMs(self.bpm);
 
-		var control = module.info.controls[controlIndex];
+		var control = module.info.controls[controlKey];
 		var controlNode = document.getElementById(control.getID());
 
 		function loop() {
@@ -98,21 +98,21 @@
 		};
 	};
 
-	modV.prototype.attachBot = function(module, controlIndex) {
+	modV.prototype.attachBot = function(module, controlKey) {
 		var self = this;
 		var mod = self.activeModules[module];
-		var control = mod.info.controls[controlIndex];
+		var control = mod.info.controls[controlKey];
 		var controlID = control.getID();
 
 		if(self.bots[controlID]) return false; // Bot already attached
-		var bot = new modVBot(mod, controlIndex, self); //jshint ignore: line
+		var bot = new modVBot(mod, controlKey, self); //jshint ignore: line
 		self.bots[controlID] = bot;
 	};
 
-	modV.prototype.removeBot = function(module, controlIndex) {
+	modV.prototype.removeBot = function(module, controlKey) {
 		var self = this;
 		var mod = self.activeModules[module];
-		var control = mod.info.controls[controlIndex];
+		var control = mod.info.controls[controlKey];
 		var controlID = control.getID();
 
 		if(!self.bots[controlID]) return false; // No bot

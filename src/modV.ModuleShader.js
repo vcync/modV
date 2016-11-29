@@ -26,7 +26,7 @@
 			if(!('shaderFile' in settings)) throw new ModuleError('Module had no path to shader in settings.shaderFile');
 
 			// Create control Array
-			if(!settings.info.controls) settings.info.controls = [];
+			if(!settings.info.controls) settings.info.controls = {};
 
 			// Settings passed, expose this.info
 			this.info = settings.info;
@@ -40,6 +40,9 @@
 
 			// Settings passed, expose self.shaderFile
 			this.shaderFile = settings.shaderFile;
+
+			// Always start on layer 0
+			this.settings.info.layer = 0;
 
 			// Loop through Uniforms, expose self.uniforms and create local variables
 			if('uniforms' in settings.info) {
@@ -69,11 +72,27 @@
 					this.add(thing);
 				});
 			} else {
-				this.settings.info.controls.push(item);
+				this.info.controls[item.variable] = item;
 			}
 		}
 
-		
+		getLayer() {
+			return this.settings.info.layer;
+		}
+
+		setLayer(layer) {
+			this.settings.info.layer = layer;
+		}
+
+		updateVariable(variable, value, modV) {
+			this[variable] = value;
+
+			modV.remote.update('moduleValueChange', {
+				variable: variable,
+				value: value,
+				name: this.info.name
+			});
+		}
 		
 	};
 

@@ -3,8 +3,9 @@
 	/*jslint browser: true */
 
 	modV.prototype.CheckboxControl = function(settings) {
-		var self = this;
-		var id;
+		let self = this;
+		let Module;
+		let id;
 		
 		self.getSettings = function() {
 			return settings;
@@ -12,6 +13,11 @@
 
 		self.getID = function() {
 			return id;
+		};
+
+		self.writeValue = function(value) {
+			this.node.checked = value;
+			Module[self.variable] = value;
 		};
 		
 		//TODO: error stuff
@@ -45,32 +51,42 @@
 		if(!('version' in settings.info)) throw new ModuleError('RangeControl had no version in settings.info');*/
 
 		// Copy settings values to local scope
-		for(var key in settings) {
+		for(let key in settings) {
 			if(settings.hasOwnProperty(key)) {
 				self[key] = settings[key];
 			}
 		}
 
-		self.makeNode = function(Module) {
-			id = Module.info.safeName + '-' + self.variable;
+		self.makeNode = function(ModuleRef, modV) {
+			if(!settings.useInternalValue) {
+				Module = ModuleRef;
+				id = Module.info.safeName + '-' + self.variable;
+			} else {
+				id = ModuleRef;
+			}
 
-			var inputNode = document.createElement('input');
+			let inputNode = document.createElement('input');
 			inputNode.type = 'checkbox';
 			inputNode.id = id;
 			if('checked' in settings) inputNode.checked = settings.checked;
 			else inputNode.checked = false;
 
 			inputNode.addEventListener('change', function() {
-				Module[self.variable] = this.checked;
+				if(!settings.useInternalValue) Module.updateVariable(self.variable, this.checked, modV);
+				else {
+					settings.oninput(this.checked);
+				}
 			}, false);
 
-			var labelNode = document.createElement('label');
+			let labelNode = document.createElement('label');
 			labelNode.setAttribute('for', id);
 
-			var div = document.createElement('div');
+			let div = document.createElement('div');
 			div.classList.add('customCheckbox');
 			div.appendChild(inputNode);
 			div.appendChild(labelNode);
+
+			this.node = inputNode;
 
 			return div;
 		};

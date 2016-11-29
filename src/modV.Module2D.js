@@ -1,8 +1,6 @@
 modV.prototype.Module2D = class Module2D {
 
 	constructor(settings) {
-		this.settings = settings;
-
 		// Set up error reporting
 		var ModuleError = modV.ModuleError;
 		ModuleError.prototype = Object.create(Error.prototype);
@@ -20,10 +18,13 @@ modV.prototype.Module2D = class Module2D {
 		if(!('version' in settings.info)) throw new ModuleError('Module had no version in settings.info');
 
 		// Create control Array
-		if(!settings.info.controls) settings.info.controls = [];
+		if(!settings.info.controls) settings.info.controls = {};
 
 		// Settings passed, expose this.info
 		this.info = settings.info;
+
+		// Always start on layer 0
+		this.info.layer = 0;
 
 		// Expose preview option
 		if('previewWithOutput' in settings) {
@@ -40,7 +41,25 @@ modV.prototype.Module2D = class Module2D {
 				this.add(thing);
 			});
 		} else {
-			this.settings.info.controls.push(item);
+			this.info.controls[item.variable] = item;
 		}
+	}
+
+	getLayer() {
+		return this.info.layer;
+	}
+
+	setLayer(layer) {
+		this.info.layer = layer;
+	}
+
+	updateVariable(variable, value, modV) {
+		this[variable] = value;
+
+		modV.remote.update('moduleValueChange', {
+			variable: variable,
+			value: value,
+			name: this.info.name
+		});
 	}
 };

@@ -2,13 +2,13 @@
 	'use strict';
 
 	modV.prototype.factoryReset = function() {
-
-		forIn(this.activeModules, (key, Module) => {
-			this.deleteActiveModule(Module);
-		});
+		
+		while(this.layers.length > 0) {
+			this.removeLayer(this.layers[0]);
+		}
 
 		// Clear the screen
-		this.previewCtx.clearRect(0, 0, this.previewCanvas.width, this.previewCanvas.height);
+		this.outputContext.clearRect(0, 0, this.outputCanvas.width, this.outputCanvas.height);
 	};
 
 })();

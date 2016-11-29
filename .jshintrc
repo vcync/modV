@@ -101,6 +101,7 @@
         "rangeRanger": true,
         "STError": true,
         "awesomeText": true,
-        "awesomeTextMeasure": true
+        "awesomeTextMeasure": true,
+        "tapTempo": true
     }   
 }

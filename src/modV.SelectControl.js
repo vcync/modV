@@ -5,6 +5,7 @@
 	modV.prototype.SelectControl = function(settings) {
 		var self = this;
 		var id;
+		var Module;
 		
 		self.getSettings = function() {
 			return settings;
@@ -12,6 +13,14 @@
 
 		self.getID = function() {
 			return id;
+		};
+
+		self.writeValue = function(value) {
+
+			let selectValue = this.node.options[value].value;
+
+			this.node.selectedIndex = value;
+			Module[self.variable] = selectValue;
 		};
 		
 		//TODO: error stuff
@@ -51,7 +60,8 @@
 			}
 		}
 
-		self.makeNode = function(Module) {
+		self.makeNode = function(ModuleRef, modV) {
+			Module = ModuleRef;
 			id = Module.info.safeName + '-' + self.variable;
 
 			var inputNode = document.createElement('select');
@@ -64,8 +74,8 @@
 					optionNode.value = option.value;
 					if('default' in option) {
 						if(option.default) {
-							optionNode.default = true;
-							Module[self.variable] = option.value;
+							optionNode.selected = true;
+							Module.updateVariable(self.variable, option.value, modV);
 						}
 					}
 
@@ -74,8 +84,10 @@
 			}
 
 			inputNode.addEventListener('change', function() {
-				Module[self.variable] = inputNode.options[inputNode.selectedIndex].value;
+				Module.updateVariable(self.variable, inputNode.options[inputNode.selectedIndex].value, modV);
 			}, false);
+
+			this.node = inputNode;
 
 			return inputNode;
 		};

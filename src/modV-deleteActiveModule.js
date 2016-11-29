@@ -10,18 +10,33 @@ modV.prototype.deleteActiveModule = function(Module) {
 	forIn(this.activeModules, (moduleName, Module) => {
 		if(Module.info.safeName === safeName) {
 			
-			Module.info.controls.forEach(control => {
-				
+			forIn(Module.info.controls, (key, Control) => {
 				// remove palette from global palette store
-				if(control instanceof this.PaletteControl) {
-					this.palettes.splice(control.paletteIndex, 1);
+				if(Control instanceof this.PaletteControl) {
+					this.palettes.splice(Control.paletteIndex, 1);
 				}
 			});
+
+
+			this.MIDIInstance.assignments.forEach(MIDIDevice => {
+				let toRemove = [];
+				forIn(MIDIDevice, (MIDIChannel, assignment) => {
+					if(assignment.moduleName === Module.info.name) toRemove.push(MIDIChannel);
+				});
+				
+				toRemove.forEach(key => {
+					delete MIDIDevice[key];
+				});
+			});
+
+			let Layer = this.layers[Module.getLayer()];
+
+			Layer.removeModule(Module);
 
 			console.info('Deleting', moduleName);
 			delete this.activeModules[moduleName];
 			
-			list.removeChild(activeItemNode);
+			Layer.moduleListNode.removeChild(activeItemNode);
 			panel.parentNode.removeChild(panel);
 			this.setModOrder(moduleName, -1);
 		}

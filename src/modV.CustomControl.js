@@ -54,7 +54,16 @@
 			}
 		}
 
-		self.makeNode = function(Module) {
+		var modV;
+		var Module;
+
+		self.setVariable = function(variable, value) {
+			Module.updateVariable(variable, value, modV);
+		};
+
+		self.makeNode = function(argModule, argModV) {
+			modV = argModV;
+			Module = argModule;
 			id = Module.info.safeName + '-' + Date.now();
 			
 			var node = settings(Module);

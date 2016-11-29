@@ -51,7 +51,7 @@
 			}
 		}
 
-		self.makeNode = function(Module) {
+		self.makeNode = function(Module, modV) {
 			id = Module.info.safeName + '-' + self.variable;
 
 			var node = document.createElement('input');
@@ -61,7 +61,7 @@
 			if('default' in settings) node.value = settings.default;
 
 			node.addEventListener('input', function() {
-				Module[self.variable] = this.value;
+				Module.updateVariable(self.variable, this.value, modV);
 			}, false);
 
 			node.id = id;

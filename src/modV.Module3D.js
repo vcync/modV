@@ -29,6 +29,9 @@ modV.prototype.Module3D = class Module3D {
 		// Settings passed, expose self.info
 		this.info = settings.info;
 
+		// Always start on layer 0
+		this.settings.info.layer = 0;
+
 		// Expose preview option
 		if('previewWithOutput' in settings) {
 			this.previewWithOutput = settings.previewWithOutput;
@@ -47,6 +50,14 @@ modV.prototype.Module3D = class Module3D {
 		}
 	}
 
+	getLayer() {
+		return this.settings.info.layer;
+	}
+
+	setLayer(layer) {
+		this.settings.info.layer = layer;
+	}
+
 	setScene(scene) {
 		this._scene = scene;
 	}
@@ -61,5 +72,15 @@ modV.prototype.Module3D = class Module3D {
 
 	setCamera(camera) {
 		this._camera = camera;
+	}
+
+	updateVariable(variable, value, modV) {
+		this[variable] = value;
+
+		modV.remote.update('moduleValueChange', {
+			variable: variable,
+			value: value,
+			name: this.info.name
+		});
 	}
 };

@@ -5,6 +5,7 @@
 	modV.prototype.RangeControl = function(settings) {
 		var self = this;
 		var id;
+		var Module;
 		
 		self.getSettings = function() {
 			return settings;
@@ -12,6 +13,19 @@
 
 		self.getID = function() {
 			return id;
+		};
+
+		self.writeValue = function(value) {
+
+			this.node.value = value;
+
+			if(settings.varType === 'int') value = parseInt(value);
+			else if(settings.varType === 'float') value = parseFloat(value);
+			else value = this.value;
+
+			if('append' in settings) value += settings.append;
+	
+			Module[self.variable] = value;
 		};
 
 		//TODO: error stuff
@@ -54,8 +68,13 @@
 			}
 		}
 
-		self.makeNode = function(Module) {
-			id = Module.info.safeName + '-' + self.variable;
+		self.makeNode = function(ModuleRef, modV) {
+			if(!settings.useInternalValue) {
+				Module = ModuleRef;
+				id = Module.info.safeName + '-' + self.variable;
+			} else {
+				id = ModuleRef;
+			}
 			
 
 			var node = document.createElement('input');
@@ -64,8 +83,12 @@
 			if('max' in settings) node.max = settings.max;
 			if('step' in settings) node.step = settings.step;
 
-			if(Module[self.variable] !== undefined) node.value = Module[self.variable];
-			else if('default' in settings) node.value = settings.default;
+			if(!settings.useInternalValue) {
+				if(Module[self.variable] !== undefined) node.value = Module[self.variable];
+				else if('default' in settings) node.value = settings.default;
+			} else {
+				if('default' in settings) node.value = settings.default;
+			}
 
 			rangeRanger(node, {
 				alt: {
@@ -102,13 +125,15 @@
 				modKey = 'ctrlKey';
 			}
 
-			node.addEventListener('mousedown', function(e) {
-				if(e[modKey]) {
-					e.preventDefault();
-					node.value = 0;
-					Module[self.variable] = settings.default || 0;
-				}
-			});
+			if(!settings.useInternalValue) {
+				node.addEventListener('mousedown', function(e) {
+					if(e[modKey]) {
+						e.preventDefault();
+						node.value = 0;
+						Module[self.variable] = settings.default || 0;
+					}
+				});
+			}
 
 			node.addEventListener('input', function() {
 				var value;
@@ -119,10 +144,15 @@
 
 				if('append' in settings) value += settings.append;
 
-				Module[self.variable] = value;
+				if(!settings.useInternalValue) Module.updateVariable(self.variable, value, modV);
+				else {
+					settings.oninput(value);
+				}
 			}, false);
 			
 			node.id = id;
+			
+			this.node = node;
 
 			return node;
 		};

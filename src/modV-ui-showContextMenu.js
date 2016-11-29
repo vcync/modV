@@ -14,9 +14,16 @@
 
 		switch(type) {
 			case 'control':
+				menuItems.push(buildControlMenu(variables[0], variables[1], self));
+				menuItems.push(buildCopyPasteMenu(variables[0], variables[1], variables[2], self));
+				menuItems.push(this.buildMIDIContextMenu(variables[0], variables[1], variables[2]));
+				menuItems.push(this.buildLFOContextMenu(variables[0], variables[1]));
+				break;
 
-				menuItems.push(buildControlMenu(variables[0], variables[1], variables[2], self));
-				menuItems.push(buildCopyPasteMenu(variables[0], variables[2], variables[3], self));
+			case 'opacity':
+				//menuItems.push(buildControlMenu(variables[0], variables[1], variables[2], self));
+				//menuItems.push(buildCopyPasteMenu(variables[0], variables[2], variables[3], self));
+				menuItems.push(this.buildMIDIContextMenu(variables[0], variables[1], variables[2]));
 				break;
 		}
 
@@ -37,19 +44,7 @@
 		menuItems.forEach(function(menuItemGroup) {
 
 			menuItemGroup.forEach(function(menuItem) {
-				var menuItemNode = document.createElement('div');
-				menuItemNode.classList.add('context-menu-item');
-				menuItemNode.textContent = menuItem.title;
-				menuItemNode.addEventListener('click', function() {
-					menuItem.callback();
-					menuNode.parentNode.removeChild(menuNode);
-					document.removeEventListener('click', menuNextClickHandler, false);
-				});
-
-				if(!menuItem.enabled) {
-					menuItemNode.classList.add('disabled');
-				}
-
+				let menuItemNode = menuItem.makeNode(menuNode, menuNextClickHandler);
 				menuNode.appendChild(menuItemNode);
 			});
 		});
@@ -60,16 +55,6 @@
 		document.body.appendChild(menuNode);
 	};
 
-	var MenuItem = function(settings) {
-
-		var self = this;
-
-		self.title = settings.title;
-		self.callback = settings.callback;
-		self.enabled = settings.enabled;
-
-	};
-
 	// TODO:
 	var SubMenuItem = function(items) { //jshint ignore:line
 
@@ -77,15 +62,14 @@
 
 	};
 
-	function buildControlMenu(Control, controlIndex, Module, modVSelf) {
-
+	function buildControlMenu(Control, Module, modVSelf) {
 		var items = [];
 
 		var attatchRobotSettings = {
 			title: 'Attach Robot',
 			enabled: true,
 			callback: function() {
-				modVSelf.attachBot(Module.info.name, controlIndex);
+				modVSelf.attachBot(Module.info.name, Control.variable);
 			}
 		};
 
@@ -93,7 +77,7 @@
 			title: 'Detatch Robot',
 			enabled: true,
 			callback: function() {
-				modVSelf.removeBot(Module.info.name, controlIndex);
+				modVSelf.removeBot(Module.info.name, Control.variable);
 			}
 		};
 
@@ -105,23 +89,22 @@
 			attatchRobotSettings.enabled = true;
 		}
 
-		items.push(new MenuItem(attatchRobotSettings));
-		items.push(new MenuItem(detatchRobotSettings));
+		items.push(new modVSelf.MenuItem(attatchRobotSettings));
+		items.push(new modVSelf.MenuItem(detatchRobotSettings));
 
 		return items;
-
 	}
 
 	function buildCopyPasteMenu(Control, Module, inputNode, modVSelf) {
 
 		var items = [];
 
-		items.push(new MenuItem({
+		items.push(new modVSelf.MenuItem({
 			title: 'Copy Value',
 			enabled: true,
 			callback: function() {
 				if(Control instanceof modVSelf.CheckboxControl) {
-					modVSelf.copiedValue = inputNode.querySelector('input[type="checkbox"]').checked;
+					modVSelf.copiedValue = Control.node.checked;
 				} else {
 					modVSelf.copiedValue = inputNode.value;
 				}
@@ -160,7 +143,7 @@
 			pasteItemSettings.enabled = false;
 		} 
 
-		items.push(new MenuItem(pasteItemSettings));
+		items.push(new modVSelf.MenuItem(pasteItemSettings));
 
 		return items;
 

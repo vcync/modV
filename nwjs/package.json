@@ -1,6 +1,6 @@
 {
 	"name": "modV",
-	"version": 1.2,
+	"version": 1.4,
 	"main": "index.html",
 	"node-main": "mediaManager.js",
 	"window": {

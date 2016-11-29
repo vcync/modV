@@ -14,7 +14,6 @@
 	}
 
 	/* Constructor */
-	// TODO: figure out why I have to pass in the controllerWIndow and controlDomain instea of getting them from self.
 	modV.prototype.ContainerGenerator = function(title, movable, controllerWindow, controlDomain) {
 		var self = this;
 

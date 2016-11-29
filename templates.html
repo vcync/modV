@@ -1,9 +1,12 @@
 <template id="global-controls">
-	<div class="pure-u-1-1 global-controls">
+	<div class="pure-u-1-1 global-controls right-controls">
 		<h1>Global Controls</h1>
-		<div class="control-group clearing-group">
-			<label for="clearingGlobal">Clearing</label>
-			<input id="clearingGlobal" type="checkbox" class="enable">
+		<div class="control-group bpm-group">
+			<label for="detectBPMGlobal">Detect BPM</label>
+			<input id="detectBPMGlobal" type="checkbox" class="enable" checked="true"><br>
+			<label>BPM Tapper</label>
+			<input id="BPMtapperGlobal" type="button" value="Tap BPM" class="enable pure-button">
+			<span id="BPMDisplayGlobal"></span>
 		</div>
 		<div class="control-group audioSource-group">
 			<label for="audioSourceGlobal">Set audio input</label>
@@ -23,19 +26,62 @@
 		</div>
 		<div class="control-group factory-group">
 			<label for="factoryResetGlobal">Factory Reset</label>
-			<input id="factoryResetGlobal" type="button" value="Factory Reset" class="enable">
+			<input id="factoryResetGlobal" type="button" value="Factory Reset" class="enable pure-button">
 		</div>
 
 		<div class="control-group set-username-group">
 			<label>Set Name</label>
 			<input type="text" id="setUsername">
-			<input id="setUsernameGlobal" type="button" value="Save Name" class="enable">
+			<input id="setUsernameGlobal" type="button" value="Save Name" class="enable pure-button">
+		</div>
+
+		<div class="control-group set-mediapath">
+			<label>Set Media Folder</label>
+			<input style="display:none" type="file" id="selectMediaFolderGlobal" nwdirectory />
+			<input class="pure-button" type="button" id="selectMediaFolderButtonGlobal" value="Select Media Folder" />
+		</div>
+		<div class="control-group retina-group">
+			<label for="retinaGlobal">Use retina resolutions</label>
+			<input id="retinaGlobal" type="checkbox" class="enable" checked="false">
+		</div>
+	</div>
+</template>
+
+<template id="layer-controls">
+	<div class="pure-u-1-1 layer-controls right-controls">
+		<h1>Layer Controls</h1>
+		<h2>Layer #</h2>
+		<div class="control-group clearing-group">
+			<label for="clearingLayers">Clearing</label>
+			<input id="clearingLayers" type="checkbox" class="enable">
+		</div>
+		<div class="control-group inherit-group">
+			<label for="inheritLayers">Inherit</label>
+			<input id="inheritLayers" type="checkbox" class="enable">
+		</div>
+		<div class="control-group pipeline-group">
+			<label for="pipeLineLayers">Pipline</label>
+			<input id="pipeLineLayers" type="checkbox" class="enable">
+		</div>
+	</div>
+</template>
+
+<template id="preset-controls">
+	<div class="pure-u-1-1 preset-controls right-controls">
+		<h1>Preset Controls</h1>
+
+		<div class="control-group load-preset-group">
+			<label for="loadPresetSelect">Load Preset</label>
+			<select id="loadPresetSelect">
+
+			</select>
+			<input id="loadPreset" type="button" value="Load Preset" class="enable">
 		</div>
 
 		<div class="control-group save-preset-group">
 			<label>Save preset</label>
 			<input type="text" id="savePresetName">
-			<input id="savePresetGlobal" type="button" value="Save Preset" class="enable">
+			<input id="savePreset" type="button" value="Save Preset" class="enable">
 		</div>
 	</div>
 </template>
@@ -59,23 +105,23 @@
 			</div>
 			<div class="pure-u-4-5 options">
 				<div class="control-group enable-group">
-					<label for="">Enabled</label>
-					<input id="" type="checkbox" checked="true" class="enable">
+					<label for="">Enabled</label> <!--
+					<input id="" type="checkbox" checked="true" class="enable"> -->
+					<div class="customCheckbox">
+						<input type="checkbox" checked="true" class="enable">
+						<label for=""></label>
+					</div>
+
 				</div>
 				<div class="control-group opacity-group">
 					<label for="">Opacity</label>
 					<input type="range" min="0" max="1" value = "1" step="0.02" class="opacity">
-				</div>
-				<div class="control-group solo-group">
-					<label for="">Solo</label>
-					<input id="" type="checkbox" class="solo">
 				</div>
 				<div class="control-group blending-group">
 					<label for="">Blending</label>
 					<select class="composite-operations" multiple="" style="color: black">
 						<optgroup label="Blend Modes">
 							<option value="normal">Normal</option>
-
 							<option value="multiply">Multiply</option>
 							<option value="overlay">Overlay</option>
 							<option value="darken">Darken</option>
@@ -118,18 +164,15 @@
 	</div>
 </template>
 
-<template id="module-group">
-	<div class="pure-u-1-1 module-group" tabindex="0">
-		<div class="pure-g">
-			<div class="pure-u-1-12 icon">
+<template id="layer-item">
+	<div class="layer-item">
+		<div class="control-bar handle">
+			<div class="title"></div>
+			<div class="collapse">
 				<i class="fa fa-toggle-down"></i>
-			</div>
-			<div class="pure-u-5-6 title" contenteditable="false">
-			
-			</div>
-			<div class="pure-u-1-12 handle-container">
-				<i class="handle fa fa-reorder"></i>
+				<i class="fa fa-toggle-up"></i>
 			</div>
 		</div>
+		<div class="module-list"></div>
 	</div>
 </template>

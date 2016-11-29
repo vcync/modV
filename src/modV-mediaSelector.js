@@ -13,6 +13,8 @@
 		var select = document.createElement('select');
 		select.classList.add('mediaSelector', type);
 
+		self.currentFile = '';
+
 		self.update = function(profiles) {
 			var key,
 				profile,
@@ -40,6 +42,8 @@
 						optGroup = document.createElement('optgroup');
 						optGroup.label = key;
 
+						self.currentFile = images[0];
+
 						for(i=0; i < images.length; i++) {
 							image = images[i];
 
@@ -55,6 +59,7 @@
 				}
 
 			} else if(type === 'multiimage') {
+				// TODO: set self.currentFile
 				select.multiple = true;
 
 				for(key in profiles) {
@@ -97,6 +102,8 @@
 
 						optGroup = document.createElement('optgroup');
 						optGroup.label = key;
+
+						self.currentFile = videos[0];
 
 						for(i=0; i < videos.length; i++) {
 							var video = videos[i];
@@ -143,16 +150,12 @@
 		};
 	};
 
-	modV.prototype.mediaSelectors = [];
-
 	modV.prototype.MediaSelector = function(type, callbacks) {
-		var self = this;
-
 		var ms = new MediaSelector(type, callbacks);
-		ms.update(self.profiles); //TODO:  instead of passing through the whole profile object, look at Media Selector inheriting the prototype of modV
+		ms.update(this.profiles);
 
-		var idx = self.mediaSelectors.push(ms)-1;
-		return self.mediaSelectors[idx];
+		var idx = this.mediaSelectors.push(ms)-1;
+		return this.mediaSelectors[idx];
 	};
 
 })();

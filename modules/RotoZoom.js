@@ -207,7 +207,7 @@ class RotoZoom extends modV.Module2D {
 		// ctx.fillText('Scale: ' + parseFloat('' + scaleVal).toFixed(2), 24, 72);
 		// ctx.fillText('Bounding Box: ' + Math.floor(vals[0]) + 'px ' + Math.floor(vals[1]) + 'px', 24, 96);
 		
-		// ctx.rotate(this.degree);
+		ctx.rotate(this.degree);
 		
 		ctx.restore();
 		if(this.sinVal >= 100) this.sinVal = 0;

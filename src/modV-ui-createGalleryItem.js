@@ -4,7 +4,12 @@
 	modV.prototype.createGalleryItem = function(oldModule) {
 		var self = this;
 
-		if(!(oldModule instanceof self.Module2D) && !(oldModule instanceof self.ModuleShader) && !(oldModule instanceof self.Module3D)) return;
+		if(
+			!(oldModule instanceof self.Module2D) &&
+			!(oldModule instanceof self.ModuleShader) &&
+			!(oldModule instanceof self.Module3D) &&
+			!(oldModule instanceof self.ModuleScript)
+		) return;
 
 		if(self.headless) return;		
 
@@ -19,15 +24,15 @@
 		var previewCtx = previewCanvas.getContext('2d');
 		
 		// Clone module
-		var Module = self.createModule(oldModule, previewCanvas, previewCtx);
+		var Module = self.createModule(oldModule, previewCanvas, previewCtx, true);
 
 		// Setup any preview settings for gallery item
-		if('previewValues' in Module.settings.info) {
-			forIn(Module.settings.info.previewValues, (key, value) => {
+		if('previewValues' in Module.info) {
+			forIn(Module.info.previewValues, (key, value) => {
 				Module[key] = value;
 			});
 		}
-
+		
 		document.querySelector('.gallery').appendChild(galleryItem);
 
 		// Pull back initialised node from DOM

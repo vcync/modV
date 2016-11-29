@@ -19,6 +19,27 @@ class Waveform extends modV.Module2D {
 			default: 1
 		}));
 
+		this.add(new modV.RangeControl({
+			variable: 'maxHeight',
+			label: 'Height',
+			varType: 'float',
+			min: 1,
+			max: 100,
+			default: 100
+		}));
+
+		this.add(new modV.SelectControl({
+			variable: 'windowing',
+			label: 'Windowing',
+			enum: [
+				{label: 'Rectangular (no window)', value: 'rect'},
+				{label: 'Hanning', value: 'hanning', default: true},
+				{label: 'Hamming', value: 'hamming'},
+				{label: 'Blackman', value: 'blackman'},
+				{label: 'Sine', value: 'sine'}
+			]
+		}));
+
 		this.add(new modV.PaletteControl({
 			variable: 'colour',
 			colours: [
@@ -47,14 +68,18 @@ class Waveform extends modV.Module2D {
 		}));
 	}
 
-	init() {
+	init(canvas) {
 		this.colour = 'red';
 		this.strokeWeight = 1;
+		this.windowing = 'hanning';
+		this.maxHeight = canvas.height;
 	}
 
 	draw(can, ctx, vid, features) {
 		var ampArr = features.buffer;
-		ampArr = Meyda.windowing(ampArr, 'hanning');
+		ampArr = Meyda.windowing(ampArr, this.windowing);
+
+		let height = Math.map(this.maxHeight, 1, 100, 1, can.height);
 
 		ctx.strokeStyle = this.colour;
 		ctx.lineWidth = this.strokeWeight;
@@ -62,9 +87,9 @@ class Waveform extends modV.Module2D {
 		for (var i = 0; i < ampArr.length-1; i+=this.strokeWeight) {
 			var width = Math.round(Math.map(i, 0, ampArr.length-1, 0, can.width));
 			var newWidth = Math.round(Math.map(i+this.strokeWeight, 0, ampArr.length-1, 0, can.width));
-			var y = can.height/2 - (can.height * ampArr[i]) / (2);
+			var y = can.height/2 - (height * ampArr[i]) / (2);
 			y = Math.round(y);
-			var yNext = can.height/2 - (can.height * ampArr[i+this.strokeWeight]) / (2);
+			var yNext = can.height/2 - (height * ampArr[i+this.strokeWeight]) / (2);
 			yNext = Math.round(yNext);
 
 			ctx.moveTo(width, y);

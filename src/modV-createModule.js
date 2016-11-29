@@ -2,10 +2,10 @@ function replaceAll(string, operator, replacement) {
 	return string.split(operator).join(replacement);
 }
 
-modV.prototype.createModule = function(originalModule, canvas, context) {
+modV.prototype.createModule = function(originalModule, canvas, context, galleryItem) {
 
-	if(!canvas) canvas = this.previewCanvas;
-	if(!context) context = this.previewContext;
+	if(!canvas) canvas = this.layers[0].canvas;
+	if(!context) context = this.layers[0].context;
 
 	let originalModuleName = originalModule.info.originalModuleName;
 	let Module = new this.moduleStore[originalModuleName]();
@@ -17,6 +17,8 @@ modV.prototype.createModule = function(originalModule, canvas, context) {
 		// make new name
 		name = this.generateName(Module.info.name);
 	}
+
+	Module.info.galleryItem = galleryItem;
 
 	if(Module instanceof this.ModuleShader) {
 		Module.programIndex = originalModule.programIndex;
@@ -44,7 +46,9 @@ modV.prototype.createModule = function(originalModule, canvas, context) {
 	}
 
 	// init Module
-	if('init' in Module && Module instanceof this.Module2D) {
+	if( 'init' in Module &&
+		(Module instanceof this.Module2D || Module instanceof this.ModuleScript)) {
+
 		Module.init(canvas, context);
 	}
 
@@ -62,6 +66,7 @@ modV.prototype.createModule = function(originalModule, canvas, context) {
 	Module.info.originalModuleName = originalModule.info.originalModuleName;
 	Module.info.disabled = false;
 	Module.info.solo = false;
+	Module.info.alpha = 1;
 
 	return Module;
 };
