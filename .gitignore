@@ -6,3 +6,4 @@ node_modules
 /nwjs/build
 /nwjs/cache
 npm-debug.log
+options.json
