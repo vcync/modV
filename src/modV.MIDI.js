@@ -72,43 +72,56 @@ modV.prototype.MIDI = class {
 			var midiNode = document.querySelector("*[data-midichannel='" + data[1] + "'][data-midideviceid='" + message.currentTarget.id + "']");
 			if(midiNode && Control) {
 
-				if(Control instanceof modV.RangeControl) {
-					let calculatedValue = Math.map(parseInt(data[2]), 0, 127, parseFloat(midiNode.min), parseFloat(midiNode.max));
+				modV.isControl(Control, {
 
-					if(parseInt(Control.node.value) === calculatedValue) return;
+					range: () => {
+						let calculatedValue = Math.map(parseInt(data[2]), 0, 127, parseFloat(midiNode.min), parseFloat(midiNode.max));
 
-					if(isReserved < 0) Control.writeValue(calculatedValue);
-					else {
-						modV.activeModules[moduleName].info[controlKey.substring(reservedKey.length)] = calculatedValue;
-						Control.node.value = calculatedValue;
-					}
-				}
+						if(parseInt(Control.node.value) === calculatedValue) return;
 
-				if(Control instanceof modV.CheckboxControl) {
-					if(parseInt(data[2]) > 63) {
-						if(isReserved < 0) Control.writeValue(!Control.node.checked);
+						if(isReserved < 0) Control.writeValue(calculatedValue);
 						else {
-							Control.node.checked = !Control.node.checked;
+							modV.activeModules[moduleName].info[controlKey.substring(reservedKey.length)] = calculatedValue;
+							Control.node.value = calculatedValue;
+						}
+					},
 
-							modV.activeModules[moduleName].info[controlKey.substring(reservedKey.length)] = !Control.node.checked;
+					checkbox: () => {
+						if(parseInt(data[2]) > 63) {
+							if(isReserved < 0) Control.writeValue(!Control.node.checked);
+							else {
+								Control.node.checked = !Control.node.checked;
+
+								modV.activeModules[moduleName].info[controlKey.substring(reservedKey.length)] = !Control.node.checked;
+							}
+						}
+					},
+
+					select: () => {
+						let node = Control.node;
+						let calculatedIndex = Math.floor(Math.map(parseInt(data[2]), 0, 127, 0, node.length-1));
+
+						if(parseInt(Control.node.selectedIndex) === calculatedIndex) return;
+
+						if(isReserved < 0) Control.writeValue(calculatedIndex);
+						else {
+							Control.node.selectedIndex = calculatedIndex;
+							let selectValue = Control.node.options[calculatedIndex].value;
+
+							modV.activeModules[moduleName].info[controlKey.substring(reservedKey.length)] = selectValue;
+						}
+					},
+
+					button: () => {
+						console.log('MIDI: button detected', data[2]);
+
+						if(parseInt(data[2]) > 63) {
+							Control.push();
+						} else {
+							Control.release();
 						}
 					}
-				}
-
-				if(Control instanceof modV.SelectControl || Control instanceof modV.CompositeOperationControl) {
-					let node = Control.node;
-					let calculatedIndex = Math.floor(Math.map(parseInt(data[2]), 0, 127, 0, node.length-1));
-
-					if(parseInt(Control.node.selectedIndex) === calculatedIndex) return;
-
-					if(isReserved < 0) Control.writeValue(calculatedIndex);
-					else {
-						Control.node.selectedIndex = calculatedIndex;
-						let selectValue = Control.node.options[calculatedIndex].value;
-
-						modV.activeModules[moduleName].info[controlKey.substring(reservedKey.length)] = selectValue;
-					}
-				}
+				});
 			}
 		}
 	}

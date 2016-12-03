@@ -35,6 +35,9 @@
 		
 		document.querySelector('.gallery').appendChild(galleryItem);
 
+		// Tell the Module it is in the gallery
+		Module.info.galleryItem = true;
+
 		// Pull back initialised node from DOM
 		galleryItem = document.querySelector('.gallery .gallery-item:last-child');
 		var galleryItemTitle = galleryItem.querySelector('span.title');
