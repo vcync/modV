@@ -67,6 +67,12 @@ class RotoZoom extends modV.Module2D {
 			varType: 'int'
 		}));
 
+		controls.push(new modV.CheckboxControl({
+			variable: 'clearing',
+			label: 'Clearing',
+			checked: false
+		}));
+
 		this.add(controls);
 	}
 
@@ -88,6 +94,7 @@ class RotoZoom extends modV.Module2D {
 		this.srOnOff = false;
 		this.rotSpeed = 400;
 		this.swing = false;
+		this.clearing = false;
 			
 		this.sinVal = 0;
 		this.distortVal = 0;
@@ -139,6 +146,9 @@ class RotoZoom extends modV.Module2D {
 		
 		this.newCtx2.clearRect(0,0,canvas.width, canvas.height);
 		this.newCtx2.drawImage(canvas, 0, 0, canvas.width, canvas.height, 0, 0, this.newCanvas2.width, this.newCanvas2.height);
+
+		if(this.clearing) ctx.clearRect(0,0,canvas.width, canvas.height);
+
 		ctx.save();
 		
 		if(this.distort) ctx.setTransform(1, thisDistortVal, 0, 1, canvas.width/2, canvas.height/2);

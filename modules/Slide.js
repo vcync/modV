@@ -25,6 +25,12 @@ class Slide extends modV.Module2D {
 			default: 0
 		}));
 
+		controls.push(new modV.CheckboxControl({
+			variable: 'clearing',
+			label: 'Clearing',
+			checked: false
+		}));
+
 		this.add(controls);
 	}
 
@@ -33,6 +39,7 @@ class Slide extends modV.Module2D {
 		this.speed = 0;
 		this.offset = 0;
 		this.base = 0;
+		this.clearing = false;
 
 		this.newCanvas2 = document.createElement('canvas');
 		this.newCtx2 = this.newCanvas2.getContext("2d");
@@ -55,10 +62,13 @@ class Slide extends modV.Module2D {
 			this.offset += this.speed;
 		}
 
-		ctx.save();
+		
 		this.newCtx2.clearRect(0, 0, this.newCanvas2.width, this.newCanvas2.height);
 		this.newCtx2.drawImage(canvas, 0, 0, canvas.width, canvas.height, 0, 0, canvas.width, canvas.height);
+		if(this.clearing) ctx.clearRect(0, 0, canvas.width, canvas.height);
 		
+		ctx.save();
+
 		ctx.drawImage(this.newCanvas2, 0, this.offset);
 		ctx.drawImage(this.newCanvas2, 0, (-canvas.height + this.offset));
 		
