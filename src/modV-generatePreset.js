@@ -1,4 +1,5 @@
 modV.prototype.generatePreset = function(name) {
+	let self = this;
 	var preset = {
 		layers: [],
 		moduleData: {},
@@ -12,7 +13,19 @@ modV.prototype.generatePreset = function(name) {
 	};
 	
 	function extractValues(Control, Module, key) {
-		preset.moduleData[key].values[Control.variable] = Module[Control.variable];
+		if(Control instanceof self.PaletteControl) {
+
+			preset.moduleData[key].values[Control.variable] = {
+				type: 'PaletteControl',
+				variable: Control.variable,
+				color: Module[Control.variable],
+				colours: Control.colours,
+				timePeriod: Control.timePeriod
+			};
+
+		} else {
+			preset.moduleData[key].values[Control.variable] = Module[Control.variable];
+		}
 	}
 
 	let MIDIAssignmentsObject = [];
