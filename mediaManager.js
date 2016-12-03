@@ -68,6 +68,8 @@ try {
 
 var directories = getDirectories(path.resolve(options.mediaDirectory));
 
+console.log('Media manager looking in', directories);
+
 function createDirectories(callback) {
 	directories.forEach(function(dir) {
 
@@ -224,7 +226,7 @@ function mediaSearch(callback) {
 	dive(options.mediaDirectory, { all: false }, function(err, file) {
 
 		if(err) throw err;
-		var pathReplaced = file.replace(options.mediaDirectory, '');
+		var pathReplaced = file.replace(path.resolve(options.mediaDirectory), '');
 		pathReplaced = pathReplaced.split(pathSeparator);
 
 		var dirSplit = file.split(pathSeparator);
@@ -298,6 +300,7 @@ function mediaSearch(callback) {
 				});
 
 			} else {
+				console.log(profiles, profile);
 				profiles[profile].files.images.push({'name': filename, 'path': filePath});
 			}
 			
