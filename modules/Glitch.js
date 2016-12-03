@@ -66,8 +66,8 @@ class Glitch extends modV.Module2D {
 
 		this.cacheCanvas = document.createElement('canvas');
 		this.cacheCtx = this.cacheCanvas.getContext('2d');
-		this.cacheCanvas.width = canvas.width/2;
-		this.cacheCanvas.height = canvas.height/2;
+		this.cacheCanvas.width = canvas.width/3;
+		this.cacheCanvas.height = canvas.height/3;
 		this.clear = false;
 		this.sensitivity = 0.5;
 		this.seed = Math.floor((Math.random()*100)+1);
@@ -85,8 +85,8 @@ class Glitch extends modV.Module2D {
 
 	resize(canvas) {
 		
-		this.cacheCanvas.width = canvas.width/2;
-		this.cacheCanvas.height = canvas.height/2;
+		this.cacheCanvas.width = canvas.width/3;
+		this.cacheCanvas.height = canvas.height/3;
 		
 	}
 
