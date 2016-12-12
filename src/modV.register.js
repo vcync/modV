@@ -228,7 +228,7 @@
 			}
 
 			// Initialise Module
-			Module.init(self.layers[0].canvas, self.layers[0].context);
+			Module.init(/*self.layers[0].canvas*/self.previewCanvas, /*self.layers[0].context*/self.previewContext);
 
 			// finish up
 			finish(Module, type);

@@ -11,11 +11,11 @@ class Plasma extends modV.ModuleShader {
 				uniforms: {
 					"u_scaleX": {
 						type: 'f',
-						value: 0.5
+						value: 50
 					},
 					"u_scaleY": {
 						type: 'f',
-						value: 0.5
+						value: 50
 					},
 					"u_timeScale": {
 						type: 'f',
@@ -30,20 +30,20 @@ class Plasma extends modV.ModuleShader {
 			variable: 'u_scaleX',
 			label: 'Scale X',
 			varType: 'float',
-			min: 0.0,
-			max: 1.0,
-			step: 0.001,
-			default: 0.5
+			min: 1.0,
+			max: 1000.0,
+			step: 1.0,
+			default: 50.0
 		}));
 
 		this.add(new modV.RangeControl({
 			variable: 'u_scaleY',
 			label: 'Scale Y',
 			varType: 'float',
-			min: 0.0,
-			max: 1.0,
-			step: 0.001,
-			default: 0.5
+			min: 1.0,
+			max: 1000.0,
+			step: 1.0,
+			default: 50.0
 		}));
 
 		this.add(new modV.RangeControl({

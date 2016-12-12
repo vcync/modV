@@ -8,6 +8,7 @@ modV.prototype.MIDI = class {
 		this.currentNode = null;
 		this.currentModuleName = null;
 		this.currentControlKey = null;
+		this.reservedKey = 'modVReserved:';
 
 		this.assignments = new Map();
 	}
@@ -43,7 +44,6 @@ modV.prototype.MIDI = class {
 		let inputMap = this.assignments.get(message.currentTarget.id);
 		let Control;
 		let isReserved;
-		let reservedKey = 'modVReserved:';
 
 		let assignment = inputMap[midiChannel];
 
@@ -64,12 +64,13 @@ modV.prototype.MIDI = class {
 			isReserved = controlKey.indexOf('modVReserved:');
 
 			if(isReserved > -1) {
-				Control = modV.activeModules[moduleName].info.internalControls[controlKey.substring(reservedKey.length)];
+				Control = modV.activeModules[moduleName].info.internalControls[controlKey.substring(this.reservedKey.length)];
 			} else {
 				Control = modV.activeModules[moduleName].info.controls[controlKey];
 			}
 
 			var midiNode = document.querySelector("*[data-midichannel='" + data[1] + "'][data-midideviceid='" + message.currentTarget.id + "']");
+
 			if(midiNode && Control) {
 
 				modV.isControl(Control, {
@@ -81,7 +82,7 @@ modV.prototype.MIDI = class {
 
 						if(isReserved < 0) Control.writeValue(calculatedValue);
 						else {
-							modV.activeModules[moduleName].info[controlKey.substring(reservedKey.length)] = calculatedValue;
+							modV.activeModules[moduleName].info[controlKey.substring(this.reservedKey.length)] = calculatedValue;
 							Control.node.value = calculatedValue;
 						}
 					},
@@ -92,7 +93,7 @@ modV.prototype.MIDI = class {
 							else {
 								Control.node.checked = !Control.node.checked;
 
-								modV.activeModules[moduleName].info[controlKey.substring(reservedKey.length)] = !Control.node.checked;
+								modV.activeModules[moduleName].info[controlKey.substring(this.reservedKey.length)] = !Control.node.checked;
 							}
 						}
 					},
@@ -108,13 +109,11 @@ modV.prototype.MIDI = class {
 							Control.node.selectedIndex = calculatedIndex;
 							let selectValue = Control.node.options[calculatedIndex].value;
 
-							modV.activeModules[moduleName].info[controlKey.substring(reservedKey.length)] = selectValue;
+							modV.activeModules[moduleName].info[controlKey.substring(this.reservedKey.length)] = selectValue;
 						}
 					},
 
 					button: () => {
-						console.log('MIDI: button detected', data[2]);
-
 						if(parseInt(data[2]) > 63) {
 							Control.push();
 						} else {
@@ -136,7 +135,16 @@ modV.prototype.MIDI = class {
 			forIn(channels, (channel, assignment) => {
 				let moduleName = assignment.moduleName;
 				let controlKey = assignment.controlKey;
-				let Control = modV.activeModules[moduleName].info.controls[controlKey];
+
+				let isReserved = controlKey.indexOf('modVReserved:');
+				let Control;
+				
+				if(isReserved > -1) {
+					Control = modV.activeModules[moduleName].info.internalControls[controlKey.substring(this.reservedKey.length)];
+				} else {
+					Control = modV.activeModules[moduleName].info.controls[controlKey];
+				}
+
 				let inputNode = Control.node;
 
 				inputMap[channel] = this.createAssignment(inputNode, deviceID, channel, moduleName, controlKey);

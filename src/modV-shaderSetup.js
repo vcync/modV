@@ -9,7 +9,7 @@
 		self.shaderEnv.gl = null;
 		self.shaderEnv.canvas = null;
 		self.shaderEnv.texture = null;
-		self.shaderEnv.activeProgram = 1;
+		self.shaderEnv.activeProgram = -1;
 
 		var buffer;
 		var gl; // reference to self.shaderEnv.gl
@@ -93,13 +93,13 @@
 
 			programs.push(gl.createProgram());
 
-			gl.attachShader(programs[self.shaderEnv.activeProgram], vertexShader);
-			gl.attachShader(programs[self.shaderEnv.activeProgram], fragmentShader);
-			gl.linkProgram(programs[self.shaderEnv.activeProgram]);	
-			gl.useProgram(programs[self.shaderEnv.activeProgram]);
+			gl.attachShader(programs[1], vertexShader);
+			gl.attachShader(programs[1], fragmentShader);
+			gl.linkProgram(programs[1]);	
+			gl.useProgram(programs[1]);
 
 			// look up where the texture coordinates need to go.
-			var texCoordLocation = gl.getAttribLocation(programs[self.shaderEnv.activeProgram], "a_texCoord");
+			var texCoordLocation = gl.getAttribLocation(programs[1], "a_texCoord");
 			
 			// provide texture coordinates for the rectangle.
 			var texCoordBuffer = gl.createBuffer();
@@ -145,7 +145,7 @@
 			resize(self.width, self.height);
 
 			// Get position of position attribute
-			var positionLocation = gl.getAttribLocation(programs[self.shaderEnv.activeProgram], "a_position");
+			var positionLocation = gl.getAttribLocation(programs[1], "a_position");
 
 			// Create a buffer for the position of the rectangle corners.
 			buffer = gl.createBuffer();
@@ -154,7 +154,7 @@
 			gl.vertexAttribPointer(positionLocation, 2, gl.FLOAT, false, 0, 0);
 
 			// Create modVCanvas sampler2D Uniform
-			var samplerLocation = gl.getUniformLocation(programs[self.shaderEnv.activeProgram], "u_modVCanvas");
+			var samplerLocation = gl.getUniformLocation(programs[1], "u_modVCanvas");
 			gl.uniform1i(samplerLocation, 0); // Unit position 0
 
 			// Set Rectangle again because of the buffer creation
@@ -192,10 +192,11 @@
 			var timeSecondsLocation = gl.getUniformLocation(programs[self.shaderEnv.activeProgram], "u_timeSeconds");
 			gl.uniform1f(timeSecondsLocation, delta / 1000);
 
+			var resolutionLocation = gl.getUniformLocation(programs[self.shaderEnv.activeProgram], "u_resolution");
+			gl.uniform2f(resolutionLocation, canvas.width, canvas.height);
+
 			// Set u_resolution
 			if(programs[self.shaderEnv.activeProgram]) {
-				var resolutionLocation = gl.getUniformLocation(programs[self.shaderEnv.activeProgram], "u_resolution");
-				gl.uniform2f(resolutionLocation, canvas.width, canvas.height);
 				setRectangle(gl, 0, 0, canvas.width, canvas.height);
 			}
 

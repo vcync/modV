@@ -33,7 +33,6 @@ modV.prototype.isControl = function(Control, callbacks) {
 	} else
 
 	if(Control instanceof this.ButtonControl) {
-		console.log('isbutton');
 		if('button' in callbacks) callbacks.button();
 	}
 };

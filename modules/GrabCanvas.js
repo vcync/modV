@@ -6,84 +6,86 @@ class GrabCanvas extends modV.ModuleScript {
 				author: 'Tim Pietrusky & Sam Wray',
 				version: 0.1,
 				previewWithOutput: false,
-				scripts: [
-					'GrabCanvas/SweetCandy.js'
-				]
+				// scripts: [
+				// 	'GrabCanvas/nerdV.js'
+				// ]
 			}
 		});
+
+		this.add(new modV.ButtonControl({
+			label: 'Fog',
+			onpress: () => {
+				this.setFog(true);
+			},
+			onrelease: () => {
+				this.setFog(false);
+			}
+		}));
 
 		this.divsor = 4;
 	}
 
 	init(canvas) {
-		if(this.info.galleryItem) return;
-
-		//this.worker = new Worker('./modules/GrabCanvas/worker.js');
-		// this.worker.postMessage({type: 'setup', payload: {
-		// 	width: canvas.width,
-		// 	height: canvas.height,
-		// 	devicePixelRatio: window.devicePixelRatio
-		// }});
-
-		this.Candy = new SweetCandy('ws://192.168.0.9:7890');
-
-		let width = canvas.width;
-		let height = canvas.height;
-		let halfWidth = Math.floor(width/2);
-		let halfHeight = Math.floor(height/2);
-
-        this.Candy.devicePixelRatio = window.devicePixelRatio;
-        this.Candy.reset();
-        this.Candy.setDimensions(width, height);
-		
-		for (var y = 0; y < 8; y++) {
-			for (var x = 0; x < 8; x++) {
-				var spacing = height / 12;
-				var pointX = halfWidth + (spacing * (x - 3.5));
-				var pointY = halfHeight + (spacing * (y - 3.5));
-
-				this.Candy.addLED(new LED(pointX, pointY)); //jshint ignore:line
-			}
+		if(this.info.galleryItem) {
+			console.log('in gallery');
+			return;
 		}
+
+		this.worker = new Worker('./modules/GrabCanvas/worker.js');
+
+		// this.nerdV = new nerdV(
+		// 	'ws://192.168.0.102:1337', // LED
+		// 	'ws://localhost:1337' // DMX
+		// );
+
+		//this.internalCanvas = document.createElement('canvas');
+		//this.internalContext = this.internalCanvas.getContext('2d');
+
+		this.resize(canvas);
 	}
 
 	resize(canvas) {
-		// this.worker.postMessage({type: 'setup', payload: {
-		// 	width: canvas.width,
-		// 	height: canvas.height,
-		// 	devicePixelRatio: window.devicePixelRatio
-		// }});
+		this.worker.postMessage({type: 'setup', payload: {
+			width: canvas.width,
+			height: canvas.height,
+			devicePixelRatio: window.devicePixelRatio
+		}});
 
-		this.Candy.setDimensions(canvas.width, canvas.height);
+		// let width = canvas.width;
+		// let height = canvas.height;
 
-		let width = canvas.width;
-		let height = canvas.height;
-		let halfWidth = Math.floor(width/2);
-		let halfHeight = Math.floor(height/2);
+		// this.internalCanvas.width = width;
+		// this.internalCanvas.height = height;
 
-		this.Candy.reset();
+		// this.nerdV.devicePixelRatio = window.devicePixelRatio;
 
-		for (var x = 0; x < 8; x++) {
-			for (var y = 0; y < 8; y++) {
-				var spacing = height / 12;
-				var pointX = halfWidth + (spacing * (x - 3.5));
-				var pointY = halfHeight + (spacing * (y - 3.5));
+		// this.nerdV.reset();
+		// this.nerdV.setDimensions(width, height);
 
-				this.Candy.addLED(new LED(pointX, pointY)); //jshint ignore:line
-			}
-		}
+		// for (var x = 0; x < 8; x++) {
+		// 	for (var y = 30; y > 0; y--) {
+		// 		var pointX = (x * Math.floor(width/8)) + Math.floor((width/8) / 2);
+		// 		var pointY = (y * Math.floor(height/30));
+
+		// 		this.nerdV.addLED(new LED(pointX, pointY)); //jshint ignore:line
+		// 	}
+		// }
 	}
 
 	loop(canvas, ctx, video, meyda, meydaFeatures, delta, bpm, kick, _gl) {
 
-		var pixels = new Uint8Array(_gl.drawingBufferWidth * _gl.drawingBufferHeight * 4);
-		_gl.readPixels(0, 0, _gl.drawingBufferWidth, _gl.drawingBufferHeight, _gl.RGBA, _gl.UNSIGNED_BYTE, pixels);
-		//console.log(pixels); // Uint8Array
+		//var pixels = new Uint8Array(_gl.drawingBufferWidth * _gl.drawingBufferHeight * 4);
+		//_gl.readPixels(0, 0, _gl.drawingBufferWidth, _gl.drawingBufferHeight, _gl.RGBA, _gl.UNSIGNED_BYTE, pixels);
+		
+		//var pixels = new Uint8Array(canvas.width * canvas.height * 4);
 
-		this.Candy.drawFrame(null, null, pixels);
+		//this.internalContext.drawImage(canvas, 0, 0);
+		let pixels = ctx.getImageData(0, 0, canvas.width, canvas.height).data;
 
-		// for(let i = 0; i < this.Candy.LEDs.length; i++) {
-		// 	let led = this.Candy.LEDs[i];
+		//this.nerdV.drawFrame(null, null, pixels);
+
+		// for(let i = 0; i < this.nerdV.LEDs.length; i++) {
+		// 	let led = this.nerdV.LEDs[i];
 		// 	ctx.save();
 		// 	ctx.strokeStyle = 'white';
 		// 	ctx.lineWidth = 1;
@@ -95,7 +97,11 @@ class GrabCanvas extends modV.ModuleScript {
 		// 	ctx.restore();
 		// }
 
-		//this.worker.postMessage({type: 'data', payload: pixels});
+		this.worker.postMessage({type: 'data', payload: pixels});
+	}
+
+	setFog(value) {
+		this.worker.postMessage({type: 'fog', payload: value});
 	}
 }
 

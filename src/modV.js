@@ -52,7 +52,7 @@ navigator.getUserMedia = navigator.getUserMedia 		||
 
 var modV = function(options) {
 
-	console.log('      modV Copyright  (C)  2016 Sam Wray      '+ "\n" +
+	console.log('      modVVVVV Copyright  (C)  2016 Sam Wray      '+ "\n" +
 				'----------------------------------------------'+ "\n" +
 				'      modV is licensed  under GNU GPL V3      '+ "\n" +
 				'This program comes with ABSOLUTELY NO WARRANTY'+ "\n" +
@@ -199,6 +199,8 @@ var modV = function(options) {
 
 				if(Module instanceof self.Module3D) {
 					Module.resize(layer.canvas, Module.getScene(), Module.getCamera(), self.THREE.material, self.THREE.texture);
+				} else if(Module instanceof self.ModuleScript) {
+					Module.resize(this.previewCanvas, this.previewContext);
 				} else {
 					Module.resize(layer.canvas, layer.context);
 				}

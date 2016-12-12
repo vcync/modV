@@ -64,7 +64,7 @@
 					// Update GL texture
 
 					// Switch program to default passthrough
-					if(1 !== self.shaderEnv.activeProgram) {
+					if(self.shaderEnv.activeProgram !== 1) {
 						self.shaderEnv.activeProgram = 1;
 						_gl.useProgram(self.shaderEnv.programs[1]);
 					}
@@ -97,7 +97,7 @@
 						);
 
 						// draw 2d operations
-						Module.loop(layer.canvas, context, self.video, meydaOutput, self.meyda, delta, self.bpm, self.kick, _gl);
+						Module.loop(/*layer.canvas*/self.previewCanvas, /*context*/self.previewContext, self.video, meydaOutput, self.meyda, delta, self.bpm, self.kick, _gl);
 
 						//copy layer back to buffer, clear first
 						bufferCtx.clearRect(0,0,canvas.width,canvas.height);
@@ -111,7 +111,7 @@
 
 					} else {
 
-						Module.loop(canvas, context, self.video, meydaOutput, self.meyda, delta, self.bpm, self.kick, _gl);
+						Module.loop(/*canvas*/self.previewCanvas, /*context*/self.previewContext, self.video, meydaOutput, self.meyda, delta, self.bpm, self.kick, _gl);
 
 					}
 				}

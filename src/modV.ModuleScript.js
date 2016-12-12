@@ -41,7 +41,7 @@ modV.prototype.ModuleScript = class ModuleScript {
 				this.add(thing);
 			});
 		} else {
-			this.info.controls.push(item);
+			this.info.controls[item.variable] = item;
 		}
 	}
 

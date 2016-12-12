@@ -46,10 +46,15 @@ modV.prototype.createModule = function(originalModule, canvas, context, galleryI
 	}
 
 	// init Module
-	if( 'init' in Module &&
-		(Module instanceof this.Module2D || Module instanceof this.ModuleScript)) {
+	if( 'init' in Module && (Module instanceof this.Module2D)) {
 
 		Module.init(canvas, context);
+	}
+
+	if( 'init' in Module && Module instanceof this.ModuleScript) {
+
+		//Module.init(canvas, context);
+		Module.init(this.previewCanvas, this.previewContext);
 	}
 
 	if('init' in Module && Module instanceof this.Module3D) {
