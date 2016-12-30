@@ -2,7 +2,7 @@
 	'use strict';
 	/*jslint browser: true */
 
-	modV.prototype.createActiveListItem = function(Module, dragStartCB, dragEndCB) {
+	modV.prototype.createActiveListItem = function(Module, dragStartCB, dragEndCB, isPreset) {
 		var self = this;
 
 		// Temp container (TODO: don't do this)
@@ -48,7 +48,7 @@
 		});
 
 		let AlphaRangeControlNode = AlphaRangeControl.makeNode(
-			Module.info.safeName + '-' + 'ListItemOpacity', self
+			Module.info.safeName + '-' + 'ListItemOpacity', self, isPreset, Module.info.alpha
 		);
 
 		opacityRangeNode.parentNode.replaceChild(AlphaRangeControlNode, opacityRangeNode);
@@ -93,7 +93,7 @@
 		});
 
 		let BlendingControlNode = BlendingControl.makeNode(
-			Module.info.safeName + '-' + 'ListItemEnable', self
+			Module.info.safeName + '-' + 'BlendingMode', self, isPreset, Module.info.blend
 		);
 
 		compositeSelectNode.parentNode.replaceChild(BlendingControlNode, compositeSelectNode);

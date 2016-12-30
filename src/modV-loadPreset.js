@@ -131,7 +131,7 @@ modV.prototype.loadPreset = function(id) {
 				this.currentActiveDrag = node;
 			}, () => {
 				this.currentActiveDrag  = null;
-			});
+			}, true);
 
 			let activeItemNode = activeItemElements.node;
 

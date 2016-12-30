@@ -95,7 +95,7 @@
 			}
 		};
 
-		self.makeNode = function(ModuleRef, modV) {
+		self.makeNode = function(ModuleRef, modV, isPreset, internalPresetValue) {
 			if(!settings.useInternalValue) {
 				Module = ModuleRef;
 				id = Module.info.safeName + '-' + self.variable;
@@ -117,6 +117,15 @@
 				let optionNode = document.createElement('option');
 				optionNode.textContent = key;
 				optionNode.value = value;
+
+				if(isPreset) {
+					if(settings.useInternalValue) {
+						if(value === internalPresetValue) {
+							optionNode.selected = true;
+						}
+					}
+				}
+				
 				blendOptionGroupNode.appendChild(optionNode);
 			});
 
@@ -124,6 +133,15 @@
 				let optionNode = document.createElement('option');
 				optionNode.textContent = key;
 				optionNode.value = value;
+
+				if(isPreset) {
+					if(settings.useInternalValue) {
+						if(value === internalPresetValue) {
+							optionNode.selected = true;
+						}
+					}
+				}
+
 				compositeOptionGroupNode.appendChild(optionNode);
 			});
 
