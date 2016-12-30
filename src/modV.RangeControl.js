@@ -68,7 +68,7 @@
 			}
 		}
 
-		self.makeNode = function(ModuleRef, modV) {
+		self.makeNode = function(ModuleRef, modV, isPreset) {
 			if(!settings.useInternalValue) {
 				Module = ModuleRef;
 				id = Module.info.safeName + '-' + self.variable;
@@ -88,6 +88,14 @@
 				else if('default' in settings) node.value = settings.default;
 			} else {
 				if('default' in settings) node.value = settings.default;
+			}
+
+			if(isPreset) {
+				if('append' in settings) {
+					node.value = Module[self.variable].replace(settings.append, '');
+				} else {
+					node.value = Module[self.variable];
+				}
 			}
 
 			rangeRanger(node, {

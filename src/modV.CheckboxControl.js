@@ -57,7 +57,7 @@
 			}
 		}
 
-		self.makeNode = function(ModuleRef, modV) {
+		self.makeNode = function(ModuleRef, modV, isPreset) {
 			if(!settings.useInternalValue) {
 				Module = ModuleRef;
 				id = Module.info.safeName + '-' + self.variable;
@@ -77,6 +77,10 @@
 					settings.oninput(this.checked);
 				}
 			}, false);
+
+			if(isPreset) {
+				inputNode.checked = Module[self.variable];
+			}
 
 			let labelNode = document.createElement('label');
 			labelNode.setAttribute('for', id);

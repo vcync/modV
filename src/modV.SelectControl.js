@@ -60,7 +60,7 @@
 			}
 		}
 
-		self.makeNode = function(ModuleRef, modV) {
+		self.makeNode = function(ModuleRef, modV, isPreset) {
 			Module = ModuleRef;
 			id = Module.info.safeName + '-' + self.variable;
 
@@ -72,7 +72,13 @@
 					var optionNode = document.createElement('option');
 					optionNode.textContent = option.label;
 					optionNode.value = option.value;
-					if('default' in option) {
+					
+					if(isPreset) {
+						if(option.value === Module[self.variable]) {
+							optionNode.selected = true;
+							Module.updateVariable(self.variable, option.value, modV);
+						}
+					} else if('default' in option) {
 						if(option.default) {
 							optionNode.selected = true;
 							Module.updateVariable(self.variable, option.value, modV);

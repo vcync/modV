@@ -2,7 +2,7 @@
 	'use strict';
 	/*jslint browser: true */
 
-	modV.prototype.createControls = function(Module) {
+	modV.prototype.createControls = function(Module, isPreset) {
 		var self = this;
 		var controlPanelWrapperNode = document.querySelector('.control-panel-wrapper');
 		var panelNode = document.createElement('div');
@@ -22,7 +22,7 @@
 				if(!Control.makeNode) return;
 				var inputNode;
 
-				inputNode = Control.makeNode(Module, self);
+				inputNode = Control.makeNode(Module, self, isPreset);
 
 				inputNode.addEventListener('contextmenu', function(ev) {
 					ev.preventDefault();

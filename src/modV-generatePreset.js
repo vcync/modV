@@ -24,7 +24,12 @@ modV.prototype.generatePreset = function(name) {
 			};
 
 		} else {
-			preset.moduleData[key].values[Control.variable] = Module[Control.variable];
+
+			if('append' in Control.getSettings()) {
+				preset.moduleData[key].values[Control.variable] = Control.node.value;
+			} else {
+				preset.moduleData[key].values[Control.variable] = Module[Control.variable];
+			}
 		}
 	}
 

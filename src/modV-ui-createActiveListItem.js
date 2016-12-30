@@ -112,7 +112,7 @@
 
 		var EnableCheckboxControl = new modV.CheckboxControl({
 			label: 'Enabled',
-			checked: true,
+			checked: !Module.info.disabled,
 			useInternalValue: true,
 			variable: 'modVReserved:disabled',
 			oninput: (value) => {

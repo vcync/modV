@@ -96,12 +96,19 @@ modV.prototype.loadPreset = function(id) {
 			Module.info.solo = presetModuleData.solo;
 			Module.info.alpha = presetModuleData.alpha;
 
-			// Create UI controls
-			this.createControls(Module, this);
+			forIn(presetModuleData.values, (key, value) => {
+				if(typeof value !== 'object') {
 
-			forIn(presetModuleData.values, value => {
-				if(typeof value !== 'object') Module[value] = presetModuleData.values[value];
-				else {
+					let ModuleSettings = {};
+					if(key in Module.info.controls) ModuleSettings = Module.info.controls[key].getSettings();
+
+					if('append' in ModuleSettings) {
+						Module[key] = value + ModuleSettings.append;
+					} else {
+						Module[key] = value;
+					}
+
+				} else {
 					if(value.type === 'PaletteControl') {
 						Module[value.variable] = value.color;
 						Module.info.controls[value.variable].color = value.color;
@@ -110,6 +117,9 @@ modV.prototype.loadPreset = function(id) {
 					}
 				}
 			});
+
+			// Create UI controls
+			this.createControls(Module, this, true);
 
 			// Add to active modules
 			this.activeModules[Module.info.name] = Module;
