@@ -1,5 +1,3 @@
-/*jslint browser: true */
-
 // map() from Processing
 Math.map = function(value, low1, high1, low2, high2) {
 	return low2 + (high2 - low2) * (value - low1) / (high1 - low1);
@@ -64,7 +62,7 @@ var modV = function(options) {
 		analyser, // Analyser Node 
 		microphone;
 
-	self.version = "1.4";
+	self.version = require('../package.json').version;
 
 	// UI Templates
 	self.templates = document.querySelector('link[rel="import"]').import;

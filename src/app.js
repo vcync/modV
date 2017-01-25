@@ -1,5 +1,3 @@
-//jshint node:true
-
 const modV = require('./modV');
 
 require('./modV-addLayer.js')(modV);

@@ -1,5 +1,3 @@
-//jshint node:true
-
 const buildControlMenu		= require('./modV-ui-buildControlMenu.js');
 const buildCopyPasteMenu	= require('./modV-ui-buildCopyPasteMenu.js');
 const buildMIDIContextMenu	= require('./modV-ui-buildMIDIContextMenu.js');
