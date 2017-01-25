@@ -59,6 +59,7 @@ require('./modV.SelectControl.js')(modV);
 require('./modV.TextControl.js')(modV);
 require('./modV.VideoControl.js')(modV);
 
+require('./modV.colourHelpers.js');
 require('./util.awesomeText.js');
 require('./util.stackTraceError');
 

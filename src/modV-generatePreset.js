@@ -37,7 +37,7 @@ module.exports = function(modV) {
 
 		let MIDIAssignmentsObject = [];
 
-		modV.MIDIInstance.assignments.forEach((value, key) => {
+		this.MIDIInstance.assignments.forEach((value, key) => {
 			MIDIAssignmentsObject.push([key, value]);
 		});
 

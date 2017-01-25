@@ -159,6 +159,6 @@ module.exports = function(modV) {
 
 		let assignments = new Map(this.presets[id].MIDIAssignments);
 		
-		modV.MIDIInstance.importAssignments(assignments);
+		this.MIDIInstance.importAssignments(assignments);
 	};
 };
