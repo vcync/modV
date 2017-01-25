@@ -29,6 +29,7 @@ require('./modV-ui-createActiveListItem.js')(modV);
 require('./modV-ui-createControls.js')(modV);
 require('./modV-ui-createGalleryItem.js')(modV);
 require('./modV-ui-enumerateSourceSelects.js')(modV);
+require('./modV-ui-showContextMenu.js')(modV);
 require('./modV-ui.js')(modV);
 require('./modV-ui.MenuItem.js')(modV);
 require('./modV-ui.TabController.js')(modV);
