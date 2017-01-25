@@ -27,6 +27,7 @@
     "node-watch": "^0.4.0",
     "nodejs-websocket": "^1.7.0",
     "open": "0.0.5",
+    "script-loader": "^0.7.0",
     "tap-tempo": "^0.1.1",
     "three": "^0.84.0",
     "ws": "^1.1.1"

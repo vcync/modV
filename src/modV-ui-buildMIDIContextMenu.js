@@ -1,4 +1,4 @@
-module.exports = function(Control, Module, inputNode) {
+module.exports = function(Control, Module, inputNode, modV) {
 	let items = [];
 
 	let assigned = false;
@@ -6,17 +6,17 @@ module.exports = function(Control, Module, inputNode) {
 
 	if(inputNode.dataset.midichannel !== undefined) {
 		assigned = true;
-		controlTitle = 'Forget Assignment (assigned to ' + this.MIDIInstance.getNameFromID(inputNode.dataset.id) + ' on channel ' + inputNode.dataset.midichannel;
+		controlTitle = 'Forget Assignment (assigned to ' + modV.MIDIInstance.getNameFromID(inputNode.dataset.id) + ' on channel ' + inputNode.dataset.midichannel;
 	}
 
-	items.push(new this.MenuItem({
+	items.push(new modV.MenuItem({
 		title: 'Learn Assignment',
 		enabled: !assigned,
 		callback: () => {
-			this.MIDIInstance.learning = true;
-			this.MIDIInstance.currentNode = inputNode;
-			this.MIDIInstance.currentControlKey = Control.variable;
-			this.MIDIInstance.currentModuleName = Module.info.name;
+			modV.MIDIInstance.learning = true;
+			modV.MIDIInstance.currentNode = inputNode;
+			modV.MIDIInstance.currentControlKey = Control.variable;
+			modV.MIDIInstance.currentModuleName = Module.info.name;
 		}
 	}));
 

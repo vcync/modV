@@ -50,6 +50,7 @@ navigator.getUserMedia = navigator.getUserMedia 		||
 
 const Meyda = require('meyda');
 const THREE = require('three');
+require('script-loader!../libraries/beatdetektor.js');
 
 var modV = function(options) {
 
@@ -338,18 +339,13 @@ var modV = function(options) {
 	self.bpmHeldAt = 120;
 	self.useDetectedBPM = true;
 
-	// Check for BeatDetektor
-	if(typeof window.BeatDetektor === 'function') {
-		self.beatDetektorSupport = true;
-		console.info('BeatDetektor detected, BPM analysis available.', 'modV robot now available.');
-		self.beatDetektorMed = new BeatDetektor(85,169);
+	// Set up BeatDetektor
+	self.beatDetektorMed = new BeatDetektor(85,169);
+	self.beatDetektorKick = new BeatDetektor.modules.vis.BassKick();
+	self.kick = false;
+	
 
-		self.beatDetektorKick = new BeatDetektor.modules.vis.BassKick();
-		self.kick = false;
-	}
-
-	// Check for THREE
-	console.info('THREE.js Revision:', THREE.REVISION);
+	// Set up THREE
 	self.THREE = {};
 
 	self.THREE.textureCanvas = document.createElement('canvas');

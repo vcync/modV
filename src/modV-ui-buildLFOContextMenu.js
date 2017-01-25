@@ -1,21 +1,21 @@
-module.exports = function(Control, Module) {
+module.exports = function(Control, Module, modV) {
 	let items = [];
 
 	let controlTitle = 'Add LFO';
 	let id = Module.info.safeName + '-LFO-' + Control.variable;
 
-	let LFO = this.LFOs.find((LFO) => {
+	let LFO = modV.LFOs.find((LFO) => {
 		return LFO.id === id;
 	});
 
 	if(LFO) {
 		controlTitle = 'Remove LFO';
 
-		items.push(new this.MenuItem({
+		items.push(new modV.MenuItem({
 			title: controlTitle,
 			enabled: true,
 			callback: () => {
-					this.LFOs.splice(this.LFOs.indexOf(LFO), 1);
+					modV.LFOs.splice(modV.LFOs.indexOf(LFO), 1);
 				}
 			})
 		);
@@ -23,82 +23,95 @@ module.exports = function(Control, Module) {
 		return items;
 	}
 
-	items.push(new this.MenuItem({
+	// info here: http://testtone.com/calculators/lfo-speed-calculator
+	function hzFromBPM(bpm) {
+
+		let secondsPerBeat = 60 / bpm;
+		let secondsPerNote = secondsPerBeat * (4 / 2);
+		let hertz = 1 / secondsPerNote;
+
+		return hertz;
+	}
+
+	items.push(new modV.MenuItem({
 		title: controlTitle,
 		enabled: true,
 		// callback: () => {
-		// 	let LFOControl = new this.LFOController(Control, Module, {
+		// 	let LFOControl = new modV.LFOController(Control, Module, {
 		// 		freq: 1.3,
 		// 		amplitude: 2,
 		// 		waveform: 'sine'
 		// 	});
 
-		// 	this.LFOs.push(LFOControl);
+		// 	modV.LFOs.push(LFOControl);
 		// },
 		submenuItems: [
-			new this.MenuItem({
+			new modV.MenuItem({
 				title: 'Sine',
 				enabled: true,
 				callback: () => {
-					let LFOControl = new this.LFOController(Control, Module, {
-						freq: 1.3,
+
+
+
+					let LFOControl = new modV.LFOController(Control, Module, {
+						freq: hzFromBPM(modV.bpm),
 						amplitude: 2,
 						waveform: 'sine'
-					});
+					}, modV);
 
-					this.LFOs.push(LFOControl);
+					modV.LFOs.push(LFOControl);
 				}
 			}),
-			new this.MenuItem({
+			new modV.MenuItem({
 				title: 'Sawtooth',
 				enabled: true,
 				callback: () => {
-					let LFOControl = new this.LFOController(Control, Module, {
+					let LFOControl = new modV.LFOController(Control, Module, {
 						freq: 1.3,
 						amplitude: 2,
 						waveform: 'sawtooth'
-					});
+					}, modV);
 
-					this.LFOs.push(LFOControl);
+					modV.LFOs.push(LFOControl);
 				}
 			}),
-			new this.MenuItem({
+			new modV.MenuItem({
 				title: 'Triangle',
 				enabled: true,
 				callback: () => {
-					let LFOControl = new this.LFOController(Control, Module, {
+					let LFOControl = new modV.LFOController(Control, Module, {
 						freq: 1.3,
 						amplitude: 2,
 						waveform: 'triangle'
-					});
+					}, modV);
 
-					this.LFOs.push(LFOControl);
+					modV.LFOs.push(LFOControl);
 				}
 			}),
-			new this.MenuItem({
+			new modV.MenuItem({
 				title: 'Square',
 				enabled: true,
 				callback: () => {
-					let LFOControl = new this.LFOController(Control, Module, {
+					let LFOControl = new modV.LFOController(Control, Module, {
 						freq: 1.3,
 						amplitude: 2,
 						waveform: 'square'
-					});
+					}, modV);
 
-					this.LFOs.push(LFOControl);
+					modV.LFOs.push(LFOControl);
 				}
 			}),
-			new this.MenuItem({
+			new modV.MenuItem({
 				title: 'Noise',
 				enabled: true,
 				callback: () => {
-					let LFOControl = new this.LFOController(Control, Module, {
+					let LFOControl = new modV.LFOController(Control, Module, {
 						freq: 1.3,
 						amplitude: 2,
 						waveform: 'noise'
-					});
+					}, modV);
 
-					this.LFOs.push(LFOControl);
+					modV.LFOs.push(LFOControl);
 				}
 			})
 		]
