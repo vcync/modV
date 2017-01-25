@@ -52,7 +52,7 @@ navigator.getUserMedia = navigator.getUserMedia 		||
 
 var modV = function(options) {
 
-	console.log('      modVVVVV Copyright  (C)  2016 Sam Wray      '+ "\n" +
+	console.log('      modV Copyright  (C)  2016 Sam Wray      '+ "\n" +
 				'----------------------------------------------'+ "\n" +
 				'      modV is licensed  under GNU GPL V3      '+ "\n" +
 				'This program comes with ABSOLUTELY NO WARRANTY'+ "\n" +
@@ -573,4 +573,3 @@ var modV = function(options) {
 };
 
 module.exports = modV;
-window.modV = modV;

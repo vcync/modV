@@ -1,25 +1,27 @@
-modV.prototype.removeLayer = function(Layer) {
+module.exports = function(modV) {
+	modV.prototype.removeLayer = function(Layer) {
 	
-	// remove modules from global lsit
-	forIn(Layer.modules, (key, Module) => {
-		this.deleteActiveModule(Module);
-	});
+		// remove modules from global lsit
+		forIn(Layer.modules, (key, Module) => {
+			this.deleteActiveModule(Module);
+		});
 
-	let activeListNode = document.querySelector('.active-list');
-	activeListNode.removeChild(Layer.getNode());
+		let activeListNode = document.querySelector('.active-list');
+		activeListNode.removeChild(Layer.getNode());
 
-	let layerIndex = this.layers.indexOf(Layer);
+		let layerIndex = this.layers.indexOf(Layer);
 
-	this.layers.splice(layerIndex, 1);
+		this.layers.splice(layerIndex, 1);
 
-	var newLayerIndexes = [];
+		var newLayerIndexes = [];
 
-	this.layers.forEach((Layer, index) => {
-		Layer.updateIndex(index);
-		newLayerIndexes.push(index);
-	});
+		this.layers.forEach((Layer, index) => {
+			Layer.updateIndex(index);
+			newLayerIndexes.push(index);
+		});
 
-	this.remote.update('removelayer', {
-		index: layerIndex
-	});
+		this.remote.update('removelayer', {
+			index: layerIndex
+		});
+	};
 };

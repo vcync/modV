@@ -1,5 +1,4 @@
-//jslint browser: true 
-modV.prototype.ModuleError = function(message) {
+module.exports = function(message) {
 	// Grab the stack
 	this.stack = (new Error()).stack;
 

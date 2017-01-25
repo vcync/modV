@@ -1,4 +1,4 @@
-modV.prototype.buildMIDIContextMenu = function(Control, Module, inputNode) {
+module.exports = function(Control, Module, inputNode) {
 	let items = [];
 
 	let assigned = false;

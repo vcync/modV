@@ -1,7 +1,4 @@
-(function() {
-	'use strict';
-	/*jslint browser: true */
-
+module.exports = function(modV) {
 	modV.prototype.CheckboxControl = function(settings) {
 		let self = this;
 		let Module;
@@ -96,4 +93,4 @@
 		};
 	};
 
-})();
+};

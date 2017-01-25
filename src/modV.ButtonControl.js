@@ -1,6 +1,4 @@
-(function() {
-	'use strict';
-	/*jslint browser: true */
+module.exports = function(modV) {
 
 	modV.prototype.ButtonControl = function(settings) {
 		let self = this;
@@ -54,7 +52,7 @@
 			}
 		}
 
-		self.makeNode = function(ModuleRef, modV) {
+		self.makeNode = function(ModuleRef) {
 
 			if(!settings.useInternalValue) {
 				Module = ModuleRef;
@@ -89,5 +87,4 @@
 			settings.onrelease();
 		};
 	};
-
-})();
+};

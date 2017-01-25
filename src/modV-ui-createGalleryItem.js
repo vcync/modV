@@ -1,5 +1,4 @@
-(function() {
-	'use strict';
+module.exports = function(modV) {
 
 	modV.prototype.createGalleryItem = function(oldModule) {
 		var self = this;
@@ -206,4 +205,4 @@
 		}
 	}*/
 
-})(module);
+};

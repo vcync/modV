@@ -1,7 +1,4 @@
-(function() {
-	'use strict';
-	/*jslint browser: true */
-
+module.exports = function(modV) {
 	modV.prototype.CompositeOperationControl = function(settings) {
 		let self = this;
 		let id;
@@ -162,5 +159,4 @@
 			return inputNode;
 		};
 	};
-
-})();
+};

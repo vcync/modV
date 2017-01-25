@@ -1,7 +1,4 @@
-(function() {
-	'use strict';
-	/*jslint browser: true */
-
+module.exports = function(modV) {
 	modV.prototype.Group = function() {
 		var self = this;
 		var Modules = [];
@@ -56,5 +53,4 @@
 		// 	}
 		// }
 	};
-
-})(module);
+};

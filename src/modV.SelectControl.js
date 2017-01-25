@@ -1,7 +1,4 @@
-(function() {
-	'use strict';
-	/*jslint browser: true */
-
+module.exports = function(modV) {
 	modV.prototype.SelectControl = function(settings) {
 		var self = this;
 		var id;
@@ -99,4 +96,4 @@
 		};
 	};
 
-})();
+};

@@ -1,102 +1,96 @@
-(function() {
-	'use strict';
-	/*jslint browser: true */
+/* TODO: bind to modV scope <<< cannot at present */
+var modVBot = function(module, controlKey, modV) {
+	var self = modV;
 
-	modV.prototype.bot = function() {
+	function bpmToMs(bpm) {
+		return (60000 / bpm);
+	}
 
-	};
+	function randomIntFromRange(min, max) {
+		return Math.floor(Math.random()*(max-min+1)+min);
+	}
 
-	/* TODO: bind to modV scope <<< cannot at present */
-	var modVBot = function(module, controlKey, modV) {
-		var self = modV;
+	function randomFloatFromRange(min, max) {
+		return Math.random()*(max-min+1)+min;
+	}
 
-		function bpmToMs(bpm) {
-			return (60000 / bpm);
-		}
+	var interval = bpmToMs(self.bpm);
 
-		function randomIntFromRange(min, max) {
-			return Math.floor(Math.random()*(max-min+1)+min);
-		}
+	var control = module.info.controls[controlKey];
+	var controlNode = document.getElementById(control.getID());
 
-		function randomFloatFromRange(min, max) {
-			return Math.random()*(max-min+1)+min;
-		}
+	function loop() {
+		//for(var cntrl in module.info.controls) {
 
-		var interval = bpmToMs(self.bpm);
+			if(control instanceof self.CheckboxControl) {
 
-		var control = module.info.controls[controlKey];
-		var controlNode = document.getElementById(control.getID());
-
-		function loop() {
-			//for(var cntrl in module.info.controls) {
-
-				if(control instanceof self.CheckboxControl) {
-
-					controlNode.checked = module[control.variable] = !Math.round(Math.random());
+				controlNode.checked = module[control.variable] = !Math.round(Math.random());
 
 
-				} else if(!(control.type instanceof self.VideoControl) && !(control.type instanceof self.ImageControl)) {
+			} else if(!(control.type instanceof self.VideoControl) && !(control.type instanceof self.ImageControl)) {
 
-					var rand;
+				var rand;
 
-					switch(control.varType) {
-						case 'int':
-							rand = randomIntFromRange(control.min, control.max);
+				switch(control.varType) {
+					case 'int':
+						rand = randomIntFromRange(control.min, control.max);
 
-							if('append' in control) {
-								controlNode.value = rand;
-								module[control.variable] = rand + control.append;
-							} else {
-								controlNode.value = module[control.variable] = rand;
-							}
+						if('append' in control) {
+							controlNode.value = rand;
+							module[control.variable] = rand + control.append;
+						} else {
+							controlNode.value = module[control.variable] = rand;
+						}
 
-							break;
+						break;
 
-						case 'float':
-							rand = randomFloatFromRange(control.min, control.max);
+					case 'float':
+						rand = randomFloatFromRange(control.min, control.max);
 
-							if('append' in control) {
-								controlNode.value = rand;
-								module[control.variable] = rand + control.append;
-							} else {
-								controlNode.value = module[control.variable] = rand;
-							}
+						if('append' in control) {
+							controlNode.value = rand;
+							module[control.variable] = rand + control.append;
+						} else {
+							controlNode.value = module[control.variable] = rand;
+						}
 
-							break;
+						break;
 
-						default:
-							rand = String.fromCharCode(0x30A0 + Math.random() * (0x30FF-0xFFFF+1));
+					default:
+						rand = String.fromCharCode(0x30A0 + Math.random() * (0x30FF-0xFFFF+1));
 
-							if('append' in control) {
-								controlNode.value = rand;
-								module[control.variable] = rand + control.append;
-							} else {
-								controlNode.value = module[control.variable] = rand;
-							}
+						if('append' in control) {
+							controlNode.value = rand;
+							module[control.variable] = rand + control.append;
+						} else {
+							controlNode.value = module[control.variable] = rand;
+						}
 
-							break;
-					}
-
-
+						break;
 				}
 
-			//}
 
-			if(self.bpm === 0) {
-				interval = 1000;
-				console.log('No BPM yet', self.bpm, 'Using 120 instead.');
-			} else {
-				interval = bpmToMs(self.bpm);
 			}
+
+		//}
+
+		if(self.bpm === 0) {
+			interval = 1000;
+			console.log('No BPM yet', self.bpm, 'Using 120 instead.');
+		} else {
+			interval = bpmToMs(self.bpm);
 		}
+	}
 
-		if(self.bpm === 0) interval = 1000;
-		var timer = setInterval(loop, interval);
+	if(self.bpm === 0) interval = 1000;
+	var timer = setInterval(loop, interval);
 
-		this.removeBot = function() {
-			clearInterval(timer);
-		};
+	this.removeBot = function() {
+		clearInterval(timer);
 	};
+};
+
+module.exports = function(modV) {
 
 	modV.prototype.attachBot = function(module, controlKey) {
 		var self = this;
@@ -121,5 +115,4 @@
 		
 		return true; // There was a bot, it has now been deleted
 	};
-
-})();
+};

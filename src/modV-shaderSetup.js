@@ -1,6 +1,4 @@
-(function() {
-	'use strict';
-	/*jslint browser: true */
+module.exports = function(modV) {
 
 	modV.prototype.shaderSetup = function() {
 		var self = this;
@@ -207,4 +205,4 @@
 
 		init();
 	};
-})();
+};

@@ -1,7 +1,5 @@
-(function() {
-	'use strict';
-	/*jslint browser: true */
-
+module.exports = function(modV) {
+	
 	modV.prototype.setModOrder = function(modName, order) {
 		var self = this;
 
@@ -30,5 +28,4 @@
 		
 		return order;
 	};
-
-})();
+};

@@ -41,7 +41,7 @@ gulp.task('lint', function() {
 });
 
 gulp.task('webpack', ['clean', 'lint'], function() {
-	return gulp.src('./src/**/*.js')
+	return gulp.src('./src/app.js')
 		.pipe(webpack({
 			output: {
 				filename: 'app.js'

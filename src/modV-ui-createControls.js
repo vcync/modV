@@ -1,6 +1,4 @@
-(function() {
-	'use strict';
-	/*jslint browser: true */
+module.exports = function(modV) {
 
 	modV.prototype.createControls = function(Module, isPreset) {
 		var self = this;
@@ -44,7 +42,5 @@
 		}
 
 		controlPanelWrapperNode.appendChild(panelNode);
-
 	};
-
-})();
+};

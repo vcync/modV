@@ -1,4 +1,4 @@
-modV.prototype.buildLFOContextMenu = function(Control, Module) {
+module.exports = function(Control, Module) {
 	let items = [];
 
 	let controlTitle = 'Add LFO';

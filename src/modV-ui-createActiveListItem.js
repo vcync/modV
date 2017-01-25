@@ -1,6 +1,4 @@
-(function() {
-	'use strict';
-	/*jslint browser: true */
+module.exports = function(modV) {
 
 	modV.prototype.createActiveListItem = function(Module, dragStartCB, dragEndCB, isPreset) {
 		var self = this;
@@ -25,7 +23,7 @@
 		// // Attach listener to Opacity Range
 		var opacityRangeNode = activeItem.querySelector('input[type=range].opacity');
 
-		var AlphaRangeControl = new modV.RangeControl({
+		var AlphaRangeControl = new this.RangeControl({
 			label: 'Opacity',
 			min: 0,
 			max: 1,
@@ -75,7 +73,7 @@
 		// 	});
 		// });
 
-		var BlendingControl = new modV.CompositeOperationControl({
+		var BlendingControl = new this.CompositeOperationControl({
 			label: 'Blending',
 			useInternalValue: true,
 			variable: 'modVReserved:blend',
@@ -110,7 +108,7 @@
 		// Attach listener to Enable Checkbox
 		var enableCheckboxNode = activeItem.querySelector('.enable-group .customCheckbox');
 
-		var EnableCheckboxControl = new modV.CheckboxControl({
+		var EnableCheckboxControl = new this.CheckboxControl({
 			label: 'Enabled',
 			checked: !Module.info.disabled,
 			useInternalValue: true,
@@ -167,4 +165,4 @@
 		};
 	};
 
-})();
+};

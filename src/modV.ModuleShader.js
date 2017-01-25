@@ -1,14 +1,12 @@
-(function() {
-	'use strict';
-	/*jslint browser: true */
+const ModuleError = require('./modV.ModuleError.js');
 
+module.exports = function(modV) {
 	modV.prototype.ModuleShader = class ModuleShader {
 
 		constructor(settings) {
 			this.settings = settings;
 
 			// Set up error reporting
-			var ModuleError = modV.ModuleError;
 			ModuleError.prototype = Object.create(Error.prototype);
 			ModuleError.prototype.constructor = ModuleError;
 
@@ -96,4 +94,4 @@
 		
 	};
 
-})(module);
+};

@@ -1,5 +1,4 @@
-(function() {
-	'use strict';
+module.exports = function(modV) {
 
 	/* Setup remote control */
 	modV.prototype.remoteSuccess = false;
@@ -106,4 +105,4 @@
 		};
 
 	};
-})();
+};

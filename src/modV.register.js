@@ -1,35 +1,32 @@
 /* globals getDocument */
-(function() {
-	'use strict';
-	/*jslint browser: true */
-	
-	function replaceAll(string, operator, replacement) {
-		return string.split(operator).join(replacement);
-	}
 
-	var loadJS = function(url, location, Module){
-		//url is URL of external file, implementationCode is the code
-		//to be called from the file, location is the location to 
-		//insert the <script> element
+function replaceAll(string, operator, replacement) {
+	return string.split(operator).join(replacement);
+}
 
-		var loaderPromise = new Promise(resolve => {
-			var scriptTag = document.createElement('script');
-			scriptTag.onload = function() {
-				resolve(Module);
-			};
-			scriptTag.onreadystatechange = function() {
-				resolve(Module);
-			};
+var loadJS = function(url, location, Module){
+	//url is URL of external file, implementationCode is the code
+	//to be called from the file, location is the location to 
+	//insert the <script> element
 
-			scriptTag.src = url;
+	var loaderPromise = new Promise(resolve => {
+		var scriptTag = document.createElement('script');
+		scriptTag.onload = function() {
+			resolve(Module);
+		};
+		scriptTag.onreadystatechange = function() {
+			resolve(Module);
+		};
 
-			location.appendChild(scriptTag);
-		});
+		scriptTag.src = url;
 
-		return loaderPromise;
-	};
+		location.appendChild(scriptTag);
+	});
 
+	return loaderPromise;
+};
 
+module.exports = function(modV) {
 	modV.prototype.register = function(Module, instantiated) {
 
 		function finish(Module, type) {
@@ -235,4 +232,4 @@
 		}
 	};
 
-})(module);
+};
