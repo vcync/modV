@@ -1,4 +1,5 @@
 const ModuleError = require('./modV.ModuleError.js');
+const THREE = require('three');
 
 module.exports = function(modV) {
 	modV.prototype.Module3D = class Module3D {

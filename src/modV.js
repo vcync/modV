@@ -48,6 +48,9 @@ navigator.getUserMedia = navigator.getUserMedia 		||
 						 navigator.msGetUserMedia		||
 						 navigator.oGetUserMedia;
 
+const Meyda = require('meyda');
+const THREE = require('three');
+
 var modV = function(options) {
 
 	console.log('      modV Copyright  (C)  2016 Sam Wray      '+ "\n" +
@@ -90,7 +93,6 @@ var modV = function(options) {
 	self.addMessageHandler();
 
 	self.gainNode = null;
-	self.meydaSupport = false;
 
 	self.modOrder = [];
 	self.moduleStore = {};
@@ -139,7 +141,6 @@ var modV = function(options) {
 
 	self.soloCanvas = undefined;
 
-	self.meydaSupport = false;
 	self.muted = true;
 
 	self.ready = false;
@@ -332,12 +333,6 @@ var modV = function(options) {
 		} else return false;
 	};
 
-	// Check for Meyda
-	if(typeof window.Meyda === 'object') {
-		self.meydaSupport = true;
-		console.info('meyda detected, expanded audio analysis available.');
-	}
-
 	self.bpm = 0;
 	self.bpmHold = false;
 	self.bpmHeldAt = 120;
@@ -354,29 +349,27 @@ var modV = function(options) {
 	}
 
 	// Check for THREE
-	if(typeof window.THREE === 'object') {
-		console.info('THREE.js detected.', 'Revision:', THREE.REVISION);
-		self.THREE = {};
+	console.info('THREE.js Revision:', THREE.REVISION);
+	self.THREE = {};
 
-		self.THREE.textureCanvas = document.createElement('canvas');
-		self.THREE.textureCanvasContext = self.THREE.textureCanvas.getContext('2d');
+	self.THREE.textureCanvas = document.createElement('canvas');
+	self.THREE.textureCanvasContext = self.THREE.textureCanvas.getContext('2d');
 
-		self.THREE.texture = new THREE.Texture(self.THREE.textureCanvas);
-		self.THREE.texture.minFilter = THREE.LinearFilter;
+	self.THREE.texture = new THREE.Texture(self.THREE.textureCanvas);
+	self.THREE.texture.minFilter = THREE.LinearFilter;
 
-		self.THREE.material = new THREE.MeshBasicMaterial({
-			map: self.THREE.texture,
-			side: THREE.DoubleSide
-		});
+	self.THREE.material = new THREE.MeshBasicMaterial({
+		map: self.THREE.texture,
+		side: THREE.DoubleSide
+	});
 
-		self.THREE.renderer = new THREE.WebGLRenderer({
-			antialias: true,
-			alpha: true
-		});
-		self.THREE.renderer.setPixelRatio(window.devicePixelRatio);
+	self.THREE.renderer = new THREE.WebGLRenderer({
+		antialias: true,
+		alpha: true
+	});
+	self.THREE.renderer.setPixelRatio(window.devicePixelRatio);
 
-		self.THREE.canvas = self.THREE.renderer.domElement;
-	}
+	self.THREE.canvas = self.THREE.renderer.domElement;
 
 	/* Save modV's config to local storage */
 	self.saveOptions = function() {
@@ -549,15 +542,14 @@ var modV = function(options) {
 		// Connect the gain node to the output (audio->(analyser)->gain->destination)
 		self.gainNode.connect(aCtx.destination);
 		
-		// If meyda is about, use it
-		if(self.meydaSupport) {
-			self.meyda = new Meyda.createMeydaAnalyzer({
-				audioContext: aCtx,
-				source: microphone,
-				bufferSize: 512,
-				windowingFunction: 'rect'
-			});
-		}
+		// Set up Meyda
+		self.meyda = new Meyda.createMeydaAnalyzer({
+			audioContext: aCtx,
+			source: microphone,
+			bufferSize: 512,
+			windowingFunction: 'rect'
+		});
+
 		
 		// Tell the rest of the script we're all good.
 		self.ready = true;

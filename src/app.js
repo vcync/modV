@@ -1,3 +1,4 @@
+const tapTempo = require('tap-tempo')();
 const modV = require('./modV');
 
 require('./modV-addLayer.js')(modV);
@@ -61,7 +62,6 @@ require('./modV.colourHelpers.js');
 require('./util.awesomeText.js');
 require('./util.stackTraceError');
 
-
-var tapTempo = require('tap-tempo')();
+window.THREE = require('three'); //TODO: provide THREE as an argument to Module3D functions?
 window.tapTempo = tapTempo;
 window.modV = modV;

@@ -3,11 +3,11 @@ module.exports = function(modV) {
 		var self = this;
 		requestAnimationFrame(self.loop.bind(self));
 
-		if(!self.meydaSupport) self.myFeatures = [];
+		self.myFeatures = [];
 		
 		if(self.ready) {
 			
-			if(self.meydaSupport && self.reallyReady) {
+			if(self.reallyReady) {
 				if(self.meydaFeatures.length > 0) self.myFeatures = self.meyda.get(self.meydaFeatures);
 				
 				self.beatDetektorMed.process((timestamp / 1000.0), self.myFeatures.complexSpectrum.real);

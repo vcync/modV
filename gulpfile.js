@@ -75,10 +75,10 @@ gulp.task('copy:library', ['clean'], function() {
 		.pipe(gulp.dest('dist'));
 });
 
-gulp.task('copy:meyda', ['clean'], function() {
-	return gulp.src('node_modules/meyda/dist/web/meyda.js')
-		.pipe(gulp.dest('dist/libraries'));
-});
+// gulp.task('copy:meyda', ['clean'], function() {
+// 	return gulp.src('node_modules/meyda/dist/web/meyda.js')
+// 		.pipe(gulp.dest('dist/libraries'));
+// });
 
 gulp.task('copy:fonts', ['clean'], function() {
 	return gulp.src('./fonts/**/*', {base: './'})
@@ -201,7 +201,7 @@ gulp.task('nwjs', ['clean', 'ejs:nwjs', 'webpack', 'copy', 'copy:nwjs:include', 
 	});
 });
 
-gulp.task('copy', ['copy:modules', 'copy:html', 'copy:css', 'copy:library', 'copy:meyda', 'copy:fonts', 'copy:license']);
+gulp.task('copy', ['copy:modules', 'copy:html', 'copy:css', 'copy:library', /*'copy:meyda',*/ 'copy:fonts', 'copy:license']);
 
 gulp.task('build', ['clean', 'ejs', 'webpack', 'copy', 'symlink']);
 
