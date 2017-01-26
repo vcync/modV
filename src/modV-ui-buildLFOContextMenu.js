@@ -50,9 +50,6 @@ module.exports = function(Control, Module, modV) {
 				title: 'Sine',
 				enabled: true,
 				callback: () => {
-
-
-
 					let LFOControl = new modV.LFOController(Control, Module, {
 						freq: hzFromBPM(modV.bpm),
 						amplitude: 2,
@@ -67,7 +64,7 @@ module.exports = function(Control, Module, modV) {
 				enabled: true,
 				callback: () => {
 					let LFOControl = new modV.LFOController(Control, Module, {
-						freq: 1.3,
+						freq: hzFromBPM(modV.bpm),
 						amplitude: 2,
 						waveform: 'sawtooth'
 					}, modV);
@@ -80,7 +77,7 @@ module.exports = function(Control, Module, modV) {
 				enabled: true,
 				callback: () => {
 					let LFOControl = new modV.LFOController(Control, Module, {
-						freq: 1.3,
+						freq: hzFromBPM(modV.bpm),
 						amplitude: 2,
 						waveform: 'triangle'
 					}, modV);
@@ -93,7 +90,7 @@ module.exports = function(Control, Module, modV) {
 				enabled: true,
 				callback: () => {
 					let LFOControl = new modV.LFOController(Control, Module, {
-						freq: 1.3,
+						freq: hzFromBPM(modV.bpm),
 						amplitude: 2,
 						waveform: 'square'
 					}, modV);
@@ -106,7 +103,7 @@ module.exports = function(Control, Module, modV) {
 				enabled: true,
 				callback: () => {
 					let LFOControl = new modV.LFOController(Control, Module, {
-						freq: 1.3,
+						freq: hzFromBPM(modV.bpm),
 						amplitude: 2,
 						waveform: 'noise'
 					}, modV);
