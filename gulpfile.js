@@ -1,13 +1,14 @@
 //jshint node:true
 
-console.log('      modV Copyright  (C)  2016 Sam Wray      '+ "\n" +
-            '----------------------------------------------'+ "\n" +
-            '      modV is licensed  under GNU GPL V3      '+ "\n" +
-            'This program comes with ABSOLUTELY NO WARRANTY'+ "\n" +
-            'For details, see LICENSE within this directory'+ "\n" +
-            '----------------------------------------------');
+console.log('	  modV Copyright  (C)  2016 Sam Wray	  '+ "\n" +
+			'----------------------------------------------'+ "\n" +
+			'	  modV is licensed  under GNU GPL V3	  '+ "\n" +
+			'This program comes with ABSOLUTELY NO WARRANTY'+ "\n" +
+			'For details, see LICENSE within this directory'+ "\n" +
+			'----------------------------------------------');
 
 const webpack = require('webpack-stream');
+const ProvidePlugin = require('webpack-stream').webpack.ProvidePlugin;
 const connect = require('gulp-connect');
 const jshint = require('gulp-jshint');
 const symlink = require('gulp-sym');
@@ -48,6 +49,11 @@ gulp.task('webpack', ['clean', 'lint'], function() {
 					{ test: /\.json$/, loader: 'json' }
 				]
 			},
+			plugins: [
+				new ProvidePlugin({
+				  'forIn': __dirname + '/src/fragments/for-in'
+			   	})
+			],
 			output: {
 				filename: 'app.js'
 			}
@@ -150,7 +156,7 @@ gulp.task('media-manager', ['set-watcher'], function(cb) {
 	});
 
 	mediaManager.stdout.on('data', function(data) {
-	    console.log(data.toString()); 
+		console.log(data.toString()); 
 	});
 
 	//return run('node ./mediaManager.js').exec();
@@ -166,7 +172,7 @@ gulp.task('connect', function() {
 
 gulp.task('reload', ['build'], function() {
 	gulp.src(allSources)
-    	.pipe(connect.reload());
+		.pipe(connect.reload());
 });
 
 gulp.task('set-watcher', ['build'], function() {

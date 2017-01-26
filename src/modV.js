@@ -1,17 +1,3 @@
-window.forIn = function(item, filter) {
-	for(var name in item) {
-		if(item.hasOwnProperty(name)) {
-			filter(name, item[name]);
-		}
-	}
-};
-
-navigator.getUserMedia = navigator.getUserMedia 		||
-						 navigator.webkitGetUserMedia	||
-						 navigator.mozGetUserMedia		||
-						 navigator.msGetUserMedia		||
-						 navigator.oGetUserMedia;
-
 const Meyda = require('meyda');
 const THREE = require('three');
 const shaderInit = require('./shader-env');
@@ -358,7 +344,7 @@ var modV = function(options) {
 	// Shader handling
 	self.shaderEnv = shaderInit(this);
 	self.resize();
-	
+
 	self.start = function() {
 
 		// Load Options
