@@ -1,11 +1,9 @@
-const ModuleError = require('./modV.ModuleError.js');
+const ModuleError = require('./module-error.js');
 
 module.exports = function(modV) {
-	modV.prototype.ModuleShader = class ModuleShader {
+	modV.prototype.Module2D = class Module2D {
 
 		constructor(settings) {
-			this.settings = settings;
-
 			// Set up error reporting
 			ModuleError.prototype = Object.create(Error.prototype);
 			ModuleError.prototype.constructor = ModuleError;
@@ -20,14 +18,15 @@ module.exports = function(modV) {
 			if(!('author' in settings.info)) throw new ModuleError('Module had no author in settings.info');
 			// Check for info.version
 			if(!('version' in settings.info)) throw new ModuleError('Module had no version in settings.info');
-			// Check for shaderFile
-			if(!('shaderFile' in settings)) throw new ModuleError('Module had no path to shader in settings.shaderFile');
 
 			// Create control Array
 			if(!settings.info.controls) settings.info.controls = {};
 
 			// Settings passed, expose this.info
 			this.info = settings.info;
+
+			// Always start on layer 0
+			this.info.layer = 0;
 
 			// Expose preview option
 			if('previewWithOutput' in settings) {
@@ -36,32 +35,6 @@ module.exports = function(modV) {
 				this.previewWithOutput = false;
 			}
 
-			// Settings passed, expose self.shaderFile
-			this.shaderFile = settings.shaderFile;
-
-			// Always start on layer 0
-			this.settings.info.layer = 0;
-
-			// Loop through Uniforms, expose self.uniforms and create local variables
-			if('uniforms' in settings.info) {
-
-				forIn(settings.info.uniforms, (uniformKey, uniform) => {
-					switch(uniform.type) {
-						case 'f':
-							this[uniformKey] = parseFloat(uniform.value);
-							break;
-
-						case 'i':
-							this[uniformKey] = parseInt(uniform.value);
-							break;
-
-						case 'b':
-							this[uniformKey] = uniform.value;
-							break;
-
-					}
-				});
-			}
 		}
 
 		add(item) {
@@ -75,11 +48,11 @@ module.exports = function(modV) {
 		}
 
 		getLayer() {
-			return this.settings.info.layer;
+			return this.info.layer;
 		}
 
 		setLayer(layer) {
-			this.settings.info.layer = layer;
+			this.info.layer = layer;
 		}
 
 		updateVariable(variable, value, modV) {
@@ -91,7 +64,5 @@ module.exports = function(modV) {
 				name: this.info.name
 			});
 		}
-		
 	};
-
 };

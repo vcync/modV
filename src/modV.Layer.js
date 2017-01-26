@@ -1,4 +1,8 @@
-/* globals replaceAll, Sortable, swapElements */
+/* globals Sortable */
+
+const swapElements = require('./fragments/swap-elements');
+const replaceAll = require('./fragments/replace-all');
+
 module.exports = function(modV) {
 
 	modV.prototype.Layer = class Layer {

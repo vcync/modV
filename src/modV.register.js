@@ -1,30 +1,6 @@
-/* globals getDocument */
-
-function replaceAll(string, operator, replacement) {
-	return string.split(operator).join(replacement);
-}
-
-var loadJS = function(url, location, Module){
-	//url is URL of external file, implementationCode is the code
-	//to be called from the file, location is the location to 
-	//insert the <script> element
-
-	var loaderPromise = new Promise(resolve => {
-		var scriptTag = document.createElement('script');
-		scriptTag.onload = function() {
-			resolve(Module);
-		};
-		scriptTag.onreadystatechange = function() {
-			resolve(Module);
-		};
-
-		scriptTag.src = url;
-
-		location.appendChild(scriptTag);
-	});
-
-	return loaderPromise;
-};
+const getDocument = require('./fragments/get-document');
+const replaceAll = require('./fragments/replace-all');
+const loadJS = require('./fragments/load-js');
 
 module.exports = function(modV) {
 	modV.prototype.register = function(Module, instantiated) {

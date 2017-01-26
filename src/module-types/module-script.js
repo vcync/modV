@@ -1,4 +1,4 @@
-const ModuleError = require('./modV.ModuleError.js');
+const ModuleError = require('./module-error.js');
 
 module.exports = function(modV) {
 	modV.prototype.ModuleScript = class ModuleScript {

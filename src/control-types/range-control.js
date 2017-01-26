@@ -1,3 +1,5 @@
+require('script-loader!../../libraries/rangeRanger.js');
+
 module.exports = function(modV) {
 
 	modV.prototype.RangeControl = function(settings) {

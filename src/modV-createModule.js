@@ -1,6 +1,4 @@
-function replaceAll(string, operator, replacement) {
-	return string.split(operator).join(replacement);
-}
+const replaceAll = require('./fragments/replace-all');
 
 module.exports = function(modV) {
 

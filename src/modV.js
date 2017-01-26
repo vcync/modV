@@ -1,39 +1,3 @@
-// map() from Processing
-Math.map = function(value, low1, high1, low2, high2) {
-	return low2 + (high2 - low2) * (value - low1) / (high1 - low1);
-};
-
-// from here: http://stackoverflow.com/questions/5223/length-of-a-javascript-object-that-is-associative-array
-Object.size = function(obj) {
-	var size = 0, key;
-	for (key in obj) {
-		if (obj.hasOwnProperty(key)) size++;
-	}
-	return size;
-};
-
-// based on: http://stackoverflow.com/questions/6116474/how-to-find-if-an-array-contains-a-specific-string-in-javascript-jquery
-Array.contains = function(needle, arrhaystack) {
-	return (arrhaystack.indexOf(needle) > -1);
-};
-
-window.replaceAll = function(string, operator, replacement) {
-	return string.split(operator).join(replacement);
-};
-
-// Get HTML document request
-window.getDocument = function(url, callback) {
-	var xhr = new XMLHttpRequest();
-
-	xhr.onload = function() {
-		callback(xhr.responseXML);
-	};
-
-	xhr.open("GET", url);
-	xhr.responseType = "document";
-	xhr.send();
-};
-
 window.forIn = function(item, filter) {
 	for(var name in item) {
 		if(item.hasOwnProperty(name)) {
@@ -50,6 +14,8 @@ navigator.getUserMedia = navigator.getUserMedia 		||
 
 const Meyda = require('meyda');
 const THREE = require('three');
+const shaderInit = require('./shader-env');
+require('./fragments/array-contains');
 require('script-loader!../libraries/beatdetektor.js');
 
 var modV = function(options) {
@@ -119,6 +85,9 @@ var modV = function(options) {
 
 	self.canvas = self.options.canvas || document.createElement('canvas');
 	self.context = self.canvas.getContext('2d');
+
+	self.width = 0;
+	self.height = 0;
 
 	self.previewCanvas = document.createElement('canvas');
 	self.previewContext = self.previewCanvas.getContext('2d');
@@ -387,9 +356,9 @@ var modV = function(options) {
 	};
 
 	// Shader handling
-	self.shaderEnv = {};
-	self.shaderSetup();
-
+	self.shaderEnv = shaderInit(this);
+	self.resize();
+	
 	self.start = function() {
 
 		// Load Options

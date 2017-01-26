@@ -1,13 +1,20 @@
-const ModuleError = require('./modV.ModuleError.js');
+const ModuleError = require('./module-error.js');
+const THREE = require('three');
 
 module.exports = function(modV) {
-	modV.prototype.Module2D = class Module2D {
+	modV.prototype.Module3D = class Module3D {
 
 		constructor(settings) {
+			this.settings = settings;
+
+			this._scene = new THREE.Scene();
+			this._camera = null;
+
 			// Set up error reporting
 			ModuleError.prototype = Object.create(Error.prototype);
 			ModuleError.prototype.constructor = ModuleError;
 
+			/*
 			// Check for settings Object
 			if(!settings) throw new ModuleError('Module had no settings');
 			// Check for info Object
@@ -17,16 +24,16 @@ module.exports = function(modV) {
 			// Check for info.author
 			if(!('author' in settings.info)) throw new ModuleError('Module had no author in settings.info');
 			// Check for info.version
-			if(!('version' in settings.info)) throw new ModuleError('Module had no version in settings.info');
+			if(!('version' in settings.info)) throw new ModuleError('Module had no version in settings.info');*/
 
 			// Create control Array
-			if(!settings.info.controls) settings.info.controls = {};
+			if(!settings.info.controls) settings.info.controls = [];
 
-			// Settings passed, expose this.info
+			// Settings passed, expose self.info
 			this.info = settings.info;
 
 			// Always start on layer 0
-			this.info.layer = 0;
+			this.settings.info.layer = 0;
 
 			// Expose preview option
 			if('previewWithOutput' in settings) {
@@ -34,7 +41,6 @@ module.exports = function(modV) {
 			} else {
 				this.previewWithOutput = false;
 			}
-
 		}
 
 		add(item) {
@@ -43,16 +49,32 @@ module.exports = function(modV) {
 					this.add(thing);
 				});
 			} else {
-				this.info.controls[item.variable] = item;
+				this.settings.info.controls.push(item);
 			}
 		}
 
 		getLayer() {
-			return this.info.layer;
+			return this.settings.info.layer;
 		}
 
 		setLayer(layer) {
-			this.info.layer = layer;
+			this.settings.info.layer = layer;
+		}
+
+		setScene(scene) {
+			this._scene = scene;
+		}
+
+		getScene() {
+			return this._scene;
+		}
+
+		getCamera() {
+			return this._camera;
+		}
+
+		setCamera(camera) {
+			this._camera = camera;
 		}
 
 		updateVariable(variable, value, modV) {
