@@ -103,7 +103,7 @@ module.exports = function(modV) {
 			//var largeWidth = Math.round(Math.map(mousePos.x, 0, positionInfo.width, 0, self.canvas.width));
 
 			if(Module.info.previewWithOutput || Module instanceof self.ModuleShader) {
-				ctx.drawImage(self.previewCanvas, 0, 0, canvas.width, canvas.height);
+				ctx.drawImage(self.outputCanvas, 0, 0, canvas.width, canvas.height);
 			}
 
 			//ctx.drawImage(self.canvas, largeWidth, 0, self.canvas.width, self.canvas.height, mousePos.x, 0, canvas.width, canvas.height);
@@ -129,7 +129,7 @@ module.exports = function(modV) {
 					_gl.RGBA,
 					_gl.RGBA,
 					_gl.UNSIGNED_BYTE,
-					self.previewCanvas
+					self.outputCanvas
 				);
 
 				// Set Uniforms

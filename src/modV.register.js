@@ -1,6 +1,7 @@
 const getDocument = require('./fragments/get-document');
 const replaceAll = require('./fragments/replace-all');
 const loadJS = require('./fragments/load-js');
+const makeProgramInit = require('./shader-env/make-program-promise');
 
 module.exports = function(modV) {
 	modV.prototype.register = function(Module, instantiated) {
@@ -71,6 +72,7 @@ module.exports = function(modV) {
 		Module.info.safeName = replaceAll(name, ' ', '-');
 
 		// Super hacky way of loading scripts
+		// TODO: improve this
 		if('scripts' in Module.info) {
 			if(!('loadedScripts' in Module.info)) {
 				Module.info.loadedScripts = [];
@@ -125,50 +127,18 @@ module.exports = function(modV) {
 				var frag = xhrDocument.querySelector('script[type="x-shader/x-fragment"]').textContent;
 
 				var gl = self.shaderEnv.gl; // set reference to self.shaderEnv.gl
+				const makeProgram = makeProgramInit(gl);
 
 				console.info('Attempting to compile', Module.info.name);
 						
 				// Compile shaders and create program
-				var vertexShader;
-				var fragmentShader;
-
-				vertexShader = gl.createShader(gl.VERTEX_SHADER);
-				gl.shaderSource(vertexShader, vert);
-				gl.compileShader(vertexShader);
-
-				var compiled = gl.getShaderParameter(vertexShader, gl.COMPILE_STATUS);
-				var compilationLog;
-
-				if(!compiled) {
-					console.error(Module.info.name + "'s", 'Vertex Shader did not compile.');
-					compilationLog = gl.getShaderInfoLog(vertexShader);
-					console.info(Module.info.name + "'s", 'Vertex Shader compiler log: ' + compilationLog);
-				}
-	 
-	  			fragmentShader = gl.createShader(gl.FRAGMENT_SHADER);
-				gl.shaderSource(fragmentShader, frag);
-				gl.compileShader(fragmentShader);
-
-				compiled = gl.getShaderParameter(fragmentShader, gl.COMPILE_STATUS);
-
-				if(!compiled) {
-					console.error(Module.info.name + "'s", 'Fragment Shader did not compile.');
-					compilationLog = gl.getShaderInfoLog(fragmentShader);
-					console.info(Module.info.name + "'s", 'Fragment Shader compiler log: ' + compilationLog);
-				}
-
-				Module.program = gl.createProgram();
-				var program = Module.program;
-
-				gl.attachShader(program, vertexShader);
-				gl.attachShader(program, fragmentShader);
-				gl.linkProgram(program);	
-				gl.useProgram(program);
-
-				Module.programIndex = self.shaderEnv.programs.push(program)-1;
-
-				// finish up
-				finish(Module, type);
+				makeProgram(vert, frag).then(program => {
+					gl.useProgram(program);
+					Module.programIndex = self.shaderEnv.programs.push(program)-1;
+					
+					// finish up
+					finish(Module, type);
+				});
 			});
 
 		}
