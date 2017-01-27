@@ -19,7 +19,7 @@ modV is open to contribution. Currently the project needs (in order of priority)
 * a better UI
 * work on the mediaManager and loading/saving Modules
 
-If you can help with any of these, please submit a PR and/or contact me at sam(at)wray.pro or on any of my socials.
+If you can help with any of these, please submit a PR and/or issue.
 
 ## Acknowledgements
 Thank you to:
