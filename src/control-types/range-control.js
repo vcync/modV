@@ -1,6 +1,6 @@
-(function() {
-	'use strict';
-	/*jslint browser: true */
+require('script-loader!../../libraries/rangeRanger.js');
+
+module.exports = function(modV) {
 
 	modV.prototype.RangeControl = function(settings) {
 		var self = this;
@@ -171,4 +171,4 @@
 		};
 	};
 
-})(module);
+};

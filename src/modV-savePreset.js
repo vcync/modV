@@ -1,5 +1,7 @@
-modV.prototype.savePreset = function(name, profile) {
-		
+module.exports = function(modV) {
+
+	modV.prototype.savePreset = function(name, profile) {
+			
 		let preset = this.generatePreset(name);
 		
 		this.presets[name] = preset;
@@ -25,3 +27,4 @@ modV.prototype.savePreset = function(name, profile) {
 			}));
 		}
 	};
+};

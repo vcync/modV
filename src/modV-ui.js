@@ -1,7 +1,5 @@
 /* globals Sortable, $ */
-(function() {
-	'use strict';
-
+module.exports = function(modV) {
 	modV.prototype.startUI = function() {
 		var self = this;
 
@@ -416,5 +414,4 @@
 
 		rightControls.insertBefore(rightTabs.tabBar(), rightControls.firstChild);
 	};
-
-})(module);
+};

@@ -1,11 +1,7 @@
-(function() {
-	'use strict';
-	/*jslint browser: true */
-
-	modV.prototype.SelectControl = function(settings) {
+module.exports = function(modV) {
+	modV.prototype.ColorControl = function(settings) {
 		var self = this;
 		var id;
-		var Module;
 		
 		self.getSettings = function() {
 			return settings;
@@ -15,14 +11,6 @@
 			return id;
 		};
 
-		self.writeValue = function(value) {
-
-			let selectValue = this.node.options[value].value;
-
-			this.node.selectedIndex = value;
-			Module[self.variable] = selectValue;
-		};
-		
 		//TODO: error stuff
 /*		// RangeControl error handle
 		function ControlError(message) {
@@ -60,43 +48,21 @@
 			}
 		}
 
-		self.makeNode = function(ModuleRef, modV, isPreset) {
-			Module = ModuleRef;
+		self.makeNode = function(Module, modV) {
 			id = Module.info.safeName + '-' + self.variable;
 
-			var inputNode = document.createElement('select');
-			inputNode.id = id;
-			
-			if('enum' in settings) {
-				settings.enum.forEach(option => {
-					var optionNode = document.createElement('option');
-					optionNode.textContent = option.label;
-					optionNode.value = option.value;
-					
-					if(isPreset) {
-						if(option.value === Module[self.variable]) {
-							optionNode.selected = true;
-							Module.updateVariable(self.variable, option.value, modV);
-						}
-					} else if('default' in option) {
-						if(option.default) {
-							optionNode.selected = true;
-							Module.updateVariable(self.variable, option.value, modV);
-						}
-					}
+			var node = document.createElement('input');
+			node.type = 'color';
+			console.log('color control', Module[self.variable]);
+			if(Module[self.variable] !== undefined) node.value = Module[self.variable];
+			if('default' in settings) node.value = settings.default;
 
-					inputNode.appendChild(optionNode);
-				});
-			}
-
-			inputNode.addEventListener('change', function() {
-				Module.updateVariable(self.variable, inputNode.options[inputNode.selectedIndex].value, modV);
+			node.addEventListener('input', function() {
+				Module.updateVariable(self.variable, this.value, modV);
 			}, false);
 
-			this.node = inputNode;
-
-			return inputNode;
+			node.id = id;
+			return node;
 		};
 	};
-
-})();
+};

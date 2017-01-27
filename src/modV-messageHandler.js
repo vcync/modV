@@ -1,29 +1,26 @@
-(function() {
-	'use strict';
-	/*jslint browser: true */
-
-	function parseVar(varType, variable) {
-		switch(varType) {
-			case 'float':
-				variable = parseFloat(variable);
-				break;
-				
-			case 'int':
-				variable = parseInt(variable);
-				break;
-				
-			case 'checkbox':
-				//variable = JSON.parse(variable.toLowerCase());
-				break;
-				
-			default:
-				variable = variable;
-		}
-		
-		return variable;
+function parseVar(varType, variable) {
+	switch(varType) {
+		case 'float':
+			variable = parseFloat(variable);
+			break;
+			
+		case 'int':
+			variable = parseInt(variable);
+			break;
+			
+		case 'checkbox':
+			//variable = JSON.parse(variable.toLowerCase());
+			break;
+			
+		default:
+			variable = variable;
 	}
 	
+	return variable;
+}
 	
+module.exports = function(modV) {
+
 	/* Handles ALL controls, popup windows and websocket remote controls */
 	modV.prototype.receiveMessage = function(event, websocket) {
 		var self = this;
@@ -203,5 +200,4 @@
 		var self = this;
 		window.addEventListener('message', self.receiveMessage.bind(self), false);
 	};
-
-})();
+};

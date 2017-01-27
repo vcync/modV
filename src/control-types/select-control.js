@@ -1,11 +1,8 @@
-(function() {
-	'use strict';
-	/*jslint browser: true */
-
-	modV.prototype.CheckboxControl = function(settings) {
-		let self = this;
-		let Module;
-		let id;
+module.exports = function(modV) {
+	modV.prototype.SelectControl = function(settings) {
+		var self = this;
+		var id;
+		var Module;
 		
 		self.getSettings = function() {
 			return settings;
@@ -16,8 +13,11 @@
 		};
 
 		self.writeValue = function(value) {
-			this.node.checked = value;
-			Module[self.variable] = value;
+
+			let selectValue = this.node.options[value].value;
+
+			this.node.selectedIndex = value;
+			Module[self.variable] = selectValue;
 		};
 		
 		//TODO: error stuff
@@ -51,49 +51,49 @@
 		if(!('version' in settings.info)) throw new ModuleError('RangeControl had no version in settings.info');*/
 
 		// Copy settings values to local scope
-		for(let key in settings) {
+		for(var key in settings) {
 			if(settings.hasOwnProperty(key)) {
 				self[key] = settings[key];
 			}
 		}
 
 		self.makeNode = function(ModuleRef, modV, isPreset) {
-			if(!settings.useInternalValue) {
-				Module = ModuleRef;
-				id = Module.info.safeName + '-' + self.variable;
-			} else {
-				id = ModuleRef;
-			}
+			Module = ModuleRef;
+			id = Module.info.safeName + '-' + self.variable;
 
-			let inputNode = document.createElement('input');
-			inputNode.type = 'checkbox';
+			var inputNode = document.createElement('select');
 			inputNode.id = id;
-			if('checked' in settings) inputNode.checked = settings.checked;
-			else inputNode.checked = false;
+			
+			if('enum' in settings) {
+				settings.enum.forEach(option => {
+					var optionNode = document.createElement('option');
+					optionNode.textContent = option.label;
+					optionNode.value = option.value;
+					
+					if(isPreset) {
+						if(option.value === Module[self.variable]) {
+							optionNode.selected = true;
+							Module.updateVariable(self.variable, option.value, modV);
+						}
+					} else if('default' in option) {
+						if(option.default) {
+							optionNode.selected = true;
+							Module.updateVariable(self.variable, option.value, modV);
+						}
+					}
+
+					inputNode.appendChild(optionNode);
+				});
+			}
 
 			inputNode.addEventListener('change', function() {
-				if(!settings.useInternalValue) Module.updateVariable(self.variable, this.checked, modV);
-				else {
-					settings.oninput(this.checked);
-				}
+				Module.updateVariable(self.variable, inputNode.options[inputNode.selectedIndex].value, modV);
 			}, false);
-
-			if(isPreset) {
-				inputNode.checked = Module[self.variable];
-			}
-
-			let labelNode = document.createElement('label');
-			labelNode.setAttribute('for', id);
-
-			let div = document.createElement('div');
-			div.classList.add('customCheckbox');
-			div.appendChild(inputNode);
-			div.appendChild(labelNode);
 
 			this.node = inputNode;
 
-			return div;
+			return inputNode;
 		};
 	};
 
-})();
+};

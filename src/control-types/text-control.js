@@ -1,13 +1,7 @@
-(function() {
-	'use strict';
-	/*jslint browser: true */
-
-	modV.prototype.ButtonControl = function(settings) {
-		let self = this;
-		let Module;
-		let id;
-
-		this.variable = 'ButtonControl' + Date.now();
+module.exports = function(modV) {
+	modV.prototype.TextControl = function(settings) {
+		var self = this;
+		var id;
 		
 		self.getSettings = function() {
 			return settings;
@@ -48,46 +42,27 @@
 		if(!('version' in settings.info)) throw new ModuleError('RangeControl had no version in settings.info');*/
 
 		// Copy settings values to local scope
-		for(let key in settings) {
+		for(var key in settings) {
 			if(settings.hasOwnProperty(key)) {
 				self[key] = settings[key];
 			}
 		}
 
-		self.makeNode = function(ModuleRef, modV) {
+		self.makeNode = function(Module, modV) {
+			id = Module.info.safeName + '-' + self.variable;
 
-			if(!settings.useInternalValue) {
-				Module = ModuleRef;
-				id = Module.info.safeName + self.variable;
-			} else {
-				id = ModuleRef;
-			}
+			var node = document.createElement('input');
+			node.type = 'text';
+			if(Module[self.variable] !== undefined) node.value = Module[self.variable];
+			else if('default' in settings) node.value = settings.default;
 
-			let inputNode = document.createElement('input');
-			inputNode.type = 'button';
-			inputNode.id = id;
-			inputNode.value = self.label;
-
-			inputNode.addEventListener('mousedown', function(e) {
-				if(typeof settings.onpress === 'function') settings.onpress(e);
+			node.addEventListener('input', function() {
+				Module.updateVariable(self.variable, this.value, modV);
 			}, false);
 
-			inputNode.addEventListener('mouseup', function(e) {
-				if(typeof settings.onrelease === 'function') settings.onrelease(e);
-			}, false);
-
-			this.node = inputNode;
-
-			return inputNode;
-		};
-
-		self.push = () => {
-			settings.onpress();
-		};
-
-		self.release = () => {
-			settings.onrelease();
+			node.id = id;
+			return node;
 		};
 	};
 
-})();
+};

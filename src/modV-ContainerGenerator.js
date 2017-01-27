@@ -1,31 +1,29 @@
-(function() {
-	'use strict';
+// from here: http://stackoverflow.com/questions/18663941/finding-closest-element-without-jquery
+function getClosestWithClass(el, tag, classN) {
+	tag = tag.toUpperCase();
+	do {
+		if (el.nodeName === tag && el.classList.contains(classN)) {
+			return el;
+		}
+	} while (el = el.parentNode);  // jshint ignore:line
 
-	// from here: http://stackoverflow.com/questions/18663941/finding-closest-element-without-jquery
-	function getClosestWithClass(el, tag, classN) {
-		tag = tag.toUpperCase();
-		do {
-			if (el.nodeName === tag && el.classList.contains(classN)) {
-				return el;
-			}
-		} while (el = el.parentNode);  // jshint ignore:line
-	
-		return false;
-	}
+	return false;
+}
 
+module.exports = function(modV) {
 	/* Constructor */
 	modV.prototype.ContainerGenerator = function(title, movable, controllerWindow, controlDomain) {
-		var self = this;
+		let self = this;
 
-		var contTitle = title;
+		let contTitle = title;
 
 		self.div = document.createElement('div');
 		self.div.classList.add('module');
 		
-		var header = document.createElement('header');
-		var headerTxt = document.createTextNode(contTitle);
+		let header = document.createElement('header');
+		let headerTxt = document.createTextNode(contTitle);
 
-		var mover = document.createElement('div');
+		let mover = document.createElement('div');
 		mover.classList.add('mover');
 
 		mover.draggable = true;
@@ -42,19 +40,19 @@
 
 			self.div.addEventListener('drop', function(e) {
 				e.preventDefault();
-				var target = getClosestWithClass(e.target, 'div', 'module');
+				let target = getClosestWithClass(e.target, 'div', 'module');
 				target.style.backgroundColor = 'white';
 				
-				var targetdata = target.dataset.name;
+				let targetdata = target.dataset.name;
 				
-				var data = e.dataTransfer.getData('text');
-				var nodeToMove = controllerWindow.document.querySelector('div.module[data-name="' + data + '"]');
+				let data = e.dataTransfer.getData('text');
+				let nodeToMove = controllerWindow.document.querySelector('div.module[data-name="' + data + '"]');
 				nodeToMove.parentNode.insertBefore(nodeToMove, target);
 				
 				controllerWindow.window.opener.postMessage({type: 'setOrderFromElements', x: data, y: targetdata}, controlDomain);
 			}, false);
 
-			var relatedTarget;
+			let relatedTarget;
 			
 			self.div.addEventListener('dragover', function(e) {
 				e.preventDefault();
@@ -78,11 +76,11 @@
 
 		self.div.appendChild(header);
 
-		var elements = [];
+		let elements = [];
 
 		self.addInput = function(id, title, type, valueName, value, event, callback) {
 
-			var element = document.createElement('input');
+			let element = document.createElement('input');
 			element.type = type;
 
 			if(valueName instanceof Array) {
@@ -98,19 +96,19 @@
 			element.addEventListener(event, callback);
 			element.id = contTitle + '-' + id;
 
-			var container = document.createElement('div');
+			let container = document.createElement('div');
 			container.classList.add('pure-g');
 
-			var left = document.createElement('div');
+			let left = document.createElement('div');
 			left.classList.add('pure-u-1-5');
 
-			var label = document.createElement('label');
+			let label = document.createElement('label');
 			label.setAttribute('for', contTitle + '-' + id);
 			label.textContent = title;
 
 			left.appendChild(label);
 
-			var right = document.createElement('div');
+			let right = document.createElement('div');
 			right.classList.add('pure-u-4-5');
 			right.appendChild(element);
 
@@ -123,10 +121,10 @@
 
 		self.addSpecial = function(element) {
 
-			var container = document.createElement('div');
+			let container = document.createElement('div');
 			container.classList.add('pure-g');
 
-			var div = document.createElement('div');
+			let div = document.createElement('div');
 			div.classList.add('pure-u-1-1');
 
 			container.appendChild(div);
@@ -144,5 +142,4 @@
 			return self.div;
 		};
 	};
-
-})();
+};

@@ -1,10 +1,11 @@
-(function() {
-	'use strict';
-	/*jslint browser: true */
+module.exports = function(modV) {
 
-	modV.prototype.ColorControl = function(settings) {
-		var self = this;
-		var id;
+	modV.prototype.ButtonControl = function(settings) {
+		let self = this;
+		let Module;
+		let id;
+
+		this.variable = 'ButtonControl' + Date.now();
 		
 		self.getSettings = function() {
 			return settings;
@@ -45,28 +46,45 @@
 		if(!('version' in settings.info)) throw new ModuleError('RangeControl had no version in settings.info');*/
 
 		// Copy settings values to local scope
-		for(var key in settings) {
+		for(let key in settings) {
 			if(settings.hasOwnProperty(key)) {
 				self[key] = settings[key];
 			}
 		}
 
-		self.makeNode = function(Module, modV) {
-			id = Module.info.safeName + '-' + self.variable;
+		self.makeNode = function(ModuleRef) {
 
-			var node = document.createElement('input');
-			node.type = 'color';
-			console.log('color control', Module[self.variable]);
-			if(Module[self.variable] !== undefined) node.value = Module[self.variable];
-			if('default' in settings) node.value = settings.default;
+			if(!settings.useInternalValue) {
+				Module = ModuleRef;
+				id = Module.info.safeName + self.variable;
+			} else {
+				id = ModuleRef;
+			}
 
-			node.addEventListener('input', function() {
-				Module.updateVariable(self.variable, this.value, modV);
+			let inputNode = document.createElement('input');
+			inputNode.type = 'button';
+			inputNode.id = id;
+			inputNode.value = self.label;
+
+			inputNode.addEventListener('mousedown', function(e) {
+				if(typeof settings.onpress === 'function') settings.onpress(e);
 			}, false);
 
-			node.id = id;
-			return node;
+			inputNode.addEventListener('mouseup', function(e) {
+				if(typeof settings.onrelease === 'function') settings.onrelease(e);
+			}, false);
+
+			this.node = inputNode;
+
+			return inputNode;
+		};
+
+		self.push = () => {
+			settings.onpress();
+		};
+
+		self.release = () => {
+			settings.onrelease();
 		};
 	};
-
-})();
+};

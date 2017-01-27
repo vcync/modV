@@ -1,10 +1,8 @@
-(function() {
-	'use strict';
-	/*jslint browser: true */
-
-	modV.prototype.TextControl = function(settings) {
-		var self = this;
-		var id;
+module.exports = function(modV) {
+	modV.prototype.CheckboxControl = function(settings) {
+		let self = this;
+		let Module;
+		let id;
 		
 		self.getSettings = function() {
 			return settings;
@@ -14,6 +12,11 @@
 			return id;
 		};
 
+		self.writeValue = function(value) {
+			this.node.checked = value;
+			Module[self.variable] = value;
+		};
+		
 		//TODO: error stuff
 /*		// RangeControl error handle
 		function ControlError(message) {
@@ -45,27 +48,49 @@
 		if(!('version' in settings.info)) throw new ModuleError('RangeControl had no version in settings.info');*/
 
 		// Copy settings values to local scope
-		for(var key in settings) {
+		for(let key in settings) {
 			if(settings.hasOwnProperty(key)) {
 				self[key] = settings[key];
 			}
 		}
 
-		self.makeNode = function(Module, modV) {
-			id = Module.info.safeName + '-' + self.variable;
+		self.makeNode = function(ModuleRef, modV, isPreset) {
+			if(!settings.useInternalValue) {
+				Module = ModuleRef;
+				id = Module.info.safeName + '-' + self.variable;
+			} else {
+				id = ModuleRef;
+			}
 
-			var node = document.createElement('input');
-			node.type = 'text';
-			if(Module[self.variable] !== undefined) node.value = Module[self.variable];
-			else if('default' in settings) node.value = settings.default;
+			let inputNode = document.createElement('input');
+			inputNode.type = 'checkbox';
+			inputNode.id = id;
+			if('checked' in settings) inputNode.checked = settings.checked;
+			else inputNode.checked = false;
 
-			node.addEventListener('input', function() {
-				Module.updateVariable(self.variable, this.value, modV);
+			inputNode.addEventListener('change', function() {
+				if(!settings.useInternalValue) Module.updateVariable(self.variable, this.checked, modV);
+				else {
+					settings.oninput(this.checked);
+				}
 			}, false);
 
-			node.id = id;
-			return node;
+			if(isPreset) {
+				inputNode.checked = Module[self.variable];
+			}
+
+			let labelNode = document.createElement('label');
+			labelNode.setAttribute('for', id);
+
+			let div = document.createElement('div');
+			div.classList.add('customCheckbox');
+			div.appendChild(inputNode);
+			div.appendChild(labelNode);
+
+			this.node = inputNode;
+
+			return div;
 		};
 	};
 
-})(module);
+};

@@ -1,45 +1,48 @@
-modV.prototype.deleteActiveModule = function(Module) {
-	let safeName = Module.info.safeName;
+module.exports = function(modV) {
 
-	let list = document.getElementsByClassName('active-list')[0];
-	let activeItemNode = list.querySelector('.active-item[data-module-name="' + safeName + '"]');
-	let panel = document.querySelector('.control-panel[data-module-name="' + safeName + '"]');
+	modV.prototype.deleteActiveModule = function(Module) {
+		let safeName = Module.info.safeName;
 
-	this.currentActiveDrag = null;
+		let list = document.getElementsByClassName('active-list')[0];
+		let activeItemNode = list.querySelector('.active-item[data-module-name="' + safeName + '"]');
+		let panel = document.querySelector('.control-panel[data-module-name="' + safeName + '"]');
 
-	forIn(this.activeModules, (moduleName, Module) => {
-		if(Module.info.safeName === safeName) {
-			
-			forIn(Module.info.controls, (key, Control) => {
-				// remove palette from global palette store
-				if(Control instanceof this.PaletteControl) {
-					this.palettes.splice(Control.paletteIndex, 1);
-				}
-			});
+		this.currentActiveDrag = null;
 
-
-			this.MIDIInstance.assignments.forEach(MIDIDevice => {
-				let toRemove = [];
-				forIn(MIDIDevice, (MIDIChannel, assignment) => {
-					if(assignment.moduleName === Module.info.name) toRemove.push(MIDIChannel);
-				});
+		forIn(this.activeModules, (moduleName, Module) => {
+			if(Module.info.safeName === safeName) {
 				
-				toRemove.forEach(key => {
-					delete MIDIDevice[key];
+				forIn(Module.info.controls, (key, Control) => {
+					// remove palette from global palette store
+					if(Control instanceof this.PaletteControl) {
+						this.palettes.splice(Control.paletteIndex, 1);
+					}
 				});
-			});
 
-			let Layer = this.layers[Module.getLayer()];
 
-			Layer.removeModule(Module);
+				this.MIDIInstance.assignments.forEach(MIDIDevice => {
+					let toRemove = [];
+					forIn(MIDIDevice, (MIDIChannel, assignment) => {
+						if(assignment.moduleName === Module.info.name) toRemove.push(MIDIChannel);
+					});
+					
+					toRemove.forEach(key => {
+						delete MIDIDevice[key];
+					});
+				});
 
-			console.info('Deleting', moduleName);
-			delete this.activeModules[moduleName];
-			
-			Layer.moduleListNode.removeChild(activeItemNode);
-			panel.parentNode.removeChild(panel);
-			this.setModOrder(moduleName, -1);
-		}
-	});
+				let Layer = this.layers[Module.getLayer()];
 
+				Layer.removeModule(Module);
+
+				console.info('Deleting', moduleName);
+				delete this.activeModules[moduleName];
+				
+				Layer.moduleListNode.removeChild(activeItemNode);
+				panel.parentNode.removeChild(panel);
+				this.setModOrder(moduleName, -1);
+			}
+		});
+
+	};
 };

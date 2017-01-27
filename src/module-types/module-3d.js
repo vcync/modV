@@ -1,17 +1,20 @@
-(function() {
-	'use strict';
-	/*jslint browser: true */
+const ModuleError = require('./module-error.js');
+const THREE = require('three');
 
-	modV.prototype.ModuleShader = class ModuleShader {
+module.exports = function(modV) {
+	modV.prototype.Module3D = class Module3D {
 
 		constructor(settings) {
 			this.settings = settings;
 
+			this._scene = new THREE.Scene();
+			this._camera = null;
+
 			// Set up error reporting
-			var ModuleError = modV.ModuleError;
 			ModuleError.prototype = Object.create(Error.prototype);
 			ModuleError.prototype.constructor = ModuleError;
 
+			/*
 			// Check for settings Object
 			if(!settings) throw new ModuleError('Module had no settings');
 			// Check for info Object
@@ -21,48 +24,22 @@
 			// Check for info.author
 			if(!('author' in settings.info)) throw new ModuleError('Module had no author in settings.info');
 			// Check for info.version
-			if(!('version' in settings.info)) throw new ModuleError('Module had no version in settings.info');
-			// Check for shaderFile
-			if(!('shaderFile' in settings)) throw new ModuleError('Module had no path to shader in settings.shaderFile');
+			if(!('version' in settings.info)) throw new ModuleError('Module had no version in settings.info');*/
 
 			// Create control Array
-			if(!settings.info.controls) settings.info.controls = {};
+			if(!settings.info.controls) settings.info.controls = [];
 
-			// Settings passed, expose this.info
+			// Settings passed, expose self.info
 			this.info = settings.info;
+
+			// Always start on layer 0
+			this.settings.info.layer = 0;
 
 			// Expose preview option
 			if('previewWithOutput' in settings) {
 				this.previewWithOutput = settings.previewWithOutput;
 			} else {
 				this.previewWithOutput = false;
-			}
-
-			// Settings passed, expose self.shaderFile
-			this.shaderFile = settings.shaderFile;
-
-			// Always start on layer 0
-			this.settings.info.layer = 0;
-
-			// Loop through Uniforms, expose self.uniforms and create local variables
-			if('uniforms' in settings.info) {
-
-				forIn(settings.info.uniforms, (uniformKey, uniform) => {
-					switch(uniform.type) {
-						case 'f':
-							this[uniformKey] = parseFloat(uniform.value);
-							break;
-
-						case 'i':
-							this[uniformKey] = parseInt(uniform.value);
-							break;
-
-						case 'b':
-							this[uniformKey] = uniform.value;
-							break;
-
-					}
-				});
 			}
 		}
 
@@ -72,7 +49,7 @@
 					this.add(thing);
 				});
 			} else {
-				this.info.controls[item.variable] = item;
+				this.settings.info.controls.push(item);
 			}
 		}
 
@@ -84,6 +61,22 @@
 			this.settings.info.layer = layer;
 		}
 
+		setScene(scene) {
+			this._scene = scene;
+		}
+
+		getScene() {
+			return this._scene;
+		}
+
+		getCamera() {
+			return this._camera;
+		}
+
+		setCamera(camera) {
+			this._camera = camera;
+		}
+
 		updateVariable(variable, value, modV) {
 			this[variable] = value;
 
@@ -93,7 +86,5 @@
 				name: this.info.name
 			});
 		}
-		
 	};
-
-})(module);
+};

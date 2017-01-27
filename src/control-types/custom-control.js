@@ -1,7 +1,4 @@
-(function() {
-	'use strict';
-	/*jslint browser: true */
-
+module.exports = function(modV) {
 	modV.prototype.CustomControl = function(settings) {
 		var self = this;
 		var id;
@@ -72,5 +69,4 @@
 			return node;
 		};
 	};
-
-})();
+};

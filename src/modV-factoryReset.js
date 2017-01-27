@@ -1,6 +1,5 @@
-(function() {
-	'use strict';
-
+module.exports = function(modV) {
+	
 	modV.prototype.factoryReset = function() {
 		
 		while(this.layers.length > 0) {
@@ -10,5 +9,4 @@
 		// Clear the screen
 		this.outputContext.clearRect(0, 0, this.outputCanvas.width, this.outputCanvas.height);
 	};
-
-})();
+};

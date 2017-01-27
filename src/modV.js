@@ -1,58 +1,12 @@
-/*jslint browser: true */
-
-// map() from Processing
-Math.map = function(value, low1, high1, low2, high2) {
-	return low2 + (high2 - low2) * (value - low1) / (high1 - low1);
-};
-
-// from here: http://stackoverflow.com/questions/5223/length-of-a-javascript-object-that-is-associative-array
-Object.size = function(obj) {
-	var size = 0, key;
-	for (key in obj) {
-		if (obj.hasOwnProperty(key)) size++;
-	}
-	return size;
-};
-
-// based on: http://stackoverflow.com/questions/6116474/how-to-find-if-an-array-contains-a-specific-string-in-javascript-jquery
-Array.contains = function(needle, arrhaystack) {
-	return (arrhaystack.indexOf(needle) > -1);
-};
-
-window.replaceAll = function(string, operator, replacement) {
-	return string.split(operator).join(replacement);
-};
-
-// Get HTML document request
-window.getDocument = function(url, callback) {
-	var xhr = new XMLHttpRequest();
-
-	xhr.onload = function() {
-		callback(xhr.responseXML);
-	};
-
-	xhr.open("GET", url);
-	xhr.responseType = "document";
-	xhr.send();
-};
-
-window.forIn = function(item, filter) {
-	for(var name in item) {
-		if(item.hasOwnProperty(name)) {
-			filter(name, item[name]);
-		}
-	}
-};
-
-navigator.getUserMedia = navigator.getUserMedia 		||
-						 navigator.webkitGetUserMedia	||
-						 navigator.mozGetUserMedia		||
-						 navigator.msGetUserMedia		||
-						 navigator.oGetUserMedia;
+const Meyda = require('meyda');
+const THREE = require('three');
+const shaderInit = require('./shader-env');
+require('./fragments/array-contains');
+require('script-loader!../libraries/beatdetektor.js');
 
 var modV = function(options) {
 
-	console.log('      modVVVVV Copyright  (C)  2016 Sam Wray      '+ "\n" +
+	console.log('      modV Copyright  (C)  2016 Sam Wray      '+ "\n" +
 				'----------------------------------------------'+ "\n" +
 				'      modV is licensed  under GNU GPL V3      '+ "\n" +
 				'This program comes with ABSOLUTELY NO WARRANTY'+ "\n" +
@@ -64,7 +18,7 @@ var modV = function(options) {
 		analyser, // Analyser Node 
 		microphone;
 
-	self.version = "1.4";
+	self.version = require('../package.json').version;
 
 	// UI Templates
 	self.templates = document.querySelector('link[rel="import"]').import;
@@ -92,7 +46,6 @@ var modV = function(options) {
 	self.addMessageHandler();
 
 	self.gainNode = null;
-	self.meydaSupport = false;
 
 	self.modOrder = [];
 	self.moduleStore = {};
@@ -119,6 +72,9 @@ var modV = function(options) {
 	self.canvas = self.options.canvas || document.createElement('canvas');
 	self.context = self.canvas.getContext('2d');
 
+	self.width = 0;
+	self.height = 0;
+
 	self.previewCanvas = document.createElement('canvas');
 	self.previewContext = self.previewCanvas.getContext('2d');
 
@@ -141,7 +97,6 @@ var modV = function(options) {
 
 	self.soloCanvas = undefined;
 
-	self.meydaSupport = false;
 	self.muted = true;
 
 	self.ready = false;
@@ -334,51 +289,38 @@ var modV = function(options) {
 		} else return false;
 	};
 
-	// Check for Meyda
-	if(typeof window.Meyda === 'object') {
-		self.meydaSupport = true;
-		console.info('meyda detected, expanded audio analysis available.');
-	}
-
 	self.bpm = 0;
 	self.bpmHold = false;
 	self.bpmHeldAt = 120;
 	self.useDetectedBPM = true;
 
-	// Check for BeatDetektor
-	if(typeof window.BeatDetektor === 'function') {
-		self.beatDetektorSupport = true;
-		console.info('BeatDetektor detected, BPM analysis available.', 'modV robot now available.');
-		self.beatDetektorMed = new BeatDetektor(85,169);
+	// Set up BeatDetektor
+	self.beatDetektorMed = new BeatDetektor(85,169);
+	self.beatDetektorKick = new BeatDetektor.modules.vis.BassKick();
+	self.kick = false;
+	
 
-		self.beatDetektorKick = new BeatDetektor.modules.vis.BassKick();
-		self.kick = false;
-	}
+	// Set up THREE
+	self.THREE = {};
 
-	// Check for THREE
-	if(typeof window.THREE === 'object') {
-		console.info('THREE.js detected.', 'Revision:', THREE.REVISION);
-		self.THREE = {};
+	self.THREE.textureCanvas = document.createElement('canvas');
+	self.THREE.textureCanvasContext = self.THREE.textureCanvas.getContext('2d');
 
-		self.THREE.textureCanvas = document.createElement('canvas');
-		self.THREE.textureCanvasContext = self.THREE.textureCanvas.getContext('2d');
+	self.THREE.texture = new THREE.Texture(self.THREE.textureCanvas);
+	self.THREE.texture.minFilter = THREE.LinearFilter;
 
-		self.THREE.texture = new THREE.Texture(self.THREE.textureCanvas);
-		self.THREE.texture.minFilter = THREE.LinearFilter;
+	self.THREE.material = new THREE.MeshBasicMaterial({
+		map: self.THREE.texture,
+		side: THREE.DoubleSide
+	});
 
-		self.THREE.material = new THREE.MeshBasicMaterial({
-			map: self.THREE.texture,
-			side: THREE.DoubleSide
-		});
+	self.THREE.renderer = new THREE.WebGLRenderer({
+		antialias: true,
+		alpha: true
+	});
+	self.THREE.renderer.setPixelRatio(window.devicePixelRatio);
 
-		self.THREE.renderer = new THREE.WebGLRenderer({
-			antialias: true,
-			alpha: true
-		});
-		self.THREE.renderer.setPixelRatio(window.devicePixelRatio);
-
-		self.THREE.canvas = self.THREE.renderer.domElement;
-	}
+	self.THREE.canvas = self.THREE.renderer.domElement;
 
 	/* Save modV's config to local storage */
 	self.saveOptions = function() {
@@ -400,8 +342,8 @@ var modV = function(options) {
 	};
 
 	// Shader handling
-	self.shaderEnv = {};
-	self.shaderSetup();
+	self.shaderEnv = shaderInit(this);
+	self.resize();
 
 	self.start = function() {
 
@@ -551,15 +493,14 @@ var modV = function(options) {
 		// Connect the gain node to the output (audio->(analyser)->gain->destination)
 		self.gainNode.connect(aCtx.destination);
 		
-		// If meyda is about, use it
-		if(self.meydaSupport) {
-			self.meyda = new Meyda.createMeydaAnalyzer({
-				audioContext: aCtx,
-				source: microphone,
-				bufferSize: 512,
-				windowingFunction: 'rect'
-			});
-		}
+		// Set up Meyda
+		self.meyda = new Meyda.createMeydaAnalyzer({
+			audioContext: aCtx,
+			source: microphone,
+			bufferSize: 512,
+			windowingFunction: 'rect'
+		});
+
 		
 		// Tell the rest of the script we're all good.
 		self.ready = true;
@@ -573,4 +514,3 @@ var modV = function(options) {
 };
 
 module.exports = modV;
-window.modV = modV;

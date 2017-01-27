@@ -1,39 +1,36 @@
-(function() {
-	'use strict';
-	/*jslint browser: true */
+class Tab {
+	constructor(name, contentEl, selected) {
 
-	class Tab {
+		let tabElement = document.createElement('div');
+		tabElement.classList.add('tab-item');
+		tabElement.textContent = name;
 
-		constructor(name, contentEl, selected) {
+		this.contentEl = contentEl;
+		this.tabElement = tabElement;
 
-			let tabElement = document.createElement('div');
-			tabElement.classList.add('tab-item');
-			tabElement.textContent = name;
-
-			this.contentEl = contentEl;
-			this.tabElement = tabElement;
-
-			if(selected) {
-				tabElement.classList.add('selected');
-			} else {
-				contentEl.classList.add('hidden');
-			}
-		}
-
-		get tab() {
-			return this.tabElement;
-		}
-
-		select() {
-			this.tabElement.classList.add('selected');
-			this.contentEl.classList.remove('hidden');
-		}
-
-		deSelect() {
-			this.tabElement.classList.remove('selected');
-			this.contentEl.classList.add('hidden');
+		if(selected) {
+			tabElement.classList.add('selected');
+		} else {
+			contentEl.classList.add('hidden');
 		}
 	}
+
+	get tab() {
+		return this.tabElement;
+	}
+
+	select() {
+		this.tabElement.classList.add('selected');
+		this.contentEl.classList.remove('hidden');
+	}
+
+	deSelect() {
+		this.tabElement.classList.remove('selected');
+		this.contentEl.classList.add('hidden');
+	}
+}
+
+module.exports = function(modV) {
 
 	modV.prototype.TabController = function(className) {
 
@@ -66,5 +63,4 @@
 			};
 		};
 	};
-
-})();
+};

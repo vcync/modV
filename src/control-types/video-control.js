@@ -1,7 +1,4 @@
-(function() {
-	'use strict';
-	/*jslint browser: true */
-
+module.exports = function(modV) {
 	modV.prototype.VideoControl = function(settings) {
 		var self = this;
 		
@@ -62,4 +59,4 @@
 		};
 	};
 
-})(module);
+};
