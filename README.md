@@ -32,7 +32,7 @@ Thank you to:
 
 
 ## Requirements
-- [node](https://nodejs.org/) (LTS is usually fine, this branch was built with 4.4.7 and has been confirmed to work with 4.5.0)
+- [node](https://nodejs.org/) (we're developing on [lts/boron](https://nodejs.org/en/blog/release/v6.9.0/) (6.9.X) so we recommend that) 
 - [Google Chrome desktop](https://www.google.com/chrome/browser/desktop/) (not required for [standalone build](https://github.com/2xAA/modV#building-standalone-application))
 
 ## Installation
