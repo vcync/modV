@@ -18,167 +18,128 @@ var modV = function(options) {
 		analyser, // Analyser Node 
 		microphone;
 
-	self.version = require('../package.json').version;
+	this.version = require('../package.json').version;
+
+	this.saveOptions = require('./option-storage').save;
+	this.loadOptions = require('./option-storage').load;
 
 	// UI Templates
-	self.templates = document.querySelector('link[rel="import"]').import;
+	this.templates = document.querySelector('link[rel="import"]').import;
 
 	// Load user options
-	if(typeof options !== 'undefined') self.options = options;
+	if(typeof options !== 'undefined') this.options = options;
 
 	self.options.user = "please set username";
 
-	self.clearing = true;
-	if(!self.options.clearing) self.clearing = false;
+	this.clearing = true;
+	if(!this.options.clearing) this.clearing = false;
 
-	if(!self.options.headless) {
-		self.headless = false;
-		self.options.headless = false;
+	if(!this.options.headless) {
+		this.headless = false;
+		this.options.headless = false;
 	} else {
-		self.headless = true;
+		this.headless = true;
 	}
 
-	if(!self.options.controlDomain) self.options.controlDomain = location.protocol + '//' + location.host;
+	if(!this.options.controlDomain) this.options.controlDomain = location.protocol + '//' + location.host;
 
-	self.baseURL = self.options.baseURL || '';
+	this.baseURL = this.options.baseURL || '';
 
 	// Attach message handler for sockets and windows
-	self.addMessageHandler();
+	this.addMessageHandler();
 
-	self.gainNode = null;
+	this.gainNode = null;
 
-	self.modOrder = [];
-	self.moduleStore = {};
-	self.registeredMods = {};
-	self.activeModules = {};
-	self.mediaSelectors = [];
-	self.LFOs = [];
+	this.modOrder = [];
+	this.moduleStore = {};
+	this.registeredMods = {};
+	this.activeModules = {};
+	this.mediaSelectors = [];
+	this.LFOs = [];
 
-	self.video = document.createElement('video');
-	self.video.autoplay = true;
-	self.video.muted = true;
+	this.outputWindows = [];
+
+	this.video = document.createElement('video');
+	this.video.autoplay = true;
+	this.video.muted = true;
 
 	// MIDI
 	this.MIDIInstance = new this.MIDI();
 	this.MIDIInstance.start();
 
 	// Remote
-	self.remoteConnect();
+	this.remoteConnect();
 
 	// Layers store
-	self.layers = [];
-	self.activeLayer = 0;
+	this.layers = [];
+	this.activeLayer = 0;
 
-	self.canvas = self.options.canvas || document.createElement('canvas');
-	self.context = self.canvas.getContext('2d');
+	this.canvas = this.options.canvas || document.createElement('canvas');
+	this.context = this.canvas.getContext('2d');
 
-	self.width = 0;
-	self.height = 0;
+	this.width = 0;
+	this.height = 0;
 
-	self.previewCanvas = document.createElement('canvas');
-	self.previewContext = self.previewCanvas.getContext('2d');
+	this.previewCanvas = document.createElement('canvas');
+	this.previewContext = this.previewCanvas.getContext('2d');
 
-	self.bufferCanvas = document.createElement('canvas');
-	self.bufferContext = self.bufferCanvas.getContext('2d');
+	this.bufferCanvas = document.createElement('canvas');
+	this.bufferContext = this.bufferCanvas.getContext('2d');
 
-	document.querySelector('.canvas-preview').appendChild(self.previewCanvas);
+	document.querySelector('.canvas-preview').appendChild(this.previewCanvas);
 
-	self.outputCanvas = document.createElement('canvas');
-	self.outputContext = self.outputCanvas.getContext('2d');
+	this.outputCanvas = document.createElement('canvas');
+	this.outputContext = this.outputCanvas.getContext('2d');
 
-	self.previewCanvasImageValues = {
+	this.previewCanvasImageValues = {
 		x: 0,
 		y: 0,
 		width: 0,
 		height: 0
 	};
 
-	self.addLayer(self.canvas, self.context, false);
+	this.addLayer(this.canvas, this.context, false);
 
-	self.soloCanvas = undefined;
+	this.soloCanvas = undefined;
 
-	self.muted = true;
+	this.muted = true;
 
-	self.ready = false;
+	this.ready = false;
 
 	// Clipboard store
-	self.copiedValue = null;
+	this.copiedValue = null;
 
 	// Robots
-	self.bots = {};
+	this.bots = {};
 
 	// WebSocket
-	self.ws = undefined;
+	this.ws = undefined;
 
 	// Set name
-	self.setName = function(name) {
-		self.options.user = name;
-		self.saveOptions();
+	this.setName = function(name) {
+		this.options.user = name;
+		this.saveOptions();
 	};
 
 	// Window resize
-	self.resize = function() {
-		self.THREE.renderer.setSize(self.outputCanvas.width, self.outputCanvas.height);
+	this.resize = require('./resize');
 
-		if(window.devicePixelRatio > 1 && self.options.retina) {
-			self.width = self.previewWindow.innerWidth * self.previewWindow.devicePixelRatio;
-			self.height = self.previewWindow.innerHeight * self.previewWindow.devicePixelRatio;
-
-		} else {
-			self.width = self.previewWindow.innerWidth;
-			self.height = self.previewWindow.innerHeight;
-		}
-
-		self.outputCanvas.width = self.width;
-		self.outputCanvas.height = self.height;
-
-		self.bufferCanvas.width = self.width;
-		self.bufferCanvas.height = self.height;
-
-		self.THREE.textureCanvas.width = self.width;
-		self.THREE.textureCanvas.height =  self.height;
-
-		self.shaderEnv.resize(self.width, self.height);
-
-		self.calculatePreviewCanvasValues();
-
-		self.layers.forEach(layer => {
-			let canvas = layer.canvas;
-			canvas.width = self.width;
-			canvas.height = self.height;
-		});
-
-		forIn(self.activeModules, (mod, Module) => {
-			if('resize' in Module) {
-				let layer = self.layers[Module.getLayer()];
-
-				if(Module instanceof self.Module3D) {
-					Module.resize(layer.canvas, Module.getScene(), Module.getCamera(), self.THREE.material, self.THREE.texture);
-				} else if(Module instanceof self.ModuleScript) {
-					Module.resize(this.previewCanvas, this.previewContext);
-				} else {
-					Module.resize(layer.canvas, layer.context);
-				}
-			}
-		});
-	};
-
-	self.mainWindowResize = function() {
+	this.mainWindowResize = () => {
 		// set canvas size
-		var boundingRect = self.previewCanvas.getBoundingClientRect();
-		self.previewCanvas.width = boundingRect.width;
-		self.previewCanvas.height = boundingRect.height;
+		var boundingRect = this.previewCanvas.getBoundingClientRect();
+		this.previewCanvas.width = boundingRect.width;
+		this.previewCanvas.height = boundingRect.height;
 
-		self.calculatePreviewCanvasValues();
+		this.calculatePreviewCanvasValues();
 	};
 
-	self.calculatePreviewCanvasValues = () => {
+	this.calculatePreviewCanvasValues = () => {
 
 		// thanks to http://ninolopezweb.com/2016/05/18/how-to-preserve-html5-canvas-aspect-ratio/
 		// for great aspect ratio advice!
-		var widthToHeight = self.width / self.height;
-		var newWidth = self.previewCanvas.width,
-			newHeight = self.previewCanvas.height;
+		var widthToHeight = this.width / this.height;
+		var newWidth = this.previewCanvas.width,
+			newHeight = this.previewCanvas.height;
 
 		var newWidthToHeight = newWidth / newHeight;
 	
@@ -188,51 +149,51 @@ var modV = function(options) {
 			newHeight = Math.round(newWidth / widthToHeight);
 		}
 
-		self.previewCanvasImageValues.x = Math.round((self.previewCanvas.width/2) - (newWidth/2));
-		self.previewCanvasImageValues.y = Math.round((self.previewCanvas.height/2) - (newHeight/2));
-		self.previewCanvasImageValues.width = newWidth;
-		self.previewCanvasImageValues.height = newHeight;
+		this.previewCanvasImageValues.x = Math.round((this.previewCanvas.width/2) - (newWidth/2));
+		this.previewCanvasImageValues.y = Math.round((this.previewCanvas.height/2) - (newHeight/2));
+		this.previewCanvasImageValues.width = newWidth;
+		this.previewCanvasImageValues.height = newHeight;
 	};
 
-	window.addEventListener('resize', self.mainWindowResize);
+	window.addEventListener('resize', this.mainWindowResize);
 
 	// Create canvas
-	self.setCanvas = function(el) {
+	this.setCanvas = function(el) {
 		if(el.nodeName !== 'CANVAS') {
 			console.error('modV: setCanvas was not supplied with a CANVAS element.');
 			return false;
 		}
-		self.canvas = el;
-		self.context = el.getContext('2d');
+		this.canvas = el;
+		this.context = el.getContext('2d');
 
 		return true;
 	};
 
 	// Create Windows
-	self.createWindows();
+	this.createWindows();
 
 	// Collection of palette controls
-	self.palettes = [];
+	this.palettes = [];
 
-	self.presets = {};
+	this.presets = {};
 
-	self.profiles = {};
+	this.profiles = {};
 
-	self.mediaManager = new WebSocket("ws://localhost:3132/");
+	this.mediaManager = new WebSocket("ws://localhost:3132/");
 
-	self.mediaManager.onerror = function() {
+	this.mediaManager.onerror = function() {
 		console.warn('Media Manager not available - did you start modV in no-manager mode?');
 	};
 
-	self.mediaManagerAvailable = false;
+	this.mediaManagerAvailable = false;
 	
-	self.mediaManager.onopen = function() {
+	this.mediaManager.onopen = () => {
 		console.info('Media Manager connected, retriveing media list');
-		self.mediaManager.send(JSON.stringify({request: 'update'}));
-		self.mediaManagerAvailable = true;
+		this.mediaManager.send(JSON.stringify({request: 'update'}));
+		this.mediaManagerAvailable = true;
 	};
 
-	self.mediaManager.onmessage = function(m) {
+	this.mediaManager.onmessage = (m) => {
 		var parsed = JSON.parse(m.data);
 
 		console.log('Media Manager says:', parsed);
@@ -240,13 +201,13 @@ var modV = function(options) {
 		if('type' in parsed) {
 			switch(parsed.type) {
 				case 'update':
-					self.profiles = parsed.payload;
-					self.mediaSelectors.forEach(function(ms) {
-						ms.update(self.profiles);
+					this.profiles = parsed.payload;
+					this.mediaSelectors.forEach(function(ms) {
+						ms.update(this.profiles);
 					});
 
 					var arr = [];
-					forIn(self.profiles, profile => {
+					forIn(this.profiles, profile => {
 						arr.push(profile);
 					});
 
@@ -254,7 +215,7 @@ var modV = function(options) {
 					let presetSelectNode = document.querySelector('#loadPresetSelect');
 					if(presetSelectNode) presetSelectNode.innerHTML = '';
 
-					forIn(self.profiles, (profileName, profile) => {
+					forIn(this.profiles, (profileName, profile) => {
 						forIn(profile.presets, (presetName, preset) => {
 							if(presetSelectNode) {
 								var optionNode = document.createElement('option');
@@ -264,12 +225,12 @@ var modV = function(options) {
 								presetSelectNode.appendChild(optionNode);
 							}
 							
-							self.presets[presetName] = preset;
+							this.presets[presetName] = preset;
 						});
 					});
 
-					self.palettes.forEach(function(palette) {
-						palette.updateProfiles(self.profiles);
+					this.palettes.forEach((palette) => {
+						palette.updateProfiles(this.profiles);
 					});
 				break;
 			}
@@ -277,27 +238,27 @@ var modV = function(options) {
 	};
 
 	window.addEventListener('beforeunload', () => {
-		self.mediaManager.close();
+		this.mediaManager.close();
 	});
 
-	self.meydaFeatures = ['complexSpectrum'];
+	this.meydaFeatures = ['complexSpectrum'];
 
-	self.addMeydaFeature = function(feature) {
-		if(!Array.contains(feature, self.meydaFeatures)) {
-			self.meydaFeatures.push(feature);
+	this.addMeydaFeature = feature => {
+		if(!Array.contains(feature, this.meydaFeatures)) {
+			this.meydaFeatures.push(feature);
 			return true;
 		} else return false;
 	};
 
-	self.bpm = 0;
-	self.bpmHold = false;
-	self.bpmHeldAt = 120;
-	self.useDetectedBPM = true;
+	this.bpm = 0;
+	this.bpmHold = false;
+	this.bpmHeldAt = 120;
+	this.useDetectedBPM = true;
 
 	// Set up BeatDetektor
-	self.beatDetektorMed = new BeatDetektor(85,169);
-	self.beatDetektorKick = new BeatDetektor.modules.vis.BassKick();
-	self.kick = false;
+	this.beatDetektor = new BeatDetektor(85,169);
+	this.beatDetektorKick = new BeatDetektor.modules.vis.BassKick();
+	this.kick = false;
 	
 
 	// Set up THREE
@@ -321,25 +282,6 @@ var modV = function(options) {
 	self.THREE.renderer.setPixelRatio(window.devicePixelRatio);
 
 	self.THREE.canvas = self.THREE.renderer.domElement;
-
-	/* Save modV's config to local storage */
-	self.saveOptions = function() {
-		localStorage.setItem('modVoptions', JSON.stringify(self.options)); 
-	};
-
-	/* Load modV's config to local storage */
-	self.loadOptions = function(callback) {
-		if(localStorage.getItem('modVoptions')) {
-			var loadedOptions = JSON.parse(localStorage.getItem('modVoptions'));
-			forIn(loadedOptions, key => {
-				if(!(key in self.options)) {
-					self.options[key] = loadedOptions[key];
-				}
-			});
-		}
-
-		if(callback) callback();
-	};
 
 	// Shader handling
 	self.shaderEnv = shaderInit(this);

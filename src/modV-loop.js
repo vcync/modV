@@ -10,12 +10,12 @@ module.exports = function(modV) {
 			if(self.reallyReady) {
 				if(self.meydaFeatures.length > 0) self.myFeatures = self.meyda.get(self.meydaFeatures);
 				
-				self.beatDetektorMed.process((timestamp / 1000.0), self.myFeatures.complexSpectrum.real);
+				self.beatDetektor.process((timestamp / 1000.0), self.myFeatures.complexSpectrum.real);
 				if(self.useDetectedBPM) {
-					self.updateBPM(self.beatDetektorMed.win_bpm_int_lo);
+					self.updateBPM(self.beatDetektor.win_bpm_int_lo);
 				}
 
-				self.beatDetektorKick.process(self.beatDetektorMed);
+				self.beatDetektorKick.process(self.beatDetektor);
 			
 				if(self.beatDetektorKick.isKick()) self.kick = true;
 				else self.kick = false;
