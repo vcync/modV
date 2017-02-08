@@ -175,6 +175,7 @@ module.exports = function(modV) {
 								let uniLoc = _gl.getUniformLocation(self.shaderEnv.programs[self.shaderEnv.activeProgram], feature);
 
 								let value = parseFloat(meydaOutput[feature]);
+								console.log(feature, value);
 								_gl.uniform1f(uniLoc, value);
 							});
 
@@ -247,12 +248,12 @@ module.exports = function(modV) {
 					}
 					
 				} else if(Module instanceof self.Module3D) {
-					let texture = self.THREE.texture;
+					let texture = self.threeEnv.texture;
 
 					// copy current canvas to our textureCanvas, clear first
-					self.THREE.textureCanvasContext.clearRect(0, 0, canvas.width, canvas.height);
+					self.threeEnv.textureCanvasContext.clearRect(0, 0, canvas.width, canvas.height);
 
-					self.THREE.textureCanvasContext.drawImage(
+					self.threeEnv.textureCanvasContext.drawImage(
 						canvas,
 						0,
 						0,
@@ -260,11 +261,11 @@ module.exports = function(modV) {
 						canvas.height
 					);
 					
-					//self.THREE.material.map = self.THREE.texture;
-					self.THREE.material.map.needsUpdate = true;
+					//self.threeEnv.material.map = self.threeEnv.texture;
+					self.threeEnv.material.map.needsUpdate = true;
 
-					Module.draw(Module.getScene(), Module.getCamera(), self.THREE.material, texture, meydaOutput);
-					self.THREE.renderer.render(Module.getScene(), Module.getCamera());
+					Module.draw(Module.getScene(), Module.getCamera(), self.threeEnv.material, texture, meydaOutput);
+					self.threeEnv.renderer.render(Module.getScene(), Module.getCamera());
 
 					if(Module.info.blend !== 'normal') {
 						context.globalCompositeOperation = Module.info.blend;
@@ -273,7 +274,7 @@ module.exports = function(modV) {
 					if(pipeline) {
 						bufferCtx.clearRect(0,0,canvas.width,canvas.height);
 						bufferCtx.drawImage(
-							self.THREE.canvas,
+							self.threeEnv.canvas,
 							0,
 							0,
 							canvas.width,
@@ -282,7 +283,7 @@ module.exports = function(modV) {
 
 					} else {
 						context.drawImage(
-							self.THREE.canvas,
+							self.threeEnv.canvas,
 							0,
 							0,
 							canvas.width,
@@ -292,7 +293,7 @@ module.exports = function(modV) {
 				}
 
 				context.restore();
-				self.THREE.texture.needsUpdate = true;
+				self.threeEnv.texture.needsUpdate = true;
 			}
 
 			if(pipeline) {

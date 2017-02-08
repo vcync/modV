@@ -154,7 +154,7 @@ module.exports = function(modV) {
 			}
 
 			// Initialise Module
-			Module.init(self.layers[0].canvas, Module.getScene(), self.THREE.material, self.THREE.texture);
+			Module.init(self.layers[0].canvas, Module.getScene(), self.threeEnv.material, self.threeEnv.texture);
 
 			// finish up
 			finish(Module, type);

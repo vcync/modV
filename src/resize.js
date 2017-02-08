@@ -1,6 +1,6 @@
 module.exports = function resize() {
 
-	this.THREE.renderer.setSize(this.outputCanvas.width, this.outputCanvas.height);
+	this.threeEnv.renderer.setSize(this.outputCanvas.width, this.outputCanvas.height);
 
 	if(window.devicePixelRatio > 1 && this.options.retina) {
 		this.width = this.previewWindow.innerWidth * this.previewWindow.devicePixelRatio;
@@ -17,8 +17,8 @@ module.exports = function resize() {
 	this.bufferCanvas.width = this.width;
 	this.bufferCanvas.height = this.height;
 
-	this.THREE.textureCanvas.width = this.width;
-	this.THREE.textureCanvas.height =  this.height;
+	this.threeEnv.textureCanvas.width = this.width;
+	this.threeEnv.textureCanvas.height =  this.height;
 
 	this.shaderEnv.resize(this.width, this.height);
 
@@ -35,7 +35,7 @@ module.exports = function resize() {
 			let layer = this.layers[Module.getLayer()];
 
 			if(Module instanceof this.Module3D) {
-				Module.resize(layer.canvas, Module.getScene(), Module.getCamera(), this.THREE.material, this.THREE.texture);
+				Module.resize(layer.canvas, Module.getScene(), Module.getCamera(), this.threeEnv.material, this.threeEnv.texture);
 			} else if(Module instanceof this.ModuleScript) {
 				Module.resize(this.previewCanvas, this.previewContext);
 			} else {

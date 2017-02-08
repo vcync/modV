@@ -1,6 +1,7 @@
 module.exports = {
-	save: function saveOptions() {
+	save: function saveOptions(callback) {
 		localStorage.setItem('modVoptions', JSON.stringify(this.options)); 
+		if(callback) callback();
 	},
 
 	load: function loadOptions(callback) {

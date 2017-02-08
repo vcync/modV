@@ -89,7 +89,7 @@ module.exports = function(modV) {
 				}
 
 				if('init' in Module && Module instanceof this.Module3D) {
-					Module.init(this.outputCanvas, Module.getScene(), Module.getCamera(), this.THREE.material, this.THREE.texture);
+					Module.init(this.outputCanvas, Module.getScene(), Module.getCamera(), this.threeEnv.material, this.threeEnv.texture);
 				}
 
 				// Set Module values

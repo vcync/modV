@@ -58,7 +58,7 @@ module.exports = function(modV) {
 		}
 
 		if('init' in Module && Module instanceof this.Module3D) {
-			Module.init(canvas, Module.getScene(), this.THREE.material, this.THREE.texture);
+			Module.init(canvas, Module.getScene(), this.threeEnv.material, this.threeEnv.texture);
 		}
 
 		// new safe name

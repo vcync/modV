@@ -1,12 +1,14 @@
 const Meyda = require('meyda');
 const THREE = require('three');
 const shaderInit = require('./shader-env');
+const threeInit = require('./three-env');
+const MM = require('./media-manager');
 require('./fragments/array-contains');
 require('script-loader!../libraries/beatdetektor.js');
 
 var modV = function(options) {
 
-	console.log('      modV Copyright  (C)  2016 Sam Wray      '+ "\n" +
+	console.log('      modV Copyright  (C)  2017 Sam Wray      '+ "\n" +
 				'----------------------------------------------'+ "\n" +
 				'      modV is licensed  under GNU GPL V3      '+ "\n" +
 				'This program comes with ABSOLUTELY NO WARRANTY'+ "\n" +
@@ -174,72 +176,10 @@ var modV = function(options) {
 
 	// Collection of palette controls
 	this.palettes = [];
-
 	this.presets = {};
-
 	this.profiles = {};
 
-	this.mediaManager = new WebSocket("ws://localhost:3132/");
-
-	this.mediaManager.onerror = function() {
-		console.warn('Media Manager not available - did you start modV in no-manager mode?');
-	};
-
-	this.mediaManagerAvailable = false;
-	
-	this.mediaManager.onopen = () => {
-		console.info('Media Manager connected, retriveing media list');
-		this.mediaManager.send(JSON.stringify({request: 'update'}));
-		this.mediaManagerAvailable = true;
-	};
-
-	this.mediaManager.onmessage = (m) => {
-		var parsed = JSON.parse(m.data);
-
-		console.log('Media Manager says:', parsed);
-
-		if('type' in parsed) {
-			switch(parsed.type) {
-				case 'update':
-					this.profiles = parsed.payload;
-					this.mediaSelectors.forEach(function(ms) {
-						ms.update(this.profiles);
-					});
-
-					var arr = [];
-					forIn(this.profiles, profile => {
-						arr.push(profile);
-					});
-
-
-					let presetSelectNode = document.querySelector('#loadPresetSelect');
-					if(presetSelectNode) presetSelectNode.innerHTML = '';
-
-					forIn(this.profiles, (profileName, profile) => {
-						forIn(profile.presets, (presetName, preset) => {
-							if(presetSelectNode) {
-								var optionNode = document.createElement('option');
-								optionNode.value = presetName;
-								optionNode.textContent = presetName;
-
-								presetSelectNode.appendChild(optionNode);
-							}
-							
-							this.presets[presetName] = preset;
-						});
-					});
-
-					this.palettes.forEach((palette) => {
-						palette.updateProfiles(this.profiles);
-					});
-				break;
-			}
-		}
-	};
-
-	window.addEventListener('beforeunload', () => {
-		this.mediaManager.close();
-	});
+	this.mediaManager = new MM(this);
 
 	this.meydaFeatures = ['complexSpectrum'];
 
@@ -260,76 +200,56 @@ var modV = function(options) {
 	this.beatDetektorKick = new BeatDetektor.modules.vis.BassKick();
 	this.kick = false;
 	
-
 	// Set up THREE
-	self.THREE = {};
-
-	self.THREE.textureCanvas = document.createElement('canvas');
-	self.THREE.textureCanvasContext = self.THREE.textureCanvas.getContext('2d');
-
-	self.THREE.texture = new THREE.Texture(self.THREE.textureCanvas);
-	self.THREE.texture.minFilter = THREE.LinearFilter;
-
-	self.THREE.material = new THREE.MeshBasicMaterial({
-		map: self.THREE.texture,
-		side: THREE.DoubleSide
-	});
-
-	self.THREE.renderer = new THREE.WebGLRenderer({
-		antialias: true,
-		alpha: true
-	});
-	self.THREE.renderer.setPixelRatio(window.devicePixelRatio);
-
-	self.THREE.canvas = self.THREE.renderer.domElement;
+	this.threeEnv = threeInit();
 
 	// Shader handling
-	self.shaderEnv = shaderInit(this);
-	self.resize();
+	this.shaderEnv = shaderInit(this);
+	this.resize();
 
-	self.start = function() {
+	this.start = () => {
 
 		// Load Options
-		self.loadOptions(function() {
+		this.loadOptions(() => {
 
 			// Scan Stream sources and setup User Media
-			scanMediaStreamSources(function(foundSources) {
+			scanMediaStreamSources((foundSources) => {
 
 				var audioSource;
 				var videoSource;
 
-				foundSources.audio.forEach(function(audioSrc) {
-					if(audioSrc.deviceId === self.options.audioSource) {
+				foundSources.audio.forEach((audioSrc) => {
+					if(audioSrc.deviceId === this.options.audioSource) {
 						audioSource = audioSrc.deviceId;
 					}
 				});
 
-				foundSources.video.forEach(function(videoSrc) {
-					if(videoSrc.deviceId === self.options.videoSource) {
+				foundSources.video.forEach((videoSrc) => {
+					if(videoSrc.deviceId === this.options.videoSource) {
 						videoSource = videoSrc.deviceId;
 					}
 				});
 
-				if(foundSources.video.length > 0) self.setMediaSource(audioSource || foundSources.audio[0].deviceId, videoSource || foundSources.video[0].deviceId);
-				else self.setMediaSource(audioSource || foundSources.audio[0].deviceId, undefined);
-				if(!self.headless) self.startUI();
+				if(foundSources.video.length > 0) this.setMediaSource(audioSource || foundSources.audio[0].deviceId, videoSource || foundSources.video[0].deviceId);
+				else this.setMediaSource(audioSource || foundSources.audio[0].deviceId, undefined);
+				if(!this.headless) this.startUI();
 			});
 			
 
 			
-			if(typeof self.canvas !== 'object') {
+			if(typeof this.canvas !== 'object') {
 				console.error('modV: Canvas not set');
 				return false;
 			}
 
-			requestAnimationFrame(self.loop.bind(self));
+			requestAnimationFrame(this.loop.bind(this));
 		});
 	};
 
 	/* Usermedia access */
 
 	// Store all available Media inputs
-	self.mediaStreamSources = {
+	this.mediaStreamSources = {
 		video: [],
 		audio: []
 	};
@@ -339,7 +259,7 @@ var modV = function(options) {
 			self.mediaStreamSources.video = [];
 			self.mediaStreamSources.audio = [];
 
-			devices.forEach(function(device) {
+			devices.forEach((device) => {
 				
 				if(device.kind === 'audioinput') {
 					self.mediaStreamSources.audio.push(device);
@@ -356,11 +276,11 @@ var modV = function(options) {
 	}
 
 	// Create function to use later on
-	self.rescanMediaStreamSources = function(callback) {
+	this.rescanMediaStreamSources = (callback) => {
 		scanMediaStreamSources(callback);
 	};
 
-	self.setMediaSource = function(audioSourceID, videoSourceID) {
+	this.setMediaSource = function(audioSourceID, videoSourceID) {
 		var constraints = {
 			audio: {
 				optional: [
@@ -377,7 +297,7 @@ var modV = function(options) {
 		};
 
 		/* If there is a video stream source, add the video permission */
-		if(self.mediaStreamSources.video.length > 0) {
+		if(this.mediaStreamSources.video.length > 0) {
 			constraints.video = {
 				optional: [
 					{googNoiseSuppression: false},
@@ -392,20 +312,20 @@ var modV = function(options) {
 			};
 		}
 
-		self.options.audioSource = audioSourceID;
-		self.options.videoSource = videoSourceID;
-		self.saveOptions();
+		this.options.audioSource = audioSourceID;
+		this.options.videoSource = videoSourceID;
+		this.saveOptions();
 
 		/* Ask for user media access */
-		navigator.getUserMedia(constraints, userMediaSuccess, userMediaError);
+		navigator.getUserMedia(constraints, userMediaSuccess.bind(this), userMediaError);
 	};
 
 	function userMediaSuccess(stream) {
 
-		self.rescanMediaStreamSources();
+		this.rescanMediaStreamSources();
 
 		// Create video stream
-		self.video.src = window.URL.createObjectURL(stream);
+		this.video.src = window.URL.createObjectURL(stream);
 		
 		// If we have opened a previous AudioContext, destroy it as the number of AudioContexts
 		// are limited to 6
@@ -418,10 +338,10 @@ var modV = function(options) {
 		analyser = aCtx.createAnalyser();
 		
 		// Create a gain node
-		self.gainNode = aCtx.createGain();
+		this.gainNode = aCtx.createGain();
 		
 		// Mute the node
-		self.gainNode.gain.value = 0;
+		this.gainNode.gain.value = 0;
 		
 		// Create the audio input stream (audio)
 		microphone = aCtx.createMediaStreamSource(stream);
@@ -430,13 +350,13 @@ var modV = function(options) {
 		microphone.connect(analyser);
 		
 		// Connect the audio stream to the gain node (audio->(analyser)->gain)
-		microphone.connect(self.gainNode);
+		microphone.connect(this.gainNode);
 		
 		// Connect the gain node to the output (audio->(analyser)->gain->destination)
-		self.gainNode.connect(aCtx.destination);
+		this.gainNode.connect(aCtx.destination);
 		
 		// Set up Meyda
-		self.meyda = new Meyda.createMeydaAnalyzer({
+		this.meyda = new Meyda.createMeydaAnalyzer({
 			audioContext: aCtx,
 			source: microphone,
 			bufferSize: 512,
@@ -445,7 +365,7 @@ var modV = function(options) {
 
 		
 		// Tell the rest of the script we're all good.
-		self.ready = true;
+		this.ready = true;
 	}
 
 	function userMediaError() {
