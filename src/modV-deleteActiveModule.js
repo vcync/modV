@@ -13,9 +13,15 @@ module.exports = function(modV) {
 			if(Module.info.safeName === safeName) {
 				
 				forIn(Module.info.controls, (key, Control) => {
+
 					// remove palette from global palette store
 					if(Control instanceof this.PaletteControl) {
-						this.palettes.splice(Control.paletteIndex, 1);
+						this.palettes.forEach((Palette, idx) => {
+							if(Control.id === Palette.id) {
+								this.palettes.splice(idx, 1);
+								return;
+							}
+						});
 					}
 				});
 

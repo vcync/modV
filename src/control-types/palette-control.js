@@ -6,6 +6,7 @@ var Palette = function(colours, timePeriod, callbacks, modV) {
 
 	self.useBPM = false;
 	self.bpmDivison = 1;
+	self.id = '';
 
 	if('init' in callbacks) callbacks.init(colours);
 	
@@ -342,6 +343,8 @@ module.exports = function(modV) {
 			return settings;
 		};
 
+		self.id = '';
+
 		//TODO: error stuff
 /*		// RangeControl error handle
 		function ControlError(message) {
@@ -386,6 +389,7 @@ module.exports = function(modV) {
 
 		self.makeNode = function(Module, modVSelf) {
 			self.creationTime = Date.now();
+			let id = Module.info.safeName + '-' + settings.variable + '-' + self.creationTime;
 
 			self.callbacks = {};
 
@@ -417,6 +421,8 @@ module.exports = function(modV) {
 			var paletteIndex = modVSelf.palettes.push(pal)-1;
 			self.paletteIndex = paletteIndex;
 			
+			self.id = pal.id = id;
+
 			return pal.generateControls();
 
 		};
