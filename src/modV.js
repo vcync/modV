@@ -31,8 +31,6 @@ var modV = function(options) {
 	// Load user options
 	if(typeof options !== 'undefined') this.options = options;
 
-	self.options.user = "please set username";
-
 	this.clearing = true;
 	if(!this.options.clearing) this.clearing = false;
 
@@ -120,6 +118,7 @@ var modV = function(options) {
 	// Set name
 	this.setName = function(name) {
 		this.options.user = name;
+		this.mediaManager.saveOption('user', name);
 		this.saveOptions();
 	};
 
@@ -211,6 +210,12 @@ var modV = function(options) {
 
 		// Load Options
 		this.loadOptions(() => {
+
+			console.log(this.options);
+
+			if(!('user' in this.options)) {
+				this.options.user = "please set username";
+			}
 
 			// Scan Stream sources and setup User Media
 			scanMediaStreamSources((foundSources) => {

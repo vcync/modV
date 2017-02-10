@@ -2,8 +2,11 @@ module.exports = function mediaManager(modV) {
 
 	const ws = new WebSocket("ws://localhost:3132/");
 	this.available = false;
+
 	this.update = require('./update')(ws);
 	this.sendJSON = require('./send-json')(ws);
+
+	this.saveOption = require('./save-option');
 
 	ws.addEventListener('error', () => {
 		console.warn('Media Manager not available - did you start modV in no-manager mode?');
