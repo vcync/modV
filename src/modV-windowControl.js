@@ -1,52 +1,69 @@
-var drunkenMess = function() {
+const genUUID = require('./uuid.js');
+
+let drunkenMess = function() {
 	return 'You sure about that, you drunken mess?';
 };
-window.onbeforeunload = drunkenMess;
 
-// Creates Preview Window
-// > must be bound to modV's scope
-var createPreviewWindow = function() {
-	var self = this;
-
-	var pWindow = window.open('', '_blank', 'width=1, height=1, location=no, menubar=no, left=0');
-	
-	var canvas = this.outputCanvas;
+let WindowController = function(id, resizeCb) {
+	let pWindow = window.open('', '_blank', 'width=1, height=1, location=no, menubar=no, left=0');
 
 	pWindow.document.body.style.margin = '0px';
 	pWindow.document.body.style.backgroundColor = 'black';
-	canvas.style.position = 'fixed';
 	
-	canvas.style.top = canvas.style.bottom = canvas.style.left = canvas.style.right = 0;
+	this.canvas = document.createElement('canvas');
+	this.context = this.canvas.getContext('2d');
 
-	pWindow.onbeforeunload = drunkenMess;
+	this.canvas.style.position = 'fixed';
+	
+	this.canvas.style.top = this.canvas.style.bottom = this.canvas.style.left = this.canvas.style.right = 0;
 
-	pWindow.addEventListener('resize', function() {
+	pWindow.document.body.appendChild(this.canvas);
 
-		canvas.style.width = pWindow.innerWidth + 'px';
-		canvas.style.height = pWindow.innerHeight + 'px';
+	this.resize = () => {
+		this.canvas.width = pWindow.innerWidth;
+		this.canvas.height = pWindow.innerHeight;
+		this.canvas.style.width = pWindow.innerWidth + 'px';
+		this.canvas.style.height = pWindow.innerHeight + 'px';
+		if(resizeCb) resizeCb();
+	};
 
-		self.resize();
+	pWindow.addEventListener('resize', this.resize);
 
-	});
+	this.getId = function() {
+		return id;
+	};
 
-	pWindow.document.body.appendChild(canvas);
-
-	return pWindow;
+	this.window = pWindow;
 };
 
 module.exports = function(modV) {
 
-	modV.prototype.createWindows = function() {
-		var self = this;
+	modV.prototype.createWindow = function() {
+
+		let id = genUUID();
 
 		// Set modV.prototype.previewWindow
-		var pWindow = createPreviewWindow.bind(self);
-		self.previewWindow 	= pWindow();
+		let WindowC = new WindowController(id, () => {
+			this.resize();
+		});
+
+		WindowC.window.onbeforeunload = drunkenMess;
+
+		WindowC.window.addEventListener('unload', () => {
+			this.outputWindows.forEach((oWindow, idx) => {
+				if(oWindow.getId() === id) {
+					this.outputWindows.splice(idx, 1);
+				}
+			});
+		});
+
+		// Add to Output Windows Array
+		this.outputWindows.push(WindowC);
 
 		// OnClose
-		window.addEventListener('beforeunload', function() {
+		window.addEventListener('beforeunload', () => {
 			try {
-				self.previewWindow.close();
+				WindowC.window.close();
 			} catch(e) {
 				// oops window not found.
 			}

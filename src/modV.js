@@ -123,6 +123,7 @@ var modV = function(options) {
 	};
 
 	// Window resize
+	this.getLargestWindow = require('./get-largest-window');
 	this.resize = require('./resize');
 
 	this.mainWindowResize = () => {
@@ -171,7 +172,7 @@ var modV = function(options) {
 	};
 
 	// Create Windows
-	this.createWindows();
+	this.createWindow();
 
 	// Collection of palette controls
 	this.palettes = [];

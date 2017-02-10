@@ -1,15 +1,17 @@
 module.exports = function resize() {
 
-	this.threeEnv.renderer.setSize(this.outputCanvas.width, this.outputCanvas.height);
+	let largestWindow = this.getLargestWindow().window;
 
 	if(window.devicePixelRatio > 1 && this.options.retina) {
-		this.width = this.previewWindow.innerWidth * this.previewWindow.devicePixelRatio;
-		this.height = this.previewWindow.innerHeight * this.previewWindow.devicePixelRatio;
+		this.width = largestWindow.innerWidth * largestWindow.devicePixelRatio;
+		this.height = largestWindow.innerHeight * largestWindow.devicePixelRatio;
 
 	} else {
-		this.width = this.previewWindow.innerWidth;
-		this.height = this.previewWindow.innerHeight;
+		this.width = largestWindow.innerWidth;
+		this.height = largestWindow.innerHeight;
 	}
+
+	this.threeEnv.renderer.setSize(this.width, this.height);
 
 	this.outputCanvas.width = this.width;
 	this.outputCanvas.height = this.height;
