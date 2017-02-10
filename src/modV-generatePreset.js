@@ -44,15 +44,18 @@ module.exports = function(modV) {
 		preset.MIDIAssignments = MIDIAssignmentsObject;
 
 		this.layers.forEach(Layer => {
+
+			//TODO: create per-type copy methods, stringify/parse is probably slow. RESEARCH.
+
 			let layerDetails = {
-				clearing: Layer.clearing,
-				alpha: Layer.alpha,
-				enabled: Layer.enabled,
-				inherit: Layer.inherit,
-				pipeline: Layer.pipeline,
-				blending: Layer.blending,
-				name: Layer.name,
-				moduleOrder: Layer.moduleOrder
+				clearing: 		JSON.parse(JSON.stringify(Layer.clearing)),
+				alpha: 			JSON.parse(JSON.stringify(Layer.alpha)),
+				enabled: 		JSON.parse(JSON.stringify(Layer.enabled)),
+				inherit: 		JSON.parse(JSON.stringify(Layer.inherit)),
+				pipeline: 		JSON.parse(JSON.stringify(Layer.pipeline)),
+				blending: 		JSON.parse(JSON.stringify(Layer.blending)),
+				name: 			JSON.parse(JSON.stringify(Layer.name)),
+				moduleOrder: 	JSON.parse(JSON.stringify(Layer.moduleOrder))
 			};
 
 			preset.layers.push(layerDetails);
