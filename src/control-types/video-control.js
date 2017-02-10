@@ -47,6 +47,7 @@ module.exports = function(modV) {
 			let Media = modVSelf.MediaSelector('video', {
 				onchange: path => {
 					Module[self.variable].src = path;
+					Module[self.variable].play();
 				}
 			});
 
