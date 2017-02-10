@@ -2,7 +2,7 @@
 /dist/
 node_modules
 /media/*
-!/media/.keep
+!/media/default/palette/*
 /nwjs/build
 /nwjs/cache
 npm-debug.log
