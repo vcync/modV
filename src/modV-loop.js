@@ -65,6 +65,6 @@ module.exports = function(modV) {
 			LFO.update();
 		});
 
-		self.drawFrame(self.myFeatures, timestamp);
+		self.draw(self.myFeatures, timestamp);
 	};
 };

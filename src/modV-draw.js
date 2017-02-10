@@ -1,6 +1,6 @@
 module.exports = function(modV) {
 
-	modV.prototype.drawFrame = function(meydaOutput, delta) {
+	modV.prototype.draw = function(meydaOutput, delta) {
 		var self = this;
 
 		if(!self.ready) return;
@@ -175,7 +175,6 @@ module.exports = function(modV) {
 								let uniLoc = _gl.getUniformLocation(self.shaderEnv.programs[self.shaderEnv.activeProgram], feature);
 
 								let value = parseFloat(meydaOutput[feature]);
-								console.log(feature, value);
 								_gl.uniform1f(uniLoc, value);
 							});
 
