@@ -18,13 +18,13 @@ module.exports = function(modV) {
 			presetSelectNode.appendChild(optionNode);
 		});
 
-		if(this.mediaManagerAvailable) {
-			this.mediaManager.send(JSON.stringify({
+		if(this.mediaManager.available) {
+			this.mediaManager.sendJSON({
 				request: 'save-preset',
 				profile: profile,
 				payload: preset,
 				name: name
-			}));
+			});
 		}
 	};
 };
