@@ -416,6 +416,13 @@ module.exports = function(modV) {
 
 			};
 
+			function updateColoursSetting(colours) {
+				self.colours = colours;
+			}
+
+			self.callbacks.add = updateColoursSetting;
+			self.callbacks.remove = updateColoursSetting;
+
 			var pal = new Palette(self.colours, self.timePeriod, self.callbacks, modVSelf);
 
 			var paletteIndex = modVSelf.palettes.push(pal)-1;
