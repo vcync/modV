@@ -32,13 +32,14 @@ module.exports = function(modV) {
 			let layerIndex = this.addLayer();
 			let Layer = this.layers[layerIndex];
 
-			Layer.clearing 	= layerDetails.clearing || Layer.clearing;
-			Layer.alpha 	= layerDetails.alpha 	|| Layer.alpha ;
-			Layer.enabled 	= layerDetails.enabled 	|| Layer.enabled;
-			Layer.inherit 	= layerDetails.inherit	|| Layer.inherit;
-			Layer.pipeline 	= layerDetails.pipeline	|| Layer.pipeline;
-			Layer.blending 	= layerDetails.blending	|| Layer.blending;
-			Layer.name 		= layerDetails.name 	|| Layer.name;
+			Layer.clearing 	= ((typeof layerDetails.clearing	!== "undefined") ? layerDetails.clearing	: Layer.clearing);
+			Layer.alpha 	= ((typeof layerDetails.alpha 		!== "undefined") ? layerDetails.alpha 		: Layer.alpha 	);
+			Layer.enabled 	= ((typeof layerDetails.enabled 	!== "undefined") ? layerDetails.enabled		: Layer.enabled	);
+			Layer.inherit 	= ((typeof layerDetails.inherit		!== "undefined") ? layerDetails.inherit		: Layer.inherit	);
+			Layer.pipeline 	= ((typeof layerDetails.pipeline	!== "undefined") ? layerDetails.pipeline	: Layer.pipeline);
+			Layer.blending 	= ((typeof layerDetails.blending	!== "undefined") ? layerDetails.blending	: Layer.blending);
+
+			Layer.setName((typeof layerDetails.name !== "undefined") ? layerDetails.name : Layer.name);
 
 			layerDetails.moduleOrder.forEach((name, idx) => {
 

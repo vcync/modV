@@ -10,6 +10,6 @@ module.exports = function(modV) {
 
 		layerControlPanel.querySelector('#clearingLayers').checked = Layer.clearing;
 		layerControlPanel.querySelector('#inheritLayers').checked = Layer.inherit;
-		layerControlPanel.querySelector('#pipeLineLayers').checked = Layer.pipline;
+		layerControlPanel.querySelector('#pipeLineLayers').checked = Layer.pipeline;
 	};
 };

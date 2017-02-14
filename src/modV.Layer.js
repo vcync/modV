@@ -24,6 +24,8 @@ module.exports = function(modV) {
 			this.canvas.width = modV.outputCanvas.width;
 			this.canvas.height = modV.outputCanvas.height;
 
+			this.nodes = {};
+
 			this.makeNode();
 			this.makeSortable(this.node);
 		}
@@ -195,6 +197,10 @@ module.exports = function(modV) {
 
 			titleNode.addEventListener('blur', stopEdit);
 
+			this.nodes.layer = layerItem;
+			this.nodes.moduleList = moduleList;
+			this.nodes.title = titleNode;
+
 			this.node = layerItem;
 			this.moduleListNode = moduleList;
 
@@ -203,6 +209,12 @@ module.exports = function(modV) {
 
 		getNode() {
 			return this.node;
+		}
+
+		setName(name) {
+			this.name = name;
+			this.nodes.title.textContent = name;
+			return true;
 		}
 
 		makeSortable() {
