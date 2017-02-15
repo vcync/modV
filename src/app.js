@@ -19,6 +19,7 @@ require('./modV-mediaSelector.js')(modV);
 require('./modV-messageHandler.js')(modV);
 require('./modV-moveLayerToIndex.js')(modV);
 require('./modV-mux.js')(modV);
+require('./profile-selector.js')(modV);
 require('./modV-removeLayer.js')(modV);
 require('./modV-robot.js')(modV);
 require('./modV-savePreset.js')(modV);

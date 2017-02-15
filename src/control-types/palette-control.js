@@ -1,3 +1,6 @@
+const makeControlGroup = require('../make-control-group');
+const appendChildren = require('../append-children');
+
 var Palette = function(colours, timePeriod, callbacks, modV) {
 	
 	var self = this;
@@ -148,40 +151,51 @@ var Palette = function(colours, timePeriod, callbacks, modV) {
 	}
 
 	var profilesList = [];
-	var profilesSelect = document.createElement('select');
-	var loadProfileListSelect = document.createElement('select');
 	var loadPaletteListSelect = document.createElement('select');
+
+	self.updateLoadPaletteSelect = (profile) => {
+		loadPaletteListSelect.innerHTML = '';
+
+		forIn(profilesList[profile].palettes, palette => {
+			let option = document.createElement('option');
+			option.textContent = option.value = palette;
+			loadPaletteListSelect.appendChild(option);
+		});
+	};
 
 	self.updateProfiles = function(profiles) {
 
 		profilesList = profiles;
 
-		// Clear select
-		while(profilesSelect.firstChild) {
-			profilesSelect.removeChild(profilesSelect.firstChild);
-			loadProfileListSelect.remove(loadProfileListSelect.firstChild);
-		}
-
 		loadPaletteListSelect.innerHTML = '';
 
-		for(var profile in profilesList) { //jshint ignore:line
-			var option = document.createElement('option');
-			option.textContent = option.value = profile;
-			profilesSelect.appendChild(option);
-			option = document.createElement('option');
-			option.textContent = option.value = profile;
-			loadProfileListSelect.appendChild(option);
-
-			forIn(profilesList[profile].palettes, palette => {
-				option = document.createElement('option');
-				option.textContent = option.value = palette;
-				loadPaletteListSelect.appendChild(option);
-			});
-		}
-
-
-
+		forIn(profilesList[loadProfileSelector.value].palettes, palette => {
+			let option = document.createElement('option');
+			option.textContent = option.value = palette;
+			loadPaletteListSelect.appendChild(option);
+		});
 	};
+
+	var loadProfileSelector = modV.ProfileSelector({
+		onupdate: (profiles) => {
+			this.updateProfiles(profiles);
+		},
+		onchange: (value) => {
+			console.log('load profile selector changed, selected value is', value);
+			this.updateLoadPaletteSelect(value);
+		}
+	});
+
+	loadProfileSelector.init();
+
+	let saveProfileSelector = modV.ProfileSelector({
+		onchange: (value) => {
+			console.log('save profile selector changed, selected value is', value);
+			//self.updateProfiles();
+		}
+	});
+
+	saveProfileSelector.init();
 
 	self.makePalette = function(colours) {
 		var swatches = [];
@@ -195,7 +209,7 @@ var Palette = function(colours, timePeriod, callbacks, modV) {
 	
 	self.generateControls = function() {
 
-		self.updateProfiles(modV.profiles);
+		//self.updateProfiles(modV.profiles);
 
 		var paletteDiv = document.createElement('div');
 		paletteDiv.classList.add('palette');
@@ -219,24 +233,28 @@ var Palette = function(colours, timePeriod, callbacks, modV) {
 
 		});
 
-		var timerRange = document.createElement('input');
-		timerRange.type = 'range';
-		timerRange.min = 2;
-		timerRange.max = 500;
-		timerRange.value = timePeriod/1000;
+		var timerRangeNode = document.createElement('input');
+		timerRangeNode.type = 'range';
+		timerRangeNode.min = 2;
+		timerRangeNode.max = 500;
+		timerRangeNode.value = timePeriod/1000;
 
-		timerRange.addEventListener('input', function() {
+		timerRangeNode.addEventListener('input', function() {
 			timePeriod = this.value;
 		});
 
-		controlsDiv.appendChild(timerRange);
-		controlsDiv.appendChild(document.createElement('br'));
-		controlsDiv.appendChild(document.createElement('br'));
-		controlsDiv.appendChild(paletteDiv);
-		controlsDiv.appendChild(colourPicker);
-		controlsDiv.appendChild(addButton);
+		let timerRangeGroup = makeControlGroup('Timer Division', timerRangeNode);
+		let paletteSwatchGroup = makeControlGroup('Swatches', paletteDiv);
 
-		controlsDiv.appendChild(document.createElement('hr'));
+		let addControlsDiv = document.createElement('div');
+		appendChildren(addControlsDiv, [colourPicker, addButton]);
+		let addColorGroup = makeControlGroup('Add Color', addControlsDiv);
+
+		controlsDiv.appendChild(paletteSwatchGroup);
+		controlsDiv.appendChild(addColorGroup);
+		controlsDiv.appendChild(timerRangeGroup);
+
+
 
 		var savePaletteButton = document.createElement('button');
 		savePaletteButton.textContent = 'Save Palette to profile';
@@ -246,17 +264,19 @@ var Palette = function(colours, timePeriod, callbacks, modV) {
 		savePaletteName.placeholder = 'Palette name';
 
 		savePaletteButton.addEventListener('click', function() {
-
-			var profilesSelectValue = profilesSelect.options[profilesSelect.selectedIndex].value;
-
+			var profilesSelectValue = saveProfileSelector.value;
 			if('savePalette' in callbacks) callbacks.savePalette(profilesSelectValue, savePaletteName.value, colours);
-
 		});
 
-		controlsDiv.appendChild(profilesSelect);
-		controlsDiv.appendChild(savePaletteName);
-		controlsDiv.appendChild(savePaletteButton);
+		let savePaletteDiv = document.createElement('div');
+		appendChildren(savePaletteDiv, [saveProfileSelector.node, savePaletteName, savePaletteButton]);
+
+		let savePaletteGroup = makeControlGroup('Save Palette', savePaletteDiv);
+		controlsDiv.appendChild(savePaletteGroup);
 		
+
+
+
 		controlsDiv.appendChild(document.createElement('hr'));
 
 		var syncToBPMCheckbox = document.createElement('input');
@@ -299,7 +319,7 @@ var Palette = function(colours, timePeriod, callbacks, modV) {
 		controlsDiv.appendChild(bpmDivisonLabel);
 
 		controlsDiv.appendChild(document.createElement('hr'));
-		controlsDiv.appendChild(loadProfileListSelect);
+		controlsDiv.appendChild(loadProfileSelector.node);
 		controlsDiv.appendChild(loadPaletteListSelect);
 
 
@@ -308,7 +328,7 @@ var Palette = function(colours, timePeriod, callbacks, modV) {
 		// TODO
 		loadPaletteButton.addEventListener('click', function() {
 
-			var selectedProfile = loadProfileListSelect.options[loadProfileListSelect.selectedIndex].value;
+			var selectedProfile = loadProfileSelector.value;
 			var selectedPalette = loadPaletteListSelect.options[loadPaletteListSelect.selectedIndex].value;
 
 			var loadedColours = profilesList[selectedProfile].palettes[selectedPalette];
@@ -323,11 +343,6 @@ var Palette = function(colours, timePeriod, callbacks, modV) {
 		});
 
 		controlsDiv.appendChild(loadPaletteButton);
-
-
-		// controlsDiv.appendChild(profilesSelect);
-		// controlsDiv.appendChild(savePaletteName);
-		// controlsDiv.appendChild(savePaletteButton);
 		
 		return controlsDiv;
 	};

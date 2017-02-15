@@ -212,6 +212,11 @@ section .bottom .control-panel-wrapper {
 	vertical-align: middle;
 }
 
+.control-group > div {
+	display: inline-block;
+	vertical-align: middle;
+}
+
 .control-panel .control-group,
 .right-controls .control-group {
 	padding: 12px 8px;

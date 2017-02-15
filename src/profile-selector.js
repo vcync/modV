@@ -1,11 +1,15 @@
 const forIn = require('./fragments/for-in');
 
 let ProfileSelector = function(callbacks) {
-	
+	let self = this;
+
 	let select = document.createElement('select');
 	select.classList.add('profile-selector');
 
-	this.update = function(profiles) {
+	this.node = select;
+	this.value = null;
+
+	this.update = (profiles) => {
 
 		// Clear select
 		while(select.firstChild) {
@@ -19,25 +23,30 @@ let ProfileSelector = function(callbacks) {
 
 			select.appendChild(option);
 		});
+
+		if(!this.value) this.value = select.options[0].value;
+
+		if(!('onupdate' in callbacks)) return;
+		else callbacks.onupdate(profiles);
 	};
 
 	function selectChanged() {
-		if(!('onchange' in callbacks)) return;
+		self.value = select.options[select.selectedIndex].value;
 
-		callbacks.onchange(select.value);
+		if('onchange' in callbacks) callbacks.onchange(select.options[select.selectedIndex].value);
+		return;
 	}
 
 	select.addEventListener('change', selectChanged);
-
-	this.returnHTML = function() {
-		return select;
-	};
 };
 
 module.exports = function(modV) {
 	modV.prototype.ProfileSelector = function(callbacks) {
+		let self = this;
 		let ps = new ProfileSelector(callbacks);
-		ps.update(this.profiles);
+		ps.init = function() {
+			this.update(self.profiles);
+		};
 
 		let idx = this.profileSelectors.push(ps)-1;
 		return this.profileSelectors[idx];

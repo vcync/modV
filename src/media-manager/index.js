@@ -61,10 +61,6 @@ module.exports = function mediaManager(modV) {
 							modV.presets[presetName] = preset;
 						});
 					});
-
-					modV.palettes.forEach((palette) => {
-						palette.updateProfiles(modV.profiles);
-					});
 				break;
 			}
 		}
