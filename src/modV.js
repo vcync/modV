@@ -55,6 +55,7 @@ var modV = function(options) {
 	this.registeredMods = {};
 	this.activeModules = {};
 	this.mediaSelectors = [];
+	this.profileSelectors = [];
 	this.LFOs = [];
 
 	this.outputWindows = [];
@@ -64,7 +65,7 @@ var modV = function(options) {
 	this.video.muted = true;
 
 	// MIDI
-	this.MIDIInstance = new this.MIDI();
+	this.MIDIInstance = new this.MIDI(this);
 	this.MIDIInstance.start();
 
 	// Remote
