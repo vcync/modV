@@ -24,6 +24,14 @@ require('./modV-removeLayer.js')(modV);
 require('./modV-robot.js')(modV);
 require('./modV-savePreset.js')(modV);
 require('./modV-setModOrder.js')(modV);
+require('./set-name.js')(modV);
+require('./set-canvas.js')(modV);
+require('./add-meyda-feature.js')(modV);
+require('./start.js')(modV);
+require('./main-window-resize')(modV);
+require('./calculate-preview-canvas-values')(modV);
+require('./rescan-media-stream-sources')(modV);
+require('./set-media-source')(modV);
 
 require('./modV-ui-createActiveListItem.js')(modV);
 require('./modV-ui-createControls.js')(modV);
