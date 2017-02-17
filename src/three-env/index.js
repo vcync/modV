@@ -1,3 +1,5 @@
+const THREE = require('three');
+
 module.exports = function threeEnvInit() {
 	let env = {};
 
