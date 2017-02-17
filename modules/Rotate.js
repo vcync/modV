@@ -23,7 +23,7 @@ class Rotate extends modV.ModuleShader {
 			varType: 'float',
 			min: -360.0,
 			max: 360.0,
-			step: 0.1,
+			step: 1.0,
 			default: 0.0
 		}));
 	}
