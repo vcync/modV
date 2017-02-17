@@ -173,13 +173,13 @@ module.exports = function(modV) {
 				
 				console.info('Sending palette with name,', paletteName, ', to media manager to save');
 
-				if(self.mediaManagerAvailable) {
-					self.mediaManager.send(JSON.stringify({
+				if(self.mediaManager.available) {
+					self.mediaManager.sendJSON({
 						request: 'save-palette',
 						profile: event.data.payload.profile,
 						payload: event.data.payload.palette,
 						name: paletteName
-					}));
+					});
 				}
 
 				// update palette list in controls window (TODO: THE SAME FOR WEBSOCKET)

@@ -1,0 +1,10 @@
+{
+	"extends": "../../../.jshintrc",
+	"globals": {
+		"colors": true,
+		"callbacks": true,
+		"currentColor": true,
+		"currentTime": true,
+		"timePeriod": true
+	}
+}
