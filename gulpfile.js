@@ -1,6 +1,6 @@
 //jshint node:true
 
-console.log('	  modV Copyright  (C)  2016 Sam Wray	  '+ "\n" +
+console.log('	  modV Copyright  (C)  2017 Sam Wray	  '+ "\n" +
 			'----------------------------------------------'+ "\n" +
 			'	  modV is licensed  under GNU GPL V3	  '+ "\n" +
 			'This program comes with ABSOLUTELY NO WARRANTY'+ "\n" +

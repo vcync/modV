@@ -7,6 +7,8 @@ let drunkenMess = function() {
 let WindowController = function(id, resizeCb) {
 	let pWindow = window.open('', '_blank', 'width=1, height=1, location=no, menubar=no, left=0');
 
+	pWindow.document.title = 'modV Output';
+
 	pWindow.document.body.style.margin = '0px';
 	pWindow.document.body.style.backgroundColor = 'black';
 	

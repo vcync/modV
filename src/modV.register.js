@@ -100,7 +100,7 @@ module.exports = function(modV) {
 
 			// Parse Meyda
 			if(Module.info.meyda) {
-				Module.info.meyda.forEach(self.addMeydaFeature);
+				Module.info.meyda.forEach(this.addMeydaFeature.bind(this));
 			}
 
 			// Initialise Module

@@ -25,6 +25,22 @@ module.exports = function(modV) {
 					timePeriod: Control.timePeriod
 				};
 
+			} else if(Control instanceof self.VideoControl) {
+
+				preset.moduleData[key].values[Control.variable] = {
+					type: 'VideoControl',
+					variable: Control.variable,
+					src: Module[Control.variable].src
+				};
+
+			} else if(Control instanceof self.ImageControl) {
+
+				preset.moduleData[key].values[Control.variable] = {
+					type: 'ImageControl',
+					variable: Control.variable,
+					src: Module[Control.variable].src
+				};
+
 			} else {
 
 				if('append' in Control.getSettings()) {

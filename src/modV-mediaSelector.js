@@ -6,16 +6,22 @@
  *
  * }
  * * * * * * * * * * * * * * * */
-var MediaSelector = function(type, callbacks) {
-	var self = this;
+let MediaSelector = function(type, callbacks, defaultOption) {
+	function areSameFile(path1, path2) {
+		if(path2.indexOf(path1.slice(2)) > -1) {
+			return true;
+		} else {
+			return false;
+		}
+	}
 
-	var select = document.createElement('select');
+	let select = document.createElement('select');
 	select.classList.add('mediaSelector', type);
 
-	self.currentFile = '';
+	this.currentFile = null;
 
-	self.update = function(profiles) {
-		var key,
+	this.update = function(profiles) {
+		let key,
 			profile,
 			optGroup;
 
@@ -24,7 +30,8 @@ var MediaSelector = function(type, callbacks) {
 			select.removeChild(select.firstChild);
 		}
 
-		var image, images, i, option;
+		let image, images, option;
+		let optionSelected = false;
 
 		if(type === 'image') {
 
@@ -41,14 +48,19 @@ var MediaSelector = function(type, callbacks) {
 					optGroup = document.createElement('optgroup');
 					optGroup.label = key;
 
-					self.currentFile = images[0];
+					this.currentFile = images[0];
 
-					for(i=0; i < images.length; i++) {
+					for(let i=0; i < images.length; i++) {
 						image = images[i];
 
 						option = document.createElement('option');
 						option.value = image.path;
 						option.textContent = image.name;
+
+						if(areSameFile(image.path, defaultOption)) {
+							option.selected = true;
+							optionSelected = true;
+						}
 
 						optGroup.appendChild(option);
 					}
@@ -74,7 +86,7 @@ var MediaSelector = function(type, callbacks) {
 					optGroup = document.createElement('optgroup');
 					optGroup.label = key;
 
-					for(i=0; i < images.length; i++) {
+					for(let i=0; i < images.length; i++) {
 						image = images[i];
 
 						option = document.createElement('option');
@@ -97,15 +109,15 @@ var MediaSelector = function(type, callbacks) {
 					// Skip if we have no videos
 					if(!('videos' in profile.files)) continue;
 
-					var videos = profile.files.videos;
+					let videos = profile.files.videos;
 
 					optGroup = document.createElement('optgroup');
 					optGroup.label = key;
 
-					self.currentFile = videos[0];
+					this.currentFile = videos[0];
 
-					for(i=0; i < videos.length; i++) {
-						var video = videos[i];
+					for(let i=0; i < videos.length; i++) {
+						let video = videos[i];
 
 						option = document.createElement('option');
 						option.value = video.path;
@@ -118,23 +130,25 @@ var MediaSelector = function(type, callbacks) {
 				}
 			}
 		}
+
+		if(!optionSelected) {
+			select.querySelector('option').selected = true;
+			this.currentFile = {path: select.querySelector('option').value}; 
+			optionSelected = true;
+		} else {
+			this.currentFile = {path: select.options[select.selectedIndex].value, name: select.options[select.selectedIndex].textContent};
+		}
 	};
 
 	function selectChanged() {
 		if(!('onchange' in callbacks)) return;
 
 		if(type === 'multiimage') {
-			var arr = [];
+			let arr = [];
 
-			// For the future...
-			// for(var el of select.selectedOptions) {
-			// 	arr.push(el.value);
-			// }
-
-			// For now...
-			[].forEach.call(select.selectedOptions, function(el) {
+			for(let el of select.selectedOptions) {
 				arr.push(el.value);
-			});
+			}
 
 			callbacks.onchange(arr);
 		} else {
@@ -144,17 +158,17 @@ var MediaSelector = function(type, callbacks) {
 
 	select.addEventListener('change', selectChanged);
 
-	self.returnHTML = function() {
+	this.returnHTML = function() {
 		return select;
 	};
 };
 
 module.exports = function(modV) {
-	modV.prototype.MediaSelector = function(type, callbacks) {
-		var ms = new MediaSelector(type, callbacks);
+	modV.prototype.MediaSelector = function(type, callbacks, defaultOption) {
+		let ms = new MediaSelector(type, callbacks, defaultOption);
 		ms.update(this.profiles);
 
-		var idx = this.mediaSelectors.push(ms)-1;
+		let idx = this.mediaSelectors.push(ms)-1;
 		return this.mediaSelectors[idx];
 	};
 };

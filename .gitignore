@@ -1,8 +1,13 @@
 *.DS_Store
 /dist/
 node_modules
+
 /media/*
-!/media/default/palette
+!/media/default/
+
+/media/default/*
+!/media/default/palette/
+
 /nwjs/build
 /nwjs/cache
 npm-debug.log

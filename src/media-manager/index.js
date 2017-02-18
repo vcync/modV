@@ -35,6 +35,10 @@ module.exports = function mediaManager(modV) {
 						ms.update(modV.profiles);
 					});
 
+					modV.profileSelectors.forEach(function(ps) {
+						ps.update(modV.profiles);
+					});
+
 					var arr = [];
 					forIn(modV.profiles, profile => {
 						arr.push(profile);
@@ -56,10 +60,6 @@ module.exports = function mediaManager(modV) {
 							
 							modV.presets[presetName] = preset;
 						});
-					});
-
-					modV.palettes.forEach((palette) => {
-						palette.updateProfiles(modV.profiles);
 					});
 				break;
 			}

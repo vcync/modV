@@ -44,13 +44,18 @@ module.exports = function(modV) {
 		}
 
 		self.makeNode = function(Module, modVSelf) {
+			console.log('imagecontrol constructor', Module[self.variable].src);
+
 			let Media = modVSelf.MediaSelector('image', {
 				onchange: path => {
 					Module[self.variable].src = path;
 				}
-			});
+			},
+			Module[self.variable].src);
 
-			Module[self.variable].src = Media.currentFile.path;
+			console.log('ic const', Media.currentFile.path, Module[self.variable].src);
+
+			Module[self.variable].src = Media.currentFile.path || Module[self.variable].src;
 
 			return Media.returnHTML();
 		};
