@@ -132,6 +132,7 @@ module.exports = function(Palette) {
 			var loadedColors = profilesList[selectedProfile].palettes[selectedPalette];
 
 			this.colors = loadedColors;
+			if('add' in this.callbacks) this.callbacks.add(this.colors);
 
 			paletteDiv.innerHTML = '';
 			this.makePalette(this.colors).forEach(function(swatch) {

@@ -8,7 +8,7 @@ module.exports = function(Palette) {
 			rgbFromHex = hexToRgb(color);
 			this.colors.push(rgbFromHex);
 
-		} else if(color.constructor === Array) {
+		} else if(Array.isArray(color.constructor)) {
 
 			this.colors.push(rgbFromHex);
 
