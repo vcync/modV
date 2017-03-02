@@ -12,11 +12,11 @@ class StaticImage extends modV.Module2D {
 		this.add(new modV.RangeControl({
 			variable: 'k',
 			label: 'Scale',
-			min: -20,
-			max: 20,
+			min: -2,
+			max: 2,
 			varType: 'float',
 			default: 1,
-			step: 0.1
+			step: 0.01
 		}));
 
 		this.add(new modV.CheckboxControl({
