@@ -15,6 +15,7 @@ module.exports = function(modV) {
 			this.enabled = true;
 			this.inherit = true;
 			this.pipeline = false;
+			this.drawToOutput = true;
 			this.blending = 'normal';
 			this.name = name || 'New Layer';
 			this.modules = {};

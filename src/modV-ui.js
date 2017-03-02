@@ -370,6 +370,10 @@ module.exports = function(modV) {
 			self.layers[self.activeLayer].pipeline = this.checked;
 		});
 
+		layerControlPanel.querySelector('#outputLayers').addEventListener('click', function() {
+			self.layers[self.activeLayer].drawToOutput = this.checked;
+		});
+
 		this.updateLayerControls();
 
 		// Create Preset Controls
