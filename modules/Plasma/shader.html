@@ -9,9 +9,7 @@
 			varying vec2 Vertex_UV;
 			attribute vec2 a_position, a_texCoord;
 			uniform vec2 u_resolution;
-			varying vec2 v_coords;
 			void main() {
-				v_coords = a_position;
 				vec2 zeroToOne = a_position / u_resolution;
 				vec2 zeroToTwo = zeroToOne * 2.0;
 				vec2 clipSpace = zeroToTwo - 1.0;
