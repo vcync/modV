@@ -18,7 +18,7 @@ module.exports = function(modV) {
 			name = this.generateName(Module.info.name);
 		}
 
-		Module.info.galleryItem = galleryItem;
+		Module.info.galleryItem = galleryItem || false;
 
 		if(Module instanceof this.ModuleShader) {
 			Module.programIndex = originalModule.programIndex;
