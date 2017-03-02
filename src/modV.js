@@ -101,7 +101,9 @@ var modV = function(options) {
 	this.getLargestWindow = require('./get-largest-window');
 	this.resize = require('./resize');
 
-	window.addEventListener('resize', this.mainWindowResize);
+	window.addEventListener('resize', () => {
+		this.mainWindowResize();
+	});
 
 	// Create Windows
 	this.createWindow();

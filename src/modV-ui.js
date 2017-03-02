@@ -304,7 +304,6 @@ module.exports = function(modV) {
 				var galleryWidth = (100 - ( mousePosition.clientX / window.innerWidth  ) * 100);
 
 				if(galleryWidth < 20 || galleryWidth > (100 - (306 / window.innerWidth) * 100)) {
-					console.log('nooooo');
 					return false;
 				}
 
@@ -395,8 +394,10 @@ module.exports = function(modV) {
 			});
 		});
 
+		let loadPresetclearScreenCheckbox = presetControlPanel.querySelector('#loadPresetClearScreen');
+
 		presetControlPanel.querySelector('#loadPreset').addEventListener('click', function() {
-			self.loadPreset(presetControlPanel.querySelector('#loadPresetSelect').value);
+			self.loadPreset(presetControlPanel.querySelector('#loadPresetSelect').value, loadPresetclearScreenCheckbox.checked);
 		});
 
 		presetControlPanel.querySelector('#savePreset').addEventListener('click', function() {

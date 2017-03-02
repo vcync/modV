@@ -240,10 +240,11 @@ module.exports = function(modV) {
 						// Get Module
 						let oldModule = modV.registeredMods[replaceAll(itemEl.dataset.moduleName, '-', ' ')];
 
-						let Module = modV.createModule(oldModule);
+						let Module = modV.createModule(oldModule, this.canvas, this.context);
 
+						// If shift is held when dropped, disable Module's output
 						if(evt.originalEvent.shiftKey) {
-							Module.info.solo = true;
+							Module.info.disabled = true;
 						}
 
 						// Move back to gallery

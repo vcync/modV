@@ -44,7 +44,7 @@ module.exports = function(modV) {
 				console.info('Deleting', moduleName);
 				delete this.activeModules[moduleName];
 				
-				Layer.moduleListNode.removeChild(activeItemNode);
+				activeItemNode.parentNode.removeChild(activeItemNode);
 				panel.parentNode.removeChild(panel);
 				this.setModOrder(moduleName, -1);
 			}

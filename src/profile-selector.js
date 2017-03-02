@@ -10,7 +10,6 @@ let ProfileSelector = function(callbacks) {
 	this.value = null;
 
 	this.update = (profiles) => {
-
 		// Clear select
 		while(select.firstChild) {
 			select.removeChild(select.firstChild);
@@ -45,6 +44,7 @@ module.exports = function(modV) {
 		let self = this;
 		let ps = new ProfileSelector(callbacks);
 		ps.init = function() {
+			if(!self.mediaManager.available) return;
 			this.update(self.profiles);
 		};
 
