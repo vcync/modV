@@ -38,6 +38,13 @@ module.exports = (gl) => {
 
 			gl.linkProgram(program);
 
+			if(gl.getProgramInfoLog(program) !== '') {
+				reject({
+					reason: 'Program not valid',
+					log: gl.getProgramInfoLog(program)
+				});
+			}
+
 			resolve(program);
 		});
 	};
