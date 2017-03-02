@@ -1,7 +1,10 @@
 module.exports = function(modV) {
 
-	modV.prototype.loadPreset = function(id) {
-		this.factoryReset();
+	modV.prototype.loadPreset = function(id, clearScreen) {
+		console.log('clear', clearScreen);
+		this.factoryReset({
+			clear: clearScreen
+		});
 
 		if(!('layers' in this.presets[id])) {
 			console.warn('Converting old preset');
@@ -86,11 +89,11 @@ module.exports = function(modV) {
 				if('init' in Module &&
 					(Module instanceof this.Module2D || Module instanceof this.ModuleScript)) {
 
-					Module.init(this.outputCanvas, this.outputContext);
+					Module.init(this.layers[0].canvas, this.layers[0].context);
 				}
 
 				if('init' in Module && Module instanceof this.Module3D) {
-					Module.init(this.outputCanvas, Module.getScene(), Module.getCamera(), this.threeEnv.material, this.threeEnv.texture);
+					Module.init(this.layers[0].canvas, Module.getScene(), this.threeEnv.material, this.threeEnv.texture);
 				}
 
 				// Set Module values
