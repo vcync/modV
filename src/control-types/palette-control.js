@@ -1,15 +1,14 @@
 const Palette = require('./palette');
 
 module.exports = function(modV) {
-	modV.prototype.PaletteControl = function(settings) {
-		var self = this;
+	modV.prototype.PaletteControl = function PaletteControl(settings) {
 		if(typeof settings === "undefined") settings = {};
 		
-		self.getSettings = function() {
+		this.getSettings = function() {
 			return settings;
 		};
 
-		self.id = '';
+		this.id = '';
 
 		//TODO: error stuff
 /*		// RangeControl error handle
@@ -46,29 +45,29 @@ module.exports = function(modV) {
 		if(!('version' in settings.info)) throw new ModuleError('RangeControl had no version in settings.info');*/
 
 		// Copy settings values to local scope
-		for(var key in settings) {
+		for(let key in settings) {
 			if(settings.hasOwnProperty(key)) {
-				self[key] = settings[key];
+				this[key] = settings[key];
 			}
 		}
 
 
-		self.makeNode = function(Module, modVSelf) {
-			self.creationTime = Date.now();
-			let id = Module.info.safeName + '-' + settings.variable + '-' + self.creationTime;
+		this.makeNode = function(Module, modVSelf) {
+			this.creationTime = Date.now();
+			let id = Module.info.safeName + '-' + settings.variable + '-' + this.creationTime;
 
-			self.callbacks = {};
+			this.callbacks = {};
 
-			self.callbacks.next = function(colour) {
-				Module[self.variable] = colour;
-				//Module.updateVariable(self.variable, colour, modVSelf);
+			this.callbacks.next = (colour) => {
+				Module[this.variable] = colour;
+				//Module.updateVariable(this.variable, colour, modVSelf);
 			};
 
-			self.callbacks.getBPM = function() {
+			this.callbacks.getBPM = function() {
 				return modVSelf.bpm;
 			};
 
-			self.callbacks.savePalette = function(profile, paletteName, palette) {
+			this.callbacks.savePalette = function(profile, paletteName, palette) {
 
 				window.postMessage({
 					type: 'global',
@@ -82,20 +81,20 @@ module.exports = function(modV) {
 
 			};
 
+			let self = this;
 			function updateColoursSetting(colours) {
 				self.colours = colours;
 			}
 
-			self.callbacks.add = updateColoursSetting;
-			self.callbacks.remove = updateColoursSetting;
+			this.callbacks.add = updateColoursSetting;
+			this.callbacks.remove = updateColoursSetting;
 
-			var pal = new Palette(self.colours, self.timePeriod, self.callbacks, modVSelf);
-			console.log(pal);
+			let pal = new Palette(this.colours, this.timePeriod, this.callbacks, modVSelf);
 			
-			var paletteIndex = modVSelf.palettes.push(pal)-1;
-			self.paletteIndex = paletteIndex;
+			let paletteIndex = modVSelf.palettes.push(pal)-1;
+			this.paletteIndex = paletteIndex;
 			
-			self.id = pal.id = id;
+			this.id = pal.id = id;
 
 			return pal.generateControls();
 
