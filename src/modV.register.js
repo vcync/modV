@@ -129,8 +129,6 @@ module.exports = function(modV) {
 				var gl = self.shaderEnv.gl; // set reference to self.shaderEnv.gl
 				const makeProgram = makeProgramInit(gl);
 
-				console.info('Attempting to compile', Module.info.name);
-						
 				// Compile shaders and create program
 				makeProgram(vert, frag).then(program => {
 					gl.useProgram(program);
@@ -138,6 +136,9 @@ module.exports = function(modV) {
 					
 					// finish up
 					finish(Module, type);
+				}).catch(error => {
+					console.error('Registration of ModuleShader "' + name + '" unsuccessful. Reason:', error.reason);
+					console.warn(error.log);
 				});
 			});
 
