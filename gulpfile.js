@@ -1,8 +1,8 @@
 //jshint node:true
 
-console.log('	  modV Copyright  (C)  2017 Sam Wray	  '+ "\n" +
+console.log('      modV Copyright  (C)  2017 Sam Wray      '+ "\n" +
 			'----------------------------------------------'+ "\n" +
-			'	  modV is licensed  under GNU GPL V3	  '+ "\n" +
+			'      modV is licensed  under GNU GPL V3      '+ "\n" +
 			'This program comes with ABSOLUTELY NO WARRANTY'+ "\n" +
 			'For details, see LICENSE within this directory'+ "\n" +
 			'----------------------------------------------');
@@ -80,11 +80,6 @@ gulp.task('copy:library', ['clean'], function() {
 	return gulp.src('./libraries/**/*', {base: './'})
 		.pipe(gulp.dest('dist'));
 });
-
-// gulp.task('copy:meyda', ['clean'], function() {
-// 	return gulp.src('node_modules/meyda/dist/web/meyda.js')
-// 		.pipe(gulp.dest('dist/libraries'));
-// });
 
 gulp.task('copy:fonts', ['clean'], function() {
 	return gulp.src('./fonts/**/*', {base: './'})
