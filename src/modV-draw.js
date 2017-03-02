@@ -21,7 +21,7 @@ module.exports = function(modV) {
 			var bufferCtx = this.bufferContext;
 
 			var pipeline = layer.pipeline;
-			if(pipeline) {
+			if(pipeline && clearing) {
 				bufferCtx.clearRect(0,0,canvas.width,canvas.height);
 			}
 
