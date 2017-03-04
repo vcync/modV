@@ -142,6 +142,8 @@ class Ball extends modV.Module2D {
 			newBall.position.y = Math.floor(Math.random()*(newBall.bounds.height-1+1)+1);
 			newBall.velocity.x = Math.floor(Math.random()*(10-1+1)+1);
 			newBall.velocity.y = Math.floor(Math.random()*(10-1+1)+1);
+			newBall.xReverse = Math.round(Math.random());
+			newBall.yReverse = Math.round(Math.random());
 			this.balls.push(newBall);
 		}
 	}
