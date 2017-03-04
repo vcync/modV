@@ -385,19 +385,6 @@ module.exports = function(modV) {
 		// Pull back initialised node from DOM
 		presetControlPanel = document.querySelector('.preset-control-panel-wrapper .preset-controls');
 
-		let presetSelectNode = presetControlPanel.querySelector('#loadPresetSelect');
-
-		// Set up loaded presets
-		forIn(this.profiles, (profileName, profile) => {
-			forIn(profile.presets, presetName => {
-				var optionNode = document.createElement('option');
-				optionNode.value = presetName;
-				optionNode.textContent = presetName;
-
-				presetSelectNode.appendChild(optionNode);
-			});
-		});
-
 		let loadPresetclearScreenCheckbox = presetControlPanel.querySelector('#loadPresetClearScreen');
 
 		presetControlPanel.querySelector('#loadPreset').addEventListener('click', function() {
