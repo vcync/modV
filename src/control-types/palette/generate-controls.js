@@ -35,7 +35,7 @@ module.exports = function(Palette) {
 		timerRangeNode.type = 'range';
 		timerRangeNode.min = 2;
 		timerRangeNode.max = 500;
-		timerRangeNode.value = this.timePeriod/1000;
+		timerRangeNode.value = this.timePeriod;
 
 		timerRangeNode.addEventListener('input', () => {
 			this.timePeriod = timerRangeNode.value;

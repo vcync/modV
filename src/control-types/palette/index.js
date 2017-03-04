@@ -6,14 +6,17 @@ function Palette(colors, timePeriod, callbacks, modV) { //jshint ignore:line
 	colors = JSON.parse(JSON.stringify(colors)) || [];
 
 	this.colors = colors;
-	this.timePeriod = timePeriod;
+	this.timePeriod = timePeriod || 100;
+
+	console.log('Palette timePeriod given', timePeriod);
+	console.log('Palette timePeriod stored', this.timePeriod);
 
 	this.profilesList = [];
 	this.loadPaletteListSelect = document.createElement('select');
 
 	this.currentColor = 0; //jshint ignore:line
 	this.currentTime = 0; //jshint ignore:line
-	this.timePeriod = Math.round((this.timePeriod/1000) * 60);
+	//this.timePeriod = Math.round((this.timePeriod/1000) * 60);
 	this.callbacks = callbacks;
 
 	this.loadPaletteListSelect = document.createElement('select');
@@ -34,11 +37,22 @@ function Palette(colors, timePeriod, callbacks, modV) { //jshint ignore:line
 
 		this.loadPaletteListSelect.innerHTML = '';
 
+		let options = [];
+
 		forIn(this.profilesList[this.loadProfileSelector.value].palettes, palette => {
 			let option = document.createElement('option');
 			option.textContent = option.value = palette;
-			this.loadPaletteListSelect.appendChild(option);
+			options.push(option);
 		});
+
+		options.sort((a, b) => {
+			return a.textContent.localeCompare(b.textContent);
+		});
+
+		options.forEach(node => {
+			this.loadPaletteListSelect.appendChild(node);
+		});
+
 	};
 
 	this.loadProfileSelector = modV.ProfileSelector({
