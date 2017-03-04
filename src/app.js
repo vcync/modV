@@ -15,7 +15,7 @@ require('./modV-generatePreset.js')(modV);
 require('./modV-isControl.js')(modV);
 require('./modV-loadPreset.js')(modV);
 require('./modV-loop.js')(modV);
-require('./modV-mediaSelector.js')(modV);
+require('./MediaSelector.js')(modV);
 require('./modV-messageHandler.js')(modV);
 require('./modV-moveLayerToIndex.js')(modV);
 require('./modV-mux.js')(modV);
