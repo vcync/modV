@@ -124,12 +124,7 @@ module.exports = function(modV) {
 						}
 
 						if(value.type === 'VideoControl' || value.type === 'ImageControl') {
-
-							console.log('got video or image', Module[value.variable].src, value.src);
-
 							Module[value.variable].src = value.src;
-
-							console.log('got video or image', Module[value.variable].src, value.src);
 						}
 					}
 				});
