@@ -46,7 +46,11 @@ module.exports = function mediaManager(modV) {
 
 
 					let presetSelectNode = document.querySelector('#loadPresetSelect');
-					if(presetSelectNode) presetSelectNode.innerHTML = '';
+					if(!presetSelectNode) return;
+
+					presetSelectNode.innerHTML = '';
+
+					let options = [];
 
 					forIn(modV.profiles, (profileName, profile) => {
 						forIn(profile.presets, (presetName, preset) => {
@@ -55,12 +59,21 @@ module.exports = function mediaManager(modV) {
 								optionNode.value = presetName;
 								optionNode.textContent = presetName;
 
-								presetSelectNode.appendChild(optionNode);
+								options.push(optionNode);
 							}
 							
 							modV.presets[presetName] = preset;
 						});
 					});
+
+					options.sort((a, b) => {
+						return a.textContent.localeCompare(b.textContent);
+					});
+
+					options.forEach(node => {
+						presetSelectNode.appendChild(node);
+					});
+
 				break;
 			}
 		}
