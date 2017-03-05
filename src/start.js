@@ -1,6 +1,8 @@
 module.exports = function(modV) {
 	modV.prototype.start = function() {
 		
+		if(!this.options.headless) this.startUI();
+
 		this.loadOptions(() => {
 
 			if(!('user' in this.options)) {
@@ -31,7 +33,6 @@ module.exports = function(modV) {
 
 				if(foundSources.video.length > 0) this.setMediaSource(audioSource || foundSources.audio[0].deviceId, videoSource || foundSources.video[0].deviceId);
 				else this.setMediaSource(audioSource || foundSources.audio[0].deviceId, undefined);
-				if(!this.options.headless) this.startUI();
 			});
 			
 			if(typeof this.canvas !== 'object') {
