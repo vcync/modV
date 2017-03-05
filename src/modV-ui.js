@@ -387,8 +387,10 @@ module.exports = function(modV) {
 
 		let loadPresetclearScreenCheckbox = presetControlPanel.querySelector('#loadPresetClearScreen');
 
+		let loadPresetLockedLayersCheckbox = presetControlPanel.querySelector('#loadPresetLockedLayers');
+
 		presetControlPanel.querySelector('#loadPreset').addEventListener('click', function() {
-			self.loadPreset(presetControlPanel.querySelector('#loadPresetSelect').value, loadPresetclearScreenCheckbox.checked);
+			self.loadPreset(presetControlPanel.querySelector('#loadPresetSelect').value, loadPresetclearScreenCheckbox.checked, loadPresetLockedLayersCheckbox.checked);
 		});
 
 		presetControlPanel.querySelector('#savePreset').addEventListener('click', function() {

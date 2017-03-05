@@ -1,9 +1,10 @@
 module.exports = function(modV) {
 
-	modV.prototype.loadPreset = function(id, clearScreen) {
+	modV.prototype.loadPreset = function(id, clearScreen, keepLocked) {
 		console.log('clear', clearScreen);
 		this.factoryReset({
-			clear: clearScreen
+			clear: clearScreen,
+			keepLockedLayers: keepLocked
 		});
 
 		if(!('layers' in this.presets[id])) {
@@ -40,6 +41,7 @@ module.exports = function(modV) {
 			Layer.enabled 		= ((typeof layerDetails.enabled 	!== "undefined") ? layerDetails.enabled		: Layer.enabled	);
 			Layer.inherit 		= ((typeof layerDetails.inherit		!== "undefined") ? layerDetails.inherit		: Layer.inherit	);
 			Layer.pipeline 		= ((typeof layerDetails.pipeline	!== "undefined") ? layerDetails.pipeline	: Layer.pipeline);
+			Layer.locked 		= ((typeof layerDetails.locked		!== "undefined") ? layerDetails.locked		: Layer.locked);
 			Layer.blending 		= ((typeof layerDetails.blending	!== "undefined") ? layerDetails.blending	: Layer.blending);
 			Layer.drawToOutput	= ((typeof layerDetails.drawToOutput!== "undefined") ? layerDetails.drawToOutput: Layer.drawToOutput);
 

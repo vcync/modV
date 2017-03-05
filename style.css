@@ -553,12 +553,11 @@ input[disabled][type="range"]::-webkit-slider-runnable-track{
 	text-shadow: 1px 1px hsla(208,100%,100%,1), -1px -1px hsla(208,100%,73%,1);
 }
 
-.layer-item .collapse {
+.layer-item .collapse,
+.layer-item .lock {
 	width: 18px;
 	height: 18px;
-	position: absolute;
-	right: 2px;
-	top: 2px;
+	display: inline-block;
 	text-align: center;
 	vertical-align: middle;
 	cursor: pointer;
@@ -585,6 +584,32 @@ input[disabled][type="range"]::-webkit-slider-runnable-track{
 }
 
 .layer-item.collapsed .fa-toggle-down {
+	display: block;
+	margin: 1px 0 0 0;
+}
+
+.layer-item-controls {
+	text-align: right;
+}
+
+.layer-item.collapsed .module-list {
+	height: 0;
+	overflow: hidden;
+	min-height: 0;
+	padding: 0;
+	border: none;
+}
+
+.layer-item .fa-toggle-down,
+.layer-item .fa-lock {
+	display: none;
+}
+
+.layer-item.locked .fa-unlock-alt {
+	display: none;
+}
+
+.layer-item.locked .fa-lock {
 	display: block;
 	margin: 1px 0 0 0;
 }

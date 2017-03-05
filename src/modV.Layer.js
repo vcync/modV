@@ -16,6 +16,7 @@ module.exports = function(modV) {
 			this.inherit = true;
 			this.pipeline = false;
 			this.drawToOutput = true;
+			this.locked = false;
 			this.blending = 'normal';
 			this.name = name || 'New Layer';
 			this.modules = {};
@@ -136,11 +137,16 @@ module.exports = function(modV) {
 
 			let titleNode = layerItem.querySelector('.title');
 			let collapseNode = layerItem.querySelector('.collapse');
+			let lockNode = layerItem.querySelector('.lock');
 			let moduleList = layerItem.querySelector('.module-list');
 
 			layerItem.addEventListener('mousedown', e => {
 				// ignore collapse button
-				if(e.target.className.search('.fa-toggle-') > -1) return;
+				if(
+					e.target.className.search('.fa-toggle-') > -1 ||
+					e.target.className.search('.fa-lock') > -1 ||
+					e.target.className.search('.fa-unlock-') > -1
+				) return;
 
 				modV.activeLayer = modV.layers.indexOf(this);
 				modV.updateLayerControls();
@@ -155,6 +161,11 @@ module.exports = function(modV) {
 
 			collapseNode.addEventListener('mousedown', function() {
 				self.node.classList.toggle('collapsed');
+			});
+
+			lockNode.addEventListener('mousedown', function() {
+				self.node.classList.toggle('locked');
+				self.locked = !self.locked;
 			});
 
 			let oldName;

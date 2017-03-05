@@ -83,6 +83,9 @@
 			<input id="loadPreset" type="button" value="Load Preset" class="enable">
 			<br><br>
 			<label for=loadPresetClearScreen>Clear screen on load</label><input id="loadPresetClearScreen" type="checkbox" checked="true">
+
+			<br><br>
+			<label for=loadPresetLockedLayers>Keep locked layers</label><input id="loadPresetLockedLayers" type="checkbox">
 		</div>
 
 		<div class="control-group save-preset-group">
@@ -173,11 +176,22 @@
 
 <template id="layer-item">
 	<div class="layer-item">
-		<div class="control-bar handle">
-			<div class="title"></div>
-			<div class="collapse">
-				<i class="fa fa-toggle-down"></i>
-				<i class="fa fa-toggle-up"></i>
+		<div class="control-bar handle pure-g">
+
+			<div class="pure-u-3-5">
+				<div class="title"></div>
+			</div>
+
+			<div class="pure-u-2-5 layer-item-controls">
+				<div class="lock">
+					<i class="fa fa-unlock-alt"></i>
+					<i class="fa fa-lock"></i>
+				</div>
+
+				<div class="collapse">
+					<i class="fa fa-toggle-down"></i>
+					<i class="fa fa-toggle-up"></i>
+				</div>
 			</div>
 		</div>
 		<div class="module-list"></div>
