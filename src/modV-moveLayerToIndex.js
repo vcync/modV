@@ -13,5 +13,7 @@ module.exports = function(modV) {
 			oldIndex: oldIndex,
 			newIndex: newIndex
 		});
+
+		this.updateLayerSelectors();
 	};
 };

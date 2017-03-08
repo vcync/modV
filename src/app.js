@@ -33,6 +33,9 @@ require('./calculate-preview-canvas-values')(modV);
 require('./rescan-media-stream-sources')(modV);
 require('./set-media-source')(modV);
 
+require('./LayerSelector.js')(modV);
+require('./update-layer-selectors.js')(modV);
+
 require('./modV-ui-createActiveListItem.js')(modV);
 require('./modV-ui-createControls.js')(modV);
 require('./modV-ui-createGalleryItem.js')(modV);

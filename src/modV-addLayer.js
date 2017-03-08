@@ -12,6 +12,8 @@ module.exports = function(modV) {
 			index: layerIndex
 		});
 
+		this.updateLayerSelectors();
+
 		return layerIndex;
 	};
 };

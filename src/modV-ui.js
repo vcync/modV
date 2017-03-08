@@ -374,6 +374,14 @@ module.exports = function(modV) {
 			self.layers[self.activeLayer].drawToOutput = this.checked;
 		});
 
+		let inheritanceSelect = self.LayerSelector({
+			onchange: function(index) {
+				self.layers[self.activeLayer].inheritFrom = parseInt(index);
+			}
+		});
+
+		layerControlPanel.querySelector('.inherit-group').appendChild(inheritanceSelect.returnHTML());
+
 		this.updateLayerControls();
 
 		// Create Preset Controls

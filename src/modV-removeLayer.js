@@ -23,5 +23,7 @@ module.exports = function(modV) {
 		this.remote.update('removelayer', {
 			index: layerIndex
 		});
+
+		this.updateLayerSelectors();
 	};
 };

@@ -14,6 +14,7 @@ module.exports = function(modV) {
 			const alpha = layer.alpha;
 			const enabled = layer.enabled;
 			const inherit = layer.inherit;
+			const inheritFrom = layer.inheritFrom;
 
 			const bufferCan = this.bufferCanvas;
 			const bufferCtx = this.bufferContext;
@@ -29,10 +30,15 @@ module.exports = function(modV) {
 
 			if(inherit) {
 				let lastCanvas;
-				if(layerIndex-1 > -1) {
-					lastCanvas = this.layers[layerIndex-1].canvas;
+
+				if(inheritFrom < 0) {
+					if(layerIndex-1 > -1) {
+						lastCanvas = this.layers[layerIndex-1].canvas;
+					} else {
+						lastCanvas = this.outputCanvas;
+					}
 				} else {
-					lastCanvas = this.outputCanvas;
+					lastCanvas = this.layers[inheritFrom].canvas;
 				}
 
 				context.drawImage(lastCanvas, 0, 0, lastCanvas.width, lastCanvas.height);
@@ -181,10 +187,8 @@ module.exports = function(modV) {
 
 					// Render
 					this.shaderEnv.render(delta, canvas);
-
-					if(Module.info.blend !== 'normal') {
-						context.globalCompositeOperation = Module.info.blend;
-					}
+					context.globalCompositeOperation = Module.info.blend;
+					
 
 					// Copy Shader Canvas to Main Canvas
 					if(pipeline) {
@@ -209,9 +213,7 @@ module.exports = function(modV) {
 
 				} else if(Module instanceof this.Module2D) {
 
-					if(Module.info.blend !== 'normal') {
-						context.globalCompositeOperation = Module.info.blend;
-					}
+					context.globalCompositeOperation = Module.info.blend;
 
 					if(pipeline) {
 
@@ -264,9 +266,7 @@ module.exports = function(modV) {
 					Module.draw(Module.getScene(), Module.getCamera(), this.threeEnv.material, texture, meydaOutput);
 					this.threeEnv.renderer.render(Module.getScene(), Module.getCamera());
 
-					if(Module.info.blend !== 'normal') {
-						context.globalCompositeOperation = Module.info.blend;
-					}
+					context.globalCompositeOperation = Module.info.blend;
 
 					if(pipeline) {
 						bufferCtx.clearRect(0,0,canvas.width,canvas.height);

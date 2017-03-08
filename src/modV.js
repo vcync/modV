@@ -39,7 +39,12 @@ var modV = function(options) {
 	// Attach message handler for sockets and windows
 	this.addMessageHandler();
 
+	// Layers store
+	this.layers = [];
+	this.activeLayer = 0;
+
 	this.activeModules = {};
+	this.layerSelectors = [];
 	this.LFOs = [];
 	this.modOrder = [];
 	this.moduleStore = {};
@@ -59,10 +64,6 @@ var modV = function(options) {
 
 	// Remote
 	this.remoteConnect();
-
-	// Layers store
-	this.layers = [];
-	this.activeLayer = 0;
 
 	this.canvas = this.options.canvas || document.createElement('canvas');
 	this.context = this.canvas.getContext('2d');

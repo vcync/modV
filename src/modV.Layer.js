@@ -14,6 +14,7 @@ module.exports = function(modV) {
 			this.alpha = 1;
 			this.enabled = true;
 			this.inherit = true;
+			this.inheritFrom = -1; // -1 = canvas before, any other number corresponds to modV.layers index
 			this.pipeline = false;
 			this.drawToOutput = true;
 			this.locked = false;
@@ -184,7 +185,7 @@ module.exports = function(modV) {
 					oldName = undefined;
 					return;
 				} else {
-					self.name = inputText;
+					self.setName(inputText);
 				}
 				
 			};
@@ -224,8 +225,14 @@ module.exports = function(modV) {
 		}
 
 		setName(name) {
+			name = name.trim();
+			if(name.length === 0) return;
+
 			this.name = name;
 			this.nodes.title.textContent = name;
+
+			this.modV.updateLayerSelectors();
+
 			return true;
 		}
 
