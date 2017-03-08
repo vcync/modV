@@ -1,26 +1,24 @@
 module.exports = function(modV) {
 
 	modV.prototype.draw = function(meydaOutput, delta) {
-		var self = this;
+		if(!this.ready) return;
 
-		if(!self.ready) return;
+		const _gl = this.shaderEnv.gl;
 
-		for(var layerIndex=0; layerIndex < self.layers.length; layerIndex++) {
+		for(let layerIndex=0; layerIndex < this.layers.length; layerIndex++) {
 
-			var _gl = self.shaderEnv.gl;
+			const layer = this.layers[layerIndex];
+			let canvas = layer.canvas;
+			const context = layer.context;
+			const clearing = layer.clearing;
+			const alpha = layer.alpha;
+			const enabled = layer.enabled;
+			const inherit = layer.inherit;
 
-			var layer = self.layers[layerIndex];
-			var canvas = layer.canvas;
-			var context = layer.context;
-			var clearing = layer.clearing;
-			var alpha = layer.alpha;
-			var enabled = layer.enabled;
-			var inherit = layer.inherit;
+			const bufferCan = this.bufferCanvas;
+			const bufferCtx = this.bufferContext;
 
-			var bufferCan = this.bufferCanvas;
-			var bufferCtx = this.bufferContext;
-
-			var pipeline = layer.pipeline;
+			const pipeline = layer.pipeline;
 			if(pipeline && clearing) {
 				bufferCtx.clearRect(0,0,canvas.width,canvas.height);
 			}
@@ -30,11 +28,11 @@ module.exports = function(modV) {
 			}
 
 			if(inherit) {
-				var lastCanvas;
+				let lastCanvas;
 				if(layerIndex-1 > -1) {
-					lastCanvas = self.layers[layerIndex-1].canvas;
+					lastCanvas = this.layers[layerIndex-1].canvas;
 				} else {
-					lastCanvas = self.outputCanvas;
+					lastCanvas = this.outputCanvas;
 				}
 
 				context.drawImage(lastCanvas, 0, 0, lastCanvas.width, lastCanvas.height);
@@ -44,9 +42,9 @@ module.exports = function(modV) {
 
 			if(!enabled || alpha === 0) continue;
 
-			for(var i=0; i < layer.moduleOrder.length; i++) {
+			for(let i=0; i < layer.moduleOrder.length; i++) {
 
-				var Module = layer.modules[layer.moduleOrder[i]];
+				const Module = layer.modules[layer.moduleOrder[i]];
 
 				if(Module.info.disabled || Module.info.alpha === 0) continue;
 
@@ -57,20 +55,20 @@ module.exports = function(modV) {
 				if(pipeline && i !== 0) canvas = bufferCan;
 				else if(pipeline) canvas = layer.canvas;
 
-				if(Module instanceof self.ModuleScript) {
+				if(Module instanceof this.ModuleScript) {
 
 					// Update GL texture
 
 					// Switch program to default passthrough
-					if(self.shaderEnv.activeProgram !== 1) {
-						self.shaderEnv.activeProgram = 1;
-						_gl.useProgram(self.shaderEnv.programs[1]);
+					if(this.shaderEnv.activeProgram !== 1) {
+						this.shaderEnv.activeProgram = 1;
+						_gl.useProgram(this.shaderEnv.programs[1]);
 					}
 
 					context.globalCompositeOperation = 'copy';
 
 					// Copy Main Canvas to Shader texture
-					self.shaderEnv.texture = _gl.texImage2D(
+					this.shaderEnv.texture = _gl.texImage2D(
 						_gl.TEXTURE_2D,
 						0,
 						_gl.RGBA,
@@ -81,7 +79,7 @@ module.exports = function(modV) {
 
 					context.globalCompositeOperation = 'normal';
 
-					self.shaderEnv.render(delta, canvas);
+					this.shaderEnv.render(delta, canvas);
 
 					if(pipeline) {
 						// copy buffer to layer canvas, clear first
@@ -95,7 +93,7 @@ module.exports = function(modV) {
 						);
 
 						// draw 2d operations
-						Module.loop(/*layer.canvas*/self.previewCanvas, /*context*/self.previewContext, self.video, meydaOutput, self.meyda, delta, self.bpm, self.kick, _gl);
+						Module.loop(/*layer.canvas*/this.previewCanvas, /*context*/this.previewContext, this.videoStream, meydaOutput, this.meyda, delta, this.bpm, this.kick, _gl);
 
 						//copy layer back to buffer, clear first
 						bufferCtx.clearRect(0,0,canvas.width,canvas.height);
@@ -109,24 +107,24 @@ module.exports = function(modV) {
 
 					} else {
 
-						Module.loop(/*canvas*/self.previewCanvas, /*context*/self.previewContext, self.video, meydaOutput, self.meyda, delta, self.bpm, self.kick, _gl);
+						Module.loop(/*canvas*/this.previewCanvas, /*context*/this.previewContext, this.videoStream, meydaOutput, this.meyda, delta, this.bpm, this.kick, _gl);
 
 					}
 				}
 
-				if(Module instanceof self.ModuleShader) {
+				if(Module instanceof this.ModuleShader) {
 
 					// Switch program
-					if(Module.programIndex !== self.shaderEnv.activeProgram) {
-						self.shaderEnv.activeProgram = Module.programIndex;
+					if(Module.programIndex !== this.shaderEnv.activeProgram) {
+						this.shaderEnv.activeProgram = Module.programIndex;
 
-						_gl.useProgram(self.shaderEnv.programs[Module.programIndex]);
+						_gl.useProgram(this.shaderEnv.programs[Module.programIndex]);
 					}
 
 					context.globalCompositeOperation = 'copy';
 
 					// Copy Main Canvas to Shader texture
-					self.shaderEnv.texture = _gl.texImage2D(
+					this.shaderEnv.texture = _gl.texImage2D(
 						_gl.TEXTURE_2D,
 						0,
 						_gl.RGBA,
@@ -141,8 +139,8 @@ module.exports = function(modV) {
 					if('uniforms' in Module.info) {
 						forIn(Module.info.uniforms, (uniformKey, uniform) => {
 
-							var uniLoc = _gl.getUniformLocation(self.shaderEnv.programs[self.shaderEnv.activeProgram], uniformKey);
-							var value;
+							const uniLoc = _gl.getUniformLocation(this.shaderEnv.programs[this.shaderEnv.activeProgram], uniformKey);
+							let value;
 
 							switch(uniform.type) {
 								case 'f':
@@ -172,7 +170,7 @@ module.exports = function(modV) {
 					if('meyda' in Module.info) {
 						if(Module.info.meyda.length > 0) {
 							Module.info.meyda.forEach((feature) => {
-								let uniLoc = _gl.getUniformLocation(self.shaderEnv.programs[self.shaderEnv.activeProgram], feature);
+								let uniLoc = _gl.getUniformLocation(this.shaderEnv.programs[this.shaderEnv.activeProgram], feature);
 
 								let value = parseFloat(meydaOutput[feature]);
 								_gl.uniform1f(uniLoc, value);
@@ -182,7 +180,7 @@ module.exports = function(modV) {
 					}
 
 					// Render
-					self.shaderEnv.render(delta, canvas);
+					this.shaderEnv.render(delta, canvas);
 
 					if(Module.info.blend !== 'normal') {
 						context.globalCompositeOperation = Module.info.blend;
@@ -192,7 +190,7 @@ module.exports = function(modV) {
 					if(pipeline) {
 						bufferCtx.clearRect(0,0,canvas.width,canvas.height);
 						bufferCtx.drawImage(
-							self.shaderEnv.canvas,
+							this.shaderEnv.canvas,
 							0,
 							0,
 							canvas.width,
@@ -201,7 +199,7 @@ module.exports = function(modV) {
 
 					} else {
 						context.drawImage(
-							self.shaderEnv.canvas,
+							this.shaderEnv.canvas,
 							0,
 							0,
 							canvas.width,
@@ -209,7 +207,7 @@ module.exports = function(modV) {
 						);
 					}
 
-				} else if(Module instanceof self.Module2D) {
+				} else if(Module instanceof this.Module2D) {
 
 					if(Module.info.blend !== 'normal') {
 						context.globalCompositeOperation = Module.info.blend;
@@ -228,7 +226,7 @@ module.exports = function(modV) {
 						);
 
 						// draw 2d operations
-						Module.draw(layer.canvas, context, self.video, meydaOutput, self.meyda, delta, self.bpm, self.kick);
+						Module.draw(layer.canvas, context, this.videoStream, meydaOutput, this.meyda, delta, this.bpm, this.kick);
 
 						//copy layer back to buffer, clear first
 						bufferCtx.clearRect(0,0,canvas.width,canvas.height);
@@ -242,17 +240,17 @@ module.exports = function(modV) {
 
 					} else {
 
-						Module.draw(canvas, context, self.video, meydaOutput, self.meyda, delta, self.bpm, self.kick);
+						Module.draw(canvas, context, this.videoStream, meydaOutput, this.meyda, delta, this.bpm, this.kick);
 
 					}
 					
-				} else if(Module instanceof self.Module3D) {
-					let texture = self.threeEnv.texture;
+				} else if(Module instanceof this.Module3D) {
+					let texture = this.threeEnv.texture;
 
 					// copy current canvas to our textureCanvas, clear first
-					self.threeEnv.textureCanvasContext.clearRect(0, 0, canvas.width, canvas.height);
+					this.threeEnv.textureCanvasContext.clearRect(0, 0, canvas.width, canvas.height);
 
-					self.threeEnv.textureCanvasContext.drawImage(
+					this.threeEnv.textureCanvasContext.drawImage(
 						canvas,
 						0,
 						0,
@@ -260,11 +258,11 @@ module.exports = function(modV) {
 						canvas.height
 					);
 					
-					//self.threeEnv.material.map = self.threeEnv.texture;
-					self.threeEnv.material.map.needsUpdate = true;
+					//this.threeEnv.material.map = this.threeEnv.texture;
+					this.threeEnv.material.map.needsUpdate = true;
 
-					Module.draw(Module.getScene(), Module.getCamera(), self.threeEnv.material, texture, meydaOutput);
-					self.threeEnv.renderer.render(Module.getScene(), Module.getCamera());
+					Module.draw(Module.getScene(), Module.getCamera(), this.threeEnv.material, texture, meydaOutput);
+					this.threeEnv.renderer.render(Module.getScene(), Module.getCamera());
 
 					if(Module.info.blend !== 'normal') {
 						context.globalCompositeOperation = Module.info.blend;
@@ -273,7 +271,7 @@ module.exports = function(modV) {
 					if(pipeline) {
 						bufferCtx.clearRect(0,0,canvas.width,canvas.height);
 						bufferCtx.drawImage(
-							self.threeEnv.canvas,
+							this.threeEnv.canvas,
 							0,
 							0,
 							canvas.width,
@@ -282,7 +280,7 @@ module.exports = function(modV) {
 
 					} else {
 						context.drawImage(
-							self.threeEnv.canvas,
+							this.threeEnv.canvas,
 							0,
 							0,
 							canvas.width,
@@ -292,7 +290,7 @@ module.exports = function(modV) {
 				}
 
 				context.restore();
-				self.threeEnv.texture.needsUpdate = true;
+				this.threeEnv.texture.needsUpdate = true;
 			}
 
 			if(pipeline) {
@@ -307,15 +305,15 @@ module.exports = function(modV) {
 			}
 		}
 
-		self.mux();
+		this.mux();
 
-		self.previewContext.clearRect(0, 0, self.previewCanvas.width, self.previewCanvas.height);
-		self.previewContext.drawImage(
-			self.outputCanvas,
-			self.previewCanvasImageValues.x,
-			self.previewCanvasImageValues.y,
-			self.previewCanvasImageValues.width,
-			self.previewCanvasImageValues.height
+		this.previewContext.clearRect(0, 0, this.previewCanvas.width, this.previewCanvas.height);
+		this.previewContext.drawImage(
+			this.outputCanvas,
+			this.previewCanvasImageValues.x,
+			this.previewCanvasImageValues.y,
+			this.previewCanvasImageValues.width,
+			this.previewCanvasImageValues.height
 		);
 	};
 };
