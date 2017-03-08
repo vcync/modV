@@ -21,7 +21,7 @@ class KickDemo extends modV.Module2D {
 
 		this.add(new modV.PaletteControl({
 			variable: 'colour',
-			colours: [
+			colors: [
 				[199,64,163],
 				[97,214,199],
 				[222,60,75],

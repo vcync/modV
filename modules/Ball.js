@@ -65,7 +65,7 @@ class Ball extends modV.Module2D {
 
 		controls.push(new modV.PaletteControl({
 			variable: 'colour',
-			colours: [
+			colors: [
 				[199,64,163],
 				[97,214,199],
 				[222,60,75],
@@ -87,7 +87,7 @@ class Ball extends modV.Module2D {
 				[209,121,211],
 				[181,152,220]
 			], // generated here: http://tools.medialab.sciences-po.fr/iwanthue/
-			timePeriod: 500
+			timePeriod: 16
 		}));
 
 		this.add(controls);

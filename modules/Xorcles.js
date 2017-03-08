@@ -48,14 +48,14 @@ class Xorcles extends modV.Module2D {
 
 		controls.push(new modV.PaletteControl({
 			variable: 'colour',
-			colours: [
+			colors: [
 				[122,121,120],
 				[135,203,172],
 				[144,255,220],
 				[141,228,255],
 				[138,196,255]
 			],
-			timePeriod: 500
+			timePeriod: 16
 		}));
 
 		this.add(controls);

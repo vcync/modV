@@ -42,7 +42,7 @@ class Waveform extends modV.Module2D {
 
 		this.add(new modV.PaletteControl({
 			variable: 'colour',
-			colours: [
+			colors: [
 				[227,210,131],
 				[62,169,158],
 				[190,132,80],
