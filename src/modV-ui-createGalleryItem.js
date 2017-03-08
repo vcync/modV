@@ -175,7 +175,7 @@ module.exports = function(modV) {
 
 			} else if('draw' in Module) {
 				ctx.save();
-				Module.draw(canvas, ctx, self.video, self.myFeatures, self.meyda, delta, self.bpm, self.kick);
+				Module.draw(canvas, ctx, self.videoStream, self.myFeatures, self.meyda, delta, self.bpm, self.kick);
 				ctx.restore();
 			}
 		}

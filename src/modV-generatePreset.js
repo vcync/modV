@@ -70,6 +70,7 @@ module.exports = function(modV) {
 				inherit: 		JSON.parse(JSON.stringify(Layer.inherit)),
 				pipeline: 		JSON.parse(JSON.stringify(Layer.pipeline)),
 				drawToOutput: 	JSON.parse(JSON.stringify(Layer.drawToOutput)),
+				locked: 		JSON.parse(JSON.stringify(Layer.locked)),
 				blending: 		JSON.parse(JSON.stringify(Layer.blending)),
 				name: 			JSON.parse(JSON.stringify(Layer.name)),
 				moduleOrder: 	JSON.parse(JSON.stringify(Layer.moduleOrder))
