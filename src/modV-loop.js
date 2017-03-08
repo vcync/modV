@@ -57,9 +57,9 @@ module.exports = function(modV) {
 			self.context.fillText(text, self.canvas.width/2 - w/2, self.canvas.height/2 + 36 + 72);
 		}
 
-		self.palettes.forEach(function(palette) {
-			palette.nextStep();
-		});
+		// self.palettes.forEach(function(palette) {
+		// 	palette.nextStep();
+		// });
 
 		self.LFOs.forEach(function(LFO) {
 			LFO.update();

@@ -61,6 +61,14 @@ require('./modV.colourHelpers.js');
 require('./util.awesomeText.js');
 require('./util.stackTraceError');
 
+require('./setup-workers.js')(modV);
+
+require('./add-palette.js')(modV);
+require('./update-palette.js')(modV);
+require('./remove-palette.js')(modV);
+require('./create-palette.js')(modV);
+require('./set-palette.js')(modV);
+
 window.THREE = require('three'); //TODO: provide THREE as an argument to Module3D functions?
 window.tapTempo = tapTempo;
 window.modV = modV;

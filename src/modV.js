@@ -47,6 +47,7 @@ var modV = function(options) {
 	this.outputWindows = [];
 	this.profileSelectors = [];
 	this.registeredMods = {};
+	this.workers = {};
 
 	this.videoStream = document.createElement('video');
 	this.videoStream.autoplay = true;
@@ -109,7 +110,7 @@ var modV = function(options) {
 	this.createWindow();
 
 	// Collection of palette controls
-	this.palettes = [];
+	this.palettes = new Map();
 	this.presets = {};
 	this.profiles = {};
 
@@ -138,6 +139,8 @@ var modV = function(options) {
 		video: [],
 		audio: []
 	};
+
+	this.setupWorkers();
 };
 
 module.exports = modV;
