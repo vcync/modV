@@ -22,37 +22,14 @@ module.exports = function(modV) {
 
 		if(Module instanceof this.ModuleShader) {
 			Module.programIndex = originalModule.programIndex;
-			
-			// Loop through Uniforms, expose self.uniforms and create local variables
-			if('uniforms' in Module.settings.info) {
-
-				forIn(Module.settings.info.uniforms, (uniformKey, uniform) => {
-					switch(uniform.type) {
-						case 'f':
-							Module[uniformKey] = parseFloat(uniform.value);
-							break;
-
-						case 'i':
-							Module[uniformKey] = parseInt(uniform.value);
-							break;
-
-						case 'b':
-							Module[uniformKey] = uniform.value;
-							break;
-
-					}
-				});
-			}
 		}
 
 		// init Module
-		if( 'init' in Module && (Module instanceof this.Module2D)) {
-
+		if('init' in Module && Module instanceof this.Module2D) {
 			Module.init(canvas, context);
 		}
 
-		if( 'init' in Module && Module instanceof this.ModuleScript) {
-
+		if('init' in Module && Module instanceof this.ModuleScript) {
 			//Module.init(canvas, context);
 			Module.init(this.previewCanvas, this.previewContext);
 		}
@@ -63,7 +40,7 @@ module.exports = function(modV) {
 
 		// new safe name
 		let safeName = replaceAll(name, ' ', '-');
-		
+
 		// update name
 		Module.info.name = name;
 		Module.info.safeName = safeName;
