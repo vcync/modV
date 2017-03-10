@@ -1,6 +1,7 @@
 *.DS_Store
 /dist/
 node_modules
+binaries
 
 /media/*
 !/media/default/
