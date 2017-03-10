@@ -57,7 +57,7 @@ module.exports = function(modV) {
 				var originalModule = this.registeredMods[presetModuleData.originalName];
 
 				Module.info.originalModuleName = originalModule.info.originalModuleName;
-				
+
 				Module.info.name = presetModuleData.name;
 				Module.info.originalName = presetModuleData.originalName;
 				Module.info.safeName = presetModuleData.safeName;
@@ -65,27 +65,6 @@ module.exports = function(modV) {
 				// init Module
 				if(Module instanceof this.ModuleShader) {
 					Module.programIndex = originalModule.programIndex;
-					
-					// Loop through Uniforms, expose this.uniforms and create local variables
-					if('uniforms' in Module.settings.info) {
-
-						forIn(Module.settings.info.uniforms, (uniformKey, uniform) => {
-							switch(uniform.type) {
-								case 'f':
-									Module[uniformKey] = parseFloat(uniform.value);
-									break;
-
-								case 'i':
-									Module[uniformKey] = parseInt(uniform.value);
-									break;
-
-								case 'b':
-									Module[uniformKey] = uniform.value;
-									break;
-
-							}
-						});
-					}
 				}
 
 				// init Module
@@ -169,7 +148,7 @@ module.exports = function(modV) {
 		});
 
 		let assignments = new Map(this.presets[id].MIDIAssignments);
-		
+
 		this.MIDIInstance.importAssignments(assignments);
 	};
 };
