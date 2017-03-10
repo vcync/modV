@@ -6,7 +6,7 @@ console.log('      modV Copyright  (C)  2017 Sam Wray      '+ "\n" +
 			'This program comes with ABSOLUTELY NO WARRANTY'+ "\n" +
 			'For details, see LICENSE within this directory'+ "\n" +
 			'----------------------------------------------');
-
+const MediaManager = require('modv-media-manager');
 const webpack = require('webpack-stream');
 const ProvidePlugin = require('webpack-stream').webpack.ProvidePlugin;
 const connect = require('gulp-connect');
@@ -17,8 +17,6 @@ const clean = require('gulp-clean');
 const ejs = require('gulp-ejs');
 const gulp = require('gulp');
 const fs = require('fs');
-
-const exec = require('child_process').exec;
 
 const NwBuilder = require('nw-builder');
 
@@ -121,17 +119,15 @@ gulp.task('copy:nwjs:mediamanager', ['clean'], function() {
 		.pipe(gulp.dest('dist'));
 });
 
-gulp.task('copy:nwjs:mediamanagermodules', ['clean'], function(cb) {
+gulp.task('copy:nwjs:mediamanagermodules', ['clean'], function() {
 
 	// read npm package and copy mediaManager dependancies to dist, for nwjs build
 	var package = JSON.parse(fs.readFileSync('package.json', 'utf8'));
-			
+
 	var foldersToCopy = [];
 
 	for(var dep in package.dependencies) {
-
 		foldersToCopy.push('./node_modules/' + dep + '/**/*');
-	
 	}
 
 	return gulp.src(foldersToCopy, {base: './'})
@@ -160,16 +156,8 @@ gulp.task('ejs:nwjs', ['clean'], function() {
 });
 
 gulp.task('media-manager', ['set-watcher'], function(cb) {
-
-	var mediaManager = exec('node ./mediaManager.js', function(err) {
-		if(err) cb(err);
-	});
-
-	mediaManager.stdout.on('data', function(data) {
-		console.log(data.toString()); 
-	});
-
-	//return run('node ./mediaManager.js').exec();
+	new MediaManager(3132);
+	cb();
 });
 
 gulp.task('connect', function() {
@@ -191,7 +179,7 @@ gulp.task('set-watcher', ['build'], function() {
 		sources += source;
 		if(idx < allSources.length-1) sources += ", ";
 	});
-	
+
 	console.log('Watching', sources);
 	gulp.watch(allSources, ['build', 'reload']);
 });
