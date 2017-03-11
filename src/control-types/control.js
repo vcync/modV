@@ -64,7 +64,7 @@ module.exports = class Control {
 		let nodeValue;
 
 		if('default' in settings) {
-			this.value = settings.default;
+			if(!isPreset) this.value = settings.default;
 			nodeValue = settings.default;
 
 		} else if(Module[this.variable] !== undefined) {
@@ -73,14 +73,13 @@ module.exports = class Control {
 
 		if(isPreset) {
 			nodeValue = Module[this.variable];
-			debugger;
 		}
 
-		if('append' in settings) {
+		if('append' in settings && typeof nodeValue === 'string') {
 			node.value = nodeValue.replace(settings.append, '');
 		}
 
-		if('prepend' in settings) {
+		if('prepend' in settings && typeof nodeValue === 'string') {
 			node.value = nodeValue.replace(settings.prepend, '');
 		}
 		node.value = nodeValue;

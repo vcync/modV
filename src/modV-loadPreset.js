@@ -90,7 +90,7 @@ module.exports = function(modV) {
 						let ModuleSettings = {};
 						if(key in Module.info.controls) ModuleSettings = Module.info.controls[key].settings;
 
-						Module[key].value = value;
+						Module[key] = value;
 
 					} else {
 						if(value.type === 'PaletteControl') {

@@ -34,7 +34,7 @@ module.exports = function(modV) {
 			else inputNode.checked = false;
 
 			inputNode.addEventListener('change', () => {
-				this.value = inputNode.value;
+				this.value = inputNode.checked;
 			}, false);
 
 			if(isPreset) {
