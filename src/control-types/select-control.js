@@ -1,99 +1,64 @@
+const ControlError = require('./control-error');
+const Control = require('./control');
+
 module.exports = function(modV) {
-	modV.prototype.SelectControl = function(settings) {
-		var self = this;
-		var id;
-		var Module;
-		
-		self.getSettings = function() {
-			return settings;
-		};
+	modV.prototype.SelectControl = class SelectControl extends Control {
 
-		self.getID = function() {
-			return id;
-		};
+		constructor(settings) {
+			let SelectControlError = new ControlError('SelectControl');
 
-		self.writeValue = function(value) {
+			// Check for settings Object
+			if(!settings) throw new SelectControlError('SelectControl had no settings');
+			// Check for enum
+			if(!('enum' in settings)) throw new SelectControlError('SelectControl had no enum in settings');
 
-			let selectValue = this.node.options[value].value;
-
-			this.node.selectedIndex = value;
-			Module[self.variable] = selectValue;
-		};
-		
-		//TODO: error stuff
-/*		// RangeControl error handle
-		function ControlError(message) {
-			// Grab the stack
-			this.stack = (new Error()).stack;
-
-			// Parse the stack for some helpful debug info
-			var reg = /\((.*?)\)/;    
-			var stackInfo = this.stack.split('\n').pop().trim();
-			stackInfo = reg.exec(stackInfo)[0];
-
-			// Expose name and message
-			this.name = 'modV.RangeControl Error';
-			this.message = message + ' ' + stackInfo || 'Error';  
+			// All checks pass, call super
+			super(settings);
 		}
-		// Inherit from Error
-		ModuleError.prototype = Object.create(Error.prototype);
-		ModuleError.prototype.constructor = ModuleError;
 
-		// Check for settings Object
-		if(!settings) throw new ModuleError('RangeControl had no settings');
-		// Check for info Object
-		if(!('info' in settings)) throw new ModuleError('RangeControl had no info in settings');
-		// Check for info.name
-		if(!('name' in settings.info)) throw new ModuleError('RangeControl had no name in settings.info');
-		// Check for info.author
-		if(!('author' in settings.info)) throw new ModuleError('RangeControl had no author in settings.info');
-		// Check for info.version
-		if(!('version' in settings.info)) throw new ModuleError('RangeControl had no version in settings.info');*/
+		makeNode(ModuleRef, modV, isPreset, internalPresetValue) {
+			let id;
+			let Module;
+			let variable = this.variable;
+			let settings = this.settings;
 
-		// Copy settings values to local scope
-		for(var key in settings) {
-			if(settings.hasOwnProperty(key)) {
-				self[key] = settings[key];
+			if(!settings.useInternalValue) {
+				Module = ModuleRef;
+				id = Module.info.safeName + '-' + variable;
+			} else {
+				id = ModuleRef;
 			}
-		}
 
-		self.makeNode = function(ModuleRef, modV, isPreset) {
-			Module = ModuleRef;
-			id = Module.info.safeName + '-' + self.variable;
+			let node = document.createElement('select');
+			node.id = id;
 
-			var inputNode = document.createElement('select');
-			inputNode.id = id;
-			
-			if('enum' in settings) {
-				settings.enum.forEach(option => {
-					var optionNode = document.createElement('option');
-					optionNode.textContent = option.label;
-					optionNode.value = option.value;
-					
-					if(isPreset) {
-						if(option.value === Module[self.variable]) {
-							optionNode.selected = true;
-							Module.updateVariable(self.variable, option.value, modV);
-						}
-					} else if('default' in option) {
-						if(option.default) {
-							optionNode.selected = true;
-							Module.updateVariable(self.variable, option.value, modV);
-						}
+			this.init(id, ModuleRef, node, isPreset, internalPresetValue);
+
+			settings.enum.forEach(option => {
+				let optionNode = document.createElement('option');
+				optionNode.textContent = option.label;
+				optionNode.value = option.value;
+
+				if(isPreset) {
+					if(option.value === Module[this.variable]) {
+						optionNode.selected = true;
+						this.value = option.value;
 					}
+				} else if('default' in option) {
+					if(option.default) {
+						optionNode.selected = true;
+						this.value = option.value;
+					}
+				}
 
-					inputNode.appendChild(optionNode);
-				});
-			}
+				node.appendChild(optionNode);
+			});
 
-			inputNode.addEventListener('change', function() {
-				Module.updateVariable(self.variable, inputNode.options[inputNode.selectedIndex].value, modV);
+			node.addEventListener('change', () => {
+				this.value = node.options[node.selectedIndex].value;
 			}, false);
 
-			this.node = inputNode;
-
-			return inputNode;
-		};
+			return node;
+		}
 	};
-
 };

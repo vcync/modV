@@ -1,61 +1,49 @@
+const ControlError = require('./control-error');
+const Control = require('./control');
+
 module.exports = function(modV) {
-	modV.prototype.ImageControl = function(settings) {
-		var self = this;
-		
-		self.getSettings = function() {
-			return settings;
-		};
-		
-		//TODO: error stuff
-/*		// RangeControl error handle
-		function ControlError(message) {
-			// Grab the stack
-			this.stack = (new Error()).stack;
+	modV.prototype.ImageControl = class ImageControl extends Control {
 
-			// Parse the stack for some helpful debug info
-			var reg = /\((.*?)\)/;    
-			var stackInfo = this.stack.split('\n').pop().trim();
-			stackInfo = reg.exec(stackInfo)[0];
+		constructor(settings) {
+			let ImageControlError = new ControlError('ImageControl');
 
-			// Expose name and message
-			this.name = 'modV.RangeControl Error';
-			this.message = message + ' ' + stackInfo || 'Error';  
+			// Check for settings Object
+			if(!settings) throw new ImageControlError('ImageControl had no settings');
+
+			// All checks pass, call super
+			super(settings);
 		}
-		// Inherit from Error
-		ModuleError.prototype = Object.create(Error.prototype);
-		ModuleError.prototype.constructor = ModuleError;
 
-		// Check for settings Object
-		if(!settings) throw new ModuleError('RangeControl had no settings');
-		// Check for info Object
-		if(!('info' in settings)) throw new ModuleError('RangeControl had no info in settings');
-		// Check for info.name
-		if(!('name' in settings.info)) throw new ModuleError('RangeControl had no name in settings.info');
-		// Check for info.author
-		if(!('author' in settings.info)) throw new ModuleError('RangeControl had no author in settings.info');
-		// Check for info.version
-		if(!('version' in settings.info)) throw new ModuleError('RangeControl had no version in settings.info');*/
+		makeNode(ModuleRef, modV, isPreset, internalPresetValue) {
+			let id;
+			let Module;
+			let variable = this.variable;
+			let settings = this.settings;
 
-		// Copy settings values to local scope
-		for(var key in settings) {
-			if(settings.hasOwnProperty(key)) {
-				self[key] = settings[key];
+			if(!settings.useInternalValue) {
+				Module = ModuleRef;
+				id = Module.info.safeName + '-' + variable;
+			} else {
+				id = ModuleRef;
 			}
+
+			let Media = modV.MediaSelector(
+				'image', {
+					onchange: path => {
+						Module[this.variable].src = path;
+					}
+				},
+				Module[this.variable].src
+			);
+
+			if(Media.currentFile) {
+				Module[this.variable].src =  Media.currentFile.path;
+			}
+
+			let node = Media.returnHTML();
+
+			this.init(id, ModuleRef, node, isPreset, internalPresetValue);
+			return node;
 		}
-
-		self.makeNode = function(Module, modVSelf) {
-			let Media = modVSelf.MediaSelector('image', {
-				onchange: path => {
-					Module[self.variable].src = path;
-				}
-			},
-			Module[self.variable].src);
-
-			if(!Media.currentFile ||!Module[self.variable].src) return Media.returnHTML();
-
-			Module[self.variable].src = Media.currentFile.path || Module[self.variable].src;
-			return Media.returnHTML();
-		};
 	};
-
 };

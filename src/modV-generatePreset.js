@@ -1,5 +1,5 @@
 module.exports = function(modV) {
-	
+
 	modV.prototype.generatePreset = function(name) {
 		let self = this;
 		var preset = {
@@ -13,7 +13,7 @@ module.exports = function(modV) {
 				author: this.options.user
 			}
 		};
-		
+
 		function extractValues(Control, Module, key) {
 			if(Control instanceof self.PaletteControl) {
 
@@ -43,7 +43,7 @@ module.exports = function(modV) {
 
 			} else {
 
-				if('append' in Control.getSettings()) {
+				if('append' in Control.settings) {
 					preset.moduleData[key].values[Control.variable] = Control.node.value;
 				} else {
 					preset.moduleData[key].values[Control.variable] = Module[Control.variable];
@@ -80,7 +80,7 @@ module.exports = function(modV) {
 		});
 
 		forIn(this.activeModules, (key, Module) => {
-			
+
 			preset.moduleData[key] = {};
 			preset.moduleData[key].disabled = 			Module.info.disabled;
 			preset.moduleData[key].blend = 				Module.info.blend || 'normal';

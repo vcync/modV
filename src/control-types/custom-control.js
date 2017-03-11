@@ -1,72 +1,93 @@
 module.exports = function(modV) {
-	modV.prototype.CustomControl = function(settings) {
-		var self = this;
-		var id;
-		
-		self.getSettings = function() {
-			return settings;
-		};
+	modV.prototype.CustomControl = class CustomControl {
 
-		self.getID = function() {
-			return id;
-		};
+		constructor(settings) {
+			this._customNode = settings;
+			this._node = null;
 
-		/*//TODO: error stuff
-		// RangeControl error handle
-		function ControlError(message) {
-			// Grab the stack
-			this.stack = (new Error()).stack;
+			let id;
 
-			// Parse the stack for some helpful debug info
-			var reg = /\((.*?)\)/;    
-			var stackInfo = this.stack.split('\n').pop().trim();
-			try {
-				stackInfo = reg.exec(stackInfo)[0];
-			} catch(e) {
-				
-			}
+			Object.defineProperty(this, 'id', {
+				set: (idIn) => {
+					id = idIn;
+				},
+				get: () => {
+					return id;
+				}
+			});
 
-			// Expose name and message
-			this.name = 'modV.RangeControl Error';
-			this.message = message + ' ' + stackInfo || 'Error';  
-		}
-		// Inherit from Error
-		ControlError.prototype = Object.create(Error.prototype);
-		ControlError.prototype.constructor = ControlError;
-
-		// Check for settings Object
-		if(!settings) throw new ControlError('RangeControl had no settings');
-		// Check for info Object
-		if(!('min' in settings)) throw new ControlError('RangeControl had no "min" in settings');
-		// Check for info.name
-		if(!('max' in settings)) throw new ControlError('RangeControl had no "max" in settings');
-		// Check for info.author
-		if(!('varType' in settings)) throw new ControlError('RangeControl had no "varType" in settings');
-		*/
-
-		// Copy settings values to local scope
-		for(var key in settings) {
-			if(settings.hasOwnProperty(key)) {
-				self[key] = settings[key];
-			}
+			Object.defineProperty(this, 'settings', {
+				get: () => {
+					return {
+						useInternalValue: false
+					};
+				}
+			});
 		}
 
-		var modV;
-		var Module;
-
-		self.setVariable = function(variable, value) {
-			Module.updateVariable(variable, value, modV);
-		};
-
-		self.makeNode = function(argModule, argModV) {
-			modV = argModV;
-			Module = argModule;
-			id = Module.info.safeName + '-' + Date.now();
-			
-			var node = settings(Module);
+		init(id, Module, node, isPreset, internalPresetValue) {
+			let settings = this.settings;
+			this.id = id;
+			this._node = node;
 			node.id = id;
 
+			// Control being used internally, return
+			if(settings.useInternalValue) {
+				if(isPreset) node.value = internalPresetValue;
+				else if('default' in settings) node.value = settings.default;
+
+				return;
+			}
+
+			this._Module = Module;
+
+			let nodeValue;
+
+			if('default' in settings) {
+				if(!isPreset) this.value = settings.default;
+				nodeValue = settings.default;
+
+			} else if(Module[this.variable] !== undefined) {
+				nodeValue = Module[this.variable];
+			}
+
+			if(isPreset) {
+				nodeValue = Module[this.variable];
+			}
+
+			if('append' in settings && typeof nodeValue === 'string') {
+				node.value = nodeValue.replace(settings.append, '');
+			}
+
+			if('prepend' in settings && typeof nodeValue === 'string') {
+				node.value = nodeValue.replace(settings.prepend, '');
+			}
+			node.value = nodeValue;
+		}
+
+		get label() {
+			return this.settings.label;
+		}
+
+		get variable() {
+			return this.settings.variable;
+		}
+
+		makeNode(ModuleRef, modV, isPreset, internalPresetValue) {
+			let id;
+			let Module;
+			let variable = this.variable;
+			let settings = this.settings;
+
+			if(!settings.useInternalValue) {
+				Module = ModuleRef;
+				id = Module.info.safeName + '-' + variable;
+			}
+
+			let node = this._customNode(Module);
+
+			this.init(id, ModuleRef, node, isPreset, internalPresetValue);
 			return node;
-		};
+		}
 	};
 };

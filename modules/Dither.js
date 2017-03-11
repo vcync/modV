@@ -21,13 +21,13 @@ class Dither extends modV.ModuleShader {
 			variable: 'scale',
 			label: 'Scale',
 			varType: 'float',
-			min: 0.0,
-			max: 10.0,
-			step: 0.001,
+			min: 1.0,
+			max: 50.0,
+			step: 1.0,
 			default: 1.0
 		}));
 	}
-	
+
 }
 
 modV.register(Dither);

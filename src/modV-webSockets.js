@@ -3,7 +3,7 @@ module.exports = function(modV) {
 	/* Setup remote control */
 	modV.prototype.remoteSuccess = false;
 	modV.prototype.uuid = undefined;
-	
+
 	modV.prototype.remoteConnect = function() {
 		//if(!this.options.remote.use) return false;
 
@@ -23,9 +23,9 @@ module.exports = function(modV) {
 			remote.onmessage = e => {
 				var data = JSON.parse(e.data);
 				console.log('Remote sent', data);
-						
+
 				if(!('type' in data)) return false;
-						
+
 				switch(data.type) {
 					case 'hello':
 						remote.sendJSON({
@@ -74,7 +74,7 @@ module.exports = function(modV) {
 
 					controls.push({
 						type: type,
-						settings: Control.getSettings()
+						settings: Control.settings
 					});
 				});
 
