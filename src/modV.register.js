@@ -28,7 +28,7 @@ module.exports = function(modV) {
 
 				controls.push({
 					type: type,
-					settings: Control.getSettings()
+					settings: Control.settings
 				});
 			});
 
@@ -56,7 +56,7 @@ module.exports = function(modV) {
 			Module = new Module();
 			Module.info.originalModuleName = originalModule.name;
 		}
-		
+
 		// Shared Module variables
 		var name;
 		let type = 'unknown';
@@ -122,7 +122,7 @@ module.exports = function(modV) {
 
 			// Read shader document
 			getDocument(self.baseURL + '/modules/' + Module.shaderFile, function(xhrDocument) {
-				
+
 				var vert = xhrDocument.querySelector('script[type="x-shader/x-vertex"]').textContent;
 				var frag = xhrDocument.querySelector('script[type="x-shader/x-fragment"]').textContent;
 
@@ -133,7 +133,7 @@ module.exports = function(modV) {
 				makeProgram(vert, frag).then(program => {
 					gl.useProgram(program);
 					Module.programIndex = self.shaderEnv.programs.push(program)-1;
-					
+
 					// finish up
 					finish(Module, type);
 				}).catch(error => {

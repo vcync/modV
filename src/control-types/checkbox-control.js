@@ -1,63 +1,28 @@
+const ControlError = require('./control-error');
+const Control = require('./control');
+
 module.exports = function(modV) {
-	modV.prototype.CheckboxControl = function(settings) {
-		let self = this;
-		let Module;
-		let id;
-		
-		self.getSettings = function() {
-			return settings;
-		};
+	modV.prototype.CheckboxControl = class CheckboxControl extends Control {
 
-		self.getID = function() {
-			return id;
-		};
+		constructor(settings) {
+			let CheckboxControlError = new ControlError('CheckboxControl');
 
-		self.writeValue = function(value) {
-			this.node.checked = value;
-			Module[self.variable] = value;
-		};
-		
-		//TODO: error stuff
-/*		// RangeControl error handle
-		function ControlError(message) {
-			// Grab the stack
-			this.stack = (new Error()).stack;
+			// Check for settings Object
+			if(!settings) throw new CheckboxControlError('CheckboxControl had no settings');
 
-			// Parse the stack for some helpful debug info
-			var reg = /\((.*?)\)/;    
-			var stackInfo = this.stack.split('\n').pop().trim();
-			stackInfo = reg.exec(stackInfo)[0];
-
-			// Expose name and message
-			this.name = 'modV.RangeControl Error';
-			this.message = message + ' ' + stackInfo || 'Error';  
-		}
-		// Inherit from Error
-		ModuleError.prototype = Object.create(Error.prototype);
-		ModuleError.prototype.constructor = ModuleError;
-
-		// Check for settings Object
-		if(!settings) throw new ModuleError('RangeControl had no settings');
-		// Check for info Object
-		if(!('info' in settings)) throw new ModuleError('RangeControl had no info in settings');
-		// Check for info.name
-		if(!('name' in settings.info)) throw new ModuleError('RangeControl had no name in settings.info');
-		// Check for info.author
-		if(!('author' in settings.info)) throw new ModuleError('RangeControl had no author in settings.info');
-		// Check for info.version
-		if(!('version' in settings.info)) throw new ModuleError('RangeControl had no version in settings.info');*/
-
-		// Copy settings values to local scope
-		for(let key in settings) {
-			if(settings.hasOwnProperty(key)) {
-				self[key] = settings[key];
-			}
+			// All checks pass, call super
+			super(settings);
 		}
 
-		self.makeNode = function(ModuleRef, modV, isPreset) {
+		makeNode(ModuleRef, modV, isPreset, internalPresetValue) {
+			let id;
+			let Module;
+			let variable = this.variable;
+			let settings = this.settings;
+
 			if(!settings.useInternalValue) {
 				Module = ModuleRef;
-				id = Module.info.safeName + '-' + self.variable;
+				id = Module.info.safeName + '-' + variable;
 			} else {
 				id = ModuleRef;
 			}
@@ -68,15 +33,12 @@ module.exports = function(modV) {
 			if('checked' in settings) inputNode.checked = settings.checked;
 			else inputNode.checked = false;
 
-			inputNode.addEventListener('change', function() {
-				if(!settings.useInternalValue) Module.updateVariable(self.variable, this.checked, modV);
-				else {
-					settings.oninput(this.checked);
-				}
+			inputNode.addEventListener('change', () => {
+				this.value = inputNode.value;
 			}, false);
 
 			if(isPreset) {
-				inputNode.checked = Module[self.variable];
+				inputNode.checked = Module[variable];
 			}
 
 			let labelNode = document.createElement('label');
@@ -87,10 +49,8 @@ module.exports = function(modV) {
 			div.appendChild(inputNode);
 			div.appendChild(labelNode);
 
-			this.node = inputNode;
-
+			this.init(id, ModuleRef, inputNode, isPreset, internalPresetValue);
 			return div;
-		};
+		}
 	};
-
 };

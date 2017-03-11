@@ -88,13 +88,9 @@ module.exports = function(modV) {
 					if(typeof value !== 'object') {
 
 						let ModuleSettings = {};
-						if(key in Module.info.controls) ModuleSettings = Module.info.controls[key].getSettings();
+						if(key in Module.info.controls) ModuleSettings = Module.info.controls[key].settings;
 
-						if('append' in ModuleSettings) {
-							Module[key] = value + ModuleSettings.append;
-						} else {
-							Module[key] = value;
-						}
+						Module[key].value = value;
 
 					} else {
 						if(value.type === 'PaletteControl') {
@@ -111,7 +107,7 @@ module.exports = function(modV) {
 				});
 
 				// Create UI controls
-				this.createControls(Module, this, true);
+				this.createControls(Module, true);
 
 				// Add to active modules
 				this.activeModules[Module.info.name] = Module;

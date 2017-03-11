@@ -13,7 +13,7 @@ module.exports = function(modV) {
 		var titleNode = activeItem.querySelector('.title');
 
 		titleNode.textContent = Module.info.name;
-		
+
 		// Init node in temp (TODO: don't do this)
 		temp.innerHTML = '';
 		temp.appendChild(activeItem);
@@ -28,7 +28,7 @@ module.exports = function(modV) {
 			min: 0,
 			max: 1,
 			varType: 'float',
-			step: 0.02,
+			step: 0.01,
 			default: 1,
 			useInternalValue: true,
 			variable: 'modVReserved:alpha',
@@ -53,7 +53,7 @@ module.exports = function(modV) {
 
 		AlphaRangeControlNode.addEventListener('contextmenu', function(ev) {
 			ev.preventDefault();
-			
+
 			self.showContextMenu('opacity', [AlphaRangeControl, Module, AlphaRangeControlNode], ev);
 
 			return false;
@@ -98,7 +98,7 @@ module.exports = function(modV) {
 
 		BlendingControlNode.addEventListener('contextmenu', function(ev) {
 			ev.preventDefault();
-			
+
 			self.showContextMenu('opacity', [BlendingControl, Module, BlendingControlNode], ev);
 
 			return false;
@@ -134,7 +134,7 @@ module.exports = function(modV) {
 
 		EnableCheckboxControlNode.addEventListener('contextmenu', function(ev) {
 			ev.preventDefault();
-			
+
 			self.showContextMenu('opacity', [EnableCheckboxControl, Module, EnableCheckboxControlNode], ev);
 
 			return false;
