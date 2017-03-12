@@ -30,7 +30,7 @@ let MediaSelector = function(type, callbacks, defaultOption) {
 			select.removeChild(select.firstChild);
 		}
 
-		let image, images, option;
+		let imagePath, images, option;
 		let optionSelected = false;
 
 		let optGroups = [];
@@ -43,30 +43,34 @@ let MediaSelector = function(type, callbacks, defaultOption) {
 					profile = profiles[key];
 
 					// Skip if we have no images
-					if(!('images' in profile.files)) continue;
+					if(!('images' in profile)) continue;
 
-					images = profile.files.images;
+					images = profile.images;
 
 					optGroup = document.createElement('optgroup');
 					optGroup.label = key;
 
-					this.currentFile = images[0];
+					this.currentFile = null;
 
 					let options = [];
 
-					for(let i=0; i < images.length; i++) {
-						image = images[i];
 
-						option = document.createElement('option');
-						option.value = image.path;
-						option.textContent = image.name;
 
-						if(areSameFile(image.path, defaultOption)) {
-							option.selected = true;
-							optionSelected = true;
+					for(let key in images) {
+						if(images.hasOwnProperty(key)) {
+							imagePath = images[key];
+
+							option = document.createElement('option');
+							option.value = imagePath;
+							option.textContent = key;
+
+							if(areSameFile(imagePath, defaultOption)) {
+								option.selected = true;
+								optionSelected = true;
+							}
+
+							options.push(option);
 						}
-
-						options.push(option);
 					}
 
 					options.sort((a, b) => {
@@ -91,23 +95,24 @@ let MediaSelector = function(type, callbacks, defaultOption) {
 					profile = profiles[key];
 
 					// Skip if we have no images
-					if(!('images' in profile.files)) continue;
+					if(!('images' in profile)) continue;
 
-					images = profile.files.images;
+					images = profile.images;
 
 					let options = [];
 
 					optGroup = document.createElement('optgroup');
 					optGroup.label = key;
 
-					for(let i=0; i < images.length; i++) {
-						image = images[i];
+					for(let key in images) {
+						if(images.hasOwnProperty(key)) {
+							imagePath = images[key];
+							option = document.createElement('option');
+							option.value = imagePath;
+							option.textContent = key;
 
-						option = document.createElement('option');
-						option.value = image.path;
-						option.textContent = image.name;
-
-						options.push(option);
+							options.push(option);
+						}
 					}
 
 					options.sort((a, b) => {
@@ -129,24 +134,26 @@ let MediaSelector = function(type, callbacks, defaultOption) {
 					profile = profiles[key];
 
 					// Skip if we have no videos
-					if(!('videos' in profile.files)) continue;
+					if(!('videos' in profile)) continue;
 
-					let videos = profile.files.videos;
+					let videos = profile.videos;
 					let options = [];
 
 					optGroup = document.createElement('optgroup');
 					optGroup.label = key;
 
-					this.currentFile = videos[0];
+					this.currentFile = null;
 
-					for(let i=0; i < videos.length; i++) {
-						let video = videos[i];
+					for(let key in videos) {
+						if(videos.hasOwnProperty(key)) {
+							let videoPath = videos[key];
 
-						option = document.createElement('option');
-						option.value = video.path;
-						option.textContent = video.name;
+							option = document.createElement('option');
+							option.value = videoPath;
+							option.textContent = key;
 
-						options.push(option);
+							options.push(option);
+						}
 					}
 
 					options.sort((a, b) => {
@@ -173,9 +180,9 @@ let MediaSelector = function(type, callbacks, defaultOption) {
 		if(!optionSelected) {
 			let option = select.querySelector('option');
 			if(!option) return;
-			
+
 			option.selected = true;
-			this.currentFile = {path: select.querySelector('option').value}; 
+			this.currentFile = {path: select.querySelector('option').value};
 			optionSelected = true;
 		} else {
 			this.currentFile = {path: select.options[select.selectedIndex].value, name: select.options[select.selectedIndex].textContent};

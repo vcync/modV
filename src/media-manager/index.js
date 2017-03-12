@@ -46,9 +46,9 @@ module.exports = function mediaManager(modV) {
 					} else if(type === 'preset') {
 						modV.profiles[profile].presets[name] = data.contents;
 					} else if(type === 'image') {
-						modV.profiles[profile].files.images.push({name: data.name, path: data.path});
+						modV.profiles[profile].images[name] = data.path;
 					} else if(type === 'video') {
-						modV.profiles[profile].files.videos.push({name: data.name, path: data.path});
+						modV.profiles[profile].videos[name] = data.path;
 					}
 
 				break;
@@ -64,13 +64,9 @@ module.exports = function mediaManager(modV) {
 					} else if(type === 'preset') {
 						delete modV.profiles[profile].presets[name];
 					} else if(type === 'image') {
-						// TODO: find entry in array and splice
-						//modV.profiles[profile].files.images.push({name: data.name, path: data.path});
-
+						delete modV.profiles[profile].images[name];
 					} else if(type === 'video') {
-						// TODO: find entry in array and splice
-						//modV.profiles[profile].files.videos.push({name: data.name, path: data.path});
-
+						delete modV.profiles[profile].videos[name];
 					}
 
 				break;
@@ -83,12 +79,6 @@ module.exports = function mediaManager(modV) {
 			modV.profileSelectors.forEach(function(ps) {
 				ps.update(modV.profiles);
 			});
-
-			var arr = [];
-			forIn(modV.profiles, profile => {
-				arr.push(profile);
-			});
-
 
 			let presetSelectNode = document.querySelector('#loadPresetSelect');
 			if(!presetSelectNode) return;
