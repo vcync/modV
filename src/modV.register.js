@@ -41,6 +41,8 @@ module.exports = function(modV) {
 
 			// Create Gallery item
 			self.createGalleryItem(Module);
+
+			self.emit('moduleRegistered', Module);
 		}
 
 		var self = this;
@@ -73,30 +75,24 @@ module.exports = function(modV) {
 
 		// Super hacky way of loading scripts
 		// TODO: improve this
-		if('scripts' in Module.info) {
-			if(!('loadedScripts' in Module.info)) {
-				Module.info.loadedScripts = [];
-			}
+		if('scripts' in Module.info && !instantiated) {
+			let promises = [];
 
-			if(Module.info.loadedScripts.length !== Module.info.scripts.length) {
-				Module.info.scripts.forEach(function(script) {
-					loadJS('/modules/' + script, document.body, Module).then(function(Module) {
-						Module.info.loadedScripts.push(true);
+			Module.info.scripts.forEach(function(script) {
+				promises.push(loadJS('/modules/' + script, document.body, Module));
+			});
 
-						if(Module.info.loadedScripts.length === Module.info.scripts.length) {
-							self.register(Module, true);
-						}
 
-					});
-				});
-				return;
-			}
+			Promise.all(promises).then(() => {
+				this.register(Module, true);
+			});
+
+			return;
 		}
 
 		// Handle Module2D
 		if(Module instanceof self.Module2D) {
 			type = 'Module2D';
-			console.info('Register: Module2D', Module.info.originalModuleName, '(' + name + ')');
 
 			// Parse Meyda
 			if(Module.info.meyda) {
@@ -113,7 +109,6 @@ module.exports = function(modV) {
 		// Handle ModuleShader
 		if(Module instanceof self.ModuleShader) {
 			type = 'ModuleShader';
-			console.info('Register: ModuleShader', Module.info.originalModuleName, '(' + name + ')');
 
 			Module.info.uniforms.modVcanvas = {
 				type: "t",
@@ -147,7 +142,6 @@ module.exports = function(modV) {
 		// Handle Module3D
 		if(Module instanceof self.Module3D) {
 			type = 'Module3D';
-			console.info('Register: Module3D', Module.info.originalModuleName, '(' + name + ')');
 
 			// Parse Meyda
 			if(Module.info.meyda) {
@@ -164,7 +158,6 @@ module.exports = function(modV) {
 		// Handle ModuleScript
 		if(Module instanceof self.ModuleScript) {
 			type = 'ModuleScript';
-			console.info('Register: ModuleScript', Module.info.originalModuleName, '(' + name + ')');
 
 			// Parse Meyda
 			if(Module.info.meyda) {

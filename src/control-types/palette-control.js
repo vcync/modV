@@ -26,17 +26,17 @@ module.exports = function(modV) {
 			this.stack = (new Error()).stack;
 
 			// Parse the stack for some helpful debug info
-			var reg = /\((.*?)\)/;    
+			var reg = /\((.*?)\)/;
 			var stackInfo = this.stack.split('\n').pop().trim();
 			try {
 				stackInfo = reg.exec(stackInfo)[0];
 			} catch(e) {
-				
+
 			}
 
 			// Expose name and message
 			this.name = 'modV.PaletteControl Error';
-			this.message = message + ' ' + stackInfo || 'Error';  
+			this.message = message + ' ' + stackInfo || 'Error';
 		}
 		// Inherit from Error
 		ControlError.prototype = Object.create(Error.prototype);
@@ -117,7 +117,7 @@ module.exports = function(modV) {
 			return returnVal;
 		};
 
-		this.makeNode = (Module, modVthis) => {
+		this.makeNode = (modVthis, Module) => {
 			modVSelf = modVthis;
 
 			this.creationTime = Date.now();
@@ -210,19 +210,19 @@ module.exports = function(modV) {
 			});
 
 			saveProfileSelector.init();
-			
+
 			var paletteDiv = document.createElement('div');
 			paletteDiv.classList.add('palette');
-			
+
 			makePalette(this.colors).forEach(function(swatch) {
 				paletteDiv.appendChild(swatch);
 			});
-			
+
 		   	var controlsDiv = document.createElement('div');
-			
+
 			var colorPicker = document.createElement('input');
 			colorPicker.type = 'color';
-			
+
 			var addButton = document.createElement('button');
 			addButton.textContent = '+';
 			addButton.addEventListener('click', () => {
@@ -275,7 +275,7 @@ module.exports = function(modV) {
 
 			let savePaletteGroup = makeControlGroup('Save Palette', savePaletteDiv);
 			controlsDiv.appendChild(savePaletteGroup);
-			
+
 
 
 

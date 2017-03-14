@@ -1,90 +1,43 @@
+const ControlError = require('./control-error');
+const Control = require('./control');
+
 module.exports = function(modV) {
+	modV.prototype.ButtonControl = class ButtonControl extends Control {
 
-	modV.prototype.ButtonControl = function(settings) {
-		let self = this;
-		let Module;
-		let id;
+		constructor(settings) {
+			let ButtonControlError = new ControlError('ButtonControl');
 
-		this.variable = 'ButtonControl' + Date.now();
-		
-		self.getSettings = function() {
-			return settings;
-		};
+			// Check for settings Object
+			if(!settings) throw new ButtonControlError('ButtonControl had no settings');
 
-		self.getID = function() {
-			return id;
-		};
-
-		//TODO: error stuff
-/*		// RangeControl error handle
-		function ControlError(message) {
-			// Grab the stack
-			this.stack = (new Error()).stack;
-
-			// Parse the stack for some helpful debug info
-			var reg = /\((.*?)\)/;    
-			var stackInfo = this.stack.split('\n').pop().trim();
-			stackInfo = reg.exec(stackInfo)[0];
-
-			// Expose name and message
-			this.name = 'modV.RangeControl Error';
-			this.message = message + ' ' + stackInfo || 'Error';  
-		}
-		// Inherit from Error
-		ModuleError.prototype = Object.create(Error.prototype);
-		ModuleError.prototype.constructor = ModuleError;
-
-		// Check for settings Object
-		if(!settings) throw new ModuleError('RangeControl had no settings');
-		// Check for info Object
-		if(!('info' in settings)) throw new ModuleError('RangeControl had no info in settings');
-		// Check for info.name
-		if(!('name' in settings.info)) throw new ModuleError('RangeControl had no name in settings.info');
-		// Check for info.author
-		if(!('author' in settings.info)) throw new ModuleError('RangeControl had no author in settings.info');
-		// Check for info.version
-		if(!('version' in settings.info)) throw new ModuleError('RangeControl had no version in settings.info');*/
-
-		// Copy settings values to local scope
-		for(let key in settings) {
-			if(settings.hasOwnProperty(key)) {
-				self[key] = settings[key];
-			}
+			// All checks pass, call super
+			super(settings);
 		}
 
-		self.makeNode = function(ModuleRef) {
+		makeNode(modV, Module, id, isPreset, internalPresetValue) {
+			let settings = this.settings;
 
-			if(!settings.useInternalValue) {
-				Module = ModuleRef;
-				id = Module.info.safeName + self.variable;
-			} else {
-				id = ModuleRef;
-			}
+			let node = document.createElement('input');
+			node.type = 'button';
 
-			let inputNode = document.createElement('input');
-			inputNode.type = 'button';
-			inputNode.id = id;
-			inputNode.value = self.label;
-
-			inputNode.addEventListener('mousedown', function(e) {
+			node.addEventListener('mousedown', (e) => {
 				if(typeof settings.onpress === 'function') settings.onpress(e);
 			}, false);
 
-			inputNode.addEventListener('mouseup', function(e) {
+			node.addEventListener('mouseup', (e) => {
 				if(typeof settings.onrelease === 'function') settings.onrelease(e);
 			}, false);
 
-			this.node = inputNode;
+			this.init(id, Module, node, isPreset, internalPresetValue, modV);
+			return node;
+		}
 
-			return inputNode;
-		};
+		push() {
+			if(typeof this.settings.onpress === 'function') this.settings.onpress();
+		}
 
-		self.push = () => {
-			settings.onpress();
-		};
-
-		self.release = () => {
-			settings.onrelease();
-		};
+		release() {
+			if(typeof this.settings.onrelease === 'function') this.settings.onrelease();
+		}
 	};
 };

@@ -1,5 +1,5 @@
 module.exports = function(modV) {
-	
+
 	modV.prototype.addLayer = function(canvas, context, clearing) {
 		let list = document.getElementsByClassName('active-list')[0];
 		let Layer = new this.Layer('Layer ' + (this.layers.length+1), canvas, context, clearing, this);
@@ -13,6 +13,11 @@ module.exports = function(modV) {
 		});
 
 		this.updateLayerSelectors();
+
+		this.emit('layerAdd', {
+			Layer: Layer,
+			atIndex: layerIndex
+		});
 
 		return layerIndex;
 	};

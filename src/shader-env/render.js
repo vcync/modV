@@ -6,12 +6,12 @@ module.exports = (gl, env) => {
 		// Clear WebGL canvas
 		gl.clearColor(0.0, 0.0, 0.0, 0.0);
 		gl.clear(gl.COLOR_BUFFER_BIT);
-		
+
 		// Set position variable
 		var positionLocation = gl.getAttribLocation(programs[env.activeProgram], "a_position");
 		gl.enableVertexAttribArray(positionLocation);
 		gl.vertexAttribPointer(positionLocation, 2, gl.FLOAT, false, 0, 0);
-		
+
 		// Set delta
 		var deltaLocation = gl.getUniformLocation(programs[env.activeProgram], "u_delta");
 		gl.uniform1f(deltaLocation, delta);

@@ -14,18 +14,8 @@ module.exports = function(modV) {
 			super(settings);
 		}
 
-		makeNode(ModuleRef, modV, isPreset, internalPresetValue) {
-			let id;
-			let Module;
-			let variable = this.variable;
+		makeNode(modV, Module, id, isPreset, internalPresetValue) {
 			let settings = this.settings;
-
-			if(!settings.useInternalValue) {
-				Module = ModuleRef;
-				id = Module.info.safeName + '-' + variable;
-			} else {
-				id = ModuleRef;
-			}
 
 			let CompositeOperations = {
 				blendModes: {
@@ -111,7 +101,7 @@ module.exports = function(modV) {
 				this.value = node.options[node.selectedIndex].value;
 			}, false);
 
-			this.init(id, ModuleRef, node, isPreset, internalPresetValue);
+			this.init(id, Module, node, isPreset, internalPresetValue, modV);
 			return node;
 		}
 	};

@@ -21,6 +21,7 @@
     "animated-gif-detector": "^1.1.2",
     "correcting-interval": "^2.0.0",
     "dive": "^0.4.0",
+    "eventemitter2": "^3.0.2",
     "fluent-ffmpeg": "^2.0.1",
     "fs-promise": "^0.5.0",
     "media-manager": "git+ssh://git@github.com:2xAA/modV-MediaManager.git",

@@ -1,147 +1,154 @@
+const EventEmitter2 = require('eventemitter2').EventEmitter2;
 const shaderInit = require('./shader-env');
 const threeInit = require('./three-env');
 const MM = require('./media-manager');
 require('./fragments/array-contains');
 require('script-loader!../libraries/beatdetektor.js');
 
-var modV = function(options) {
+class modV extends EventEmitter2 {
 
-	console.log('      modV Copyright  (C)  2017 Sam Wray      '+ "\n" +
-				'----------------------------------------------'+ "\n" +
-				'      modV is licensed  under GNU GPL V3      '+ "\n" +
-				'This program comes with ABSOLUTELY NO WARRANTY'+ "\n" +
-				'For details, see http://localhost:3131/LICENSE'+ "\n" +
-				'----------------------------------------------');
+	constructor(options) {
+		super();
 
-	this.version = require('../package.json').version;
+		console.log('      modV Copyright  (C)  2017 Sam Wray      '+ "\n" +
+					'----------------------------------------------'+ "\n" +
+					'      modV is licensed  under GNU GPL V3      '+ "\n" +
+					'This program comes with ABSOLUTELY NO WARRANTY'+ "\n" +
+					'For details, see http://localhost:3131/LICENSE'+ "\n" +
+					'----------------------------------------------');
 
-	this.saveOptions = require('./option-storage').save;
-	this.loadOptions = require('./option-storage').load;
+		this.version = require('../package.json').version;
 
-	// Audio
-	this.audioContext = null;
-	this.analyserNode = null; 
-	this.audioStream = null;
-	this.gainNode = null;
-	this.muted = true;
-	this.ready = false;
+		this.saveOptions = require('./option-storage').save;
+		this.loadOptions = require('./option-storage').load;
 
-	// UI Templates
-	this.templates = document.querySelector('link[rel="import"]').import;
+		// Audio
+		this.audioContext = null;
+		this.analyserNode = null;
+		this.audioStream = null;
+		this.gainNode = null;
+		this.muted = true;
+		this.ready = false;
 
-	// Load user options
-	if(typeof options !== 'undefined') this.options = options;
+		// UI Templates
+		this.templates = document.querySelector('link[rel="import"]').import;
 
-	if(!this.options.controlDomain) this.options.controlDomain = location.protocol + '//' + location.host;
+		// Load user options
+		if(typeof options !== 'undefined') this.options = options;
 
-	this.baseURL = this.options.baseURL || '';
+		if(!this.options.controlDomain) this.options.controlDomain = location.protocol + '//' + location.host;
 
-	// Attach message handler for sockets and windows
-	this.addMessageHandler();
+		this.baseURL = this.options.baseURL || '';
 
-	// Layers store
-	this.layers = [];
-	this.activeLayer = 0;
+		// Attach message handler for sockets and windows
+		this.addMessageHandler();
 
-	this.activeModules = {};
-	this.layerSelectors = [];
-	this.LFOs = [];
-	this.modOrder = [];
-	this.moduleStore = {};
-	this.mediaSelectors = [];
-	this.outputWindows = [];
-	this.profileSelectors = [];
-	this.registeredMods = {};
-	this.workers = {};
+		// Layers store
+		this.layers = [];
+		this.activeLayer = 0;
 
-	this.videoStream = document.createElement('video');
-	this.videoStream.autoplay = true;
-	this.videoStream.muted = true;
+		this.activeModules = {};
+		this.layerSelectors = [];
+		this.LFOs = [];
+		this.modOrder = [];
+		this.moduleStore = {};
+		this.mediaSelectors = [];
+		this.outputWindows = [];
+		this.profileSelectors = [];
+		this.registeredMods = {};
+		this.workers = {};
 
-	// MIDI
-	this.MIDIInstance = new this.MIDI(this);
-	this.MIDIInstance.start();
+		this.videoStream = document.createElement('video');
+		this.videoStream.autoplay = true;
+		this.videoStream.muted = true;
 
-	// Remote
-	this.remoteConnect();
+		// MIDI
+		this.MIDIInstance = new this.MIDI(this);
+		this.MIDIInstance.start();
 
-	this.canvas = this.options.canvas || document.createElement('canvas');
-	this.context = this.canvas.getContext('2d');
+		// Remote
+		this.remoteConnect();
 
-	this.width = 0;
-	this.height = 0;
+		this.canvas = this.options.canvas || document.createElement('canvas');
+		this.context = this.canvas.getContext('2d');
 
-	this.previewCanvas = document.createElement('canvas');
-	this.previewContext = this.previewCanvas.getContext('2d');
+		this.width = 0;
+		this.height = 0;
 
-	this.bufferCanvas = document.createElement('canvas');
-	this.bufferContext = this.bufferCanvas.getContext('2d');
+		this.previewCanvas = document.createElement('canvas');
+		this.previewContext = this.previewCanvas.getContext('2d');
 
-	document.querySelector('.canvas-preview').appendChild(this.previewCanvas);
+		this.bufferCanvas = document.createElement('canvas');
+		this.bufferContext = this.bufferCanvas.getContext('2d');
 
-	this.outputCanvas = document.createElement('canvas');
-	this.outputContext = this.outputCanvas.getContext('2d');
+		document.querySelector('.canvas-preview').appendChild(this.previewCanvas);
 
-	this.previewCanvasImageValues = {
-		x: 0,
-		y: 0,
-		width: 0,
-		height: 0
-	};
+		this.outputCanvas = document.createElement('canvas');
+		this.outputContext = this.outputCanvas.getContext('2d');
 
-	this.addLayer(this.canvas, this.context, false);
+		this.previewCanvasImageValues = {
+			x: 0,
+			y: 0,
+			width: 0,
+			height: 0
+		};
 
-	this.soloCanvas = undefined;
+		this.addLayer(this.canvas, this.context, false);
 
-	// Clipboard store
-	this.copiedValue = null;
+		this.soloCanvas = undefined;
 
-	// Robots
-	this.bots = {};
+		// Clipboard store
+		this.copiedValue = null;
 
-	// Window resize
-	this.getLargestWindow = require('./get-largest-window');
-	this.resize = require('./resize');
+		// Robots
+		this.bots = {};
 
-	window.addEventListener('resize', () => {
-		this.mainWindowResize();
-	});
+		// Window resize
+		this.getLargestWindow = require('./get-largest-window');
+		this.resize = require('./resize');
 
-	// Create Windows
-	this.createWindow();
+		window.addEventListener('resize', () => {
+			this.mainWindowResize();
+		});
 
-	// Collection of palette controls
-	this.palettes = new Map();
-	this.presets = {};
-	this.profiles = {};
+		// Create Windows
+		this.createWindow();
 
-	this.mediaManager = new MM(this);
+		// Collection of palette controls
+		this.palettes = new Map();
+		this.presets = {};
+		this.profiles = {};
 
-	this.meydaFeatures = ['complexSpectrum'];
+		this.mediaManager = new MM(this);
 
-	this.bpm = 0;
-	this.bpmHold = false;
-	this.bpmHeldAt = 120;
-	this.useDetectedBPM = true;
+		this.meydaFeatures = ['complexSpectrum'];
 
-	// Set up BeatDetektor
-	this.beatDetektor = new BeatDetektor(85,169);
-	this.beatDetektorKick = new BeatDetektor.modules.vis.BassKick();
-	this.kick = false;
-	
-	// Set up THREE
-	this.threeEnv = threeInit();
+		this.bpm = 0;
+		this.bpmHold = false;
+		this.bpmHeldAt = 120;
+		this.useDetectedBPM = true;
 
-	// Shader handling
-	this.shaderEnv = shaderInit(this);
+		// Set up BeatDetektor
+		this.beatDetektor = new BeatDetektor(85,169);
+		this.beatDetektorKick = new BeatDetektor.modules.vis.BassKick();
+		this.kick = false;
 
-	// Store all available Media inputs
-	this.mediaStreamSources = {
-		video: [],
-		audio: []
-	};
+		// Set up THREE
+		this.threeEnv = threeInit();
 
-	this.setupWorkers();
-};
+		// Shader handling
+		this.shaderEnv = shaderInit(this);
+
+		// Store all available Media inputs
+		this.mediaStreamSources = {
+			video: [],
+			audio: []
+		};
+
+		this.setupWorkers();
+
+		this.emit('ready');
+	}
+}
 
 module.exports = modV;

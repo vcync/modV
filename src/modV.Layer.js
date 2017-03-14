@@ -50,7 +50,7 @@ module.exports = function(modV) {
 				layer: Module.getLayer(),
 				order: order
 			});
-			
+
 			return order;
 		}
 
@@ -80,7 +80,7 @@ module.exports = function(modV) {
 			});
 		}
 
-		setOrder(Module, order, sentToRemote) {
+		setOrder(Module, order, sentToRemote, moveNodes) {
 			let name = Module.info.name;
 
 			if(this.moduleOrder[order] === 'undefined') this.moduleOrder[order] = name;
@@ -94,7 +94,12 @@ module.exports = function(modV) {
 				if(index > -1) this.moduleOrder.splice(index, 1);
 
 				this.moduleOrder.splice(order, 0, name);
-				
+
+				if(moveNodes) {
+					let children = this.node.querySelector('.module-list').children;
+					children[index].parentNode.insertBefore(children[index], children[order]);
+				}
+
 				this.moduleOrder.forEach((mod, idx) => {
 					this.modules[mod].info.order = idx;
 				});
@@ -110,8 +115,14 @@ module.exports = function(modV) {
 			}
 		}
 
-		reverse() {
-			this.moduleOrder.reverse();
+		reverse(moveNodes) {
+			//this.moduleOrder.reverse();
+			for(let i=0; i < this.moduleOrder.length; i++) {
+				let Module = this.modules[this.moduleOrder[i]];
+
+				this.setOrder(Module, this.moduleOrder.length-i, true, moveNodes);
+			}
+
 			return this.moduleOrder;
 		}
 
@@ -127,7 +138,7 @@ module.exports = function(modV) {
 				// Create active list item
 			let template = modV.templates.querySelector('#layer-item');
 			let layerItem = document.importNode(template.content, true);
-			
+
 			// Init node in temp (TODO: don't do this)
 			let temp = document.getElementById('temp');
 			temp.innerHTML = '';
@@ -173,7 +184,7 @@ module.exports = function(modV) {
 
 			let stopEdit = function() {
 				if(!this.classList.contains('editable')) return;
-				
+
 				let inputText = this.textContent.trim();
 
 				this.contentEditable = false;
@@ -187,7 +198,7 @@ module.exports = function(modV) {
 				} else {
 					self.setName(inputText);
 				}
-				
+
 			};
 
 			let enterPress = function(e) {
@@ -317,7 +328,7 @@ module.exports = function(modV) {
 
 						// Layer = old layer
 						// this.Layer = new layer
-						
+
 						this.modules[name] = Layer.modules[name];
 
 						Module.setLayer(modV.layers.indexOf(this));

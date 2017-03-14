@@ -41,7 +41,7 @@ module.exports = function(modV) {
 
 			let node = Media.returnHTML();
 
-			this.init(id, ModuleRef, node, isPreset, internalPresetValue);
+			this.init(id, ModuleRef, node, isPreset, internalPresetValue, modV);
 			return node;
 		}
 	};

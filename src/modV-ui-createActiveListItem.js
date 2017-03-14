@@ -1,13 +1,11 @@
 module.exports = function(modV) {
 
 	modV.prototype.createActiveListItem = function(Module, dragStartCB, dragEndCB, isPreset) {
-		var self = this;
-
 		// Temp container (TODO: don't do this)
 		var temp = document.getElementById('temp');
 
 		// Create active list item
-		var template = self.templates.querySelector('#active-item');
+		var template = this.templates.querySelector('#active-item');
 		var activeItem = document.importNode(template.content, true);
 
 		var titleNode = activeItem.querySelector('.title');
@@ -36,7 +34,7 @@ module.exports = function(modV) {
 				Module.info.alpha = parseFloat(value);
 
 				// Send to remote
-				self.remote.update('moduleInfoUpdate', {
+				this.remote.update('moduleInfoUpdate', {
 					value: Module.info.alpha,
 					variable: 'alpha',
 					name: Module.info.name,
@@ -46,15 +44,15 @@ module.exports = function(modV) {
 		});
 
 		let AlphaRangeControlNode = AlphaRangeControl.makeNode(
-			Module.info.safeName + '-' + 'ListItemOpacity', self, isPreset, Module.info.alpha
+			this, Module, Module.info.safeName + '-' + 'ListItemOpacity', isPreset, Module.info.alpha
 		);
 
 		opacityRangeNode.parentNode.replaceChild(AlphaRangeControlNode, opacityRangeNode);
 
-		AlphaRangeControlNode.addEventListener('contextmenu', function(ev) {
+		AlphaRangeControlNode.addEventListener('contextmenu', (ev) => {
 			ev.preventDefault();
 
-			self.showContextMenu('opacity', [AlphaRangeControl, Module, AlphaRangeControlNode], ev);
+			this.showContextMenu('opacity', [AlphaRangeControl, Module, AlphaRangeControlNode], ev);
 
 			return false;
 		}, false);
@@ -81,7 +79,7 @@ module.exports = function(modV) {
 				Module.info.blend = value;
 
 				// Send to remote
-				self.remote.update('moduleInfoUpdate', {
+				this.remote.update('moduleInfoUpdate', {
 					value: Module.info.blend,
 					variable: 'blend',
 					name: Module.info.name,
@@ -91,7 +89,7 @@ module.exports = function(modV) {
 		});
 
 		let BlendingControlNode = BlendingControl.makeNode(
-			Module.info.safeName + '-' + 'BlendingMode', self, isPreset, Module.info.blend
+			this, Module, Module.info.safeName + '-' + 'BlendingMode', isPreset, Module.info.blend
 		);
 
 		compositeSelectNode.parentNode.replaceChild(BlendingControlNode, compositeSelectNode);
@@ -99,7 +97,7 @@ module.exports = function(modV) {
 		BlendingControlNode.addEventListener('contextmenu', function(ev) {
 			ev.preventDefault();
 
-			self.showContextMenu('opacity', [BlendingControl, Module, BlendingControlNode], ev);
+			this.showContextMenu('opacity', [BlendingControl, Module, BlendingControlNode], ev);
 
 			return false;
 		}, false);
@@ -117,7 +115,7 @@ module.exports = function(modV) {
 				Module.info.disabled = !value;
 
 				// Send to remote
-				self.remote.update('moduleInfoUpdate', {
+				this.remote.update('moduleInfoUpdate', {
 					value: Module.info.disabled,
 					variable: 'disabled',
 					name: Module.info.name,
@@ -127,29 +125,29 @@ module.exports = function(modV) {
 		});
 
 		let EnableCheckboxControlNode = EnableCheckboxControl.makeNode(
-			Module.info.safeName + '-' + 'ListItemEnable', self
+			this, Module, Module.info.safeName + '-' + 'ListItemEnable', isPreset, !Module.info.disabled
 		);
 
 		enableCheckboxNode.parentNode.replaceChild(EnableCheckboxControlNode, enableCheckboxNode);
 
-		EnableCheckboxControlNode.addEventListener('contextmenu', function(ev) {
+		EnableCheckboxControlNode.addEventListener('contextmenu', (ev) => {
 			ev.preventDefault();
 
-			self.showContextMenu('opacity', [EnableCheckboxControl, Module, EnableCheckboxControlNode], ev);
+			this.showContextMenu('opacity', [EnableCheckboxControl, Module, EnableCheckboxControlNode], ev);
 
 			return false;
 		}, false);
 
 		activeItem.dataset.moduleName = Module.info.safeName;
 
-		activeItem.addEventListener('dragstart', function(e) {
+		activeItem.addEventListener('dragstart', (e) => {
 			e.dataTransfer.setData('modulename', activeItem.dataset.moduleName);
 			if(typeof dragStartCB === 'function') {
 				dragStartCB(activeItem);
 			}
 		});
 
-		activeItem.addEventListener('dragend', function() {
+		activeItem.addEventListener('dragend', () => {
 			if(typeof dragEndCB === 'function') {
 				dragEndCB(activeItem);
 			}

@@ -1,12 +1,11 @@
 module.exports = function(modV) {
 
 	modV.prototype.generateName = function(name) {
-		var self = this;
-		var dupeNo = 1;
+		let dupeNo = 1;
 
-		if(name in self.activeModules) {
-			var dupeName = name + ' (' + dupeNo + ')';
-			while(dupeName in self.activeModules) {
+		if(name in this.activeModules) {
+			let dupeName = name + ' (' + dupeNo + ')';
+			while(dupeName in this.activeModules) {
 				dupeNo++;
 				dupeName = name + ' (' + dupeNo + ')';
 			}

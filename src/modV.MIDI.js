@@ -1,7 +1,7 @@
 module.exports = function(modV) {
 
 	modV.prototype.MIDI = class {
-		
+
 		constructor() {
 
 			this.access = null;
@@ -125,6 +125,8 @@ module.exports = function(modV) {
 					});
 				}
 			}
+
+			this.emit('midiInput', this);
 		}
 
 		importAssignments(assignments) {
@@ -140,7 +142,7 @@ module.exports = function(modV) {
 
 					let isReserved = controlKey.indexOf('modVReserved:');
 					let Control;
-					
+
 					if(isReserved > -1) {
 						Control = modV.activeModules[moduleName].info.internalControls[controlKey.substring(this.reservedKey.length)];
 					} else {
@@ -157,7 +159,7 @@ module.exports = function(modV) {
 
 		createAssignment(node, id, channel, name, controlKey) {
 			let inputNode = node;
-			
+
 			inputNode.dataset.midichannel = channel;
 			inputNode.dataset.midideviceid = id;
 
@@ -174,7 +176,7 @@ module.exports = function(modV) {
 				navigator.requestMIDIAccess({
 					sysex: false
 				}).then((access) => {
-					
+
 					this.access = access;
 					this.inputs = access.inputs;
 

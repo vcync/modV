@@ -14,31 +14,32 @@ module.exports = function(modV) {
 			super(settings);
 		}
 
-		makeNode(ModuleRef, modV, isPreset, internalPresetValue) {
-			let id;
-			let Module;
+		makeNode(modV, Module, id, isPreset, internalPresetValue) {
 			let variable = this.variable;
 			let settings = this.settings;
-
-			if(!settings.useInternalValue) {
-				Module = ModuleRef;
-				id = Module.info.safeName + '-' + variable;
-			} else {
-				id = ModuleRef;
-			}
 
 			let inputNode = document.createElement('input');
 			inputNode.type = 'checkbox';
 			inputNode.id = id;
-			if('checked' in settings) inputNode.checked = settings.checked;
-			else inputNode.checked = false;
 
 			inputNode.addEventListener('change', () => {
 				this.value = inputNode.checked;
 			}, false);
 
-			if(isPreset) {
-				inputNode.checked = Module[variable];
+			this.init(id, Module, inputNode, isPreset, internalPresetValue, modV);
+
+			// TODO clear up logic
+			if(settings.useInternalValue) {
+				if(isPreset) inputNode.checked = internalPresetValue;
+				else if('checked' in settings) inputNode.checked = settings.checked;
+			} else {
+				if('checked' in settings) {
+					if(!isPreset) this.value = settings.checked;
+					inputNode.checked = settings.checked;
+
+				} else if(Module[variable] !== undefined) {
+					inputNode.checked = Module[variable];
+				}
 			}
 
 			let labelNode = document.createElement('label');
@@ -49,7 +50,6 @@ module.exports = function(modV) {
 			div.appendChild(inputNode);
 			div.appendChild(labelNode);
 
-			this.init(id, ModuleRef, inputNode, isPreset, internalPresetValue);
 			return div;
 		}
 	};

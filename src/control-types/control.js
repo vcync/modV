@@ -6,14 +6,41 @@ module.exports = class Control {
 			throw new Error('Control had no "label" in settings');
 		}
 
-		this._node = null;
+		this.node = null;
 
-		let id, value;
+		let id, value, Module, modV;
 
-		Object.defineProperty(this, 'id', {
+		Object.defineProperty(this, '_modVSet', {
+			set: (modVIn) => {
+				modV = modVIn;
+				delete this._modVSet;
+			},
+			configurable: true
+		});
+
+		Object.defineProperty(this, '_ModuleSet', {
+			set: (ModuleIn) => {
+				Module = ModuleIn;
+				delete this._ModuleSet;
+			},
+			configurable: true
+		});
+
+		Object.defineProperty(this, 'Module', {
+			get: () => {
+				return Module;
+			}
+		});
+
+		Object.defineProperty(this, '_idSet', {
 			set: (idIn) => {
 				id = idIn;
+				delete this._idSet;
 			},
+			configurable: true
+		});
+
+		Object.defineProperty(this, 'id', {
 			get: () => {
 				return id;
 			}
@@ -39,16 +66,21 @@ module.exports = class Control {
 				if('prepend' in settings) value = settings.prepend + value;
 				if('append' in settings) value += settings.append;
 
-				if(!settings.useInternalValue) this._Module[variable] = value;
+				if(!settings.useInternalValue) Module[variable] = value;
 				else settings.oninput(value);
+
+				if(modV) modV.emit('controlUpdate', this);
 			}
 		});
 	}
 
-	init(id, Module, node, isPreset, internalPresetValue) {
+	init(id, Module, node, isPreset, internalPresetValue, modV) {
 		let settings = this.settings;
-		this.id = id;
-		this._node = node;
+
+		this.node = node;
+		this._idSet = id;
+		this._modVSet = modV;
+		this._ModuleSet = Module;
 		node.id = id;
 
 		// Control being used internally, return
@@ -58,8 +90,6 @@ module.exports = class Control {
 
 			return;
 		}
-
-		this._Module = Module;
 
 		let nodeValue;
 
