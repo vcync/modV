@@ -95,8 +95,6 @@ class modV extends EventEmitter2 {
 
 		this.addLayer(this.canvas, this.context, false);
 
-		this.soloCanvas = undefined;
-
 		// Clipboard store
 		this.copiedValue = null;
 
@@ -122,6 +120,7 @@ class modV extends EventEmitter2 {
 		this.mediaManager = new MM(this);
 
 		this.meydaFeatures = ['complexSpectrum'];
+		this.activeFeatures = {};
 
 		this.bpm = 0;
 		this.bpmHold = false;
