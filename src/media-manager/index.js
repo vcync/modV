@@ -1,6 +1,14 @@
-module.exports = function mediaManager(modV) {
+const WebSocket = require('reconnecting-websocket'); //jshint ignore:line
 
-	const ws = new WebSocket("ws://localhost:3132/");
+module.exports = function mediaManager(modV) {
+	let ws;
+
+	try {
+		ws = new WebSocket("ws://localhost:3132/");
+	} catch(e) {
+		console.warn('Media Manager not connected, retrying');
+	}
+
 	this.available = false;
 
 	this.update = require('./update')(ws);
@@ -9,7 +17,7 @@ module.exports = function mediaManager(modV) {
 	this.saveOption = require('./save-option');
 
 	ws.addEventListener('error', () => {
-		console.warn('Media Manager not available - did you start modV in no-manager mode?');
+		console.warn('Media Manager not connected, retrying');
 	});
 
 	ws.addEventListener('open', () => {
@@ -19,7 +27,9 @@ module.exports = function mediaManager(modV) {
 	});
 
 	window.addEventListener('beforeunload', () => {
-		ws.close();
+		ws.close({
+			keepClosed: true
+		});
 	});
 
 	ws.addEventListener('message', (m) => {
@@ -33,6 +43,25 @@ module.exports = function mediaManager(modV) {
 			switch(parsed.type) {
 				case 'update':
 					modV.profiles = parsed.payload;
+				break;
+
+				case 'profile-add':
+					data = parsed.data;
+					profile = data.profile;
+
+					modV.profiles[profile] = {
+						palettes: {},
+						videos: {},
+						images: {},
+						presets: {}
+					};
+				break;
+
+				case 'profile-delete':
+					data = parsed.data;
+					profile = data.profile;
+
+					delete modV.profiles[profile];
 				break;
 
 				case 'file-update-add':
