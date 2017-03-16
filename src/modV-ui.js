@@ -39,11 +39,11 @@ module.exports = function(modV) {
 		gallery.addEventListener('drop', function(e) {
 			e.preventDefault();
 			var droppedModuleData = e.dataTransfer.getData('modulename');
-			
+
 			self.currentActiveDrag  = null;
 
 			forIn(self.activeModules, (moduleName, Module) => {
-				if(Module.info.safeName === droppedModuleData) {					
+				if(Module.info.safeName === droppedModuleData) {
 					self.deleteActiveModule(Module);
 				}
 			});
@@ -59,7 +59,7 @@ module.exports = function(modV) {
 		gallery.addEventListener('dragleave', function(e) {
 			e.preventDefault();
 			if(!self.currentActiveDrag) return;
-			
+
 			self.currentActiveDrag.classList.remove('deletable');
 		});
 
@@ -94,7 +94,7 @@ module.exports = function(modV) {
 
 			var dataName = eventNode.dataset.moduleName;
 			var panel = document.querySelector('.control-panel[data-module-name="' + dataName + '"]');
-			
+
 			clearPanels();
 			panel.classList.add('show');
 		}
@@ -169,7 +169,7 @@ module.exports = function(modV) {
 
 		chooser.addEventListener('change', function() {
 			if(this.value.trim().length > 0) {
-				self.mediaManager.send(JSON.stringify({request: 'save-option', key: 'mediaDirectory', value: this.value.trim()}));
+				self.mediaManager.sendJSON({request: 'set-folder', folder: this.value});
 			}
 		}, false);
 
@@ -247,7 +247,7 @@ module.exports = function(modV) {
 			var bottomPos = getAbsoluteOffsetFromBody(bottom);
 			var galleryPos = getAbsoluteOffsetFromBody(galleryWrapper);
 			var mousePosition = getClickPosition(e);
-			
+
 			if(mousePosition.clientY > bottomPos.top-3 && mousePosition.clientY < bottomPos.top+3) {
 
 				document.body.classList.add('ns-resize');
@@ -324,7 +324,7 @@ module.exports = function(modV) {
 
 		var addLayerButton = document.querySelector('.add-layer');
 		addLayerButton.addEventListener('click', function() {
-			self.addLayer();			
+			self.addLayer();
 		});
 
 		function findAncestor (el, cls) {
