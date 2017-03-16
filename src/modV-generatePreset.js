@@ -2,7 +2,7 @@ module.exports = function(modV) {
 
 	modV.prototype.generatePreset = function(name) {
 		let self = this;
-		var preset = {
+		let preset = {
 			layers: [],
 			moduleData: {},
 			MIDIAssignments: [],

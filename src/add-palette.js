@@ -4,7 +4,5 @@ module.exports = function(modV) {
 		else {
 			console.error('Palette with ID', id, 'already exists');
 		}
-
-		
 	};
 };

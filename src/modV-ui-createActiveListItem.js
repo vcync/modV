@@ -2,13 +2,13 @@ module.exports = function(modV) {
 
 	modV.prototype.createActiveListItem = function(Module, dragStartCB, dragEndCB, isPreset) {
 		// Temp container (TODO: don't do this)
-		var temp = document.getElementById('temp');
+		let temp = document.getElementById('temp');
 
 		// Create active list item
-		var template = this.templates.querySelector('#active-item');
-		var activeItem = document.importNode(template.content, true);
+		let template = this.templates.querySelector('#active-item');
+		let activeItem = document.importNode(template.content, true);
 
-		var titleNode = activeItem.querySelector('.title');
+		let titleNode = activeItem.querySelector('.title');
 
 		titleNode.textContent = Module.info.name;
 
@@ -19,9 +19,9 @@ module.exports = function(modV) {
 		activeItem = temp.querySelector('div');
 
 		// // Attach listener to Opacity Range
-		var opacityRangeNode = activeItem.querySelector('input[type=range].opacity');
+		let opacityRangeNode = activeItem.querySelector('input[type=range].opacity');
 
-		var AlphaRangeControl = new this.RangeControl({
+		let AlphaRangeControl = new this.RangeControl({
 			label: 'Opacity',
 			min: 0,
 			max: 1,
@@ -58,7 +58,7 @@ module.exports = function(modV) {
 		}, false);
 
 		// Attach listener to Blending Select
-		var compositeSelectNode = activeItem.querySelector('.composite-operations');
+		let compositeSelectNode = activeItem.querySelector('.composite-operations');
 		// compositeSelectNode.addEventListener('change', function() {
 		// 	Module.info.blend = this.value;
 
@@ -71,7 +71,7 @@ module.exports = function(modV) {
 		// 	});
 		// });
 
-		var BlendingControl = new this.CompositeOperationControl({
+		let BlendingControl = new this.CompositeOperationControl({
 			label: 'Blending',
 			useInternalValue: true,
 			variable: 'modVReserved:blend',
@@ -104,9 +104,9 @@ module.exports = function(modV) {
 
 
 		// Attach listener to Enable Checkbox
-		var enableCheckboxNode = activeItem.querySelector('.enable-group .customCheckbox');
+		let enableCheckboxNode = activeItem.querySelector('.enable-group .customCheckbox');
 
-		var EnableCheckboxControl = new this.CheckboxControl({
+		let EnableCheckboxControl = new this.CheckboxControl({
 			label: 'Enabled',
 			checked: !Module.info.disabled,
 			useInternalValue: true,

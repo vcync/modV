@@ -1,8 +1,6 @@
 module.exports = function(modV) {
-	
-	modV.prototype.setModOrder = function(modName, order) {
-		var self = this;
 
+	modV.prototype.setModOrder = function(modName, order) {
 		if(order < 0) {
 			let index = -1;
 			this.modOrder.forEach(function(mod, idx) {
@@ -20,12 +18,12 @@ module.exports = function(modV) {
 			});
 			if(index > -1) this.modOrder.splice(index, 1);
 			this.modOrder.splice(order, 0, modName);
-			
-			this.modOrder.forEach(function(mod, idx) {
-				self.activeModules[mod].info.order = idx;
+
+			this.modOrder.forEach((mod, idx) => {
+				this.activeModules[mod].info.order = idx;
 			});
 		}
-		
+
 		return order;
 	};
 };

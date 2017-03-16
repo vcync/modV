@@ -14,7 +14,6 @@ module.exports = function(modV) {
 		let instances = this.detectInstancesOf(originalModuleName);
 
 		if(instances.length > 0) {
-			// make new name
 			name = this.generateName(Module.info.name);
 		}
 
@@ -24,7 +23,6 @@ module.exports = function(modV) {
 			Module.programIndex = originalModule.programIndex;
 		}
 
-		// init Module
 		if('init' in Module && Module instanceof this.Module2D) {
 			Module.init(canvas, context);
 		}

@@ -1,6 +1,4 @@
-/* TODO: bind to modV scope <<< cannot at present */
-var modVBot = function(module, controlKey, modV) {
-	var self = modV;
+let modVBot = function(module, controlKey, modV) {
 
 	function bpmToMs(bpm) {
 		return (60000 / bpm);
@@ -14,22 +12,22 @@ var modVBot = function(module, controlKey, modV) {
 		return Math.random()*(max-min+1)+min;
 	}
 
-	var interval = bpmToMs(self.bpm);
+	let interval = bpmToMs(modV.bpm);
 
-	var control = module.info.controls[controlKey];
-	var controlNode = document.getElementById(control.getID());
+	let control = module.info.controls[controlKey];
+	let controlNode = document.getElementById(control.getID());
 
 	function loop() {
-		//for(var cntrl in module.info.controls) {
+		//for(let cntrl in module.info.controls) {
 
-			if(control instanceof self.CheckboxControl) {
+			if(control instanceof modV.CheckboxControl) {
 
 				controlNode.checked = module[control.variable] = !Math.round(Math.random());
 
 
-			} else if(!(control.type instanceof self.VideoControl) && !(control.type instanceof self.ImageControl)) {
+			} else if(!(control.type instanceof modV.VideoControl) && !(control.type instanceof modV.ImageControl)) {
 
-				var rand;
+				let rand;
 
 				switch(control.varType) {
 					case 'int':
@@ -74,16 +72,16 @@ var modVBot = function(module, controlKey, modV) {
 
 		//}
 
-		if(self.bpm === 0) {
+		if(modV.bpm === 0) {
 			interval = 1000;
-			console.log('No BPM yet', self.bpm, 'Using 120 instead.');
+			console.log('No BPM yet', modV.bpm, 'Using 120 instead.');
 		} else {
-			interval = bpmToMs(self.bpm);
+			interval = bpmToMs(modV.bpm);
 		}
 	}
 
-	if(self.bpm === 0) interval = 1000;
-	var timer = setInterval(loop, interval);
+	if(modV.bpm === 0) interval = 1000;
+	let timer = setInterval(loop, interval);
 
 	this.removeBot = function() {
 		clearInterval(timer);
@@ -93,26 +91,24 @@ var modVBot = function(module, controlKey, modV) {
 module.exports = function(modV) {
 
 	modV.prototype.attachBot = function(module, controlKey) {
-		var self = this;
-		var mod = self.activeModules[module];
-		var control = mod.info.controls[controlKey];
-		var controlID = control.getID();
+		let mod = this.activeModules[module];
+		let control = mod.info.controls[controlKey];
+		let controlID = control.getID();
 
-		if(self.bots[controlID]) return false; // Bot already attached
-		var bot = new modVBot(mod, controlKey, self); //jshint ignore: line
-		self.bots[controlID] = bot;
+		if(this.bots[controlID]) return false; // Bot already attached
+		let bot = new modVBot(mod, controlKey, this); //jshint ignore: line
+		this.bots[controlID] = bot;
 	};
 
 	modV.prototype.removeBot = function(module, controlKey) {
-		var self = this;
-		var mod = self.activeModules[module];
-		var control = mod.info.controls[controlKey];
-		var controlID = control.getID();
+		let mod = this.activeModules[module];
+		let control = mod.info.controls[controlKey];
+		let controlID = control.getID();
 
-		if(!self.bots[controlID]) return false; // No bot
-		self.bots[controlID].removeBot();
-		delete self.bots[controlID];
-		
+		if(!this.bots[controlID]) return false; // No bot
+		this.bots[controlID].removeBot();
+		delete this.bots[controlID];
+
 		return true; // There was a bot, it has now been deleted
 	};
 };

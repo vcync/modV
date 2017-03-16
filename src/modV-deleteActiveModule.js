@@ -11,7 +11,7 @@ module.exports = function(modV) {
 
 		forIn(this.activeModules, (moduleName, Module) => {
 			if(Module.info.safeName === safeName) {
-				
+
 				forIn(Module.info.controls, (key, Control) => {
 
 					// remove palette from global palette store
@@ -26,7 +26,7 @@ module.exports = function(modV) {
 					forIn(MIDIDevice, (MIDIChannel, assignment) => {
 						if(assignment.moduleName === Module.info.name) toRemove.push(MIDIChannel);
 					});
-					
+
 					toRemove.forEach(key => {
 						delete MIDIDevice[key];
 					});
@@ -36,9 +36,8 @@ module.exports = function(modV) {
 
 				Layer.removeModule(Module);
 
-				console.info('Deleting', moduleName);
 				delete this.activeModules[moduleName];
-				
+
 				activeItemNode.parentNode.removeChild(activeItemNode);
 				panel.parentNode.removeChild(panel);
 				this.setModOrder(moduleName, -1);

@@ -49,12 +49,12 @@ module.exports = function(modV) {
 
 			layerDetails.moduleOrder.forEach((name, idx) => {
 
-				var presetModuleData = this.presets[id].moduleData[name];
-				var Module;
+				let presetModuleData = this.presets[id].moduleData[name];
+				let Module;
 
 				Module = new this.moduleStore[presetModuleData.originalModuleName]();
 
-				var originalModule = this.registeredMods[presetModuleData.originalName];
+				let originalModule = this.registeredMods[presetModuleData.originalName];
 
 				Module.info.originalModuleName = originalModule.info.originalModuleName;
 

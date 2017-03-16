@@ -1,6 +1,6 @@
 module.exports = function(modV) {
 	modV.prototype.removeLayer = function(Layer) {
-	
+
 		// remove modules from global lsit
 		forIn(Layer.modules, (key, Module) => {
 			this.deleteActiveModule(Module);
@@ -13,7 +13,7 @@ module.exports = function(modV) {
 
 		this.layers.splice(layerIndex, 1);
 
-		var newLayerIndexes = [];
+		let newLayerIndexes = [];
 
 		this.layers.forEach((Layer, index) => {
 			Layer.updateIndex(index);
