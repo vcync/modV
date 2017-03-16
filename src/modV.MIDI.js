@@ -2,8 +2,8 @@ module.exports = function(modV) {
 
 	modV.prototype.MIDI = class {
 
-		constructor() {
-
+		constructor(modV) {
+			this._modV = modV;
 			this.access = null;
 			this.inputs = null;
 			this.learning = false;
@@ -41,6 +41,8 @@ module.exports = function(modV) {
 		}
 
 		handleInput(message) {
+			const modV = this._modV;
+
 			let data = message.data;
 			let midiChannel = parseInt(data[1]);
 			let inputMap = this.assignments.get(message.currentTarget.id);
@@ -82,7 +84,7 @@ module.exports = function(modV) {
 
 							if(parseInt(Control.node.value) === calculatedValue) return;
 
-							if(isReserved < 0) Control.writeValue(calculatedValue);
+							if(isReserved < 0) Control.update(calculatedValue);
 							else {
 								modV.activeModules[moduleName].info[controlKey.substring(this.reservedKey.length)] = calculatedValue;
 								Control.node.value = calculatedValue;
@@ -91,7 +93,7 @@ module.exports = function(modV) {
 
 						checkbox: () => {
 							if(parseInt(data[2]) > 63) {
-								if(isReserved < 0) Control.writeValue(!Control.node.checked);
+								if(isReserved < 0) Control.update(!Control.node.checked);
 								else {
 									Control.node.checked = !Control.node.checked;
 
@@ -106,7 +108,7 @@ module.exports = function(modV) {
 
 							if(parseInt(Control.node.selectedIndex) === calculatedIndex) return;
 
-							if(isReserved < 0) Control.writeValue(calculatedIndex);
+							if(isReserved < 0) Control.update(calculatedIndex);
 							else {
 								Control.node.selectedIndex = calculatedIndex;
 								let selectValue = Control.node.options[calculatedIndex].value;
@@ -126,10 +128,11 @@ module.exports = function(modV) {
 				}
 			}
 
-			this.emit('midiInput', this);
+			modV.emit('midiInput', this);
 		}
 
 		importAssignments(assignments) {
+			const modV = this._modV;
 
 			assignments.forEach((channels, deviceID)  => {
 
