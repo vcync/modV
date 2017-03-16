@@ -2,7 +2,7 @@
 	"name": "modV",
 	"version": 1.4,
 	"main": "index.html",
-	"node-main": "mediaManager.js",
+	"node-main": "media-manager.js",
 	"window": {
 		"position": "center",
 		"width": 800,

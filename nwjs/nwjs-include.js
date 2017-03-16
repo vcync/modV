@@ -1,14 +1,21 @@
 //jshint node:true
-//globals nw
+/* globals nw */
 var gui = require('nw.gui');
+//require('./create-mac-built-in')(mb.Menu.prototype);
 
+var isDarwin = false;
 var mb = new gui.Menu({type:"menubar"});
-if(process.platform === "darwin") mb.createMacBuiltin("modV");
+if(process.platform === "darwin") {
+	isDarwin = true;
+	mb.createMacBuiltin("modV");
+}
 
 var submenu = new nw.Menu();
 
 submenu.append(new nw.MenuItem({
-	label: 'Spawn new output Window',
+	label: 'Create output window',
+	modifiers: (isDarwin ? 'cmd' : 'ctrl'),
+	key: 'n',
 	click: function() {
 		modV.createWindow();
 	}
@@ -23,8 +30,8 @@ submenu.append(new nw.MenuItem({
 
 // the menu item appended should have a submenu
 mb.append(new nw.MenuItem({
-  label: 'Options',
-  submenu: submenu
+	label: 'Options',
+	submenu: submenu
 }));
 
 gui.Window.get().menu = mb;
@@ -55,9 +62,9 @@ menu.append(new gui.MenuItem({
 		alert('Hi!');
 	}
 }));
-
+/*
 document.body.addEventListener('contextmenu', function(ev) {
 	ev.preventDefault();
 	menu.popup(ev.x, ev.y);
 	return false;
-});
+});*/

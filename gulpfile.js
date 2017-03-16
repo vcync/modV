@@ -104,25 +104,25 @@ gulp.task('copy:license', ['clean'], function() {
 		.pipe(gulp.dest('dist'));
 });
 
-gulp.task('copy:nwjs:include', ['clean'], function() {
+gulp.task('copy:nwjs:include', ['clean', 'clean:nwjs'], function() {
 	return gulp.src('./nwjs/nwjs-include.js')
 		.pipe(gulp.dest('dist'));
 });
 
-gulp.task('copy:nwjs:package', ['clean'], function() {
+gulp.task('copy:nwjs:package', ['clean', 'clean:nwjs'], function() {
 	return gulp.src('./nwjs/package.json')
 		.pipe(gulp.dest('dist'));
 });
 
-gulp.task('copy:nwjs:mediamanager', ['clean'], function() {
-	return gulp.src('./mediaManager.js')
+gulp.task('copy:nwjs:mediamanager', ['clean', 'clean:nwjs'], function() {
+	return gulp.src('./nwjs/media-manager.js')
 		.pipe(gulp.dest('dist'));
 });
 
-gulp.task('copy:nwjs:mediamanagermodules', ['clean'], function() {
+gulp.task('copy:nwjs:mediamanagermodules', ['clean', 'clean:nwjs'], function() {
 
 	// read npm package and copy mediaManager dependancies to dist, for nwjs build
-	var package = JSON.parse(fs.readFileSync('package.json', 'utf8'));
+	var package = JSON.parse(fs.readFileSync('./node_modules/modv-media-manager/package.json', 'utf8'));
 
 	var foldersToCopy = [];
 
@@ -147,7 +147,7 @@ gulp.task('ejs', ['clean'], function() {
 		.pipe(gulp.dest('dist'));
 });
 
-gulp.task('ejs:nwjs', ['clean'], function() {
+gulp.task('ejs:nwjs', ['clean', 'clean:nwjs'], function() {
 	return gulp.src('./*.ejs', {base: './'})
 		.pipe(ejs({nwjs: true}, {
 			ext: '.html'
@@ -184,7 +184,7 @@ gulp.task('set-watcher', ['build'], function() {
 	gulp.watch(allSources, ['build', 'reload']);
 });
 
-gulp.task('nwjs', ['clean', 'ejs:nwjs', 'webpack', 'copy', 'copy:nwjs:include', 'copy:nwjs:package', 'copy:nwjs:mediamanager', 'copy:nwjs:mediamanagermodules', 'clean:nwjs'], function(cb) {
+gulp.task('nwjs', ['clean', 'clean:nwjs', 'ejs:nwjs', 'webpack', 'copy', 'copy:nwjs:include', 'copy:nwjs:package', 'copy:nwjs:mediamanager', 'copy:nwjs:mediamanagermodules'], function(cb) {
 	mkdirp.sync('./dist/media/');
 
 	var nw = new NwBuilder({
@@ -209,7 +209,7 @@ gulp.task('copy', ['copy:modules', 'copy:html', 'copy:css', 'copy:library', /*'c
 
 gulp.task('build', ['clean', 'ejs', 'webpack', 'webpack-palette', 'copy', 'symlink']);
 
-gulp.task('build-nwjs', ['clean', 'ejs:nwjs', 'webpack', 'copy', 'nwjs']);
+gulp.task('build-nwjs', ['clean', 'ejs:nwjs', 'webpack', 'webpack-palette', 'copy', 'nwjs']);
 
 gulp.task('watch', ['build', 'connect', 'set-watcher', 'media-manager']);
 
