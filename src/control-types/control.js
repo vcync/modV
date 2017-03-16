@@ -1,6 +1,6 @@
 module.exports = class Control {
 
-	constructor(settings) {
+	constructor(settings, setValue) {
 		if(!('variable' in settings)) throw new Error('Control had no "variable" in settings');
 		if(!('label' in settings) && !settings.useInternalValue) {
 			throw new Error('Control had no "label" in settings');
@@ -9,6 +9,19 @@ module.exports = class Control {
 		this.node = null;
 
 		let id, value, Module, modV;
+
+		if(!setValue) {
+			setValue = function(valueIn) {
+				if(settings.varType === 'int') value = parseInt(valueIn);
+				else if(settings.varType === 'float') value = parseFloat(valueIn);
+				else value = valueIn;
+
+				if('prepend' in settings) value = settings.prepend + value;
+				if('append' in settings) value += settings.append;
+
+				return value;
+			};
+		}
 
 		Object.defineProperty(this, '_modVSet', {
 			set: (modVIn) => {
@@ -59,12 +72,7 @@ module.exports = class Control {
 			set: (valueIn) => {
 				let variable = settings.variable;
 
-				if(settings.varType === 'int') value = parseInt(valueIn);
-				else if(settings.varType === 'float') value = parseFloat(valueIn);
-				else value = valueIn;
-
-				if('prepend' in settings) value = settings.prepend + value;
-				if('append' in settings) value += settings.append;
+				value = setValue(valueIn);
 
 				if(!settings.useInternalValue) Module[variable] = value;
 				else settings.oninput(value);
@@ -121,5 +129,10 @@ module.exports = class Control {
 
 	get variable() {
 		return this.settings.variable;
+	}
+
+	update(value) {
+		this.value = value;
+		this.node.value = this.value;
 	}
 };

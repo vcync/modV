@@ -12,8 +12,20 @@ module.exports = function(modV) {
 			// Check for enum
 			if(!('enum' in settings)) throw new SelectControlError('SelectControl had no enum in settings');
 
+			let setValue = function(valueIn) {
+				valueIn = settings.enum[valueIn].value;
+
+				if(settings.varType === 'int') valueIn = parseInt(valueIn);
+				else if(settings.varType === 'float') valueIn = parseFloat(valueIn);
+
+				if('prepend' in settings) valueIn = settings.prepend + valueIn;
+				if('append' in settings) valueIn += settings.append;
+
+				return valueIn;
+			};
+
 			// All checks pass, call super
-			super(settings);
+			super(settings, setValue);
 		}
 
 		makeNode(modV, Module, id, isPreset, internalPresetValue) {
@@ -24,7 +36,7 @@ module.exports = function(modV) {
 
 			this.init(id, Module, node, isPreset, internalPresetValue, modV);
 
-			settings.enum.forEach(option => {
+			settings.enum.forEach((option, idx) => {
 				let optionNode = document.createElement('option');
 				optionNode.textContent = option.label;
 				optionNode.value = option.value;
@@ -32,12 +44,12 @@ module.exports = function(modV) {
 				if(isPreset) {
 					if(option.value === Module[this.variable]) {
 						optionNode.selected = true;
-						this.value = option.value;
+						this.value = idx;
 					}
 				} else if('default' in option) {
 					if(option.default) {
 						optionNode.selected = true;
-						this.value = option.value;
+						this.value = idx;
 					}
 				}
 
@@ -45,7 +57,7 @@ module.exports = function(modV) {
 			});
 
 			node.addEventListener('change', () => {
-				this.value = node.options[node.selectedIndex].value;
+				this.value = node.selectedIndex;
 			}, false);
 
 			return node;
