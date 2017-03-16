@@ -1,7 +1,7 @@
 module.exports = function(modV) {
-	
+
 	modV.prototype.moveLayerToIndex = function(oldIndex, newIndex) {
-		var layerToMove = this.layers.splice(oldIndex, 1)[0];
+		let layerToMove = this.layers.splice(oldIndex, 1)[0];
 		this.layers.splice(newIndex, 0, layerToMove);
 
 		this.layers.forEach((Layer, index) => {
@@ -10,6 +10,12 @@ module.exports = function(modV) {
 
 		// Send to remote
 		this.remote.update('layerOrder', {
+			oldIndex: oldIndex,
+			newIndex: newIndex
+		});
+
+		this.emit('layerOrder', {
+			Layer: layerToMove,
 			oldIndex: oldIndex,
 			newIndex: newIndex
 		});
