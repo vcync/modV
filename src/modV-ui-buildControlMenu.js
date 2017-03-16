@@ -1,7 +1,7 @@
 module.exports = function(Control, Module, modV) {
-	var items = [];
+	let items = [];
 
-	var attatchRobotSettings = {
+	let attatchRobotSettings = {
 		title: 'Attach Robot',
 		enabled: true,
 		callback: function() {
@@ -9,7 +9,7 @@ module.exports = function(Control, Module, modV) {
 		}
 	};
 
-	var detatchRobotSettings = {
+	let detatchRobotSettings = {
 		title: 'Detatch Robot',
 		enabled: true,
 		callback: function() {
@@ -17,7 +17,7 @@ module.exports = function(Control, Module, modV) {
 		}
 	};
 
-	if(modV.bots[Control.getID()]) {
+	if(modV.bots[Control.id]) {
 		detatchRobotSettings.enabled = true;
 		attatchRobotSettings.enabled = false;
 	} else {
