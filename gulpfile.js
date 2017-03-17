@@ -135,9 +135,9 @@ gulp.task('copy:nwjs:mediamanager', ['clean', 'clean:nwjs'], function() {
 // 		.pipe(gulp.dest('dist'));
 // });
 
-gulp.task('nwjs:install', ['copy:nwjs:package'], function() {
-	return gulp.src('./dist/')
-		.pipe(exec('npm install --prefix <%= file.path %>'))
+gulp.task('nwjs:install', ['clean', 'clean:nwjs', 'copy:nwjs:package'], function() {
+	return gulp.src('dist')
+		.pipe(exec('cd ./dist/ && npm install --prefix <%= file.path %>'))
 		.pipe(exec.reporter());
 });
 
