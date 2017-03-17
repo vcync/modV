@@ -12,8 +12,9 @@ const ProvidePlugin = require('webpack-stream').webpack.ProvidePlugin;
 const connect = require('gulp-connect');
 const jshint = require('gulp-jshint');
 const symlink = require('gulp-sym');
-const mkdirp = require('mkdirp');
 const clean = require('gulp-clean');
+const exec = require('gulp-exec');
+const mkdirp = require('mkdirp');
 const ejs = require('gulp-ejs');
 const gulp = require('gulp');
 const fs = require('fs');
@@ -119,19 +120,25 @@ gulp.task('copy:nwjs:mediamanager', ['clean', 'clean:nwjs'], function() {
 		.pipe(gulp.dest('dist'));
 });
 
-gulp.task('copy:nwjs:mediamanagermodules', ['clean', 'clean:nwjs'], function() {
+// gulp.task('copy:nwjs:mediamanagermodules', ['clean', 'clean:nwjs'], function() {
 
-	// read npm package and copy mediaManager dependancies to dist, for nwjs build
-	var package = JSON.parse(fs.readFileSync('./node_modules/modv-media-manager/package.json', 'utf8'));
+// 	// read npm package and copy mediaManager dependancies to dist, for nwjs build
+// 	var package = JSON.parse(fs.readFileSync('./node_modules/modv-media-manager/package.json', 'utf8'));
 
-	var foldersToCopy = [];
+// 	var foldersToCopy = [];
 
-	for(var dep in package.dependencies) {
-		foldersToCopy.push('./node_modules/' + dep + '/**/*');
-	}
+// 	for(var dep in package.dependencies) {
+// 		foldersToCopy.push('./node_modules/' + dep + '/**/*');
+// 	}
 
-	return gulp.src(foldersToCopy, {base: './'})
-		.pipe(gulp.dest('dist'));
+// 	return gulp.src(foldersToCopy, {base: './'})
+// 		.pipe(gulp.dest('dist'));
+// });
+
+gulp.task('nwjs:install', ['copy:nwjs:package'], function() {
+	return gulp.src('./dist/')
+		.pipe(exec('npm install --prefix <%= file.path %>'))
+		.pipe(exec.reporter());
 });
 
 gulp.task('symlink', ['clean'], function() {
@@ -184,8 +191,7 @@ gulp.task('set-watcher', ['build'], function() {
 	gulp.watch(allSources, ['build', 'reload']);
 });
 
-gulp.task('nwjs', ['clean', 'clean:nwjs', 'ejs:nwjs', 'webpack', 'copy', 'copy:nwjs:include', 'copy:nwjs:package', 'copy:nwjs:mediamanager', 'copy:nwjs:mediamanagermodules'], function(cb) {
-	mkdirp.sync('./dist/media/');
+gulp.task('nwjs', ['clean', 'clean:nwjs', 'ejs:nwjs', 'webpack', 'copy', 'copy:nwjs:include', 'copy:nwjs:package', 'copy:nwjs:mediamanager', 'nwjs:install'], function(cb) {
 
 	var nw = new NwBuilder({
 		files: './dist/**/**',

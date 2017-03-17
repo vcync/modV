@@ -1,6 +1,6 @@
 {
 	"name": "modV",
-	"version": 1.4,
+	"version": "1.4.0",
 	"main": "index.html",
 	"node-main": "media-manager.js",
 	"window": {
@@ -11,5 +11,8 @@
 		"min_height": 100
 	},
 	"plugin": false,
-	"chromium-args": "--disable-raf-throttling"
+	"chromium-args": "--disable-raf-throttling",
+	"dependencies": {
+		"modv-media-manager": "git+ssh://git@github.com:2xAA/modV-MediaManager.git"
+	}
 }
