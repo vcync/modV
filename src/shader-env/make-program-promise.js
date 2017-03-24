@@ -18,6 +18,7 @@ module.exports = (gl) => {
 				});
 			} catch(e) {
 				reject(e);
+				return;
 			}
 
 			resolve(info.program);

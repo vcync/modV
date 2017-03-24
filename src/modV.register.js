@@ -132,8 +132,8 @@ module.exports = function(modV) {
 					// finish up
 					finish(Module, type);
 				}).catch(error => {
-					console.error('Registration of ModuleShader "' + name + '" unsuccessful. Reason:', error.reason);
-					console.warn(error.log);
+					console.error('Registration of ModuleShader "' + name + '" unsuccessful.');
+					console.error(error);
 				});
 			});
 
