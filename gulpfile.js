@@ -11,13 +11,12 @@ const webpack = require('webpack-stream');
 const ProvidePlugin = require('webpack-stream').webpack.ProvidePlugin;
 const connect = require('gulp-connect');
 const jshint = require('gulp-jshint');
+const modclean = require('modclean');
 const symlink = require('gulp-sym');
 const clean = require('gulp-clean');
 const exec = require('gulp-exec');
-const mkdirp = require('mkdirp');
 const ejs = require('gulp-ejs');
 const gulp = require('gulp');
-const fs = require('fs');
 
 const NwBuilder = require('nw-builder');
 
@@ -120,25 +119,22 @@ gulp.task('copy:nwjs:mediamanager', ['clean', 'clean:nwjs'], function() {
 		.pipe(gulp.dest('dist'));
 });
 
-// gulp.task('copy:nwjs:mediamanagermodules', ['clean', 'clean:nwjs'], function() {
-
-// 	// read npm package and copy mediaManager dependancies to dist, for nwjs build
-// 	var package = JSON.parse(fs.readFileSync('./node_modules/modv-media-manager/package.json', 'utf8'));
-
-// 	var foldersToCopy = [];
-
-// 	for(var dep in package.dependencies) {
-// 		foldersToCopy.push('./node_modules/' + dep + '/**/*');
-// 	}
-
-// 	return gulp.src(foldersToCopy, {base: './'})
-// 		.pipe(gulp.dest('dist'));
-// });
-
 gulp.task('nwjs:install', ['clean', 'clean:nwjs', 'copy:nwjs:package'], function() {
 	return gulp.src('dist')
 		.pipe(exec('cd ./dist/ && npm install --prefix <%= file.path %>'))
 		.pipe(exec.reporter());
+});
+
+gulp.task('nwjs:modclean', ['nwjs:install'], function(cb) {
+	modclean({ cwd: './dist/', patterns: ['default:safe', 'default:caution'] }, function(err, results) {
+		if(err) {
+			console.error(err);
+			return;
+		}
+
+		console.log(`${results.length} files removed!`);
+		cb();
+	});
 });
 
 gulp.task('symlink', ['clean'], function() {
@@ -191,7 +187,7 @@ gulp.task('set-watcher', ['build'], function() {
 	gulp.watch(allSources, ['build', 'reload']);
 });
 
-gulp.task('nwjs', ['clean', 'clean:nwjs', 'ejs:nwjs', 'webpack', 'copy', 'copy:nwjs:include', 'copy:nwjs:package', 'copy:nwjs:mediamanager', 'nwjs:install'], function(cb) {
+gulp.task('nwjs', ['clean', 'clean:nwjs', 'ejs:nwjs', 'webpack', 'copy', 'copy:nwjs:include', 'copy:nwjs:package', 'copy:nwjs:mediamanager', 'nwjs:install', 'nwjs:modclean'], function(cb) {
 
 	var nw = new NwBuilder({
 		files: './dist/**/**',

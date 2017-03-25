@@ -54,6 +54,7 @@
     "jshint-stylish": "^2.2.1",
     "json-loader": "^0.5.4",
     "matchdep": "~0.1.2",
+    "modclean": "^2.1.0",
     "nw-builder": "^3.1.0",
     "webpack-stream": "^3.2.0"
   }
