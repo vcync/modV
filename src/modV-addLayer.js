@@ -14,10 +14,10 @@ module.exports = function(modV) {
 
 		this.updateLayerSelectors();
 
-		this.emit('layerAdd', {
-			Layer: Layer,
-			atIndex: layerIndex
-		});
+		this.emit('layerAdd',
+			Layer,
+			layerIndex
+		);
 
 		return layerIndex;
 	};

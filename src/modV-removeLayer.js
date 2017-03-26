@@ -20,10 +20,11 @@ module.exports = function(modV) {
 			newLayerIndexes.push(index);
 		});
 
-		this.remote.update('removelayer', {
-			index: layerIndex
-		});
-
 		this.updateLayerSelectors();
+
+		this.emit('layerRemove',
+			Layer,
+			layerIndex
+		);
 	};
 };

@@ -1,28 +1,141 @@
 /* globals Sortable */
 
+const EventEmitter2 = require('eventemitter2').EventEmitter2;
 const swapElements = require('./fragments/swap-elements');
 const replaceAll = require('./fragments/replace-all');
 
 module.exports = function(modV) {
 
-	modV.prototype.Layer = class Layer {
+	modV.prototype.Layer = class Layer extends EventEmitter2 {
 
-		constructor(name, canvas, context, clearing, modV) {
+		constructor(nameIn, canvas, context, clearingIn, modV) {
+			super();
+
 			this.canvas = canvas || document.createElement('canvas');
 			this.context = context || this.canvas.getContext('2d');
-			this.clearing = clearing || false;
-			this.alpha = 1;
-			this.enabled = true;
-			this.inherit = true;
-			this.inheritFrom = -1; // -1 = canvas before, any other number corresponds to modV.layers index
-			this.pipeline = false;
-			this.drawToOutput = true;
-			this.locked = false;
-			this.blending = 'normal';
-			this.name = name || 'New Layer';
+
+			this.name = nameIn || 'New Layer';
 			this.modules = {};
 			this.moduleOrder = [];
 			this.modV = modV;
+
+			let clearing = clearingIn || false,
+				alpha = 1,
+				enabled = true,
+				inherit = true,
+				inheritFrom = -1, // -1 = canvas before, any other number corresponds to modV.layers index
+				pipeline = false,
+				drawToOutput = true,
+				locked = false,
+				blending = 'normal';
+
+			Object.defineProperty(this, 'clearing', {
+				get: () => {
+					return clearing;
+				},
+				set: (clearingIn) => {
+					clearing = clearingIn;
+					this.emit('clearingSet',
+						clearing
+					);
+				}
+			});
+
+			Object.defineProperty(this, 'alpha', {
+				get: () => {
+					return alpha;
+				},
+				set: (alphaIn) => {
+					alpha = alphaIn;
+					this.emit('alphaSet',
+						alpha
+					);
+				}
+			});
+
+			Object.defineProperty(this, 'enabled', {
+				get: () => {
+					return enabled;
+				},
+				set: (enabledIn) => {
+					enabled = enabledIn;
+					this.emit('enabledSet',
+						enabled
+					);
+				}
+			});
+
+			Object.defineProperty(this, 'inherit', {
+				get: () => {
+					return inherit;
+				},
+				set: (inheritIn) => {
+					inherit = inheritIn;
+					this.emit('inheritSet',
+						inherit
+					);
+				}
+			});
+
+			Object.defineProperty(this, 'inheritFrom', {
+				get: () => {
+					return inheritFrom;
+				},
+				set: (inheritFromIn) => {
+					inheritFrom = inheritFromIn;
+					this.emit('inheritFromSet',
+						inheritFrom
+					);
+				}
+			});
+
+			Object.defineProperty(this, 'pipeline', {
+				get: () => {
+					return pipeline;
+				},
+				set: (pipelineIn) => {
+					pipeline = pipelineIn;
+					this.emit('pipelineSet',
+						pipeline
+					);
+				}
+			});
+
+			Object.defineProperty(this, 'drawToOutput', {
+				get: () => {
+					return drawToOutput;
+				},
+				set: (drawToOutputIn) => {
+					drawToOutput = drawToOutputIn;
+					this.emit('drawToOutputSet',
+						drawToOutput
+					);
+				}
+			});
+
+			Object.defineProperty(this, 'locked', {
+				get: () => {
+					return locked;
+				},
+				set: (lockedIn) => {
+					locked = lockedIn;
+					this.emit('lockedSet',
+						locked
+					);
+				}
+			});
+
+			Object.defineProperty(this, 'blending', {
+				get: () => {
+					return blending;
+				},
+				set: (blendingIn) => {
+					blending = blendingIn;
+					this.emit('blendingSet',
+						blending
+					);
+				}
+			});
 
 			this.canvas.width = modV.outputCanvas.width;
 			this.canvas.height = modV.outputCanvas.height;
@@ -51,6 +164,11 @@ module.exports = function(modV) {
 				order: order
 			});
 
+			this.emit('moduleAdd',
+				Module,
+				order
+			);
+
 			return order;
 		}
 
@@ -69,6 +187,11 @@ module.exports = function(modV) {
 					layerIndex: Module.getLayer()
 				});
 			}
+
+			this.emit('moduleRemove',
+				Module,
+				index
+			);
 
 			// Remove from module store
 			delete this.modules[name];
@@ -112,6 +235,11 @@ module.exports = function(modV) {
 					layer: Module.getLayer(),
 					order: order
 				});
+
+				this.emit('moduleReorder',
+					Module,
+					order
+				);
 			}
 		}
 
@@ -128,6 +256,11 @@ module.exports = function(modV) {
 
 		toggle() {
 			this.enabled = !this.enabled;
+
+			this.emit('enabled',
+				this.enabled
+			);
+
 			return this.enabled;
 		}
 
@@ -243,6 +376,10 @@ module.exports = function(modV) {
 			this.nodes.title.textContent = name;
 
 			this.modV.updateLayerSelectors();
+
+			this.emit('nameChange',
+				name
+			);
 
 			return true;
 		}

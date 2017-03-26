@@ -42,7 +42,9 @@ module.exports = function(modV) {
 			// Create Gallery item
 			self.createGalleryItem(Module);
 
-			self.emit('moduleRegistered', Module);
+			self.emit('moduleRegister',
+				Module
+			);
 		}
 
 		var self = this;

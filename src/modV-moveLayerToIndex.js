@@ -14,11 +14,11 @@ module.exports = function(modV) {
 			newIndex: newIndex
 		});
 
-		this.emit('layerOrder', {
-			Layer: layerToMove,
-			oldIndex: oldIndex,
-			newIndex: newIndex
-		});
+		this.emit('layerReorder',
+			layerToMove,
+			oldIndex,
+			newIndex
+		);
 
 		this.updateLayerSelectors();
 	};
