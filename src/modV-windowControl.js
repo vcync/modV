@@ -11,12 +11,12 @@ let WindowController = function(id, resizeCb) {
 
 	pWindow.document.body.style.margin = '0px';
 	pWindow.document.body.style.backgroundColor = 'black';
-	
+
 	this.canvas = document.createElement('canvas');
 	this.context = this.canvas.getContext('2d');
 
 	this.canvas.style.position = 'fixed';
-	
+
 	this.canvas.style.top = this.canvas.style.bottom = this.canvas.style.left = this.canvas.style.right = 0;
 
 	pWindow.document.body.appendChild(this.canvas);
@@ -46,6 +46,7 @@ module.exports = function(modV) {
 
 		// Set modV.prototype.previewWindow
 		let WindowC = new WindowController(id, () => {
+			this.pixelRatio = WindowC.window.devicePixelRatio;
 			this.resize();
 		});
 

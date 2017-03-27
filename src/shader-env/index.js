@@ -1,5 +1,7 @@
+const defaultShader = require('./default-shader');
+
 module.exports = function shaderEnvInit(modV) {
-	
+
 	let gl;
 
 	let env = {};
@@ -30,9 +32,14 @@ module.exports = function shaderEnvInit(modV) {
 	env.render = require('./render')(gl, env);
 
 	// Make basic shader program
-	const defaultShader = require('./default-shader');
+	Object.defineProperty(env, 'defaultShader', {
+		get: () => {
+			return defaultShader;
+		}
+	});
+
 	let program = env.makeProgram(defaultShader.v, defaultShader.f);
-	
+
 	env.programs.push(program);
 	gl.useProgram(env.programs[1]);
 

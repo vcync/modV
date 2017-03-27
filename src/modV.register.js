@@ -1,7 +1,6 @@
 const getDocument = require('./fragments/get-document');
 const replaceAll = require('./fragments/replace-all');
 const loadJS = require('./fragments/load-js');
-const makeProgramInit = require('./shader-env/make-program-promise');
 
 module.exports = function(modV) {
 	modV.prototype.register = function(Module, instantiated) {
@@ -111,34 +110,16 @@ module.exports = function(modV) {
 		// Handle ModuleShader
 		if(Module instanceof self.ModuleShader) {
 			type = 'ModuleShader';
+			let gl = self.shaderEnv.gl;
 
 			Module.info.uniforms.modVcanvas = {
 				type: "t",
 				value: self.shaderEnv.texture
 			};
 
-			// Read shader document
-			getDocument(self.baseURL + '/modules/' + Module.shaderFile, function(xhrDocument) {
-
-				var vert = xhrDocument.querySelector('script[type="x-shader/x-vertex"]').textContent;
-				var frag = xhrDocument.querySelector('script[type="x-shader/x-fragment"]').textContent;
-
-				var gl = self.shaderEnv.gl; // set reference to self.shaderEnv.gl
-				const makeProgram = makeProgramInit(gl);
-
-				// Compile shaders and create program
-				makeProgram(vert, frag).then(program => {
-					gl.useProgram(program);
-					Module.programIndex = self.shaderEnv.programs.push(program)-1;
-
-					// finish up
-					finish(Module, type);
-				}).catch(error => {
-					console.error('Registration of ModuleShader "' + name + '" unsuccessful.');
-					console.error(error);
-				});
+			Module._makeProgram(gl, this).then(finish).catch(e => {
+				console.error(e);
 			});
-
 		}
 
 		// Handle Module3D

@@ -2,7 +2,7 @@ module.exports = (gl, env) => {
 	let programs = env.programs;
 	let setRectangle = env.setRectangle;
 
-	return function render(delta, canvas) {
+	return function render(delta, canvas, pixelRatio) {
 		// Clear WebGL canvas
 		gl.clearColor(0.0, 0.0, 0.0, 0.0);
 		gl.clear(gl.COLOR_BUFFER_BIT);
@@ -24,11 +24,11 @@ module.exports = (gl, env) => {
 		var timeLocation = gl.getUniformLocation(programs[env.activeProgram], "u_time");
 		gl.uniform1f(timeLocation, delta);
 
-		var timeSecondsLocation = gl.getUniformLocation(programs[env.activeProgram], "u_timeSeconds");
+		var timeSecondsLocation = gl.getUniformLocation(programs[env.activeProgram], "iGlobalTime");
 		gl.uniform1f(timeSecondsLocation, delta / 1000);
 
-		var resolutionLocation = gl.getUniformLocation(programs[env.activeProgram], "u_resolution");
-		gl.uniform2f(resolutionLocation, canvas.width, canvas.height);
+		var resolutionLocation = gl.getUniformLocation(programs[env.activeProgram], "iResolution");
+		gl.uniform3f(resolutionLocation, canvas.width, canvas.height, 1.0);
 
 		// Set u_resolution
 		if(programs[env.activeProgram]) {

@@ -23,7 +23,7 @@ class Plasma extends modV.ModuleShader {
 					}
 				} // Three.JS uniforms
 			},
-			shaderFile: "/Plasma/shader.html" // path to HTML file within modules directory with shader script tags
+			fragmentFile: "/Plasma/plasma.frag" // path to HTML file within modules directory with shader script tags
 		});
 
 		this.add(new modV.RangeControl({

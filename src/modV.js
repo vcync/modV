@@ -74,6 +74,7 @@ class modV extends EventEmitter2 {
 
 		this.width = 0;
 		this.height = 0;
+		this.pixelRatio = 1.0;
 
 		this.previewCanvas = document.createElement('canvas');
 		this.previewContext = this.previewCanvas.getContext('2d');
