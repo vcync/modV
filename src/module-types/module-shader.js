@@ -69,6 +69,15 @@ module.exports = function(modV) {
 							let vs = values[0];
 							let fs = values[1];
 
+							if(fs.search('gl_FragColor') < 0) {
+								fs = modV.shaderEnv.defaultShader.fWrap.replace(
+									/(\%MAIN_IMAGE_INJECT\%)/,
+									fs
+								);
+
+								vs = modV.shaderEnv.defaultShader.v300;
+							}
+
 							makeProgram(vs, fs).then(program => {
 								gl.useProgram(program);
 								this.programIndex = modV.shaderEnv.programs.push(program)-1;

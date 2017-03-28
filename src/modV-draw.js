@@ -163,7 +163,7 @@ module.exports = function(modV) {
 									value = Module[uniformKey];
 									if(value) value = 1;
 									else value = 0;
-									
+
 									_gl.uniform1i(uniLoc, value);
 									break;
 
@@ -188,7 +188,7 @@ module.exports = function(modV) {
 					// Render
 					this.shaderEnv.render(delta, canvas);
 					context.globalCompositeOperation = Module.info.blend;
-					
+
 
 					// Copy Shader Canvas to Main Canvas
 					if(pipeline) {
@@ -245,7 +245,7 @@ module.exports = function(modV) {
 						Module.draw(canvas, context, this.videoStream, meydaOutput, this.meyda, delta, this.bpm, this.kick);
 
 					}
-					
+
 				} else if(Module instanceof this.Module3D) {
 					let texture = this.threeEnv.texture;
 
@@ -259,7 +259,7 @@ module.exports = function(modV) {
 						canvas.width,
 						canvas.height
 					);
-					
+
 					//this.threeEnv.material.map = this.threeEnv.texture;
 					this.threeEnv.material.map.needsUpdate = true;
 

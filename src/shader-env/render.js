@@ -7,18 +7,9 @@ module.exports = (gl, env) => {
 		gl.clearColor(0.0, 0.0, 0.0, 0.0);
 		gl.clear(gl.COLOR_BUFFER_BIT);
 
-		// Set position variable
-		var positionLocation = gl.getAttribLocation(programs[env.activeProgram], "a_position");
-		gl.enableVertexAttribArray(positionLocation);
-		gl.vertexAttribPointer(positionLocation, 2, gl.FLOAT, false, 0, 0);
-
 		// Set delta
 		var deltaLocation = gl.getUniformLocation(programs[env.activeProgram], "u_delta");
 		gl.uniform1f(deltaLocation, delta);
-
-		// Update texture???
-		var samplerLocation = gl.getUniformLocation(programs[env.activeProgram], "u_modVCanvas");
-		gl.uniform1i(samplerLocation, 0); // Unit position 0
 
 		// TODO: setup u_time & other usual uniforms
 		var timeLocation = gl.getUniformLocation(programs[env.activeProgram], "u_time");
@@ -30,10 +21,9 @@ module.exports = (gl, env) => {
 		var resolutionLocation = gl.getUniformLocation(programs[env.activeProgram], "iResolution");
 		gl.uniform3f(resolutionLocation, canvas.width, canvas.height, 1.0);
 
-		// Set u_resolution
-		if(programs[env.activeProgram]) {
-			setRectangle(0, 0, canvas.width, canvas.height, env.buffer);
-		}
+		// required as we need to resize our drawing boundaries for gallery and main canvases
+		// -- potential performance hinderance, consider seperate GL environment for gallery
+		setRectangle(0, 0, canvas.width, canvas.height, env.buffer);
 
 		gl.drawArrays(gl.TRIANGLES, 0, 6);
 	};

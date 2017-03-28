@@ -11,8 +11,8 @@ module.exports = function shaderEnvInit(modV) {
 	env.buffer = null;
 
 	env.canvas	= document.createElement('canvas');
-	env.gl		= env.canvas.getContext('webgl', {
-		antialias: false,
+	env.gl		= env.canvas.getContext('webgl2', {
+		//antialias: false,
 		premultipliedAlpha: false
 	});
 
@@ -81,10 +81,11 @@ module.exports = function shaderEnvInit(modV) {
 	);
 
 	// Set the parameters so we can render any size image.
+	// TODO: WebGL2 should be able to support NPOT textures, yet it still errors on NPOT textues...
 	gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE);
 	gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);
-	gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR); // or NEAREST
-	gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.LINEAR); // or NEAREST
+	gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR);
+	gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.LINEAR);
 
 	// Set canvas and viewport sizes
 	resize(modV.width, modV.height);
@@ -98,15 +99,11 @@ module.exports = function shaderEnvInit(modV) {
 	gl.enableVertexAttribArray(positionLocation);
 	gl.vertexAttribPointer(positionLocation, 2, gl.FLOAT, false, 0, 0);
 
-	// Create modVCanvas sampler2D Uniform
-	var samplerLocation = gl.getUniformLocation(env.programs[1], "u_modVCanvas");
-	gl.uniform1i(samplerLocation, 0); // Unit position 0
-
 	env.setRectangle(0, 0, modV.width, modV.height, env.buffer);
 
 	env.resize = (width, height) => {
 		resize(width, height);
-		env.setRectangle(0, 0, width, height, env.buffer);
+		//env.setRectangle(0, 0, width, height, env.buffer);
 	};
 
 	env.resize(modV.width, modV.height);
