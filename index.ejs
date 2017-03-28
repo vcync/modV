@@ -98,9 +98,19 @@
 				}
 			});
 
-			// modV.on('moduleRegistered', (Module) => {
-			// 	console.info('Register:', Module.info.originalModuleName, '(' + Module.info.name + ')');
-			// });
+			modV.layers[0].onAny(layerListener);
+
+			modV.onAny(function(event, ...args) {
+				console.log(event, arguments);
+			});
+
+			function layerListener(event, ...args) {
+				console.log(event, arguments);
+			}
+
+			modV.on('layerAdd', function(Layer) {
+				Layer.onAny(layerListener);
+			});
 
 			modV.start();
 		</script>
@@ -148,6 +158,9 @@
 		<script src="./modules/Brightness-Contrast.js"></script>
 		<script src="./modules/Hue-Saturation.js"></script>
 		<script src="./modules/Rotate.js"></script>
+		<script src="./modules/BarrelDistortion.js"></script>
+		<script src="./modules/RGB-Display.js"></script>
+		<script src="./modules/Vignette.js"></script>
 
 		<script src="./modules/3D.js"></script>
 
