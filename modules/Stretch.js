@@ -14,7 +14,7 @@ class Stretch extends modV.ModuleShader {
 					}
 				} // Three.JS uniforms
 			},
-			shaderFile: "/Stretch/shader.html" // path to HTML file within modules directory with shader script tags
+			fragmentFile: "/Stretch/stretch.frag" // path to HTML file within modules directory with shader script tags
 		});
 
 		this.add(new modV.RangeControl({
@@ -27,7 +27,7 @@ class Stretch extends modV.ModuleShader {
 			default: 1.0
 		}));
 	}
-	
+
 }
 
 modV.register(Stretch);

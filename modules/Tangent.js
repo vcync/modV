@@ -26,7 +26,7 @@ class Tangent extends modV.ModuleShader {
 					}
 				} // Three.JS uniforms
 			},
-			shaderFile: "/Tangent/shader.html" // path to HTML file within modules directory with shader script tags
+			fragmentFile: "/Tangent/tangent.frag" // path to HTML file within modules directory with shader script tags
 		});
 
 		this.add(new modV.RangeControl({

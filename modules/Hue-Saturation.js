@@ -18,9 +18,9 @@ class HueSat extends modV.ModuleShader {
 					}
 				} // Three.JS style uniforms
 			},
-			shaderFile: "/Hue-Saturation/shader.html" // path to HTML file within modules directory with shader script tags
+			fragmentFile: "/Hue-Saturation/hueSat.frag" // path to HTML file within modules directory with shader script tags
 		});
-				
+
 		this.add(new modV.RangeControl({
 			variable: 'hue',
 			label: 'Hue',

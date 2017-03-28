@@ -18,9 +18,9 @@ class BrightCont extends modV.ModuleShader {
 					}
 				} // Three.JS style uniforms
 			},
-			shaderFile: "/Brightness-Contrast/shader.html" // path to HTML file within modules directory with shader script tags
+			fragmentFile: "/Brightness-Contrast/brightCont.frag" // path to HTML file within modules directory with shader script tags
 		});
-				
+
 		this.add(new modV.RangeControl({
 			variable: 'brightness',
 			label: 'Brightness',

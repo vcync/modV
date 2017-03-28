@@ -14,7 +14,7 @@ class Kaleidoscope extends modV.ModuleShader {
 					}
 				} // Three.JS uniforms
 			},
-			shaderFile: "/Kaleidoscope/shader.html" // path to HTML file within modules directory with shader script tags
+			fragmentFile: "/Kaleidoscope/kaleidoscope.frag" // path to HTML file within modules directory with shader script tags
 		});
 
 		this.add(new modV.RangeControl({

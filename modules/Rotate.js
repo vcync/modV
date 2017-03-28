@@ -14,9 +14,9 @@ class Rotate extends modV.ModuleShader {
 					}
 				} // Three.JS style uniforms
 			},
-			shaderFile: "/Rotate/shader.html" // path to HTML file within modules directory with shader script tags
+			fragmentFile: "/Rotate/rotate.frag" // path to HTML file within modules directory with shader script tags
 		});
-				
+
 		this.add(new modV.RangeControl({
 			variable: 'angle',
 			label: 'Angle',

@@ -18,7 +18,7 @@ class Mirror extends modV.ModuleShader {
 					}
 				} // Three.JS uniforms
 			},
-			shaderFile: "/Mirror/shader.html" // path to HTML file within modules directory with shader script tags
+			fragmentFile: "/Mirror/mirror.frag" // path to HTML file within modules directory with shader script tags
 		});
 
 		this.add(new modV.RangeControl({
