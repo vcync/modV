@@ -1,4 +1,5 @@
 const defaultShader = require('./default-shader');
+const twgl = require('twgl.js');
 
 module.exports = function shaderEnvInit(modV) {
 
@@ -39,28 +40,19 @@ module.exports = function shaderEnvInit(modV) {
 	});
 
 	let program = env.makeProgram(defaultShader.v, defaultShader.f);
+	let programInfo = twgl.createProgramInfoFromProgram(gl, program);
 
 	env.programs.push(program);
 	gl.useProgram(env.programs[1]);
 
-	// Look up where the texture coordinates need to go.
-	let texCoordLocation = gl.getAttribLocation(env.programs[1], "a_texCoord");
+	let arrays = {
+    	position: [-1, -1, 0, 1, -1, 0, -1, 1, 0, -1, 1, 0, 1, -1, 0, 1, 1, 0],
+    };
 
-	// provide texture coordinates for the rectangle.
-	let texCoordBuffer = gl.createBuffer();
-	gl.bindBuffer(gl.ARRAY_BUFFER, texCoordBuffer);
-	gl.bufferData(gl.ARRAY_BUFFER, new Float32Array([
-			0.0,	0.0,
-			1.0,	0.0,
-			0.0,	1.0,
-			0.0,	1.0,
-			1.0,	0.0,
-			1.0,	1.0
-		]),
-		gl.STATIC_DRAW
-	);
-	gl.enableVertexAttribArray(texCoordLocation);
-	gl.vertexAttribPointer(texCoordLocation, 2, gl.FLOAT, false, 0, 0);
+    let bufferInfo = twgl.createBufferInfoFromArrays(gl, arrays);
+
+    twgl.setBuffersAndAttributes(gl, programInfo, bufferInfo);
+	//twgl.setUniforms(programInfo, uniforms);
 
 	// Create a texture.
 	env.texture = gl.createTexture();
@@ -79,11 +71,12 @@ module.exports = function shaderEnvInit(modV) {
 		gl.UNSIGNED_BYTE,
 		new Uint8Array([0, 0, 0, 0])
 	);
+	gl.generateMipmap(gl.TEXTURE_2D);
 
 	// Set the parameters so we can render any size image.
 	// TODO: WebGL2 should be able to support NPOT textures, yet it still errors on NPOT textues...
-	gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE);
-	gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);
+	//gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE);
+	//gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);
 	gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR);
 	gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.LINEAR);
 

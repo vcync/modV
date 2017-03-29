@@ -1,3 +1,5 @@
+const twgl = require('twgl.js');
+
 module.exports = (gl, env) => {
 	let programs = env.programs;
 	let setRectangle = env.setRectangle;
@@ -6,20 +8,31 @@ module.exports = (gl, env) => {
 		// Clear WebGL canvas
 		gl.clearColor(0.0, 0.0, 0.0, 0.0);
 		gl.clear(gl.COLOR_BUFFER_BIT);
+		let programInfo = twgl.createProgramInfoFromProgram(gl, programs[env.activeProgram]);
 
 		// Set delta
-		var deltaLocation = gl.getUniformLocation(programs[env.activeProgram], "u_delta");
-		gl.uniform1f(deltaLocation, delta);
+		// var deltaLocation = gl.getUniformLocation(programs[env.activeProgram], "u_delta");
+		// gl.uniform1f(deltaLocation, delta);
 
-		// TODO: setup u_time & other usual uniforms
-		var timeLocation = gl.getUniformLocation(programs[env.activeProgram], "u_time");
-		gl.uniform1f(timeLocation, delta);
+		// // TODO: setup u_time & other usual uniforms
+		// var timeLocation = gl.getUniformLocation(programs[env.activeProgram], "u_time");
+		// gl.uniform1f(timeLocation, delta);
 
-		var timeSecondsLocation = gl.getUniformLocation(programs[env.activeProgram], "iGlobalTime");
-		gl.uniform1f(timeSecondsLocation, delta / 1000);
+		// var timeSecondsLocation = gl.getUniformLocation(programs[env.activeProgram], "iGlobalTime");
+		// gl.uniform1f(timeSecondsLocation, delta / 1000);
 
-		var resolutionLocation = gl.getUniformLocation(programs[env.activeProgram], "iResolution");
-		gl.uniform3f(resolutionLocation, canvas.width, canvas.height, 1.0);
+		// var resolutionLocation = gl.getUniformLocation(programs[env.activeProgram], "iResolution");
+		// gl.uniform3f(resolutionLocation, canvas.width, canvas.height, 1.0);
+
+		let uniforms = {
+			iGlobalTime: delta / 1000,
+			iDelta: delta,
+			u_delta: delta,
+			u_time: delta,
+			iResolution: [canvas.width, canvas.height, 1.0]
+		};
+
+		twgl.setUniforms(programInfo, uniforms);
 
 		// required as we need to resize our drawing boundaries for gallery and main canvases
 		// -- potential performance hinderance, consider seperate GL environment for gallery
