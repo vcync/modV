@@ -22,7 +22,7 @@ module.exports = function(modV) {
 					let max = this.Control.max;
 
 					let value = Math.map(LFOValue, -1, 1, min, max);
-					this.Control.writeValue(value);
+					this.Control.update(value);
 				},
 
 				select: () => {
