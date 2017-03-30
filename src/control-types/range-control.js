@@ -80,5 +80,13 @@ module.exports = function(modV) {
 			this.init(id, Module, node, isPreset, internalPresetValue, modV);
 			return node;
 		}
+
+		get min() {
+			return this.settings.min;
+		}
+
+		get max() {
+			return this.settings.max;
+		}
 	};
 };
