@@ -12,7 +12,13 @@ module.exports = function(modV) {
 			// Check for enum
 			if(!('enum' in settings)) throw new SelectControlError('SelectControl had no enum in settings');
 
-			let setValue = function(valueIn) {
+			super(settings, setValue);
+
+			this.enumValue = 0;
+
+			let self = this;
+			function setValue(valueIn) {
+				self.enumValue = valueIn;
 				valueIn = settings.enum[valueIn].value;
 
 				if(settings.varType === 'int') valueIn = parseInt(valueIn);
@@ -22,10 +28,7 @@ module.exports = function(modV) {
 				if('append' in settings) valueIn += settings.append;
 
 				return valueIn;
-			};
-
-			// All checks pass, call super
-			super(settings, setValue);
+			}
 		}
 
 		makeNode(modV, Module, id, isPreset, internalPresetValue) {
