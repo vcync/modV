@@ -95,36 +95,8 @@ module.exports = function(modV) {
 				this.outputCanvas
 			);
 
-			// Set Uniforms
-			if('uniforms' in Module.info) {
-				forIn(Module.info.uniforms, (uniformKey, uniform) => {
-					let uniLoc = _gl.getUniformLocation(this.shaderEnv.programs[this.shaderEnv.activeProgram], uniformKey);
-					let value;
-
-					switch(uniform.type) {
-						case 'f':
-							value = parseFloat(Module[uniformKey]);
-							_gl.uniform1f(uniLoc, value);
-							break;
-
-						case 'i':
-							value = parseInt(Module[uniformKey]);
-							_gl.uniform1i(uniLoc, value);
-							break;
-
-						case 'b':
-							value = Module[uniformKey];
-							if(value) value = 1;
-							else value = 0;
-
-							_gl.uniform1i(uniLoc, value);
-							break;
-					}
-				});
-			}
-
 			// Render
-			this.shaderEnv.render(delta, canvas);
+			this.shaderEnv.render(delta, canvas, window.devicePixelRatio, Module);
 
 			// Copy Shader Canvas to Main Canvas
 			ctx.drawImage(
