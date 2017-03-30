@@ -1,6 +1,6 @@
 {
   "name": "modv",
-  "version": "1.4.0",
+  "version": "1.5.0",
   "description": "The JavaScript audio visualisation tool",
   "scripts": {
     "start": "gulp watch"
