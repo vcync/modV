@@ -22,9 +22,9 @@ class SlipNSlideShader extends modV.ModuleShader {
 					}
 				} // Three.JS style uniforms
 			},
-			shaderFile: "/SlipNSlideShader/shader.html" // path to HTML file within modules directory with shader script tags
+			fragmentFile: "/SlipNSlideShader/slipNSlide.frag" // path to HTML file within modules directory with shader script tags
 		});
-				
+
 		this.add(new modV.RangeControl({
 			variable: 'slices',
 			label: 'Slices',

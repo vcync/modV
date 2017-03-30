@@ -21,6 +21,8 @@ module.exports = function(modV) {
 
 		if(Module instanceof this.ModuleShader) {
 			Module.programIndex = originalModule.programIndex;
+			Module._makeProgramInfoFromIndex(this);
+			Module._setupUniforms(this.shaderEnv.gl);
 		}
 
 		if('init' in Module && Module instanceof this.Module2D) {

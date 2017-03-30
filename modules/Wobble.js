@@ -18,9 +18,9 @@ class Wobble extends modV.ModuleShader {
 			        }
 				} // Three.JS style uniforms
 			},
-			shaderFile: "/Wobble/shader.html" // path to HTML file within modules directory with shader script tags
+			fragmentFile: "/Wobble/wobble.frag" // path to HTML file within modules directory with shader script tags
 		});
-				
+
 		this.add(new modV.RangeControl({
 			variable: 'strength',
 			label: 'Strength',

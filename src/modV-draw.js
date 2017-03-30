@@ -74,14 +74,7 @@ module.exports = function(modV) {
 					context.globalCompositeOperation = 'copy';
 
 					// Copy Main Canvas to Shader texture
-					this.shaderEnv.texture = _gl.texImage2D(
-						_gl.TEXTURE_2D,
-						0,
-						_gl.RGBA,
-						_gl.RGBA,
-						_gl.UNSIGNED_BYTE,
-						canvas
-					);
+					this.shaderEnv.uploadTexture(canvas);
 
 					context.globalCompositeOperation = 'normal';
 
@@ -110,11 +103,8 @@ module.exports = function(modV) {
 							canvas.width,
 							canvas.height
 						);
-
 					} else {
-
 						Module.loop(/*canvas*/this.previewCanvas, /*context*/this.previewContext, this.videoStream, meydaOutput, this.meyda, delta, this.bpm, this.kick, _gl);
-
 					}
 				}
 
@@ -129,47 +119,9 @@ module.exports = function(modV) {
 
 					context.globalCompositeOperation = 'copy';
 
-					// Copy Main Canvas to Shader texture
-					this.shaderEnv.texture = _gl.texImage2D(
-						_gl.TEXTURE_2D,
-						0,
-						_gl.RGBA,
-						_gl.RGBA,
-						_gl.UNSIGNED_BYTE,
-						canvas
-					);
+					this.shaderEnv.uploadTexture(canvas);
 
 					context.globalCompositeOperation = 'normal';
-
-					// Set Uniforms
-					if('uniforms' in Module.info) {
-						forIn(Module.info.uniforms, (uniformKey, uniform) => {
-
-							const uniLoc = _gl.getUniformLocation(this.shaderEnv.programs[this.shaderEnv.activeProgram], uniformKey);
-							let value;
-
-							switch(uniform.type) {
-								case 'f':
-									value = parseFloat(Module[uniformKey]);
-									_gl.uniform1f(uniLoc, value);
-									break;
-
-								case 'i':
-									value = parseInt(Module[uniformKey]);
-									_gl.uniform1i(uniLoc, value);
-									break;
-
-								case 'b':
-									value = Module[uniformKey];
-									if(value) value = 1;
-									else value = 0;
-									
-									_gl.uniform1i(uniLoc, value);
-									break;
-
-							}
-						});
-					}
 
 					// Set Meyda Uniforms
 					// TODO: support all meyda feature types
@@ -186,9 +138,9 @@ module.exports = function(modV) {
 					}
 
 					// Render
-					this.shaderEnv.render(delta, canvas);
+					this.shaderEnv.render(delta, canvas, window.devicePixelRatio, Module);
 					context.globalCompositeOperation = Module.info.blend;
-					
+
 
 					// Copy Shader Canvas to Main Canvas
 					if(pipeline) {
@@ -245,7 +197,7 @@ module.exports = function(modV) {
 						Module.draw(canvas, context, this.videoStream, meydaOutput, this.meyda, delta, this.bpm, this.kick);
 
 					}
-					
+
 				} else if(Module instanceof this.Module3D) {
 					let texture = this.threeEnv.texture;
 
@@ -259,7 +211,7 @@ module.exports = function(modV) {
 						canvas.width,
 						canvas.height
 					);
-					
+
 					//this.threeEnv.material.map = this.threeEnv.texture;
 					this.threeEnv.material.map.needsUpdate = true;
 

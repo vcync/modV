@@ -30,7 +30,7 @@ class MagneticTape extends modV.ModuleShader {
 					}
 				} // Three.JS style uniforms
 			},
-			shaderFile: "/MagneticTape/shader.html" // path to HTML file within modules directory with shader script tags
+			fragmentFile: "/MagneticTape/magneticTape.frag" // path to HTML file within modules directory with shader script tags
 		});
 
 		this.add(new modV.RangeControl({

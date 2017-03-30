@@ -14,7 +14,7 @@ class Dither extends modV.ModuleShader {
 					}
 				} // Three.JS uniforms
 			},
-			shaderFile: "/Dither/shader.html" // path to HTML file within modules directory with shader script tags
+			fragmentFile: "/Dither/dither.frag" // path to HTML file within modules directory with shader script tags
 		});
 
 		this.add(new modV.RangeControl({

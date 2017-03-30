@@ -1,0 +1,61 @@
+<!DOCTYPE HTML>
+<html>
+	<head>
+		<!-- form here: https://www.shadertoy.com/view/4dX3DM -->
+	</head>
+	<body>
+		<script id="vertexshader" type="x-shader/x-vertex">
+			varying vec2 Vertex_UV;
+			attribute vec2 a_position, a_texCoord;
+			uniform vec2 u_resolution;
+			varying vec2 fragCoord;
+
+			void main() {
+				vec2 zeroToOne = a_position / u_resolution;
+				vec2 zeroToTwo = zeroToOne * 2.0;
+				vec2 clipSpace = zeroToTwo - 1.0;
+				gl_Position = vec4(clipSpace * vec2(1, -1), 0, 1);
+				Vertex_UV = a_texCoord;
+				fragCoord = a_position;
+			}
+		</script>
+
+		<script id="fragmentshader" type="x-shader/x-fragment">
+			#ifdef GL_FRAGMENT_PRECISION_HIGH
+				precision highp float;
+			#else
+				precision mediump float;
+			#endif
+
+			uniform sampler2D u_modVCanvas;
+			uniform vec2 u_resolution;
+			varying vec2 fragCoord;
+			uniform int cellSize;
+
+			void main() {
+
+				int CELL_SIZE = cellSize;
+				float CELL_SIZE_FLOAT = float(CELL_SIZE);
+				int RED_COLUMNS = int(CELL_SIZE_FLOAT/3.);
+				int GREEN_COLUMNS = CELL_SIZE-RED_COLUMNS;
+
+
+				vec2 p = floor(fragCoord.xy / CELL_SIZE_FLOAT) * CELL_SIZE_FLOAT;
+				int offsetx = int(mod(fragCoord.x,CELL_SIZE_FLOAT));
+				int offsety = int(mod(fragCoord.y,CELL_SIZE_FLOAT));
+
+				vec4 sum = texture2D(u_modVCanvas, p / u_resolution.xy);
+
+				vec4 fragColor = vec4(0.,0.,0.,1.);
+				if (offsety < CELL_SIZE-1) {
+					if (offsetx < RED_COLUMNS) fragColor.r = sum.r;
+					else if (offsetx < GREEN_COLUMNS) fragColor.g = sum.g;
+					else fragColor.b = sum.b;
+				}
+
+				gl_FragColor = fragColor;
+			}
+
+		</script>
+	</body>
+</html>

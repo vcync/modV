@@ -22,7 +22,7 @@ class MattiasCRT extends modV.ModuleShader {
 					}*/
 				} // Three.JS uniforms
 			},
-			shaderFile: "/MattiasCRT/shader.html" // path to HTML file within modules directory with shader script tags
+			fragmentFile: "/MattiasCRT/mattiasCRT.frag" // path to HTML file within modules directory with shader script tags
 		});
 	}
 }

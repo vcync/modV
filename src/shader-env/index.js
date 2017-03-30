@@ -1,5 +1,8 @@
+const defaultShader = require('./default-shader');
+const twgl = require('twgl.js');
+
 module.exports = function shaderEnvInit(modV) {
-	
+
 	let gl;
 
 	let env = {};
@@ -7,10 +10,11 @@ module.exports = function shaderEnvInit(modV) {
 	env.texture = null;
 	env.activeProgram = -1;
 	env.buffer = null;
+	env.useMipmap = false;
 
 	env.canvas	= document.createElement('canvas');
-	env.gl		= env.canvas.getContext('webgl', {
-		antialias: false,
+	env.gl		= env.canvas.getContext('webgl2', {
+		//antialias: false,
 		premultipliedAlpha: false
 	});
 
@@ -28,32 +32,28 @@ module.exports = function shaderEnvInit(modV) {
 	env.makeProgram = require('./make-program')(gl);
 	env.setRectangle = require('./set-rectangle')(gl);
 	env.render = require('./render')(gl, env);
+	env.uploadTexture = require('./upload-texture')(gl, env);
 
 	// Make basic shader program
-	const defaultShader = require('./default-shader');
+	Object.defineProperty(env, 'defaultShader', {
+		get: () => {
+			return defaultShader;
+		}
+	});
+
 	let program = env.makeProgram(defaultShader.v, defaultShader.f);
-	
+	let programInfo = twgl.createProgramInfoFromProgram(gl, program);
 	env.programs.push(program);
 	gl.useProgram(env.programs[1]);
 
-	// Look up where the texture coordinates need to go.
-	let texCoordLocation = gl.getAttribLocation(env.programs[1], "a_texCoord");
+	let arrays = {
+    	position: [-1, -1, 0, 1, -1, 0, -1, 1, 0, -1, 1, 0, 1, -1, 0, 1, 1, 0],
+    };
 
-	// provide texture coordinates for the rectangle.
-	let texCoordBuffer = gl.createBuffer();
-	gl.bindBuffer(gl.ARRAY_BUFFER, texCoordBuffer);
-	gl.bufferData(gl.ARRAY_BUFFER, new Float32Array([
-			0.0,	0.0,
-			1.0,	0.0,
-			0.0,	1.0,
-			0.0,	1.0,
-			1.0,	0.0,
-			1.0,	1.0
-		]),
-		gl.STATIC_DRAW
-	);
-	gl.enableVertexAttribArray(texCoordLocation);
-	gl.vertexAttribPointer(texCoordLocation, 2, gl.FLOAT, false, 0, 0);
+    let bufferInfo = twgl.createBufferInfoFromArrays(gl, arrays);
+
+    twgl.setBuffersAndAttributes(gl, programInfo, bufferInfo);
+	//twgl.setUniforms(programInfo, uniforms);
 
 	// Create a texture.
 	env.texture = gl.createTexture();
@@ -72,12 +72,12 @@ module.exports = function shaderEnvInit(modV) {
 		gl.UNSIGNED_BYTE,
 		new Uint8Array([0, 0, 0, 0])
 	);
+	if(env.useMipmap) gl.generateMipmap(gl.TEXTURE_2D);
 
-	// Set the parameters so we can render any size image.
-	gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE);
-	gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);
-	gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR); // or NEAREST
-	gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.LINEAR); // or NEAREST
+	gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.MIRRORED_REPEAT);
+	gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.MIRRORED_REPEAT);
+	gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR);
+	gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.LINEAR);
 
 	// Set canvas and viewport sizes
 	resize(modV.width, modV.height);
@@ -91,15 +91,11 @@ module.exports = function shaderEnvInit(modV) {
 	gl.enableVertexAttribArray(positionLocation);
 	gl.vertexAttribPointer(positionLocation, 2, gl.FLOAT, false, 0, 0);
 
-	// Create modVCanvas sampler2D Uniform
-	var samplerLocation = gl.getUniformLocation(env.programs[1], "u_modVCanvas");
-	gl.uniform1i(samplerLocation, 0); // Unit position 0
-
 	env.setRectangle(0, 0, modV.width, modV.height, env.buffer);
 
 	env.resize = (width, height) => {
 		resize(width, height);
-		env.setRectangle(0, 0, width, height, env.buffer);
+		//env.setRectangle(0, 0, width, height, env.buffer);
 	};
 
 	env.resize(modV.width, modV.height);

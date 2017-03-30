@@ -34,6 +34,11 @@ module.exports = class Module {
 			this.previewWithOutput = false;
 		}
 
+		Object.defineProperty(this, 'settings', {
+			get: () => {
+				return settings;
+			}
+		});
 	}
 
 	add(item) {

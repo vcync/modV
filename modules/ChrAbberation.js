@@ -22,9 +22,9 @@ class ChrAbberation extends modV.ModuleShader {
 					}
 				} // Three.JS style uniforms
 			},
-			shaderFile: "/Default Shader/shader.html" // path to HTML file within modules directory with shader script tags
+			fragmentFile: "/Default Shader/chrAbb.frag" // path to HTML file within modules directory with shader script tags
 		});
-				
+
 		this.add(new modV.RangeControl({
 			variable: 'rOffset',
 			label: 'Red Offset',

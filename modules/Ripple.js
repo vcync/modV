@@ -22,7 +22,7 @@ class Ripple extends modV.ModuleShader {
 					}
 				} // Three.JS uniforms
 			},
-			shaderFile: "/Ripple/shader.html" // path to HTML file within modules directory with shader script tags
+			fragmentFile: "/Ripple/ripple.frag" // path to HTML file within modules directory with shader script tags
 		});
 
 		this.add(new modV.RangeControl({
@@ -55,7 +55,7 @@ class Ripple extends modV.ModuleShader {
 			default: 500.0
 		}));
 	}
-	
+
 }
 
 modV.register(Ripple);

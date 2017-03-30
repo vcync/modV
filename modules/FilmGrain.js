@@ -18,9 +18,9 @@ class FilmGrain extends modV.ModuleShader {
 					}
 				} // Three.JS style uniforms
 			},
-			shaderFile: "/FilmGrain/shader.html" // path to HTML file within modules directory with shader script tags
+			fragmentFile: "/FilmGrain/filmGrain.frag" // path to HTML file within modules directory with shader script tags
 		});
-				
+
 		this.add(new modV.RangeControl({
 			variable: 'strength',
 			label: 'Strength',

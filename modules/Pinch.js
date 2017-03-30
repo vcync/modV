@@ -22,7 +22,7 @@ class Pinch extends modV.ModuleShader {
 					}
 				} // Three.JS uniforms
 			},
-			shaderFile: "/Pinch/shader.html" // path to HTML file within modules directory with shader script tags
+			fragmentFile: "/Pinch/pinch.frag" // path to HTML file within modules directory with shader script tags
 		});
 
 		this.add(new modV.RangeControl({
@@ -55,7 +55,7 @@ class Pinch extends modV.ModuleShader {
 			default: 0.5
 		}));
 	}
-	
+
 }
 
 

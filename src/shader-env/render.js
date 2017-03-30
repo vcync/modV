@@ -1,39 +1,34 @@
+const twgl = require('twgl.js');
+
 module.exports = (gl, env) => {
 	let programs = env.programs;
 	let setRectangle = env.setRectangle;
 
-	return function render(delta, canvas) {
+	return function render(delta, canvas, pixelRatio, Module) {
 		// Clear WebGL canvas
 		gl.clearColor(0.0, 0.0, 0.0, 0.0);
 		gl.clear(gl.COLOR_BUFFER_BIT);
+		let programInfo = Module.programInfo;
 
-		// Set position variable
-		var positionLocation = gl.getAttribLocation(programs[env.activeProgram], "a_position");
-		gl.enableVertexAttribArray(positionLocation);
-		gl.vertexAttribPointer(positionLocation, 2, gl.FLOAT, false, 0, 0);
+		let uniforms = {
+			iGlobalTime: delta / 1000,
+			iDelta: delta,
+			u_delta: delta,
+			u_time: delta,
+			iResolution: [canvas.width, canvas.height, pixelRatio || 1.0]
+		};
 
-		// Set delta
-		var deltaLocation = gl.getUniformLocation(programs[env.activeProgram], "u_delta");
-		gl.uniform1f(deltaLocation, delta);
-
-		// Update texture???
-		var samplerLocation = gl.getUniformLocation(programs[env.activeProgram], "u_modVCanvas");
-		gl.uniform1i(samplerLocation, 0); // Unit position 0
-
-		// TODO: setup u_time & other usual uniforms
-		var timeLocation = gl.getUniformLocation(programs[env.activeProgram], "u_time");
-		gl.uniform1f(timeLocation, delta);
-
-		var timeSecondsLocation = gl.getUniformLocation(programs[env.activeProgram], "u_timeSeconds");
-		gl.uniform1f(timeSecondsLocation, delta / 1000);
-
-		var resolutionLocation = gl.getUniformLocation(programs[env.activeProgram], "u_resolution");
-		gl.uniform2f(resolutionLocation, canvas.width, canvas.height);
-
-		// Set u_resolution
-		if(programs[env.activeProgram]) {
-			setRectangle(0, 0, canvas.width, canvas.height, env.buffer);
+		for(var [key, value] of Module.uniformValues.entries()) {
+			uniforms[key] = value;
 		}
+
+		gl.useProgram(programInfo.program);
+		twgl.setUniforms(programInfo, uniforms);
+
+		// required as we need to resize our drawing boundaries for gallery and main canvases
+		// TODO: this is a performance hinderance, the most expensive call within this function,
+		// consider seperate GL environment for gallery
+		setRectangle(0, 0, canvas.width, canvas.height, env.buffer);
 
 		gl.drawArrays(gl.TRIANGLES, 0, 6);
 	};

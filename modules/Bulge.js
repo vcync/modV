@@ -22,7 +22,7 @@ class Bulge extends modV.ModuleShader {
 					}*/
 				} // Three.JS uniforms
 			},
-			shaderFile: "/Bulge/shader.html" // path to HTML file within modules directory with shader script tags
+			fragmentFile: "/Bulge/bulge.frag" // path to HTML file within modules directory with shader script tags
 		});
 
 		this.add(new modV.RangeControl({
@@ -55,7 +55,7 @@ class Bulge extends modV.ModuleShader {
 			default: 0.5
 		}));*/
 	}
-	
+
 }
 
 modV.register(Bulge);

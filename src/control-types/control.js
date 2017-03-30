@@ -74,8 +74,9 @@ module.exports = class Control {
 
 				value = setValue(valueIn);
 
-				if(!settings.useInternalValue) Module[variable] = value;
-				else settings.oninput(value);
+				if(!settings.useInternalValue) {
+					Module[variable] = value;
+				} else settings.oninput(value);
 
 				if(modV) modV.emit('controlUpdate', this);
 			}
@@ -129,6 +130,10 @@ module.exports = class Control {
 
 	get variable() {
 		return this.settings.variable;
+	}
+
+	get varType() {
+		return this.settings.varType;
 	}
 
 	update(value) {

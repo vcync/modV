@@ -22,7 +22,7 @@ class Puke extends modV.ModuleShader {
 					}
 				} // Three.JS uniforms
 			},
-			shaderFile: "/Puke/shader.html" // path to HTML file within modules directory with shader script tags
+			fragmentFile: "/Puke/puke.frag" // path to HTML file within modules directory with shader script tags
 		});
 
 		this.add(new modV.CheckboxControl({

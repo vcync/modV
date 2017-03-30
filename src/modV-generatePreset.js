@@ -41,13 +41,10 @@ module.exports = function(modV) {
 					src: Module[Control.variable].src
 				};
 
+			} else if(Control instanceof self.SelectControl) {
+				preset.moduleData[key].values[Control.variable] = Control.enumValue;
 			} else {
-
-				if('append' in Control.settings) {
-					preset.moduleData[key].values[Control.variable] = Control.node.value;
-				} else {
-					preset.moduleData[key].values[Control.variable] = Module[Control.variable];
-				}
+				preset.moduleData[key].values[Control.variable] = Control.value;
 			}
 		}
 
