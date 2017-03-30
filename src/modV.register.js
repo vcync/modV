@@ -5,7 +5,7 @@ const loadJS = require('./fragments/load-js');
 module.exports = function(modV) {
 	modV.prototype.register = function(Module, instantiated) {
 
-		function finish(Module, type) {
+		function finish(Module) {
 			// Add to Registry
 			self.registeredMods[Module.info.name] = Module;
 
@@ -112,12 +112,15 @@ module.exports = function(modV) {
 			type = 'ModuleShader';
 			let gl = self.shaderEnv.gl;
 
-			Module.info.uniforms.modVcanvas = {
-				type: "t",
-				value: self.shaderEnv.texture
-			};
+			// Module.info.uniforms.modVcanvas = {
+			// 	type: "t",
+			// 	value: self.shaderEnv.texture
+			// };
 
-			Module._makeProgram(gl, this).then(finish).catch(e => {
+			Module._makeProgram(gl, this).then(() => {
+				Module._setupUniforms(gl);
+				finish(Module, 'shader');
+			}).catch(e => {
 				console.error(e);
 			});
 		}
