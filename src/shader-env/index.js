@@ -10,6 +10,7 @@ module.exports = function shaderEnvInit(modV) {
 	env.texture = null;
 	env.activeProgram = -1;
 	env.buffer = null;
+	env.useMipmap = false;
 
 	env.canvas	= document.createElement('canvas');
 	env.gl		= env.canvas.getContext('webgl2', {
@@ -31,6 +32,7 @@ module.exports = function shaderEnvInit(modV) {
 	env.makeProgram = require('./make-program')(gl);
 	env.setRectangle = require('./set-rectangle')(gl);
 	env.render = require('./render')(gl, env);
+	env.uploadTexture = require('./upload-texture')(gl, env);
 
 	// Make basic shader program
 	Object.defineProperty(env, 'defaultShader', {
@@ -41,7 +43,6 @@ module.exports = function shaderEnvInit(modV) {
 
 	let program = env.makeProgram(defaultShader.v, defaultShader.f);
 	let programInfo = twgl.createProgramInfoFromProgram(gl, program);
-
 	env.programs.push(program);
 	gl.useProgram(env.programs[1]);
 
@@ -71,12 +72,10 @@ module.exports = function shaderEnvInit(modV) {
 		gl.UNSIGNED_BYTE,
 		new Uint8Array([0, 0, 0, 0])
 	);
-	gl.generateMipmap(gl.TEXTURE_2D);
+	if(env.useMipmap) gl.generateMipmap(gl.TEXTURE_2D);
 
-	// Set the parameters so we can render any size image.
-	// TODO: WebGL2 should be able to support NPOT textures, yet it still errors on NPOT textues...
-	//gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE);
-	//gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);
+	gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.MIRRORED_REPEAT);
+	gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.MIRRORED_REPEAT);
 	gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR);
 	gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.LINEAR);
 
