@@ -125,10 +125,10 @@ If you were expecting to see this message, carry on, otherwise you may want to c
 									Control.value = 0;
 								}
 							} else {
-								Control.value = value;
+								Control.update(value);
 							}
 						} else {
-							Control.value = value;
+							Control.update(value);
 						}
 					} else {
 						if(value.type === 'PaletteControl') {
