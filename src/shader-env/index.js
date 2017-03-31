@@ -33,6 +33,7 @@ module.exports = function shaderEnvInit(modV) {
 	env.setRectangle = require('./set-rectangle')(gl);
 	env.render = require('./render')(gl, env);
 	env.uploadTexture = require('./upload-texture')(gl, env);
+	env.setActiveProgramFromIndex = require('./set-active-program-from-index')(gl);
 
 	// Make basic shader program
 	Object.defineProperty(env, 'defaultShader', {
@@ -95,7 +96,7 @@ module.exports = function shaderEnvInit(modV) {
 
 	env.resize = (width, height) => {
 		resize(width, height);
-		//env.setRectangle(0, 0, width, height, env.buffer);
+		env.setRectangle(0, 0, width, height, env.buffer);
 	};
 
 	env.resize(modV.width, modV.height);
