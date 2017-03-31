@@ -14,7 +14,7 @@ module.exports = function(modV) {
 
 	modV.prototype.showContextMenu = function(type, variables, e) {
 		var self = this;
-		
+
 		var existingMenu = document.querySelector('.context-menu');
 		if(existingMenu) {
 			existingMenu.parentNode.removeChild(existingMenu);
@@ -46,8 +46,8 @@ module.exports = function(modV) {
 
 			if(e.currentTarget !== menuNode) {
 				menuNode.parentNode.removeChild(menuNode);
+				document.removeEventListener('click', menuNextClickHandler, false);
 			}
-			document.removeEventListener('click', menuNextClickHandler, false);
 		}
 
 		document.addEventListener('click', menuNextClickHandler, false);
@@ -60,10 +60,23 @@ module.exports = function(modV) {
 			});
 		});
 
-		menuNode.style.left = e.clientX + 'px';
-		menuNode.style.top = e.clientY + 'px';
-
 		document.body.appendChild(menuNode);
+
+		let x = e.clientX;
+		let y = e.clientY;
+		let width = menuNode.clientWidth;
+		let height = menuNode.clientHeight;
+
+		if((x + width) > window.innerWidth) {
+			x = window.innerWidth - width;
+		}
+
+		if((y + height) > window.innerHeight) {
+			y = window.innerHeight - height;
+		}
+
+		menuNode.style.left = x + 'px';
+		menuNode.style.top = y + 'px';
 	};
 
 };

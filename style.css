@@ -64,27 +64,27 @@ section .top .active-list {
 	bottom: 23px;
 }
 
-.active-list .gallery-item.sortable-ghost {		
-	height: 115px;		
-	width: 100%;		
-	overflow: hidden;		
-}		
-.active-list .gallery-item.sortable-ghost canvas {		
-	height: auto;		
-	position: relative;		
-	top: -10%;		
-}		
-section .top .active-list-wrapper:before {		
-	position: absolute;		
-	top: 50%;		
-	width: 100%;		
-	height: auto;		
-	text-align: center;		
-	font-size: 2em;		
-	color: rgba(210, 210, 210, 0.8);		
-	text-shadow: 1px 4px 6px #fff, 0 0 0 #000, 1px 4px 6px #fff;		
-	opacity: 0.7;		
-	pointer-events: none;		
+.active-list .gallery-item.sortable-ghost {
+	height: 115px;
+	width: 100%;
+	overflow: hidden;
+}
+.active-list .gallery-item.sortable-ghost canvas {
+	height: auto;
+	position: relative;
+	top: -10%;
+}
+section .top .active-list-wrapper:before {
+	position: absolute;
+	top: 50%;
+	width: 100%;
+	height: auto;
+	text-align: center;
+	font-size: 2em;
+	color: rgba(210, 210, 210, 0.8);
+	text-shadow: 1px 4px 6px #fff, 0 0 0 #000, 1px 4px 6px #fff;
+	opacity: 0.7;
+	pointer-events: none;
 	content: 'Drag Modules Here';
 }
 
@@ -100,11 +100,16 @@ section .top .active-list-wrapper,
 section .top .gallery {
 	min-width: 600px;
 	overflow: hidden;
+	padding: 5pt;
+	box-sizing: border-box;
+	background-color: rgb(56, 56, 56);
 }
 
 .gallery-item {
 	position: relative;
 	overflow: hidden;
+	padding: 5pt;
+	box-sizing: border-box;
 }
 
 .gallery-item .title-wrapper {
@@ -118,6 +123,7 @@ section .top .gallery {
 	pointer-events: none;
 	transition: all 300ms;
 	font-size: 0;
+    margin: 5pt;
 }
 
 .gallery-item .title-wrapper .title {
@@ -136,6 +142,15 @@ section .top .gallery {
 	color: rgba(255,255,255,0);
 }
 
+.gallery .gallery-item canvas {
+	box-shadow: 0px 0px 6px 0px rgba(0,0,0,.8);
+}
+
+.active-list .gallery-item.sortable-ghost {
+	padding: 0;
+}
+
+
 .active-list .gallery-item.sortable-ghost .title {
 	position: absolute;
 	top: 8px;
@@ -146,6 +161,7 @@ section .top .gallery {
 
 .active-list .gallery-item.sortable-ghost .title-wrapper {
 	background-color: rgba(0,0,0,0);
+	margin: 0pt;
 }
 
 .top > .pure-g {
@@ -454,7 +470,7 @@ input[disabled][type="range"]::-webkit-slider-runnable-track{
 /* Context Menu */
 .context-menu {
 	position: fixed;
-	width: 218px;
+	/*width: 218px;*/
 	background-color: rgba(226, 226, 226, 0.8);
 	color: black;
 	box-shadow: 0px 0px 1px 0px black, 0px 0px 3px 1px rgba(0, 0, 0, 0.3);
@@ -468,10 +484,11 @@ input[disabled][type="range"]::-webkit-slider-runnable-track{
 }
 
 .context-menu-item {
-	padding: 2px 5px;
+	padding: 2px 20px;
 	box-sizing: border-box;
 	cursor: default;
 	position: relative;
+	font-size: 11pt;
 }
 
 .context-menu-item:hover {

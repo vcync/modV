@@ -1,10 +1,10 @@
 function isAncestor(descendant,ancestor){
-    return descendant.compareDocumentPosition(ancestor) & 
+    return descendant.compareDocumentPosition(ancestor) &
         Node.DOCUMENT_POSITION_CONTAINED_BY;
 }
 module.exports = function(modV) {
 	modV.prototype.MenuItem = class {
-		
+
 		constructor(settings) {
 
 			this.title = settings.title;
@@ -22,8 +22,13 @@ module.exports = function(modV) {
 			menuItemNode.textContent = this.title;
 			menuItemNode.addEventListener('click', () => {
 				if(typeof this.callback === 'function') this.callback();
-				
-				menuItemNode.parentNode.parentNode.removeChild(menuNode);
+
+				try {
+					menuNode.parentNode.removeChild(menuNode);
+				} catch(e) {
+
+				}
+
 				document.removeEventListener('click', nextClickHandler, false);
 				this.submenuShown = false;
 			});
@@ -38,8 +43,28 @@ module.exports = function(modV) {
 				timer = setTimeout(() => {
 					submenuNode = this.makeSubmenu();
 
-					submenuNode.style.left 	= menuItemNode.offsetWidth + 'px';
-					submenuNode.style.top 	= '-5px';
+					document.body.appendChild(submenuNode);
+
+					let x = menuItemNode.offsetWidth;
+					let y = -5;
+					let width = submenuNode.clientWidth;
+					let height = submenuNode.clientHeight;
+
+					let heightFromWindowTop = menuItemNode.offsetTop + menuItemNode.parentNode.offsetTop;
+					console.log(heightFromWindowTop + y + height, window.innerHeight);
+
+					if((x + width) > window.innerWidth) {
+						x = window.innerWidth - width;
+					}
+
+					if((heightFromWindowTop + y + height) > window.innerHeight) {
+						y = menuItemNode.clientHeight - height;
+						console.log(y);
+						console.dir(submenuNode);
+					}
+
+					submenuNode.style.left 	= x + 'px';
+					submenuNode.style.top 	= y + 'px';
 
 					menuItemNode.appendChild(submenuNode);
 					this.submenuShown = true;
@@ -50,7 +75,7 @@ module.exports = function(modV) {
 			menuItemNode.addEventListener('mouseout', (e) => {
 				if(
 					this.submenuItems.length < 1 ||
-					!this.submenuShown || 
+					!this.submenuShown ||
 					isAncestor(menuItemNode, e.toElement)
 				) return;
 
