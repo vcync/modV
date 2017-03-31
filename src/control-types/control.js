@@ -27,6 +27,11 @@ module.exports = class Control {
 			set: (modVIn) => {
 				modV = modVIn;
 				delete this._modVSet;
+				Object.defineProperty(this, 'modV', {
+					get: () => {
+						return modV;
+					}
+				});
 			},
 			configurable: true
 		});
@@ -138,6 +143,11 @@ module.exports = class Control {
 
 	update(value) {
 		this.value = value;
-		this.node.value = this.value;
+		// TODO: add updateNodeValue method to all control types
+		if(this instanceof this.modV.CheckboxControl) {
+			this.node.checked = this.checked;
+		} else {
+			this.node.value = this.value;
+		}
 	}
 };
