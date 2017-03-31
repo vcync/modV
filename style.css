@@ -45,6 +45,8 @@ section > .pure-g {
 
 section .top {
 	height: 75%;
+	max-height: calc(100% - 170px);
+	min-height: 170px;
 }
 
 section .top > .pure-g {
@@ -54,7 +56,6 @@ section .top > .pure-g {
 section .top .active-list {
 	min-height: 100%;
 	box-sizing: border-box;
-	border-right: 3px solid grey;
 	position: relative;
 	background-color: hsla(70,8%,4%,1);
 	padding: 0 0 33px 0;
@@ -176,6 +177,7 @@ section .top .gallery {
 .gallery-wrapper {
 	flex: 1;
 	position: relative;
+	min-width: 306px;
 }
 
 section .bottom {
@@ -184,6 +186,8 @@ section .bottom {
 	right: 0;
 	left: 0;
 	height: 25%;
+	max-height: calc(100% - 170px);
+	min-height: 170px;
 	box-sizing: border-box;
 	box-shadow: 0px 2px 10px -1px black;
 }
@@ -636,7 +640,7 @@ input[disabled][type="range"]::-webkit-slider-runnable-track{
 	position: absolute;
 	bottom: 0;
 	left: 0;
-	right: 3px;
+	right: 0;
 	height: 33px;
 	background-color: hsla(70,0%,22%,1);;
 	padding: 5px;
@@ -667,13 +671,18 @@ input[disabled][type="range"]::-webkit-slider-runnable-track{
 	margin: 0 5px 0 0;
 }
 
+.main-control-area {
+	position: relative;
+	height: calc(100% - 30px) !important;
+}
+
 .right-controls {
-	padding: 30px 0 0 0;
 	position: relative;
 }
 
 .right-controls-panels {
-	height: calc(100% - 30px);
+	height: 100%;
+	margin: 30px 0 0 0;
 }
 
 /* tabs */
@@ -700,4 +709,43 @@ input[disabled][type="range"]::-webkit-slider-runnable-track{
 
 .tab-item.selected {
 	background-color: orange;
+}
+
+/* Resize handles */
+resize-handle-top {
+	position: absolute;
+	width: 100%;
+
+	top: 0;
+	left: 0;
+	right: 0;
+	height: 5px;
+
+	border-top: 1px solid #BBBBBB;
+	transition: 50ms;
+}
+
+resize-handle-top:hover {
+	border-top-width: 5px;
+	cursor: ns-resize;
+	top: -2px;
+}
+
+resize-handle-left {
+	position: absolute;
+	height: 100%;
+
+	top: 0;
+	left: 0;
+	bottom: 0;
+	width: 5px;
+
+	border-left: 1px solid #BBBBBB;
+	transition: 50ms;
+}
+
+resize-handle-left:hover {
+	border-left-width: 5px;
+	cursor: ew-resize;
+	left: -2px;
 }

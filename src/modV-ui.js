@@ -1,10 +1,14 @@
 /* globals Sortable, $ */
+
+const attachResizeHandles = require('./ui-resize/attach');
+
 module.exports = function(modV) {
 	modV.prototype.startUI = function() {
 		var self = this;
 
 		// simplebar
 		$('.active-list-wrapper').simplebar({ wrapContent: false });
+		$('.gallery-wrapper').simplebar({ wrapContent: false });
 
 		self.mainWindowResize();
 
@@ -177,151 +181,10 @@ module.exports = function(modV) {
 			chooser.click();
 		});
 
-		// finds the offset of el from the body or html element
-		function getAbsoluteOffsetFromBody( el ) {
-			var _x = 0;
-			var _y = 0;
-			while( el && !isNaN( el.offsetLeft ) && !isNaN( el.offsetTop ) ) {
-				_x += el.offsetLeft - el.scrollLeft + el.clientLeft;
-				_y += el.offsetTop - el.scrollTop + el.clientTop;
-				el = el.offsetParent;
-			}
-			return { top: _y, left: _x };
-		}
-
-
-		function getClickPosition(e) {
-			var parentPosition = getPosition(e.currentTarget);
-			var xPosition = e.clientX - parentPosition.x;
-			var yPosition = e.clientY - parentPosition.y;
-
-			return { x: xPosition, y: yPosition, clientX: e.clientX, clientY: e.clientY};
-		}
-
-		function getPosition(element) {
-			var xPosition = 0;
-			var yPosition = 0;
-
-			while (element) {
-				xPosition += (element.offsetLeft - element.scrollLeft + element.clientLeft);
-				yPosition += (element.offsetTop - element.scrollTop + element.clientTop);
-				element = element.offsetParent;
-			}
-
-			return { x: xPosition, y: yPosition };
-		}
-
-		// Area resize handles
-		var bottom = document.querySelector('.bottom');
-		var top = document.querySelector('.top');
-		var activeListWrapper = document.querySelector('.active-list-wrapper');
-		var galleryWrapper = document.querySelector('.gallery-wrapper');
-
-		var mouseDown = false;
-		var draggingBottom = false;
-		var draggingGallery = false;
-
-		window.addEventListener('mousedown', function(e) {
-
-			mouseDown = true;
-			if(e.currentTarget !== bottom || e.currentTarget !== activeListWrapper) {
-				setTimeout(function() {
-					mouseDown = false;
-				}, 300);
-			}
-
-		});
-
-		window.addEventListener('mouseup', function() {
-
-			mouseDown = false;
-			draggingBottom = false;
-			draggingGallery = false;
-			document.body.classList.remove('ns-resize');
-			document.body.classList.remove('ew-resize');
-
-		});
-
-		window.addEventListener('mousemove', function(e) {
-
-			var bottomPos = getAbsoluteOffsetFromBody(bottom);
-			var galleryPos = getAbsoluteOffsetFromBody(galleryWrapper);
-			var mousePosition = getClickPosition(e);
-
-			if(mousePosition.clientY > bottomPos.top-3 && mousePosition.clientY < bottomPos.top+3) {
-
-				document.body.classList.add('ns-resize');
-
-				if(mouseDown) {
-					draggingBottom = true;
-				}
-			} else if(
-				mousePosition.clientX > galleryPos.left-3 &&
-				mousePosition.clientX < galleryPos.left+3 &&
-				mousePosition.clientY < bottomPos.top-3 ) {
-
-				document.body.classList.add('ew-resize');
-
-				if(mouseDown) {
-					draggingGallery = true;
-				}
-
-			} else {
-
-				if(!draggingBottom) {
-					document.body.classList.remove('ns-resize');
-				}
-
-				if(!draggingGallery) {
-					document.body.classList.remove('ew-resize');
-				}
-			}
-
-			if(draggingBottom) {
-				document.body.classList.add('ns-resize');
-				e.preventDefault();
-				e.cancelBubble=true;
-				e.returnValue=false;
-
-				var bottomHeight = 100 - ( mousePosition.clientY / window.innerHeight  ) * 100;
-
-				if(bottomHeight < 20 || bottomHeight > 75) return false;
-
-				bottom.style.height = bottomHeight + '%';
-				top.style.height = (100 - bottomHeight) + '%';
-
-				self.mainWindowResize();
-
-				return false;
-			}
-
-			if(draggingGallery) {
-				document.body.classList.add('ew-resize');
-				e.preventDefault();
-				e.cancelBubble=true;
-				e.returnValue=false;
-
-				var galleryWidth = (100 - ( mousePosition.clientX / window.innerWidth  ) * 100);
-
-				if(galleryWidth < 20 || galleryWidth > (100 - (306 / window.innerWidth) * 100)) {
-					return false;
-				}
-
-				//galleryWrapper.style.width = galleryWidth + '%';
-				activeListWrapper.style.width = (100 - galleryWidth) + '%';
-
-				return false;
-			}
-
-		});
-
-		//let galleryWidth = Math.floor(100 - (306 / window.innerWidth) * 100);
-
-		//galleryWrapper.style.width = galleryWidth + '%';
-		//activeListWrapper.style.width = (100 - galleryWidth) + '%';
+		// Attach UI resize handles
+		attachResizeHandles(this);
 
 		// Layer menu
-
 		var addLayerButton = document.querySelector('.add-layer');
 		addLayerButton.addEventListener('click', function() {
 			self.addLayer();
@@ -408,11 +271,11 @@ module.exports = function(modV) {
 		// Tabs for right-side controls
 		let rightTabs = this.TabController();
 		rightTabs = new rightTabs(); //jshint ignore:line
-		rightTabs.add('Layers', document.querySelector('.layer-control-panel-wrapper'), true);
+		rightTabs.add('Layer', document.querySelector('.layer-control-panel-wrapper'), true);
 		rightTabs.add('Global', document.querySelector('.global-control-panel-wrapper'));
 		rightTabs.add('Presets', document.querySelector('.preset-control-panel-wrapper'));
 
-		let rightControls = document.querySelector('.right-controls');
+		let rightControls = document.querySelector('.main-control-area');
 
 		rightControls.insertBefore(rightTabs.tabBar(), rightControls.firstChild);
 	};
