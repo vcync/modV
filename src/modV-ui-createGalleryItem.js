@@ -41,6 +41,21 @@ module.exports = function(modV) {
 		galleryItem.dataset.moduleName = Module.info.name.replace(' ', '-');
 
 		previewCanvas.addEventListener('mouseenter', () => {
+			previewCanvas.width = previewCanvas.clientWidth;
+			previewCanvas.height = previewCanvas.clientHeight;
+			if('resize' in Module) {
+				if(Module instanceof this.Module3D) {
+					Module.resize(
+						previewCanvas,
+						Module.getScene(),
+						Module.getCamera(),
+						this.threeEnv.material,
+						this.threeEnv.texture
+					);
+				} else {
+					Module.resize(previewCanvas);
+				}
+			}
 			mouseOver = true;
 			activeVariables = [Module, previewCanvas, previewCtx];
 			raf = requestAnimationFrame(loop.bind(this));
@@ -101,6 +116,40 @@ module.exports = function(modV) {
 			// Copy Shader Canvas to Main Canvas
 			ctx.drawImage(
 				this.shaderEnv.canvas,
+				0,
+				0,
+				canvas.width,
+				canvas.height
+			);
+
+		} else if(Module instanceof this.Module3D) {
+			let texture = this.threeEnv.texture;
+
+			// copy current canvas to our textureCanvas, clear first
+			this.threeEnv.textureCanvasContext.clearRect(0, 0, canvas.width, canvas.height);
+
+			this.threeEnv.textureCanvasContext.drawImage(
+				canvas,
+				0,
+				0,
+				canvas.width,
+				canvas.height
+			);
+
+			//this.threeEnv.material.map = this.threeEnv.texture;
+			this.threeEnv.material.map.needsUpdate = true;
+
+			Module.draw(
+				Module.getScene(),
+				Module.getCamera(),
+				this.threeEnv.material,
+				texture,
+				this.activeFeatures
+			);
+			this.threeEnv.renderer.render(Module.getScene(), Module.getCamera());
+
+			ctx.drawImage(
+				this.threeEnv.canvas,
 				0,
 				0,
 				canvas.width,
