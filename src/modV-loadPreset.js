@@ -112,6 +112,9 @@ If you were expecting to see this message, carry on, otherwise you may want to c
 					if(typeof value !== 'object') {
 						if(presetVersion < 1.5) {
 
+							// TODO: fix palette control loading (AGAIN)
+							if(Control instanceof this.PaletteControl) return;
+
 							if(Control instanceof this.SelectControl) {
 								// lookup enumIndex from actual value
 								let found = Control.settings['enum'].findIndex(enumValue => {
