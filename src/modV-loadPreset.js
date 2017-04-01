@@ -100,6 +100,51 @@ module.exports = function(modV) {
 
 					if(key in Module.info.controls) {
 						Control = Module.info.controls[key];
+
+						if(typeof value !== 'object') {
+							if(presetVersion < 1.5) {
+
+								// TODO: fix palette control loading (AGAIN)
+								if(Control instanceof this.PaletteControl) return;
+
+								if(Control instanceof this.SelectControl) {
+									// lookup enumIndex from actual value
+									let found = Control.settings['enum'].findIndex(enumValue => {
+										return enumValue.value === value;
+									});
+
+									if(found > -1) {
+										Control.value = found;
+									} else {
+										console.warn('Using value', 0, 'for Control with ID of', Control.id, 'created for Module', Module.info.name, 'as the correct value could not be found in settings.enum.\n Please make sure you are using the same Module or Module version this preset, named', id + ',', 'was created with.');
+										Control.value = 0;
+									}
+								} else {
+									Control.update(value);
+								}
+							} else {
+								Control.update(value);
+							}
+						} else {
+							if(value.type === 'PaletteControl') {
+								Module[value.variable] = value.color;
+								Module.info.controls[value.variable].color = value.color;
+								Module.info.controls[value.variable].setPalette(value.colors);
+								Module.info.controls[value.variable].timePeriod = value.timePeriod;
+							}
+
+							if(value.type === 'VideoControl' || value.type === 'ImageControl') {
+								Module[value.variable].src = value.src;
+							}
+						}
+
+					} else if('saveData' in Module.info) {
+						if(key in Module.info.saveData) {
+							console.info(key, 'in savedata!');
+							if('import' in Module) {
+								Module.import(key, value);
+							}
+						}
 					} else {
 						console.warn(
 `Could not find "${key}" in ${Module.info.name}'s Control Array.
@@ -107,43 +152,6 @@ This means the Module has been updated since this preset was created or the pres
 If you were expecting to see this message, carry on, otherwise you may want to contact the author of the Module author (${Module.info.author}) and ask them to let their users know when they update and add breaking changes 🙄`
 						);
 						return;
-					}
-
-					if(typeof value !== 'object') {
-						if(presetVersion < 1.5) {
-
-							// TODO: fix palette control loading (AGAIN)
-							if(Control instanceof this.PaletteControl) return;
-
-							if(Control instanceof this.SelectControl) {
-								// lookup enumIndex from actual value
-								let found = Control.settings['enum'].findIndex(enumValue => {
-									return enumValue.value === value;
-								});
-
-								if(found > -1) {
-									Control.value = found;
-								} else {
-									console.warn('Using value', 0, 'for Control with ID of', Control.id, 'created for Module', Module.info.name, 'as the correct value could not be found in settings.enum.\n Please make sure you are using the same Module or Module version this preset, named', id + ',', 'was created with.');
-									Control.value = 0;
-								}
-							} else {
-								Control.update(value);
-							}
-						} else {
-							Control.update(value);
-						}
-					} else {
-						if(value.type === 'PaletteControl') {
-							Module[value.variable] = value.color;
-							Module.info.controls[value.variable].color = value.color;
-							Module.info.controls[value.variable].colours = value.colours;
-							Module.info.controls[value.variable].timePeriod = value.timePeriod;
-						}
-
-						if(value.type === 'VideoControl' || value.type === 'ImageControl') {
-							Module[value.variable].src = value.src;
-						}
 					}
 				});
 
