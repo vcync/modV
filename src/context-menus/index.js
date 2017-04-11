@@ -10,4 +10,5 @@ module.exports = function initContextMenus() {
 	}
 
 	require('./bots').bind(this)(nw);
+	require('./copy-paste').bind(this)(nw);
 };
