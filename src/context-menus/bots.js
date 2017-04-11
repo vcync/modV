@@ -5,17 +5,32 @@ module.exports = function(nw) {
 		label: 'Attach Robot'
 	});
 
-	attachRobotMenuItem.on('click', function() {
-		let node = modV.menus.contextMenuTarget;
-		let parts = node.id.split('-');
-		let Module = modV.activeModules[parts[0]];
-		let controlID = Module.info.controls[parts[1]].id;
+	function getControlDataFromNode(node) {
+		if(!node) return false;
 
-		if(controlID in modV.bots) {
-			modV.removeBot(Module.info.name, parts[1]);
+		let parts = node.id.split('-');
+
+		let variable = parts.pop();
+		let moduleName = parts.join(' ');
+
+		let Module = modV.activeModules[moduleName];
+		let controlId = Module.info.controls[variable].id;
+
+		return {
+			moduleName,
+			controlId,
+			variable
+		};
+	}
+
+	attachRobotMenuItem.on('click', function() {
+		let data = getControlDataFromNode(modV.menus.contextMenuTarget);
+
+		if(data.controlId in modV.bots) {
+			modV.removeBot(data.moduleName, data.variable);
 			this.label = 'Attach Robot';
 		} else {
-			modV.attachBot(Module.info.name, parts[1]);
+			modV.attachBot(data.moduleName, data.variable);
 			this.label = 'Detatch Robot';
 		}
 	});
@@ -41,12 +56,9 @@ module.exports = function(nw) {
 			attachRobotMenuItem
 		],
 		beforeShow: function() {
-			let node = modV.menus.contextMenuTarget;
-			let parts = node.id.split('-');
-			let Module = modV.activeModules[parts[0]];
-			let controlID = Module.info.controls[parts[1]].id;
+			let data = getControlDataFromNode(modV.menus.contextMenuTarget);
 
-			if(controlID in modV.bots) {
+			if(data.controlId in modV.bots) {
 				attachRobotMenuItem.label = 'Detatch Robot';
 			} else {
 				attachRobotMenuItem.label = 'Attach Robot';
