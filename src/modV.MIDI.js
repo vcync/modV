@@ -15,13 +15,13 @@ module.exports = function(modV) {
 			this.assignments = new Map();
 		}
 
-		getNameFromID(ID) {
+		getNameFromID(id) {
 
 			let inputs = this.inputs;
-			let name = false;
+			let name;
 
-			for(let input of inputs) {
-				if(ID === input.id) name = input.name;
+			for(let input of inputs.values()) {
+				if(id === input.id) name = input.name;
 			}
 
 			return name;
