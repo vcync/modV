@@ -107,6 +107,20 @@ module.exports = function(modV) {
 			return this.colors.length;
 		};
 
+		this.setPalette = (palette) => {
+			this.colors = [];
+
+			palette.forEach(color => {
+				this.colors.push(color);
+			});
+
+			modVSelf.setPalette(id, {
+				colors: this.colors
+			});
+
+			return true;
+		};
+
 		this.removeAtIndex = (index) => {
 			var returnVal = this.colors.splice(index, 1);
 
