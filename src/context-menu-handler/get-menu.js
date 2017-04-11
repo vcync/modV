@@ -30,10 +30,12 @@ module.exports = function(hooks) {
 		});
 
 		let menuItemCount = 0;
-		filteredHooks.forEach(hook => {
+		filteredHooks.forEach((hook, idx) => {
 			hook.menuItems.forEach(() => {
 				menuItemCount++;
 			});
+
+			if(filteredHooks.length-1 !== idx) menuItemCount++;
 		});
 
 
