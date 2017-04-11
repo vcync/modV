@@ -118,7 +118,7 @@ section .top .gallery {
     justify-self: center;
     align-self: flex-start;
     width: 100%;
-    padding-bottom: calc(100% / 1.777777778);
+    padding-bottom: 56.249999993%;
 }
 
 .gallery-item .title-wrapper {
