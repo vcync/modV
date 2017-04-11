@@ -42,7 +42,7 @@ class ContextMenuHandler {
 
 			let matchedHooks = matchingHooks(e.target);
 
-			if(matchedHooks) {
+			if(matchedHooks.length > 0) {
 				e.preventDefault();
 
 				matchedHooks.forEach(hook => {
