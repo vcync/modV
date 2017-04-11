@@ -22,13 +22,13 @@ module.exports = function(modV) {
 
 				inputNode = Control.makeNode(this, Module, id, isPreset);
 
-				inputNode.addEventListener('contextmenu', (ev) => {
-					ev.preventDefault();
+				// inputNode.addEventListener('contextmenu', (ev) => {
+				// 	ev.preventDefault();
 
-					this.showContextMenu('control', [Control, Module, inputNode], ev);
+				// 	this.showContextMenu('control', [Control, Module, inputNode], ev);
 
-					return false;
-				}, false);
+				// 	return false;
+				// }, false);
 
 				let groupNode = document.createElement('div');
 				groupNode.classList.add('control-group');

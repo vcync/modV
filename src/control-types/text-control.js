@@ -17,6 +17,7 @@ module.exports = function(modV) {
 		makeNode(modV, Module, id, isPreset, internalPresetValue) {
 			let node = document.createElement('input');
 			node.type = 'text';
+			node.classList.add('modv-text-control');
 
 			node.addEventListener('input', () => {
 				this.value = node.value;

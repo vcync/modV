@@ -19,6 +19,7 @@ module.exports = function(modV) {
 
 			let node = document.createElement('input');
 			node.type = 'button';
+			node.classList.add('modv-button-control');
 
 			node.addEventListener('mousedown', (e) => {
 				if(typeof settings.onpress === 'function') settings.onpress(e);

@@ -25,6 +25,7 @@
     "eventemitter2": "^3.0.2",
     "fluent-ffmpeg": "^2.0.1",
     "fs-promise": "^0.5.0",
+    "lodash.isequal": "^4.5.0",
     "meyda": "^3.0.4",
     "mkdirp": "^0.5.1",
     "modv-media-manager": "git+ssh://git@github.com:2xAA/modV-MediaManager.git",

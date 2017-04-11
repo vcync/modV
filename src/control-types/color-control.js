@@ -17,6 +17,7 @@ module.exports = function(modV) {
 		makeNode(modV, Module, id, isPreset, internalPresetValue) {
 			let node = document.createElement('input');
 			node.type = 'color';
+			node.classList.add('modv-color-control');
 
 			node.addEventListener('input', () => {
 				this.value = node.value;

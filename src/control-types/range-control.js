@@ -26,6 +26,7 @@ module.exports = function(modV) {
 			node.type = 'range';
 			node.min = settings.min;
 			node.max = settings.max;
+			node.classList.add('modv-range-control');
 			if('step' in settings) node.step = settings.step;
 
 			rangeRanger(node, {

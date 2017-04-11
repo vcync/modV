@@ -1,10 +1,40 @@
 /* globals Sortable, $ */
 
 const attachResizeHandles = require('./ui-resize/attach');
+const ContextMenuHandler = require('./context-menu-handler');
+const initContextMenus = require('./context-menus');
+const Menu = require('../libraries/menu.js');
+
+if(!window.nw) {
+	var nw = {};
+	nw.Menu = Menu.Menu;
+	nw.MenuItem = Menu.MenuItem;
+} else {
+	var nw = window.nw;
+}
 
 module.exports = function(modV) {
 	modV.prototype.startUI = function() {
 		var self = this;
+
+		// ContextMenu handler
+		this.ContextMenuHandler = new ContextMenuHandler();
+		this.menus = {};
+		this.menus.addHook = this.ContextMenuHandler.addHook;
+
+		Object.defineProperty(this.menus, 'contextMenuEvent', {
+			get: () => {
+				return this.ContextMenuHandler.contextMenuEvent;
+			}
+		});
+
+		Object.defineProperty(this.menus, 'contextMenuTarget', {
+			get: () => {
+				return this.ContextMenuHandler.contextMenuTarget;
+			}
+		});
+
+		initContextMenus.bind(this)();
 
 		// simplebar
 		$('.active-list-wrapper').simplebar({ wrapContent: false });

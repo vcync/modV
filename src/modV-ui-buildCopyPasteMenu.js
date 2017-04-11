@@ -13,7 +13,6 @@ module.exports = function(Control, Module, inputNode, modV) {
 		}
 	}));
 
-	
 	var pasteItemSettings = {
 		title: 'Paste Value',
 		enabled: true,
@@ -43,10 +42,9 @@ module.exports = function(Control, Module, inputNode, modV) {
 		pasteItemSettings.title = 'Paste Value (' + modV.copiedValue + ')';
 	} else {
 		pasteItemSettings.enabled = false;
-	} 
+	}
 
 	items.push(new modV.MenuItem(pasteItemSettings));
 
 	return items;
-
 };
