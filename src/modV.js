@@ -83,6 +83,7 @@ class modV extends EventEmitter2 {
 		this.bufferContext = this.bufferCanvas.getContext('2d');
 
 		document.querySelector('.canvas-preview').appendChild(this.previewCanvas);
+		this.addOutputWindowButtonHandler();
 
 		this.outputCanvas = document.createElement('canvas');
 		this.outputContext = this.outputCanvas.getContext('2d');
@@ -148,6 +149,27 @@ class modV extends EventEmitter2 {
 		this.setupWorkers();
 
 		this.emit('ready');
+	}
+
+	addOutputWindowButtonHandler() {
+		const button = document.querySelector('.canvas-preview-output');
+		if (button === null) {
+			return;
+		}
+
+		button.addEventListener('click', this.outputWindowButtonHandler.bind(this));
+	}
+
+	/** @param {MouseEvent} evt */
+	outputWindowButtonHandler(evt) {
+		const largestWindow = this.getLargestWindow();
+		if (largestWindow === null) {
+			return;
+		}
+
+		if (largestWindow.window && typeof largestWindow.window.focus === 'function') {
+			largestWindow.window.focus();
+		}
 	}
 }
 
