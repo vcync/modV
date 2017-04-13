@@ -16,7 +16,7 @@ module.exports = function(modV) {
 
 					// remove palette from global palette store
 					if(Control instanceof this.PaletteControl) {
-						this.removePalette(Control.getId());
+						this.removePalette(Control.id);
 					}
 				});
 
