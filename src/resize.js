@@ -1,6 +1,9 @@
 module.exports = function resize() {
 
-	let largestWindow = this.getLargestWindow().window;
+	let largestWindow = this.getLargestWindow();
+
+	if(!largestWindow) return;
+	else largestWindow = largestWindow.window;
 
 	if(window.devicePixelRatio > 1 && this.options.retina) {
 		this.width = largestWindow.innerWidth * largestWindow.devicePixelRatio;
