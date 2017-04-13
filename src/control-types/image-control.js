@@ -41,6 +41,7 @@ module.exports = function(modV) {
 			}
 
 			let node = Media.returnHTML();
+			node.classList.add('modv-image-control');
 
 			this.init(id, ModuleRef, node, isPreset, internalPresetValue, modV);
 			return node;

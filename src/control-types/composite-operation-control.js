@@ -56,6 +56,7 @@ module.exports = function(modV) {
 			node.id = id;
 			node.multiple = true;
 			node.classList.add('composite-operations');
+			node.classList.add('modv-composite-operation-control');
 
 			let blendOptionGroupNode = document.createElement('optgroup');
 			blendOptionGroupNode.label = 'Blend Modes';

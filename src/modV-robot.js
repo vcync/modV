@@ -76,6 +76,7 @@ module.exports = function(modV) {
 		if(this.bots[controlID]) return false; // Bot already attached
 		let bot = new modVBot(mod, controlKey, this); //jshint ignore: line
 		this.bots[controlID] = bot;
+		return controlID;
 	};
 
 	modV.prototype.removeBot = function(module, controlKey) {

@@ -47,15 +47,17 @@ module.exports = function(modV) {
 			this, Module, Module.info.safeName + '-' + 'ListItemOpacity', isPreset, Module.info.alpha
 		);
 
+		AlphaRangeControlNode.classList.add('modv-alpha-control');
+
 		opacityRangeNode.parentNode.replaceChild(AlphaRangeControlNode, opacityRangeNode);
 
-		AlphaRangeControlNode.addEventListener('contextmenu', (ev) => {
-			ev.preventDefault();
+		// AlphaRangeControlNode.addEventListener('contextmenu', (ev) => {
+		// 	ev.preventDefault();
 
-			this.showContextMenu('opacity', [AlphaRangeControl, Module, AlphaRangeControlNode], ev);
+		// 	this.showContextMenu('opacity', [AlphaRangeControl, Module, AlphaRangeControlNode], ev);
 
-			return false;
-		}, false);
+		// 	return false;
+		// }, false);
 
 		// Attach listener to Blending Select
 		let compositeSelectNode = activeItem.querySelector('.composite-operations');
@@ -92,15 +94,17 @@ module.exports = function(modV) {
 			this, Module, Module.info.safeName + '-' + 'BlendingMode', isPreset, Module.info.blend
 		);
 
+		BlendingControlNode.classList.add('modv-blending-control');
+
 		compositeSelectNode.parentNode.replaceChild(BlendingControlNode, compositeSelectNode);
 
-		BlendingControlNode.addEventListener('contextmenu', function(ev) {
-			ev.preventDefault();
+		// BlendingControlNode.addEventListener('contextmenu', function(ev) {
+		// 	ev.preventDefault();
 
-			this.showContextMenu('opacity', [BlendingControl, Module, BlendingControlNode], ev);
+		// 	this.showContextMenu('opacity', [BlendingControl, Module, BlendingControlNode], ev);
 
-			return false;
-		}, false);
+		// 	return false;
+		// }, false);
 
 
 		// Attach listener to Enable Checkbox
@@ -128,15 +132,17 @@ module.exports = function(modV) {
 			this, Module, Module.info.safeName + '-' + 'ListItemEnable', isPreset, !Module.info.disabled
 		);
 
+		EnableCheckboxControlNode.classList.add('modv-checkbox-control');
+
 		enableCheckboxNode.parentNode.replaceChild(EnableCheckboxControlNode, enableCheckboxNode);
 
-		EnableCheckboxControlNode.addEventListener('contextmenu', (ev) => {
-			ev.preventDefault();
+		// EnableCheckboxControlNode.addEventListener('contextmenu', (ev) => {
+		// 	ev.preventDefault();
 
-			this.showContextMenu('opacity', [EnableCheckboxControl, Module, EnableCheckboxControlNode], ev);
+		// 	this.showContextMenu('opacity', [EnableCheckboxControl, Module, EnableCheckboxControlNode], ev);
 
-			return false;
-		}, false);
+		// 	return false;
+		// }, false);
 
 		activeItem.dataset.moduleName = Module.info.safeName;
 

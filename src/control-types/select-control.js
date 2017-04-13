@@ -36,6 +36,7 @@ module.exports = function(modV) {
 
 			let node = document.createElement('select');
 			node.id = id;
+			node.classList.add('modv-select-control');
 
 			this.init(id, Module, node, isPreset, internalPresetValue, modV);
 

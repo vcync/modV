@@ -8,11 +8,11 @@ console.log('      modV Copyright  (C)  2017 Sam Wray      '+ "\n" +
 			'----------------------------------------------');
 const MediaManager = require('modv-media-manager');
 const webpack = require('webpack-stream');
-const ProvidePlugin = require('webpack-stream').webpack.ProvidePlugin;
 const connect = require('gulp-connect');
 const jshint = require('gulp-jshint');
 const modclean = require('modclean');
 const symlink = require('gulp-sym');
+const merge = require('lodash.merge');
 const clean = require('gulp-clean');
 const exec = require('gulp-exec');
 const ejs = require('gulp-ejs');
@@ -39,38 +39,22 @@ gulp.task('lint', function() {
 		//.pipe(jshint.reporter('fail'));
 });
 
-gulp.task('webpack', ['clean', 'lint'], function() {
-	return gulp.src('./src/app.js')
-		.pipe(webpack({
-			module: {
-				loaders: [
-					{ test: /\.json$/, loader: 'json' }
-				]
-			},
-			plugins: [
-				new ProvidePlugin({
-					'forIn': __dirname + '/src/fragments/for-in'
-				})
-			],
-			output: {
-				filename: 'app.js'
-			}
-		}))
-		.pipe(gulp.dest('./dist/'));
-});
-
-gulp.task('webpack-palette', ['clean', 'lint'], function() {
-	return gulp.src('./src/palette-worker/index.js')
-		.pipe(webpack({
-			plugins: [
-				new ProvidePlugin({
-					'forIn': __dirname + '/src/fragments/for-in'
-				})
-			],
-			output: {
-				filename: 'palette-worker.js'
-			}
-		}))
+gulp.task('webpack', ['clean'], function() {
+	return gulp.src(['src/app.js', './src/palette-worker/index.js'])
+		.pipe(
+			webpack(
+				merge(
+					{
+						entry: {
+							app: './src/app.js',
+							'palette-worker': './src/palette-worker/index.js',
+					    }
+					},
+					require('./webpack.config.js')
+				),
+				require('webpack') // pass webpack for webpack2
+			)
+		)
 		.pipe(gulp.dest('./dist/'));
 });
 
@@ -209,9 +193,9 @@ gulp.task('nwjs', ['clean', 'clean:nwjs', 'ejs:nwjs', 'webpack', 'copy', 'copy:n
 
 gulp.task('copy', ['copy:modules', 'copy:html', 'copy:css', 'copy:library', /*'copy:meyda',*/ 'copy:fonts', 'copy:license']);
 
-gulp.task('build', ['clean', 'ejs', 'webpack', 'webpack-palette', 'copy', 'symlink']);
+gulp.task('build', ['clean', 'ejs', 'webpack', 'copy', 'symlink']);
 
-gulp.task('build-nwjs', ['clean', 'ejs:nwjs', 'webpack', 'webpack-palette', 'copy', 'nwjs']);
+gulp.task('build-nwjs', ['clean', 'ejs:nwjs', 'webpack', 'copy', 'nwjs']);
 
 gulp.task('watch', ['build', 'connect', 'set-watcher', 'media-manager']);
 

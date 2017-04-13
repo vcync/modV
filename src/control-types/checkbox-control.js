@@ -21,6 +21,8 @@ module.exports = function(modV) {
 			let inputNode = document.createElement('input');
 			inputNode.type = 'checkbox';
 			inputNode.id = id;
+			inputNode.classList.add('modv-checkbox-control');
+
 
 			inputNode.addEventListener('change', () => {
 				this.value = inputNode.checked;
