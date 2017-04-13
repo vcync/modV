@@ -26,6 +26,7 @@
     "fluent-ffmpeg": "^2.0.1",
     "fs-promise": "^0.5.0",
     "lodash.isequal": "^4.5.0",
+    "lodash.merge": "^4.6.0",
     "meyda": "^3.0.4",
     "mkdirp": "^0.5.1",
     "modv-media-manager": "git+ssh://git@github.com:2xAA/modV-MediaManager.git",
@@ -59,6 +60,7 @@
     "matchdep": "~0.1.2",
     "modclean": "^2.1.0",
     "nw-builder": "^3.1.0",
+    "webpack": "^2.3.3",
     "webpack-stream": "^3.2.0"
   }
 }
