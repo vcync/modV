@@ -4,99 +4,203 @@ class Ball extends modV.Module2D {
 			info: {
 				name: 'Ball',
 				author: '2xAA',
-				version: 1.0,
-				meyda: ['rms', 'zcr']
+				version: 1.2,
+				meyda: ['rms', 'zcr'],
+				saveData: {
+					"soundType": {
+						"type": "boolean"
+					},
+					"intensity": {
+						"type": "number"
+					},
+					"amount": {
+						"type": "number"
+					},
+					"baseSize": {
+						"type": "number"
+					},
+					"size": {
+						"type": "number"
+					},
+					"colour": {
+						"type": "string"
+					},
+					"speed": {
+						"type": "number"
+					},
+					"wrap": {
+						"type": "boolean"
+					},
+					"balls": {
+						"type": "array",
+						"items": [
+							{
+								"type": "object",
+								"properties": {
+									// "bounds": {
+									// 	"type": "object",
+									// 	"properties": {
+									// 		"width": {
+									// 			"type":"number"
+									// 		},
+									// 		"height": {
+									// 			"type":"number"
+									// 		}
+									// 	}
+									// },
+									"position": {
+										"type": "object",
+										"properties": {
+											"x": {
+												"type":"number"
+											},
+											"y": {
+												"type":"number"
+											}
+										}
+									},
+									"velocity": {
+										"type": "object",
+										"properties": {
+											"x": {
+												"type":"number"
+											},
+											"y": {
+												"type":"number"
+											}
+										}
+									},
+									"xReverse": {
+										"type": "boolean"
+									},
+									"yReverse": {
+										"type": "boolean"
+									}
+								}
+							}
+						]
+					}
+				}
 			}
 		});
 
-		var controls = [];
+		// <
+			var controls = [];
 
-		controls.push(new modV.CheckboxControl({
-			variable: 'wrap',
-			label: 'Wrap',
-			checked: false
-		}));
+			controls.push(new modV.CheckboxControl({
+				variable: 'wrap',
+				label: 'Wrap',
+				checked: false
+			}));
 
-		controls.push(new modV.RangeControl({
-			variable: 'amount',
-			label: 'Amount',
-			varType: 'int',
-			min: 0,
-			max: 50,
-			step: 1,
-			default: 15
-		}));
+			controls.push(new modV.RangeControl({
+				variable: 'amount',
+				label: 'Amount',
+				varType: 'int',
+				min: 0,
+				max: 50,
+				step: 1,
+				default: 15
+			}));
 
-		controls.push(new modV.RangeControl({
-			variable: 'speed',
-			label: 'Speed',
-			varType: 'int',
-			min: 1,
-			max: 50,
-			step: 1,
-			default: 5
-		}));
+			controls.push(new modV.RangeControl({
+				variable: 'speed',
+				label: 'Speed',
+				varType: 'int',
+				min: 1,
+				max: 50,
+				step: 1,
+				default: 5
+			}));
 
-		controls.push(new modV.RangeControl({
-			variable: 'size',
-			label: 'Size',
-			varType: 'int',
-			min: 1,
-			max: 50,
-			step: 1,
-			default: 2
-		}));
+			controls.push(new modV.RangeControl({
+				variable: 'size',
+				label: 'Size',
+				varType: 'int',
+				min: 1,
+				max: 50,
+				step: 1,
+				default: 2
+			}));
 
-		controls.push(new modV.RangeControl({
-			variable: 'intensity',
-			label: 'RMS/ZCR Intensity',
-			varType: 'int',
-			min: 0,
-			max: 30,
-			step: 1,
-			default: 15
-		}));
+			controls.push(new modV.RangeControl({
+				variable: 'intensity',
+				label: 'RMS/ZCR Intensity',
+				varType: 'int',
+				min: 0,
+				max: 30,
+				step: 1,
+				default: 15
+			}));
 
-		controls.push(new modV.CheckboxControl({
-			variable: 'soundType',
-			label: 'RMS (unchecked) / ZCR (checked)',
-			checked: false
-		}));
+			controls.push(new modV.CheckboxControl({
+				variable: 'soundType',
+				label: 'RMS (unchecked) / ZCR (checked)',
+				checked: false
+			}));
 
-		controls.push(new modV.PaletteControl({
-			variable: 'colour',
-			colors: [
-				[199,64,163],
-				[97,214,199],
-				[222,60,75],
-				[101,151,220],
-				[213,158,151],
-				[100,132,129],
-				[154,94,218],
-				[194,211,205],
-				[201,107,152],
-				[119,98,169],
-				[214,175,208],
-				[218,57,123],
-				[196,96,98],
-				[218,74,219],
-				[138,100,121],
-				[96,118,225],
-				[132,195,223],
-				[82,127,162],
-				[209,121,211],
-				[181,152,220]
-			], // generated here: http://tools.medialab.sciences-po.fr/iwanthue/
-			timePeriod: 16
-		}));
+			controls.push(new modV.PaletteControl({
+				variable: 'colour',
+				colors: [
+					[199,64,163],
+					[97,214,199],
+					[222,60,75],
+					[101,151,220],
+					[213,158,151],
+					[100,132,129],
+					[154,94,218],
+					[194,211,205],
+					[201,107,152],
+					[119,98,169],
+					[214,175,208],
+					[218,57,123],
+					[196,96,98],
+					[218,74,219],
+					[138,100,121],
+					[96,118,225],
+					[132,195,223],
+					[82,127,162],
+					[209,121,211],
+					[181,152,220]
+				], // generated here: http://tools.medialab.sciences-po.fr/iwanthue/
+				timePeriod: 16
+			}));
 
-		this.add(controls);
+			this.add(controls);
+		// >
 	}
-	
+
+	import(key, value) {
+
+		switch(key) {
+			case 'balls':
+				let balls = value;
+				this.balls = [];
+				for(var i=0; i < balls.length; i++) {
+					let ball = balls[i];
+					var newBall = new (this.ballObj())();
+					newBall.speed = this.speed;
+					newBall.bounds.width = this._canvas.width;
+					newBall.bounds.height = this._canvas.height;
+					newBall.position.x = ball.position.x;
+					newBall.position.y = ball.position.y;
+					newBall.velocity.x = ball.velocity.x;
+					newBall.velocity.y = ball.velocity.y;
+					newBall.xReverse = ball.xReverse;
+					newBall.yReverse = ball.xReverse;
+					this.balls.push(newBall);
+				}
+
+			break;
+		}
+
+	}
+
 	init(canvas) {
-		
+		this._canvas = canvas;
 		this.soundType = false; // false RMS, true ZCR
 		this.intensity = 15; // Half max
+		this.analysed = 0;
 
 		this.amount = 10;
 		this.baseSize = 2;
@@ -107,26 +211,26 @@ class Ball extends modV.Module2D {
 		this.wrap = false;
 
 		this.setupBalls(canvas);
-		
+
 	}
-	
+
 	resize(canvas) {
-		this.setupBalls(canvas);
+		for(var i=0; i < this.balls.length; i++) {
+			this.balls[i].setBounds(canvas.width, canvas.height);
+		}
 	}
 
 	draw(canvas, ctx, vid, features) {
-		var analysed;
-
 		if(this.soundType) {
-			analysed = features.zcr/10 * this.intensity;
+			this.analysed = features.zcr/10 * this.intensity;
 		} else {
-			analysed = (features.rms * 10) * this.intensity;
+			this.analysed = (features.rms * 10) * this.intensity;
 		}
-		
+
 		for(var i=0; i < this.amount; i++) {
 			this.balls[i].speed = this.speed;
 			this.balls[i].wrap = this.wrap;
-			this.balls[i].drawUpdate(canvas, ctx, analysed, this.colour);
+			this.balls[i].drawUpdate(canvas, ctx, this.analysed, this.colour);
 		}
 
 	}
@@ -190,6 +294,16 @@ class Ball extends modV.Module2D {
 				this.position.y += this.velocity.y;
 
 				if(this.velocity.y === 0) this.velocity.y = -this.velocity.y+1;
+			};
+
+			this.setBounds = function(width, height) {
+				this.bounds = {
+					width: width,
+					height: height
+				};
+
+				if(this.position.x > this.bounds.width) this.position.x = this.bounds.width-1;
+				if(this.position.y > this.bounds.height) this.position.y = this.bounds.height-1;
 			};
 		};
 	}

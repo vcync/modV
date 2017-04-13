@@ -1,6 +1,19 @@
+const Ajv = require('ajv');
+const makeSchema = function(props) {
+	return {
+		"$schema": "http://json-schema.org/draft-04/schema#",
+		"type": "object",
+		"properties": props
+	};
+};
+
 module.exports = function(modV) {
+	const ajv = new Ajv({
+		removeAdditional: 'all'
+	});
 
 	modV.prototype.generatePreset = function(name) {
+
 		let self = this;
 		let preset = {
 			layers: [],
@@ -21,7 +34,7 @@ module.exports = function(modV) {
 					type: 'PaletteControl',
 					variable: Control.variable,
 					color: Module[Control.variable],
-					colours: Control.colours,
+					colors: Control.colors,
 					timePeriod: Control.timePeriod
 				};
 
@@ -88,12 +101,37 @@ module.exports = function(modV) {
 			preset.moduleData[key].originalModuleName = Module.info.originalModuleName;
 			preset.moduleData[key].solo = 				Module.info.solo;
 			preset.moduleData[key].alpha = 				Module.info.alpha;
+			preset.moduleData[key].version = 			Module.info.version;
+			preset.moduleData[key].author = 			Module.info.author;
+			preset.moduleData[key].values =				{};
 
 			if('originalName' in Module.info) {
 				preset.moduleData[key].clone = true;
 			}
 
-			preset.moduleData[key].values = {};
+			if(!('saveData' in Module.info)) {
+				console.warn(
+					`generatePreset: Module ${Module.info.name} has no saveData schema, falling back to skimming Controls for data`
+				);
+			}
+
+			let schema = makeSchema(Module.info.saveData);
+			let validate = ajv.compile(schema);
+
+			// Ugh - TODO: figure out a better clone than JSONparse(JSONstringify())
+			let copiedModule = JSON.parse(JSON.stringify(Module));
+			let validated = validate(copiedModule);
+			if(!validated) {
+				console.error(
+					`generatePreset: Module ${Module.info.name} failed saveData validation, skipping`,
+					validate.errors
+				);
+				return;
+			}
+
+			preset.moduleData[key].values = copiedModule;
+
+			// Look for Controls which need to save special datasets (e.g. PaletteControl)
 			forIn(Module.info.controls, (k, Control) => {
 				extractValues(Control, Module, key);
 			});

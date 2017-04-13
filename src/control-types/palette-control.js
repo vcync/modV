@@ -42,8 +42,8 @@ module.exports = function(modV) {
 			let settings = this.settings;
 			this.colors = settings.colors || this.colors;
 			this.timePeriod = settings.timePeriod || this.timePeriod;
-
-			modV.createPalette(id, this.colors, this.timePeriod);
+      
+      modV.createPalette(id, this.colors, this.timePeriod);
 
 			Object.defineProperty(Module, this.variable, {
 				get: () => {
