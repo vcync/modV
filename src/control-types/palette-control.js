@@ -1,191 +1,73 @@
-const makeControlGroup = require('../make-control-group');
+const ControlError = require('./control-error');
+const Control = require('./control');
+
 const appendChildren = require('../append-children');
+const makeControlGroup = require('../make-control-group');
 const colorToRGBString = require('../fragments/color-to-rgb-string');
 const hexToRgb = require('../fragments/hex-to-rgb');
 
 module.exports = function(modV) {
-	modV.prototype.PaletteControl = function PaletteControl(settings) {
-		if(typeof settings === "undefined") settings = {};
-		let modVSelf;
-		let self = this;
+	modV.prototype.PaletteControl = class PaletteControl extends Control {
 
-		this.getSettings = function() {
-			return settings;
-		};
+		constructor(settings) {
+			let CheckboxControlError = new ControlError('PaletteControl');
 
-		let id;
+			// Check for settings Object
+			if(!settings) throw new CheckboxControlError('PaletteControl had no settings');
 
-		this.getId = function() {
-			return id;
-		};
+			// All checks pass, call super
+			super(settings);
 
-		//TODO: error stuff
-		// RangeControl error handle
-		function ControlError(message) {
-			// Grab the stack
-			this.stack = (new Error()).stack;
-
-			// Parse the stack for some helpful debug info
-			var reg = /\((.*?)\)/;
-			var stackInfo = this.stack.split('\n').pop().trim();
-			try {
-				stackInfo = reg.exec(stackInfo)[0];
-			} catch(e) {
-
-			}
-
-			// Expose name and message
-			this.name = 'modV.PaletteControl Error';
-			this.message = message + ' ' + stackInfo || 'Error';
-		}
-		// Inherit from Error
-		ControlError.prototype = Object.create(Error.prototype);
-		ControlError.prototype.constructor = ControlError;
-
-		// Check for settings Object
-		if(!settings) throw new ControlError('PaletteControl had no settings');
-		// Check for colors
-		if(!('colors' in settings)) throw new ControlError('PaletteControl had no "colors" in settings');
-		// Check for timePeriod
-		if(!('timePeriod' in settings)) throw new ControlError('RangeControl had no "timePeriod" in settings');
-
-		// Check for variable
-		if(!('variable' in settings)) throw new ControlError('RangeControl had no "variable" in settings');
-
-
-		// Copy settings values to local scope
-		for(let key in settings) {
-			if(settings.hasOwnProperty(key)) {
-				this[key] = settings[key];
-			}
-		}
-
-		function makePalette(colors) {
-			var swatches = [];
-			colors.forEach((color) => {
-				var swatch = makeColorSwatch(color);
-				swatches.push(swatch);
-			});
-
-			return swatches;
-		}
-
-		function makeColorSwatch(color) {
-			let swatch = document.createElement('div');
-			swatch.classList.add('swatch');
-			swatch.style.backgroundColor = colorToRGBString(color);
-			swatch.addEventListener('click', () => {
-
-				let nodeList = Array.prototype.slice.call(swatch.parentNode.children);
-				let idx = nodeList.indexOf(swatch);
-
-				self.removeAtIndex(idx);
-				swatch.remove();
-			});
-			return swatch;
-		}
-
-		this.addColor = (color) => {
-			let rgbFromHex;
-			if(typeof color === 'string') {
-
-				rgbFromHex = hexToRgb(color);
-				this.colors.push(rgbFromHex);
-
-			} else if(Array.isArray(color)) {
-
-				color.forEach(col => {
-					this.colors.push(col);
-				});
-
-			} else return;
-
-			modVSelf.setPalette(id, {
-				colors: this.colors
-			});
-
-			return this.colors.length;
-		};
-
-		this.setPalette = (palette) => {
 			this.colors = [];
+			let timePeriod = settings.timePeriod || 30;
 
-			palette.forEach(color => {
-				this.colors.push(color);
-			});
-
-			modVSelf.setPalette(id, {
-				colors: this.colors
-			});
-
-			return true;
-		};
-
-		this.removeAtIndex = (index) => {
-			var returnVal = this.colors.splice(index, 1);
-
-			modVSelf.setPalette(id, {
-				colors: this.colors
-			});
-
-			return returnVal;
-		};
-
-		this.makeNode = (modVthis, Module) => {
-			modVSelf = modVthis;
-
-			this.creationTime = Date.now();
-			id = Module.info.safeName + '-' + settings.variable + '-' + this.creationTime;
-
-			this.callbacks = {};
-
-			this.callbacks.next = (colour) => {
-				Module[this.variable] = colour;
-				//Module.updateVariable(this.variable, colour, modVSelf);
-			};
-
-			this.callbacks.getBPM = function() {
-				return modVSelf.bpm;
-			};
-
-			this.callbacks.savePalette = function(profile, paletteName, palette) {
-
-				window.postMessage({
-					type: 'global',
-					name: 'savepalette',
-					payload: {
-						palette: palette,
-						profile: profile,
-						name: paletteName
-					}
-				}, modVSelf.options.controlDomain);
-
-			};
-
-			modVSelf.createPalette(id, this.colors, this.timePeriod);
-
-			Object.defineProperty(Module, this.variable, {
+			Object.defineProperty(this, 'timePeriod', {
 				get: () => {
-					return modVSelf.palettes.get(id).currentStep;
+					return timePeriod;
+				},
+				set: (input) => {
+					if(!this.id || !this.modV) return;
+					timePeriod = parseInt(input);
+
+					this.modV.setPalette(this.id, {
+						timePeriod: timePeriod
+					});
 				}
 			});
 
+			this.nodes = {};
+		}
 
-			let loadPaletteListSelect = document.createElement('select');
+		makeNode(modV, Module, id, isPreset, internalPresetValue) {
+			let settings = this.settings;
+			this.colors = settings.colors || this.colors;
+			this.timePeriod = settings.timePeriod || this.timePeriod;
+      
+      modV.createPalette(id, this.colors, this.timePeriod);
+
+			Object.defineProperty(Module, this.variable, {
+				get: () => {
+					let step = modV.palettes.get(id);
+					return step ? step.currentStep : 'rgba(0,0,0,0)';
+				}
+			});
+
+			let controlsDiv = document.createElement('div');
+
+			let loadPaletteSelect = document.createElement('select');
 
 			function updateLoadPaletteSelect(profile) {
-				loadPaletteListSelect.innerHTML = '';
+				loadPaletteSelect.innerHTML = '';
 
-				forIn(modVSelf.profiles[profile].palettes, palette => {
+				forIn(modV.profiles[profile].palettes, palette => {
 					let option = document.createElement('option');
 					option.textContent = option.value = palette;
-					loadPaletteListSelect.appendChild(option);
+					loadPaletteSelect.appendChild(option);
 				});
 			}
 
 			this.updateProfiles = function(profiles) {
-
-				loadPaletteListSelect.innerHTML = '';
+				loadPaletteSelect.innerHTML = '';
 
 				let options = [];
 
@@ -200,39 +82,34 @@ module.exports = function(modV) {
 				});
 
 				options.forEach(node => {
-					loadPaletteListSelect.appendChild(node);
+					loadPaletteSelect.appendChild(node);
 				});
-
 			};
 
-			let loadProfileSelector = modVSelf.ProfileSelector({
+			let loadProfileSelector = modV.ProfileSelector({
 				onupdate: (profiles) => {
 					this.updateProfiles(profiles);
 				},
 				onchange: (value) => {
-					console.log('load profile selector changed, selected value is', value);
 					updateLoadPaletteSelect(value);
 				}
 			});
-
 			loadProfileSelector.init();
 
-			let saveProfileSelector = modVSelf.ProfileSelector({
+			let saveProfileSelector = modV.ProfileSelector({
 				onchange: (value) => {
 					console.log('save profile selector changed, selected value is', value);
 				}
 			});
-
 			saveProfileSelector.init();
 
 			var paletteDiv = document.createElement('div');
 			paletteDiv.classList.add('palette');
+			this.nodes.paletteDiv = paletteDiv;
 
-			makePalette(this.colors).forEach(function(swatch) {
+			this.makePalette(this.colors).forEach((swatch) => {
 				paletteDiv.appendChild(swatch);
 			});
-
-		   	var controlsDiv = document.createElement('div');
 
 			var colorPicker = document.createElement('input');
 			colorPicker.type = 'color';
@@ -241,7 +118,7 @@ module.exports = function(modV) {
 			addButton.textContent = '+';
 			addButton.addEventListener('click', () => {
 				var colorsLength = this.addColor(colorPicker.value);
-				var swatch = makeColorSwatch(this.colors[colorsLength-1]);
+				var swatch = this.makeColorSwatch(this.colors[colorsLength-1]);
 				swatch.id = colorsLength-1;
 				paletteDiv.appendChild(swatch);
 
@@ -254,7 +131,8 @@ module.exports = function(modV) {
 			timerRangeNode.value = this.timePeriod;
 
 			timerRangeNode.addEventListener('input', () => {
-				modVSelf.setPalette(id, {
+				this.timePeriod = timerRangeNode.value;
+				modV.setPalette(id, {
 					timePeriod: timerRangeNode.value
 				});
 			});
@@ -269,8 +147,6 @@ module.exports = function(modV) {
 			controlsDiv.appendChild(paletteSwatchGroup);
 			controlsDiv.appendChild(addColorGroup);
 			controlsDiv.appendChild(timerRangeGroup);
-
-
 
 			var savePaletteButton = document.createElement('button');
 			savePaletteButton.textContent = 'Save Palette to profile';
@@ -290,22 +166,21 @@ module.exports = function(modV) {
 			let savePaletteGroup = makeControlGroup('Save Palette', savePaletteDiv);
 			controlsDiv.appendChild(savePaletteGroup);
 
-
-
-
 			controlsDiv.appendChild(document.createElement('hr'));
 
 			var syncToBPMCheckbox = document.createElement('input');
 			syncToBPMCheckbox.type = 'checkbox';
 			syncToBPMCheckbox.checked = false;
 			syncToBPMCheckbox.addEventListener('change', () => {
-				this.useBPM = syncToBPMCheckbox.checked;
+				console.warn('TODO: make BPM work in worker');
+				modV.setPalette(id, {
+					useBPM: syncToBPMCheckbox.checked
+				});
 			});
 
 			var syncToBPMLabel = document.createElement('label');
 			syncToBPMLabel.textContent = 'Use detected BPM ';
 			syncToBPMLabel.appendChild(syncToBPMCheckbox);
-
 			controlsDiv.appendChild(syncToBPMLabel);
 
 			var bpmDivisionSpan = document.createElement('span');
@@ -323,7 +198,6 @@ module.exports = function(modV) {
 				if(val === 0) val = 1;
 				this.bpmDivison = bpmDivisionRange.value;
 				bpmDivisionSpan.textContent = this.bpmDivison;
-
 			});
 
 			var bpmDivisonLabel = document.createElement('label');
@@ -336,7 +210,7 @@ module.exports = function(modV) {
 
 			controlsDiv.appendChild(document.createElement('hr'));
 			controlsDiv.appendChild(loadProfileSelector.node);
-			controlsDiv.appendChild(loadPaletteListSelect);
+			controlsDiv.appendChild(loadPaletteSelect);
 
 
 			var loadPaletteButton = document.createElement('button');
@@ -345,15 +219,15 @@ module.exports = function(modV) {
 			loadPaletteButton.addEventListener('click', () => {
 
 				var selectedProfile = loadProfileSelector.value;
-				var selectedPalette = loadPaletteListSelect.options[loadPaletteListSelect.selectedIndex].value;
+				var selectedPalette = loadPaletteSelect.options[loadPaletteSelect.selectedIndex].value;
 
-				var loadedColors = modVSelf.profiles[selectedProfile].palettes[selectedPalette];
+				var loadedColors = modV.profiles[selectedProfile].palettes[selectedPalette];
 
 				this.colors = [];
 				this.addColor(loadedColors);
 
 				paletteDiv.innerHTML = '';
-				makePalette(this.colors).forEach(function(swatch) {
+				this.makePalette(this.colors).forEach(function(swatch) {
 					paletteDiv.appendChild(swatch);
 				});
 
@@ -361,9 +235,80 @@ module.exports = function(modV) {
 
 			controlsDiv.appendChild(loadPaletteButton);
 
+			this.init(id, Module, document.createElement('input'), isPreset, internalPresetValue, modV);
+
 			return controlsDiv;
+		}
 
-		};
+		addColor(color) {
+			let rgbFromHex;
+			if(typeof color === 'string') {
+
+				rgbFromHex = hexToRgb(color);
+				this.colors.push(rgbFromHex);
+
+			} else if(Array.isArray(color)) {
+
+				color.forEach(col => {
+					this.colors.push(col);
+				});
+
+			} else return;
+
+			this.modV.setPalette(this.id, {
+				colors: this.colors
+			});
+
+			return this.colors.length;
+		}
+
+		removeAtIndex(index) {
+			var returnVal = this.colors.splice(index, 1);
+
+			this.modV.setPalette(this.id, {
+				colors: this.colors
+			});
+
+			return returnVal;
+		}
+
+		clearPalette() {
+			this.nodes.paletteDiv.innerHTML = '';
+		}
+
+		setPalette(colors) {
+			this.clearPalette();
+			this.colors = [];
+			this.addColor(colors);
+			this.makePalette(this.colors).forEach((swatch) => {
+				this.nodes.paletteDiv.appendChild(swatch);
+			});
+			return this.colors;
+		}
+
+		makeColorSwatch(color) {
+			let swatch = document.createElement('div');
+			swatch.classList.add('swatch');
+			swatch.style.backgroundColor = colorToRGBString(color);
+			swatch.addEventListener('click', () => {
+
+				let nodeList = Array.prototype.slice.call(swatch.parentNode.children);
+				let idx = nodeList.indexOf(swatch);
+
+				this.removeAtIndex(idx);
+				swatch.remove();
+			});
+			return swatch;
+		}
+
+		makePalette(colors) {
+			var swatches = [];
+			colors.forEach((color) => {
+				var swatch = this.makeColorSwatch(color);
+				swatches.push(swatch);
+			});
+
+			return swatches;
+		}
 	};
-
 };

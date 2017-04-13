@@ -766,3 +766,29 @@ resize-handle-left:hover {
 	cursor: ew-resize;
 	left: -2px;
 }
+
+.canvas-preview-output {
+  background: rgba(255, 255, 255, .2);
+  color: white;
+  cursor: pointer;
+  display: inline-block;
+  padding: 5px;
+  position: absolute;
+  right: 10px;
+  top: 10px;
+  transition: background .2s ease;
+}
+
+.canvas-preview-output-text {
+  display: none;
+  padding-right: 5px;
+}
+
+.canvas-preview-output:hover .canvas-preview-output-text {
+  display: inline;
+}
+
+.canvas-preview-output:hover {
+  background: rgba(255, 255, 255, .8);
+  color: black;
+}

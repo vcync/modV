@@ -2,9 +2,9 @@ module.exports = class Control {
 
 	constructor(settings, setValue) {
 		if(!('variable' in settings)) throw new Error('Control had no "variable" in settings');
-		if(!('label' in settings) && !settings.useInternalValue) {
-			throw new Error('Control had no "label" in settings');
-		}
+		// if(!('label' in settings) && !settings.useInternalValue) {
+		// 	throw new Error('Control had no "label" in settings');
+		// }
 
 		this.node = null;
 
