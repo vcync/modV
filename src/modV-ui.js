@@ -193,6 +193,8 @@ module.exports = function(modV) {
 			self.factoryReset();
 		});
 
+		globalControlPanel.querySelector('#newOutputWindowGlobal').addEventListener('click', () => self.createWindow());
+
 		globalControlPanel.querySelector('#setUsername').value = self.options.user;
 
 		globalControlPanel.querySelector('#setUsernameGlobal').addEventListener('click', function() {
