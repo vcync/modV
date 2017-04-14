@@ -1,16 +1,22 @@
 const ModuleError = require('./module-error.js');
 
 /**
+ * @typedef  {Object} ModuleSettings
+ * @property {Object} info                  The information about the Module
+ * @property {String} info.name             The name of the Module
+ * @property {String} info.author           The author of the Module
+ * @property {(String|Number)} info.version The version of the Module
+ * @property {Array}  meyda                 [description]
+ * @property {Object} saveData              [description]
+ */
+
+/**
  * Module
  */
 class Module {
 
 	/**
-	 * @param {Object} settings
-	 * @param {Object} settings.info                  The information about the Module
-	 * @param {String} settings.info.name             The name of the Module
-	 * @param {String} settings.info.author           The author of the Module
-	 * @param {(String|Number)} settings.info.version The version of the Module
+	 * @param {ModuleSettings} settings
 	 */
 	constructor(settings) {
 		// Set up error reporting
@@ -63,6 +69,27 @@ class Module {
 			}
 		});
 	}
+
+	/**
+	 * Called when the Module is first initiated
+	 * @param  {HTMLCanvas}               canvas        The Canvas to draw to
+	 * @param  {CanvasRenderingContext2D} context       The Context of the Canvas
+	 */
+	init(canvas, context) {} //jshint ignore:line
+
+	/**
+	 * Key/Value pairs to import onto the Module - called internally when loading saveData from {@link ModuleSettings} from a {@link Preset}
+	 * @param  {(String|Number)} key
+	 * @param  {any}             value
+	 */
+	import(key, value) {} //jshint ignore:line
+
+	/**
+	 * Called when an output window canvas resizes
+	 * @param  {HTMLCanvas}               canvas        The resized Canvas
+	 * @param  {CanvasRenderingContext2D} context       The Context of the Canvas
+	 */
+	resize(canvas, context) {} //jshint ignore:line
 
 	/**
 	 * Add a Control to the Module's Control array within settings.info
