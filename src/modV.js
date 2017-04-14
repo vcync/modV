@@ -5,33 +5,32 @@ const MM = require('./media-manager');
 require('./fragments/array-contains');
 require('script-loader!../libraries/beatdetektor.js');
 
-class modV extends EventEmitter2 {
-
+class ModV extends EventEmitter2 {
 	constructor(options) {
 		super();
 
-		console.log('      modV Copyright  (C)  2017 Sam Wray      '+ "\n" +
-					'----------------------------------------------'+ "\n" +
-					'      modV is licensed  under GNU GPL V3      '+ "\n" +
-					'This program comes with ABSOLUTELY NO WARRANTY'+ "\n" +
-					'For details, see http://localhost:3131/LICENSE'+ "\n" +
-					'----------------------------------------------');
+		this.printCopyrights();
 
+		/** @const {string} */
 		this.version = require('../package.json').version;
 
-		this.saveOptions = require('./option-storage').save;
-		this.loadOptions = require('./option-storage').load;
-
-		// Audio
+		/**
+		 * Init audiosystem
+		 * @see set-media-source.js
+		 */
+		/** @type {AudioContext} */
 		this.audioContext = null;
+		/** @type {AnalyserNode} */
 		this.analyserNode = null;
+		/** @type {MediaStreamAudioSourceNode} */
 		this.audioStream = null;
+		/** @type {GainNode} */
 		this.gainNode = null;
-		this.muted = true;
-		this.ready = false;
+		/** @type {boolean} */
+		this.mediaSourcesInited = false;
 
-		// UI Templates
-		this.templates = document.querySelector('link[rel="import"]').import;
+		/** @type {Document} */
+		this.templates = this.importTemplates();
 
 		// Load user options
 		if(typeof options !== 'undefined') this.options = options;
@@ -171,6 +170,42 @@ class modV extends EventEmitter2 {
 			largestWindow.window.focus();
 		}
 	}
+
+	printCopyrights() {
+		const copyrightStrings = ['      modV Copyright  (C)  2017 Sam Wray      ',
+															'----------------------------------------------',
+															'      modV is licensed  under GNU GPL V3      ',
+															'This program comes with ABSOLUTELY NO WARRANTY',
+															'For details, see http://localhost:3131/LICENSE',
+															'----------------------------------------------'];
+		console.log(copyrightStrings.join('\n'));
+	}
+
+	/** Saves current modV options to localStorage */
+	saveOptions() {
+		localStorage.setItem(ModV.LOCAL_STORAGE_KEY, JSON.stringify(this.options)); 
+	}
+
+	/** Loads options from localStorage and append non-existing keys to current modV options */
+	loadOptions() {
+		const savedOptionsValue = localStorage.getItem(ModV.LOCAL_STORAGE_KEY);
+		if (savedOptionsValue) {
+			const savedOptions = JSON.parse(savedOptionsValue);
+			this.options = Object.assign(savedOptions, this.options);
+		}
+	}
+
+	/** 
+	 * UI Templates importing
+	 * @todo Use another way to import templates
+	 *   because HTML imports currently in Working Draft status
+	 * @return {Document} imported document, not usual Document object
+	 */
+	importTemplates() {
+		return document.getElementById('app_templates').import;
+	}
 }
 
-module.exports = modV;
+ModV.LOCAL_STORAGE_KEY = 'modVoptions';
+
+module.exports = ModV;
