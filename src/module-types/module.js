@@ -1,6 +1,17 @@
 const ModuleError = require('./module-error.js');
 
-module.exports = class Module {
+/**
+ * Module
+ */
+class Module {
+
+	/**
+	 * @param {Object} settings
+	 * @param {Object} settings.info                  The information about the Module
+	 * @param {String} settings.info.name             The name of the Module
+	 * @param {String} settings.info.author           The author of the Module
+	 * @param {(String|Number)} settings.info.version The version of the Module
+	 */
 	constructor(settings) {
 		// Set up error reporting
 		this.ModuleError = ModuleError;
@@ -21,19 +32,31 @@ module.exports = class Module {
 		// Create control Array
 		if(!settings.info.controls) settings.info.controls = {};
 
-		// Settings passed, expose this.info
+		/**
+		 * The information Object from the settings Object passed to {@link Module}
+		 * @type {Object}
+		 */
 		this.info = settings.info;
 
 		// Always start on layer 0
+		/* @todo move info properties into Module variables */
 		this.info.layer = 0;
 
-		// Expose preview option
+		/**
+		 * Indicates whether the current output be passed into the Module's draw loop when displayed in the gallery
+		 * @type {Boolean}
+		 */
+		this.previewWithOutput = false;
+
 		if('previewWithOutput' in settings) {
 			this.previewWithOutput = settings.previewWithOutput;
-		} else {
-			this.previewWithOutput = false;
 		}
 
+		/**
+		 * The settings Object passed to {@link Module}
+		 * @type {Object}
+		 * @name Module#settings
+		 */
 		Object.defineProperty(this, 'settings', {
 			get: () => {
 				return settings;
@@ -41,6 +64,11 @@ module.exports = class Module {
 		});
 	}
 
+	/**
+	 * Add a Control to the Module's Control array within settings.info
+	 * @param {(Control|Array)} item Can be either a Control Object or an Array of Control Objects
+	 * @todo For Plugins (1.6/1.7) allow other Objects to be passed and stored in Modules
+	 */
 	add(item) {
 		if(item instanceof Array) {
 			item.forEach(thing => {
@@ -51,14 +79,30 @@ module.exports = class Module {
 		}
 	}
 
+	/**
+	 * Return the current Layer assigned to the Module
+	 * @return {Number} Index of the Layer in {@link ModV#layers}
+	 */
 	getLayer() {
 		return this.info.layer;
 	}
 
+	/**
+	 * Set the Module Layer position
+	 * @param {Number} layer Index of the Layer in {@link ModV#layers}
+	 */
 	setLayer(layer) {
 		this.info.layer = layer;
 	}
 
+	/**
+	 * Set a Module's variable and update other resources that depend on variable state changes
+	 * @todo Review this method and data flow within modV. Doesn't seem like the best way to do this
+	 *
+	 * @param  {(String|Number)} variable The name of the property to update on the Module
+	 * @param  {any} value                The value to set
+	 * @param  {ModV} modV                Reference to an instance of {@link ModV}
+	 */
 	updateVariable(variable, value, modV) {
 		this[variable] = value;
 
@@ -68,4 +112,6 @@ module.exports = class Module {
 			name: this.info.name
 		});
 	}
-};
+}
+
+module.exports = Module;
