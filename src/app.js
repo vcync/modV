@@ -1,7 +1,7 @@
 const tapTempo = require('tap-tempo')();
 const modV = require('./modV');
 
-require('./modV-addLayer.js')(modV);
+
 require('./modV-ContainerGenerator.js')(modV);
 require('./modV-createModule.js')(modV);
 require('./modV-deleteActiveModule.js')(modV);
@@ -51,7 +51,6 @@ require('./modV-webSockets.js')(modV);
 require('./modV-windowControl.js')(modV);
 
 require('./modV.Group.js')(modV);
-require('./modV.Layer.js')(modV);
 require('./modV.LFOController.js')(modV);
 require('./modV.MIDI.js')(modV);
 

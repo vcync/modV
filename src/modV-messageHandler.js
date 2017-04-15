@@ -195,9 +195,4 @@ module.exports = function(modV) {
 			}
 		}
 	};
-
-	modV.prototype.addMessageHandler = function() {
-		var self = this;
-		window.addEventListener('message', self.receiveMessage.bind(self), false);
-	};
 };

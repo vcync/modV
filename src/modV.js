@@ -1,6 +1,7 @@
 const EventEmitter2 = require('eventemitter2').EventEmitter2;
 const shaderInit = require('./shader-env');
 const threeInit = require('./three-env');
+const Layer = require('./Layer');
 const MM = require('./media-manager');
 require('./fragments/array-contains');
 require('script-loader!../libraries/beatdetektor.js');
@@ -37,18 +38,22 @@ class ModV extends EventEmitter2 {
 		/** @type {Document} */
 		this.templates = this.importTemplates();
 
-		// Load user options
-		if(typeof options !== 'undefined') this.options = options;
-
-		if(!this.options.controlDomain) this.options.controlDomain = location.protocol + '//' + location.host;
-
-		this.baseURL = this.options.baseURL || '';
+		/** 
+		 * Set user options
+		 * @todo different datatypes for default options and user-defined options
+		 * @const {ModV.OptionsDataType} 
+		 */
+		this.options = Object.assign(this.defaultOptions, options);
 
 		// Attach message handler for sockets and windows
 		this.addMessageHandler();
 
-		// Layers store
+		/**
+		 * Layers store
+		 * @type {Array<Layer>}
+		 */
 		this.layers = [];
+		/** @type {number} Currently active layer index */
 		this.activeLayer = 0;
 
 		this.activeModules = {};
@@ -209,8 +214,63 @@ class ModV extends EventEmitter2 {
 	importTemplates() {
 		return document.getElementById('app_templates').import;
 	}
+
+	/** @return {ModV.OptionsDataType} */
+	get defaultOptions() {
+		const controlDomain = `${location.protocol}//${location.host}`;
+
+		return {
+			baseURL: '',
+			controlDomain,
+		};
+	}
+
+	/** @todo More verbose method name */
+	addMessageHandler() {
+		window.addEventListener('message', this.receiveMessage.bind(this));
+	}
+
+	/**
+	 * Adds new Layer to layers list
+	 * @param {HTMLCanvas} canvas
+	 * @param {CanvasRenderingContext2D} context
+	 * @param {boolean} clearing
+	 * @return {number} new layer index
+	 */
+	addLayer(canvas, context, clearing) {
+		const list = document.getElementsByClassName('active-list')[0];
+		const layerName = `Layer ${this.layers.length + 1}`;
+
+		const layer = new Layer(layerName, canvas, context, clearing, this);
+
+		list.appendChild(layer.getNode());
+
+		const layerIndex = this.layers.push(layer)-1;
+
+		this.remote.update('addlayer', {
+			index: layerIndex
+		});
+
+		this.updateLayerSelectors();
+
+		this.emit('layerAdd', layer, layerIndex);
+
+		return layerIndex;
+	}
 }
 
+/**
+ * localStorage key name for saving ModV user options
+ * @const {string}
+ */
 ModV.LOCAL_STORAGE_KEY = 'modVoptions';
+
+/** 
+ * @typedef {{
+ *   baseURL: string,
+ *   controlDomain: string,
+ * }}
+ */
+ModV.OptionsDataType;
 
 module.exports = ModV;
