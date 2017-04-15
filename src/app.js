@@ -52,7 +52,6 @@ require('./modV-windowControl.js')(modV);
 
 require('./modV.Group.js')(modV);
 require('./modV.LFOController.js')(modV);
-require('./modV.MIDI.js')(modV);
 
 require('./control-types')(modV);
 require('./module-types')(modV);

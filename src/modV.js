@@ -2,6 +2,7 @@ const EventEmitter2 = require('eventemitter2').EventEmitter2;
 const shaderInit = require('./shader-env');
 const threeInit = require('./three-env');
 const Layer = require('./Layer');
+const MIDI = require('./MIDI');
 const MM = require('./media-manager');
 require('./fragments/array-contains');
 require('script-loader!../libraries/beatdetektor.js');
@@ -72,7 +73,7 @@ class ModV extends EventEmitter2 {
 		this.videoStream.muted = true;
 
 		// MIDI
-		this.MIDIInstance = new this.MIDI(this);
+		this.MIDIInstance = new MIDI(this);
 		this.MIDIInstance.start();
 
 		// Remote

@@ -1,33 +1,51 @@
-module.exports = function(modV) {
+class MIDI {
+	constructor(modV) {
+		/** @private {ModV} Parent ModV instance */
+		this._modV = modV;
+		/** @type {MIDIAccess} */
+		this.access = null;
+		/** @type {MIDIInputMap} */
+		this.inputs = null;
+		/**
+		 * @todo Add flag description 
+		 * @type {boolean}
+		 */
+		this.learning = false;
+		/**
+		 * @todo Add flag description 
+		 * @type {EventTarget}
+		 */
+		this.currentNode = null;
+		/** @type {?string} */
+		this.currentModuleName = null;
+		/** @type {?(string|number)} */
+		this.currentControlKey = null;
+		/**
+		 * @todo Add description and better type annotation
+		 * @type {Map}
+		 */
+		this.assignments = new Map();
+	}
 
-	modV.prototype.MIDI = class {
+	/**
+	 * Returns name of MIDI input by given id
+	 * @param {DOMString} id
+	 * @return {DOMString} According to https://webaudio.github.io/web-midi-api 
+	 */
+	getNameFromID(id) {
+		const inputs = this.inputs;
+		let name;
 
-		constructor(modV) {
-			this._modV = modV;
-			this.access = null;
-			this.inputs = null;
-			this.learning = false;
-			this.currentNode = null;
-			this.currentModuleName = null;
-			this.currentControlKey = null;
-			this.reservedKey = 'modVReserved:';
-
-			this.assignments = new Map();
-		}
-
-		getNameFromID(id) {
-
-			let inputs = this.inputs;
-			let name;
-
-			for(let input of inputs.values()) {
-				if(id === input.id) name = input.name;
+		for(let input of inputs.values()) {
+			if (id === input.id) {
+				name = input.name;
 			}
-
-			return name;
 		}
 
-		handleDevices() {
+		return name;
+	}
+
+	handleDevices() {
 			let inputs = this.inputs;
 
 			// loop over all available inputs and listen for any MIDI input
@@ -68,7 +86,7 @@ module.exports = function(modV) {
 				isReserved = controlKey.indexOf('modVReserved:');
 
 				if(isReserved > -1) {
-					Control = modV.activeModules[moduleName].info.internalControls[controlKey.substring(this.reservedKey.length)];
+					Control = modV.activeModules[moduleName].info.internalControls[controlKey.substring(MIDI.RESERVED_KEY.length)];
 				} else {
 					Control = modV.activeModules[moduleName].info.controls[controlKey];
 				}
@@ -86,7 +104,7 @@ module.exports = function(modV) {
 
 							if(isReserved < 0) Control.update(calculatedValue);
 							else {
-								modV.activeModules[moduleName].info[controlKey.substring(this.reservedKey.length)] = calculatedValue;
+								modV.activeModules[moduleName].info[controlKey.substring(MIDI.RESERVED_KEY.length)] = calculatedValue;
 								Control.node.value = calculatedValue;
 							}
 						},
@@ -97,7 +115,7 @@ module.exports = function(modV) {
 								else {
 									Control.node.checked = !Control.node.checked;
 
-									modV.activeModules[moduleName].info[controlKey.substring(this.reservedKey.length)] = !Control.node.checked;
+									modV.activeModules[moduleName].info[controlKey.substring(MIDI.RESERVED_KEY.length)] = !Control.node.checked;
 								}
 							}
 						},
@@ -113,7 +131,7 @@ module.exports = function(modV) {
 								Control.node.selectedIndex = calculatedIndex;
 								let selectValue = Control.node.options[calculatedIndex].value;
 
-								modV.activeModules[moduleName].info[controlKey.substring(this.reservedKey.length)] = selectValue;
+								modV.activeModules[moduleName].info[controlKey.substring(MIDI.RESERVED_KEY.length)] = selectValue;
 							}
 						},
 
@@ -147,7 +165,7 @@ module.exports = function(modV) {
 					let Control;
 
 					if(isReserved > -1) {
-						Control = modV.activeModules[moduleName].info.internalControls[controlKey.substring(this.reservedKey.length)];
+						Control = modV.activeModules[moduleName].info.internalControls[controlKey.substring(MIDI.RESERVED_KEY.length)];
 					} else {
 						Control = modV.activeModules[moduleName].info.controls[controlKey];
 					}
@@ -197,6 +215,13 @@ module.exports = function(modV) {
 			}
 
 		}
+}
 
-	};
-};
+/** 
+ * Control key prefix used to highlight internal controls
+ * @todo Clarify description
+ * @const {string}
+ */
+MIDI.RESERVED_KEY = 'modVReserved:';
+
+module.exports = MIDI;
