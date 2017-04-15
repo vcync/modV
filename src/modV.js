@@ -5,8 +5,11 @@ const MM = require('./media-manager');
 require('./fragments/array-contains');
 require('script-loader!../libraries/beatdetektor.js');
 
+/**
+ * modV
+ * @extends {EventEmitter2}
+ */
 class modV extends EventEmitter2 {
-
 	constructor(options) {
 		super();
 

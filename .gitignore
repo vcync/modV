@@ -13,3 +13,5 @@ binaries
 /nwjs/cache
 npm-debug.log
 options.json
+
+/docs/*
