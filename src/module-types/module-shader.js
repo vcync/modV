@@ -40,13 +40,13 @@ module.exports = function(modV) {
 				let promises = [];
 
 				if('vertexFile' in settings) {
-					promises.push(fetch(modV.baseURL + '/modules/' + settings.vertexFile));
+					promises.push(fetch(modV.options.baseURL + '/modules/' + settings.vertexFile));
 				} else {
 					promises.push(modV.shaderEnv.defaultShader.v);
 				}
 
 				if('fragmentFile' in settings) {
-					promises.push(fetch(modV.baseURL + '/modules/' + settings.fragmentFile));
+					promises.push(fetch(modV.options.baseURL + '/modules/' + settings.fragmentFile));
 				} else {
 					promises.push(modV.shaderEnv.defaultShader.f);
 				}

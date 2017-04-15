@@ -44,7 +44,7 @@ function userMediaSuccess(stream) {
 	});
 	
 	// Tell the rest of the script we're all good.
-	this.ready = true;
+	this.mediaSourcesInited = true;
 }
 
 function userMediaError() {

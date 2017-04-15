@@ -1,53 +1,60 @@
 const EventEmitter2 = require('eventemitter2').EventEmitter2;
 const shaderInit = require('./shader-env');
 const threeInit = require('./three-env');
+const Layer = require('./Layer');
+const MIDI = require('./MIDI');
 const MM = require('./media-manager');
 require('./fragments/array-contains');
 require('script-loader!../libraries/beatdetektor.js');
+
 
 /**
  * modV
  * @extends {EventEmitter2}
  */
-class modV extends EventEmitter2 {
+class ModV extends EventEmitter2 {
 	constructor(options) {
 		super();
 
-		console.log('      modV Copyright  (C)  2017 Sam Wray      '+ "\n" +
-					'----------------------------------------------'+ "\n" +
-					'      modV is licensed  under GNU GPL V3      '+ "\n" +
-					'This program comes with ABSOLUTELY NO WARRANTY'+ "\n" +
-					'For details, see http://localhost:3131/LICENSE'+ "\n" +
-					'----------------------------------------------');
+		this.printCopyrights();
 
+		/** @const {string} */
 		this.version = require('../package.json').version;
 
-		this.saveOptions = require('./option-storage').save;
-		this.loadOptions = require('./option-storage').load;
-
-		// Audio
+		/**
+		 * Init audiosystem
+		 * @see set-media-source.js
+		 */
+		/** @type {AudioContext} */
 		this.audioContext = null;
+		/** @type {AnalyserNode} */
 		this.analyserNode = null;
+		/** @type {MediaStreamAudioSourceNode} */
 		this.audioStream = null;
+		/** @type {GainNode} */
 		this.gainNode = null;
-		this.muted = true;
-		this.ready = false;
+		/** @type {boolean} */
+		this.mediaSourcesInited = false;
 
-		// UI Templates
-		this.templates = document.querySelector('link[rel="import"]').import;
+		/** @type {Document} */
+		this.templates = this.importTemplates();
 
-		// Load user options
-		if(typeof options !== 'undefined') this.options = options;
-
-		if(!this.options.controlDomain) this.options.controlDomain = location.protocol + '//' + location.host;
-
-		this.baseURL = this.options.baseURL || '';
+		/** 
+		 * Set user options
+		 * @todo different datatypes for default options and user-defined options
+		 * @const {ModV.OptionsDataType} 
+		 */
+		this.options = Object.assign(this.defaultOptions, options);
 
 		// Attach message handler for sockets and windows
 		this.addMessageHandler();
 
-		// Layers store
+		/**
+		 * Layers store
+		 * @type {Array<Layer>}
+		 */
 		this.layers = [];
+		/** @type {number} Currently active layer index */
 		this.activeLayer = 0;
 
 		this.activeModules = {};
@@ -66,7 +73,7 @@ class modV extends EventEmitter2 {
 		this.videoStream.muted = true;
 
 		// MIDI
-		this.MIDIInstance = new this.MIDI(this);
+		this.MIDIInstance = new MIDI(this);
 		this.MIDIInstance.start();
 
 		// Remote
@@ -174,6 +181,97 @@ class modV extends EventEmitter2 {
 			largestWindow.window.focus();
 		}
 	}
+
+	printCopyrights() {
+		const copyrightStrings = ['      modV Copyright  (C)  2017 Sam Wray      ',
+															'----------------------------------------------',
+															'      modV is licensed  under GNU GPL V3      ',
+															'This program comes with ABSOLUTELY NO WARRANTY',
+															'For details, see http://localhost:3131/LICENSE',
+															'----------------------------------------------'];
+		console.log(copyrightStrings.join('\n'));
+	}
+
+	/** Saves current modV options to localStorage */
+	saveOptions() {
+		localStorage.setItem(ModV.LOCAL_STORAGE_KEY, JSON.stringify(this.options)); 
+	}
+
+	/** Loads options from localStorage and append non-existing keys to current modV options */
+	loadOptions() {
+		const savedOptionsValue = localStorage.getItem(ModV.LOCAL_STORAGE_KEY);
+		if (savedOptionsValue) {
+			const savedOptions = JSON.parse(savedOptionsValue);
+			this.options = Object.assign(savedOptions, this.options);
+		}
+	}
+
+	/** 
+	 * UI Templates importing
+	 * @todo Use another way to import templates
+	 *   because HTML imports currently in Working Draft status
+	 * @return {Document} imported document, not usual Document object
+	 */
+	importTemplates() {
+		return document.getElementById('app_templates').import;
+	}
+
+	/** @return {ModV.OptionsDataType} */
+	get defaultOptions() {
+		const controlDomain = `${location.protocol}//${location.host}`;
+
+		return {
+			baseURL: '',
+			controlDomain,
+		};
+	}
+
+	/** @todo More verbose method name */
+	addMessageHandler() {
+		window.addEventListener('message', this.receiveMessage.bind(this));
+	}
+
+	/**
+	 * Adds new Layer to layers list
+	 * @param {HTMLCanvas} canvas
+	 * @param {CanvasRenderingContext2D} context
+	 * @param {boolean} clearing
+	 * @return {number} new layer index
+	 */
+	addLayer(canvas, context, clearing) {
+		const list = document.getElementsByClassName('active-list')[0];
+		const layerName = `Layer ${this.layers.length + 1}`;
+
+		const layer = new Layer(layerName, canvas, context, clearing, this);
+
+		list.appendChild(layer.getNode());
+
+		const layerIndex = this.layers.push(layer)-1;
+
+		this.remote.update('addlayer', {
+			index: layerIndex
+		});
+
+		this.updateLayerSelectors();
+
+		this.emit('layerAdd', layer, layerIndex);
+
+		return layerIndex;
+	}
 }
 
-module.exports = modV;
+/**
+ * localStorage key name for saving ModV user options
+ * @const {string}
+ */
+ModV.LOCAL_STORAGE_KEY = 'modVoptions';
+
+/** 
+ * @typedef {{
+ *   baseURL: string,
+ *   controlDomain: string,
+ * }}
+ */
+ModV.OptionsDataType;
+
+module.exports = ModV;

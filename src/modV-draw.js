@@ -1,7 +1,7 @@
 module.exports = function(modV) {
 
 	modV.prototype.draw = function(meydaOutput, delta) {
-		if(!this.ready) return;
+		if(!this.mediaSourcesInited) return;
 
 		const _gl = this.shaderEnv.gl;
 

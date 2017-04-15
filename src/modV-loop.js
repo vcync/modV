@@ -4,7 +4,7 @@ module.exports = function(modV) {
 
 		let features;
 
-		if(this.ready) {
+		if(this.mediaSourcesInited) {
 			if(this.meydaFeatures.length > 0) features = this.meyda.get(this.meydaFeatures);
 
 			if(features) {
