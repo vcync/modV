@@ -1,10 +1,24 @@
 const Module = require('./module');
 
 module.exports = function(modV) {
-	modV.prototype.ModuleScript = class ModuleScript extends Module {
 
+	/**
+	 * @extends Module
+	 */
+	class ModuleScript extends Module {
+
+		/**
+		 * @param {ModuleSettings} settings
+		 */
 		constructor(settings) {
 			super(settings);
 		}
-	};
+	}
+
+	/**
+	 * @name ModuleScript
+	 * @memberOf modV
+	 * @type {ModuleScript}
+	 */
+	modV.prototype.ModuleScript = ModuleScript;
 };

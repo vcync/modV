@@ -10,7 +10,6 @@ const MediaManager = require('modv-media-manager');
 const webpack = require('webpack-stream');
 const connect = require('gulp-connect');
 const jshint = require('gulp-jshint');
-const modclean = require('modclean');
 const symlink = require('gulp-sym');
 const merge = require('lodash.merge');
 const clean = require('gulp-clean');
@@ -109,17 +108,17 @@ gulp.task('nwjs:install', ['clean', 'clean:nwjs', 'copy:nwjs:package'], function
 		.pipe(exec.reporter());
 });
 
-gulp.task('nwjs:modclean', ['nwjs:install'], function(cb) {
-	modclean({ cwd: './dist/', patterns: ['default:safe', 'default:caution'] }, function(err, results) {
-		if(err) {
-			console.error(err);
-			return;
-		}
+// gulp.task('nwjs:modclean', ['nwjs:install'], function(cb) {
+// 	modclean({ cwd: './dist/', patterns: ['default:safe', 'default:caution'] }, function(err, results) {
+// 		if(err) {
+// 			console.error(err);
+// 			return;
+// 		}
 
-		console.log(`${results.length} files removed!`);
-		cb();
-	});
-});
+// 		console.log(`${results.length} files removed!`);
+// 		cb();
+// 	});
+// });
 
 gulp.task('symlink', ['clean'], function() {
 	return gulp.src('./media', {base: './'})
@@ -171,7 +170,7 @@ gulp.task('set-watcher', ['build'], function() {
 	gulp.watch(allSources, ['build', 'reload']);
 });
 
-gulp.task('nwjs', ['clean', 'clean:nwjs', 'ejs:nwjs', 'webpack', 'copy', 'copy:nwjs:include', 'copy:nwjs:package', 'copy:nwjs:mediamanager', 'nwjs:install', 'nwjs:modclean'], function(cb) {
+gulp.task('nwjs', ['clean', 'clean:nwjs', 'ejs:nwjs', 'webpack', 'copy', 'copy:nwjs:include', 'copy:nwjs:package', 'copy:nwjs:mediamanager', 'nwjs:install', /*'nwjs:modclean'*/], function(cb) {
 
 	var nw = new NwBuilder({
 		files: './dist/**/**',

@@ -3,8 +3,19 @@ const makeProgramInit = require('../shader-env/make-program-promise');
 const twgl = require('twgl.js');
 
 module.exports = function(modV) {
-	modV.prototype.ModuleShader = class ModuleShader extends Module {
 
+	/**
+	 * @extends Module
+	 */
+	class ModuleShader extends Module {
+
+		/**
+		 * The usual ModuleSettings Object with some extra keys
+		 * @param {ModuleSettings} settings
+		 * @param {String} settings.vertexFile        (optional) Location of the Vertex shader file
+		 * @param {String} settings.fragmentFile      (optional) Location of the Fragment shader file
+		 * @param {Object} settings.info.uniforms     (optional) (THREE.js style) Uniforms to pass to the shader
+		 */
 		constructor(settings) {
 			super(settings);
 
@@ -13,6 +24,13 @@ module.exports = function(modV) {
 			this.uniformValues = new Map();
 		}
 
+		/**
+		 * Internal function to make a GL program from the given shader files
+		 * @private
+		 * @param  {WebGL2RenderingContext}  gl   A reference to modV's internal GL Context
+		 * @param  {modV}                    modV A reference to a modV instance
+		 * @return {Promise}                      Resolves with completion of compiled shaders
+		 */
 		_makeProgram(gl, modV) {
 			return new Promise((resolve, reject) => {
 				const settings = this.settings;
@@ -82,12 +100,22 @@ module.exports = function(modV) {
 			});
 		}
 
+		/**
+		 * Make program information (used by twgl) from a previously compiled and stored program in modV's Shader Environment, then store it on the Module (Module.programInfo)
+		 * @private
+		 * @param  {modV}   modV A reference to a modV instance
+		 */
 		_makeProgramInfoFromIndex(modV) {
 			let program = modV.shaderEnv.programs[this.programIndex];
 			let gl = modV.shaderEnv.gl;
 			this.programInfo = twgl.createProgramInfoFromProgram(gl, program);
 		}
 
+		/**
+		 * Create getters and setters on the Module for the given Uniforms
+		 * @private
+		 * @param {WebGL2RenderingContext} gl A reference to modV's internal GL Context
+		 */
 		_setupUniforms(gl) {
 			const settings = this.settings;
 			let programInfo = this.programInfo;
@@ -111,27 +139,12 @@ module.exports = function(modV) {
 				}
 			});
 		}
-	};
+	}
+
+	/**
+	 * @name ModuleShader
+	 * @memberOf modV
+	 * @type {ModuleShader}
+	 */
+	modV.prototype.ModuleShader = ModuleShader;
 };
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
