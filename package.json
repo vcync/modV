@@ -28,7 +28,7 @@
     "fs-promise": "^0.5.0",
     "lodash.isequal": "^4.5.0",
     "lodash.merge": "^4.6.0",
-    "meyda": "^3.0.4",
+    "meyda": "^4.0.2",
     "mkdirp": "^0.5.1",
     "modv-media-manager": "git+ssh://git@github.com:2xAA/modV-MediaManager.git",
     "mv": "^2.1.1",
@@ -61,7 +61,6 @@
     "json-loader": "^0.5.4",
     "loke-jsdoc-theme": "^2.1.0",
     "matchdep": "~0.1.2",
-    "modclean": "^2.1.0",
     "nw-builder": "^3.1.0",
     "webpack": "^2.3.3",
     "webpack-stream": "^3.2.0"
