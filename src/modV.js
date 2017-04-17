@@ -4,6 +4,7 @@ const threeInit = require('./three-env');
 const Layer = require('./Layer');
 const MIDI = require('./MIDI');
 const MM = require('./media-manager');
+const PaletteWorker = require('./paletteworker');
 require('./fragments/array-contains');
 require('script-loader!../libraries/beatdetektor.js');
 
@@ -66,7 +67,9 @@ class ModV extends EventEmitter2 {
 		this.outputWindows = [];
 		this.profileSelectors = [];
 		this.registeredMods = {};
-		this.workers = {};
+
+		/** @const {ModV.WorkersDataType} */
+		this.workers = this.createWorkers();
 
 		this.videoStream = document.createElement('video');
 		this.videoStream.autoplay = true;
@@ -155,8 +158,6 @@ class ModV extends EventEmitter2 {
 			video: [],
 			audio: []
 		};
-
-		this.setupWorkers();
 
 		this.emit('ready');
 	}
@@ -258,6 +259,49 @@ class ModV extends EventEmitter2 {
 
 		return layerIndex;
 	}
+
+	/** @return {ModV.WorkersDataType} */
+	createWorkers() {
+		const palette = new PaletteWorker();
+		palette.on(PaletteWorker.EventType.PALETTE_ADDED, this.paletteAddHandler.bind(this));
+		palette.on(PaletteWorker.EventType.PALETTE_UPDATED, this.paletteUpdateHandler.bind(this));
+
+		return {
+			palette,
+		};
+	}
+
+	/**
+	 * @protected
+	 * @param {string} data
+	 */
+	paletteAddHandler(id) {
+		if(!this.palettes.has(id)) {
+			this.palettes.set(id, {});
+		} else {
+			console.error('Palette with ID', id, 'already exists');
+		}
+	}
+
+	/**
+	 * @protected
+	 * @param {string} id
+	 * @param {*} currentColor
+	 * @param {*} currentStep
+	 * @todo Types
+	 */
+	paletteUpdateHandler(id, currentColor, currentStep) {
+		this.palettes.set(id, {
+			currentColor: currentColor,
+			currentStep: currentStep
+		});
+	}
+
+	/** @param {string} id */
+	removePalette(id) {
+		this.palettes.delete(id);
+		this.workers.palette.removePalette(id);
+	}
 }
 
 /**
@@ -273,5 +317,12 @@ ModV.LOCAL_STORAGE_KEY = 'modVoptions';
  * }}
  */
 ModV.OptionsDataType;
+
+/** 
+ * @typedef {{
+ *   palette: PaletteWorker,
+ * }}
+ */
+ModV.WorkersDataType;
 
 module.exports = ModV;

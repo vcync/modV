@@ -100,7 +100,7 @@ module.exports = function(modV) {
 
 			} else return;
 
-			modVSelf.setPalette(id, {
+			modVSelf.wotkers.palette.setPalette(id, {
 				colors: this.colors
 			});
 
@@ -110,7 +110,7 @@ module.exports = function(modV) {
 		this.removeAtIndex = (index) => {
 			var returnVal = this.colors.splice(index, 1);
 
-			modVSelf.setPalette(id, {
+			modVSelf.workers.palette.setPalette(id, {
 				colors: this.colors
 			});
 
@@ -148,7 +148,7 @@ module.exports = function(modV) {
 
 			};
 
-			modVSelf.createPalette(id, this.colors, this.timePeriod);
+			modVSelf.workers.palette.createPalette(id, this.colors, this.timePeriod);
 
 			Object.defineProperty(Module, this.variable, {
 				get: () => {
@@ -240,7 +240,7 @@ module.exports = function(modV) {
 			timerRangeNode.value = this.timePeriod;
 
 			timerRangeNode.addEventListener('input', () => {
-				modVSelf.setPalette(id, {
+				modVSelf.workers.palette.setPalette(id, {
 					timePeriod: timerRangeNode.value
 				});
 			});
