@@ -34,6 +34,7 @@
     "mv": "^2.1.1",
     "node-watch": "^0.4.0",
     "nodejs-websocket": "^1.7.0",
+    "nwjs-menu-browser": "^1.0.0",
     "open": "0.0.5",
     "reconnecting-websocket": "^3.0.3",
     "script-loader": "^0.7.0",
