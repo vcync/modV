@@ -1,4 +1,4 @@
-const Menu = require('../../libraries/menu.js');
+const Menu = require('nwjs-menu-browser');
 
 module.exports = function initContextMenus() {
 	if(!window.nw) {
