@@ -1,5 +1,5 @@
 const isEqual = require('lodash.isequal');
-const Menu = require('../../libraries/menu.js');
+const Menu = require('nwjs-menu-browser');
 
 if(!window.nw) {
 	var nw = {};
