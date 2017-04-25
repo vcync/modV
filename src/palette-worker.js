@@ -1,10 +1,16 @@
 const EventEmitter2 = require('eventemitter2').EventEmitter2;
 
+/**
+ * PaletteWorker
+ */
 class PaletteWorker extends EventEmitter2 {
   constructor() {
     super();
 
-    /** @private {Worker} */
+    /**
+     * @private
+     * @type {Worker}
+     */
     this._worker = new Worker('palette-worker.js');
     this._worker.addEventListener('message', this.messageHandler.bind(this));
   }

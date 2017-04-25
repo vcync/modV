@@ -4,10 +4,23 @@ const threeInit = require('./three-env');
 const Layer = require('./Layer');
 const MIDI = require('./MIDI');
 const MM = require('./media-manager');
-const PaletteWorker = require('./paletteworker');
+const PaletteWorker = require('./palette-worker');
 require('./fragments/array-contains');
 require('script-loader!../libraries/beatdetektor.js');
 
+
+/**
+ * ModV instance options
+ * @typedef {Object} OptionsDataType
+ * @property {string} baseUrl
+ * @property {string} controlDomain
+ */
+
+/**
+ * Object contains all modV workers
+ * @typedef {Object} WorkersDataType
+ * @property {PaletteWorker} palette
+ */
 
 /**
  * modV
@@ -43,7 +56,7 @@ class ModV extends EventEmitter2 {
 		/** 
 		 * Set user options
 		 * @todo different datatypes for default options and user-defined options
-		 * @const {ModV.OptionsDataType} 
+		 * @const {OptionsDataType} 
 		 */
 		this.options = Object.assign(this.defaultOptions, options);
 
@@ -55,7 +68,10 @@ class ModV extends EventEmitter2 {
 		 * @type {Array<Layer>}
 		 */
 		this.layers = [];
-		/** @type {number} Currently active layer index */
+		/** 
+		 * Currently active layer index
+		 * @type {number}
+		 */
 		this.activeLayer = 0;
 
 		this.activeModules = {};
@@ -68,7 +84,7 @@ class ModV extends EventEmitter2 {
 		this.profileSelectors = [];
 		this.registeredMods = {};
 
-		/** @const {ModV.WorkersDataType} */
+		/** @const {WorkersDataType} */
 		this.workers = this.createWorkers();
 
 		this.videoStream = document.createElement('video');
@@ -217,7 +233,7 @@ class ModV extends EventEmitter2 {
 		return document.getElementById('app_templates').import;
 	}
 
-	/** @return {ModV.OptionsDataType} */
+	/** @return {OptionsDataType} */
 	get defaultOptions() {
 		const controlDomain = `${location.protocol}//${location.host}`;
 
@@ -260,7 +276,7 @@ class ModV extends EventEmitter2 {
 		return layerIndex;
 	}
 
-	/** @return {ModV.WorkersDataType} */
+	/** @return {WorkersDataType} */
 	createWorkers() {
 		const palette = new PaletteWorker();
 		palette.on(PaletteWorker.EventType.PALETTE_ADDED, this.paletteAddHandler.bind(this));
@@ -273,7 +289,7 @@ class ModV extends EventEmitter2 {
 
 	/**
 	 * @protected
-	 * @param {string} data
+	 * @param {string} id
 	 */
 	paletteAddHandler(id) {
 		if(!this.palettes.has(id)) {
@@ -309,20 +325,5 @@ class ModV extends EventEmitter2 {
  * @const {string}
  */
 ModV.LOCAL_STORAGE_KEY = 'modVoptions';
-
-/** 
- * @typedef {{
- *   baseURL: string,
- *   controlDomain: string,
- * }}
- */
-ModV.OptionsDataType;
-
-/** 
- * @typedef {{
- *   palette: PaletteWorker,
- * }}
- */
-ModV.WorkersDataType;
 
 module.exports = ModV;

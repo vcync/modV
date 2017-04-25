@@ -1,6 +1,14 @@
+
+/** 
+ * MIDI
+ */
 class MIDI {
 	constructor(modV) {
-		/** @private {ModV} Parent ModV instance */
+		/**
+		 * Parent ModV instance
+		 * @private 
+		 * @type {ModV}
+		 */
 		this._modV = modV;
 		/** @type {MIDIAccess} */
 		this.access = null;
