@@ -4,9 +4,23 @@ const threeInit = require('./three-env');
 const Layer = require('./Layer');
 const MIDI = require('./MIDI');
 const MM = require('./media-manager');
+const PaletteWorker = require('./palette-worker');
 require('./fragments/array-contains');
 require('script-loader!../libraries/beatdetektor.js');
 
+
+/**
+ * ModV instance options
+ * @typedef {Object} OptionsDataType
+ * @property {string} baseUrl
+ * @property {string} controlDomain
+ */
+
+/**
+ * Object contains all modV workers
+ * @typedef {Object} WorkersDataType
+ * @property {PaletteWorker} palette
+ */
 
 /**
  * modV
@@ -42,7 +56,7 @@ class ModV extends EventEmitter2 {
 		/** 
 		 * Set user options
 		 * @todo different datatypes for default options and user-defined options
-		 * @const {ModV.OptionsDataType} 
+		 * @const {OptionsDataType} 
 		 */
 		this.options = Object.assign(this.defaultOptions, options);
 
@@ -54,7 +68,10 @@ class ModV extends EventEmitter2 {
 		 * @type {Array<Layer>}
 		 */
 		this.layers = [];
-		/** @type {number} Currently active layer index */
+		/** 
+		 * Currently active layer index
+		 * @type {number}
+		 */
 		this.activeLayer = 0;
 
 		this.activeModules = {};
@@ -66,7 +83,9 @@ class ModV extends EventEmitter2 {
 		this.outputWindows = [];
 		this.profileSelectors = [];
 		this.registeredMods = {};
-		this.workers = {};
+
+		/** @const {WorkersDataType} */
+		this.workers = this.createWorkers();
 
 		this.videoStream = document.createElement('video');
 		this.videoStream.autoplay = true;
@@ -156,8 +175,6 @@ class ModV extends EventEmitter2 {
 			audio: []
 		};
 
-		this.setupWorkers();
-
 		this.emit('ready');
 	}
 
@@ -216,7 +233,7 @@ class ModV extends EventEmitter2 {
 		return document.getElementById('app_templates').import;
 	}
 
-	/** @return {ModV.OptionsDataType} */
+	/** @return {OptionsDataType} */
 	get defaultOptions() {
 		const controlDomain = `${location.protocol}//${location.host}`;
 
@@ -258,6 +275,49 @@ class ModV extends EventEmitter2 {
 
 		return layerIndex;
 	}
+
+	/** @return {WorkersDataType} */
+	createWorkers() {
+		const palette = new PaletteWorker();
+		palette.on(PaletteWorker.EventType.PALETTE_ADDED, this.paletteAddHandler.bind(this));
+		palette.on(PaletteWorker.EventType.PALETTE_UPDATED, this.paletteUpdateHandler.bind(this));
+
+		return {
+			palette,
+		};
+	}
+
+	/**
+	 * @protected
+	 * @param {string} id
+	 */
+	paletteAddHandler(id) {
+		if(!this.palettes.has(id)) {
+			this.palettes.set(id, {});
+		} else {
+			console.error('Palette with ID', id, 'already exists');
+		}
+	}
+
+	/**
+	 * @protected
+	 * @param {string} id
+	 * @param {*} currentColor
+	 * @param {*} currentStep
+	 * @todo Types
+	 */
+	paletteUpdateHandler(id, currentColor, currentStep) {
+		this.palettes.set(id, {
+			currentColor: currentColor,
+			currentStep: currentStep
+		});
+	}
+
+	/** @param {string} id */
+	removePalette(id) {
+		this.palettes.delete(id);
+		this.workers.palette.removePalette(id);
+	}
 }
 
 /**
@@ -265,13 +325,5 @@ class ModV extends EventEmitter2 {
  * @const {string}
  */
 ModV.LOCAL_STORAGE_KEY = 'modVoptions';
-
-/** 
- * @typedef {{
- *   baseURL: string,
- *   controlDomain: string,
- * }}
- */
-ModV.OptionsDataType;
 
 module.exports = ModV;

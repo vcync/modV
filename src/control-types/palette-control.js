@@ -29,7 +29,7 @@ module.exports = function(modV) {
 					if(!this.id || !this.modV) return;
 					timePeriod = parseInt(input);
 
-					this.modV.setPalette(this.id, {
+					this.modV.workers.palette.setPalette(this.id, {
 						timePeriod: timePeriod
 					});
 				}
@@ -43,7 +43,7 @@ module.exports = function(modV) {
 			this.colors = settings.colors || this.colors;
 			this.timePeriod = settings.timePeriod || this.timePeriod;
       
-      modV.createPalette(id, this.colors, this.timePeriod);
+      modV.workers.palette.createPalette(id, this.colors, this.timePeriod);
 
 			Object.defineProperty(Module, this.variable, {
 				get: () => {
@@ -132,7 +132,7 @@ module.exports = function(modV) {
 
 			timerRangeNode.addEventListener('input', () => {
 				this.timePeriod = timerRangeNode.value;
-				modV.setPalette(id, {
+				modV.workers.palette.setPalette(id, {
 					timePeriod: timerRangeNode.value
 				});
 			});
@@ -173,7 +173,7 @@ module.exports = function(modV) {
 			syncToBPMCheckbox.checked = false;
 			syncToBPMCheckbox.addEventListener('change', () => {
 				console.warn('TODO: make BPM work in worker');
-				modV.setPalette(id, {
+				modV.workers.palette.setPalette(id, {
 					useBPM: syncToBPMCheckbox.checked
 				});
 			});
@@ -255,7 +255,7 @@ module.exports = function(modV) {
 
 			} else return;
 
-			this.modV.setPalette(this.id, {
+			this.modV.workers.palette.setPalette(this.id, {
 				colors: this.colors
 			});
 
@@ -265,7 +265,7 @@ module.exports = function(modV) {
 		removeAtIndex(index) {
 			var returnVal = this.colors.splice(index, 1);
 
-			this.modV.setPalette(this.id, {
+			this.modV.workers.palette.setPalette(this.id, {
 				colors: this.colors
 			});
 
