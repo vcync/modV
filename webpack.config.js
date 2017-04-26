@@ -6,6 +6,14 @@ module.exports = {
   output: {
     filename: '[name].js'
   },
+  module: {
+    rules: [
+      {
+        test: /\.css$/,
+        use: [ 'style-loader', 'css-loader' ]
+      }
+    ]
+  },
   plugins: [
     new webpack.ProvidePlugin({
       'forIn': __dirname + '/src/fragments/for-in.js'

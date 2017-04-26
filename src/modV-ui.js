@@ -3,7 +3,8 @@
 const attachResizeHandles = require('./ui-resize/attach');
 const ContextMenuHandler = require('./context-menu-handler');
 const initContextMenus = require('./context-menus');
-const Menu = require('../libraries/menu.js');
+const Menu = require('nwjs-menu-browser');
+require('../node_modules/nwjs-menu-browser/dist/nwjs-menu-browser.css');
 
 if(!window.nw) {
 	var nw = {};
