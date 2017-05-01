@@ -28,7 +28,7 @@
     "fs-promise": "^0.5.0",
     "lodash.isequal": "^4.5.0",
     "lodash.merge": "^4.6.0",
-    "meyda": "^4.0.2",
+    "meyda": "^4.0.5",
     "mkdirp": "^0.5.1",
     "modv-media-manager": "git+ssh://git@github.com:2xAA/modV-MediaManager.git",
     "mv": "^2.1.1",
