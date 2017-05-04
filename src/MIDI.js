@@ -1,3 +1,5 @@
+const {forIn} = require('./utils');
+
 
 /** 
  * MIDI

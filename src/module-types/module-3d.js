@@ -33,7 +33,7 @@ module.exports = function(modV) {
 		 * @param  {THREE.Camera}   camera        The Camera Object stored in the Module3D instance
 		 * @param  {THREE.Material} material      modV's output canvas material
 		 * @param  {THREE.Texture}  texture       modV's output canvas texture
-		 * @param  {Object}         meydaFeatures Requested Meyda features
+		 * @param  {Array<MeydaFeature>}          meydaFeatures Requested Meyda features
 		 */
 		draw(scene, camera, material, texture, meydaFeatures) {} //jshint ignore:line
 

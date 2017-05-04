@@ -1,8 +1,7 @@
 /* globals Sortable */
 
 const EventEmitter2 = require('eventemitter2').EventEmitter2;
-const swapElements = require('./fragments/swap-elements');
-const replaceAll = require('./fragments/replace-all');
+const { forIn, replaceAll, swapElements } = require('./utils');
 
 
 /**

@@ -1,4 +1,4 @@
-const forIn = require('./fragments/for-in');
+const {forIn} = require('./utils');
 
 let ProfileSelector = function(callbacks) {
 	let self = this;

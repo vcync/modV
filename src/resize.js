@@ -1,3 +1,6 @@
+const {forIn} = require('./utils');
+
+
 module.exports = function resize() {
 
 	let largestWindow = this.getLargestWindow();

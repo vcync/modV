@@ -1,6 +1,10 @@
-const classListContainsAll = require('../fragments/class-list-contains-all');
-const classListContainsAny = require('../fragments/class-list-contains-any');
+const { classListContainsAll, classListContainsAny } = require('../utils');
 
+/**
+ * @param {Element} node
+ * @param {Object} hook
+ * @todo Typedef for Hook
+ */
 module.exports = function nodeMatchesHook(node, hook) {
 	if(!node || !hook) return false;
 

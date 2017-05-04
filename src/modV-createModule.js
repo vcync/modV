@@ -1,4 +1,5 @@
-const replaceAll = require('./fragments/replace-all');
+const {replaceAll} = require('./utils');
+
 
 module.exports = function(modV) {
 
