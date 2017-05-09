@@ -1,6 +1,7 @@
 //jshint worker:true
 
 const ci = require('correcting-interval');
+const {forIn} = require('../utils');
 const Palette = require('./Palette.js');
 
 let timer;

@@ -1,5 +1,6 @@
 const ControlError = require('./control-error');
 const Control = require('./control');
+const {forIn} = require('../utils');
 
 module.exports = function(modV) {
 	modV.prototype.CompositeOperationControl = class CompositeOperationControl extends Control {

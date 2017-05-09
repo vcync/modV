@@ -1,3 +1,4 @@
+const {forIn} = require('./utils');
 const Ajv = require('ajv');
 const makeSchema = function(props) {
 	return {

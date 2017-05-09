@@ -19,7 +19,7 @@ module.exports = function(modV) {
 		 * @param  {HTMLCanvas}               canvas        The Canvas to draw to
 		 * @param  {CanvasRenderingContext2D} context       The Context of the Canvas
 		 * @param  {HTMLVideoElement}         video         The video stream requested by modV
-		 * @param  {Object}                   meydaFeatures Requested Meyda features
+		 * @param  {Array<MeydaFeatures>}     meydaFeatures Requested Meyda features
 		 * @param  {Meyda}                    meyda         The Meyda instance (for Windowing functions etc.)
 		 * @param  {DOMHighResTimeStamp}      delta         Timestamp returned by requestAnimationFrame
 		 * @param  {Number}                   bpm           The detected or tapped BPM

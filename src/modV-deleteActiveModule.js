@@ -1,3 +1,6 @@
+const {forIn} = require('./utils');
+
+
 module.exports = function(modV) {
 
 	modV.prototype.deleteActiveModule = function(Module) {
