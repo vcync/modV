@@ -11,7 +11,24 @@ binaries
 
 /nwjs/build
 /nwjs/cache
-npm-debug.log
+*npm-debug.log
 options.json
 
 /docs/*
+
+*.DS_Store
+/old/dist/
+/oldnode_modules
+/oldbinaries
+
+/old/media/*
+!/old/media/default/
+
+/old/media/default/*
+!/old/media/default/palette/
+
+/old/nwjs/build
+/old/nwjs/cache
+/old/options.json
+
+/old/docs/*

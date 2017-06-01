@@ -1,64 +1,30 @@
-# modV
-modV is a modular audio visualisation environment written in JavaScript and runs in Google Chrome.
+# modv
 
-All documentation so far is available in [this repo's Wiki](https://github.com/2xAA/modV/wiki). There's more to come!
+> Audio visualisation environment
 
-## Sample images
-[![](https://github.com/2xAA/modV/raw/master/docs/example-images/1.jpg)](https://github.com/2xAA/modV/raw/master/docs/example-images/1.png)
-[![](https://github.com/2xAA/modV/raw/master/docs/example-images/2.jpg)](https://github.com/2xAA/modV/raw/master/docs/example-images/2.png)
-[![](https://github.com/2xAA/modV/raw/master/docs/example-images/3.jpg)](https://github.com/2xAA/modV/raw/master/docs/example-images/3.png)
-[![](https://github.com/2xAA/modV/raw/master/docs/example-images/4.jpg)](https://github.com/2xAA/modV/raw/master/docs/example-images/4.png)
-[![](https://github.com/2xAA/modV/raw/master/docs/example-images/5.jpg)](https://github.com/2xAA/modV/raw/master/docs/example-images/5.png)
-[![](https://github.com/2xAA/modV/raw/master/docs/example-images/6.jpg)](https://github.com/2xAA/modV/raw/master/docs/example-images/6.png)
-[![](https://github.com/2xAA/modV/raw/master/docs/example-images/7.jpg)](https://github.com/2xAA/modV/raw/master/docs/example-images/7.png)
+## Build Setup
 
+``` bash
+# install dependencies
+npm install
 
-## Contribution
-modV is open to contribution. Currently the project needs (in order of priority):  
-* full re-write for ES6
-* a better UI
-* work on the mediaManager and loading/saving Modules
+# serve with hot reload at localhost:8080
+npm run dev
 
-If you can help with any of these, please submit a PR and/or issue.
+# build for production with minification
+npm run build
 
-## Acknowledgements
-Thank you to:
+# build for production and view the bundle analyzer report
+npm run build --report
 
-* Hugh Rawlinson, Nevo Segal and Jakub Fiala for the incredible audio analysis engine, [meyda](https://github.com/hughrawlinson/meyda)
-* [Dario Villanueva](http://alolo.co) for his advice and introduction to live visuals which inspired this whole project
-* Lebedev Konstantin for [Sortable](https://github.com/RubaXa/Sortable)
-* Charles J. Cliffe for [BeatDetektor](https://github.com/cjcliffe/beatdetektor)
-* mrdoob for [THREE.js](https://threejs.org/)
+# run unit tests
+npm run unit
 
+# run e2e tests
+npm run e2e
 
-## Requirements
-- [node](https://nodejs.org/) (we're developing on [lts/boron](https://nodejs.org/en/blog/release/v6.9.0/) (6.9.X) so we recommend that) 
-- [Google Chrome desktop](https://www.google.com/chrome/browser/desktop/) (not required for [standalone build](https://github.com/2xAA/modV#building-standalone-application))
+# run all tests
+npm test
+```
 
-## Installation
-1. Download (clone or zip)
-* Open a terminal, navigate to your downloaded folder (for example; ```cd ~/Downloads/modV/```)
-* Run ```npm install```, this will install modV's required packages
-* Once the installation has finished, run ```npm start```
-* Open Chrome and go to ```http://localhost:3131```
-
-## OS Specifics
-
-### Windows
-- You must run either Command Prompt or PowerShell with administrative privileges for the media folder to be symlinked.  
-To do this, find either cmd or PowerShell in your start menu, right click and select 'Run as administrator.'.
-- VB Cable is recommended to route audio to the browser, download that [here](http://vb-audio.pagesperso-orange.fr/Cable/)
-
-### OS X/macOS
-- SoundFlower is recommended to route audio to the browser, download that [here](https://github.com/mattingalls/Soundflower/releases/)
-
-### Linux
-- Jack may be the way to go for audio routing to the browser, but I have not tested this. Please submit a PR for this README if you have any information on this.
-
-## Building standalone application
-modV can also be built using [NWJS](http://nwjs.io/) as a standalone application.
-
-To build modV make sure you have already run ```npm install``` and then run ```gulp build-nwjs```. After it has finished building your application should appear in ./nwjs/build/modV.
-
-By default the build script will build for OS X 64-bit and Windows 64-bit. To change this, edit the ```build-nwjs``` task in ```gulpfile.js``` and modify the platform target array.  
-For more information, please read [the nw-builder documentation](https://github.com/nwjs/nw-builder).
+For detailed explanation on how things work, checkout the [guide](http://vuejs-templates.github.io/webpack/) and [docs for vue-loader](http://vuejs.github.io/vue-loader).
