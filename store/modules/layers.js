@@ -46,6 +46,14 @@ const actions = {
 
     if(Layer.collapsed) commit('uncollapse', { layerIndex });
     else commit('collapse', { layerIndex });
+  },
+  addModuleToLayer({ commit, state }, { module, layerIndex }) {
+    commit('addModuleToLayer', { module, layerIndex });
+    commit(
+      'modVModules/setModuleFocus',
+      { activeModuleName: module.info.name },
+      { root: true }
+    );
   }
 };
 

@@ -72,15 +72,15 @@
       ...mapActions('layers', [
         'addLayer',
         'toggleLocked',
-        'toggleCollapsed'
+        'toggleCollapsed',
+        'addModuleToLayer'
       ]),
       ...mapActions('modVModules', [
         'createActiveModule'
       ]),
       ...mapMutations('layers', [
         'setLayerName',
-        'setLayerFocus',
-        'addModuleToLayer'
+        'setLayerFocus'
       ]),
       startNameEdit() {
         const node = this.$el.querySelector('.title');

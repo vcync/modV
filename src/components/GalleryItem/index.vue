@@ -9,7 +9,7 @@
 </template>
 
 <script>
-  import { mapActions, mapGetters, mapMutations } from 'vuex';
+  import { mapActions, mapGetters } from 'vuex';
 
   export default {
     name: 'galleryItem',
@@ -32,7 +32,7 @@
       if('init' in this.Module) this.Module.init({ width: 50, height: 50 });
     },
     methods: {
-      ...mapMutations('layers', [
+      ...mapActions('layers', [
         'addModuleToLayer'
       ]),
       ...mapActions('modVModules', [

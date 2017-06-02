@@ -1,5 +1,5 @@
 <template>
-  <div class="pure-u-1-1 active-item" tabindex="0">
+  <div class="pure-u-1-1 active-item" :class='{current: name === focusedModuleName}' tabindex="0" @focus='focusActiveModule'>
     <div class="pure-g">
       <!-- <canvas class="preview"></canvas> --><!-- TODO: create preview option on mouseover item -->
       <div class="pure-u-1-1 title">
@@ -67,12 +67,17 @@
 </template>
 
 <script>
+  import { mapGetters, mapMutations } from 'vuex';
+
   export default {
     name: 'activeItem',
     props: [
       'ModuleIn'
     ],
     computed: {
+      ...mapGetters('modVModules', [
+        'focusedModuleName'
+      ]),
       name() {
         const Module = this.ModuleIn;
         if(!Module) return '';
@@ -82,6 +87,9 @@
       }
     },
     methods: {
+      ...mapMutations('modVModules', [
+        'setModuleFocus'
+      ]),
       inputOpacity(e) {
         console.log(e);
       },
@@ -90,6 +98,9 @@
       },
       changeBlendmode(e) {
         console.log(e);
+      },
+      focusActiveModule() {
+        this.setModuleFocus({ activeModuleName: this.name });
       }
     }
   };

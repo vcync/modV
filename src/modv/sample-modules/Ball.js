@@ -89,57 +89,63 @@ class Ball extends Module2D {
     // <
     const controls = [];
 
-    // controls.push(new modV.CheckboxControl({
-    //   variable: 'wrap',
-    //   label: 'Wrap',
-    //   checked: false
-    // }));
+    controls.push({
+      type: 'checkboxControl',
+      variable: 'wrap',
+      label: 'Wrap',
+      checked: false
+    });
 
-    // controls.push(new modV.RangeControl({
-    //   variable: 'amount',
-    //   label: 'Amount',
-    //   varType: 'int',
-    //   min: 0,
-    //   max: 50,
-    //   step: 1,
-    //   default: 15
-    // }));
+    controls.push({
+      type: 'rangeControl',
+      variable: 'amount',
+      label: 'Amount',
+      varType: 'int',
+      min: 0,
+      max: 50,
+      step: 1,
+      default: 15
+    });
 
-    // controls.push(new modV.RangeControl({
-    //   variable: 'speed',
-    //   label: 'Speed',
-    //   varType: 'int',
-    //   min: 1,
-    //   max: 50,
-    //   step: 1,
-    //   default: 5
-    // }));
+    controls.push({
+      type: 'rangeControl',
+      variable: 'speed',
+      label: 'Speed',
+      varType: 'int',
+      min: 1,
+      max: 50,
+      step: 1,
+      default: 5
+    });
 
-    // controls.push(new modV.RangeControl({
-    //   variable: 'size',
-    //   label: 'Size',
-    //   varType: 'int',
-    //   min: 1,
-    //   max: 50,
-    //   step: 1,
-    //   default: 2
-    // }));
+    controls.push({
+      type: 'rangeControl',
+      variable: 'size',
+      label: 'Size',
+      varType: 'int',
+      min: 1,
+      max: 50,
+      step: 1,
+      default: 2
+    });
 
-    // controls.push(new modV.RangeControl({
-    //   variable: 'intensity',
-    //   label: 'RMS/ZCR Intensity',
-    //   varType: 'int',
-    //   min: 0,
-    //   max: 30,
-    //   step: 1,
-    //   default: 15
-    // }));
+    controls.push({
+      type: 'rangeControl',
+      variable: 'intensity',
+      label: 'RMS/ZCR Intensity',
+      varType: 'int',
+      min: 0,
+      max: 30,
+      step: 1,
+      default: 15
+    });
 
-    // controls.push(new modV.CheckboxControl({
-    //   variable: 'soundType',
-    //   label: 'RMS (unchecked) / ZCR (checked)',
-    //   checked: false
-    // }));
+    controls.push({
+      type: 'checkboxControl',
+      variable: 'soundType',
+      label: 'RMS (unchecked) / ZCR (checked)',
+      checked: false
+    });
 
     // controls.push(new modV.PaletteControl({
     //   variable: 'colour',
