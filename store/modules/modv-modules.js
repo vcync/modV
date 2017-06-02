@@ -27,7 +27,8 @@ const state = {
   registered: {
     Waveform,
     Ball
-  }
+  },
+  focusedModule: null
 };
 
 function generateName(name) {
@@ -48,7 +49,9 @@ function generateName(name) {
 // getters
 const getters = {
   registeredModules: state => state.registered,
-  activeModules: state => state.active
+  activeModules: state => state.active,
+  focusedModule: state => state.active[state.focusedModule],
+  focusedModuleName: state => state.focusedModule
 };
 
 // actions
@@ -74,6 +77,9 @@ const mutations = {
   removeActiveModule(stateIn, { moduleName }) {
     const state = stateIn;
     delete state.active[moduleName];
+  },
+  setModuleFocus(state, { activeModuleName }) {
+    state.focusedModule = activeModuleName;
   }
 };
 
