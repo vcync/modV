@@ -48,7 +48,7 @@ const actions = {
     else commit('collapse', { layerIndex });
   },
   addModuleToLayer({ commit, state }, { module, layerIndex }) {
-    commit('addModuleToLayer', { module, layerIndex });
+    commit('addModuleToLayer', { moduleName: module.info.name, layerIndex });
     commit(
       'modVModules/setModuleFocus',
       { activeModuleName: module.info.name },
@@ -59,14 +59,14 @@ const actions = {
 
 // mutations
 const mutations = {
-  addModuleToLayer(state, { module, layerIndex }) {
+  addModuleToLayer(state, { moduleName, layerIndex }) {
     const Layer = state.layers[layerIndex];
     if(Layer.locked) return;
 
     if (!Layer) {
       throw `Cannot find Layer with index ${layerIndex}`;
     } else {
-      Layer.addModule(module);
+      Layer.addModule(moduleName);
     }
   },
   addLayer(state, { layer }) {

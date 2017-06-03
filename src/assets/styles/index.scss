@@ -361,16 +361,6 @@ canvas {
 	display: inline-block;
 }
 
-select.composite-operations:hover {
-	height: 68px;
-}
-
-select.composite-operations {
-	color: #000;
-	height: 18px;
-	transition: height 300ms;
-}
-
 /* Palette Control */
 div.palette div.swatch {
 	display: inline-block;

@@ -15,6 +15,7 @@
   },
   "dependencies": {
     "eventemitter2": "^4.1.0",
+    "meyda": "^4.0.5",
     "vue": "^2.3.3",
     "vuex": "^2.3.1"
   },

@@ -28,6 +28,18 @@ new Vue({
   },
   mounted() {
     modV.start();
+
+    const modules = [
+      'Waveform',
+      'Ball',
+      'Webcam'
+    ];
+
+    modules.forEach((fileName) => {
+      System.import(`@/modv/sample-modules/${fileName}`).then((Module) => {
+        modV.register(Module.default);
+      });
+    });
     attachResizeHandles(modV);
   }
 });

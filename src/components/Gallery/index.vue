@@ -5,6 +5,7 @@
       <gallery-item
         v-for='(module, key) in modules'
         :ModuleIn='module'
+        :moduleName='key'
         :key='key'
         :class="{ hidden: !search(key, phrase) }"
       ></gallery-item>
@@ -27,7 +28,7 @@
       };
     },
     computed: mapGetters('modVModules', {
-      modules: 'registeredModules'
+      modules: 'registry'
     }),
     methods: {
       search(textIn, termIn) {
