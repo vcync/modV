@@ -1,33 +1,13 @@
-import Ball from '@/modv/sample-modules/Ball';
+import store from '../index';
+import Vue from 'vue';
 
-class Waveform {
-  constructor() {
-    this.info = {
-      name: 'Waveform',
-      author: '2xAA',
-      version: '1.0'
-    };
-
-    this.hue = 0;
-  }
-
-  draw(canvas, context) {
-    const ctx = context;
-
-    ctx.fillStyle = `hsl(${this.hue}, 50%, 50%)`;
-    ctx.fillRect(0, 0, canvas.width, canvas.height);
-
-    this.hue += 3;
-    if (this.hue > 360) this.hue = 0;
-  }
-}
+const externalState = {
+  active: {}
+};
 
 const state = {
   active: {},
-  registered: {
-    Waveform,
-    Ball
-  },
+  registry: {},
   focusedModule: null
 };
 
@@ -48,35 +28,62 @@ function generateName(name) {
 
 // getters
 const getters = {
-  registeredModules: state => state.registered,
+  registry: state => state.registry,
   activeModules: state => state.active,
-  focusedModule: state => state.active[state.focusedModule],
-  focusedModuleName: state => state.focusedModule
+  focusedModule: state => externalState.active[state.focusedModule],
+  focusedModuleName: state => state.focusedModule,
+  getActiveModule: () => moduleName => externalState.active[moduleName]
 };
 
 // actions
 const actions = {
-  createActiveModule({ commit, state }, { moduleName }) {
-    const module = new state.registered[moduleName]();
-    const newModuleName = generateName(module.info.name);
+  createActiveModule({ commit, state }, { moduleName, appendToName, skipInit }) {
+    const module = new state.registry[moduleName]();
+    let newModuleName = generateName(module.info.name);
     module.info.name = newModuleName;
+    module.info.alpha = 1;
+    module.info.originalName = moduleName;
+    module.info.enabled = true;
+    module.info.compositeOperation = 'normal';
 
-    if('init' in module) module.init({ width: 50, height: 50 });
+    const windowRef = store.getters['windows/largestWindowReference'];
 
-    commit('addActiveModule', { module });
+    if('init' in module && !skipInit) module.init({ width: windowRef.innerWidth, height: windowRef.innerHeight });
+
+    if('meyda' in module.info) {
+      if(Array.isArray(module.info.meyda)) {
+        module.info.meyda.forEach(feature =>
+          store.commit('meyda/addFeature', { feature })
+        );
+      }
+    }
+
+    newModuleName = `${newModuleName}${appendToName || ''}`;
+    commit('addActiveModule', { module, moduleName: newModuleName });
     return module;
+  },
+  register({ commit, state }, { Module }) {
+    const instantiated = new Module();
+    const moduleName = instantiated.info.name;
+    commit('addModuleToRegistry', { Module, moduleName });
   }
 };
 
 // mutations
 const mutations = {
-  addActiveModule(stateIn, { module }) {
-    const state = stateIn;
-    state.active[module.info.name] = module;
+  addModuleToRegistry(state, { Module, moduleName }) {
+    Vue.set(state.registry, moduleName, Module);
   },
-  removeActiveModule(stateIn, { moduleName }) {
-    const state = stateIn;
+  removeModuleFromRegistry(state, { moduleName }) {
+    delete state.registry[moduleName];
+  },
+  addActiveModule(state, { module, moduleName }) {
+    Vue.set(state.active, moduleName, moduleName);
+    externalState.active[moduleName] = module;
+  },
+  removeActiveModule(state, { moduleName }) {
     delete state.active[moduleName];
+    delete externalState.active[moduleName];
   },
   setModuleFocus(state, { activeModuleName }) {
     state.focusedModule = activeModuleName;

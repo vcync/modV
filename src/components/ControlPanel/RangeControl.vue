@@ -40,6 +40,9 @@
       variable() {
         return this.control.variable;
       },
+      varType() {
+        return this.control.varType;
+      },
       min() {
         return this.control.min;
       },
@@ -54,14 +57,18 @@
       }
     },
     beforeMount() {
-      this.value = this.defaultValue;
+      this.value = this.module[this.variable];
+      if(typeof this.value === 'undefined') this.value = this.defaultValue;
     },
     watch: {
       module() {
         this.value = this.module[this.variable];
       },
       value() {
-        this.module[this.variable] = this.value;
+        let val;
+        if(this.varType === 'int') val = parseInt(this.value, 10);
+        else if(this.varType === 'float') val = parseFloat(this.value, 10);
+        this.module[this.variable] = val;
       }
     }
   };

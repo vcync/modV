@@ -44,7 +44,8 @@
       }
     },
     beforeMount() {
-      this.value = this.defaultValue;
+      this.value = this.module[this.variable];
+      if(typeof this.value === 'undefined') this.value = this.defaultValue;
     },
     watch: {
       module() {

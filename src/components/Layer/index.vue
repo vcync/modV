@@ -32,7 +32,7 @@
     >
       <active-module
         v-for='module in modules'
-        :ModuleIn='module'
+        :moduleName='module'
         :key='module'
       ></active-module>
     </div>

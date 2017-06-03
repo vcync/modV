@@ -1,18 +1,18 @@
 import WindowController from '@/modv/window-controller';
+import getLargestWindow from '@/modv/get-largest-window';
 
 const state = {
   windows: []
 };
 
 // We can't store Window Objects in Vuex because the Observer traversal exceeds the stack size
-const externalState = {};
-
+const externalState = [];
 // getters
 const getters = {
   allWindows: state => state.windows,
-  windowReference: () => (index) => {
-    if(index in externalState) return externalState[index];
-    return false;
+  windowReference: () => index => externalState[index],
+  largestWindowReference() {
+    return getLargestWindow(state.windows) || externalState[0];
   }
 };
 
@@ -37,11 +37,13 @@ const mutations = {
     const index = state.windows.length;
     windowController.window = index;
     state.windows.push(windowController);
-    externalState[index] = windowRef;
+    externalState.push(windowRef);
+    getters.largestWindowReference();
   },
   removeWindow(state, { windowRef }) {
     state.windows.splice(windowRef, 1);
-    delete externalState[windowRef];
+    externalState.splice(windowRef, 1);
+    getters.largestWindowReference();
   }
 };
 

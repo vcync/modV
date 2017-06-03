@@ -226,14 +226,12 @@ class Ball extends Module2D {
     }
   }
 
-  draw(canvas, ctx/* , vid, features*/) {
-    // if(this.soundType) {
-    //   this.analysed = features.zcr/10 * this.intensity;
-    // } else {
-    //   this.analysed = (features.rms * 10) * this.intensity;
-    // }
-
-    this.analysed = 2;
+  draw(canvas, ctx, vid, features) {
+    if(this.soundType) {
+      this.analysed = (features.zcr / 10) * this.intensity;
+    } else {
+      this.analysed = (features.rms * 10) * this.intensity;
+    }
 
     for(let i = 0; i < this.amount; i += 1) {
       this.balls[i].speed = this.speed;

@@ -8,6 +8,7 @@
         :is='control.type'
         :module='focusedModule'
         :control='control'
+        :key='control'
       ></component>
     </div>
   </div>

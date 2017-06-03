@@ -18,18 +18,26 @@
         canvas: false,
         context: false,
         Module: false,
-        raf: false
+        raf: false,
+        appendToName: '-gallery'
       };
     },
     props: [
-      'ModuleIn'
+      'ModuleIn',
+      'moduleName'
     ],
     mounted() {
       this.canvas = this.$el.querySelector('canvas.preview');
       this.context = this.canvas.getContext('2d');
 
-      this.Module = new this.ModuleIn();
-      if('init' in this.Module) this.Module.init({ width: 50, height: 50 });
+      this.createActiveModule({
+        moduleName: this.moduleName,
+        appendToName: this.appendToName,
+        skipInit: true
+      }).then((Module) => {
+        this.Module = Module;
+        if('init' in this.Module) this.Module.init({ width: this.canvas.width, height: this.canvas.height });
+      });
     },
     methods: {
       ...mapActions('layers', [
@@ -41,7 +49,8 @@
       draw() {
         this.raf = requestAnimationFrame(this.draw);
         this.context.clearRect(0, 0, this.canvas.width, this.canvas.height);
-        this.Module.draw(this.canvas, this.context);
+        const features = this.$modV.meyda.get(this.$modV.audioFeatures);
+        this.Module.draw(this.canvas, this.context, this.$modV.videoStream, features);
       },
       mouseover(e) {
         if(!e.target.classList.contains('preview')) return;
@@ -55,7 +64,8 @@
       },
       doubleclick() {
         this.createActiveModule({
-          moduleName: this.Module.info.name
+          moduleName: this.moduleName,
+          skipInit: false
         }).then((Module) => {
           this.addModuleToLayer({
             module: Module,
