@@ -2,7 +2,7 @@ import EventEmitter2 from 'eventemitter2';
 import store from '@/../store/';
 import { Module2D } from './Modules';
 import Layer from './Layer';
-import { scan as mediaStreamScan, setSource as setMediaStreamSource } from './MediaStream';
+import { scan, setSource } from './MediaStream';
 
 class ModV extends EventEmitter2 {
 
@@ -25,6 +25,9 @@ class ModV extends EventEmitter2 {
       video: store.getters['mediaStream/videoSources']
     };
 
+    this.mediaStreamScan = scan.bind(this);
+    this.setMediaStreamSource = setSource.bind(this);
+
     window.addEventListener('unload', () => {
       this.windows.forEach((windowController) => {
         const windowRef = this.windowReference(windowController.window);
@@ -34,6 +37,9 @@ class ModV extends EventEmitter2 {
   }
 
   start() {
+    const mediaStreamScan = this.mediaStreamScan;
+    const setMediaStreamSource = this.setMediaStreamSource;
+
     this.previewCanvas = document.getElementById('preview-canvas');
     this.previewContext = this.previewCanvas.getContext('2d');
 
@@ -50,7 +56,9 @@ class ModV extends EventEmitter2 {
         audioSourceId: mediaStreamDevices.audio[0].deviceId,
         videoSourceId: mediaStreamDevices.video[0].deviceId
       };
-    }).then(setMediaStreamSource.bind(this)).then(() => {
+    }).then(setMediaStreamSource).then(({ audioSourceId, videoSourceId }) => {
+      store.commit('mediaStream/setCurrentAudioSource', { sourceId: audioSourceId });
+      store.commit('mediaStream/setCurrentVideoSource', { sourceId: videoSourceId });
       requestAnimationFrame(this.loop.bind(this));
     });
   }
@@ -94,9 +102,11 @@ class ModV extends EventEmitter2 {
   }
 }
 
-export default ModV;
+const modV = new ModV();
+
+export default modV;
 export {
-  ModV,
+  modV,
   Module2D,
   Layer
 };

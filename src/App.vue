@@ -38,7 +38,7 @@
 
               </div>
               <div class="pure-u-1-1 global-control-panel-wrapper control-panel-wrapper pure-g">
-
+                <global-controls></global-controls>
               </div>
               <div class="pure-u-1-1 preset-control-panel-wrapper control-panel-wrapper pure-g">
 
@@ -62,6 +62,7 @@
 <script>
   import ControlPanel from '@/components/ControlPanel';
   import Gallery from '@/components/Gallery';
+  import GlobalControls from '@/components/GlobalControls';
   import LayerMenu from '@/components/LayerMenu';
   import List from '@/components/List';
   import OutputWindowButton from '@/components/OutputWindowButton';
@@ -71,6 +72,7 @@
     components: {
       ControlPanel,
       Gallery,
+      GlobalControls,
       LayerMenu,
       List,
       OutputWindowButton
