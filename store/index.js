@@ -4,6 +4,9 @@ import layers from './modules/layers';
 import mediaStream from './modules/media-stream';
 import meyda from './modules/meyda';
 import modVModules from './modules/modv-modules';
+import size from './modules/size';
+import tempo from './modules/tempo';
+import user from './modules/user';
 import windows from './modules/windows';
 
 Vue.use(Vuex);
@@ -16,6 +19,9 @@ export default new Vuex.Store({
     mediaStream,
     meyda,
     modVModules,
+    size,
+    tempo,
+    user,
     windows
   },
   strict: debug
