@@ -37,9 +37,9 @@ const actions = {
   destroyWindow({ commit }, { windowRef }) {
     commit('removeWindow', { windowRef });
   },
-  resize({ state }, { width, height, dpr, emit}) {
+  resize({ state }, { width, height, dpr }) {
     state.windows.forEach((windowController) => {
-      windowController.resize(width, height, dpr, emit);
+      windowController.resize(width, height, dpr, false);
     });
   }
 };

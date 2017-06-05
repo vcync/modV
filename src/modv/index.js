@@ -92,7 +92,7 @@ class ModV extends EventEmitter2 {
       });
     });
 
-    mux.bind(this)();
+    mux();
   }
 
   register(Module) { //eslint-disable-line
@@ -104,10 +104,6 @@ class ModV extends EventEmitter2 {
     this.height = height * dpr;
     this.bufferCanvas.width = this.width;
     this.bufferCanvas.height = this.height;
-
-    this.layers.forEach((Layer) => {
-      Layer.resize({ width: this.width, height: this.height });
-    });
   }
 
   static get Layer() {

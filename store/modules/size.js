@@ -1,5 +1,5 @@
 import store from '@/../store';
-import modV from '@/modv';
+import { modV } from '@/modv';
 
 const state = {
   width: 200,
@@ -30,6 +30,7 @@ const actions = {
 
       modV.resize(state.width, state.width, dpr);
       store.dispatch('modVModules/resizeActive');
+      store.dispatch('layers/resize', { width: state.width, height: state.height, dpr });
       store.dispatch('windows/resize', { width: state.width, height: state.height, dpr });
     }
   },
@@ -40,7 +41,8 @@ const actions = {
     commit('setUseRetina', { useRetina });
     modV.resize(state.width, state.height, dpr);
     store.dispatch('modVModules/resizeActive');
-    store.dispatch('windows/resize', { width: state.width, height: state.height, dpr, emit: false });
+    store.dispatch('layers/resize', { width: state.width, height: state.height, dpr });
+    store.dispatch('windows/resize', { width: state.width, height: state.height, dpr });
   }
 };
 
