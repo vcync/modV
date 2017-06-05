@@ -1,14 +1,12 @@
 const state = {
   mediaPath: undefined,
-  name: 'A modV user',
-  useRetina: true
+  name: 'A modV user'
 };
 
 // getters
 const getters = {
   mediaPath: state => state.mediaPath,
-  name: state => state.name,
-  useRetina: state => state.useRetina
+  name: state => state.name
 };
 
 // actions
@@ -23,9 +21,6 @@ const mutations = {
   },
   setName(state, { name }) {
     state.name = name;
-  },
-  setUseRetina(state, { useRetina }) {
-    state.useRetina = useRetina;
   }
 };
 

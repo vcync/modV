@@ -1,5 +1,6 @@
 import WindowController from '@/modv/window-controller';
 import getLargestWindow from '@/modv/get-largest-window';
+import store from '@/../store';
 
 const state = {
   windows: []
@@ -7,12 +8,16 @@ const state = {
 
 // We can't store Window Objects in Vuex because the Observer traversal exceeds the stack size
 const externalState = [];
+
 // getters
 const getters = {
   allWindows: state => state.windows,
   windowReference: () => index => externalState[index],
   largestWindowReference() {
-    return getLargestWindow(state.windows) || externalState[0];
+    return () => getLargestWindow(state.windows).window || externalState[0];
+  },
+  largestWindowController() {
+    return () => getLargestWindow(state.windows).controller;
   }
 };
 
@@ -22,12 +27,20 @@ const actions = {
     return new WindowController().then((windowController) => {
       const windowRef = windowController.window;
       delete windowController.window;
+      windowController.on('resize', (width, height) => {
+        store.dispatch('size/setDimensions', { width, height });
+      });
       commit('addWindow', { windowController, windowRef });
       return windowController;
     });
   },
   destroyWindow({ commit }, { windowRef }) {
     commit('removeWindow', { windowRef });
+  },
+  resize({ state }, { width, height, dpr, emit}) {
+    state.windows.forEach((windowController) => {
+      windowController.resize(width, height, dpr, emit);
+    });
   }
 };
 

@@ -1,5 +1,6 @@
-import store from '../index';
 import Vue from 'vue';
+import { modV } from '@/modv';
+import store from '../index';
 
 const externalState = {
   active: {}
@@ -46,9 +47,17 @@ const actions = {
     module.info.enabled = true;
     module.info.compositeOperation = 'normal';
 
-    const windowRef = store.getters['windows/largestWindowReference'];
+    const dimensions = store.getters['size/dimensions'];
+    const useDpr = store.getters['size/useRetina'];
 
-    if('init' in module && !skipInit) module.init({ width: windowRef.innerWidth, height: windowRef.innerHeight });
+    if(useDpr) {
+      dimensions.width *= window.devicePixelRatio;
+      dimensions.height *= window.devicePixelRatio;
+    }
+
+    const canvas = modV.bufferCanvas;
+
+    if('init' in module && !skipInit) module.init(canvas);
 
     if('meyda' in module.info) {
       if(Array.isArray(module.info.meyda)) {
@@ -66,6 +75,24 @@ const actions = {
     const instantiated = new Module();
     const moduleName = instantiated.info.name;
     commit('addModuleToRegistry', { Module, moduleName });
+  },
+  resizeActive({ state }) {
+    const canvas = modV.bufferCanvas;
+    Object.keys(state.active).forEach((moduleName) => {
+      let module;
+
+      if(moduleName.indexOf('-gallery') > -1) return;
+
+      if(moduleName in externalState.active) {
+        module = externalState.active[moduleName];
+      } else {
+        return;
+      }
+
+      if('resize' in module) {
+        module.resize(canvas);
+      }
+    });
   }
 };
 

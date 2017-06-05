@@ -3,6 +3,7 @@ import store from '@/../store/';
 import { Module2D } from './Modules';
 import Layer from './Layer';
 import { scan, setSource } from './MediaStream';
+import mux from './mux';
 
 class ModV extends EventEmitter2 {
 
@@ -40,6 +41,9 @@ class ModV extends EventEmitter2 {
     const mediaStreamScan = this.mediaStreamScan;
     const setMediaStreamSource = this.setMediaStreamSource;
 
+    this.bufferCanvas = document.createElement('canvas');
+    this.bufferContext = this.bufferCanvas.getContext('2d');
+
     this.previewCanvas = document.getElementById('preview-canvas');
     this.previewContext = this.previewCanvas.getContext('2d');
 
@@ -68,13 +72,13 @@ class ModV extends EventEmitter2 {
 
     if(!this.meyda) return;
     const features = this.meyda.get(this.audioFeatures);
-    const windowController = this.windows[0];
-    const canvas = windowController.canvas;
-    const context = windowController.context;
-
-    context.clearRect(0, 0, canvas.width, canvas.height);
 
     this.layers.forEach((Layer) => {
+      const canvas = Layer.canvas;
+      const context = Layer.context;
+
+      context.clearRect(0, 0, canvas.width, canvas.height);
+
       Object.keys(Layer.modules).forEach((moduleName) => {
         const Module = this.getActiveModule(moduleName);
 
@@ -87,10 +91,23 @@ class ModV extends EventEmitter2 {
         context.restore();
       });
     });
+
+    mux.bind(this)();
   }
 
   register(Module) { //eslint-disable-line
     store.dispatch('modVModules/register', { Module });
+  }
+
+  resize(width, height, dpr = 1) {
+    this.width = width * dpr;
+    this.height = height * dpr;
+    this.bufferCanvas.width = this.width;
+    this.bufferCanvas.height = this.height;
+
+    this.layers.forEach((Layer) => {
+      Layer.resize({ width: this.width, height: this.height });
+    });
   }
 
   static get Layer() {
@@ -103,6 +120,8 @@ class ModV extends EventEmitter2 {
 }
 
 const modV = new ModV();
+
+window.modV = modV;
 
 export default modV;
 export {

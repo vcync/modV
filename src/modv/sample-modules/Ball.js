@@ -221,9 +221,11 @@ class Ball extends Module2D {
   }
 
   resize(canvas) {
-    for(let i = 0; i < this.balls.length; i += 1) {
-      this.balls[i].setBounds(canvas.width, canvas.height);
-    }
+    this.setupBalls(canvas);
+
+    // for(let i = 0; i < this.balls.length; i += 1) {
+    //   this.balls[i].setBounds(canvas.width, canvas.height);
+    // }
   }
 
   draw(canvas, ctx, vid, features) {

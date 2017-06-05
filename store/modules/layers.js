@@ -1,4 +1,5 @@
 import { Layer } from '@/modv';
+import store from '@/../store';
 
 const state = {
   focusedLayer: 0,
@@ -17,6 +18,15 @@ const actions = {
     const layerName = `Layer ${state.layers.length + 1}`;
     const layer = new Layer();
     layer.setName(layerName);
+
+    let width = store.getters['size/width'];
+    let height = store.getters['size/height'];
+    if(store.getters['size/useRetina']) {
+      width *= window.devicePixelRatio;
+      height *= window.devicePixelRatio;
+    }
+
+    layer.resize({ width: width, height: height });
     commit('addLayer', { layer });
     commit('setLayerFocus', {
       LayerIndex: state.layers.length - 1
