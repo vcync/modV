@@ -96,9 +96,11 @@
       ]),
       ...mapGetters('user', [
         'mediaPath',
-        'name',
+        'name'
+      ]),
+      ...mapGetters('size', [
         'useRetina'
-      ])
+      ]),
     },
     methods: {
       ...mapActions('mediaStream', [
@@ -111,7 +113,9 @@
       ]),
       ...mapMutations('user', [
         'setMediaPath',
-        'setName',
+        'setName'
+      ]),
+      ...mapActions('size', [
         'setUseRetina'
       ]),
       ...mapActions('windows', [
