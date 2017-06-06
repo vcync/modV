@@ -80,28 +80,28 @@ class Waveform extends Module2D {
     this.maxHeight = canvas.height;
   }
 
-  draw(can, ctx, vid, features) {
+  draw({ canvas, context, features }) {
     let ampArr = features.buffer;
     ampArr = Meyda.windowing(ampArr, this.windowing);
 
-    const height = Math.map(this.maxHeight, 1, 100, 1, can.height);
+    const height = Math.map(this.maxHeight, 1, 100, 1, canvas.height);
 
-    ctx.strokeStyle = this.colour;
-    ctx.lineWidth = this.strokeWeight;
-    ctx.beginPath();
+    context.strokeStyle = this.colour;
+    context.lineWidth = this.strokeWeight;
+    context.beginPath();
     for (let i = 0; i < ampArr.length - 1; i += this.strokeWeight) {
-      const width = Math.round(Math.map(i, 0, ampArr.length - 1, 0, can.width));
-      const newWidth = Math.round(Math.map(i + this.strokeWeight, 0, ampArr.length - 1, 0, can.width));
-      let y = (can.height / 2) - ((height * ampArr[i]) / 2);
+      const width = Math.round(Math.map(i, 0, ampArr.length - 1, 0, canvas.width));
+      const newWidth = Math.round(Math.map(i + this.strokeWeight, 0, ampArr.length - 1, 0, canvas.width));
+      let y = (canvas.height / 2) - ((height * ampArr[i]) / 2);
       y = Math.round(y);
-      let yNext = (can.height / 2) - ((height * ampArr[i + this.strokeWeight]) / 2);
+      let yNext = (canvas.height / 2) - ((height * ampArr[i + this.strokeWeight]) / 2);
       yNext = Math.round(yNext);
 
-      ctx.moveTo(width, y);
-      ctx.lineTo(newWidth, yNext);
+      context.moveTo(width, y);
+      context.lineTo(newWidth, yNext);
     }
-    ctx.closePath();
-    ctx.stroke();
+    context.closePath();
+    context.stroke();
   }
 }
 

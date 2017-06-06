@@ -16,8 +16,8 @@ const actions = {
 
 // mutations
 const mutations = {
-  setBpm(state, { tempo }) {
-    state.bpm = tempo;
+  setBpm(state, { bpm }) {
+    state.bpm = bpm;
   },
   setBpmDetect(state, { detect }) {
     state.detect = detect;

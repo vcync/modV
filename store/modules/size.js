@@ -28,7 +28,7 @@ const actions = {
       let dpr = window.devicePixelRatio || 1;
       if(!state.useRetina) dpr = 1;
 
-      modV.resize(state.width, state.width, dpr);
+      modV.resize(state.width, state.height, dpr);
       store.dispatch('modVModules/resizeActive');
       store.dispatch('layers/resize', { width: state.width, height: state.height, dpr });
       store.dispatch('windows/resize', { width: state.width, height: state.height, dpr });

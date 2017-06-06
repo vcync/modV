@@ -11,8 +11,8 @@ class Webcam extends Module2D {
     });
   }
 
-  draw(canvas, ctx, vid) { //eslint-disable-line
-    ctx.drawImage(vid, 0, 0, canvas.width, canvas.height);
+  draw({ canvas, context, video }) { //eslint-disable-line
+    context.drawImage(video, 0, 0, canvas.width, canvas.height);
   }
 }
 

@@ -19,14 +19,14 @@ const actions = {
     const layer = new Layer();
     layer.setName(layerName);
 
-    let width = store.getters['size/width'];
-    let height = store.getters['size/height'];
+    const width = store.getters['size/width'];
+    const height = store.getters['size/height'];
+    let dpr = 1;
     if(store.getters['size/useRetina']) {
-      width *= window.devicePixelRatio;
-      height *= window.devicePixelRatio;
+      dpr = window.devicePixelRatio;
     }
 
-    layer.resize({ width: width, height: height });
+    layer.resize({ width, height, dpr });
     commit('addLayer', { layer });
     commit('setLayerFocus', {
       LayerIndex: state.layers.length - 1

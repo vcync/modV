@@ -31,7 +31,10 @@ new Vue({
     const modules = [
       'Waveform',
       'Ball',
-      'Webcam'
+      'Webcam',
+      'Plasma',
+      'MattiasCRT',
+      'FilmGrain'
     ];
 
     modules.forEach((fileName) => {

@@ -1,9 +1,11 @@
 import EventEmitter2 from 'eventemitter2';
+import BeatDetektor from '@/extra/beatdetektor';
 import store from '@/../store/';
-import { Module2D } from './Modules';
+import { Module2D, ModuleShader } from './Modules';
 import Layer from './Layer';
 import { scan, setSource } from './MediaStream';
-import mux from './mux';
+import draw from './draw';
+import setupWebGl from './webgl';
 
 class ModV extends EventEmitter2 {
 
@@ -26,8 +28,20 @@ class ModV extends EventEmitter2 {
       video: store.getters['mediaStream/videoSources']
     };
 
+    this.useDetectedBpm = store.getters['tempo/detect'];
+    this.bpm = store.getters['tempo/bpm'];
+
+    this.beatDetektor = new BeatDetektor(85, 169);
+    this.beatDetektorKick = new BeatDetektor.modules.vis.BassKick();
+    this.kick = false;
+
     this.mediaStreamScan = scan.bind(this);
     this.setMediaStreamSource = setSource.bind(this);
+
+    this.width = 200;
+    this.height = 200;
+
+    this.webgl = setupWebGl(this);
 
     window.addEventListener('unload', () => {
       this.windows.forEach((windowController) => {
@@ -67,32 +81,21 @@ class ModV extends EventEmitter2 {
     });
   }
 
-  loop() {
+  loop(δ) {
     requestAnimationFrame(this.loop.bind(this));
+    let features = [];
+    if(this.audioFeatures.length > 0) features = this.meyda.get(this.audioFeatures);
+    if(features) {
+      this.activeFeatures = features;
 
-    if(!this.meyda) return;
-    const features = this.meyda.get(this.audioFeatures);
+      this.beatDetektor.process((δ / 1000.0), features.complexSpectrum.real);
+      this.updateBPM(this.beatDetektor.win_bpm_int_lo);
+    }
 
-    this.layers.forEach((Layer) => {
-      const canvas = Layer.canvas;
-      const context = Layer.context;
+    this.beatDetektorKick.process(this.beatDetektor);
+    this.kick = this.beatDetektorKick.isKick();
 
-      context.clearRect(0, 0, canvas.width, canvas.height);
-
-      Object.keys(Layer.modules).forEach((moduleName) => {
-        const Module = this.getActiveModule(moduleName);
-
-        if(!Module.info.enabled || Module.info.alpha === 0) return;
-
-        context.save();
-        context.globalAlpha = Module.info.alpha || 1;
-        context.globalCompositeOperation = Module.info.compositeOperation;
-        Module.draw(canvas, context, this.videoStream, features);
-        context.restore();
-      });
-    });
-
-    mux();
+    draw(δ);
   }
 
   register(Module) { //eslint-disable-line
@@ -104,6 +107,18 @@ class ModV extends EventEmitter2 {
     this.height = height * dpr;
     this.bufferCanvas.width = this.width;
     this.bufferCanvas.height = this.height;
+  }
+
+  updateBPM(newBpm) {
+    this.bpm = store.getters['tempo/bpm'];
+    this.useDetectedBpm = store.getters['tempo/detect'];
+
+    if(!newBpm || !this.useDetectedBpm) return;
+
+    const bpm = Math.round(newBpm);
+    if(this.bpm !== bpm) {
+      store.commit('tempo/setBpm', { bpm });
+    }
   }
 
   static get Layer() {
@@ -118,10 +133,13 @@ class ModV extends EventEmitter2 {
 const modV = new ModV();
 
 window.modV = modV;
+const webgl = modV.webgl;
 
 export default modV;
 export {
   modV,
   Module2D,
-  Layer
+  ModuleShader,
+  Layer,
+  webgl
 };

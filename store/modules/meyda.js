@@ -1,5 +1,5 @@
 const state = {
-  features: []
+  features: ['complexSpectrum']
 };
 
 // getters

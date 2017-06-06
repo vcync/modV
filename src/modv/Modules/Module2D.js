@@ -8,9 +8,26 @@ class Module2D extends Module {
   /**
    * @param {ModuleSettings} settings
    */
-  // constructor(settings) {
-  //   super(settings);
-  // }
+  constructor(settings) {
+    super(settings);
+
+    function render({ canvas, context, video, features, meyda, delta, bpm, kick }) {
+      context.save();
+      context.globalAlpha = this.info.alpha || 1;
+      context.globalCompositeOperation = this.info.compositeOperation || 'normal';
+      this.draw({ canvas, context, video, features, meyda, delta, bpm, kick });
+      context.restore();
+    }
+
+    Object.defineProperty(this, 'render', {
+      get() {
+        return render.bind(this);
+      },
+      set() {
+        throw new Error('Module2D\'s method "render" cannot be overwritten');
+      }
+    });
+  }
 
   /**
    * Called each frame to update the Module
@@ -23,7 +40,7 @@ class Module2D extends Module {
    * @param  {Number}                   bpm           The detected or tapped BPM
    * @param  {Boolean}                  kick          Indicates if BeatDetektor detected a kick in the audio stream
    */
-  draw(canvas, context, video, meydaFeatures, meyda, delta, bpm, kick) {} //eslint-disable-line
+  draw({ canvas, context, video, features, meyda, delta, bpm, kick }) {} //eslint-disable-line
 }
 
 export default Module2D;
