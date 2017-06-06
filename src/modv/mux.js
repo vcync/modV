@@ -7,15 +7,15 @@ function mux() {
   const width = modV.width;
   const height = modV.height;
 
-  const bufferCanvas = modV.bufferCanvas;
-  const bufferContext = modV.bufferContext;
+  const outputCanvas = modV.outputCanvas;
+  const outputContext = modV.outputContext;
 
-  bufferContext.clearRect(0, 0, width, height);
+  outputContext.clearRect(0, 0, width, height);
 
   layers.forEach((Layer) => {
     if(!Layer.enabled || Layer.alpha === 0 || !Layer.drawToOutput) return;
     const canvas = Layer.canvas;
-    bufferContext.drawImage(canvas, 0, 0, width, height);
+    outputContext.drawImage(canvas, 0, 0, width, height);
   });
 
   windows.forEach((windowController) => {
@@ -23,7 +23,7 @@ function mux() {
     const context = windowController.context;
 
     context.clearRect(0, 0, canvas.width, canvas.height);
-    context.drawImage(bufferCanvas, 0, 0, canvas.width, canvas.height);
+    context.drawImage(outputCanvas, 0, 0, canvas.width, canvas.height);
   });
 }
 

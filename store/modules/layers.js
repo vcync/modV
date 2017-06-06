@@ -9,7 +9,8 @@ const state = {
 // getters
 const getters = {
   allLayers: state => state.layers,
-  focusedLayer: state => state.focusedLayer
+  focusedLayerIndex: state => state.focusedLayer,
+  focusedLayer: state => state.layers[state.focusedLayer]
 };
 
 // actions

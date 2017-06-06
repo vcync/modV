@@ -1,6 +1,6 @@
 import twgl from 'twgl.js'; //eslint-disable-line
 // import setRectangle from './set-rectangle';
-import { webgl } from '@/modv';
+import { webgl, modV } from '@/modv';
 import setActiveProgramFromIndex from './set-active-program-from-index';
 
 export default function render({ delta, canvas, pixelRatio, Module }) {
@@ -26,6 +26,18 @@ export default function render({ delta, canvas, pixelRatio, Module }) {
 
   setActiveProgramFromIndex(programIndex);
   twgl.setUniforms(programInfo, uniforms);
+
+  if('meyda' in Module.info) {
+    if(Module.info.meyda.length > 0) {
+      const meydaFeatures = modV.meyda.get(modV.audioFeatures);
+      Module.info.meyda.forEach((feature) => {
+        const uniLoc = gl.getUniformLocation(webgl.programs[webgl.activeProgram], feature);
+
+        const value = parseFloat(meydaFeatures[feature]);
+        gl.uniform1f(uniLoc, value);
+      });
+    }
+  }
 
   // required as we need to resize our drawing boundaries for gallery and main canvases
   // TODO: this is a performance hinderance, the most expensive call within this function,

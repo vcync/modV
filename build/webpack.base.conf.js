@@ -64,7 +64,7 @@ module.exports = {
       },
       {
         test: /\.(glsl|vert|frag)$/,
-        loader: 'glsl-template-loader'
+        loader: 'text-loader'
       }
     ]
   }

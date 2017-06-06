@@ -21,6 +21,8 @@ class ModuleShader extends Module {
     this.uniformValues = new Map();
     this._makeProgram().then(() => { //eslint-disable-line
       this._setupUniforms(); //eslint-disable-line
+    }).catch((err) => {
+      console.error(err);
     });
   }
 
@@ -128,9 +130,7 @@ class ModuleShader extends Module {
           set: (value) => {
             this.uniformValues.set(uniformKey, value);
           },
-          get: () => {
-            this.uniformValues.get(uniformKey);
-          }
+          get: () => this.uniformValues.get(uniformKey)
         });
 
         gl.useProgram(this.programInfo.program);
@@ -152,7 +152,7 @@ class ModuleShader extends Module {
       modV.bufferCanvas
     );
 
-    webgl.resize(canvas.width, canvas.height);
+    // webgl.resize(canvas.width, canvas.height);
 
     // Clear WebGL canvas
     gl.clearColor(0.0, 0.0, 0.0, 0.0);
@@ -175,6 +175,18 @@ class ModuleShader extends Module {
 
     setActiveProgramFromIndex(programIndex);
     twgl.setUniforms(programInfo, uniforms);
+
+    if('meyda' in this.info) {
+      if(this.info.meyda.length > 0) {
+        const meydaFeatures = modV.meyda.get(modV.audioFeatures);
+        this.info.meyda.forEach((feature) => {
+          const uniLoc = gl.getUniformLocation(webgl.programs[webgl.activeProgram], feature);
+
+          const value = parseFloat(meydaFeatures[feature]);
+          gl.uniform1f(uniLoc, value);
+        });
+      }
+    }
 
     // required as we need to resize our drawing boundaries for gallery and main canvases
     // TODO: this is a performance hinderance, the most expensive call within this function,

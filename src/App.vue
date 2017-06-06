@@ -33,17 +33,17 @@
           </div>
 
           <div class="pure-u-1-3 pure-g main-control-area">
-            <div class="right-controls-panels"  data-simplebar-direction="vertical">
-              <div class="pure-u-1-1 layer-control-panel-wrapper control-panel-wrapper pure-g">
-
+            <tabs :titles="['Layer', 'Global', 'Preset']">
+              <div slot="tab-1" class="pure-u-1-1 layer-control-panel-wrapper control-panel-wrapper pure-g">
+                <layer-controls></layer-controls>
               </div>
-              <div class="pure-u-1-1 global-control-panel-wrapper control-panel-wrapper pure-g">
+              <div slot="tab-2" class="pure-u-1-1 global-control-panel-wrapper control-panel-wrapper pure-g">
                 <global-controls></global-controls>
               </div>
-              <div class="pure-u-1-1 preset-control-panel-wrapper control-panel-wrapper pure-g">
+              <div slot="tab-3" class="pure-u-1-1 preset-control-panel-wrapper control-panel-wrapper pure-g">
 
               </div>
-            </div>
+            </tabs>
           </div>
 
           <div class="canvas-preview pure-u-1-3">
@@ -63,9 +63,11 @@
   import ControlPanel from '@/components/ControlPanel';
   import Gallery from '@/components/Gallery';
   import GlobalControls from '@/components/GlobalControls';
+  import LayerControls from '@/components/LayerControls';
   import LayerMenu from '@/components/LayerMenu';
   import List from '@/components/List';
   import OutputWindowButton from '@/components/OutputWindowButton';
+  import Tabs from '@/components/Tabs';
 
   export default {
     name: 'app',
@@ -73,9 +75,11 @@
       ControlPanel,
       Gallery,
       GlobalControls,
+      LayerControls,
       LayerMenu,
       List,
-      OutputWindowButton
+      OutputWindowButton,
+      Tabs
     },
   };
 </script>

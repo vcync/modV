@@ -11,14 +11,50 @@ function draw(δ) {
   const webgl = modV.webgl;
   const gl = webgl.gl;
 
+  const bufferCanvas = modV.bufferCanvas;
+  const bufferContext = modV.bufferContext;
+
   if(!modV.meyda) return;
   const features = modV.meyda.get(audioFeatures);
 
-  layers.forEach((Layer) => {
+  layers.forEach((Layer, LayerIndex) => {
     const canvas = Layer.canvas;
     const context = Layer.context;
 
-    context.clearRect(0, 0, canvas.width, canvas.height);
+    const clearing = Layer.clearing;
+    const alpha = Layer.alpha;
+    const enabled = Layer.enabled;
+    const inherit = Layer.inherit;
+    const inheritFrom = Layer.inheritFrom;
+    const pipeline = Layer.pipeline;
+
+    if(pipeline && clearing) {
+      bufferContext.clearRect(0, 0, bufferCanvas.width, bufferCanvas.height);
+    }
+
+    if(clearing) {
+      context.clearRect(0, 0, canvas.width, canvas.height);
+    }
+
+    if(inherit) {
+      let lastCanvas;
+
+      if(inheritFrom < 0) {
+        if(LayerIndex - 1 > -1) {
+          lastCanvas = modV.layers[LayerIndex - 1].canvas;
+        } else {
+          lastCanvas = modV.outputCanvas;
+        }
+      } else {
+        lastCanvas = modV.layers[inheritFrom].canvas;
+      }
+
+      context.drawImage(lastCanvas, 0, 0, lastCanvas.width, lastCanvas.height);
+
+      if(pipeline) bufferContext.drawImage(lastCanvas, 0, 0, lastCanvas.width, lastCanvas.height);
+    }
+
+    if(!enabled || alpha === 0) return;
 
     Object.keys(Layer.modules).forEach((moduleName) => {
       const Module = getActiveModule(moduleName);

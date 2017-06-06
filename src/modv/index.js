@@ -58,6 +58,9 @@ class ModV extends EventEmitter2 {
     this.bufferCanvas = document.createElement('canvas');
     this.bufferContext = this.bufferCanvas.getContext('2d');
 
+    this.outputCanvas = document.createElement('canvas');
+    this.outputContext = this.outputCanvas.getContext('2d');
+
     this.previewCanvas = document.getElementById('preview-canvas');
     this.previewContext = this.previewCanvas.getContext('2d');
 
@@ -107,6 +110,8 @@ class ModV extends EventEmitter2 {
     this.height = height * dpr;
     this.bufferCanvas.width = this.width;
     this.bufferCanvas.height = this.height;
+    this.outputCanvas.width = this.width;
+    this.outputCanvas.height = this.height;
   }
 
   updateBPM(newBpm) {

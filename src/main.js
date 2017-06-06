@@ -34,7 +34,9 @@ new Vue({
       'Webcam',
       'Plasma',
       'MattiasCRT',
-      'FilmGrain'
+      'FilmGrain',
+      'ChromaticAbberation',
+      'Stretch'
     ];
 
     modules.forEach((fileName) => {
