@@ -6,6 +6,7 @@ import Layer from './Layer';
 import { scan, setSource } from './MediaStream';
 import draw from './draw';
 import setupWebGl from './webgl';
+import PaletteWorker from './palette-worker';
 
 class ModV extends EventEmitter2 {
 
@@ -27,6 +28,7 @@ class ModV extends EventEmitter2 {
       audio: store.getters['mediaStream/audioSources'],
       video: store.getters['mediaStream/videoSources']
     };
+    this.palettes = store.getters['palettes/allPalettes'];
 
     this.useDetectedBpm = store.getters['tempo/detect'];
     this.bpm = store.getters['tempo/bpm'];
@@ -124,6 +126,49 @@ class ModV extends EventEmitter2 {
     if(this.bpm !== bpm) {
       store.commit('tempo/setBpm', { bpm });
     }
+  }
+
+  /** @return {WorkersDataType} */
+  createWorkers() {
+    const palette = new PaletteWorker();
+    palette.on(PaletteWorker.EventType.PALETTE_ADDED, this.paletteAddHandler.bind(this));
+    palette.on(PaletteWorker.EventType.PALETTE_UPDATED, this.paletteUpdateHandler.bind(this));
+
+    return {
+      palette,
+    };
+  }
+
+  /**
+   * @protected
+   * @param {string} id
+   */
+  paletteAddHandler(id) {
+    if(!this.palettes.has(id)) {
+      this.palettes.set(id, {});
+    } else {
+      console.error('Palette with ID', id, 'already exists');
+    }
+  }
+
+  /**
+   * @protected
+   * @param {string} id
+   * @param {*} currentColor
+   * @param {*} currentStep
+   * @todo Types
+   */
+  paletteUpdateHandler(id, currentColor, currentStep) {
+    this.palettes.set(id, {
+      currentColor,
+      currentStep
+    });
+  }
+
+  /** @param {string} id */
+  removePalette(id) {
+    this.palettes.delete(id);
+    this.workers.palette.removePalette(id);
   }
 
   static get Layer() {

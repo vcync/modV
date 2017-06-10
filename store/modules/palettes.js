@@ -1,5 +1,5 @@
 const state = {
-  palettes: []
+  palettes: new Map()
 };
 
 // getters
@@ -9,11 +9,22 @@ const getters = {
 
 // actions
 const actions = {
+  createWindow({ commit }, { id, palette }) {
+    return new Promise((resolve, reject) => {
+      commit('addPalette', id);
+    });
+  }
 };
 
 // mutations
 const mutations = {
-
+  addPalette(state, { id, palette }) {
+    if(!state.palettes.has(id)) {
+      state.palettes.set(id, {});
+    } else {
+      console.error('Palette with ID', id, 'already exists');
+    }
+  }
 };
 
 export default {
