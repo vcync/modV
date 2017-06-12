@@ -1,27 +1,26 @@
 <template>
-  <div class="pure-u-1-1 active-item" tabindex="0">
+  <div class="pure-u-1-1 active-item" :class='{current: focused}' tabindex="0" @focus='focusActiveModule'>
     <div class="pure-g">
       <!-- <canvas class="preview"></canvas> --><!-- TODO: create preview option on mouseover item -->
       <div class="pure-u-1-1 title">
-        {{ name }}
+        {{ moduleName }}
       </div>
       <div class="pure-u-4-5 options">
         <div class="control-group enable-group">
-          <label for="">Enabled</label> <!--
-          <input id="" type="checkbox" checked="true" class="enable"> -->
+          <label :for='enabledCheckboxId'>Enabled</label>
           <div class="customCheckbox">
-            <input type="checkbox" checked="true" class="enable" @change='checkEnabled'>
-            <label for=""></label>
+            <input type="checkbox" checked="true" class="enable" v-model='enabled' :id='enabledCheckboxId'>
+            <label :for='enabledCheckboxId'></label>
           </div>
 
         </div>
         <div class="control-group opacity-group">
           <label for="">Opacity</label>
-          <input type="range" min="0" max="1" value = "1" step="0.01" class="opacity" @input='inputOpacity'>
+          <input type="range" min="0" max="1" value = "1" step="0.01" class="opacity" v-model='opacity'>
         </div>
         <div class="control-group blending-group">
           <label for="">Blending</label>
-          <select class="composite-operations" multiple="" style="color: black" @change='changeBlendmode'>
+          <select class="composite-operations" style="color: black" v-model='compositeOperation'>
             <optgroup label="Blend Modes">
               <option value="normal">Normal</option>
               <option value="multiply">Multiply</option>
@@ -67,21 +66,41 @@
 </template>
 
 <script>
+  import { mapGetters, mapMutations } from 'vuex';
+
   export default {
     name: 'activeItem',
+    data() {
+      return {
+        compositeOperation: 'normal',
+        enabled: true,
+        opacity: 1
+      };
+    },
     props: [
-      'ModuleIn'
+      'moduleName'
     ],
     computed: {
-      name() {
-        const Module = this.ModuleIn;
-        if(!Module) return '';
-        if(!('info' in Module)) return '';
-        if(!('name' in Module.info)) return '';
-        return Module.info.name;
+      ...mapGetters('modVModules', [
+        'focusedModuleName'
+      ]),
+      module() {
+        return this.getActiveModule()(this.moduleName);
+      },
+      enabledCheckboxId() {
+        return `${this.moduleName}:modvreserved:enabled`;
+      },
+      focused() {
+        return this.moduleName === this.focusedModuleName;
       }
     },
     methods: {
+      ...mapMutations('modVModules', [
+        'setModuleFocus'
+      ]),
+      ...mapGetters('modVModules', [
+        'getActiveModule'
+      ]),
       inputOpacity(e) {
         console.log(e);
       },
@@ -90,11 +109,27 @@
       },
       changeBlendmode(e) {
         console.log(e);
+      },
+      focusActiveModule() {
+        this.setModuleFocus({ activeModuleName: this.moduleName });
+      }
+    },
+    watch: {
+      compositeOperation() {
+        this.module.info.compositeOperation = this.compositeOperation;
+      },
+      enabled() {
+        this.module.info.enabled = this.enabled;
+      },
+      opacity() {
+        this.module.info.alpha = parseFloat(this.opacity);
       }
     }
   };
 </script>
 
 <style scoped>
-
+  select.composite-operations {
+    width: 60%;
+  }
 </style>

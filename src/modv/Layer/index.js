@@ -260,20 +260,19 @@ class Layer extends EventEmitter2 {
 
   /**
    * Add a Module to the Layer
-   * @param {Module} Module
+   * @param {String} moduleName
    * @param {Number} order  The position within {@link Layer#moduleOrder} the Module should be inserted at
    * @return {Number}       The position within {@link Layer#moduleOrder} the Module was inserted at
    */
-  addModule(Module, orderIn) {
+  addModule(moduleName, orderIn) {
     let order = orderIn;
     // const modV = this.modV;
-    const name = Module.info.name;
-    this.modules[Module.info.name] = Module;
+    this.modules[moduleName] = moduleName;
 
     if(typeof order !== 'undefined') {
-      this.setOrder(Module, order, true);
+      this.setOrder(moduleName, order, true);
     } else {
-      order = this.moduleOrder.push(name) - 1;
+      order = this.moduleOrder.push(moduleName) - 1;
     }
 
     /* // Send to remote
@@ -284,7 +283,7 @@ class Layer extends EventEmitter2 {
     });*/
 
     this.emit('moduleAdd',
-      Module,
+      moduleName,
       order
     );
 
@@ -340,8 +339,8 @@ class Layer extends EventEmitter2 {
    * @param {Boolean} sentToRemote  [description]
    * @param {Boolean}  moveNodes    [description]
    */
-  setOrder(Module, order, sentToRemote, moveNodes) {
-    const name = Module.info.name;
+  setOrder(moduleName, order, sentToRemote, moveNodes) {
+    const name = moduleName;
 
     if(this.moduleOrder[order] === 'undefined') this.moduleOrder[order] = name;
     else {
@@ -349,7 +348,6 @@ class Layer extends EventEmitter2 {
       this.moduleOrder.forEach((mod, idx) => {
         if(name === mod) index = idx;
       });
-
 
       if(index > -1) this.moduleOrder.splice(index, 1);
 
@@ -359,25 +357,12 @@ class Layer extends EventEmitter2 {
         const children = this.node.querySelector('.module-list').children;
         children[index].parentNode.insertBefore(children[index], children[order]);
       }
-
-      this.moduleOrder.forEach((mod, idx) => {
-        this.modules[mod].info.order = idx;
-      });
     }
 
-    // Send to remote
-    if(!sentToRemote) {
-      this.modV.remote.update('moduleOrder', {
-        name,
-        order,
-        layer: Module.getLayer()
-      });
-
-      this.emit('moduleReorder',
-        Module,
-        order
-      );
-    }
+    this.emit('moduleReorder',
+      moduleName,
+      order
+    );
   }
 
   /**
@@ -408,116 +393,6 @@ class Layer extends EventEmitter2 {
     );
 
     return this.enabled;
-  }
-
-  /**
-   * Make the Layer's Element node
-   * @return {Element} The build node
-   */
-  makeNode() {
-    const self = this;
-    const modV = this.modV;
-
-      // Create active list item
-    const template = modV.templates.querySelector('#layer-item');
-    let layerItem = document.importNode(template.content, true);
-
-    // Init node in temp (TODO: don't do this)
-    const temp = document.getElementById('temp');
-    temp.innerHTML = '';
-    temp.appendChild(layerItem);
-
-    // Grab initialised node
-    layerItem = temp.querySelector('.layer-item');
-
-    const titleNode = layerItem.querySelector('.title');
-    const collapseNode = layerItem.querySelector('.collapse');
-    const lockNode = layerItem.querySelector('.lock');
-    const moduleList = layerItem.querySelector('.module-list');
-
-    layerItem.addEventListener('mousedown', (e) => {
-      // ignore collapse button
-      if(
-        e.target.className.search('.fa-toggle-') > -1 ||
-        e.target.className.search('.fa-lock') > -1 ||
-        e.target.className.search('.fa-unlock-') > -1
-      ) return;
-
-      modV.activeLayer = modV.layers.indexOf(this);
-      modV.updateLayerControls();
-      modV.layers.forEach((Layer) => {
-        Layer.getNode().classList.remove('active');
-      });
-
-      layerItem.classList.add('active');
-    });
-
-    titleNode.textContent = this.name;
-
-    collapseNode.addEventListener('mousedown', () => {
-      this.node.classList.toggle('collapsed');
-    });
-
-    lockNode.addEventListener('mousedown', () => {
-      this.node.classList.toggle('locked');
-      this.locked = !self.locked;
-    });
-
-    let oldName;
-
-    function enterPress(e) { // eslint-disable-line
-      if(e.keyCode === 13) {
-        stopEdit.bind(this)(); // eslint-disable-line
-        return false;
-      }
-    }
-
-    function stopEdit() {
-      if(!this.classList.contains('editable')) return;
-
-      const inputText = this.textContent.trim();
-
-      this.contentEditable = false;
-      this.classList.remove('editable');
-      this.removeEventListener('keypress', enterPress);
-
-      if(inputText.length === 0) {
-        this.textContent = oldName;
-        oldName = undefined;
-      } else {
-        self.setName(inputText);
-      }
-    }
-
-    titleNode.addEventListener('dblclick', function() {
-      if(this.classList.contains('editable')) return;
-
-      oldName = self.name;
-      this.contentEditable = true;
-      this.focus();
-      this.classList.add('editable');
-
-      this.addEventListener('keypress', enterPress);
-    });
-
-    titleNode.addEventListener('blur', stopEdit);
-
-    this.nodes.layer = layerItem;
-    this.nodes.moduleList = moduleList;
-    this.nodes.title = titleNode;
-
-    this.node = layerItem;
-    this.moduleListNode = moduleList;
-
-    return layerItem;
-  }
-
-  /**
-   * The Layer's Element node, presumably build with {@link Layer#makeNode}
-   * @return {Element}
-   */
-  getNode() {
-    return this.node;
   }
 
   /**
@@ -649,6 +524,12 @@ class Layer extends EventEmitter2 {
         }
       }
     });
+  }
+
+  resize({ width, height, dpr }) {
+    this.canvas.width = width * dpr;
+    this.canvas.height = height * dpr;
+    console.log(width, height);
   }
 }
 

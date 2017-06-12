@@ -1,4 +1,5 @@
 import { Layer } from '@/modv';
+import store from '@/../store';
 
 const state = {
   focusedLayer: 0,
@@ -17,6 +18,15 @@ const actions = {
     const layerName = `Layer ${state.layers.length + 1}`;
     const layer = new Layer();
     layer.setName(layerName);
+
+    let width = store.getters['size/width'];
+    let height = store.getters['size/height'];
+    if(store.getters['size/useRetina']) {
+      width *= window.devicePixelRatio;
+      height *= window.devicePixelRatio;
+    }
+
+    layer.resize({ width: width, height: height });
     commit('addLayer', { layer });
     commit('setLayerFocus', {
       LayerIndex: state.layers.length - 1
@@ -46,19 +56,32 @@ const actions = {
 
     if(Layer.collapsed) commit('uncollapse', { layerIndex });
     else commit('collapse', { layerIndex });
+  },
+  addModuleToLayer({ commit, state }, { module, layerIndex }) {
+    commit('addModuleToLayer', { moduleName: module.info.name, layerIndex });
+    commit(
+      'modVModules/setModuleFocus',
+      { activeModuleName: module.info.name },
+      { root: true }
+    );
+  },
+  resize({ commit, state }, { width, height, dpr }) {
+    state.layers.forEach((Layer) => {
+      Layer.resize({ width, height, dpr });
+    });
   }
 };
 
 // mutations
 const mutations = {
-  addModuleToLayer(state, { module, layerIndex }) {
+  addModuleToLayer(state, { moduleName, layerIndex }) {
     const Layer = state.layers[layerIndex];
     if(Layer.locked) return;
 
     if (!Layer) {
       throw `Cannot find Layer with index ${layerIndex}`;
     } else {
-      Layer.addModule(module);
+      Layer.addModule(moduleName);
     }
   },
   addLayer(state, { layer }) {

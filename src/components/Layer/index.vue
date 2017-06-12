@@ -32,7 +32,7 @@
     >
       <active-module
         v-for='module in modules'
-        :ModuleIn='module'
+        :moduleName='module'
         :key='module'
       ></active-module>
     </div>
@@ -72,15 +72,15 @@
       ...mapActions('layers', [
         'addLayer',
         'toggleLocked',
-        'toggleCollapsed'
+        'toggleCollapsed',
+        'addModuleToLayer'
       ]),
       ...mapActions('modVModules', [
         'createActiveModule'
       ]),
       ...mapMutations('layers', [
         'setLayerName',
-        'setLayerFocus',
-        'addModuleToLayer'
+        'setLayerFocus'
       ]),
       startNameEdit() {
         const node = this.$el.querySelector('.title');

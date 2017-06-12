@@ -216,11 +216,11 @@ section .bottom > .pure-g > div {
 
 section .bottom .control-panel-wrapper,
 section .bottom .control-panel-wrapper .control-panel {
-/*	height: 100%;
-*/}
+	height: 100%;
+}
 
 section .bottom .control-panel-wrapper .control-panel {
-	display: none;
+	// display: none;
 }
 
 section .bottom .control-panel-wrapper .control-panel.show {
@@ -359,16 +359,6 @@ canvas {
 	text-align: center;
 	vertical-align: middle;
 	display: inline-block;
-}
-
-select.composite-operations:hover {
-	height: 68px;
-}
-
-select.composite-operations {
-	color: #000;
-	height: 18px;
-	transition: height 300ms;
 }
 
 /* Palette Control */
