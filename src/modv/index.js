@@ -64,6 +64,10 @@ class ModV extends EventEmitter2 {
     this.previewCanvas = document.getElementById('preview-canvas');
     this.previewContext = this.previewCanvas.getContext('2d');
 
+    window.addEventListener('resize', () => {
+      store.dispatch('size/resizePreviewCanvas');
+    });
+
     this.videoStream = document.createElement('video');
     this.videoStream.autoplay = true;
     this.videoStream.muted = true;
@@ -124,6 +128,37 @@ class ModV extends EventEmitter2 {
     if(this.bpm !== bpm) {
       store.commit('tempo/setBpm', { bpm });
     }
+  }
+
+  /** @return {WorkersDataType} */
+  createWorkers() {
+    const palette = new PaletteWorker();
+    palette.on(PaletteWorker.EventType.PALETTE_ADDED, this.paletteAddHandler.bind(this));
+    palette.on(PaletteWorker.EventType.PALETTE_UPDATED, this.paletteUpdateHandler.bind(this));
+
+    return {
+      palette,
+    };
+  }
+
+  /**
+   * @protected
+   * @param {string} id
+   * @param {*} currentColor
+   * @param {*} currentStep
+   * @todo Types
+   */
+  paletteUpdateHandler(id, currentColor, currentStep) {
+    this.palettes.set(id, {
+      currentColor,
+      currentStep
+    });
+  }
+
+  /** @param {string} id */
+  removePalette(id) {
+    this.palettes.delete(id);
+    this.workers.palette.removePalette(id);
   }
 
   static get Layer() {

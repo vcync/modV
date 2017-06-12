@@ -44,6 +44,6 @@ new Vue({
         modV.register(Module.default);
       });
     });
-    attachResizeHandles(modV);
+    attachResizeHandles();
   }
 });

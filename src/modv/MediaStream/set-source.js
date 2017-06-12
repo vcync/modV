@@ -10,7 +10,9 @@ function userMediaSuccess(stream, ids) {
     if(this.audioContext) this.audioContext.close();
 
     // Create new Audio Context
-    this.audioContext = new window.AudioContext();
+    this.audioContext = new window.AudioContext({
+      latencyHint: 'playback'
+    });
 
     // Create new Audio Analyser
     this.analyserNode = this.audioContext.createAnalyser();

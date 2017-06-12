@@ -7,6 +7,7 @@ function draw(δ) {
   const layers = store.getters['layers/allLayers'];
   const audioFeatures = store.getters['meyda/features'];
   const getActiveModule = store.getters['modVModules/getActiveModule'];
+  const previewValues = store.getters['size/previewValues'];
 
   const webgl = modV.webgl;
   const gl = webgl.gl;
@@ -105,7 +106,16 @@ function draw(δ) {
     });
   });
 
-  mux();
+  mux().then(() => {
+    modV.previewContext.clearRect(0, 0, modV.previewCanvas.width, modV.previewCanvas.height);
+    modV.previewContext.drawImage(
+      modV.outputCanvas,
+      previewValues.x,
+      previewValues.y,
+      previewValues.width,
+      previewValues.height
+    );
+  });
 }
 
 export default draw;
