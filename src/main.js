@@ -31,7 +31,12 @@ new Vue({
     const modules = [
       'Waveform',
       'Ball',
-      'Webcam'
+      'Webcam',
+      'Plasma',
+      'MattiasCRT',
+      'FilmGrain',
+      'ChromaticAbberation',
+      'Stretch'
     ];
 
     modules.forEach((fileName) => {
@@ -39,6 +44,6 @@ new Vue({
         modV.register(Module.default);
       });
     });
-    attachResizeHandles(modV);
+    attachResizeHandles();
   }
 });

@@ -228,7 +228,7 @@ class Ball extends Module2D {
     // }
   }
 
-  draw(canvas, ctx, vid, features) {
+  draw({ canvas, context, features }) {
     if(this.soundType) {
       this.analysed = (features.zcr / 10) * this.intensity;
     } else {
@@ -238,7 +238,7 @@ class Ball extends Module2D {
     for(let i = 0; i < this.amount; i += 1) {
       this.balls[i].speed = this.speed;
       this.balls[i].wrap = this.wrap;
-      this.balls[i].drawUpdate(canvas, ctx, this.analysed, this.colour);
+      this.balls[i].drawUpdate(canvas, context, this.analysed, this.colour);
     }
   }
 
