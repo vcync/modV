@@ -528,8 +528,9 @@ class Layer extends EventEmitter2 {
   }
 
   resize({ width, height, dpr }) {
-    this.canvas.width = width * dpr;
-    this.canvas.height = height * dpr;
+    const devicePixRatio = dpr || 1;
+    this.canvas.width = width * devicePixRatio;
+    this.canvas.height = height * devicePixRatio;
   }
 }
 

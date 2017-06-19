@@ -46,11 +46,17 @@
       ...mapActions('modVModules', [
         'createActiveModule'
       ]),
-      draw() {
+      draw(delta) {
         this.raf = requestAnimationFrame(this.draw);
         this.context.clearRect(0, 0, this.canvas.width, this.canvas.height);
         const features = this.$modV.meyda.get(this.$modV.audioFeatures);
-        this.Module.draw(this.canvas, this.context, this.$modV.videoStream, features);
+        this.Module.draw({
+          canvas: this.canvas,
+          context: this.context,
+          video: this.$modV.videoStream,
+          features,
+          delta
+        });
       },
       mouseover(e) {
         if(!e.target.classList.contains('preview')) return;

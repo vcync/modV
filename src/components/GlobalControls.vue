@@ -158,8 +158,9 @@
       }
     },
     created() {
-      tapTempo.on('tempo', (tempo) => {
-        this.setBpm({ tempo });
+      tapTempo.on('tempo', (bpm) => {
+        if(this.bpm === Math.round(bpm)) return;
+        this.setBpm({ bpm: Math.round(bpm) });
       });
 
       this.nameInput = this.name;

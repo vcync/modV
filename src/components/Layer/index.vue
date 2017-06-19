@@ -2,7 +2,7 @@
   <div
       class="layer-item"
       :class="{
-        active: focusedLayer === LayerIndex,
+        active: focusedLayerIndex === LayerIndex,
         locked: locked,
         collapsed: collapsed
       }"
@@ -145,7 +145,7 @@
         }
       },
       focusLayer() {
-        if(this.focusedLayer === this.LayerIndex) return;
+        if(this.focusedLayerIndex === this.LayerIndex) return;
         this.setLayerFocus({
           LayerIndex: this.LayerIndex
         });

@@ -1,5 +1,5 @@
 import Vue from 'vue';
-import { modV } from '@/modv';
+import { modV, ModuleShader } from '@/modv';
 import store from '../index';
 
 const externalState = {
