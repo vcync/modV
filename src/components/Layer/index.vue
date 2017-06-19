@@ -28,7 +28,7 @@
     <draggable
       class="module-list"
       v-model='modules'
-      :options="{ group: 'modules' }"
+      :options="{ group: 'modules', handle: '.handle' }"
       :data-layer-index='LayerIndex'
       @add='drop'
     >
