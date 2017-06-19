@@ -57,7 +57,7 @@ function draw(δ) {
 
     if(!enabled || alpha === 0) return;
 
-    Object.keys(Layer.modules).forEach((moduleName) => {
+    Layer.moduleOrder.forEach((moduleName) => {
       const Module = getActiveModule(moduleName);
 
       if(!Module.info.enabled || Module.info.alpha === 0) return;

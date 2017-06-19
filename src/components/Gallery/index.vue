@@ -38,6 +38,7 @@
     }),
     methods: {
       ...mapMutations('modVModules', [
+        'removeActiveModule',
         'setCurrentDragged'
       ]),
       ...mapMutations('layers', [
@@ -52,18 +53,15 @@
       },
       drop(e) {
         e.preventDefault();
-
         const moduleName = e.dataTransfer.getData('module-name');
         const layerIndex = e.dataTransfer.getData('layer-index');
-        console.log(moduleName, layerIndex);
 
-        // Remove activeModule
         this.removeModuleFromLayer({ moduleName, layerIndex });
+        this.removeActiveModule({ moduleName });
 
         this.setCurrentDragged({ moduleName: null });
       },
       dragover(e) {
-        console.log('dragover');
         // Drag activeModule over gallery
         e.preventDefault();
         if(!this.currentActiveDrag) return;

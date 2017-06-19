@@ -75,7 +75,7 @@
         return this.Layer.collapsed;
       },
       ...mapGetters('layers', [
-        'focusedLayer'
+        'focusedLayerIndex'
       ])
     },
     methods: {
@@ -92,7 +92,6 @@
             });
           });
         } else {
-          console.log('hello');
           const fromLayerIndex = parseInt(e.from.dataset.layerIndex, 10);
           const toLayerIndex = this.LayerIndex;
 

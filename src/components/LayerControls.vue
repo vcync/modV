@@ -62,7 +62,6 @@
       name() {
         if(!this.Layer) return;
         const Layer = this.Layer;
-        console.log(Layer);
 
         this.clearingChecked = Layer.clearing;
         this.inheritChecked = Layer.inherit;

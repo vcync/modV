@@ -111,7 +111,7 @@ const mutations = {
     externalState.active[moduleName] = module;
   },
   removeActiveModule(state, { moduleName }) {
-    Vue.delete(state.active[moduleName]);
+    Vue.delete(state.active, moduleName);
     delete externalState.active[moduleName];
   },
   setModuleFocus(state, { activeModuleName }) {

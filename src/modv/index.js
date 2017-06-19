@@ -132,14 +132,14 @@ class ModV extends EventEmitter2 {
   }
 
   /** @return {WorkersDataType} */
-  createWorkers() {
-    const palette = new PaletteWorker();
-    palette.on(PaletteWorker.EventType.PALETTE_ADDED, this.paletteAddHandler.bind(this));
-    palette.on(PaletteWorker.EventType.PALETTE_UPDATED, this.paletteUpdateHandler.bind(this));
+  createWorkers() {//eslint-disable-line
+    // const palette = new PaletteWorker();
+    // palette.on(PaletteWorker.EventType.PALETTE_ADDED, this.paletteAddHandler.bind(this));
+    // palette.on(PaletteWorker.EventType.PALETTE_UPDATED, this.paletteUpdateHandler.bind(this));
 
-    return {
-      palette,
-    };
+    // return {
+    //   palette,
+    // };
   }
 
   /**

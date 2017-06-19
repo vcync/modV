@@ -1,7 +1,6 @@
 // The Vue build version to load with the `import` command
 // (runtime-only or standalone) has been set in webpack.base.conf with an alias.
 import Vue from 'vue';
-import { Vue2Dragula } from 'vue2-dragula';
 import { modV } from './modv';
 import App from './App';
 import store from '../store';
@@ -14,12 +13,6 @@ Vue.config.productionTip = false;
 Object.defineProperty(Vue.prototype, '$modV', {
   get() {
     return modV;
-  }
-});
-
-Vue.use(Vue2Dragula, {
-  logging: {
-    service: true
   }
 });
 

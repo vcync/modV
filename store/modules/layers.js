@@ -146,7 +146,6 @@ const mutations = {
   updateModuleOrder(state, { layerIndex, order }) {
     const Layer = state.layers[layerIndex];
     Layer.moduleOrder = order;
-    console.log(layerIndex, Layer, order);
   }
 };
 
