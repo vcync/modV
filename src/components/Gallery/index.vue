@@ -3,9 +3,7 @@
     <search-bar :phrase.sync='phrase'></search-bar>
     <draggable
       class='gallery-items'
-      :options="{group: { name: 'modules',  pull: 'clone', put: false }}"
-      @start='drag=true'
-      @end='drag=false'
+      :options="{ group: { name: 'modules',  pull: 'clone', put: false }, sort: false }"
     >
       <gallery-item
         v-for='(module, key) in modules'
@@ -34,6 +32,7 @@
       };
     },
     computed: mapGetters('modVModules', {
+      currentDragged: 'currentDragged',
       modules: 'registry'
     }),
     methods: {
@@ -62,18 +61,17 @@
         this.setCurrentDragged({ moduleName: null });
       },
       dragover(e) {
-        // Drag activeModule over gallery
         e.preventDefault();
-        if(!this.currentActiveDrag) return;
-
-        this.currentActiveDrag.classList.add('deletable');
+        if(!this.currentDragged) return;
+        const draggedNode = document.querySelectorAll(`.active-item[data-module-name="${this.currentDragged}"]`)[1];
+        draggedNode.classList.add('deletable');
       },
       dragleave(e) {
-        // Drag activeModule out of gallery
+        console.log('leave gallery');
         e.preventDefault();
-        if(!this.currentActiveDrag) return;
-
-        this.currentActiveDrag.classList.remove('deletable');
+        if(!this.currentDragged) return;
+        const draggedNode = document.querySelectorAll(`.active-item[data-module-name="${this.currentDragged}"]`)[1];
+        draggedNode.classList.remove('deletable');
       }
     },
     components: {

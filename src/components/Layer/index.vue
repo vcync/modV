@@ -28,9 +28,10 @@
     <draggable
       class="module-list"
       v-model='modules'
-      :options="{ group: 'modules', handle: '.handle' }"
+      :options="{ group: 'modules', handle: '.handle', 'chosenClass': 'chosen', animation: 100, disabled: locked }"
       :data-layer-index='LayerIndex'
       @add='drop'
+      @end='end'
     >
       <active-module
         v-for='module in modules'
@@ -81,9 +82,12 @@
     methods: {
       drop(e) {
         const moduleName = e.item.dataset.moduleName;
+        const galleryItemNode = document.querySelector(`.gallery .gallery-item[data-module-name="${moduleName}"]`);
 
         if(e.item.classList.contains('gallery-item')) {
-          e.item.parentNode.removeChild(e.item);
+          galleryItemNode.parentNode.insertBefore(e.item, galleryItemNode);
+          galleryItemNode.parentNode.removeChild(galleryItemNode);
+
           this.createActiveModule({ moduleName }).then((module) => {
             this.addModuleToLayer({
               module,
@@ -96,6 +100,12 @@
           const toLayerIndex = this.LayerIndex;
 
           this.moveModuleInstance({ fromLayerIndex, toLayerIndex, moduleName });
+        }
+      },
+      end(e) {
+        console.log(e);
+        if(e.item) {
+          e.item.classList.remove('deletable');
         }
       },
       ...mapActions('layers', [
