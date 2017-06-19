@@ -1,5 +1,5 @@
 <template>
-  <div class="pure-u-6-24 gallery-item" @dblclick='doubleclick' draggable @dragstart='dragstart'>
+  <div class="pure-u-6-24 gallery-item" @dblclick='doubleclick' draggable @dragstart='dragstart' :data-module-name='name'>
     <canvas class="preview" @mouseout='mouseout' @mouseover='mouseover'></canvas>
     <div class="title-wrapper">
       <span class="title">{{ name }}</span>

@@ -9,7 +9,8 @@ const externalState = {
 const state = {
   active: {},
   registry: {},
-  focusedModule: null
+  focusedModule: null,
+  currentDragged: null
 };
 
 function generateName(name) {
@@ -33,7 +34,8 @@ const getters = {
   activeModules: state => state.active,
   focusedModule: state => externalState.active[state.focusedModule],
   focusedModuleName: state => state.focusedModule,
-  getActiveModule: () => moduleName => externalState.active[moduleName]
+  getActiveModule: () => moduleName => externalState.active[moduleName],
+  currentDragged: state => state.currentDragged
 };
 
 // actions
@@ -102,18 +104,21 @@ const mutations = {
     Vue.set(state.registry, moduleName, Module);
   },
   removeModuleFromRegistry(state, { moduleName }) {
-    delete state.registry[moduleName];
+    Vue.delete(state.registry, moduleName);
   },
   addActiveModule(state, { module, moduleName }) {
     Vue.set(state.active, moduleName, moduleName);
     externalState.active[moduleName] = module;
   },
   removeActiveModule(state, { moduleName }) {
-    delete state.active[moduleName];
+    Vue.delete(state.active[moduleName]);
     delete externalState.active[moduleName];
   },
   setModuleFocus(state, { activeModuleName }) {
     state.focusedModule = activeModuleName;
+  },
+  setCurrentDragged(state, { moduleName }) {
+    state.currentDragged = moduleName;
   }
 };
 

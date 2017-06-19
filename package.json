@@ -19,6 +19,7 @@
     "tap-tempo": "^0.1.1",
     "twgl.js": "^3.4.0",
     "vue": "^2.3.3",
+    "vuedraggable": "git+https://github.com/SortableJS/Vue.Draggable.git",
     "vuex": "^2.3.1",
     "webgl-compile-shader": "^2.3.9"
   },

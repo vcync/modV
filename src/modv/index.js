@@ -102,6 +102,7 @@ class ModV extends EventEmitter2 {
     this.beatDetektorKick.process(this.beatDetektor);
     this.kick = this.beatDetektorKick.isKick();
 
+
     draw(δ);
   }
 

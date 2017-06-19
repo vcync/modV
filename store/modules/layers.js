@@ -1,3 +1,4 @@
+import Vue from 'vue';
 import { Layer } from '@/modv';
 import store from '@/../store';
 
@@ -58,32 +59,62 @@ const actions = {
     if(Layer.collapsed) commit('uncollapse', { layerIndex });
     else commit('collapse', { layerIndex });
   },
-  addModuleToLayer({ commit, state }, { module, layerIndex }) {
-    commit('addModuleToLayer', { moduleName: module.info.name, layerIndex });
+  addModuleToLayer({ commit, state }, { module, layerIndex, position }) {
+    if(typeof position !== 'number') {
+      if(position < 0) {
+        position = 0;
+      }
+    }
+    commit('addModuleToLayer', { moduleName: module.info.name, layerIndex, position });
     commit(
       'modVModules/setModuleFocus',
       { activeModuleName: module.info.name },
       { root: true }
     );
   },
+  updateModuleOrder({ commit, state }, { layerIndex, order }) {
+    commit('updateModuleOrder', { layerIndex, order });
+  },
   resize({ commit, state }, { width, height, dpr }) {
     state.layers.forEach((Layer) => {
       Layer.resize({ width, height, dpr });
     });
+  },
+  moveModuleInstance({ commit, state }, { fromLayerIndex, toLayerIndex, moduleName }) {
+    const moduleInstance = state.layers[fromLayerIndex].modules[moduleName];
+
+    commit('addModuleInstanceToLayer', { moduleName, moduleInstance, layerIndex: toLayerIndex });
+    commit('removeModuleInstanceFromLayer', { moduleName, layerIndex: fromLayerIndex });
   }
 };
 
 // mutations
 const mutations = {
-  addModuleToLayer(state, { moduleName, layerIndex }) {
+  addModuleToLayer(state, { moduleName, layerIndex, position }) {
     const Layer = state.layers[layerIndex];
     if(Layer.locked) return;
 
     if (!Layer) {
       throw `Cannot find Layer with index ${layerIndex}`;
     } else {
-      Layer.addModule(moduleName);
+      Layer.addModule(moduleName, position);
     }
+  },
+  removeModuleFromLayer(state, { moduleName, layerIndex }) {
+    const Layer = state.layers[layerIndex];
+
+    const moduleIndex = Layer.moduleOrder.indexOf(moduleName);
+    if(moduleIndex < 0) return;
+
+    Layer.moduleOrder.splice(moduleIndex, 1);
+    Vue.delete(Layer.modules, moduleName);
+  },
+  addModuleInstanceToLayer(state, { moduleName, moduleInstance, layerIndex }) {
+    Vue.set(state.layers[layerIndex].modules, moduleName, moduleInstance);
+  },
+  removeModuleInstanceFromLayer(state, { moduleName, layerIndex }) {
+    const Layer = state.layers[layerIndex];
+    Vue.delete(Layer.modules, moduleName);
   },
   addLayer(state, { layer }) {
     state.layers.push(layer);
@@ -108,6 +139,14 @@ const mutations = {
   },
   uncollapse(state, { layerIndex }) {
     state.layers[layerIndex].collapsed = false;
+  },
+  updateLayers(state, { layers }) {
+    state.layers = layers;
+  },
+  updateModuleOrder(state, { layerIndex, order }) {
+    const Layer = state.layers[layerIndex];
+    Layer.moduleOrder = order;
+    console.log(layerIndex, Layer, order);
   }
 };
 
