@@ -25,23 +25,28 @@
         </div>
       </div>
     </div>
-    <div
+    <draggable
       class="module-list"
-      @dragover.prevent='dragover'
-      @drop.prevent='drop'
+      v-model='modules'
+      :options="{ group: 'modules' }"
+      :data-layer-index='LayerIndex'
+      @add='drop'
     >
       <active-module
         v-for='module in modules'
         :moduleName='module'
         :key='module'
+        :data-module-name='module'
+        @dragstart.native='dragstart'
       ></active-module>
-    </div>
+    </draggable>
   </div>
 </template>
 
 <script>
   import { mapActions, mapGetters, mapMutations } from 'vuex';
   import ActiveModule from '@/components/ActiveModule';
+  import draggable from 'vuedraggable';
 
   export default {
     name: 'layer',
@@ -50,8 +55,13 @@
       'LayerIndex'
     ],
     computed: {
-      modules() {
-        return this.Layer.moduleOrder.map(moduleName => this.Layer.modules[moduleName]);
+      modules: {
+        get() {
+          return this.Layer.moduleOrder.map(moduleName => this.Layer.modules[moduleName]);
+        },
+        set(value) {
+          this.updateModuleOrder({ layerIndex: this.LayerIndex, order: value });
+        }
       },
       name() {
         if(!this.Layer) return '';
@@ -66,14 +76,36 @@
       },
       ...mapGetters('layers', [
         'focusedLayer'
-      ]),
+      ])
     },
     methods: {
+      drop(e) {
+        const moduleName = e.item.dataset.moduleName;
+
+        if(e.item.classList.contains('gallery-item')) {
+          e.item.parentNode.removeChild(e.item);
+          this.createActiveModule({ moduleName }).then((module) => {
+            this.addModuleToLayer({
+              module,
+              layerIndex: this.LayerIndex,
+              position: e.newIndex
+            });
+          });
+        } else {
+          console.log('hello');
+          const fromLayerIndex = parseInt(e.from.dataset.layerIndex, 10);
+          const toLayerIndex = this.LayerIndex;
+
+          this.moveModuleInstance({ fromLayerIndex, toLayerIndex, moduleName });
+        }
+      },
       ...mapActions('layers', [
         'addLayer',
         'toggleLocked',
         'toggleCollapsed',
-        'addModuleToLayer'
+        'addModuleToLayer',
+        'updateModuleOrder',
+        'moveModuleInstance'
       ]),
       ...mapActions('modVModules', [
         'createActiveModule'
@@ -121,15 +153,10 @@
       dragover(e) {
         if(this.locked) e.dataTransfer.dropEffect = 'none';
       },
-      drop(e) {
-        console.log(e);
-        const moduleName = e.dataTransfer.getData('module-name');
-        this.createActiveModule({ moduleName }).then((module) => {
-          this.addModuleToLayer({
-            module,
-            layerIndex: this.LayerIndex
-          });
-        });
+      dragstart(e) {
+        const moduleName = e.target.dataset.moduleName;
+        e.dataTransfer.setData('module-name', moduleName);
+        e.dataTransfer.setData('layer-index', this.LayerIndex);
       },
       clickToggleLock() {
         this.toggleLocked({ layerIndex: this.LayerIndex });
@@ -139,7 +166,8 @@
       }
     },
     components: {
-      ActiveModule
+      ActiveModule,
+      draggable
     }
   };
 </script>

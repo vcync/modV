@@ -1,30 +1,62 @@
 <template>
-  <div class="left-top active-list pure-g">
+  <draggable
+    :options='dragOptions'
+    v-model='layers'
+    class="left-top active-list pure-g"
+  >
     <layer
       v-for='(layer, index) in layers'
       :Layer='layer'
       :LayerIndex='index'
       :key='index'
     ></layer>
-  </div>
+  </draggable>
 </template>
 
 <script>
-  import { mapActions, mapGetters } from 'vuex';
+  import { mapActions, mapMutations, mapGetters } from 'vuex';
   import LayerComponent from '@/components/Layer';
+  import draggable from 'vuedraggable';
 
   export default {
     name: 'list',
-    computed: mapGetters('layers', {
-      layers: 'allLayers',
-      focusedLayer: 'focusedLayer'
-    }),
+    data() {
+      return {
+        dragOptions: {
+          group: {
+            name: 'layers',
+            pull: true,
+            put: true
+          },
+          handle: '.handle',
+          chosenClass: 'chosen'
+        }
+      };
+    },
+    computed: {
+      ...mapGetters('layers', {
+        allLayers: 'allLayers',
+        focusedLayer: 'focusedLayer'
+      }),
+      layers: {
+        get() {
+          return this.allLayers;
+        },
+        set(value) {
+          this.updateLayers({ layers: value });
+        }
+      }
+    },
     components: {
+      draggable,
       Layer: LayerComponent
     },
     methods: {
       ...mapActions('layers', [
         'addLayer'
+      ]),
+      ...mapMutations('layers', [
+        'updateLayers'
       ])
     },
     created() {

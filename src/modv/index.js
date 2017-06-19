@@ -69,6 +69,7 @@ class ModV extends EventEmitter2 {
 
   loop() {
     requestAnimationFrame(this.loop.bind(this));
+    this.layers = store.getters['layers/allLayers'];
 
     if(!this.meyda) return;
     const features = this.meyda.get(this.audioFeatures);
@@ -79,7 +80,7 @@ class ModV extends EventEmitter2 {
 
       context.clearRect(0, 0, canvas.width, canvas.height);
 
-      Object.keys(Layer.modules).forEach((moduleName) => {
+      Layer.moduleOrder.forEach((moduleName) => {
         const Module = this.getActiveModule(moduleName);
 
         if(!Module.info.enabled || Module.info.alpha === 0) return;

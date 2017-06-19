@@ -271,6 +271,7 @@ class Layer extends EventEmitter2 {
 
     if(typeof order !== 'undefined') {
       this.setOrder(moduleName, order, true);
+      console.log(orderIn);
     } else {
       order = this.moduleOrder.push(moduleName) - 1;
     }
@@ -529,7 +530,6 @@ class Layer extends EventEmitter2 {
   resize({ width, height, dpr }) {
     this.canvas.width = width * dpr;
     this.canvas.height = height * dpr;
-    console.log(width, height);
   }
 }
 

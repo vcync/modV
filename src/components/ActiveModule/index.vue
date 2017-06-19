@@ -1,5 +1,5 @@
 <template>
-  <div class="pure-u-1-1 active-item" :class='{current: focused}' tabindex="0" @focus='focusActiveModule'>
+  <div class="pure-u-1-1 active-item" :class='{current: focused}' tabindex="0" @focus='focusActiveModule' @dragstart='dragstart'>
     <div class="pure-g">
       <!-- <canvas class="preview"></canvas> --><!-- TODO: create preview option on mouseover item -->
       <div class="pure-u-1-1 title">
@@ -96,6 +96,7 @@
     },
     methods: {
       ...mapMutations('modVModules', [
+        'setCurrentDragged',
         'setModuleFocus'
       ]),
       ...mapGetters('modVModules', [
@@ -112,6 +113,9 @@
       },
       focusActiveModule() {
         this.setModuleFocus({ activeModuleName: this.moduleName });
+      },
+      dragstart() {
+        this.setCurrentDragged({ moduleName: this.moduleName });
       }
     },
     watch: {
