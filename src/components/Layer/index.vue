@@ -181,6 +181,132 @@
   };
 </script>
 
-<style scoped>
+<style scoped lang='scss'>
+  /* layer item */
+  .layer-item {
+    width: 100%;
+    min-height: 115px;
+    height: 100%;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.5);
+    background-color: hsla(70,0%,22%,1);
 
+    .module-list {
+      display: block;
+      min-height: 115px;
+      position: relative;
+      border-top: 1px solid rgba(255, 255, 255, 0.5);
+
+      &:before {
+        position: absolute;
+        top: 35%;
+        width: 100%;
+        height: auto;
+        text-align: center;
+        font-size: 2em;
+        color: rgb(49, 49, 49);
+        text-shadow: 1px 1px rgba(138, 138, 138, 0.34), -1px -1px #0e0e0e;
+        opacity: 0.7;
+        pointer-events: none;
+        content: 'Drag Modules Here';
+        letter-spacing: -0.008em;
+      }
+    }
+
+    .control-bar {
+      letter-spacing: 0px;
+      padding: 2px 2px;
+      height: 18px;
+      position: relative;
+      color: #fff;
+    }
+
+    .title {
+      display: inline-block;
+      min-width: 100px;
+
+      &.editable {
+        cursor: text;
+      }
+    }
+
+    &.active {
+      background-color: hsla(199,92%,92%,1);
+      border-bottom: 1px solid rgba(0, 0, 0, 0.5);
+
+      .control-bar {
+        color: #000;
+      }
+
+      .module-list {
+        border-top: 1px solid rgba(0, 0, 0, 0.5);
+
+        &:before {
+          color: hsla(199,92%,86%,1);
+          text-shadow: 1px 1px hsla(208,100%,100%,1), -1px -1px hsla(208,100%,73%,1);
+        }
+      }
+    }
+
+    .collapse,
+    .lock {
+      width: 18px;
+      height: 18px;
+      display: inline-block;
+      text-align: center;
+      vertical-align: middle;
+      cursor: pointer;
+    }
+
+    &.collapsed {
+      min-height: 0;
+
+      .module-list {
+        height: 0;
+        overflow: hidden;
+        min-height: 0;
+        padding: 0;
+        border: none;
+      }
+
+      .fa-toggle-up {
+        display: none;
+      }
+
+      .fa-toggle-down {
+        display: block;
+        margin: 1px 0 0 0;
+      }
+
+      .module-list {
+        height: 0;
+        overflow: hidden;
+        min-height: 0;
+        padding: 0;
+        border: none;
+      }
+    }
+
+    .fa-toggle-down {
+      display: none;
+    }
+
+    .layer-item-controls {
+      text-align: right;
+    }
+    .fa-toggle-down,
+    .fa-lock {
+      display: none;
+    }
+
+    &.locked {
+      .fa-unlock-alt {
+        display: none;
+      }
+
+      .fa-lock {
+        display: block;
+        margin: 1px 0 0 0;
+      }
+    }
+  }
 </style>

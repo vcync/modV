@@ -29,6 +29,16 @@
   };
 </script>
 
-<style scoped>
+<style scoped lang='scss'>
+  .search-bar-container {
+    width: 100%;
+    padding: 5pt;
 
+    input {
+      padding: 3px;
+      display: block;
+      width: 100%;
+      box-sizing: border-box;
+    }
+  }
 </style>

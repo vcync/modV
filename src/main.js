@@ -1,6 +1,7 @@
 // The Vue build version to load with the `import` command
 // (runtime-only or standalone) has been set in webpack.base.conf with an alias.
 import Vue from 'vue';
+import Dropdown from 'hsy-vue-dropdown';
 import { modV } from './modv';
 import App from './App';
 import store from '../store';
@@ -15,6 +16,8 @@ Object.defineProperty(Vue.prototype, '$modV', {
     return modV;
   }
 });
+
+Vue.use(Dropdown);
 
 /* eslint-disable no-new */
 new Vue({

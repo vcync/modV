@@ -15,6 +15,7 @@
   },
   "dependencies": {
     "eventemitter2": "^4.1.0",
+    "hsy-vue-dropdown": "0.0.5",
     "meyda": "^4.0.5",
     "tap-tempo": "^0.1.1",
     "twgl.js": "^3.4.0",

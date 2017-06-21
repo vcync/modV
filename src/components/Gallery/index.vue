@@ -88,12 +88,21 @@
   }
 
   .gallery-items {
+    align-content: stretch;
+    align-items: center;
+    box-sizing: border-box;
     display: grid;
     grid-template-columns: 25% 25% 25% 25%;
     justify-items: start;
-    align-items: center;
-    align-content: stretch;
     width: 100%;
+  }
+
+  .gallery {
+    background-color: #383838;
     box-sizing: border-box;
+    height: 100%;
+    min-width: 600px;
+    overflow: hidden;
+    padding: 5pt;
   }
 </style>
