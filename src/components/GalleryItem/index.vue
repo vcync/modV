@@ -10,6 +10,7 @@
 
 <script>
   import { mapActions, mapGetters } from 'vuex';
+  import { webgl } from '@/modv';
 
   export default {
     name: 'galleryItem',
@@ -62,6 +63,7 @@
         if(!e.target.classList.contains('preview')) return;
         if(this.raf) return;
         this.raf = requestAnimationFrame(this.draw);
+        webgl.resize(this.canvas.width, this.canvas.height);
       },
       mouseout(e) {
         if(!e.target.classList.contains('preview')) return;
@@ -75,7 +77,7 @@
         }).then((Module) => {
           this.addModuleToLayer({
             module: Module,
-            layerIndex: this.focusedLayer
+            layerIndex: this.focusedLayerIndex
           });
         });
       },
@@ -85,7 +87,7 @@
     },
     computed: {
       ...mapGetters('layers', [
-        'focusedLayer'
+        'focusedLayerIndex'
       ]),
       name() {
         const Module = this.Module;
@@ -100,8 +102,80 @@
 
 <style lang='scss' scoped>
   .gallery-item {
+    position: relative;
+    overflow: hidden;
+    box-sizing: border-box;
+    justify-self: center;
+    align-self: flex-start;
+    width: 100%;
+    padding-bottom: 56.249999993%;
+    cursor: move;
+
+    .title-wrapper {
+      background-color: rgba(0,0,0,0.5);
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      text-align: center;
+      pointer-events: none;
+      transition: all 300ms;
+      font-size: 0;
+      margin: 5pt;
+
+      .title {
+        color: #fff;
+        vertical-align: middle;
+        transition: all 300ms;
+        font-size: 18px;
+        letter-spacing: -1px;
+      }
+    }
+
     &:hover {
-      cursor: move;
+      .title-wrapper {
+        background-color: rgba(0,0,0,0);
+      }
+
+      .title {
+        color: rgba(255,255,255,0);
+      }
+    }
+
+    canvas {
+      box-shadow: 0px 0px 6px 0px rgba(0,0,0,.8);
+      background-color: #000;
+      width: calc(100% - 10pt);
+      height: calc(100% - 10pt);
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      margin: 5pt;
+    }
+
+    &.sortable-ghost {
+      padding: 0;
+
+      .title {
+        position: absolute;
+        top: 8px;
+        left: 8px;
+        font-size: 25.6px;
+        letter-spacing: -2px;
+      }
+
+      .title-wrapper {
+        background-color: rgba(0,0,0,0);
+        margin: 0pt;
+      }
+
+      canvas {
+        margin: 0;
+        width: 100%;
+      }
     }
   }
 </style>

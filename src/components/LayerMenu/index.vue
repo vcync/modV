@@ -18,6 +18,17 @@
   };
 </script>
 
-<style scoped>
-
+<style scoped lang='scss'>
+  .layer-menu {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    height: 33px;
+    background-color: #383838;
+    padding: 5px;
+    box-sizing: border-box;
+    border-top: 1px solid rgba(255, 255, 255, 0.5);
+    z-index: 101;
+  }
 </style>

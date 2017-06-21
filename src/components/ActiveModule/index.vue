@@ -20,40 +20,7 @@
         </div>
         <div class="control-group blending-group">
           <label for="">Blending</label>
-          <select class="composite-operations" style="color: black" v-model='compositeOperation'>
-            <optgroup label="Blend Modes">
-              <option value="normal">Normal</option>
-              <option value="multiply">Multiply</option>
-              <option value="overlay">Overlay</option>
-              <option value="darken">Darken</option>
-              <option value="lighten">Lighten</option>
-              <option value="color-dodge">Color dodge</option>
-              <option value="color-burn">Color burn</option>
-              <option value="hard-light">Hard light</option>
-              <option value="soft-light">Soft light</option>
-              <option value="difference">Difference</option>
-              <option value="exclusion">Exclusion</option>
-              <option value="hue">Hue</option>
-              <option value="saturation">Saturation</option>
-              <option value="color">Color</option>
-              <option value="luminosity">Luminosity</option>
-            </optgroup>
-            <optgroup label="Composite Modes">
-              <option value="clear">Clear</option>
-              <option value="copy">Copy</option>
-              <option value="destination">Destination</option>
-              <option value="source-over">Source over</option>
-              <option value="destination-over">Destination over</option>
-              <option value="source-in">Source in</option>
-              <option value="destination-in">Destination in</option>
-              <option value="source-out">Source out</option>
-              <option value="destination-out">Destination out</option>
-              <option value="source-atop">Source atop</option>
-              <option value="destination-atop">Destination atop</option>
-              <option value="xor">Xor</option>
-              <option value="lighter">Lighter</option>
-            </optgroup>
-          </select>
+          <dropdown :data="operations" grouped placeholder='Normal' :width='150' :cbChanged="compositeOperationChanged"></dropdown>
         </div>
       </div>
       <div class="pure-u-1-5 handle-container">
@@ -74,7 +41,100 @@
       return {
         compositeOperation: 'normal',
         enabled: true,
-        opacity: 1
+        opacity: 1,
+        operations: [{
+          label: 'Blend Modes',
+          children: [{
+            label: 'Normal',
+            value: 'normal',
+            selected: true
+          }, {
+            label: 'Multiply',
+            value: 'multiply'
+          }, {
+            label: 'Overlay',
+            value: 'overlay'
+          }, {
+            label: 'Darken',
+            value: 'darken'
+          }, {
+            label: 'Lighten',
+            value: 'lighten'
+          }, {
+            label: 'Color Dodge',
+            value: 'color-dodge'
+          }, {
+            label: 'Color Burn',
+            value: 'color-burn'
+          }, {
+            label: 'Hard Light',
+            value: 'hard-light'
+          }, {
+            label: 'Soft Light',
+            value: 'soft-light'
+          }, {
+            label: 'Difference',
+            value: 'difference'
+          }, {
+            label: 'Exclusion',
+            value: 'exclusion'
+          }, {
+            label: 'Hue',
+            value: 'hue'
+          }, {
+            label: 'Saturation',
+            value: 'saturation'
+          }, {
+            label: 'Color',
+            value: 'color'
+          }, {
+            label: 'Luminosity',
+            value: 'luminosity'
+          }]
+        },
+        {
+          label: 'Composite Modes',
+          children: [{
+            label: 'Clear',
+            value: 'clear'
+          }, {
+            label: 'Copy',
+            value: 'copy'
+          }, {
+            label: 'Destination',
+            value: 'destination'
+          }, {
+            label: 'Source Over',
+            value: 'source-over'
+          }, {
+            label: 'Destination Over',
+            value: 'destination-over'
+          }, {
+            label: 'Source In',
+            value: 'source-in'
+          }, {
+            label: 'Destination In',
+            value: 'destination-in'
+          }, {
+            label: 'Source Out',
+            value: 'source-out'
+          }, {
+            label: 'Destination Out',
+            value: 'destination-out'
+          }, {
+            label: 'Source Atop',
+            value: 'source-atop'
+          }, {
+            label: 'Destination Atop',
+            value: 'destination-atop'
+          }, {
+            label: 'Xor',
+            value: 'xor'
+          }, {
+            label: 'Lighter',
+            value: 'lighter'
+          }]
+        }]
       };
     },
     props: [
@@ -116,6 +176,9 @@
       },
       dragstart() {
         this.setCurrentDragged({ moduleName: this.moduleName });
+      },
+      compositeOperationChanged(item) {
+        this.compositeOperation = item[0].value;
       }
     },
     watch: {
@@ -132,8 +195,81 @@
   };
 </script>
 
-<style scoped>
-  select.composite-operations {
-    width: 60%;
+<style scoped lang='scss'>
+  .active-item {
+    background-color: #222;
+    border-bottom: 1px #333 solid;
+    box-sizing: border-box;
+    color: #fff;
+    display: inline-block;
+    max-height: 115px;
+    padding: 8px;
+    position: relative;
+    transition: background 150ms;
+
+
+    &:nth-child(even) {
+      background-color: #000;
+    }
+
+    &.current {
+      background-color: aliceblue;
+      color: black;
+      z-index: 100;
+    }
+
+    &.chosen {
+      animation-direction: alternate;
+      animation-duration: 700ms;
+      animation-iteration-count: infinite;
+      animation-name: chosen;
+      animation-timing-function: linear;
+    }
+
+    &.chosen.deletable {
+      animation-name: chosen-deletable;
+    }
+
+    @keyframes chosen {
+      from {
+        background-color: aliceblue;
+      }
+
+      to {
+        background-color: lime;
+      }
+    }
+
+    @keyframes chosen-deletable {
+      from {
+        background-color: aliceblue;
+      }
+
+      to {
+        background-color: red;
+      }
+    }
+
+    .title {
+      font-size: 1.6em;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+
+    .options label {
+      font-size: 0.8em;
+    }
+
+    .handle-container {
+      text-align: right;
+    }
+
+    .handle-container .handle {
+      cursor: move;
+      display: inline-block;
+      text-align: center;
+      vertical-align: middle;
+    }
   }
 </style>

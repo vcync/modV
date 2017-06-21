@@ -149,10 +149,8 @@ class ModuleShader extends Module {
       gl.RGBA,
       gl.RGBA,
       gl.UNSIGNED_BYTE,
-      modV.bufferCanvas
+      modV.outputCanvas
     );
-
-    // webgl.resize(canvas.width, canvas.height);
 
     // Clear WebGL canvas
     gl.clearColor(0.0, 0.0, 0.0, 0.0);

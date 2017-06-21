@@ -33,7 +33,7 @@ class Plasma extends ModuleShader {
       label: 'Scale X',
       varType: 'float',
       min: 1.0,
-      max: 1000.0,
+      max: 150.0,
       step: 1.0,
       default: 50.0
     });
@@ -44,7 +44,7 @@ class Plasma extends ModuleShader {
       label: 'Scale Y',
       varType: 'float',
       min: 1.0,
-      max: 1000.0,
+      max: 150.0,
       step: 1.0,
       default: 50.0
     });
