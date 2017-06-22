@@ -18,6 +18,7 @@
   import { mapGetters } from 'vuex';
   import rangeControl from './RangeControl';
   import checkboxControl from './CheckboxControl';
+  import paletteControl from './PaletteControl';
 
   export default {
     name: 'controlPanel',
@@ -39,6 +40,7 @@
     },
     components: {
       checkboxControl,
+      paletteControl,
       rangeControl
     }
   };

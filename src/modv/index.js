@@ -28,6 +28,7 @@ class ModV extends EventEmitter2 {
       audio: store.getters['mediaStream/audioSources'],
       video: store.getters['mediaStream/videoSources']
     };
+    this.palettes = store.getters['palettes/allPalettes'];
 
     this.useDetectedBpm = store.getters['tempo/detect'];
     this.bpm = store.getters['tempo/bpm'];
