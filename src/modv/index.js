@@ -6,6 +6,7 @@ import Layer from './Layer';
 import { scan, setSource } from './MediaStream';
 import draw from './draw';
 import setupWebGl from './webgl';
+import PaletteWorker from './palette-worker/palette-worker';
 
 class ModV extends EventEmitter2 {
 
@@ -84,6 +85,7 @@ class ModV extends EventEmitter2 {
     }).then(setMediaStreamSource).then(({ audioSourceId, videoSourceId }) => {
       store.commit('mediaStream/setCurrentAudioSource', { sourceId: audioSourceId });
       store.commit('mediaStream/setCurrentVideoSource', { sourceId: videoSourceId });
+      this.createWorkers();
       requestAnimationFrame(this.loop.bind(this));
     });
   }
@@ -133,13 +135,25 @@ class ModV extends EventEmitter2 {
 
   /** @return {WorkersDataType} */
   createWorkers() {//eslint-disable-line
-    // const palette = new PaletteWorker();
-    // palette.on(PaletteWorker.EventType.PALETTE_ADDED, this.paletteAddHandler.bind(this));
-    // palette.on(PaletteWorker.EventType.PALETTE_UPDATED, this.paletteUpdateHandler.bind(this));
+    const palette = new PaletteWorker();
+    palette.on(PaletteWorker.EventType.PALETTE_ADDED, this.paletteAddHandler.bind(this));
+    palette.on(PaletteWorker.EventType.PALETTE_UPDATED, this.paletteUpdateHandler.bind(this));
 
-    // return {
-    //   palette,
-    // };
+    return {
+      palette,
+    };
+  }
+
+  /**
+   * @protected
+   * @param {string} id
+   */
+  paletteAddHandler(id) {
+    if(!this.palettes.has(id)) {
+      this.palettes.set(id, {});
+    } else {
+      console.error('Palette with ID', id, 'already exists');
+    }
   }
 
   /**
