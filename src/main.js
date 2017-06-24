@@ -39,7 +39,8 @@ new Vue({
       'MattiasCRT',
       'FilmGrain',
       'ChromaticAbberation',
-      'Stretch'
+      'Stretch',
+      'Wobble'
     ];
 
     modules.forEach((fileName) => {

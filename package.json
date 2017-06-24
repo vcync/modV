@@ -24,7 +24,8 @@
     "vuedraggable": "git+https://github.com/SortableJS/Vue.Draggable.git",
     "vuex": "^2.3.1",
     "webgl-compile-shader": "^2.3.9",
-    "worker-loader": "^0.8.0"
+    "worker-loader": "^0.8.0",
+    "vuex-localstorage": "^1.0.0"
   },
   "devDependencies": {
     "autoprefixer": "^6.7.2",

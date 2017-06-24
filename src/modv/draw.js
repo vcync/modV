@@ -19,7 +19,7 @@ function draw(δ) {
   const features = modV.meyda.get(audioFeatures);
 
   layers.forEach((Layer, LayerIndex) => {
-    const canvas = Layer.canvas;
+    let canvas = Layer.canvas;
     const context = Layer.context;
 
     const clearing = Layer.clearing;
@@ -57,20 +57,55 @@ function draw(δ) {
 
     if(!enabled || alpha === 0) return;
 
-    Layer.moduleOrder.forEach((moduleName) => {
+    Layer.moduleOrder.forEach((moduleName, moduleIndex) => {
       const Module = getActiveModule(moduleName);
 
       if(!Module.info.enabled || Module.info.alpha === 0) return;
 
+      if(pipeline && moduleIndex !== 0) {
+        canvas = bufferCanvas;
+      } else if(pipeline) {
+        canvas = Layer.canvas;
+      }
+
       if(Module instanceof Module2D) {
-        Module.render({
-          canvas,
-          context,
-          video: modV.videoStream,
-          features,
-          meyda: modV.meyda,
-          delta: δ
-        });
+        if(pipeline) {
+          context.clearRect(0, 0, canvas.width, canvas.height);
+          context.drawImage(
+            bufferCanvas,
+            0,
+            0,
+            canvas.width,
+            canvas.height
+          );
+
+          Module.render({
+            canvas,
+            context,
+            video: modV.videoStream,
+            features,
+            meyda: modV.meyda,
+            delta: δ
+          });
+
+          bufferContext.clearRect(0, 0, canvas.width, canvas.height);
+          bufferContext.drawImage(
+            Layer.canvas,
+            0,
+            0,
+            canvas.width,
+            canvas.height
+          );
+        } else {
+          Module.render({
+            canvas,
+            context,
+            video: modV.videoStream,
+            features,
+            meyda: modV.meyda,
+            delta: δ
+          });
+        }
       }
 
       if(Module instanceof ModuleShader) {
@@ -94,14 +129,45 @@ function draw(δ) {
         context.save();
         context.globalAlpha = Module.info.alpha || 1;
         context.globalCompositeOperation = Module.info.compositeOperation || 'normal';
+
+        // Copy Shader Canvas to Main Canvas
+        if(pipeline) {
+          bufferContext.clearRect(
+            0,
+            0,
+            canvas.width,
+            canvas.height
+          );
+
+          bufferContext.drawImage(
+            webgl.canvas,
+            0,
+            0,
+            canvas.width,
+            canvas.height
+          );
+        } else {
+          context.drawImage(
+            webgl.canvas,
+            0,
+            0,
+            canvas.width,
+            canvas.height
+          );
+        }
+
+        context.restore();
+      }
+
+      if(pipeline) {
+        context.clearRect(0, 0, canvas.width, canvas.height);
         context.drawImage(
-          webgl.canvas,
+          bufferCanvas,
           0,
           0,
           canvas.width,
           canvas.height
         );
-        context.restore();
       }
     });
   });
