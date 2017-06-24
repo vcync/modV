@@ -24,7 +24,7 @@ const actions = {
     const width = store.getters['size/width'];
     const height = store.getters['size/height'];
     let dpr = 1;
-    if(store.getters['size/useRetina']) {
+    if(store.getters['user/useRetina']) {
       dpr = window.devicePixelRatio;
     }
 

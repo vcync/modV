@@ -1,4 +1,5 @@
 import Meyda from 'meyda';
+import { modV } from '@/modv';
 
 function userMediaSuccess(stream, ids) {
   return new Promise((resolve) => {
@@ -45,6 +46,9 @@ function userMediaSuccess(stream, ids) {
 
     // Tell the rest of the script we're all good.
     this.mediaSourcesInited = true;
+
+    if(!modV.mainRaf) modV.mainRaf = requestAnimationFrame(modV.loop.bind(modV));
+
     resolve(ids);
   });
 }
@@ -61,31 +65,15 @@ function setMediaSource({ audioSourceId, videoSourceId }) {
 
     if(audioSourceId) {
       constraints.audio = {
-        optional: [
-          { googNoiseSuppression: false },
-          { googEchoCancellation: false },
-          { googEchoCancellation2: false },
-          { googAutoGainControl: false },
-          { googNoiseSuppression2: false },
-          { googHighpassFilter: false },
-          { googTypingNoiseDetection: false },
-          { sourceId: audioSourceId }
-        ]
+        echoCancellation: { exact: false },
+        deviceId: audioSourceId
       };
     }
 
     if(videoSourceId) {
       constraints.video = {
-        optional: [
-          { googNoiseSuppression: false },
-          { googEchoCancellation: false },
-          { googEchoCancellation2: false },
-          { googAutoGainControl: false },
-          { googNoiseSuppression2: false },
-          { googHighpassFilter: false },
-          { googTypingNoiseDetection: false },
-          { sourceId: videoSourceId }
-        ]
+        echoCancellation: { exact: false },
+        deviceId: videoSourceId
       };
     }
 

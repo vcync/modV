@@ -43,6 +43,8 @@ class ModV extends EventEmitter2 {
 
     this.webgl = setupWebGl(this);
 
+    this.mainRaf = null;
+
     window.addEventListener('unload', () => {
       this.windows.forEach((windowController) => {
         const windowRef = this.windowReference(windowController.window);
@@ -77,19 +79,37 @@ class ModV extends EventEmitter2 {
     mediaStreamScan().then((mediaStreamDevices) => {
       mediaStreamDevices.audio.forEach(source => store.commit('mediaStream/addAudioSource', { source }));
       mediaStreamDevices.video.forEach(source => store.commit('mediaStream/addVideoSource', { source }));
+
+      let audioSourceId;
+      let videoSourceId;
+
+      if(store.getters['user/currentAudioSource']) {
+        audioSourceId = store.getters['user/currentAudioSource'];
+      } else if(mediaStreamDevices.audio.length > 0) {
+        audioSourceId = mediaStreamDevices.audio[0].deviceId;
+      }
+
+      if(store.getters['user/setCurrentVideoSource']) {
+        videoSourceId = store.getters['user/setCurrentVideoSource'];
+      } else if (mediaStreamDevices.video.length > 0) {
+        videoSourceId = mediaStreamDevices.video[0].deviceId;
+      }
+
       return {
-        audioSourceId: mediaStreamDevices.audio[0].deviceId,
-        videoSourceId: mediaStreamDevices.video[0].deviceId
+        audioSourceId,
+        videoSourceId
       };
     }).then(setMediaStreamSource).then(({ audioSourceId, videoSourceId }) => {
-      store.commit('mediaStream/setCurrentAudioSource', { sourceId: audioSourceId });
-      store.commit('mediaStream/setCurrentVideoSource', { sourceId: videoSourceId });
-      requestAnimationFrame(this.loop.bind(this));
+      store.commit('user/setCurrentAudioSource', { sourceId: audioSourceId });
+      store.commit('user/setCurrentVideoSource', { sourceId: videoSourceId });
+
+      this.mainRaf = requestAnimationFrame(this.loop.bind(this));
     });
+    store.dispatch('size/resizePreviewCanvas');
   }
 
   loop(δ) {
-    requestAnimationFrame(this.loop.bind(this));
+    this.mainRaf = requestAnimationFrame(this.loop.bind(this));
     let features = [];
     if(this.audioFeatures.length > 0) features = this.meyda.get(this.audioFeatures);
     if(features) {

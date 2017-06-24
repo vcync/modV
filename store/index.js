@@ -1,5 +1,6 @@
 import Vue from 'vue';
 import Vuex from 'vuex';
+import createPersist from 'vuex-localstorage';
 import layers from './modules/layers';
 import mediaStream from './modules/media-stream';
 import meyda from './modules/meyda';
@@ -14,6 +15,14 @@ Vue.use(Vuex);
 const debug = process.env.NODE_ENV !== 'production';
 
 export default new Vuex.Store({
+  plugins: [
+    createPersist({
+      namespace: 'modv',
+      initialState: {},
+      paths: ['user'],
+      expires: 0 // Never expire
+    })
+  ],
   modules: {
     layers,
     mediaStream,
