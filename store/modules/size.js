@@ -4,7 +4,6 @@ import { modV } from '@/modv';
 const state = {
   width: 200,
   height: 200,
-  useRetina: true,
   previewX: 0,
   previewY: 0,
   previewWidth: 0,
@@ -19,14 +18,13 @@ const getters = {
   dimensions: (state) => {
     return { width: state.width, height: state.height };
   },
-  useRetina: state => state.useRetina,
   previewValues: (state) => {
     return {
       width: state.previewWidth,
       height: state.previewHeight,
       x: state.previewX,
       y: state.previewY
-    }
+    };
   }
 };
 
@@ -38,7 +36,7 @@ const actions = {
       commit('setDimensions', { width, height });
 
       let dpr = window.devicePixelRatio || 1;
-      if(!state.useRetina) dpr = 1;
+      if(!store.getters['user/useRetina']) dpr = 1;
 
       modV.resize(state.width, state.height, dpr);
       store.dispatch('modVModules/resizeActive');
@@ -46,16 +44,6 @@ const actions = {
       store.dispatch('windows/resize', { width: state.width, height: state.height, dpr });
       store.dispatch('size/calculatePreviewCanvasValues');
     }
-  },
-  setUseRetina({ commit, state }, { useRetina }) {
-    let dpr = window.devicePixelRatio || 1;
-    if(!useRetina) dpr = 1;
-
-    commit('setUseRetina', { useRetina });
-    modV.resize(state.width, state.height, dpr);
-    store.dispatch('modVModules/resizeActive');
-    store.dispatch('layers/resize', { width: state.width, height: state.height, dpr });
-    store.dispatch('windows/resize', { width: state.width, height: state.height, dpr });
   },
   resizePreviewCanvas({ commit, state }) {
     const boundingRect = modV.previewCanvas.getBoundingClientRect();
@@ -98,9 +86,6 @@ const mutations = {
   setDimensions(state, { width, height }) {
     state.width = width;
     state.height = height;
-  },
-  setUseRetina(state, { useRetina }) {
-    state.useRetina = useRetina;
   },
   setPreviewValues(state, { width, height, x, y }) {
     state.previewWidth = width;

@@ -50,7 +50,7 @@ const actions = {
     module.info.compositeOperation = 'normal';
 
     const dimensions = store.getters['size/dimensions'];
-    const useDpr = store.getters['size/useRetina'];
+    const useDpr = store.getters['user/useRetina'];
 
     if(useDpr) {
       dimensions.width *= window.devicePixelRatio;
