@@ -7,6 +7,7 @@ import { forIn } from '../utils';
 
 let timer;
 const palettes = new Map();
+self.palettes = palettes;
 
 function createPalette(colors, duration, id) {
   const pal = new Palette(colors, duration, id);

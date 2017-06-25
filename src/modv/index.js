@@ -46,6 +46,7 @@ class ModV extends EventEmitter2 {
     this.webgl = setupWebGl(this);
 
     this.mainRaf = null;
+    this.workers = {};
 
     window.addEventListener('unload', () => {
       this.windows.forEach((windowController) => {
@@ -107,7 +108,7 @@ class ModV extends EventEmitter2 {
 
       this.mainRaf = requestAnimationFrame(this.loop.bind(this));
     });
-    this.createWorkers();
+    this.workers = this.createWorkers();
     store.dispatch('size/resizePreviewCanvas');
   }
 

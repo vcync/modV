@@ -1,3 +1,5 @@
+import { modV } from '@/modv';
+
 const state = {
   palettes: new Map()
 };
@@ -9,25 +11,34 @@ const getters = {
 
 // actions
 const actions = {
-  createWindow({ commit }, { id, palette }) {
-    return new Promise((resolve, reject) => {
+  createPalette({ commit }, { id, colors, duration }) {
+    if(state.palettes.has(id)) return;
+
+    let colorsPassed = [];
+    let durationPassed = 300;
+
+    if(colors) colorsPassed = colors;
+    if(duration) durationPassed = duration;
+
+    return new Promise((resolve) => {
+      modV.workers.palette.createPalette(id, colorsPassed, durationPassed);
       commit('addPalette', id);
+      resolve();
     });
   }
 };
 
 // mutations
 const mutations = {
-  addPalette(state, { id, palette }) {
+  addPalette(state, { id }) {
     if(!state.palettes.has(id)) {
       state.palettes.set(id, {});
-    } else {
-      console.error('Palette with ID', id, 'already exists');
     }
   }
 };
 
 export default {
+  namespaced: true,
   state,
   getters,
   actions,

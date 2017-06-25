@@ -238,18 +238,6 @@ canvas {
 	height: 100%;
 }
 
-/* Palette Control */
-div.palette div.swatch {
-	display: inline-block;
-	width: 10px;
-	height: 10px;
-	border: 1px #aaa solid;
-}
-
-div.palette div.swatch ~ div.swatch {
-	border-left: none;
-}
-
 /* Range styles */
 input[type=range] {
 	-webkit-appearance: none;

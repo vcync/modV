@@ -32,9 +32,9 @@ function calculateStep(colors, currentColor, currentTime, timePeriod) {
   const b2 = colors[nextColor][2];
 
   const p = currentTime / (timePeriod - 1);
-  const r = Math.round(((((1.0 - p) * r1) + p) * r2) + 0.5);
-  const g = Math.round(((((1.0 - p) * g1) + p) * g2) + 0.5);
-  const b = Math.round(((((1.0 - p) * b1) + p) * b2) + 0.5);
+  const r = Math.round((1.0 - p) * r1 + p * r2 + 0.5); // eslint-disable-line
+  const g = Math.round((1.0 - p) * g1 + p * g2 + 0.5); // eslint-disable-line
+  const b = Math.round((1.0 - p) * b1 + p * b2 + 0.5); // eslint-disable-line
 
   return [r, g, b];
 }
@@ -103,7 +103,7 @@ Palette.prototype.nextStep = function nextStep(cb) {
     return colorToRGBString(this.colors[0]);
   }
 
-  this.currentTime += 1;
+  this.currentTime += (1000 / 60);
 
   if(this.currentTime >= this.timePeriod) {
     if(this.currentColor > this.colors.length - 2) {
