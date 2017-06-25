@@ -1,7 +1,8 @@
+import Vue from 'vue';
 import { modV } from '@/modv';
 
 const state = {
-  palettes: new Map()
+  palettes: {}
 };
 
 // getters
@@ -11,8 +12,8 @@ const getters = {
 
 // actions
 const actions = {
-  createPalette({ commit }, { id, colors, duration }) {
-    if(state.palettes.has(id)) return;
+  createPalette({ commit }, { id, colors, duration, moduleName, variable }) {
+    if(id in state.palettes === true) return;
 
     let colorsPassed = [];
     let durationPassed = 300;
@@ -20,20 +21,30 @@ const actions = {
     if(colors) colorsPassed = colors;
     if(duration) durationPassed = duration;
 
-    return new Promise((resolve) => {
-      modV.workers.palette.createPalette(id, colorsPassed, durationPassed);
-      commit('addPalette', id);
-      resolve();
+    modV.workers.palette.createPalette(id, colorsPassed, durationPassed);
+    commit('addPalette', { id, colors, duration, moduleName, variable });
+  },
+  updateBpm({ commit }, { bpm }) {
+    Object.keys(state.palettes).forEach((id) => {
+      modV.workers.palette.setPalette(id, {
+        bpm
+      });
     });
   }
 };
 
 // mutations
 const mutations = {
-  addPalette(state, { id }) {
-    if(!state.palettes.has(id)) {
-      state.palettes.set(id, {});
+  addPalette(state, { id, colors, duration, moduleName, variable }) {
+    if(id in state.palettes === false) {
+      Vue.set(state.palettes, id, {
+        colors,
+        duration,
+        moduleName,
+        variable
+      });
     }
+    console.log(state.palettes);
   }
 };
 

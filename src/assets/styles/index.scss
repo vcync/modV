@@ -286,10 +286,17 @@ input[type=range]:active::-webkit-slider-thumb  {
 /*	margin-left: -3px;
 */}
 
-input[disabled][type="range"]::-webkit-slider-thumb,
-input[disabled][type="range"]::-webkit-slider-runnable-track{
+input[disabled][type="range"]::-webkit-slider-thumb {
 	cursor: not-allowed;
-	background-color: #F3F3F3;/*#FF8600;*/
+	background-color: #F3F3F3;
+	height: 20px;
+	width: 20px;
+	margin-top: -5px;
+}
+
+input[disabled][type="range"]::-webkit-slider-runnable-track {
+	cursor: not-allowed;
+	background-color: #ddd;
 }
 
 /* Checkbox styles */

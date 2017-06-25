@@ -1,3 +1,5 @@
+import store from '../index';
+
 const state = {
   bpm: 120,
   detect: true
@@ -11,7 +13,10 @@ const getters = {
 
 // actions
 const actions = {
-
+  setBpm({ commit }, { bpm }) {
+    commit('setBpm', { bpm });
+    store.dispatch('palettes/updateBpm', { bpm });
+  }
 };
 
 // mutations

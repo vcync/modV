@@ -70,6 +70,24 @@ const actions = {
     }
 
     newModuleName = `${newModuleName}${appendToName || ''}`;
+
+    if('controls' in module.info) {
+      Object.keys(module.info.controls).forEach((key) => {
+        const control = module.info.controls[key];
+        const inputId = `${newModuleName}-${control.variable}`;
+
+        if(control.type === 'paletteControl') {
+          store.dispatch('palettes/createPalette', {
+            id: inputId,
+            colors: control.colors || [],
+            duration: control.timePeriod,
+            moduleName: newModuleName,
+            variable: control.variable
+          });
+        }
+      });
+    }
+
     commit('addActiveModule', { module, moduleName: newModuleName });
     return module;
   },

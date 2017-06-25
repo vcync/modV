@@ -18,11 +18,18 @@
         >
         </div>
       </div>
-<!--       <div
-        :style="`border-color: ${value}`"
-        class="pure-form-message-inline"
-      >{{ value }}</div> -->
+      <div class="pure-form-message-inline">
+        <button
+          class="pure-button"
+          @click='togglePicker'
+        >{{ pickerButtonText }} picker</button>
+      </div>
     </div>
+
+    <div class="picker-wrapper">
+      <sketch-picker v-model="pickerColors" :class="{'hidden': !showPicker}" />
+    </div>
+
     <div class="pure-control-group">
       <label :for='`${inputId}-duration`'>Duration</label>
       <input
@@ -31,10 +38,46 @@
         v-model='durationInput'
         max='1000'
         min='2'
+        :disabled='useBpmInput'
       >
-      <div class="pure-form-message-inline">{{ durationInput }}</div>
+      <input
+        class="pure-form-message-inline"
+        type='number'
+        min='2'
+        v-model='durationInput'
+        step='any'
+        :disabled='useBpmInput'
+      >
     </div>
-    <sketch-picker v-model="pickerColors" />
+    <div class="pure-control-group">
+      <label :for='`${inputId}-useBpm`'>Sync duration to BPM</label>
+      <div class='customCheckbox'>
+        <input
+          :id='`${inputId}-useBpm`'
+          type='checkbox'
+          v-model='useBpmInput'
+        >
+        <label :for='`${inputId}-useBpm`'></label>
+      </div>
+    </div>
+    <div class="pure-control-group" :class="{'hidden': !useBpmInput}">
+      <label :for='`${inputId}-duration`'>BPM Division</label>
+      <input
+        :id='`${inputId}-duration`'
+        type='range'
+        v-model='bpmDivisonInput'
+        max='32'
+        min='1'
+        step='1'
+      >
+      <input
+        class="pure-form-message-inline"
+        type='number'
+        v-model='bpmDivisonInput'
+        min='1'
+        step='1'
+      >
+    </div>
   </div>
 </template>
 
@@ -78,7 +121,10 @@
         value: undefined,
         currentColor: 0,
         durationInput: undefined,
-        pickerColors: defaultProps
+        pickerColors: defaultProps,
+        showPicker: false,
+        useBpmInput: false,
+        bpmDivisonInput: 16
       };
     },
     computed: {
@@ -113,15 +159,17 @@
       pickerRgbString() {
         const rgba = this.pickerColors.rgba;
         return `rgb(${rgba.r},${rgba.g},${rgba.b})`;
+      },
+      pickerButtonText() {
+        return this.showPicker ? 'Hide' : 'Show';
       }
     },
     methods: {
       ...mapActions('palettes', [
         'createPalette'
       ]),
-      update(id, currentColor, currentStep) {
+      update(id, currentColor) {
         if(id === this.inputId) {
-          this.value = currentStep;
           this.currentColor = currentColor;
         }
       },
@@ -136,6 +184,9 @@
         modV.workers.palette.setPalette(this.inputId, {
           colors: this.control.colors
         });
+      },
+      togglePicker() {
+        this.showPicker = !this.showPicker;
       }
     },
     created() {
@@ -147,6 +198,8 @@
       if(typeof this.value === 'undefined') this.value = this.defaultValue;
 
       this.durationInput = this.timePeriod;
+      this.useBpmInput = this.control.useBpm;
+      this.bpmDivisonInput = this.control.bpmDivison;
     },
     watch: {
       module() {
@@ -160,6 +213,18 @@
           timePeriod: this.durationInput
         });
         this.control.timePeriod = this.durationInput;
+      },
+      useBpmInput() {
+        modV.workers.palette.setPalette(this.inputId, {
+          useBpm: this.useBpmInput
+        });
+        this.control.useBpm = this.useBpmInput;
+      },
+      bpmDivisonInput() {
+        modV.workers.palette.setPalette(this.inputId, {
+          bpmDivison: this.bpmDivisonInput
+        });
+        this.control.bpmDivison = this.bpmDivisonInput;
       }
     },
     components: {
@@ -179,6 +244,7 @@
     text-align: left !important;
     vertical-align: middle !important;
     margin-right: 0 !important;
+    cursor: pointer;
   }
 
   .swatch ~ .swatch {
@@ -188,10 +254,6 @@
   .swatch.current {
     border-color: #000;
     z-index: 1;
-  }
-
-  .add-swatch {
-    cursor: pointer;
   }
 
   .add-swatch::before {
@@ -214,8 +276,25 @@
     width: 129px;
   }
 
-  .palette ~ .pure-form-message-inline {
-    border: 1px solid;
-    font-family: monospace;
+  input.pure-form-message-inline {
+    max-width: 70px;
+  }
+
+  .picker-wrapper {
+    text-align: right;
+
+    .vue-color__sketch {
+      display: inline-block;
+      margin: 1em;
+      text-align: left;
+    }
+  }
+
+  .customCheckbox label {
+    text-align: initial;
+    display: initial;
+    vertical-align: initial;
+    width: 20px;
+    margin: initial;
   }
 </style>

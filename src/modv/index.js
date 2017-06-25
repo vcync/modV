@@ -1,3 +1,4 @@
+import Vue from 'vue';
 import EventEmitter2 from 'eventemitter2';
 import BeatDetektor from '@/extra/beatdetektor';
 import store from '@/../store/';
@@ -151,14 +152,14 @@ class ModV extends EventEmitter2 {
 
     const bpm = Math.round(newBpm);
     if(this.bpm !== bpm) {
-      store.commit('tempo/setBpm', { bpm });
+      store.dispatch('tempo/setBpm', { bpm });
     }
   }
 
   /** @return {WorkersDataType} */
   createWorkers() {//eslint-disable-line
     const palette = new PaletteWorker();
-    palette.on(PaletteWorker.EventType.PALETTE_ADDED, this.paletteAddHandler.bind(this));
+    // palette.on(PaletteWorker.EventType.PALETTE_ADDED, this.paletteAddHandler.bind(this));
     palette.on(PaletteWorker.EventType.PALETTE_UPDATED, this.paletteUpdateHandler.bind(this));
 
     return {
@@ -166,17 +167,19 @@ class ModV extends EventEmitter2 {
     };
   }
 
-  /**
-   * @protected
-   * @param {string} id
-   */
-  paletteAddHandler(id) {
-    if(!this.palettes.has(id)) {
-      this.palettes.set(id, {});
-    } else {
-      console.error('Palette with ID', id, 'already exists');
-    }
-  }
+  // /**
+  //  * @protected
+  //  * @param {string} id
+  //  */
+  // paletteAddHandler(id) {
+  //   this.palettes = store.getters['palettes/allPalettes'];
+
+  //   if(id in this.palettes === false) {
+  //     Vue.set(this, id, {});
+  //   } else {
+  //     console.error('Palette with ID', id, 'already exists');
+  //   }
+  // }
 
   /**
    * @protected
@@ -186,9 +189,22 @@ class ModV extends EventEmitter2 {
    * @todo Types
    */
   paletteUpdateHandler(id, currentColor, currentStep) {
-    this.palettes.set(id, {
-      currentColor,
-      currentStep
+    this.palettes = store.getters['palettes/allPalettes'];
+
+    const palette = this.palettes[id];
+
+    palette.currentColor = currentColor;
+    palette.currentStep = currentStep;
+
+    Vue.set(this.palettes, id, palette);
+
+    Object.keys(this.palettes).forEach((paletteId) => {
+      const palette = this.palettes[paletteId];
+
+      if(id === paletteId) {
+        const Module = this.getActiveModule(palette.moduleName);
+        Module[palette.variable] = currentStep;
+      }
     });
   }
 

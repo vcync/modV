@@ -11,7 +11,12 @@
       :step='step'
       v-model='value'
     >
-    <div class="pure-form-message-inline">{{ value }}</div>
+    <input
+        class="pure-form-message-inline"
+        type='number'
+        v-model='value'
+        step='any'
+      >
   </div>
 </template>
 
@@ -75,5 +80,7 @@
 </script>
 
 <style scoped lang='scss'>
-
+  input.pure-form-message-inline {
+    max-width: 70px;
+  }
 </style>
