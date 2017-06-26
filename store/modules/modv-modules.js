@@ -91,6 +91,28 @@ const actions = {
     commit('addActiveModule', { module, moduleName: newModuleName });
     return module;
   },
+  removeActiveModule({ commit }, { moduleName }) {
+    const Module = externalState.active[moduleName];
+
+    if(state.focusedModule === moduleName) {
+      commit('setModuleFocus', { activeModuleName: null });
+    }
+
+    if('controls' in Module.info) {
+      Object.keys(Module.info.controls).forEach((key) => {
+        const control = Module.info.controls[key];
+        const inputId = `${moduleName}-${control.variable}`;
+
+        if(control.type === 'paletteControl') {
+          store.dispatch('palettes/removePalette', {
+            id: inputId
+          });
+        }
+      });
+    }
+
+    commit('removeActiveModule', { moduleName });
+  },
   register({ commit, state }, { Module }) {
     const instantiated = new Module();
     const moduleName = instantiated.info.name;

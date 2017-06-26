@@ -196,6 +196,7 @@ class ModV extends EventEmitter2 {
     this.palettes = store.getters['palettes/allPalettes'];
 
     const palette = this.palettes[id];
+    if(!palette) return;
 
     palette.currentColor = currentColor;
     palette.currentStep = currentStep;

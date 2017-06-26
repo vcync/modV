@@ -17,7 +17,7 @@
 </template>
 
 <script>
-  import { mapGetters, mapMutations } from 'vuex';
+  import { mapActions, mapGetters, mapMutations } from 'vuex';
   // import { forIn } from '@/modv/utils';
   import SearchBar from '@/components/Gallery/SearchBar';
   import GalleryItem from '@/components/GalleryItem';
@@ -36,8 +36,10 @@
       modules: 'registry'
     }),
     methods: {
+      ...mapActions('modVModules', [
+        'removeActiveModule'
+      ]),
       ...mapMutations('modVModules', [
-        'removeActiveModule',
         'setCurrentDragged'
       ]),
       ...mapMutations('layers', [
