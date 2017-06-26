@@ -147,7 +147,7 @@ class Ball extends Module2D {
       checked: false
     });
 
-    this.add({
+    controls.push({
       type: 'paletteControl',
       variable: 'colour',
       colors: [

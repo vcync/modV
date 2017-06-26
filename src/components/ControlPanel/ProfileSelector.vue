@@ -1,9 +1,9 @@
 <template>
   <dropdown
-    :data="selectData"
+    :data="profileNames"
     :width='129'
-    :cbChanged="dropdownChanged"
-    :class="{'palette-selector': true}"
+    :cbChanged="profileChanged"
+    :class="{'profile-selector': true}"
   ></dropdown>
 </template>
 
@@ -11,57 +11,49 @@
   import { mapGetters } from 'vuex';
 
   export default {
-    name: 'paletteSelector',
+    name: 'profileSelector',
     props: [
-      'value',
-      'profile'
+      'value'
     ],
     data() {
       return {
-        currentPalette: null
+        currentProfile: 'default'
       };
     },
     computed: {
       ...mapGetters('profiles', [
         'allProfiles'
       ]),
-      selectData() {
+      profileNames() {
         const data = [];
         const allProfiles = this.allProfiles;
 
-        const profile = allProfiles[this.profile];
-
-        Object.keys(profile.palettes).forEach((paletteName) => {
+        Object.keys(allProfiles).forEach((profileName) => {
           data.push({
-            label: paletteName,
-            value: paletteName
+            label: profileName,
+            value: profileName,
+            selected: this.currentProfile === profileName
           });
-        });
-
-        data.sort((a, b) => {
-          if(a.label < b.label) return -1;
-          if(a.label > b.label) return 1;
-          return 0;
         });
 
         return data;
       }
     },
     methods: {
-      dropdownChanged(e) {
-        this.currentPalette = e[0].value;
-        this.$emit('input', this.currentPalette);
+      profileChanged(e) {
+        this.currentProfile = e[0].value;
+        this.$emit('input', this.currentProfile);
       }
     }
   };
 </script>
 
 <style lang='scss'>
-  .palette-selector-container {
+  .profile-selector-container {
     display: inline-block;
   }
 
-  .palette-selector.hsy-dropdown {
+  .profile-selector.hsy-dropdown {
       display: inline-block;
       vertical-align: middle;
 

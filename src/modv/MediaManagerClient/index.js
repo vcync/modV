@@ -43,9 +43,13 @@ class MediaManagerClient {
     this.ws.sendJSON({ request: 'update' });
   }
 
+  send(data) {
+    this.ws.sendJSON(data);
+  }
+
   messageHandler(message) { //eslint-disable-line
     const parsed = JSON.parse(message.data);
-    // console.log('Media Manager says:', parsed);
+    console.log('Media Manager says:', parsed);
 
     // let data;
     // let type;
@@ -71,6 +75,30 @@ class MediaManagerClient {
           });
           break;
 
+        case 'file-update-add':
+          if('data' in parsed) {
+            const data = parsed.data;
+            const type = data.type;
+            const profileName = data.profile;
+            const name = data.name;
+
+            if(type === 'palette') {
+              store.commit('profiles/addPaletteToProfile', {
+                profileName,
+                paletteName: name,
+                colors: data.contents
+              });
+            } else if(type === 'preset') {
+              // modV.profiles[profile].presets[name] = data.contents;
+            } else if(type === 'image') {
+              // modV.profiles[profile].images[name] = data.path;
+            } else if(type === 'video') {
+             //  modV.profiles[profile].videos[name] = data.path;
+            }
+          }
+
+          break;
+
       //   case 'profile-add':
       //     data = parsed.data;
       //     profile = data.profile;
@@ -88,24 +116,6 @@ class MediaManagerClient {
       //     profile = data.profile;
 
       //     delete modV.profiles[profile];
-      //     break;
-
-      //   case 'file-update-add':
-      //     data = parsed.data;
-      //     type = data.type;
-      //     profile = data.profile;
-      //     name = data.name;
-
-      //     if(type === 'palette') {
-      //       modV.profiles[profile].palettes[name] = data.contents;
-      //     } else if(type === 'preset') {
-      //       modV.profiles[profile].presets[name] = data.contents;
-      //     } else if(type === 'image') {
-      //       modV.profiles[profile].images[name] = data.path;
-      //     } else if(type === 'video') {
-      //       modV.profiles[profile].videos[name] = data.path;
-      //     }
-
       //     break;
 
       //   case 'file-update-delete':

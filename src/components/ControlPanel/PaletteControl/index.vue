@@ -78,15 +78,35 @@
         step='1'
       >
     </div>
-
+    <div class="pure-control-group">
+      <hr>
+    </div>
+    <div class="pure-control-group">
+      <label :for='`${inputId}-load-palette`'>Profile</label>
+      <profile-selector :id='`${inputId}-profile`' v-model='profileSelectorInput'></profile-selector>
+    </div>
     <div class="pure-control-group">
       <label :for='`${inputId}-load-palette`'>Load Palette</label>
-      <palette-selector :id='`${inputId}-load-palette`' v-model='paletteSelectorInput'></palette-selector>
+      <palette-selector
+        :profile='profileSelectorInput'
+        :id='`${inputId}-load-palette`'
+        v-model='paletteSelectorInput'
+      ></palette-selector>
       <div class="pure-form-message-inline">
         <button
           class="pure-button"
           @click='clickLoadPalette'
         >Load</button>
+      </div>
+    </div>
+    <div class="pure-control-group">
+      <label :for='`${inputId}-save-palette`'>Save Palette</label>
+      <input :id='`${inputId}-save-palette`' v-model='savePaletteNameInput' type='text' />
+      <div class="pure-form-message-inline">
+        <button
+          class="pure-button"
+          @click='clickSavePalette'
+        >Save</button>
       </div>
     </div>
 
@@ -100,6 +120,7 @@
   import { Sketch } from 'vue-color';
 
   import PaletteSelector from './PaletteSelector';
+  import ProfileSelector from '../ProfileSelector';
 
   const defaultProps = {
     hex: '#194d33',
@@ -139,7 +160,9 @@
         showPicker: false,
         useBpmInput: false,
         bpmDivisonInput: 16,
-        paletteSelectorInput: {}
+        profileSelectorInput: 'default',
+        paletteSelectorInput: '',
+        savePaletteNameInput: ''
       };
     },
     computed: {
@@ -186,6 +209,9 @@
       ...mapGetters('profiles', [
         'getPaletteFromProfile'
       ]),
+      ...mapActions('profiles', [
+        'savePaletteToProfile'
+      ]),
       update(id, currentColor) {
         if(id === this.inputId) {
           this.currentColor = currentColor;
@@ -208,13 +234,20 @@
       },
       clickLoadPalette() {
         const palette = this.getPaletteFromProfile()({
-          paletteName: this.paletteSelectorInput.palette,
-          profileName: this.paletteSelectorInput.profile
+          paletteName: this.paletteSelectorInput,
+          profileName: this.profileSelectorInput
         });
 
         this.$set(this.control, 'colors', palette);
         modV.workers.palette.setPalette(this.inputId, {
           colors: palette
+        });
+      },
+      clickSavePalette() {
+        this.savePaletteToProfile({
+          profileName: this.profileSelectorInput,
+          paletteName: this.savePaletteNameInput,
+          colors: this.colors
         });
       }
     },
@@ -258,7 +291,8 @@
     },
     components: {
       'sketch-picker': Sketch,
-      PaletteSelector
+      PaletteSelector,
+      ProfileSelector
     }
   };
 </script>
@@ -304,6 +338,10 @@
   .palette {
     display: inline-block;
     width: 129px;
+  }
+
+  .pure-control-group input {
+    max-width: 129px;
   }
 
   input.pure-form-message-inline {

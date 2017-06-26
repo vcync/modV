@@ -1,4 +1,5 @@
 import Vue from 'vue';
+import { modV } from '@/modv';
 
 const state = {
   profiles: {}
@@ -12,8 +13,16 @@ const getters = {
 
 // actions
 const actions = {
-  // defaultAction({ commit }, { }) {
-  // }
+  savePaletteToProfile({ commit }, { profileName, paletteName, colors }) {
+    const MediaManager = modV.MediaManagerClient;
+
+    MediaManager.send({
+      request: 'save-palette',
+      profile: profileName,
+      name: paletteName,
+      payload: colors
+    });
+  }
 };
 
 // mutations
@@ -26,6 +35,10 @@ const mutations = {
     profile.videos = videos || {};
 
     Vue.set(state.profiles, profileName, profile);
+  },
+  addPaletteToProfile(state, { profileName, paletteName, colors }) {
+    const profile = state.profiles[profileName];
+    Vue.set(profile.palettes, paletteName, colors);
   }
 };
 
