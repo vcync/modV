@@ -8,6 +8,7 @@ import { scan, setSource } from './MediaStream';
 import draw from './draw';
 import setupWebGl from './webgl';
 import PaletteWorker from './palette-worker/palette-worker';
+import MediaManagerClient from './MediaManagerClient';
 
 class ModV extends EventEmitter2 {
 
@@ -109,7 +110,10 @@ class ModV extends EventEmitter2 {
 
       this.mainRaf = requestAnimationFrame(this.loop.bind(this));
     });
+
     this.workers = this.createWorkers();
+    this.MediaManagerClient = new MediaManagerClient();
+
     store.dispatch('size/resizePreviewCanvas');
   }
 

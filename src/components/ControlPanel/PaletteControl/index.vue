@@ -78,14 +78,28 @@
         step='1'
       >
     </div>
+
+    <div class="pure-control-group">
+      <label :for='`${inputId}-load-palette`'>Load Palette</label>
+      <palette-selector :id='`${inputId}-load-palette`' v-model='paletteSelectorInput'></palette-selector>
+      <div class="pure-form-message-inline">
+        <button
+          class="pure-button"
+          @click='clickLoadPalette'
+        >Load</button>
+      </div>
+    </div>
+
   </div>
 </template>
 
 <script>
-  import { mapActions } from 'vuex';
+  import { mapActions, mapGetters } from 'vuex';
   import PaletteWorker from '@/modv/palette-worker/palette-worker';
   import { modV } from '@/modv';
   import { Sketch } from 'vue-color';
+
+  import PaletteSelector from './PaletteSelector';
 
   const defaultProps = {
     hex: '#194d33',
@@ -124,7 +138,8 @@
         pickerColors: defaultProps,
         showPicker: false,
         useBpmInput: false,
-        bpmDivisonInput: 16
+        bpmDivisonInput: 16,
+        paletteSelectorInput: {}
       };
     },
     computed: {
@@ -168,6 +183,9 @@
       ...mapActions('palettes', [
         'createPalette'
       ]),
+      ...mapGetters('profiles', [
+        'getPaletteFromProfile'
+      ]),
       update(id, currentColor) {
         if(id === this.inputId) {
           this.currentColor = currentColor;
@@ -187,6 +205,17 @@
       },
       togglePicker() {
         this.showPicker = !this.showPicker;
+      },
+      clickLoadPalette() {
+        const palette = this.getPaletteFromProfile()({
+          paletteName: this.paletteSelectorInput.palette,
+          profileName: this.paletteSelectorInput.profile
+        });
+
+        this.$set(this.control, 'colors', palette);
+        modV.workers.palette.setPalette(this.inputId, {
+          colors: palette
+        });
       }
     },
     created() {
@@ -228,7 +257,8 @@
       }
     },
     components: {
-      'sketch-picker': Sketch
+      'sketch-picker': Sketch,
+      PaletteSelector
     }
   };
 </script>
