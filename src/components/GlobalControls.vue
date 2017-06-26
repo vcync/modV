@@ -101,8 +101,10 @@
       ]),
     },
     methods: {
+      ...mapActions('tempo', [
+        'setBpm'
+      ]),
       ...mapMutations('tempo', [
-        'setBpm',
         'setBpmDetect'
       ]),
       ...mapMutations('user', [

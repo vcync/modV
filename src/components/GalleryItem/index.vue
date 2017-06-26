@@ -1,6 +1,6 @@
 <template>
-  <div class="pure-u-6-24 gallery-item" @dblclick='doubleclick' draggable @dragstart='dragstart' :data-module-name='name'>
-    <canvas class="preview" @mouseout='mouseout' @mouseover='mouseover'></canvas>
+  <div class="pure-u-6-24 gallery-item" @mouseout='mouseout' @mouseover='mouseover' @dblclick='doubleclick' draggable @dragstart='dragstart' :data-module-name='name'>
+    <canvas class="preview"></canvas>
     <div class="title-wrapper">
       <span class="title">{{ name }}</span>
       <span class="ibvf"></span>
@@ -59,14 +59,12 @@
           delta
         });
       },
-      mouseover(e) {
-        if(!e.target.classList.contains('preview')) return;
+      mouseover() {
         if(this.raf) return;
         this.raf = requestAnimationFrame(this.draw);
         webgl.resize(this.canvas.width, this.canvas.height);
       },
-      mouseout(e) {
-        if(!e.target.classList.contains('preview')) return;
+      mouseout() {
         cancelAnimationFrame(this.raf);
         this.raf = false;
       },
