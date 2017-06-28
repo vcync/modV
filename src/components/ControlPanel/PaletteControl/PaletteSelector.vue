@@ -29,8 +29,8 @@
         const data = [];
         const allProfiles = this.allProfiles;
 
+        if(!Object.prototype.hasOwnProperty.call(allProfiles, this.profile)) return [];
         const profile = allProfiles[this.profile];
-        if(!Object.prototype.hasOwnProperty.call(allProfiles, profile)) return [];
 
         Object.keys(profile.palettes).forEach((paletteName) => {
           data.push({
