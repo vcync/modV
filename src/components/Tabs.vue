@@ -10,17 +10,11 @@
         {{ titles[i-1] }}
       </div>
     </div>
-    <div class="tab-contents">
-      <div class="simplebar">
-        <div class="simplebar-scroll-content">
-          <div class=" simplebar-content">
-            <div class="tab-content" :class="{ show: focusedTabIndex === i }" v-for='i in amount'>
-              <slot
-                :name='`tab-${i}`'
-              ></slot>
-            </div>
-          </div>
-        </div>
+    <div class="tab-contents" data-simplebar-direction="vertical">
+      <div class="tab-content" :class="{ show: focusedTabIndex === i }" v-for='i in amount'>
+        <slot
+          :name='`tab-${i}`'
+        ></slot>
       </div>
     </div>
   </div>
