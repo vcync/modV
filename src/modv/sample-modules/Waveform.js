@@ -33,17 +33,18 @@ class Waveform extends Module2D {
       default: 100
     });
 
-    // this.add(new modV.SelectControl({
-    //  variable: 'windowing',
-    //  label: 'Windowing',
-    //  enum: [
-    //    {label: 'Rectangular (no window)', value: 'rect'},
-    //    {label: 'Hanning', value: 'hanning', default: true},
-    //    {label: 'Hamming', value: 'hamming'},
-    //    {label: 'Blackman', value: 'blackman'},
-    //    {label: 'Sine', value: 'sine'}
-    //  ]
-    // }));
+    this.add({
+      type: 'selectControl',
+      variable: 'windowing',
+      label: 'Windowing',
+      enum: [
+        { label: 'Rectangular (no window)', value: 'rect' },
+        { label: 'Hanning', value: 'hanning', selected: true },
+        { label: 'Hamming', value: 'hamming' },
+        { label: 'Blackman', value: 'blackman' },
+        { label: 'Sine', value: 'sine' }
+      ]
+    });
 
     this.add({
       type: 'paletteControl',
