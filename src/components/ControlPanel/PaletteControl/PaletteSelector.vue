@@ -30,6 +30,7 @@
         const allProfiles = this.allProfiles;
 
         const profile = allProfiles[this.profile];
+        if(!Object.prototype.hasOwnProperty.call(allProfiles, profile)) return [];
 
         Object.keys(profile.palettes).forEach((paletteName) => {
           data.push({

@@ -61,11 +61,11 @@
       </div>
     </div>
     <div class="pure-control-group" :class="{'hidden': !useBpmInput}">
-      <label :for='`${inputId}-duration`'>BPM Division</label>
+      <label :for='`${inputId}-bpmDivision`'>BPM Division</label>
       <input
-        :id='`${inputId}-duration`'
+        :id='`${inputId}-bpmDivision`'
         type='range'
-        v-model='bpmDivisonInput'
+        v-model='bpmDivisionInput'
         max='32'
         min='1'
         step='1'
@@ -73,7 +73,7 @@
       <input
         class="pure-form-message-inline"
         type='number'
-        v-model='bpmDivisonInput'
+        v-model='bpmDivisionInput'
         min='1'
         step='1'
       >
@@ -159,7 +159,7 @@
         pickerColors: defaultProps,
         showPicker: false,
         useBpmInput: false,
-        bpmDivisonInput: 16,
+        bpmDivisionInput: 16,
         profileSelectorInput: 'default',
         paletteSelectorInput: '',
         savePaletteNameInput: ''
@@ -184,11 +184,23 @@
       defaultValue() {
         return this.control.default;
       },
-      colors() {
-        return this.control.colors;
+      ...mapGetters('palettes', [
+        'allPalettes'
+      ]),
+      palette() {
+        return this.allPalettes[Object.keys(this.allPalettes).find(paletteId => paletteId === this.inputId)];
       },
-      timePeriod() {
-        return this.control.timePeriod;
+      colors() {
+        return this.palette.colors;
+      },
+      duration() {
+        return this.palette.duration;
+      },
+      useBpm() {
+        return this.palette.useBpm;
+      },
+      bpmDivision() {
+        return this.palette.bpmDivision;
       },
       pickerRgbArray() {
         const rgba = this.pickerColors.rgba;
@@ -200,11 +212,18 @@
       },
       pickerButtonText() {
         return this.showPicker ? 'Hide' : 'Show';
+      },
+      boundUpdate() {
+        return this.update.bind(this);
       }
     },
     methods: {
       ...mapActions('palettes', [
-        'createPalette'
+        'createPalette',
+        'updateColors',
+        'updateDuration',
+        'updateUseBpm',
+        'updateBpmDivision'
       ]),
       ...mapGetters('profiles', [
         'getPaletteFromProfile'
@@ -218,15 +237,21 @@
         }
       },
       addSwatch() {
-        this.control.colors.push(this.pickerRgbArray);
-        modV.workers.palette.setPalette(this.inputId, {
-          colors: this.control.colors
+        const updatedColors = this.colors.slice();
+        updatedColors.push(this.pickerRgbArray);
+
+        this.updateColors({
+          id: this.inputId,
+          colors: updatedColors
         });
       },
       removeSwatch(idx) {
-        this.control.colors.splice(idx, 1);
-        modV.workers.palette.setPalette(this.inputId, {
-          colors: this.control.colors
+        const updatedColors = this.colors.slice();
+        updatedColors.splice(idx, 1);
+
+        this.updateColors({
+          id: this.inputId,
+          colors: updatedColors
         });
       },
       togglePicker() {
@@ -238,8 +263,8 @@
           profileName: this.profileSelectorInput
         });
 
-        this.$set(this.control, 'colors', palette);
-        modV.workers.palette.setPalette(this.inputId, {
+        this.updateColors({
+          id: this.inputId,
           colors: palette
         });
       },
@@ -252,16 +277,18 @@
       }
     },
     created() {
-      this.createPalette({ id: this.inputId, colors: this.colors, duration: this.timePeriod });
-      modV.workers.palette.on(PaletteWorker.EventType.PALETTE_UPDATED, this.update.bind(this));
+      modV.workers.palette.on(PaletteWorker.EventType.PALETTE_UPDATED, this.boundUpdate);
+    },
+    beforeDestroy() {
+      modV.workers.palette.off(PaletteWorker.EventType.PALETTE_UPDATED, this.boundUpdate);
     },
     beforeMount() {
       this.value = this.module[this.variable];
       if(typeof this.value === 'undefined') this.value = this.defaultValue;
 
-      this.durationInput = this.timePeriod;
-      this.useBpmInput = this.control.useBpm;
-      this.bpmDivisonInput = this.control.bpmDivison;
+      this.durationInput = this.duration;
+      this.useBpmInput = this.useBpm;
+      this.bpmDivisionInput = this.bpmDivision;
     },
     watch: {
       module() {
@@ -271,22 +298,22 @@
         this.module[this.variable] = this.value;
       },
       durationInput() {
-        modV.workers.palette.setPalette(this.inputId, {
-          timePeriod: this.durationInput
+        this.updateDuration({
+          id: this.inputId,
+          duration: this.durationInput
         });
-        this.control.timePeriod = this.durationInput;
       },
       useBpmInput() {
-        modV.workers.palette.setPalette(this.inputId, {
+        this.updateUseBpm({
+          id: this.inputId,
           useBpm: this.useBpmInput
         });
-        this.control.useBpm = this.useBpmInput;
       },
-      bpmDivisonInput() {
-        modV.workers.palette.setPalette(this.inputId, {
-          bpmDivison: this.bpmDivisonInput
+      bpmDivisionInput() {
+        this.updateBpmDivision({
+          id: this.inputId,
+          bpmDivision: this.bpmDivisionInput
         });
-        this.control.bpmDivison = this.bpmDivisonInput;
       }
     },
     components: {

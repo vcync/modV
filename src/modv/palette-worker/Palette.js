@@ -51,7 +51,7 @@ function hexToRgb(hex) {
 function Palette(colorsIn, timePeriod, id) {
   this.bpm = 120;
   this.useBpm = false;
-  this.bpmDivison = 16;
+  this.bpmDivision = 16;
   this.creationTime = Date.now();
 
   const stringed = JSON.stringify(colorsIn);
@@ -94,7 +94,7 @@ Palette.prototype.removeAtIndex = function removeAtIndex(index) {
 Palette.prototype.nextStep = function nextStep(cb) {
   if(this.useBpm) {
     // fps * 60 seconds / bpm / BpmDiv
-    this.timePeriod = (((60 * 60) / this.bpm) * this.bpmDivison);
+    this.timePeriod = (((60 * 60) / this.bpm) * this.bpmDivision);
   }
 
   if(this.colors.length < 1) {
