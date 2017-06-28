@@ -30,7 +30,7 @@ class Waveform extends Module2D {
       varType: 'float',
       min: 1,
       max: 100,
-      default: 100
+      default: 75
     });
 
     this.add({
@@ -75,11 +75,11 @@ class Waveform extends Module2D {
     });
   }
 
-  init(canvas) {
+  init() {
     this.colour = 'red';
     this.strokeWeight = 1;
     this.windowing = 'hanning';
-    this.maxHeight = canvas.height;
+    this.maxHeight = 75;
   }
 
   draw({ canvas, context, features }) {
@@ -94,9 +94,9 @@ class Waveform extends Module2D {
     for (let i = 0; i < ampArr.length - 1; i += this.strokeWeight) {
       const width = Math.round(Math.map(i, 0, ampArr.length - 1, 0, canvas.width));
       const newWidth = Math.round(Math.map(i + this.strokeWeight, 0, ampArr.length - 1, 0, canvas.width));
-      let y = (canvas.height / 2) - ((height * ampArr[i]) / 2);
+      let y = (canvas.height / 2) - ((height * ampArr[i]));
       y = Math.round(y);
-      let yNext = (canvas.height / 2) - ((height * ampArr[i + this.strokeWeight]) / 2);
+      let yNext = (canvas.height / 2) - ((height * ampArr[i + this.strokeWeight]));
       yNext = Math.round(yNext);
 
       context.moveTo(width, y);
