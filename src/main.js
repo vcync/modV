@@ -20,7 +20,7 @@ Object.defineProperty(Vue.prototype, '$modV', {
 Vue.use(Dropdown);
 
 /* eslint-disable no-new */
-new Vue({
+window.modVVue = new Vue({
   el: '#app',
   template: '<App/>',
   components: { App },

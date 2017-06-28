@@ -15,6 +15,10 @@ import windows from './modules/windows';
 Vue.use(Vuex);
 
 const debug = process.env.NODE_ENV !== 'production';
+if(debug) {
+  console.warn(`modV: Vuex is in STRICT mode as NODE_ENV is set to "${process.env.NODE_ENV}".\n
+All commits are syncronously watched. Performance lag is due to this.`);
+}
 
 export default new Vuex.Store({
   plugins: [
