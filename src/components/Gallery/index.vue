@@ -1,18 +1,20 @@
 <template>
   <div class="right-top gallery pure-g" @drop='drop' @dragover='dragover'>
-    <search-bar :phrase.sync='phrase'></search-bar>
-    <draggable
-      class='gallery-items'
-      :options="{ group: { name: 'modules',  pull: 'clone', put: false }, sort: false }"
-    >
-      <gallery-item
-        v-for='(module, key) in modules'
-        :ModuleIn='module'
-        :moduleName='key'
-        :key='key'
-        :class="{ hidden: !search(key, phrase) }"
-      ></gallery-item>
-    </draggable>
+    <search-bar :phrase.sync='phrase' class='search-bar-wrapper'></search-bar>
+    <div class='gallery-items-wrapper' data-simplebar-direction="vertical">
+      <draggable
+        class='gallery-items'
+        :options="{ group: { name: 'modules',  pull: 'clone', put: false }, sort: false }"
+      >
+        <gallery-item
+          v-for='(module, key) in modules'
+          :ModuleIn='module'
+          :moduleName='key'
+          :key='key'
+          :class="{ hidden: !search(key, phrase) }"
+        ></gallery-item>
+      </draggable>
+    </div>
   </div>
 </template>
 
@@ -89,6 +91,10 @@
     display: none;
   }
 
+  .gallery-items-wrapper {
+    flex: 1 1 auto;
+  }
+
   .gallery-items {
     align-content: stretch;
     align-items: center;
@@ -102,9 +108,21 @@
   .gallery {
     background-color: #383838;
     box-sizing: border-box;
-    height: 100%;
     min-width: 600px;
     overflow: hidden;
-    padding: 5pt;
+    padding: 5pt 5pt 0;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    flex-wrap: nowrap;
+    justify-content: flex-start;
+    align-content: stretch;
+    align-items: stretch;
+  }
+
+  .search-bar-wrapper {
+    order: 0;
+    flex: 0 1 auto;
+    align-self: auto;
   }
 </style>

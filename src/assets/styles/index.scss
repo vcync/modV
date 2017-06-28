@@ -94,10 +94,6 @@ section .top .active-list {
 	background-color: hsla(70,8%,4%,1);
 }
 
-.active-list-wrapper .simplebar-track {
-	bottom: 23px;
-}
-
 .active-list .gallery-item.sortable-ghost {
 	height: 115px;
 	width: 100%;
@@ -124,10 +120,6 @@ section .top .active-list-wrapper:before {
 
 section .top .active-list-wrapper {
 	min-width: 306px;
-
-	.simplebar-scroll-content {
-		height: calc(100% - 33px);
-	}
 }
 
 section .top .active-list-wrapper,

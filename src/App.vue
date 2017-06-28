@@ -3,21 +3,15 @@
     <section>
       <div class="top">
         <div class="pure-g">
-          <div class="active-list-wrapper simplebar"> <!-- pure-u-1-5 -->
-            <div class="simplebar-scroll-content">
-              <div class=" simplebar-content">
-                <list></list>
-              </div>
+          <div class="active-list-wrapper"> <!-- pure-u-1-5 -->
+            <div data-simplebar-direction="vertical">
+              <list></list>
             </div>
 
             <layer-menu></layer-menu>
           </div>
-          <div class="gallery-wrapper simplebar"> <!-- pure-u-4-5 -->
-            <div class="simplebar-scroll-content">
-              <div class=" simplebar-content">
-                <gallery></gallery>
-              </div>
-            </div>
+          <div class="gallery-wrapper"> <!-- pure-u-4-5 -->
+            <gallery></gallery>
             <resize-handle-left></resize-handle-left>
           </div>
         </div>
@@ -91,5 +85,9 @@
 
   .active-list-wrapper {
     position: relative;
+  }
+
+  .active-list-wrapper > div {
+    height: calc(100% - 33px);
   }
 </style>
