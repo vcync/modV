@@ -86,9 +86,7 @@
     computed: {
       ...mapGetters('mediaStream', [
         'audioSources',
-        'currentAudioSource',
         'videoSources',
-        'currentVideoSource'
       ]),
       ...mapGetters('tempo', [
         'bpm',
@@ -96,27 +94,27 @@
       ]),
       ...mapGetters('user', [
         'mediaPath',
-        'name'
-      ]),
-      ...mapGetters('size', [
-        'useRetina'
+        'name',
+        'useRetina',
+        'currentAudioSource',
+        'currentVideoSource'
       ]),
     },
     methods: {
-      ...mapActions('mediaStream', [
-        'setCurrentAudioSource',
-        'setCurrentVideoSource'
+      ...mapActions('tempo', [
+        'setBpm'
       ]),
       ...mapMutations('tempo', [
-        'setBpm',
         'setBpmDetect'
       ]),
       ...mapMutations('user', [
         'setMediaPath',
         'setName'
       ]),
-      ...mapActions('size', [
-        'setUseRetina'
+      ...mapActions('user', [
+        'setUseRetina',
+        'setCurrentAudioSource',
+        'setCurrentVideoSource'
       ]),
       ...mapActions('windows', [
         'createWindow'
@@ -139,9 +137,11 @@
         this.videoSource = this.currentVideoSource;
       },
       audioSource() {
+        if(this.audioSource === this.currentAudioSource) return;
         this.setCurrentAudioSource({ sourceId: this.audioSource });
       },
       videoSource() {
+        if(this.videoSource === this.currentVideoSource) return;
         this.setCurrentVideoSource({ sourceId: this.videoSource });
       },
       detect() {
@@ -164,6 +164,9 @@
       });
 
       this.nameInput = this.name;
+      this.useRetinaInput = this.useRetina;
+      this.audioSource = this.currentAudioSource || 'default';
+      this.videoSource = this.currentVideoSource || 'default';
     }
   };
 </script>

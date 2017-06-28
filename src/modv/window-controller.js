@@ -64,7 +64,7 @@ class WindowController extends EventEmitter2 {
     windowRef.addEventListener('resize', () => {
       let dpr = windowRef.devicePixelRatio;
 
-      if(!store.getters['size/useRetina']) {
+      if(!store.getters['user/useRetina']) {
         dpr = 1;
       }
 

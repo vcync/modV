@@ -50,7 +50,7 @@ const actions = {
     module.info.compositeOperation = 'normal';
 
     const dimensions = store.getters['size/dimensions'];
-    const useDpr = store.getters['size/useRetina'];
+    const useDpr = store.getters['user/useRetina'];
 
     if(useDpr) {
       dimensions.width *= window.devicePixelRatio;
@@ -70,8 +70,48 @@ const actions = {
     }
 
     newModuleName = `${newModuleName}${appendToName || ''}`;
+
+    if('controls' in module.info) {
+      Object.keys(module.info.controls).forEach((key) => {
+        const control = module.info.controls[key];
+        const inputId = `${newModuleName}-${control.variable}`;
+
+        if(control.type === 'paletteControl') {
+          store.dispatch('palettes/createPalette', {
+            id: inputId,
+            colors: control.colors || [],
+            duration: control.timePeriod,
+            moduleName: newModuleName,
+            variable: control.variable
+          });
+        }
+      });
+    }
+
     commit('addActiveModule', { module, moduleName: newModuleName });
     return module;
+  },
+  removeActiveModule({ commit }, { moduleName }) {
+    const Module = externalState.active[moduleName];
+
+    if(state.focusedModule === moduleName) {
+      commit('setModuleFocus', { activeModuleName: null });
+    }
+
+    if('controls' in Module.info) {
+      Object.keys(Module.info.controls).forEach((key) => {
+        const control = Module.info.controls[key];
+        const inputId = `${moduleName}-${control.variable}`;
+
+        if(control.type === 'paletteControl') {
+          store.dispatch('palettes/removePalette', {
+            id: inputId
+          });
+        }
+      });
+    }
+
+    commit('removeActiveModule', { moduleName });
   },
   register({ commit, state }, { Module }) {
     const instantiated = new Module();

@@ -1,10 +1,10 @@
 import store from '@/../store';
 import { modV } from '@/modv';
+import Vue from 'vue';
 
 const state = {
   width: 200,
   height: 200,
-  useRetina: true,
   previewX: 0,
   previewY: 0,
   previewWidth: 0,
@@ -19,14 +19,13 @@ const getters = {
   dimensions: (state) => {
     return { width: state.width, height: state.height };
   },
-  useRetina: state => state.useRetina,
   previewValues: (state) => {
     return {
       width: state.previewWidth,
       height: state.previewHeight,
       x: state.previewX,
       y: state.previewY
-    }
+    };
   }
 };
 
@@ -38,7 +37,7 @@ const actions = {
       commit('setDimensions', { width, height });
 
       let dpr = window.devicePixelRatio || 1;
-      if(!state.useRetina) dpr = 1;
+      if(!store.getters['user/useRetina']) dpr = 1;
 
       modV.resize(state.width, state.height, dpr);
       store.dispatch('modVModules/resizeActive');
@@ -47,20 +46,9 @@ const actions = {
       store.dispatch('size/calculatePreviewCanvasValues');
     }
   },
-  setUseRetina({ commit, state }, { useRetina }) {
-    let dpr = window.devicePixelRatio || 1;
-    if(!useRetina) dpr = 1;
-
-    commit('setUseRetina', { useRetina });
-    modV.resize(state.width, state.height, dpr);
-    store.dispatch('modVModules/resizeActive');
-    store.dispatch('layers/resize', { width: state.width, height: state.height, dpr });
-    store.dispatch('windows/resize', { width: state.width, height: state.height, dpr });
-  },
-  resizePreviewCanvas({ commit, state }) {
-    const boundingRect = modV.previewCanvas.getBoundingClientRect();
-    modV.previewCanvas.width = boundingRect.width;
-    modV.previewCanvas.height = boundingRect.height;
+  resizePreviewCanvas() {
+    modV.previewCanvas.width = modV.previewCanvas.clientWidth;
+    modV.previewCanvas.height = modV.previewCanvas.clientHeight;
     store.dispatch('size/calculatePreviewCanvasValues');
   },
   calculatePreviewCanvasValues({ commit, state }) {
@@ -90,23 +78,20 @@ const actions = {
 // mutations
 const mutations = {
   setWidth(state, { width }) {
-    state.width = width;
+    Vue.set(state, 'width', width);
   },
   setHeight(state, { height }) {
-    state.height = height;
+    Vue.set(state, 'height', height);
   },
   setDimensions(state, { width, height }) {
-    state.width = width;
-    state.height = height;
-  },
-  setUseRetina(state, { useRetina }) {
-    state.useRetina = useRetina;
+    Vue.set(state, 'width', width);
+    Vue.set(state, 'height', height);
   },
   setPreviewValues(state, { width, height, x, y }) {
-    state.previewWidth = width;
-    state.previewHeight = height;
-    state.previewX = x;
-    state.previewY = y;
+    Vue.set(state, 'previewWidth', width);
+    Vue.set(state, 'previewHeight', height);
+    Vue.set(state, 'previewX', x);
+    Vue.set(state, 'previewY', y);
   }
 };
 

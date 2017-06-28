@@ -14,6 +14,8 @@ export default function top(resizeTargetIn) {
     window.addEventListener('mouseup', () => {
       allowDrag = false;
       resizeTarget = null;
+
+      if(cb) cb();
     });
 
     window.addEventListener('mousemove', (e) => {

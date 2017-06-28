@@ -1,3 +1,4 @@
+import Vue from 'vue';
 import EventEmitter2 from 'eventemitter2';
 import BeatDetektor from '@/extra/beatdetektor';
 import store from '@/../store/';
@@ -6,6 +7,8 @@ import Layer from './Layer';
 import { scan, setSource } from './MediaStream';
 import draw from './draw';
 import setupWebGl from './webgl';
+import PaletteWorker from './palette-worker/palette-worker';
+import MediaManagerClient from './MediaManagerClient';
 
 class ModV extends EventEmitter2 {
 
@@ -27,6 +30,7 @@ class ModV extends EventEmitter2 {
       audio: store.getters['mediaStream/audioSources'],
       video: store.getters['mediaStream/videoSources']
     };
+    this.palettes = store.getters['palettes/allPalettes'];
 
     this.useDetectedBpm = store.getters['tempo/detect'];
     this.bpm = store.getters['tempo/bpm'];
@@ -42,6 +46,9 @@ class ModV extends EventEmitter2 {
     this.height = 200;
 
     this.webgl = setupWebGl(this);
+
+    this.mainRaf = null;
+    this.workers = {};
 
     window.addEventListener('unload', () => {
       this.windows.forEach((windowController) => {
@@ -77,19 +84,41 @@ class ModV extends EventEmitter2 {
     mediaStreamScan().then((mediaStreamDevices) => {
       mediaStreamDevices.audio.forEach(source => store.commit('mediaStream/addAudioSource', { source }));
       mediaStreamDevices.video.forEach(source => store.commit('mediaStream/addVideoSource', { source }));
+
+      let audioSourceId;
+      let videoSourceId;
+
+      if(store.getters['user/currentAudioSource']) {
+        audioSourceId = store.getters['user/currentAudioSource'];
+      } else if(mediaStreamDevices.audio.length > 0) {
+        audioSourceId = mediaStreamDevices.audio[0].deviceId;
+      }
+
+      if(store.getters['user/setCurrentVideoSource']) {
+        videoSourceId = store.getters['user/setCurrentVideoSource'];
+      } else if (mediaStreamDevices.video.length > 0) {
+        videoSourceId = mediaStreamDevices.video[0].deviceId;
+      }
+
       return {
-        audioSourceId: mediaStreamDevices.audio[0].deviceId,
-        videoSourceId: mediaStreamDevices.video[0].deviceId
+        audioSourceId,
+        videoSourceId
       };
     }).then(setMediaStreamSource).then(({ audioSourceId, videoSourceId }) => {
-      store.commit('mediaStream/setCurrentAudioSource', { sourceId: audioSourceId });
-      store.commit('mediaStream/setCurrentVideoSource', { sourceId: videoSourceId });
-      requestAnimationFrame(this.loop.bind(this));
+      store.commit('user/setCurrentAudioSource', { sourceId: audioSourceId });
+      store.commit('user/setCurrentVideoSource', { sourceId: videoSourceId });
+
+      this.mainRaf = requestAnimationFrame(this.loop.bind(this));
     });
+
+    this.workers = this.createWorkers();
+    this.MediaManagerClient = new MediaManagerClient();
+
+    store.dispatch('size/resizePreviewCanvas');
   }
 
   loop(δ) {
-    requestAnimationFrame(this.loop.bind(this));
+    this.mainRaf = requestAnimationFrame(this.loop.bind(this));
     let features = [];
     if(this.audioFeatures.length > 0) features = this.meyda.get(this.audioFeatures);
     if(features) {
@@ -127,20 +156,34 @@ class ModV extends EventEmitter2 {
 
     const bpm = Math.round(newBpm);
     if(this.bpm !== bpm) {
-      store.commit('tempo/setBpm', { bpm });
+      store.dispatch('tempo/setBpm', { bpm });
     }
   }
 
   /** @return {WorkersDataType} */
   createWorkers() {//eslint-disable-line
-    // const palette = new PaletteWorker();
+    const palette = new PaletteWorker();
     // palette.on(PaletteWorker.EventType.PALETTE_ADDED, this.paletteAddHandler.bind(this));
-    // palette.on(PaletteWorker.EventType.PALETTE_UPDATED, this.paletteUpdateHandler.bind(this));
+    palette.on(PaletteWorker.EventType.PALETTE_UPDATED, this.paletteUpdateHandler.bind(this));
 
-    // return {
-    //   palette,
-    // };
+    return {
+      palette,
+    };
   }
+
+  // /**
+  //  * @protected
+  //  * @param {string} id
+  //  */
+  // paletteAddHandler(id) {
+  //   this.palettes = store.getters['palettes/allPalettes'];
+
+  //   if(id in this.palettes === false) {
+  //     Vue.set(this, id, {});
+  //   } else {
+  //     console.error('Palette with ID', id, 'already exists');
+  //   }
+  // }
 
   /**
    * @protected
@@ -150,9 +193,23 @@ class ModV extends EventEmitter2 {
    * @todo Types
    */
   paletteUpdateHandler(id, currentColor, currentStep) {
-    this.palettes.set(id, {
-      currentColor,
-      currentStep
+    this.palettes = store.getters['palettes/allPalettes'];
+
+    const palette = this.palettes[id];
+    if(!palette) return;
+
+    palette.currentColor = currentColor;
+    palette.currentStep = currentStep;
+
+    Vue.set(this.palettes, id, palette);
+
+    Object.keys(this.palettes).forEach((paletteId) => {
+      const palette = this.palettes[paletteId];
+
+      if(id === paletteId) {
+        const Module = this.getActiveModule(palette.moduleName);
+        Module[palette.variable] = currentStep;
+      }
     });
   }
 

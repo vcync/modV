@@ -94,10 +94,6 @@ section .top .active-list {
 	background-color: hsla(70,8%,4%,1);
 }
 
-.active-list-wrapper .simplebar-track {
-	bottom: 23px;
-}
-
 .active-list .gallery-item.sortable-ghost {
 	height: 115px;
 	width: 100%;
@@ -124,10 +120,6 @@ section .top .active-list-wrapper:before {
 
 section .top .active-list-wrapper {
 	min-width: 306px;
-
-	.simplebar-scroll-content {
-		height: calc(100% - 33px);
-	}
 }
 
 section .top .active-list-wrapper,
@@ -238,18 +230,6 @@ canvas {
 	height: 100%;
 }
 
-/* Palette Control */
-div.palette div.swatch {
-	display: inline-block;
-	width: 10px;
-	height: 10px;
-	border: 1px #aaa solid;
-}
-
-div.palette div.swatch ~ div.swatch {
-	border-left: none;
-}
-
 /* Range styles */
 input[type=range] {
 	-webkit-appearance: none;
@@ -298,10 +278,17 @@ input[type=range]:active::-webkit-slider-thumb  {
 /*	margin-left: -3px;
 */}
 
-input[disabled][type="range"]::-webkit-slider-thumb,
-input[disabled][type="range"]::-webkit-slider-runnable-track{
+input[disabled][type="range"]::-webkit-slider-thumb {
 	cursor: not-allowed;
-	background-color: #F3F3F3;/*#FF8600;*/
+	background-color: #F3F3F3;
+	height: 20px;
+	width: 20px;
+	margin-top: -5px;
+}
+
+input[disabled][type="range"]::-webkit-slider-runnable-track {
+	cursor: not-allowed;
+	background-color: #ddd;
 }
 
 /* Checkbox styles */
