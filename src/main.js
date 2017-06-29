@@ -2,6 +2,7 @@
 // (runtime-only or standalone) has been set in webpack.base.conf with an alias.
 import Vue from 'vue';
 import Dropdown from 'hsy-vue-dropdown';
+import Shortkey from 'vue-shortkey';
 import { modV } from './modv';
 import App from './App';
 import store from '../store';
@@ -18,6 +19,7 @@ Object.defineProperty(Vue.prototype, '$modV', {
 });
 
 Vue.use(Dropdown);
+Vue.use(Shortkey);
 
 /* eslint-disable no-new */
 window.modVVue = new Vue({
