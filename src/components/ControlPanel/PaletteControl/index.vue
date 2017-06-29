@@ -4,7 +4,11 @@
       <label :for='inputId'>
         {{ label }}
       </label>
-      <div class='palette'>
+      <draggable
+        :options='dragOptions'
+        v-model='colors'
+        class="palette"
+      >
         <div
           class='swatch'
           v-for='(color, idx) in colors'
@@ -12,12 +16,8 @@
           :class="{ current: currentColor === idx }"
           @click='removeSwatch(idx)'
         ></div>
-        <div
-          class='add-swatch'
-          @click='addSwatch'
-        >
-        </div>
-      </div>
+      </draggable>
+      <div class='add-swatch' @click='addSwatch'></div>
       <div class="pure-form-message-inline">
         <button
           class="pure-button"
@@ -115,6 +115,7 @@
 
 <script>
   import { mapActions, mapGetters } from 'vuex';
+  import draggable from 'vuedraggable';
   import PaletteWorker from '@/modv/palette-worker/palette-worker';
   import { modV } from '@/modv';
   import { Sketch } from 'vue-color';
@@ -153,6 +154,13 @@
     ],
     data() {
       return {
+        dragOptions: {
+          group: {
+            name: 'palette',
+            pull: true,
+            put: true
+          }
+        },
         value: undefined,
         currentColor: 0,
         durationInput: undefined,
@@ -190,8 +198,16 @@
       palette() {
         return this.allPalettes[Object.keys(this.allPalettes).find(paletteId => paletteId === this.inputId)];
       },
-      colors() {
-        return this.palette.colors;
+      colors: {
+        get() {
+          return this.palette.colors;
+        },
+        set(value) {
+          this.updateColors({
+            id: this.inputId,
+            colors: value
+          });
+        }
       },
       duration() {
         return this.palette.duration;
@@ -319,7 +335,8 @@
     components: {
       'sketch-picker': Sketch,
       PaletteSelector,
-      ProfileSelector
+      ProfileSelector,
+      draggable
     }
   };
 </script>
