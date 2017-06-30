@@ -2,16 +2,53 @@
   <div class="right-top gallery pure-g" @drop='drop' @dragover='dragover'>
     <search-bar :phrase.sync='phrase' class='search-bar-wrapper'></search-bar>
     <div class='gallery-items-wrapper' data-simplebar-direction="vertical">
+
+      <div class='pure-u-1-1 title' :class="{ hidden: phrase.length < 1 }">
+        <h2>All Modules</h2>
+      </div>
       <draggable
         class='gallery-items'
+        :class="{ hidden: phrase.length < 1 }"
         :options="{ group: { name: 'modules',  pull: 'clone', put: false }, sort: false }"
       >
         <gallery-item
-          v-for='(module, key) in modules'
+          v-for="(module, key) in modules"
           :ModuleIn='module'
           :moduleName='key'
           :key='key'
           :class="{ hidden: !search(key, phrase) }"
+        ></gallery-item>
+      </draggable>
+
+      <div class='pure-u-1-1 title' :class="{ hidden: phrase.length > 0 }">
+        <h2>Module 2D</h2>
+      </div>
+      <draggable
+        class='gallery-items'
+        :class="{ hidden: phrase.length > 0 }"
+        :options="{ group: { name: 'modules',  pull: 'clone', put: false }, sort: false }"
+      >
+        <gallery-item
+          v-for="(module, key) in module2d"
+          :ModuleIn='module'
+          :moduleName='key'
+          :key='key'
+        ></gallery-item>
+      </draggable>
+
+      <div class='pure-u-1-1 title' :class="{ hidden: phrase.length > 0 }">
+        <h2>Module Shader</h2>
+      </div>
+      <draggable
+        class='gallery-items'
+        :class="{ hidden: phrase.length > 0 }"
+        :options="{ group: { name: 'modules',  pull: 'clone', put: false }, sort: false }"
+      >
+        <gallery-item
+          v-for='(module, key) in moduleShader'
+          :ModuleIn='module'
+          :moduleName='key'
+          :key='key'
         ></gallery-item>
       </draggable>
     </div>
@@ -20,7 +57,7 @@
 
 <script>
   import { mapActions, mapGetters, mapMutations } from 'vuex';
-  // import { forIn } from '@/modv/utils';
+  import { Module2D, ModuleShader } from '@/modv';
   import SearchBar from '@/components/Gallery/SearchBar';
   import GalleryItem from '@/components/GalleryItem';
   import draggable from 'vuedraggable';
@@ -33,10 +70,28 @@
         phrase: ''
       };
     },
-    computed: mapGetters('modVModules', {
-      currentDragged: 'currentDragged',
-      modules: 'registry'
-    }),
+    computed: {
+      ...mapGetters('modVModules', {
+        currentDragged: 'currentDragged',
+        modules: 'registry'
+      }),
+      moduleShader() {
+        return Object.keys(this.modules)
+          .filter(key => this.modules[key].prototype instanceof ModuleShader)
+          .reduce((result, key) => {
+            result[key] = this.modules[key];
+            return result;
+          }, {});
+      },
+      module2d() {
+        return Object.keys(this.modules)
+          .filter(key => this.modules[key].prototype instanceof Module2D)
+          .reduce((result, key) => {
+            result[key] = this.modules[key];
+            return result;
+          }, {});
+      }
+    },
     methods: {
       ...mapActions('modVModules', [
         'removeActiveModule'
@@ -124,5 +179,12 @@
     order: 0;
     flex: 0 1 auto;
     align-self: auto;
+  }
+
+  .title h2 {
+    color: #fff;
+    cursor: default;
+    font-weight: normal;
+    margin: 0.82em 5pt 0.2em 5pt;
   }
 </style>
