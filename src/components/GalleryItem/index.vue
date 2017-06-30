@@ -121,6 +121,10 @@
       transition: all 300ms;
       font-size: 0;
       margin: 5pt;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      padding: 2pt;
 
       .title {
         color: #fff;
