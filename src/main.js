@@ -3,7 +3,7 @@
 import Vue from 'vue';
 import Dropdown from 'hsy-vue-dropdown';
 import Shortkey from 'vue-shortkey';
-import { modV } from './modv';
+import { ModuleISF, modV } from './modv';
 import App from './App';
 import store from '../store';
 import './assets/styles/index.scss';
@@ -42,7 +42,9 @@ window.modVVue = new Vue({
       'FilmGrain',
       'ChromaticAbberation',
       'Stretch',
-      'Wobble'
+      'Wobble',
+      'OpticalFlowDistort',
+      'Neon'
     ];
 
     modules.forEach((fileName) => {
@@ -50,6 +52,40 @@ window.modVVue = new Vue({
         modV.register(Module.default);
       });
     });
+
+    const isfSamples = [
+      'plasma.fs',
+      'Random Shape.fs',
+      'Triangles.fs',
+      'Echo Trace.fs',
+      'rgbtimeglitch.fs',
+      'badtv.fs',
+      'edges.fs',
+      'feedback.fs',
+      'rgbglitchmod.fs',
+      'tapestryfract.fs'
+    ];
+
+    isfSamples.forEach((fileName) => {
+      System.import(`@/modv/sample-modules/isf-samples/${fileName}`).then((fragmentShader) => {
+        class Module extends ModuleISF {
+          constructor() {
+            super({
+              info: {
+                name: fileName,
+                author: '2xAA',
+                version: 0.1,
+                meyda: []
+              },
+              fragmentShader
+            });
+          }
+        }
+
+        modV.register(Module);
+      });
+    });
+
     attachResizeHandles();
   }
 });

@@ -2,7 +2,7 @@ import Vue from 'vue';
 import EventEmitter2 from 'eventemitter2';
 import BeatDetektor from '@/extra/beatdetektor';
 import store from '@/../store/';
-import { Module2D, ModuleShader } from './Modules';
+import { Module2D, ModuleShader, ModuleISF } from './Modules';
 import Layer from './Layer';
 import { scan, setSource } from './MediaStream';
 import draw from './draw';
@@ -46,6 +46,18 @@ class ModV extends EventEmitter2 {
     this.height = 200;
 
     this.webgl = setupWebGl(this);
+
+    const ISFcanvas = document.createElement('canvas');
+    const ISFgl = ISFcanvas.getContext('webgl2');
+
+    // document.body.appendChild(ISFcanvas);
+
+    // ISFcanvas.style.opacity = '0';
+    // ISFcanvas.style.pointerEvents = 'none';
+    this.isf = {
+      canvas: ISFcanvas,
+      gl: ISFgl
+    };
 
     this.mainRaf = null;
     this.workers = {};
@@ -232,12 +244,15 @@ const modV = new ModV();
 
 window.modV = modV;
 const webgl = modV.webgl;
+const isf = modV.isf;
 
 export default modV;
 export {
   modV,
   Module2D,
   ModuleShader,
+  ModuleISF,
   Layer,
-  webgl
+  webgl,
+  isf
 };
