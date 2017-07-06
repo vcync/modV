@@ -17,7 +17,7 @@
     "correcting-interval": "^2.0.0",
     "eventemitter2": "^4.1.0",
     "hsy-vue-dropdown": "0.0.5",
-    "interactive-shader-format": "^2.6.1",
+    "interactive-shader-format-for-modv": "^2.6.1",
     "meyda": "^4.0.5",
     "modv-media-manager": "git+ssh://git@github.com:2xAA/modV-MediaManager.git",
     "reconnecting-websocket": "^3.0.5",

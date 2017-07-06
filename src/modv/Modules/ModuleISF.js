@@ -1,5 +1,5 @@
 import { isf } from '@/modv';
-import { Renderer as ISFRenderer, Parser as ISFParser } from 'interactive-shader-format';
+import { Renderer as ISFRenderer, Parser as ISFParser } from 'interactive-shader-format-for-modv';
 import Module from './Module';
 
 class ModuleISF extends Module {
