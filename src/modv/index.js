@@ -68,6 +68,10 @@ class ModV extends EventEmitter2 {
         windowRef.close();
       });
     });
+
+    this.Module2D = Module2D;
+    this.ModuleISF = ModuleISF;
+    this.ModuleShader = ModuleShader;
   }
 
   start() {

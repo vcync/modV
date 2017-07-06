@@ -1,38 +1,36 @@
 
 /*{
-  "CREDIT": "by VIDVOX",
-  "CATEGORIES": [
-    "Stylize"
-  ],
-  "INPUTS": [
-    {
-      "NAME": "inputImage",
-      "TYPE": "image"
-    },
-    {
-      "NAME": "cell_size",
-      "TYPE": "float",
-      "MIN": 0.001,
-      "MAX": 0.5,
-      "DEFAULT": 0.125
-    },
-    {
-      "NAME": "style",
-      "VALUES": [
-        0,
-        1
-      ],
-      "LABELS": [
-        "Squared",
-        "Diamond"
-      ],
-      "DEFAULT": 1,
-      "TYPE": "long"
-    }
-  ]
+	"CREDIT": "by VIDVOX",
+	"CATEGORIES": [
+		"Stylize"
+	],
+	"INPUTS": [
+		{
+			"NAME": "inputImage",
+			"TYPE": "image"
+		},
+		{
+			"NAME": "cell_size",
+			"TYPE": "float",
+			"MIN": 0.001,
+			"MAX": 0.5,
+			"DEFAULT": 0.125
+		},
+		{
+			"NAME": "style",
+			"VALUES": [
+				0,
+				1
+			],
+			"LABELS": [
+				"Squared",
+				"Diamond"
+			],
+			"DEFAULT": 0,
+			"TYPE": "long"
+		}
+	]
 }*/
-
-
 
 void main()
 {
@@ -43,15 +41,14 @@ void main()
 	}
 	else	{
 		// Position of current pixel
-		vec2 xy; 
-		xy.x = isf_FragNormCoord[0];
-		xy.y = isf_FragNormCoord[1];
-
+		vec2 xy;
+		xy.x = isf_FragNormCoord.x;
+		xy.y = isf_FragNormCoord.y;
 
 		// Left and right of tile
 		float CellWidth = cell_size;
 		float CellHeight = cell_size;
-		
+
 		CellHeight = cell_size * RENDERSIZE.x / RENDERSIZE.y;
 
 		float x1 = floor(xy.x / CellWidth)*CellWidth;
@@ -59,12 +56,12 @@ void main()
 		// Top and bottom of tile
 		float y1 = floor(xy.y / CellHeight)*CellHeight;
 		float y2 = clamp((ceil(xy.y / CellHeight)*CellHeight), 0.0, 1.0);
-		
+
 		//	get the normalized local coords in the cell
 		float x = (xy.x-x1) / CellWidth;
 		float y = (xy.y-y1) / CellHeight;
 		vec4 avgClr = vec4(0.0);
-		
+
 		//	style 0, two right triangles making a square
 		if (style == 0)	{
 			//	if above the center line...
@@ -91,7 +88,7 @@ void main()
 				vec4 avgL = IMG_NORM_PIXEL(inputImage, vec2(x1, y1));
 				vec4 avgR = IMG_NORM_PIXEL(inputImage, vec2(x2, y1));
 				vec4 avgC = IMG_NORM_PIXEL(inputImage, vec2(x1+(CellWidth/2.0), y2+(CellHeight/2.0)));	// Average the averages + centre
-				avgClr = (avgL+avgR+avgC) / 3.0;				
+				avgClr = (avgL+avgR+avgC) / 3.0;
 			}
 			else if ((x < y)&&(x < 1.0 - y))	{
 				// Average bottom left, top left, center
@@ -117,7 +114,7 @@ void main()
 				//avgClr = vec4(0.0,0.0,1.0,1.0);
 			}
 		}
-		
+
 		gl_FragColor = avgClr;
 	}
 }

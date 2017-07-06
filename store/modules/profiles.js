@@ -27,12 +27,13 @@ const actions = {
 
 // mutations
 const mutations = {
-  addProfile(state, { profileName, images, palettes, presets, videos }) {
+  addProfile(state, { profileName, images, palettes, presets, videos, modules }) {
     const profile = {};
     profile.images = images || {};
     profile.palettes = palettes || {};
     profile.presets = presets || {};
     profile.videos = videos || {};
+    profile.modules = modules || {};
 
     Vue.set(state.profiles, profileName, profile);
   },

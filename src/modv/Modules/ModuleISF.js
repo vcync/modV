@@ -18,9 +18,11 @@ class ModuleISF extends Module {
     this.time = 0;
 
     function render({ canvas, context, video, features, meyda, delta, bpm, kick }) { //eslint-disable-line
-      this.inputs.filter(input => input.TYPE === 'image').forEach((input) => {
-        this.renderer.setValue(input.NAME, canvas);
-      });
+      if(this.inputs) {
+        this.inputs.filter(input => input.TYPE === 'image').forEach((input) => {
+          this.renderer.setValue(input.NAME, canvas);
+        });
+      }
 
       this.renderer.setValue('TIME', this.time);
 
@@ -30,7 +32,7 @@ class ModuleISF extends Module {
       context.save();
       context.globalAlpha = this.info.alpha || 1;
       context.globalCompositeOperation = this.info.compositeOperation || 'normal';
-      context.drawImage(this.ISFcanvas, 0, 0);
+      context.drawImage(this.ISFcanvas, 0, 0, canvas.width, canvas.height);
       context.restore();
     }
 
@@ -68,7 +70,7 @@ class ModuleISF extends Module {
           this.add({
             type: 'rangeControl',
             variable: input.NAME,
-            label: input.LABEL,
+            label: input.LABEL || input.NAME,
             varType: 'float',
             min: input.MIN || 0.0,
             max: input.MAX || 1.0,
@@ -82,7 +84,7 @@ class ModuleISF extends Module {
           this.add({
             type: 'checkboxControl',
             variable: input.NAME,
-            label: input.LABEL,
+            label: input.LABEL || input.NAME,
             checked: input.DEFAULT || 0.0
           });
           break;
@@ -94,6 +96,20 @@ class ModuleISF extends Module {
             label: input.NAME,
             enum: input.VALUES.map((value, idx) => new Object({ label: input.LABELS[idx], value, selected: (value === input.DEFAULT) })) //eslint-disable-line
           });
+          break;
+
+        case 'color':
+          this.add({
+            type: 'colorControl',
+            variable: input.NAME,
+            label: input.LABEL || input.NAME,
+            returnFormat: 'rgbaArray',
+            default: input.DEFAULT || 0.0
+          });
+          break;
+
+        case 'image':
+          this.info.previewWithOutput = true;
           break;
       }
 

@@ -34,7 +34,7 @@ window.modVVue = new Vue({
     modV.start();
 
     const modules = [
-      'Waveform',
+      // 'Waveform',
       'Ball',
       'Webcam',
       'Plasma',
@@ -60,7 +60,6 @@ window.modVVue = new Vue({
       'Echo Trace.fs',
       'rgbtimeglitch.fs',
       'badtv.fs',
-      'edges.fs',
       'feedback.fs',
       'rgbglitchmod.fs',
       'tapestryfract.fs'

@@ -85,7 +85,7 @@ devMiddleware.waitUntilValid(() => {
 
 var server = app.listen(port);
 
-var manager = new MediaManager(3132);
+const MM = new MediaManager(3132); //eslint-disable-line
 
 module.exports = {
   ready: readyPromise,
