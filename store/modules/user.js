@@ -1,3 +1,4 @@
+import stats from '@/extra/stats';
 import store from '@/../store';
 import { modV } from '@/modv';
 
@@ -6,7 +7,8 @@ const state = {
   name: 'A modV user',
   useRetina: true,
   currentAudioId: '',
-  currentVideoId: ''
+  currentVideoId: '',
+  showStats: false
 };
 
 // getters
@@ -16,6 +18,7 @@ const getters = {
   useRetina: state => state.useRetina,
   currentAudioSource: state => state.currentAudioId,
   currentVideoSource: state => state.currentVideoId,
+  showStats: state => state.showStats
 };
 
 // actions
@@ -43,6 +46,15 @@ const actions = {
     modV.setMediaStreamSource({ audioSourceId: state.currentAudioId, videoSourceId: sourceId }).then(() => {
       commit('setCurrentVideoSource', { sourceId });
     });
+  },
+  setShowStats({ commit, state }, shouldShowStats) {
+    if(shouldShowStats) {
+      stats.dom.classList.remove('hidden');
+    } else {
+      stats.dom.classList.add('hidden');
+    }
+
+    commit('setShowStats', shouldShowStats);
   }
 };
 
@@ -62,6 +74,9 @@ const mutations = {
   },
   setCurrentVideoSource(state, { sourceId }) {
     state.currentVideoId = sourceId;
+  },
+  setShowStats(state, shouldShowStats) {
+    state.showStats = shouldShowStats;
   }
 };
 

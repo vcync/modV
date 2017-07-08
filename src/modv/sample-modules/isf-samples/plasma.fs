@@ -4,39 +4,36 @@
     "XXX"
   ],
   "DESCRIPTION" : "",
-  "ISFVSN" : "2",
   "INPUTS" : [
     {
       "NAME" : "timeScale",
       "TYPE" : "float",
-      "DEFAULT" : 100,
+      "DEFAULT" : 0.18,
+      "MIN": 0.001,
+      "MAX": 2.0,
       "LABEL" : "Time Scale"
     },
     {
-      "NAME" : "scaleX",
-      "TYPE" : "float",
-      "MAX" : 150,
-      "DEFAULT" : 50,
-      "LABEL" : "Scale X",
-      "MIN" : 1
-    },
-    {
-      "NAME" : "scaleY",
-      "TYPE" : "float",
-      "MAX" : 150,
-      "DEFAULT" : 50,
-      "LABEL" : "Scale Y",
-      "MIN" : 1
+      "NAME": "uScale",
+      "TYPE": "point2D",
+      "LABEL" : "Scale",
+      "DEFAULT": [
+        10.5,
+        10.5
+      ],
+      "MAX": 50.0,
+      "MIN": 0.001
     }
   ],
   "CREDIT" : ""
 }
 */
-#define PI 3.1415926535897932384626433832795
+
+const float PI = 3.1415926535897932384626433832795;
 
 void main() {
 	float time = TIME / timeScale;
-	vec2 scale = vec2(RENDERSIZE.x / scaleX, RENDERSIZE.y / scaleY);
+	vec2 scale = vec2(RENDERSIZE.x / uScale.x, RENDERSIZE.y / uScale.y);
 	float v = 0.0;
 	vec2 c = isf_FragNormCoord * scale - scale/2.0;
 	v += sin((c.x+time));

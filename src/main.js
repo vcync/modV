@@ -3,6 +3,7 @@
 import Vue from 'vue';
 import Dropdown from 'hsy-vue-dropdown';
 import Shortkey from 'vue-shortkey';
+import stats from '@/extra/stats';
 import { ModuleISF, modV } from './modv';
 import App from './App';
 import store from '../store';
@@ -17,6 +18,11 @@ Object.defineProperty(Vue.prototype, '$modV', {
     return modV;
   }
 });
+
+document.body.appendChild(stats.dom);
+stats.dom.style.left = null;
+stats.dom.style.right = 0;
+stats.dom.classList.add('hidden');
 
 Vue.use(Dropdown);
 Vue.use(Shortkey);
@@ -34,7 +40,7 @@ window.modVVue = new Vue({
     modV.start();
 
     const modules = [
-      // 'Waveform',
+      'Waveform',
       'Ball',
       'Webcam',
       'Plasma',
@@ -44,7 +50,8 @@ window.modVVue = new Vue({
       'Stretch',
       'Wobble',
       'OpticalFlowDistort',
-      'Neon'
+      'Neon',
+      'SolidColor'
     ];
 
     modules.forEach((fileName) => {
@@ -62,7 +69,17 @@ window.modVVue = new Vue({
       'badtv.fs',
       'feedback.fs',
       'rgbglitchmod.fs',
-      'tapestryfract.fs'
+      'tapestryfract.fs',
+      'hexagons.fs',
+      'UltimateFlame.fs',
+      'CompoundWaveStudy1.fs',
+      'FractilianParabolicCircleInversion.fs',
+      'ASCII Art.fs',
+      'CollapsingArchitecture.fs',
+      'Dither-Bayer.fs',
+      'GreatBallOfFire.fs',
+      'VHS Glitch.fs.fs',
+      'Zebre.fs'
     ];
 
     isfSamples.forEach((fileName) => {
@@ -82,6 +99,8 @@ window.modVVue = new Vue({
         }
 
         modV.register(Module);
+      }).catch((e) => {
+        console.log(e);
       });
     });
 

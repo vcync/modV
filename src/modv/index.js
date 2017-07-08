@@ -2,6 +2,7 @@ import Vue from 'vue';
 import EventEmitter2 from 'eventemitter2';
 import BeatDetektor from '@/extra/beatdetektor';
 import store from '@/../store/';
+import stats from '@/extra/stats';
 import { Module2D, ModuleShader, ModuleISF } from './Modules';
 import Layer from './Layer';
 import { scan, setSource } from './MediaStream';
@@ -134,6 +135,7 @@ class ModV extends EventEmitter2 {
   }
 
   loop(δ) {
+    stats.begin();
     this.mainRaf = requestAnimationFrame(this.loop.bind(this));
     let features = [];
     if(this.audioFeatures.length > 0) features = this.meyda.get(this.audioFeatures);
@@ -149,6 +151,7 @@ class ModV extends EventEmitter2 {
 
 
     draw(δ);
+    stats.end();
   }
 
   register(Module) { //eslint-disable-line

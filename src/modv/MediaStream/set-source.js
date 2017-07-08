@@ -1,5 +1,5 @@
 import Meyda from 'meyda';
-import { modV } from '@/modv';
+// import { modV } from '@/modv';
 
 function userMediaSuccess(stream, ids) {
   return new Promise((resolve) => {
@@ -47,7 +47,7 @@ function userMediaSuccess(stream, ids) {
     // Tell the rest of the script we're all good.
     this.mediaSourcesInited = true;
 
-    if(!modV.mainRaf) modV.mainRaf = requestAnimationFrame(modV.loop.bind(modV));
+    // if(!modV.mainRaf) modV.mainRaf = requestAnimationFrame(modV.loop.bind(modV));
 
     resolve(ids);
   });

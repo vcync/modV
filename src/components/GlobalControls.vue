@@ -62,6 +62,11 @@
       <label for="newOutputWindowGlobal">New output window</label>
       <input id="newOutputWindowGlobal" type="button" value="Open" class="enable pure-button" @click='createWindow'>
     </div>
+
+    <div class="control-group showStats-group">
+      <label for="showStatsGlobal">Show Statistics</label>
+      <input id="showStatsGlobal" type="checkbox" class="enable" v-model='showStatsInput'>
+    </div>
   </div>
 </template>
 
@@ -80,7 +85,8 @@
         detectBpm: true,
         mediaPathInput: '',
         nameInput: '',
-        useRetinaInput: true
+        useRetinaInput: true,
+        showStatsInput: false
       };
     },
     computed: {
@@ -97,7 +103,8 @@
         'name',
         'useRetina',
         'currentAudioSource',
-        'currentVideoSource'
+        'currentVideoSource',
+        'showStats'
       ]),
     },
     methods: {
@@ -114,7 +121,8 @@
       ...mapActions('user', [
         'setUseRetina',
         'setCurrentAudioSource',
-        'setCurrentVideoSource'
+        'setCurrentVideoSource',
+        'setShowStats'
       ]),
       ...mapActions('windows', [
         'createWindow'
@@ -155,6 +163,9 @@
       },
       useRetinaInput() {
         this.setUseRetina({ useRetina: this.useRetinaInput });
+      },
+      showStatsInput() {
+        this.setShowStats(this.showStatsInput);
       }
     },
     created() {
@@ -167,6 +178,7 @@
       this.useRetinaInput = this.useRetina;
       this.audioSource = this.currentAudioSource || 'default';
       this.videoSource = this.currentVideoSource || 'default';
+      this.showStatsInput = this.showStats;
     }
   };
 </script>
