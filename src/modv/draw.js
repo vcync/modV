@@ -1,4 +1,4 @@
-import { Module2D, ModuleShader, modV } from '@/modv';
+import { Module2D, ModuleShader, ModuleISF, modV } from '@/modv';
 import webglRender from '@/modv/webgl/render';
 import store from '@/../store';
 import mux from './mux';
@@ -157,6 +157,46 @@ function draw(δ) {
         }
 
         context.restore();
+      }
+
+      if(Module instanceof ModuleISF) {
+        if(pipeline) {
+          context.clearRect(0, 0, canvas.width, canvas.height);
+          context.drawImage(
+            bufferCanvas,
+            0,
+            0,
+            canvas.width,
+            canvas.height
+          );
+
+          Module.render({
+            canvas,
+            context,
+            video: modV.videoStream,
+            features,
+            meyda: modV.meyda,
+            delta: δ
+          });
+
+          bufferContext.clearRect(0, 0, canvas.width, canvas.height);
+          bufferContext.drawImage(
+            Layer.canvas,
+            0,
+            0,
+            canvas.width,
+            canvas.height
+          );
+        } else {
+          Module.render({
+            canvas,
+            context,
+            video: modV.videoStream,
+            features,
+            meyda: modV.meyda,
+            delta: δ
+          });
+        }
       }
 
       if(pipeline) {

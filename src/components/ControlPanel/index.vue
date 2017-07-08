@@ -16,10 +16,12 @@
 
 <script>
   import { mapGetters } from 'vuex';
+  import colorControl from './ColorControl';
   import checkboxControl from './CheckboxControl';
   import paletteControl from './PaletteControl';
   import rangeControl from './RangeControl';
   import selectControl from './SelectControl';
+  import twoDPointControl from './TwoDPointControl';
 
   export default {
     name: 'controlPanel',
@@ -40,10 +42,12 @@
 
     },
     components: {
+      colorControl,
       checkboxControl,
       paletteControl,
       rangeControl,
-      selectControl
+      selectControl,
+      twoDPointControl
     }
   };
 </script>

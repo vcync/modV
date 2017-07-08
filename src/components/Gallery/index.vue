@@ -51,13 +51,29 @@
           :key='key'
         ></gallery-item>
       </draggable>
+
+      <div class='pure-u-1-1 title' :class="{ hidden: phrase.length > 0 }">
+        <h2>Module ISF</h2>
+      </div>
+      <draggable
+        class='gallery-items'
+        :class="{ hidden: phrase.length > 0 }"
+        :options="{ group: { name: 'modules',  pull: 'clone', put: false }, sort: false }"
+      >
+        <gallery-item
+          v-for='(module, key) in moduleISF'
+          :ModuleIn='module'
+          :moduleName='key'
+          :key='key'
+        ></gallery-item>
+      </draggable>
     </div>
   </div>
 </template>
 
 <script>
   import { mapActions, mapGetters, mapMutations } from 'vuex';
-  import { Module2D, ModuleShader } from '@/modv';
+  import { Module2D, ModuleShader, ModuleISF } from '@/modv';
   import SearchBar from '@/components/Gallery/SearchBar';
   import GalleryItem from '@/components/GalleryItem';
   import draggable from 'vuedraggable';
@@ -86,6 +102,14 @@
       module2d() {
         return Object.keys(this.modules)
           .filter(key => this.modules[key].prototype instanceof Module2D)
+          .reduce((result, key) => {
+            result[key] = this.modules[key];
+            return result;
+          }, {});
+      },
+      moduleISF() {
+        return Object.keys(this.modules)
+          .filter(key => this.modules[key].prototype instanceof ModuleISF)
           .reduce((result, key) => {
             result[key] = this.modules[key];
             return result;

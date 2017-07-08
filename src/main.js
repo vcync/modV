@@ -3,7 +3,8 @@
 import Vue from 'vue';
 import Dropdown from 'hsy-vue-dropdown';
 import Shortkey from 'vue-shortkey';
-import { modV } from './modv';
+import stats from '@/extra/stats';
+import { ModuleISF, modV } from './modv';
 import App from './App';
 import store from '../store';
 import './assets/styles/index.scss';
@@ -17,6 +18,11 @@ Object.defineProperty(Vue.prototype, '$modV', {
     return modV;
   }
 });
+
+document.body.appendChild(stats.dom);
+stats.dom.style.left = null;
+stats.dom.style.right = 0;
+stats.dom.classList.add('hidden');
 
 Vue.use(Dropdown);
 Vue.use(Shortkey);
@@ -42,7 +48,10 @@ window.modVVue = new Vue({
       'FilmGrain',
       'ChromaticAbberation',
       'Stretch',
-      'Wobble'
+      'Wobble',
+      'OpticalFlowDistort',
+      'Neon',
+      'SolidColor'
     ];
 
     modules.forEach((fileName) => {
@@ -50,6 +59,51 @@ window.modVVue = new Vue({
         modV.register(Module.default);
       });
     });
+
+    const isfSamples = [
+      'plasma.fs',
+      'Random Shape.fs',
+      'Triangles.fs',
+      'Echo Trace.fs',
+      'rgbtimeglitch.fs',
+      'badtv.fs',
+      'feedback.fs',
+      'rgbglitchmod.fs',
+      'tapestryfract.fs',
+      'hexagons.fs',
+      'UltimateFlame.fs',
+      'CompoundWaveStudy1.fs',
+      'FractilianParabolicCircleInversion.fs',
+      'ASCII Art.fs',
+      'CollapsingArchitecture.fs',
+      'Dither-Bayer.fs',
+      'GreatBallOfFire.fs',
+      'VHS Glitch.fs.fs',
+      'Zebre.fs'
+    ];
+
+    isfSamples.forEach((fileName) => {
+      System.import(`@/modv/sample-modules/isf-samples/${fileName}`).then((fragmentShader) => {
+        class Module extends ModuleISF {
+          constructor() {
+            super({
+              info: {
+                name: fileName,
+                author: '2xAA',
+                version: 0.1,
+                meyda: []
+              },
+              fragmentShader
+            });
+          }
+        }
+
+        modV.register(Module);
+      }).catch((e) => {
+        console.log(e);
+      });
+    });
+
     attachResizeHandles();
   }
 });

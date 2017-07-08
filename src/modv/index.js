@@ -2,7 +2,8 @@ import Vue from 'vue';
 import EventEmitter2 from 'eventemitter2';
 import BeatDetektor from '@/extra/beatdetektor';
 import store from '@/../store/';
-import { Module2D, ModuleShader } from './Modules';
+import stats from '@/extra/stats';
+import { Module2D, ModuleShader, ModuleISF } from './Modules';
 import Layer from './Layer';
 import { scan, setSource } from './MediaStream';
 import draw from './draw';
@@ -47,6 +48,18 @@ class ModV extends EventEmitter2 {
 
     this.webgl = setupWebGl(this);
 
+    const ISFcanvas = document.createElement('canvas');
+    const ISFgl = ISFcanvas.getContext('webgl2');
+
+    // document.body.appendChild(ISFcanvas);
+
+    // ISFcanvas.style.opacity = '0';
+    // ISFcanvas.style.pointerEvents = 'none';
+    this.isf = {
+      canvas: ISFcanvas,
+      gl: ISFgl
+    };
+
     this.mainRaf = null;
     this.workers = {};
 
@@ -56,6 +69,10 @@ class ModV extends EventEmitter2 {
         windowRef.close();
       });
     });
+
+    this.Module2D = Module2D;
+    this.ModuleISF = ModuleISF;
+    this.ModuleShader = ModuleShader;
   }
 
   start() {
@@ -118,6 +135,7 @@ class ModV extends EventEmitter2 {
   }
 
   loop(δ) {
+    stats.begin();
     this.mainRaf = requestAnimationFrame(this.loop.bind(this));
     let features = [];
     if(this.audioFeatures.length > 0) features = this.meyda.get(this.audioFeatures);
@@ -133,6 +151,7 @@ class ModV extends EventEmitter2 {
 
 
     draw(δ);
+    stats.end();
   }
 
   register(Module) { //eslint-disable-line
@@ -232,12 +251,15 @@ const modV = new ModV();
 
 window.modV = modV;
 const webgl = modV.webgl;
+const isf = modV.isf;
 
 export default modV;
 export {
   modV,
   Module2D,
   ModuleShader,
+  ModuleISF,
   Layer,
-  webgl
+  webgl,
+  isf
 };

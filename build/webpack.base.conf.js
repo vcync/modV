@@ -22,7 +22,8 @@ module.exports = {
     extensions: ['.js', '.vue', '.json'],
     alias: {
       vue$: 'vue/dist/vue.esm.js',
-      '@': resolve('src')
+      '@': resolve('src'),
+      modv: resolve('src/modv')
     }
   },
   module: {
@@ -63,7 +64,7 @@ module.exports = {
         }
       },
       {
-        test: /\.(glsl|vert|frag)$/,
+        test: /\.(glsl|vert|frag|fs|vs)$/,
         loader: 'text-loader'
       }
     ]

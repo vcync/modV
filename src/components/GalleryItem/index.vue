@@ -10,7 +10,7 @@
 
 <script>
   import { mapActions, mapGetters } from 'vuex';
-  import { webgl } from '@/modv';
+  import { webgl, modV } from '@/modv';
 
   export default {
     name: 'galleryItem',
@@ -38,6 +38,9 @@
       }).then((Module) => {
         this.Module = Module;
         if('init' in this.Module) this.Module.init({ width: this.canvas.width, height: this.canvas.height });
+      }).catch((e) => {
+        console.log(`An error occoured whilst initialising a gallery module - ${this.Module.info.name}`);
+        console.error(e);
       });
     },
     methods: {
@@ -51,6 +54,17 @@
         this.raf = requestAnimationFrame(this.draw);
         this.context.clearRect(0, 0, this.canvas.width, this.canvas.height);
         const features = this.$modV.meyda.get(this.$modV.audioFeatures);
+
+        if(this.Module.info.previewWithOutput) {
+          this.context.drawImage(
+            modV.outputCanvas,
+            0,
+            0,
+            this.canvas.width,
+            this.canvas.height
+          );
+        }
+
         this.Module.draw({
           canvas: this.canvas,
           context: this.context,
