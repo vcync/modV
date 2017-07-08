@@ -21,6 +21,7 @@
   import paletteControl from './PaletteControl';
   import rangeControl from './RangeControl';
   import selectControl from './SelectControl';
+  import twoDPointControl from './TwoDPointControl';
 
   export default {
     name: 'controlPanel',
@@ -45,7 +46,8 @@
       checkboxControl,
       paletteControl,
       rangeControl,
-      selectControl
+      selectControl,
+      twoDPointControl
     }
   };
 </script>
