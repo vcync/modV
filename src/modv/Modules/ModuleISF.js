@@ -1,5 +1,9 @@
 import { isf } from '@/modv';
-import { Renderer as ISFRenderer, Parser as ISFParser } from 'interactive-shader-format-for-modv';
+import {
+  Renderer as ISFRenderer,
+  Parser as ISFParser,
+  Upgrader as ISFUpgrader
+} from 'interactive-shader-format-for-modv';
 import Module from './Module';
 
 class ModuleISF extends Module {
@@ -52,11 +56,28 @@ class ModuleISF extends Module {
     this.ISFcanvas.width = can.width;
     this.ISFcanvas.height = can.height;
 
-    this.renderer = new ISFRenderer(this.gl);
-    this.renderer.loadSource(this.settings.fragmentShader, this.settings.vertexShader);
+    let fragmentShader = this.settings.fragmentShader;
+    let vertexShader = this.settings.vertexShader;
 
     const parser = new ISFParser();
-    parser.parse(this.settings.fragmentShader);
+    parser.parse(fragmentShader, vertexShader);
+    if(parser.error) {
+      console.error(`Error evaluating ${this.settings.info.name}'s shaders`);
+      throw new Error(parser.error);
+    }
+
+    if(this.settings.info.name === 'hexagons.fs') {
+      console.log(parser);
+    }
+
+    if(parser.isfVersion < 2) {
+      fragmentShader = ISFUpgrader.convertFragment(fragmentShader);
+      if(vertexShader) vertexShader = ISFUpgrader.convertVertex(vertexShader);
+    }
+
+    this.renderer = new ISFRenderer(this.gl);
+    this.renderer.loadSource(fragmentShader, vertexShader);
+
     this.inputs = parser.inputs;
 
     this.uniformValues = new Map();
@@ -72,12 +93,11 @@ class ModuleISF extends Module {
             variable: input.NAME,
             label: input.LABEL || input.NAME,
             varType: 'float',
-            min: input.MIN || 0.0,
-            max: input.MAX || 1.0,
-            default: input.DEFAULT || 0.0,
+            default: input.DEFAULT,
+            min: input.MIN,
+            max: input.MAX,
             step: 0.01
           });
-
           break;
 
         case 'bool':
@@ -103,8 +123,19 @@ class ModuleISF extends Module {
             type: 'colorControl',
             variable: input.NAME,
             label: input.LABEL || input.NAME,
-            returnFormat: 'rgbaArray',
-            default: input.DEFAULT || 0.0
+            returnFormat: 'mappedRgbaArray',
+            default: input.DEFAULT,
+          });
+          break;
+
+        case 'point2D':
+          this.add({
+            type: 'twoDPointControl',
+            variable: input.NAME,
+            label: input.LABEL || input.NAME,
+            default: input.DEFAULT,
+            min: input.MIN,
+            max: input.MAX
           });
           break;
 
