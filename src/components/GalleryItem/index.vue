@@ -38,6 +38,9 @@
       }).then((Module) => {
         this.Module = Module;
         if('init' in this.Module) this.Module.init({ width: this.canvas.width, height: this.canvas.height });
+      }).catch((e) => {
+        console.log(`An error occoured whilst initialising a gallery module - ${this.Module.info.name}`);
+        console.error(e);
       });
     },
     methods: {
