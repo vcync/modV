@@ -78,6 +78,15 @@
         const rgba = this.pickerColors.rgba;
         return [rgba.r, rgba.g, rgba.b, rgba.a];
       },
+      mappedRgbaArray() {
+        const rgba = this.pickerColors.rgba;
+        const red = Math.map(rgba.r, 0, 255, 0.0, 1.0);
+        const green = Math.map(rgba.g, 0, 255, 0.0, 1.0);
+        const blue = Math.map(rgba.b, 0, 255, 0.0, 1.0);
+        const alpha = Math.map(rgba.a, 0, 255, 0.0, 1.0);
+
+        return [red, green, blue, alpha];
+      },
       rgbaString() {
 
       },
