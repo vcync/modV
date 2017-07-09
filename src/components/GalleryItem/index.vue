@@ -5,6 +5,11 @@
       <span class="title">{{ name }}</span>
       <span class="ibvf"></span>
     </div>
+    <i class='fa fa-info-circle fa-lg' aria-hidden='true'></i>
+    <div class='information'>
+      <div class='author'>Credit: {{ credit }}</div>
+      <div class='author'>Version: {{ version }}</div>
+    </div>
   </div>
 </template>
 
@@ -107,6 +112,14 @@
         if (!('info' in Module)) return '';
         if (!('name' in Module.info)) return '';
         return Module.info.name;
+      },
+      credit() {
+        if(!this.Module) return '';
+        return this.Module.info.author;
+      },
+      version() {
+        if(!this.Module) return '';
+        return this.Module.info.version;
       }
     }
   };
@@ -149,6 +162,35 @@
       }
     }
 
+    i.fa-info-circle {
+      color: rgba(255, 255, 255, 0);
+      position: absolute;
+      top: 15px;
+      right: 15px;
+      transition: color 300ms;
+      z-index: 1;
+    }
+
+    .information {
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      text-align: center;
+      pointer-events: none;
+      transition: all 300ms;
+      margin: 5pt;
+      // display: flex;
+      // justify-content: flex-start;
+      // align-items: flex-start;
+      padding: 2pt;
+      opacity: 0;
+      transition: opacity 300ms;
+      color: #fff;
+      background-color: rgba(0,0,0,0.5);
+    }
+
     &:hover {
       .title-wrapper {
         background-color: rgba(0,0,0,0);
@@ -156,6 +198,16 @@
 
       .title {
         color: rgba(255,255,255,0);
+      }
+
+      i.fa-info-circle {
+        color: rgba(255, 255, 255, 255);
+
+        &:hover {
+          & ~ .information {
+            opacity: 1;
+          }
+        }
       }
     }
 

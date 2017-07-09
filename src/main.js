@@ -50,8 +50,8 @@ window.modVVue = new Vue({
       'Stretch',
       'Wobble',
       'OpticalFlowDistort',
-      'Neon',
-      'SolidColor'
+      'Neon'/* ,
+      'SolidColor'*/
     ];
 
     modules.forEach((fileName) => {
