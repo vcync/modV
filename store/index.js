@@ -4,6 +4,7 @@ import createPersist from 'vuex-localstorage';
 import layers from './modules/layers';
 import mediaStream from './modules/media-stream';
 import meyda from './modules/meyda';
+import midi from './modules/midi';
 import modVModules from './modules/modv-modules';
 import palettes from './modules/palettes';
 import profiles from './modules/profiles';
@@ -33,6 +34,7 @@ export default new Vuex.Store({
     layers,
     mediaStream,
     meyda,
+    midi,
     modVModules,
     palettes,
     profiles,
