@@ -1,21 +1,24 @@
 <template>
   <div class="pure-u-6-24 gallery-item" @mouseout='mouseout' @mouseover='mouseover' @dblclick='doubleclick' draggable @dragstart='dragstart' :data-module-name='name'>
-    <canvas class="preview"></canvas>
+    <canvas class="preview" ref='canvas'></canvas>
     <div class="title-wrapper">
       <span class="title">{{ name }}</span>
       <span class="ibvf"></span>
     </div>
     <i class='fa fa-info-circle fa-lg' aria-hidden='true'></i>
     <div class='information'>
-      <div class='author'>Credit: {{ credit }}</div>
-      <div class='author'>Version: {{ version }}</div>
+      <div class='module'>Module: {{ name }}</div>
+      <div v-if='credit' class='author'>Credit: {{ credit }}</div>
+      <div v-if='version' class='version'>Version: {{ version }}</div>
+      <div v-if='isIsf' class='isf-version'>ISF Version: {{ isfVersion }}</div>
+      <div v-if='description' class='desciption'>{{ description }}</div>
     </div>
   </div>
 </template>
 
 <script>
   import { mapActions, mapGetters } from 'vuex';
-  import { webgl, modV } from '@/modv';
+  import { webgl, modV, ModuleISF } from '@/modv';
 
   export default {
     name: 'galleryItem',
@@ -25,7 +28,8 @@
         context: false,
         Module: false,
         raf: false,
-        appendToName: '-gallery'
+        appendToName: '-gallery',
+        isIsf: false
       };
     },
     props: [
@@ -33,7 +37,7 @@
       'moduleName'
     ],
     mounted() {
-      this.canvas = this.$el.querySelector('canvas.preview');
+      this.canvas = this.$refs.canvas;
       this.context = this.canvas.getContext('2d');
 
       this.createActiveModule({
@@ -42,7 +46,13 @@
         skipInit: true
       }).then((Module) => {
         this.Module = Module;
-        if('init' in this.Module) this.Module.init({ width: this.canvas.width, height: this.canvas.height });
+        if(Module instanceof ModuleISF) {
+          this.isIsf = true;
+        }
+
+        if('init' in Module) {
+          Module.init({ width: this.canvas.width, height: this.canvas.height });
+        }
       }).catch((e) => {
         console.log(`An error occoured whilst initialising a gallery module - ${this.Module.info.name}`);
         console.error(e);
@@ -120,6 +130,17 @@
       version() {
         if(!this.Module) return '';
         return this.Module.info.version;
+      },
+      isfVersion() {
+        if(!this.Module) return '';
+        if(!this.isIsf) return 'N/A';
+        let outputString = `${this.Module.info.isfVersion}`;
+        if(this.Module.info.isfVersion === 1) outputString += ' (auto upgraded to 2)';
+        return outputString;
+      },
+      description() {
+        if(!this.Module) return '';
+        return this.Module.info.description;
       }
     }
   };
@@ -177,18 +198,23 @@
       left: 0;
       right: 0;
       bottom: 0;
-      text-align: center;
+      text-align: left;
       pointer-events: none;
       transition: all 300ms;
       margin: 5pt;
       // display: flex;
       // justify-content: flex-start;
       // align-items: flex-start;
-      padding: 2pt;
+      padding: 10pt;
       opacity: 0;
       transition: opacity 300ms;
       color: #fff;
       background-color: rgba(0,0,0,0.5);
+      overflow-y: hidden;
+
+      div {
+        margin-bottom: 5pt;
+      }
     }
 
     &:hover {
