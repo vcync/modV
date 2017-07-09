@@ -10,6 +10,7 @@ import draw from './draw';
 import setupWebGl from './webgl';
 import PaletteWorker from './palette-worker/palette-worker';
 import MediaManagerClient from './MediaManagerClient';
+import MIDIAssigner from './MIDI';
 
 class ModV extends EventEmitter2 {
 
@@ -46,15 +47,37 @@ class ModV extends EventEmitter2 {
     this.width = 200;
     this.height = 200;
 
+    this.midi = new MIDIAssigner({
+      get: store.getters['midi/assignment'],
+      set(key, value) {
+        console.log(key, value);
+        store.commit('midi/setAssignment', { key, value });
+      }
+    });
+    this.midi.start();
+    this.midi.on('midiAssignmentInput', (channel, assignment, midiEvent) => {
+      const data = assignment.variable.split(',');
+      const moduleName = data[0];
+      const variableName = data[1];
+      const Module = this.getActiveModule(moduleName);
+      const control = Module.info.controls[variableName];
+
+      let newValue = Math.map(midiEvent.data[2], 0, 127, control.min || 0, control.max || 1);
+
+      if(control.varType === 'int') newValue = Math.round(newValue);
+
+      store.commit('modVModules/setActiveModuleControlValue', {
+        moduleName,
+        variable: variableName,
+        value: newValue
+      });
+    });
+
     this.webgl = setupWebGl(this);
 
     const ISFcanvas = document.createElement('canvas');
     const ISFgl = ISFcanvas.getContext('webgl2');
 
-    // document.body.appendChild(ISFcanvas);
-
-    // ISFcanvas.style.opacity = '0';
-    // ISFcanvas.style.pointerEvents = 'none';
     this.isf = {
       canvas: ISFcanvas,
       gl: ISFgl

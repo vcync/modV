@@ -1,5 +1,5 @@
 import Vue from 'vue';
-import { modV, ModuleShader } from '@/modv';
+import { modV } from '@/modv';
 import store from '../index';
 
 const externalState = {
@@ -35,7 +35,8 @@ const getters = {
   focusedModule: state => externalState.active[state.focusedModule],
   focusedModuleName: state => state.focusedModule,
   getActiveModule: () => moduleName => externalState.active[moduleName],
-  currentDragged: state => state.currentDragged
+  currentDragged: state => state.currentDragged,
+  getValueFromActiveModule: state => (moduleName, controlVariable) => state.active[moduleName][controlVariable]
 };
 
 // actions
@@ -147,8 +148,24 @@ const mutations = {
     Vue.delete(state.registry, moduleName);
   },
   addActiveModule(state, { module, moduleName }) {
-    Vue.set(state.active, moduleName, moduleName);
+    const values = {};
+
+    Object.keys(module.info.controls).forEach((controlVariableName) => {
+      values[controlVariableName] = module[controlVariableName];
+    });
+
+    Vue.set(state.active, moduleName, values);
     externalState.active[moduleName] = module;
+  },
+  setActiveModuleControlValue(state, { moduleName, variable, value }) {
+    const controlValues = state.active[moduleName];
+
+    if(Object.keys(controlValues).filter(controlVariableName => controlVariableName === variable).length < 1) {
+      return;
+    }
+
+    Vue.set(state.active[moduleName], variable, value);
+    externalState.active[moduleName][variable] = value;
   },
   removeActiveModule(state, { moduleName }) {
     Vue.delete(state.active, moduleName);

@@ -21,18 +21,33 @@
 </template>
 
 <script>
+  import { mapGetters, mapMutations } from 'vuex';
+
   export default {
     name: 'rangeControl',
     props: [
       'module',
       'control'
     ],
-    data() {
-      return {
-        value: undefined
-      };
-    },
     computed: {
+      value: {
+        get() {
+          return this.getValueFromActiveModule(this.moduleName, this.variable);
+        },
+        set(value) {
+          let val;
+          if(this.varType === 'int') val = parseInt(value, 10);
+          else if(this.varType === 'float') val = parseFloat(value, 10);
+          this.setActiveModuleControlValue({
+            moduleName: this.moduleName,
+            variable: this.variable,
+            value: val
+          });
+        }
+      },
+      ...mapGetters('modVModules', [
+        'getValueFromActiveModule'
+      ]),
       moduleName() {
         return this.module.info.name;
       },
@@ -61,6 +76,11 @@
         return this.control.default;
       }
     },
+    methods: {
+      ...mapMutations('modVModules', [
+        'setActiveModuleControlValue'
+      ])
+    },
     beforeMount() {
       this.value = this.module[this.variable];
       if(typeof this.value === 'undefined') this.value = this.defaultValue;
@@ -68,12 +88,6 @@
     watch: {
       module() {
         this.value = this.module[this.variable];
-      },
-      value() {
-        let val;
-        if(this.varType === 'int') val = parseInt(this.value, 10);
-        else if(this.varType === 'float') val = parseFloat(this.value, 10);
-        this.module[this.variable] = val;
       }
     }
   };
