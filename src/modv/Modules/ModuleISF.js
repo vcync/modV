@@ -20,11 +20,17 @@ class ModuleISF extends Module {
     this.gl = isf.gl;
     this.ISFcanvas = isf.canvas;
     this.time = 0;
+    this.imageInputs = [];
+    this.inputs = [];
 
     function render({ canvas, context, video, features, meyda, delta, bpm, kick }) { //eslint-disable-line
       if(this.inputs) {
-        this.inputs.filter(input => input.TYPE === 'image').forEach((input) => {
-          this.renderer.setValue(input.NAME, canvas);
+        this.imageInputs.forEach((input) => {
+          if(input.NAME in this.info.controls) {
+            this.renderer.setValue(input.NAME, this[input.NAME] || canvas);
+          } else {
+            this.renderer.setValue(input.NAME, canvas);
+          }
         });
       }
 
@@ -66,19 +72,23 @@ class ModuleISF extends Module {
       throw new Error(parser.error);
     }
 
-    if(this.settings.info.name === 'hexagons.fs') {
-      console.log(parser);
-    }
-
     if(parser.isfVersion < 2) {
       fragmentShader = ISFUpgrader.convertFragment(fragmentShader);
       if(vertexShader) vertexShader = ISFUpgrader.convertVertex(vertexShader);
     }
 
+    console.log(parser);
+
+    this.settings.info.isfVersion = parser.isfVersion;
+    this.settings.info.author = parser.metadata.CREDIT;
+    this.settings.info.description = parser.metadata.DESCRIPTION;
+    this.settings.info.version = parser.metadata.VSN;
+
     this.renderer = new ISFRenderer(this.gl);
     this.renderer.loadSource(fragmentShader, vertexShader);
 
     this.inputs = parser.inputs;
+    this.imageInputs = parser.inputs.filter(input => input.TYPE === 'image');
 
     this.uniformValues = new Map();
 
@@ -141,6 +151,13 @@ class ModuleISF extends Module {
 
         case 'image':
           this.info.previewWithOutput = true;
+
+          this.add({
+            type: 'imageControl',
+            variable: input.NAME,
+            label: input.LABEL || input.NAME
+          });
+
           break;
       }
 
