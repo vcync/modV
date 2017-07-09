@@ -21,6 +21,8 @@ class MIDIAssigner extends EventEmitter2 {
     };
 
     if(settings.set) this.set = settings.set;
+
+    this.handleInputBound = this.handleInput.bind(this);
   }
 
   start() {
@@ -50,7 +52,8 @@ class MIDIAssigner extends EventEmitter2 {
     // loop over all available inputs and listen for any MIDI input
     for(let input of inputs.values()) { // eslint-disable-line
       // each time there is a midi message call the onMIDIMessage function
-      input.addEventListener('midimessage', this.handleInput.bind(this));
+      input.removeEventListener('midimessage', this.handleInputBound);
+      input.addEventListener('midimessage', this.handleInputBound);
     }
   }
 
