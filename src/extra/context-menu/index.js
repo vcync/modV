@@ -4,6 +4,7 @@ import store from '@/../store';
 import { Menu, MenuItem } from 'nwjs-menu-browser';
 import '@/../node_modules/nwjs-menu-browser/nwjs-menu-browser.css';
 import contextMenuStore from './store';
+import ContextMenuComponent from './Menu';
 
 if(!window.nw) {
   window.nw = {
@@ -13,9 +14,6 @@ if(!window.nw) {
 }
 
 const nw = window.nw;
-
-// Add some items
-const items = [];
 
 function buildMeydaMenu(moduleName, controlVariable) {
   const MeydaFeaturesSubmenu = new nw.Menu();
@@ -48,16 +46,22 @@ function buildMeydaMenu(moduleName, controlVariable) {
   return MeydaFeaturesSubmenu;
 }
 
+function searchForSubMenus(menu) {
+  let menus = [];
+
+  menu.items.filter(item => !!item.submenu).forEach((item, idx) => {
+    item.submenu.$id = `${menu.$id}-${idx}`;
+    menus.push(item.submenu);
+    menus = menus.concat(searchForSubMenus(item.submenu));
+  });
+
+  return menus;
+}
+
 function buildMenu(e, id, options, vnode, store) {
   e.preventDefault();
-
-  if(store.getters['contextMenu/menu'](id)) {
-    console.log(store.getters['contextMenu/menu'](id));
-    const Menu = store.getters['contextMenu/menu'](id);
-    store.dispatch('contextMenu/popdown', { id });
-    Menu.node.parentNode.removeChild(Menu.node);
-  }
   const menu = new nw.Menu();
+  menu.$id = id;
 
   options.menuItems.forEach((item, idx) => menu.insert(item, idx));
 
@@ -66,9 +70,13 @@ function buildMenu(e, id, options, vnode, store) {
   const MeydaFeaturesMenu = buildMeydaMenu(moduleName, controlVariable);
   menu.append(new nw.MenuItem({ label: 'Attach Feature', submenu: MeydaFeaturesMenu }));
 
-  items.forEach(item => menu.append(item));
+  let menus = [];
+  menus.push(menu);
+  menus = menus.concat(searchForSubMenus(menu));
+  console.log(menus);
 
-  store.commit('contextMenu/addMenu', { Menu: menu, id });
+  menus.forEach(menu => store.commit('contextMenu/addMenu', { Menu: menu, id: menu.$id }));
+
   store.dispatch('contextMenu/popup', { id, x: e.x, y: e.y });
   return false;
 }
@@ -77,9 +85,11 @@ const ContextMenu = {
   install(Vue, { store }) {
     if(!store) throw new Error('No Vuex store detected');
 
+    Vue.component('context-menu', ContextMenuComponent);
+
     Vue.directive('context-menu', {
-      bind(el, binding, vnode, oldVnode) {
-        console.log(el, binding, vnode, oldVnode);
+      bind(el, binding, vnode/* , oldVnode*/) {
+        // console.log(el, binding, vnode, oldVnode);
 
         el.addEventListener('contextmenu', (e) => {
           buildMenu(e, vnode.context._uid, binding.value, vnode, store); //eslint-disable-line

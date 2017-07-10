@@ -1,13 +1,17 @@
 import Vue from 'vue';
 
 const state = {
-  menus: {}
+  menus: {},
+  activeMenus: [],
+  visible: false
 };
 
 // getters
 const getters = {
   menus: state => state.menus,
-  menu: state => id => state.menus[id]
+  menu: state => id => state.menus[id],
+  activeMenus: state => state.activeMenus.map(id => state.menus[id]),
+  visible: state => state.visible,
 };
 
 // actions
@@ -26,10 +30,19 @@ const mutations = {
     Vue.set(state.menus, id, Menu);
   },
   popdown(state, { id }) {
-    state.menus[id].popdown();
+    const indexToSplice = state.activeMenus.indexOf(id);
+    state.activeMenus.splice(indexToSplice, 1);
+    state.visible = false;
   },
   popup(state, { id, x, y }) {
-    state.menus[id].popup(x, y);
+    const existingMenuId = state.activeMenus.indexOf(id);
+    if(existingMenuId < 0) state.activeMenus.push(id);
+    Vue.set(state.menus[id], 'x', x);
+    Vue.set(state.menus[id], 'y', y);
+    state.visible = true;
+  },
+  setVisibility(state, { visible }) {
+    state.visible = visible;
   }
 };
 

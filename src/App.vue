@@ -50,6 +50,7 @@
       </div>
 
     </section>
+    <context-menu v-for='menu in activeMenus' :options='menu'></context-menu>
   </div>
 </template>
 
@@ -63,8 +64,15 @@
   import OutputWindowButton from '@/components/OutputWindowButton';
   import Tabs from '@/components/Tabs';
 
+  import { mapGetters } from 'vuex';
+
   export default {
     name: 'app',
+    computed: {
+      ...mapGetters('contextMenu', [
+        'activeMenus'
+      ]),
+    },
     components: {
       ControlPanel,
       Gallery,
