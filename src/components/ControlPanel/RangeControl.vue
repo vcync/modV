@@ -1,5 +1,5 @@
 <template>
-  <div class="range-control" :data-moduleName='moduleName'>
+  <div class="range-control" :data-moduleName='moduleName' v-context-menu='menuOptions'>
     <label :for='inputId'>
       {{ label }}
     </label>
@@ -22,6 +22,16 @@
 
 <script>
   import { mapGetters, mapMutations } from 'vuex';
+  import { Menu, MenuItem } from 'nwjs-menu-browser';
+
+  if(!window.nw) {
+    window.nw = {
+      Menu,
+      MenuItem
+    };
+  }
+
+  const nw = window.nw;
 
   export default {
     name: 'rangeControl',
@@ -29,6 +39,14 @@
       'module',
       'control'
     ],
+    data() {
+      return {
+        menuOptions: {
+          match: ['rangeControl'],
+          menuItems: []
+        }
+      };
+    },
     computed: {
       value: {
         get() {
@@ -84,6 +102,16 @@
     beforeMount() {
       this.value = this.module[this.variable];
       if(typeof this.value === 'undefined') this.value = this.defaultValue;
+
+      this.$data.menuOptions.menuItems.push(
+        new nw.MenuItem({
+          label: this.label,
+          enabled: false
+        }),
+        new nw.MenuItem({
+          type: 'separator'
+        })
+      );
     },
     watch: {
       module() {

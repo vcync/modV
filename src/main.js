@@ -7,6 +7,7 @@ import stats from '@/extra/stats';
 import { ModuleISF, modV } from './modv';
 import App from './App';
 import store from '../store';
+import contextMenu from './extra/context-menu';
 import './assets/styles/index.scss';
 
 import attachResizeHandles from './extra/ui-resize/attach';
@@ -26,6 +27,9 @@ stats.dom.classList.add('hidden');
 
 Vue.use(Dropdown);
 Vue.use(Shortkey);
+Vue.use(contextMenu, {
+  store
+});
 
 /* eslint-disable no-new */
 window.modVVue = new Vue({

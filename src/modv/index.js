@@ -165,6 +165,19 @@ class ModV extends EventEmitter2 {
     if(features) {
       this.activeFeatures = features;
 
+      const assignments = store.getters['meyda/controlAssignments'];
+      assignments.forEach((assignment) => {
+        const featureValue = features[assignment.feature];
+        const Module = store.getters['modVModules/getActiveModule'](assignment.moduleName);
+        const control = Module.info.controls[assignment.controlVariable];
+
+        store.commit('modVModules/setActiveModuleControlValue', {
+          moduleName: assignment.moduleName,
+          variable: assignment.controlVariable,
+          value: Math.map(featureValue, 0, 1, control.min, control.max)
+        });
+      });
+
       this.beatDetektor.process((δ / 1000.0), features.complexSpectrum.real);
       this.updateBPM(this.beatDetektor.win_bpm_int_lo);
     }

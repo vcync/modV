@@ -6,22 +6,24 @@ class WindowController extends EventEmitter2 {
     super();
 
     return new Promise((resolve) => {
-      if(!window.nw) {
-        this.window = window.open(
-          '',
-          '_blank',
-          'width=250, height=250, location=no, menubar=no, left=0'
-        );
-        if(this.window.document.readyState === 'complete') {
-          this.configureWindow(resolve);
+      if(window.nw) {
+        if(window.nw.open) {
+          window.nw.Window.open('output.html', (newWindow) => {
+            this.window = newWindow.window;
+            if(this.window.document.readyState === 'complete') {
+              this.configureWindow(resolve);
+            } else {
+              this.window.onload = () => {
+                this.configureWindow(resolve);
+              };
+            }
+          });
         } else {
-          this.window.onload = () => {
-            this.configureWindow(resolve);
-          };
-        }
-      } else {
-        window.nw.Window.open('output.html', (newWindow) => {
-          this.window = newWindow.window;
+          this.window = window.open(
+            '',
+            '_blank',
+            'width=250, height=250, location=no, menubar=no, left=0'
+          );
           if(this.window.document.readyState === 'complete') {
             this.configureWindow(resolve);
           } else {
@@ -29,7 +31,7 @@ class WindowController extends EventEmitter2 {
               this.configureWindow(resolve);
             };
           }
-        });
+        }
       }
     });
   }
