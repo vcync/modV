@@ -48,12 +48,16 @@ function buildMeydaMenu(moduleName, controlVariable) {
 
 function searchForSubMenus(menu) {
   let menus = [];
+  const submenus = [];
 
   menu.items.filter(item => !!item.submenu).forEach((item, idx) => {
     item.submenu.$id = `${menu.$id}-${idx}`;
+    item.isSubmenu = true;
     menus.push(item.submenu);
+    submenus.push(item.submenu);
     menus = menus.concat(searchForSubMenus(item.submenu));
   });
+  menu.submenus = submenus;
 
   return menus;
 }
@@ -62,6 +66,7 @@ function buildMenu(e, id, options, vnode, store) {
   e.preventDefault();
   const menu = new nw.Menu();
   menu.$id = id;
+  menu.isSubmenu = false;
 
   options.menuItems.forEach((item, idx) => menu.insert(item, idx));
 
@@ -73,7 +78,6 @@ function buildMenu(e, id, options, vnode, store) {
   let menus = [];
   menus.push(menu);
   menus = menus.concat(searchForSubMenus(menu));
-  console.log(menus);
 
   menus.forEach(menu => store.commit('contextMenu/addMenu', { Menu: menu, id: menu.$id }));
 
@@ -88,9 +92,7 @@ const ContextMenu = {
     Vue.component('context-menu', ContextMenuComponent);
 
     Vue.directive('context-menu', {
-      bind(el, binding, vnode/* , oldVnode*/) {
-        // console.log(el, binding, vnode, oldVnode);
-
+      bind(el, binding, vnode) {
         el.addEventListener('contextmenu', (e) => {
           buildMenu(e, vnode.context._uid, binding.value, vnode, store); //eslint-disable-line
         });

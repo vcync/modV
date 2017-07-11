@@ -1,19 +1,22 @@
 <template>
-  <ul class="nwjs-menu contextmenu" :class="{ show: visible }" ref="menu">
+  <ul class="nwjs-menu contextmenu" :class='{ show: visible }' ref="menu">
     <component
       is='contextMenuItem'
-      v-for='item in items'
+      v-for='item, idx in items'
       :options='item'
+      :parentOptions='options'
       :parentOffsetWidth='offsetWidth'
       :parentOffsetHeight='offsetHeight'
       :parentPosition='{ x: options.x, y: options.y }'
+      :index='idx'
     ></component>
   </ul>
 </template>
 
 <script>
-  import { mapGetters } from 'vuex';
+  import { mapActions } from 'vuex';
   import contextMenuItem from './MenuItem';
+  import isDescendant from './is-descendant';
 
   export default {
     name: 'contextMenu',
@@ -27,11 +30,35 @@
       };
     },
     computed: {
-      ...mapGetters('contextMenu', [
-        'visible'
-      ]),
       items() {
         return this.options.items;
+      },
+      visible() {
+        return this.options.visible;
+      },
+      isSubmenu() {
+        return this.options.isSubmenu;
+      },
+      id() {
+        return this.options.$id;
+      }
+    },
+    methods: {
+      ...mapActions('contextMenu', [
+        'popdownAll'
+      ]),
+      checkIfClickedMenu(e) {
+        e.preventDefault();
+        if(
+          !e.target === this.$refs.menu || !isDescendant(this.$refs.menu, e.target)
+        ) {
+          this.popdownAll();
+        }
+      }
+    },
+    beforeMount() {
+      if(!this.isSubmenu) {
+        this.popdownAll([this.id]);
       }
     },
     mounted() {
@@ -40,6 +67,11 @@
       this.$data.offsetHeight = menuEl.offsetHeight;
       menuEl.style.left = `${this.options.x}px`;
       menuEl.style.top = `${this.options.y}px`;
+
+      window.addEventListener('click', this.checkIfClickedMenu);
+    },
+    beforeDestroy() {
+      window.removeEventListener('click', this.checkIfClickedMenu);
     },
     components: {
       contextMenuItem
