@@ -65,12 +65,12 @@
     methods: {
       mapValues(x, y) {
         const mappedX = Math.map(x, 0, 131, this.min, this.max);
-        const mappedY = Math.map(y, 0, 131, this.min, this.max);
+        const mappedY = Math.map(y, 131, 0, this.min, this.max);
         return [mappedX, mappedY];
       },
       unmapValues(x, y) {
         const unmappedX = Math.map(x, this.min, this.max, 0, 131);
-        const unmappedY = Math.map(y, this.min, this.max, 0, 131);
+        const unmappedY = Math.map(y, this.min, this.max, 131, 0);
         return [unmappedX, unmappedY];
       },
       mouseDown() {
