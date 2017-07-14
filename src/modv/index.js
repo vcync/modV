@@ -10,7 +10,6 @@ import draw from './draw';
 import setupWebGl from './webgl';
 import PaletteWorker from './palette-worker/palette-worker';
 import MediaManagerClient from './MediaManagerClient';
-import MIDIAssigner from './MIDI';
 
 class ModV extends EventEmitter2 {
 
@@ -20,6 +19,9 @@ class ModV extends EventEmitter2 {
    */
   constructor() {
     super();
+
+    this.assignmentMax = 1;
+    this.plugins = []; // @todo Move to Vuex?
 
     this.layers = store.getters['layers/allLayers'];
     this.registeredModules = store.getters['modVModules/registeredModules'];
@@ -47,36 +49,12 @@ class ModV extends EventEmitter2 {
     this.width = 200;
     this.height = 200;
 
-    this.midi = new MIDIAssigner({
-      get: store.getters['midi/assignment'],
-      set(key, value) {
-        console.log(key, value);
-        store.commit('midi/setAssignment', { key, value });
-      }
-    });
-    this.midi.start();
-    this.midi.on('midiAssignmentInput', (channel, assignment, midiEvent) => {
-      const data = assignment.variable.split(',');
-      const moduleName = data[0];
-      const variableName = data[1];
-      const Module = this.getActiveModule(moduleName);
-      const control = Module.info.controls[variableName];
-
-      let newValue = Math.map(midiEvent.data[2], 0, 127, control.min || 0, control.max || 1);
-
-      if(control.varType === 'int') newValue = Math.round(newValue);
-
-      store.commit('modVModules/setActiveModuleControlValue', {
-        moduleName,
-        variable: variableName,
-        value: newValue
-      });
-    });
-
     this.webgl = setupWebGl(this);
 
     const ISFcanvas = document.createElement('canvas');
-    const ISFgl = ISFcanvas.getContext('webgl2');
+    const ISFgl = ISFcanvas.getContext('webgl2', {
+      premultipliedAlpha: false
+    });
 
     this.isf = {
       canvas: ISFcanvas,
@@ -165,9 +143,26 @@ class ModV extends EventEmitter2 {
     if(features) {
       this.activeFeatures = features;
 
+      const assignments = store.getters['meyda/controlAssignments'];
+      assignments.forEach((assignment) => {
+        const featureValue = features[assignment.feature];
+        const Module = store.getters['modVModules/getActiveModule'](assignment.moduleName);
+        const control = Module.info.controls[assignment.controlVariable];
+
+        store.commit('modVModules/setActiveModuleControlValue', {
+          moduleName: assignment.moduleName,
+          variable: assignment.controlVariable,
+          value: Math.map(featureValue, 0, this.assignmentMax, control.min, control.max)
+        });
+      });
+
       this.beatDetektor.process((δ / 1000.0), features.complexSpectrum.real);
       this.updateBPM(this.beatDetektor.win_bpm_int_lo);
     }
+
+    this.plugins.filter(plugin => ('process' in plugin)).forEach(plugin => plugin.process({
+      delta: δ
+    }));
 
     this.beatDetektorKick.process(this.beatDetektor);
     this.kick = this.beatDetektorKick.isKick();
@@ -175,6 +170,18 @@ class ModV extends EventEmitter2 {
 
     draw(δ);
     stats.end();
+  }
+
+  use(plugin) {
+    this.plugins.push(plugin);
+    if('modvInstall' in plugin) plugin.modvInstall();
+  }
+
+  addContextMenuHook(hook) { //eslint-disable-line
+    store.commit('contextMenu/addHook', {
+      hookName: hook.hook,
+      hook
+    });
   }
 
   register(Module) { //eslint-disable-line

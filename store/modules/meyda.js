@@ -1,10 +1,14 @@
+import store from '../index';
+
 const state = {
-  features: ['complexSpectrum']
+  features: ['complexSpectrum'],
+  controlAssignments: []
 };
 
 // getters
 const getters = {
-  features: state => state.features
+  features: state => state.features,
+  controlAssignments: state => state.controlAssignments
 };
 
 // actions
@@ -22,6 +26,20 @@ const mutations = {
     const index = state.features.findIndex(element => element === feature);
     if(index < 0) return;
     state.features.splice(index, 1);
+  },
+  assignFeatureToControl(state, { feature, moduleName, controlVariable }) {
+    const Module = store.getters['modVModules/getActiveModule'](moduleName);
+    if(!Module) return;
+    if(typeof Module.info.controls[controlVariable] === 'undefined') return;
+
+    const assignment = {
+      feature,
+      moduleName,
+      controlVariable
+    };
+
+    if(state.features.indexOf(feature) < 0) state.features.push(feature);
+    state.controlAssignments.push(assignment);
   }
 };
 
