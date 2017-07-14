@@ -30,7 +30,7 @@
     "lodash.merge": "^4.6.0",
     "meyda": "^4.0.2",
     "mkdirp": "^0.5.1",
-    "modv-media-manager": "git+ssh://git@github.com:2xAA/modV-MediaManager.git",
+    "modv-media-manager": "https://github.com/2xAA/modV-MediaManager.git",
     "mv": "^2.1.1",
     "node-watch": "^0.4.0",
     "nodejs-websocket": "^1.7.0",
