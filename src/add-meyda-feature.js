@@ -1,8 +1,12 @@
 module.exports = function(modV) {
+  /** @param {MeydaFeature} feature */
 	modV.prototype.addMeydaFeature = function(feature) {
-		if(!Array.contains(feature, this.meydaFeatures)) {
-			this.meydaFeatures.push(feature);
-			return true;
-		} else return false;
+    const isFeatureAlreadyAdded = this.meydaFeatures.includes(feature);
+    if (isFeatureAlreadyAdded) {
+      return false;
+    }
+
+    this.meydaFeatures.push(feature);
+		return true;
 	};
 };

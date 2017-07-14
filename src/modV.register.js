@@ -1,6 +1,5 @@
-const getDocument = require('./fragments/get-document');
-const replaceAll = require('./fragments/replace-all');
-const loadJS = require('./fragments/load-js');
+const { forIn, getDocument, loadJS, replaceAll } = require('./utils');
+
 
 module.exports = function(modV) {
 	modV.prototype.register = function(Module, instantiated) {

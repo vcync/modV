@@ -5,7 +5,6 @@ const Layer = require('./Layer');
 const MIDI = require('./MIDI');
 const MM = require('./media-manager');
 const PaletteWorker = require('./palette-worker');
-require('./fragments/array-contains');
 require('script-loader!../libraries/beatdetektor.js');
 
 
@@ -20,6 +19,12 @@ require('script-loader!../libraries/beatdetektor.js');
  * Object contains all modV workers
  * @typedef {Object} WorkersDataType
  * @property {PaletteWorker} palette
+ */
+
+/**
+ * Meyda feature id
+ * @see https://github.com/meyda/meyda/wiki/Audio-Features
+ * @typedef {string} MeydaFeature
  */
 
 /**
@@ -150,6 +155,7 @@ class ModV extends EventEmitter2 {
 
 		this.mediaManager = new MM(this);
 
+		/** @type {Array<MeydaFeature>} */
 		this.meydaFeatures = ['complexSpectrum'];
 		this.activeFeatures = {};
 

@@ -1,3 +1,4 @@
+const {forIn} = require('../utils');
 const Module = require('./module');
 const makeProgramInit = require('../shader-env/make-program-promise');
 const twgl = require('twgl.js');

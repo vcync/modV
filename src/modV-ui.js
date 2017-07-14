@@ -2,6 +2,7 @@
 
 const attachResizeHandles = require('./ui-resize/attach');
 const ContextMenuHandler = require('./context-menu-handler');
+const {forIn} = require('./utils');
 const initContextMenus = require('./context-menus');
 const Menu = require('nwjs-menu-browser');
 require('../node_modules/nwjs-menu-browser/dist/nwjs-menu-browser.css');

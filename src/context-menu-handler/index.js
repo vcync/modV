@@ -10,18 +10,6 @@ class ContextMenuHandler {
 		this.contextMenuEvent = null;
 		this.contextMenuTarget = null;
 
-		function matchesAnyHook(node) {
-			for(let i=0; i < hooks.length; i++) {
-				let hook = hooks[i];
-
-				if(nodeMatchesHook(node, hook)) {
-					return hook;
-				}
-			}
-
-			return false;
-		}
-
 		function matchingHooks(node) {
 			let matchedHooks = [];
 			for(let i=0; i < hooks.length; i++) {

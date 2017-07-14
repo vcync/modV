@@ -3,8 +3,8 @@ const Control = require('./control');
 
 const appendChildren = require('../append-children');
 const makeControlGroup = require('../make-control-group');
-const colorToRGBString = require('../fragments/color-to-rgb-string');
-const hexToRgb = require('../fragments/hex-to-rgb');
+const { colorToRGBString, forIn, hexToRgb } = require('../utils');
+
 
 module.exports = function(modV) {
 	modV.prototype.PaletteControl = class PaletteControl extends Control {
