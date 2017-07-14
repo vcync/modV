@@ -19,6 +19,7 @@ class ModuleISF extends Module {
 
     this.gl = isf.gl;
     this.ISFcanvas = isf.canvas;
+    this.ISFcontext = isf.context;
     this.time = 0;
     this.imageInputs = [];
     this.inputs = [];
@@ -76,8 +77,6 @@ class ModuleISF extends Module {
       fragmentShader = ISFUpgrader.convertFragment(fragmentShader);
       if(vertexShader) vertexShader = ISFUpgrader.convertVertex(vertexShader);
     }
-
-    console.log(parser);
 
     this.settings.info.isfVersion = parser.isfVersion;
     this.settings.info.author = parser.metadata.CREDIT;
