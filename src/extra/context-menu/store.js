@@ -3,14 +3,18 @@ import Vue from 'vue';
 const state = {
   menus: {},
   activeMenus: [],
-  visible: false
+  visible: false,
+  hooks: {
+    default: []
+  }
 };
 
 // getters
 const getters = {
   menus: state => state.menus,
   menu: state => id => state.menus[id],
-  activeMenus: state => state.activeMenus.map(id => state.menus[id])
+  activeMenus: state => state.activeMenus.map(id => state.menus[id]),
+  hooks: state => state.hooks
 };
 
 // actions
@@ -53,6 +57,14 @@ const mutations = {
   editItemProperty(state, { id, index, property, value }) {
     Vue.set(state.menus[id].items[index], property, value);
     console.log(state.menus[id].items[index][property]);
+  },
+  addHook(state, { hookName, hook }) {
+    if(!(hookName in state.hooks)) {
+      Vue.set(state.hooks, hookName, []);
+    }
+
+    const hookArray = state.hooks[hookName];
+    hookArray.push(hook);
   }
 };
 

@@ -3,11 +3,15 @@
 import Vue from 'vue';
 import Dropdown from 'hsy-vue-dropdown';
 import Shortkey from 'vue-shortkey';
+import vmodal from 'vue-js-modal';
 import stats from '@/extra/stats';
 import { ModuleISF, modV } from './modv';
 import App from './App';
 import store from '../store';
 import contextMenu from './extra/context-menu';
+import expression from './extra/expression';
+import midiAssignment from './extra/midi-assignment';
+import featureAssignment from './extra/feature-assignment';
 import './assets/styles/index.scss';
 
 import attachResizeHandles from './extra/ui-resize/attach';
@@ -30,6 +34,20 @@ Vue.use(Shortkey);
 Vue.use(contextMenu, {
   store
 });
+Vue.use(featureAssignment, {
+  store
+});
+Vue.use(expression, {
+  store
+});
+Vue.use(midiAssignment, {
+  store
+});
+Vue.use(vmodal);
+
+modV.use(featureAssignment);
+modV.use(expression);
+modV.use(midiAssignment);
 
 /* eslint-disable no-new */
 window.modVVue = new Vue({
@@ -65,6 +83,7 @@ window.modVVue = new Vue({
     });
 
     const isfSamples = [
+      'block-color.fs',
       'plasma.fs',
       'Random Shape.fs',
       'Triangles.fs',
@@ -111,3 +130,5 @@ window.modVVue = new Vue({
     attachResizeHandles();
   }
 });
+
+export default window.modVVue;

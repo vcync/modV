@@ -9,13 +9,15 @@
       :min='min'
       :max='max'
       :step='step'
-      v-model='value'
+      v-model='processedValue'
+      @input='numberInput'
     >
     <input
         class="pure-form-message-inline"
         type='number'
-        v-model='value'
+        v-model='processedValue'
         step='any'
+        @input='numberInput'
       >
   </div>
 </template>
@@ -44,24 +46,13 @@
         menuOptions: {
           match: ['rangeControl'],
           menuItems: []
-        }
+        },
+        valueIn: 0
       };
     },
     computed: {
-      value: {
-        get() {
-          return this.getValueFromActiveModule(this.moduleName, this.variable);
-        },
-        set(value) {
-          let val;
-          if(this.varType === 'int') val = parseInt(value, 10);
-          else if(this.varType === 'float') val = parseFloat(value, 10);
-          this.setActiveModuleControlValue({
-            moduleName: this.moduleName,
-            variable: this.variable,
-            value: val
-          });
-        }
+      processedValue() {
+        return this.getValueFromActiveModule(this.moduleName, this.variable).processed;
       },
       ...mapGetters('modVModules', [
         'getValueFromActiveModule'
@@ -97,12 +88,12 @@
     methods: {
       ...mapMutations('modVModules', [
         'setActiveModuleControlValue'
-      ])
+      ]),
+      numberInput(e) {
+        this.$data.valueIn = e.target.value;
+      }
     },
     beforeMount() {
-      this.value = this.module[this.variable];
-      if(typeof this.value === 'undefined') this.value = this.defaultValue;
-
       this.$data.menuOptions.menuItems.push(
         new nw.MenuItem({
           label: this.label,
@@ -114,8 +105,17 @@
       );
     },
     watch: {
-      module() {
-        this.value = this.module[this.variable];
+      valueIn() {
+        const value = this.valueIn;
+
+        let val;
+        if(this.varType === 'int') val = parseInt(value, 10);
+        else if(this.varType === 'float') val = parseFloat(value, 10);
+        this.setActiveModuleControlValue({
+          moduleName: this.moduleName,
+          variable: this.variable,
+          value: val
+        });
       }
     }
   };

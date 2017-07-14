@@ -51,6 +51,7 @@
 
     </section>
     <context-menu v-for='menu in activeMenus' :options='menu'></context-menu>
+    <expression></expression>
   </div>
 </template>
 

@@ -36,7 +36,7 @@ const getters = {
   focusedModuleName: state => state.focusedModule,
   getActiveModule: () => moduleName => externalState.active[moduleName],
   currentDragged: state => state.currentDragged,
-  getValueFromActiveModule: state => (moduleName, controlVariable) => state.active[moduleName][controlVariable]
+  getValueFromActiveModule: state => (moduleName, controlVariable) => ({ raw: state.active[moduleName][controlVariable], processed: externalState.active[moduleName][controlVariable] })
 };
 
 // actions
@@ -159,13 +159,25 @@ const mutations = {
   },
   setActiveModuleControlValue(state, { moduleName, variable, value }) {
     const controlValues = state.active[moduleName];
+    let processedValue = value;
 
-    if(Object.keys(controlValues).filter(controlVariableName => controlVariableName === variable).length < 1) {
+    modV.plugins.filter(plugin => ('processValue' in plugin)).forEach((plugin) => {
+      processedValue = plugin.processValue({
+        currentValue: value,
+        controlVariable: variable,
+        moduleName
+      });
+    });
+
+    if(
+      Object.keys(controlValues)
+        .filter(controlVariableName => controlVariableName === variable).length < 1
+      ) {
       return;
     }
 
     Vue.set(state.active[moduleName], variable, value);
-    externalState.active[moduleName][variable] = value;
+    externalState.active[moduleName][variable] = processedValue;
   },
   removeActiveModule(state, { moduleName }) {
     Vue.delete(state.active, moduleName);

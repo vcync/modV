@@ -1,6 +1,3 @@
-import meyda from 'meyda';
-import store from '@/../store';
-
 import { Menu, MenuItem } from 'nwjs-menu-browser';
 import '@/../node_modules/nwjs-menu-browser/nwjs-menu-browser.css';
 import contextMenuStore from './store';
@@ -14,37 +11,6 @@ if(!window.nw) {
 }
 
 const nw = window.nw;
-
-function buildMeydaMenu(moduleName, controlVariable) {
-  const MeydaFeaturesSubmenu = new nw.Menu();
-  var activeFeature = ''; //eslint-disable-line
-
-  function clickFeature() {
-    activeFeature = this.label;
-
-    MeydaFeaturesSubmenu.items.forEach((item) => {
-      item.checked = false;
-      if(item.label === activeFeature) item.checked = true;
-    });
-    MeydaFeaturesSubmenu.rebuild();
-
-    store.commit('meyda/assignFeatureToControl', {
-      feature: this.label,
-      moduleName,
-      controlVariable
-    });
-  }
-
-  Object.keys(meyda.featureExtractors).forEach((feature) => {
-    MeydaFeaturesSubmenu.append(new nw.MenuItem({
-      label: feature,
-      type: 'checkbox',
-      click: clickFeature
-    }));
-  });
-
-  return MeydaFeaturesSubmenu;
-}
 
 function searchForSubMenus(menu) {
   let menus = [];
@@ -72,8 +38,15 @@ function buildMenu(e, id, options, vnode, store) {
 
   const moduleName = vnode.context.moduleName;
   const controlVariable = vnode.context.variable;
-  const MeydaFeaturesMenu = buildMeydaMenu(moduleName, controlVariable);
-  menu.append(new nw.MenuItem({ label: 'Attach Feature', submenu: MeydaFeaturesMenu }));
+
+  const hooks = store.getters['contextMenu/hooks'];
+  let hookItems = [];
+
+  options.match.forEach((hook) => {
+    if(hook in hooks) hookItems = hookItems.concat(hooks[hook]);
+  });
+
+  hookItems.forEach(item => menu.append(item.buildMenuItem(moduleName, controlVariable)));
 
   let menus = [];
   menus.push(menu);
