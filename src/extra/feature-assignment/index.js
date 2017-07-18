@@ -16,7 +16,7 @@ class FeatureAssignment {
 
     store.subscribe((mutation) => {
       if(mutation.type === 'modVModules/removeActiveModule') {
-        store.commit('meyda/removeAssignments', mutation.payload.moduleName);
+        store.commit('meyda/removeAssignments', { moduleName: mutation.payload.moduleName });
       }
     });
   }

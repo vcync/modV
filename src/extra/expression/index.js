@@ -29,6 +29,10 @@ class Expression {
     modV.addContextMenuHook({ hook: 'rangeControl', buildMenuItem: this.createMenuItem.bind(this) });
   }
 
+  get component() { //eslint-disable-line
+    return ExpressionComponent;
+  }
+
   createMenuItem(moduleName, controlVariable) {
     const store = this.store;
 
@@ -53,16 +57,23 @@ class Expression {
 
   processValue({ currentValue, moduleName, controlVariable }) {
     const store = this.store;
+    let value = currentValue;
 
     const assignment = store.getters['expression/assignment'](moduleName, controlVariable);
 
-    let value = currentValue;
-
     if(assignment) {
-      value = assignment.func.eval({
+      const additionalScope = assignment.additionalScope;
+
+      const scope = {
         value: currentValue,
         delta: this.delta
+      };
+
+      Object.keys(additionalScope).forEach((key) => {
+        scope[key] = additionalScope[key];
       });
+
+      value = assignment.func.eval(scope);
     }
 
     return value;

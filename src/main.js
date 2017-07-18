@@ -12,6 +12,7 @@ import contextMenu from './extra/context-menu';
 import expression from './extra/expression';
 import midiAssignment from './extra/midi-assignment';
 import featureAssignment from './extra/feature-assignment';
+import lfo from './extra/lfo';
 import './assets/styles/index.scss';
 
 import attachResizeHandles from './extra/ui-resize/attach';
@@ -43,11 +44,16 @@ Vue.use(expression, {
 Vue.use(midiAssignment, {
   store
 });
+Vue.use(lfo, {
+  store
+});
 Vue.use(vmodal);
 
+modV.use(contextMenu);
 modV.use(featureAssignment);
 modV.use(expression);
 modV.use(midiAssignment);
+modV.use(lfo);
 
 /* eslint-disable no-new */
 window.modVVue = new Vue({
