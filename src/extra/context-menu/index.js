@@ -1,16 +1,7 @@
-import { Menu, MenuItem } from 'nwjs-menu-browser';
+import { Menu } from 'nwjs-menu-browser';
 import '@/../node_modules/nwjs-menu-browser/nwjs-menu-browser.css';
 import contextMenuStore from './store';
 import ContextMenuHandler from './MenuHandler';
-
-if(!window.nw) {
-  window.nw = {
-    Menu,
-    MenuItem
-  };
-}
-
-const nw = window.nw;
 
 function searchForSubMenus(menu) {
   let menus = [];
@@ -30,7 +21,7 @@ function searchForSubMenus(menu) {
 
 function buildMenu(e, id, options, vnode, store) {
   e.preventDefault();
-  const menu = new nw.Menu();
+  const menu = new Menu();
   menu.$id = id;
   menu.isSubmenu = false;
 
