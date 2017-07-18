@@ -93,6 +93,11 @@ var webpackConfig = merge(baseWebpackConfig, {
         from: path.resolve(__dirname, '../static'),
         to: config.build.assetsSubDirectory,
         ignore: ['.*']
+      },
+      {
+        from: path.resolve(__dirname, '..', 'nwjs', 'src'),
+        to: config.build.assetsRoot,
+        ignore: ['.*']
       }
     ])
   ]
