@@ -32,8 +32,8 @@ const actions = {
 
 // mutations
 const mutations = {
-  addMenu(state, { Menu, id, force }) {
-    if(state.menus[id] && !force) return;
+  addMenu(state, { Menu, id }) {
+    // if(state.menus[id] && !force) return;
     Vue.set(state.menus, id, Menu);
   },
   popdown(state, { id }) {

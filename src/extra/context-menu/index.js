@@ -1,7 +1,7 @@
 import { Menu, MenuItem } from 'nwjs-menu-browser';
 import '@/../node_modules/nwjs-menu-browser/nwjs-menu-browser.css';
 import contextMenuStore from './store';
-import ContextMenuComponent from './Menu';
+import ContextMenuHandler from './MenuHandler';
 
 if(!window.nw) {
   window.nw = {
@@ -62,7 +62,7 @@ const ContextMenu = {
   install(Vue, { store }) {
     if(!store) throw new Error('No Vuex store detected');
 
-    Vue.component('context-menu', ContextMenuComponent);
+    Vue.component('contextMenuHandler', ContextMenuHandler);
 
     Vue.directive('context-menu', {
       bind(el, binding, vnode) {
@@ -73,7 +73,8 @@ const ContextMenu = {
     });
 
     store.registerModule('contextMenu', contextMenuStore);
-  }
+  },
+  component: ContextMenuHandler
 };
 
 export default ContextMenu;

@@ -25,8 +25,13 @@ const getters = {
   // activeMenus: state => state.activeMenus.map(id => state.menus[id])
 };
 
-function compileExpression(expression) {
-  const scope = { value: 0, delta: 0, map: window.math.map };
+function compileExpression(expression, additionalScope = {}) {
+  const scope = { value: 0, delta: 0, map: window.Math.map };
+
+  Object.keys(additionalScope).forEach((key) => {
+    scope[key] = additionalScope[key];
+  });
+
   // provide a scope
   const node = math.parse(expression, scope);
   const newFunction = node.compile();
@@ -42,20 +47,35 @@ function compileExpression(expression) {
 
 // actions
 const actions = {
-  addExpression({ commit }, { expression, moduleName, controlVariable }) {
+  addExpression({ commit }, { expression, moduleName, controlVariable, scopeAdditions }) {
     const Module = store.getters['modVModules/getActiveModule'](moduleName);
     if(!Module) return;
     if(typeof Module.info.controls[controlVariable] === 'undefined') return;
 
+    let additionalScope = {};
+    const existingModuleAssignment = state.assignments[moduleName];
+    if(existingModuleAssignment) {
+      if(controlVariable in existingModuleAssignment) {
+        additionalScope = existingModuleAssignment[controlVariable].additionalScope;
+      }
+    }
+
+    if(scopeAdditions) {
+      Object.keys(scopeAdditions).forEach((key) => {
+        additionalScope[key] = eval(`(${scopeAdditions[key]})`); //eslint-disable-line
+      });
+    }
+
     let exp = expression;
     if(!exp) exp = 'value';
 
-    const func = compileExpression(exp);
+    const func = compileExpression(exp, additionalScope);
     if(!func) return;
 
     const assignment = {
       func,
       expression: exp,
+      additionalScope,
       moduleName,
       controlVariable
     };
@@ -65,6 +85,21 @@ const actions = {
   setActiveControlData({ commit }, { moduleName, controlVariable }) {
     modvVue.$modal.show('expression-input');
     commit('setActiveControlData', { moduleName, controlVariable });
+  },
+  addToScope({ commit, dispatch }, { moduleName, controlVariable, scopeAdditions }) {
+    const assignmentModule = state.assignments[moduleName];
+    if(!assignmentModule) dispatch('addExpression', { moduleName, controlVariable });
+
+    const assignmentVariable = state.assignments[moduleName][controlVariable];
+    if(!assignmentVariable) dispatch('addExpression', { moduleName, controlVariable });
+
+    commit('addToScope', { moduleName, controlVariable, scopeAdditions });
+
+    const expression = state.assignments[moduleName][controlVariable].expression;
+    const additionalScope = state.assignments[moduleName][controlVariable].additionalScope;
+    const expressionFunction = compileExpression(expression, additionalScope);
+    if(!expressionFunction) return;
+    commit('setExpressionFunction', { moduleName, controlVariable, expressionFunction });
   }
 };
 
@@ -76,6 +111,19 @@ const mutations = {
     }
 
     Vue.set(state.assignments[assignment.moduleName], assignment.controlVariable, assignment);
+  },
+  addToScope(state, { moduleName, controlVariable, scopeAdditions }) {
+    const additionalScope = state.assignments[moduleName][controlVariable].additionalScope || {};
+    Object.keys(scopeAdditions).forEach((key) => {
+      additionalScope[key] = eval(`(${scopeAdditions[key]})`); //eslint-disable-line
+    });
+
+    Vue.set(state.assignments[moduleName][controlVariable], 'additionalScope', additionalScope);
+  },
+  setExpressionFunction(state, { moduleName, controlVariable, expressionFunction }) {
+    if(!state.assignments[moduleName][controlVariable]) return;
+
+    Vue.set(state.assignments[moduleName][controlVariable], 'func', expressionFunction);
   },
   removeExpression(state, { moduleName, controlVariable }) {
     Vue.delete(state.assignments[moduleName], controlVariable);

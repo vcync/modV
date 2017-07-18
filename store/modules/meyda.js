@@ -40,6 +40,13 @@ const mutations = {
 
     if(state.features.indexOf(feature) < 0) state.features.push(feature);
     state.controlAssignments.push(assignment);
+  },
+  removeAssignments(state, { moduleName }) {
+    state.controlAssignments.forEach((assignment, idx) => {
+      if(assignment.moduleName === moduleName) {
+        state.controlAssignments.splice(idx, 1);
+      }
+    });
   }
 };
 

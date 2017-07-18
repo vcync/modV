@@ -24,6 +24,9 @@ const mutations = {
   },
   removeAssignment(state, { key }) {
     Vue.delete(state.assignments, key);
+  },
+  removeAssignments() {
+    console.log('@TODO - update MIDI assignment storage');
   }
 };
 

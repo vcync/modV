@@ -50,8 +50,7 @@
       </div>
 
     </section>
-    <context-menu v-for='menu in activeMenus' :options='menu'></context-menu>
-    <expression></expression>
+    <component v-for='pluginComponent in pluginComponents' :is='pluginComponent'></component>
   </div>
 </template>
 
@@ -65,14 +64,16 @@
   import OutputWindowButton from '@/components/OutputWindowButton';
   import Tabs from '@/components/Tabs';
 
-  import { mapGetters } from 'vuex';
+  import { modV } from 'modv';
 
   export default {
     name: 'app',
     computed: {
-      ...mapGetters('contextMenu', [
-        'activeMenus'
-      ]),
+      pluginComponents() {
+        return modV.plugins
+          .filter(plugin => 'component' in plugin)
+          .map(plugin => plugin.component.name);
+      },
     },
     components: {
       ControlPanel,
