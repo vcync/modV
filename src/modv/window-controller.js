@@ -53,6 +53,27 @@ class WindowController extends EventEmitter2 {
     this.canvas.style.left = 0;
     this.canvas.style.right = 0;
 
+    this.canvas.addEventListener('dblclick', () => {
+      if(!this.canvas.ownerDocument.webkitFullscreenElement) {
+        this.canvas.webkitRequestFullscreen();
+      } else {
+        this.canvas.ownerDocument.webkitExitFullscreen();
+      }
+    });
+
+    let mouseTimer;
+
+    function movedMouse() {
+      if(mouseTimer) mouseTimer = null;
+      this.canvas.ownerDocument.body.style.cursor = 'none';
+    }
+
+    this.canvas.addEventListener('mousemove', () => {
+      if(mouseTimer) clearTimeout(mouseTimer);
+      this.canvas.ownerDocument.body.style.cursor = 'default';
+      mouseTimer = setTimeout(movedMouse.bind(this), 200);
+    });
+
     this.window.document.body.appendChild(this.canvas);
 
     this.resize = (width, height, dpr = 1, emit = true) => {
