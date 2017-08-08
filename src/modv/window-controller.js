@@ -1,5 +1,6 @@
 import store from '@/../store';
 import EventEmitter2 from 'eventemitter2';
+import { modV, draw } from '@/modv';
 
 class WindowController extends EventEmitter2 {
   constructor() {
@@ -76,12 +77,41 @@ class WindowController extends EventEmitter2 {
 
     this.window.document.body.appendChild(this.canvas);
 
-    this.resize = (width, height, dpr = 1, emit = true) => {
+    const resizeQueue = [];
+    let lastLength = 0;
+    // Roughly attach to the main RAF loop for smoother resizing
+    modV.on('tick', (δ) => {
+      if(resizeQueue.length < 1) return;
+
+      if(resizeQueue.length !== lastLength) {
+        lastLength = resizeQueue.length;
+        return;
+      }
+
+      const index = resizeQueue.length - 1;
+
+      const width = resizeQueue[index].width;
+      const height = resizeQueue[index].height;
+      const dpr = resizeQueue[index].dpr;
+      const emit = resizeQueue[index].emit;
+
       this.canvas.width = width * dpr;
       this.canvas.height = height * dpr;
       this.canvas.style.width = `${width}px`;
       this.canvas.style.height = `${height}px`;
       if(emit) this.emit('resize', width, height);
+
+      resizeQueue.splice(0, index + 1);
+      draw(δ);
+    });
+
+    this.resize = (width, height, dpr = 1, emit = true) => {
+      resizeQueue.push({
+        width,
+        height,
+        dpr,
+        emit
+      });
     };
 
     windowRef.addEventListener('resize', () => {

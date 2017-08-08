@@ -170,6 +170,7 @@ class ModV extends EventEmitter2 {
 
     draw(δ);
     stats.end();
+    this.emit('tick', δ);
   }
 
   use(plugin) {
@@ -291,5 +292,6 @@ export {
   ModuleISF,
   Layer,
   webgl,
-  isf
+  isf,
+  draw
 };
