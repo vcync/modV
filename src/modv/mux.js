@@ -1,5 +1,16 @@
 import { modV } from '@/modv';
+import CCapture from 'ccapture.js';
 import store from '@/../store';
+
+const capturer = new CCapture({
+  verbose: true,
+  framerate: 60,
+  // motionBlurFrames: 16,
+  quality: 10,
+  format: 'webm'
+});
+
+window.capturer = capturer;
 
 function mux() {
   return new Promise((resolve) => {
@@ -19,6 +30,9 @@ function mux() {
       outputContext.drawImage(canvas, 0, 0, width, height);
     });
 
+    resolve();
+    capturer.capture(outputCanvas);
+
     windows.forEach((windowController) => {
       const canvas = windowController.canvas;
       const context = windowController.context;
@@ -26,7 +40,6 @@ function mux() {
       context.clearRect(0, 0, canvas.width, canvas.height);
       context.drawImage(outputCanvas, 0, 0, canvas.width, canvas.height);
     });
-    resolve();
   });
 }
 
