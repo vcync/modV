@@ -36,7 +36,19 @@ const getters = {
   focusedModuleName: state => state.focusedModule,
   getActiveModule: () => moduleName => externalState.active[moduleName],
   currentDragged: state => state.currentDragged,
-  getValueFromActiveModule: state => (moduleName, controlVariable) => ({ raw: state.active[moduleName][controlVariable], processed: externalState.active[moduleName][controlVariable] })
+  getValueFromActiveModule: state => (moduleName, controlVariable) => {
+    const module = externalState.active[moduleName];
+    let processed = externalState.active[moduleName][controlVariable];
+
+    if('append' in module.info.controls[controlVariable]) {
+      processed = processed.replace(module.info.controls[controlVariable].append, '');
+    }
+
+    return {
+      raw: state.active[moduleName][controlVariable],
+      processed
+    }
+  }
 };
 
 // actions
@@ -158,6 +170,7 @@ const mutations = {
     externalState.active[moduleName] = module;
   },
   setActiveModuleControlValue(state, { moduleName, variable, value }) {
+    const module = externalState.active[moduleName];
     const controlValues = state.active[moduleName];
     let processedValue = value;
 
@@ -174,6 +187,10 @@ const mutations = {
         .filter(controlVariableName => controlVariableName === variable).length < 1
       ) {
       return;
+    }
+
+    if('append' in module.info.controls[variable]) {
+      processedValue = `${processedValue}${module.info.controls[variable].append}`;
     }
 
     Vue.set(state.active[moduleName], variable, value);

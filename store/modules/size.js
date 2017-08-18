@@ -31,9 +31,23 @@ const getters = {
 
 // actions
 const actions = {
+  updateSize({ commit, state }) {
+    store.dispatch('size/setDimensions', {
+      width: state.width,
+      height: state.height
+    });
+  },
   setDimensions({ commit, state }, { width, height }) {
     const largestWindowReference = store.getters['windows/largestWindowReference']();
     if(width >= largestWindowReference.innerWidth && height >= largestWindowReference.innerHeight) {
+      if(store.getters['user/constrainToOneOne']) {
+        if(width > height) {
+          width = height;
+        } else {
+          height = width;
+        }
+      }
+
       commit('setDimensions', { width, height });
 
       let dpr = window.devicePixelRatio || 1;
