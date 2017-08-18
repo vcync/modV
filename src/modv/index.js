@@ -192,6 +192,7 @@ class ModV extends EventEmitter2 {
   resize(width, height, dpr = 1) {
     this.width = width * dpr;
     this.height = height * dpr;
+
     this.bufferCanvas.width = this.width;
     this.bufferCanvas.height = this.height;
     this.outputCanvas.width = this.width;

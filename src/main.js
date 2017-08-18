@@ -70,6 +70,7 @@ window.modVVue = new Vue({
     const modules = [
       'Waveform',
       'Ball',
+      'Text',
       'Webcam',
       'Plasma',
       'MattiasCRT',
@@ -78,7 +79,8 @@ window.modVVue = new Vue({
       'Stretch',
       'Wobble',
       'OpticalFlowDistort',
-      'Neon'/* ,
+      'Neon',
+      'Fisheye'/* ,
       'SolidColor'*/
     ];
 
@@ -108,7 +110,11 @@ window.modVVue = new Vue({
       'Dither-Bayer.fs',
       'GreatBallOfFire.fs',
       'VHS Glitch.fs.fs',
-      'Zebre.fs'
+      'Zebre.fs',
+      'st_lsfGDH.fs',
+      'st_Ms2SD1.fs.fs',
+      'rotozoomer.fs',
+      'Kaleidoscope.fs'
     ];
 
     isfSamples.forEach((fileName) => {

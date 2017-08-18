@@ -1,3 +1,8 @@
+@font-face {
+  font-family: 'SourceHanSans';
+  src: url('../SourceHanSans-Regular.otf');
+}
+
 html, body {
 	height: 100%;
 	-webkit-user-select: none;
@@ -218,10 +223,6 @@ section .bottom .control-panel-wrapper {
 
 section .bottom .control-group > label {
 	width: 120px;
-}
-
-.canvas-preview {
-	position: relative;
 }
 
 canvas {

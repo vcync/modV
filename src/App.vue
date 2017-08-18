@@ -39,29 +39,24 @@
               </div>
             </tabs>
           </div>
-
-          <div class="canvas-preview pure-u-1-3">
-            <output-window-button></output-window-button>
-            <canvas id="preview-canvas"></canvas>
-          </div>
-
         </div>
         <resize-handle-top></resize-handle-top>
       </div>
 
     </section>
     <component v-for='pluginComponent in pluginComponents' :is='pluginComponent'></component>
+    <canvas-preview></canvas-preview>
   </div>
 </template>
 
 <script>
+  import CanvasPreview from '@/components/CanvasPreview';
   import ControlPanel from '@/components/ControlPanel';
   import Gallery from '@/components/Gallery';
   import GlobalControls from '@/components/GlobalControls';
   import LayerControls from '@/components/LayerControls';
   import LayerMenu from '@/components/LayerMenu';
   import List from '@/components/List';
-  import OutputWindowButton from '@/components/OutputWindowButton';
   import Tabs from '@/components/Tabs';
 
   import { modV } from 'modv';
@@ -76,13 +71,13 @@
       },
     },
     components: {
+      CanvasPreview,
       ControlPanel,
       Gallery,
       GlobalControls,
       LayerControls,
       LayerMenu,
       List,
-      OutputWindowButton,
       Tabs
     },
   };
@@ -90,7 +85,7 @@
 
 <style>
   body {
-    font-family: sans-serif;
+    font-family: 'SourceHanSans', sans-serif;
   }
 
   .active-list-wrapper {
@@ -99,5 +94,15 @@
 
   .active-list-wrapper > div {
     height: calc(100% - 33px);
+  }
+
+  #app {
+    background-color: #383838;
+    width: 100vw;
+    height: 100vh;
+  }
+
+  .control-panel-wrapper {
+    padding: 10px;
   }
 </style>
