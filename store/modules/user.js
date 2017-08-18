@@ -8,7 +8,8 @@ const state = {
   useRetina: true,
   currentAudioId: '',
   currentVideoId: '',
-  showStats: false
+  showStats: false,
+  constrainToOneOne: false
 };
 
 // getters
@@ -18,7 +19,8 @@ const getters = {
   useRetina: state => state.useRetina,
   currentAudioSource: state => state.currentAudioId,
   currentVideoSource: state => state.currentVideoId,
-  showStats: state => state.showStats
+  showStats: state => state.showStats,
+  constrainToOneOne: state => state.constrainToOneOne
 };
 
 // actions
@@ -55,6 +57,10 @@ const actions = {
     }
 
     commit('setShowStats', shouldShowStats);
+  },
+  setConstrainToOneOne({ commit, state }, shouldConstrain) {
+    commit('setConstrainToOneOne', shouldConstrain);
+    store.dispatch('size/updateSize');
   }
 };
 
@@ -77,6 +83,9 @@ const mutations = {
   },
   setShowStats(state, shouldShowStats) {
     state.showStats = shouldShowStats;
+  },
+  setConstrainToOneOne(state, shouldConstrain) {
+    state.constrainToOneOne = shouldConstrain;
   }
 };
 

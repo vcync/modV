@@ -49,10 +49,11 @@ class WindowController extends EventEmitter2 {
 
     this.canvas.style.position = 'fixed';
 
-    this.canvas.style.top = 0;
+    this.canvas.style.top = '50%';
     this.canvas.style.bottom = 0;
-    this.canvas.style.left = 0;
+    this.canvas.style.left = '50%';
     this.canvas.style.right = 0;
+    this.canvas.style.transform = 'translate(-50%, -50%)';
 
     this.canvas.addEventListener('dblclick', () => {
       if(!this.canvas.ownerDocument.webkitFullscreenElement) {

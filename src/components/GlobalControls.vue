@@ -53,9 +53,15 @@
       >
       <label for="selectMediaFolderGlobal" class="pure-button">Select Media Folder</label>
     </div>
+
     <div class="control-group retina-group">
       <label for="retinaGlobal">Use retina resolutions</label>
       <input id="retinaGlobal" type="checkbox" class="enable" v-model='useRetinaInput'>
+    </div>
+
+    <div class="control-group constrain-group">
+      <label for="constrainGlobal">Constrain output size to 1:1 ratio</label>
+      <input id="constrainGlobal" type="checkbox" class="enable" v-model='constrainToOneOneInput'>
     </div>
 
     <div class="control-group newOutputWindow-group">
@@ -86,7 +92,8 @@
         mediaPathInput: '',
         nameInput: '',
         useRetinaInput: true,
-        showStatsInput: false
+        showStatsInput: false,
+        constrainToOneOneInput: false
       };
     },
     computed: {
@@ -104,7 +111,8 @@
         'useRetina',
         'currentAudioSource',
         'currentVideoSource',
-        'showStats'
+        'showStats',
+        'constrainToOneOne'
       ]),
     },
     methods: {
@@ -122,7 +130,8 @@
         'setUseRetina',
         'setCurrentAudioSource',
         'setCurrentVideoSource',
-        'setShowStats'
+        'setShowStats',
+        'setConstrainToOneOne'
       ]),
       ...mapActions('windows', [
         'createWindow'
@@ -166,6 +175,9 @@
       },
       showStatsInput() {
         this.setShowStats(this.showStatsInput);
+      },
+      constrainToOneOneInput() {
+        this.setConstrainToOneOne(this.constrainToOneOneInput);
       }
     },
     created() {
@@ -179,6 +191,7 @@
       this.audioSource = this.currentAudioSource || 'default';
       this.videoSource = this.currentVideoSource || 'default';
       this.showStatsInput = this.showStats;
+      this.constrainToOneOneInput = this.constrainToOneOne;
     }
   };
 </script>
