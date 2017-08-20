@@ -65,6 +65,7 @@
     border-radius: 4px;
     overflow: hidden;
     display: grid;
+    grid-template-rows: 28px auto;
   }
 
   .control-panel .pure-form.pure-form-aligned {
