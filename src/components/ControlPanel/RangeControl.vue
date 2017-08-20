@@ -3,19 +3,27 @@
     <label :for='inputId'>
       {{ label }}
     </label>
-    <input
+    <!-- <input
       :id='inputId'
       type='range'
       :min='min'
       :max='max'
       :step='step'
-      v-model='processedValue'
+      v-model='currentValue'
       @input='numberInput'
-    >
+    > -->
+    <canvas
+      :id='inputId'
+      ref='canvas'
+      @mousedown='mouseDown'
+
+      @mousemove='mouseMove'
+      @click='click'
+    ></canvas>
     <input
         class="pure-form-message-inline"
         type='number'
-        v-model='processedValue'
+        v-model='currentValue'
         step='any'
         @input='numberInput'
       >
@@ -47,7 +55,15 @@
           match: ['rangeControl'],
           menuItems: []
         },
-        valueIn: 0
+        valueIn: 0,
+        updateQueue: [],
+        currentValue: 0,
+        raf: null,
+        lastLength: 0,
+        context: null,
+        mousePressed: false,
+        value: 0,
+        canvasX: 0
       };
     },
     computed: {
@@ -91,9 +107,54 @@
       ]),
       numberInput(e) {
         this.$data.valueIn = e.target.value;
+      },
+      mapValue(x) {
+        const mappedX = Math.map(x, 0, 170, this.min, this.max);
+        return +mappedX.toFixed(2);
+      },
+      unmapValue(x) {
+        const unmappedX = Math.map(x, this.min, this.max, 0, 170);
+        return unmappedX;
+      },
+      mouseDown() {
+        this.mousePressed = true;
+      },
+      mouseUp() {
+        this.mousePressed = false;
+      },
+      mouseMove(e) {
+        if(!this.mousePressed) return;
+        this.calculateValues(e);
+      },
+      click(e) {
+        this.calculateValues(e, true);
+      },
+      calculateValues(e, clicked = false) {
+        const rect = this.$refs.canvas.getBoundingClientRect();
+        const x = e.clientX - Math.round(rect.left);
+
+        if(this.mousePressed || clicked) {
+          this.valueIn = this.mapValue(x);
+          this.currentValue = this.valueIn;
+          this.canvasX = x;
+          this.currentX = this.value;
+        }
+      },
+      draw() {
+        const x = this.canvasX;
+        const canvas = this.$refs.canvas;
+        const context = this.context;
+
+        context.fillStyle = '#393939';
+        context.fillRect(0, 0, canvas.width, canvas.height);
+
+        context.fillStyle = '#ef8d00';
+        context.fillRect(0, 0, x, canvas.height);
       }
     },
     beforeMount() {
+      this.$data.currentValue = this.processedValue;
+
       this.$data.menuOptions.menuItems.push(
         new nw.MenuItem({
           label: this.label,
@@ -103,6 +164,17 @@
           type: 'separator'
         })
       );
+    },
+    mounted() {
+      window.addEventListener('mouseup', this.mouseUp.bind(this));
+      this.$refs.canvas.width = 170;
+      this.$refs.canvas.height = 30;
+      this.context = this.$refs.canvas.getContext('2d');
+      this.canvasX = this.unmapValue(this.currentValue);
+      this.draw();
+    },
+    destroy() {
+      window.removeEventListener('mouseup', this.mouseUp.bind(this));
     },
     watch: {
       valueIn() {
@@ -116,12 +188,27 @@
           variable: this.variable,
           value: val
         });
+      },
+      processedValue() {
+        this.currentValue = this.processedValue;
+        this.canvasX = this.unmapValue(this.currentValue);
+      },
+      canvasX() {
+        this.draw();
       }
     }
   };
 </script>
 
 <style scoped lang='scss'>
+  canvas {
+    width: 170px;
+    height: 30px;
+    display: inline-block;
+    vertical-align: top;
+    cursor: col-resize;
+  }
+
   input.pure-form-message-inline {
     max-width: 70px;
   }

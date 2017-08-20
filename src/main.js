@@ -4,6 +4,8 @@ import Vue from 'vue';
 import Dropdown from 'hsy-vue-dropdown';
 import Shortkey from 'vue-shortkey';
 import vmodal from 'vue-js-modal';
+import VueThrottleEvent from 'vue-throttle-event';
+
 import stats from '@/extra/stats';
 import { ModuleISF, modV } from './modv';
 import App from './App';
@@ -30,6 +32,7 @@ stats.dom.style.left = null;
 stats.dom.style.right = 0;
 stats.dom.classList.add('hidden');
 
+Vue.use(VueThrottleEvent);
 Vue.use(Dropdown);
 Vue.use(Shortkey);
 Vue.use(contextMenu, {
@@ -70,7 +73,9 @@ window.modVVue = new Vue({
     const modules = [
       'Waveform',
       'Ball',
+      'Text',
       'Webcam',
+      'Pixelate',
       'Plasma',
       'MattiasCRT',
       'FilmGrain',
@@ -78,7 +83,10 @@ window.modVVue = new Vue({
       'Stretch',
       'Wobble',
       'OpticalFlowDistort',
-      'Neon'/* ,
+      'Neon',
+      'Fisheye',
+      'MirrorEdge',
+      'EdgeDistort'/* ,
       'SolidColor'*/
     ];
 
@@ -108,7 +116,28 @@ window.modVVue = new Vue({
       'Dither-Bayer.fs',
       'GreatBallOfFire.fs',
       'VHS Glitch.fs.fs',
-      'Zebre.fs'
+      'Zebre.fs',
+      'st_lsfGDH.fs',
+      'st_Ms2SD1.fs.fs',
+      'rotozoomer.fs',
+      'Kaleidoscope.fs',
+      'RGB Halftone-lookaround.fs',
+      'Circuits.fs',
+      'BrightnessContrast.fs',
+      'UltimateSpiral.fs',
+      'MBOX3.fs',
+      'HexVortex.fs',
+      'Hue-Saturation.fs',
+      'Vignette.fs',
+      'v002 Crosshatch.fs',
+      'Sine Warp Tile.fs',
+      'RGB Trails 3.0.fs',
+      'RGB Strobe.fs',
+      'Kaleidoscope Tile.fs',
+      'Interlace.fs',
+      'Convergence.fs',
+      'Collage.fs',
+      'bokeh.fs'
     ];
 
     isfSamples.forEach((fileName) => {

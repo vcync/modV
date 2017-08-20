@@ -16,10 +16,10 @@
         >{{ source.label }}</option>
       </select>
     </div>
-    <div class="control-group monitor-group">
+    <!-- <div class="control-group monitor-group">
       <label for="monitorAudioGlobal">Monitor audio input</label>
       <input id="monitorAudioGlobal" type="checkbox" class="enable">
-    </div>
+    </div> -->
     <div class="control-group videoSource-group">
       <label for="videoSourceGlobal">Set video input</label>
       <select id="videoSourceGlobal" v-model='videoSource'>
@@ -197,6 +197,11 @@
 </script>
 
 <style scoped>
+  label,
+  #BPMDisplayGlobal {
+    color: #bdbdbd;
+  }
+
   label.pure-button {
     width: initial !important;
   }

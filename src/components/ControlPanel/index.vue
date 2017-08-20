@@ -1,9 +1,9 @@
 <template>
-  <div class="pure-u-1-1 control-panel">
-    <div class="title"><h1>{{ name }}</h1></div>
-    <div class="pure-form pure-form-aligned">
+  <div class='pure-u-1-1 control-panel' v-if='focusedModule'>
+    <div class='title'><h1>{{ name }}</h1></div>
+    <div class='pure-form pure-form-aligned'>
       <component
-        class="pure-control-group"
+        class='pure-control-group'
         v-for='control in controls'
         :is='control.type'
         :module='focusedModule'
@@ -22,6 +22,7 @@
   import paletteControl from './PaletteControl';
   import rangeControl from './RangeControl';
   import selectControl from './SelectControl';
+  import textControl from './TextControl';
   import twoDPointControl from './TwoDPointControl';
 
   export default {
@@ -49,21 +50,58 @@
       paletteControl,
       rangeControl,
       selectControl,
+      textControl,
       twoDPointControl
     }
   };
 </script>
 
-<style scoped lang='scss'>
+<style lang='scss'>
   .control-panel {
-    height: 100%;
+    box-sizing: border-box;
+    box-shadow: 0px 0px 20px 5px rgba(0,0,0,0.35);
+    background-color: #bdbdbd;
+    color: #010101;
+    border-radius: 4px;
+    overflow: hidden;
+    display: grid;
+    grid-template-rows: 28px auto;
   }
 
-  .title {
-    color: #000;
+  .control-panel .pure-form.pure-form-aligned {
+    overflow-y: auto;
   }
 
-  .pure-form-aligned .pure-control-group {
+  .control-panel .title {
+    margin: 0;
+    padding: 5px;
+    background-color: #454545;
+    color: #adadad;
+  }
+
+  .control-panel .title h1 {
+    padding: 0;
+    margin: 0;
+    font-size: medium;
+    font-weight: 400;
+    letter-spacing: normal;
+  }
+
+  .control-panel label {
+    font-size: 12px !important;
+    letter-spacing: normal;
+    text-align: left !important;
+  }
+
+  .control-panel .pure-control-group {
+    border-bottom: 1px solid #aaa;
+  }
+
+  // .control-panel {
+  //   height: 100%;
+  // }
+
+  .control-panel .pure-form-aligned .pure-control-group {
     margin: 0;
     padding: .5em 8px;
 

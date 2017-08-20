@@ -103,6 +103,9 @@ class Module {
       });
     } else {
       this.info.controls[item.variable] = item;
+      if('default' in item) {
+        this[item.variable] = item.default;
+      }
     }
   }
 
