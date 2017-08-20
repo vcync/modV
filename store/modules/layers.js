@@ -11,7 +11,25 @@ const state = {
 const getters = {
   allLayers: state => state.layers,
   focusedLayerIndex: state => state.focusedLayer,
-  focusedLayer: state => state.layers[state.focusedLayer]
+  focusedLayer: state => state.layers[state.focusedLayer],
+  presetData: (state) => {
+    return state.layers.map((Layer) => {
+      const layerData = {};
+      layerData.alpha = Layer.alpha;
+      layerData.blending = Layer.blending;
+      layerData.clearing = Layer.clearing;
+      layerData.collapsed = Layer.collapsed;
+      layerData.drawToOutput = Layer.drawToOutput;
+      layerData.enabled = Layer.enabled;
+      layerData.inherit = Layer.inherit;
+      layerData.inheritFrom = Layer.inheritFrom;
+      layerData.locked = Layer.locked;
+      layerData.moduleOrder = Layer.moduleOrder;
+      layerData.name = Layer.name;
+      layerData.pipeline = Layer.pipeline;
+      return layerData;
+    });
+  }
 };
 
 // actions
@@ -126,26 +144,62 @@ const mutations = {
     state.layers[LayerIndex].setName(name);
   },
   setLayerFocus(state, { LayerIndex }) {
-    state.focusedLayer = LayerIndex;
+    Vue.set(state, 'focusedLayer', LayerIndex);
   },
   lock(state, { layerIndex }) {
-    state.layers[layerIndex].locked = true;
+    const Layer = state.layers[layerIndex];
+    Vue.set(Layer, 'locked', true);
   },
   unlock(state, { layerIndex }) {
-    state.layers[layerIndex].locked = false;
+    const Layer = state.layers[layerIndex];
+    Vue.set(Layer, 'locked', false);
   },
   collapse(state, { layerIndex }) {
-    state.layers[layerIndex].collapsed = true;
+    const Layer = state.layers[layerIndex];
+    Vue.set(Layer, 'collapsed', true);
   },
   uncollapse(state, { layerIndex }) {
-    state.layers[layerIndex].collapsed = false;
+    const Layer = state.layers[layerIndex];
+    Vue.set(Layer, 'collapsed', false);
   },
   updateLayers(state, { layers }) {
     state.layers = layers;
   },
   updateModuleOrder(state, { layerIndex, order }) {
     const Layer = state.layers[layerIndex];
-    Layer.moduleOrder = order;
+    Vue.set(Layer, 'moduleOrder', order);
+  },
+  setClearing(state, { layerIndex, clearing }) {
+    const Layer = state.layers[layerIndex];
+    Vue.set(Layer, 'clearing', clearing);
+  },
+  setAlpha(state, { layerIndex, alpha }) {
+    const Layer = state.layers[layerIndex];
+    Vue.set(Layer, 'alpha', alpha);
+  },
+  setEnabled(state, { layerIndex, enabled }) {
+    const Layer = state.layers[layerIndex];
+    Vue.set(Layer, 'enabled', enabled);
+  },
+  setInherit(state, { layerIndex, inherit }) {
+    const Layer = state.layers[layerIndex];
+    Vue.set(Layer, 'inherit', inherit);
+  },
+  setInheritFrom(state, { layerIndex, inheritFrom }) {
+    const Layer = state.layers[layerIndex];
+    Vue.set(Layer, 'inheritFrom', inheritFrom);
+  },
+  setPipeline(state, { layerIndex, pipeline }) {
+    const Layer = state.layers[layerIndex];
+    Vue.set(Layer, 'pipeline', pipeline);
+  },
+  setBlending(state, { layerIndex, blending }) {
+    const Layer = state.layers[layerIndex];
+    Vue.set(Layer, 'blending', blending);
+  },
+  setDrawToOutput(state, { layerIndex, drawToOutput }) {
+    const Layer = state.layers[layerIndex];
+    Vue.set(Layer, 'drawToOutput', drawToOutput);
   }
 };
 

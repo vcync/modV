@@ -1,4 +1,5 @@
 import Vue from 'vue';
+import store from '@/../store';
 import { modV } from '@/modv';
 
 const state = {
@@ -13,6 +14,17 @@ const getters = {
 
 // actions
 const actions = {
+  savePresetToProfile({ commit }, { profileName, presetName }) {
+    const preset = {};
+    const layers = store.getters['layers/presetData'];
+    const moduleData = store.getters['modVModules/presetData'];
+    const paletteData = store.getters['palettes/presetData'](Object.keys(moduleData));
+    preset.layers = layers;
+    preset.moduleData = moduleData;
+    preset.paletteData = paletteData;
+
+    return preset;
+  },
   savePaletteToProfile({ commit }, { profileName, paletteName, colors }) {
     const MediaManager = modV.MediaManagerClient;
 

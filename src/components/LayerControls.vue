@@ -31,7 +31,7 @@
 </template>
 
 <script>
-  import { mapGetters } from 'vuex';
+  import { mapGetters, mapMutations } from 'vuex';
 
   export default {
     name: 'layerControls',
@@ -47,7 +47,8 @@
     computed: {
       ...mapGetters('layers', {
         Layer: 'focusedLayer',
-        layers: 'allLayers'
+        layers: 'allLayers',
+        layerIndex: 'focusedLayerIndex'
       }),
       name() {
         if(!this.Layer) return '';
@@ -56,7 +57,13 @@
       }
     },
     methods: {
-
+      ...mapMutations('layers', [
+        'setClearing',
+        'setInherit',
+        'setInheritFrom',
+        'setPipeline',
+        'setDrawToOutput'
+      ])
     },
     watch: {
       name() {
@@ -70,7 +77,10 @@
         this.drawToOutputChecked = Layer.drawToOutput;
       },
       clearingChecked() {
-        this.Layer.clearing = this.clearingChecked;
+        this.setClearing({
+          layerIndex: this.layerIndex,
+          clearing: this.clearingChecked
+        });
       },
       inheritChecked() {
         this.Layer.inherit = this.inheritChecked;

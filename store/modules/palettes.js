@@ -7,7 +7,19 @@ const state = {
 
 // getters
 const getters = {
-  allPalettes: state => state.palettes
+  allPalettes: state => state.palettes,
+  presetData: state => (modulesToGet) => {
+    const data = {};
+
+    Object.keys(state.palettes).forEach((key) => {
+      const paletteData = state.palettes[key];
+      if(modulesToGet.includes(paletteData.moduleName)) {
+        data[key] = paletteData;
+      }
+    });
+
+    return data;
+  }
 };
 
 // actions

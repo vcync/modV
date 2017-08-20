@@ -48,6 +48,14 @@ const getters = {
       raw: state.active[moduleName][controlVariable],
       processed
     }
+  },
+  presetData: (state) => {
+    return Object.keys(state.active)
+      .filter(key => key.substring(key.length - 8, key.length) !== '-gallery')
+      .reduce((obj, moduleName) => {
+        obj[moduleName] = state.active[moduleName];
+        return obj;
+      }, {});
   }
 };
 
