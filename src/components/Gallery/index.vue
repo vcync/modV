@@ -1,6 +1,10 @@
 <template>
   <div class="right-top gallery pure-g" @drop='drop' @dragover='dragover'>
-    <search-bar :phrase.sync='phrase' class='search-bar-wrapper'></search-bar>
+    <search-bar
+      :phrase.sync='phrase'
+      class='search-bar-wrapper'
+      @menuIconClicked='menuIconClicked'
+    ></search-bar>
     <div class='gallery-items-wrapper' data-simplebar-direction="vertical">
 
       <div class='pure-u-1-1 title' :class="{ hidden: phrase.length < 1 }">
@@ -155,6 +159,9 @@
         if(!this.currentDragged) return;
         const draggedNode = document.querySelectorAll(`.active-item[data-module-name="${this.currentDragged}"]`)[1];
         draggedNode.classList.remove('deletable');
+      },
+      menuIconClicked() {
+        this.$emit('menuIconClicked');
       }
     },
     components: {

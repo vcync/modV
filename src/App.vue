@@ -11,7 +11,7 @@
             <layer-menu></layer-menu>
           </div>
           <div class="gallery-wrapper"> <!-- pure-u-4-5 -->
-            <gallery></gallery>
+            <gallery @menuIconClicked='menuIconClicked'></gallery>
             <resize-handle-left></resize-handle-left>
           </div>
         </div>
@@ -27,16 +27,16 @@
           </div>
 
           <div class="pure-u-1-3 pure-g main-control-area">
-            <tabs :titles="['Layer', 'Global', 'Preset']">
+            <tabs :titles="['Layer']">
               <div slot="tab-1" class="pure-u-1-1 layer-control-panel-wrapper control-panel-wrapper pure-g">
                 <layer-controls></layer-controls>
               </div>
-              <div slot="tab-2" class="pure-u-1-1 global-control-panel-wrapper control-panel-wrapper pure-g">
+              <!-- <div slot="tab-2" class="pure-u-1-1 global-control-panel-wrapper control-panel-wrapper pure-g">
                 <global-controls></global-controls>
               </div>
               <div slot="tab-3" class="pure-u-1-1 preset-control-panel-wrapper control-panel-wrapper pure-g">
 
-              </div>
+              </div> -->
             </tabs>
           </div>
         </div>
@@ -46,6 +46,7 @@
     </section>
     <component v-for='pluginComponent in pluginComponents' :is='pluginComponent'></component>
     <canvas-preview></canvas-preview>
+    <side-menu :menuState='menuOpen'></side-menu>
   </div>
 </template>
 
@@ -57,18 +58,29 @@
   import LayerControls from '@/components/LayerControls';
   import LayerMenu from '@/components/LayerMenu';
   import List from '@/components/List';
+  import SideMenu from '@/components/SideMenu';
   import Tabs from '@/components/Tabs';
 
   import { modV } from 'modv';
 
   export default {
     name: 'app',
+    data() {
+      return {
+        menuOpen: false
+      };
+    },
     computed: {
       pluginComponents() {
         return modV.plugins
           .filter(plugin => 'component' in plugin)
           .map(plugin => plugin.component.name);
       },
+    },
+    methods: {
+      menuIconClicked() {
+        this.$data.menuOpen = !this.$data.menuOpen;
+      }
     },
     components: {
       CanvasPreview,
@@ -78,6 +90,7 @@
       LayerControls,
       LayerMenu,
       List,
+      SideMenu,
       Tabs
     },
   };
@@ -100,9 +113,15 @@
     background-color: #383838;
     width: 100vw;
     height: 100vh;
+    position: relative;
+    overflow: hidden;
   }
 
   .control-panel-wrapper {
     padding: 10px;
+  }
+
+  .gallery-wrapper {
+    overflow-y: auto;
   }
 </style>

@@ -8,6 +8,7 @@
       @shortkey="focus"
       ref="gallery-search"
     />
+    <i class="fa fa-bars fa-2x" aria-hidden="true" @click='menuIconClicked'></i>
   </div>
 </template>
 
@@ -35,6 +36,9 @@
       clearSearch() {
         if(this.$refs['gallery-search'] !== document.activeElement) return;
         this.phrase = '';
+      },
+      menuIconClicked() {
+        this.$emit('menuIconClicked');
       }
     },
     watch: {
@@ -53,9 +57,18 @@
 
     input {
       padding: 3px;
-      display: block;
-      width: 100%;
+      display: inline-block;
+      width: 90%;
       box-sizing: border-box;
+      margin: 0 20px 0 0;
+      vertical-align: top;
+    }
+
+    i {
+      color: #fff;
+      vertical-align: top;
+      margin: -2px 0 0 0;
+      cursor: pointer;
     }
   }
 </style>
