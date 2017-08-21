@@ -1,6 +1,15 @@
 import Vue from 'vue';
+import Ajv from 'ajv';
 import { modV } from '@/modv';
 import store from '../index';
+
+const makeSchema = function(properties) {
+  return {
+    $schema: 'http://json-schema.org/draft-04/schema#',
+    type: 'object',
+    properties
+  };
+};
 
 const externalState = {
   active: {}
@@ -50,12 +59,45 @@ const getters = {
     }
   },
   presetData: (state) => {
-    return Object.keys(state.active)
-      .filter(key => key.substring(key.length - 8, key.length) !== '-gallery')
-      .reduce((obj, moduleName) => {
-        obj[moduleName] = state.active[moduleName];
-        return obj;
-      }, {});
+    // @TODO: figure out a better clone than JSONparse(JSONstringify())
+    const ajv = new Ajv({
+      removeAdditional: 'all'
+    });
+
+    const moduleNames = Object.keys(state.active)
+      .filter(key => key.substring(key.length - 8, key.length) !== '-gallery');
+
+    const moduleData = moduleNames.reduce((obj, moduleName) => {
+      obj[moduleName] = JSON.parse(JSON.stringify(state.active[moduleName]));
+      return obj;
+    }, {});
+
+    moduleNames.forEach((moduleName) => {
+      const Module = externalState.active[moduleName];
+
+      if(!('saveData' in Module.info)) {
+        console.warn(`generatePreset: Module ${Module.info.name} has no saveData schema, falling back to Vuex store data`);
+        return;
+      }
+
+      const schema = makeSchema(JSON.parse(JSON.stringify(Module.info.saveData)));
+      let validate = ajv.compile(schema);
+
+      let copiedModule = JSON.parse(JSON.stringify(Module));
+      let validated = validate(copiedModule);
+      if(!validated) {
+        console.error(
+          `generatePreset: Module ${Module.info.name} failed saveData validation, skipping`,
+          validate.errors
+        );
+        return;
+      }
+
+      // Merge validated data onto existing data
+      moduleData[moduleName] = Object.assign(moduleData[moduleName], copiedModule);
+    });
+
+    return moduleData;
   }
 };
 
