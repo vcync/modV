@@ -40,14 +40,13 @@
     data() {
       return {
         compositeOperation: 'normal',
-        enabled: true,
-        opacity: 1,
+        enabled: null,
+        opacity: null,
         operations: [{
           label: 'Blend Modes',
           children: [{
             label: 'Normal',
-            value: 'normal',
-            selected: true
+            value: 'normal'
           }, {
             label: 'Multiply',
             value: 'multiply'
@@ -181,11 +180,18 @@
         this.compositeOperation = item[0].value;
       }
     },
+    mounted() {
+      this.enabled = this.module.info.enabled;
+      this.opacity = this.module.info.alpha;
+
+      this.operations[0].children.find(item => item.value === this.module.info.compositeOperation).selected = true; //eslint-disable-line
+    },
     watch: {
       compositeOperation() {
         this.module.info.compositeOperation = this.compositeOperation;
       },
       enabled() {
+        console.log('enabled changed');
         this.module.info.enabled = this.enabled;
       },
       opacity() {
