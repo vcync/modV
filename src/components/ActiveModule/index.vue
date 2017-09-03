@@ -2,30 +2,38 @@
   <div class="pure-u-1-1 active-item" :class='{current: focused}' tabindex="0" @focus='focusActiveModule' @dragstart='dragstart'>
     <div class="pure-g">
       <!-- <canvas class="preview"></canvas> --><!-- TODO: create preview option on mouseover item -->
-      <div class="pure-u-1-1 title">
-        {{ moduleName }}
-      </div>
-      <div class="pure-u-4-5 options">
-        <div class="control-group enable-group">
-          <label :for='enabledCheckboxId'>Enabled</label>
-          <div class="customCheckbox">
-            <input type="checkbox" checked="true" class="enable" v-model='enabled' :id='enabledCheckboxId'>
-            <label :for='enabledCheckboxId'></label>
-          </div>
+      <div class='pure-u-1-1'>
+        <div class='pure-g'>
+          <div class='pure-u-4-5'>
+            <div class='pure-g'>
+              <div class="pure-u-1-1 title">
+                {{ moduleName }}
+              </div>
+              <div class="pure-u-1-1 options">
+                <div class="control-group enable-group">
+                  <label :for='enabledCheckboxId'>Enabled</label>
+                  <div class="customCheckbox">
+                    <input type="checkbox" checked="true" class="enable" v-model='enabled' :id='enabledCheckboxId'>
+                    <label :for='enabledCheckboxId'></label>
+                  </div>
 
+                </div>
+                <div class="control-group opacity-group">
+                  <label for="">Opacity</label>
+                  <input type="range" min="0" max="1" value = "1" step="0.01" class="opacity" v-model='opacity'>
+                </div>
+                <div class="control-group blending-group">
+                  <label for="">Blending</label>
+                  <dropdown :data="operations" grouped placeholder='Normal' :width='150' :cbChanged="compositeOperationChanged"></dropdown>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class='pure-u-1-5 handle-container'>
+            <span class="ibvf"></span>
+            <i class="handle fa fa-reorder fa-3x"></i>
+          </div>
         </div>
-        <div class="control-group opacity-group">
-          <label for="">Opacity</label>
-          <input type="range" min="0" max="1" value = "1" step="0.01" class="opacity" v-model='opacity'>
-        </div>
-        <div class="control-group blending-group">
-          <label for="">Blending</label>
-          <dropdown :data="operations" grouped placeholder='Normal' :width='150' :cbChanged="compositeOperationChanged"></dropdown>
-        </div>
-      </div>
-      <div class="pure-u-1-5 handle-container">
-        <span class="ibvf"></span>
-        <i class="handle fa fa-reorder fa-3x"></i>
       </div>
     </div>
 
@@ -157,7 +165,10 @@
     methods: {
       ...mapMutations('modVModules', [
         'setCurrentDragged',
-        'setModuleFocus'
+        'setModuleFocus',
+        'setActiveModuleAlpha',
+        'setActiveModuleEnabled',
+        'setActiveModuleCompositeOperation'
       ]),
       ...mapGetters('modVModules', [
         'getActiveModule'
@@ -183,13 +194,13 @@
     },
     watch: {
       compositeOperation() {
-        this.module.info.compositeOperation = this.compositeOperation;
+        this.setActiveModuleCompositeOperation({ moduleName: this.moduleName, compositeOperation: this.compositeOperation });
       },
       enabled() {
-        this.module.info.enabled = this.enabled;
+        this.setActiveModuleEnabled({ moduleName: this.moduleName, enabled: this.enabled });
       },
       opacity() {
-        this.module.info.alpha = parseFloat(this.opacity);
+        this.setActiveModuleAlpha({ moduleName: this.moduleName, alpha: parseFloat(this.opacity) });
       }
     }
   };
@@ -248,6 +259,10 @@
       to {
         background-color: red;
       }
+    }
+
+    input[type='range'] {
+      vertical-align: middle;
     }
 
     .title {
