@@ -42,11 +42,8 @@ const mutations = {
     state.controlAssignments.push(assignment);
   },
   removeAssignments(state, { moduleName }) {
-    state.controlAssignments.forEach((assignment, idx) => {
-      if(assignment.moduleName === moduleName) {
-        state.controlAssignments.splice(idx, 1);
-      }
-    });
+    state.controlAssignments = state.controlAssignments
+      .filter(assignment => assignment.moduleName !== moduleName);
   }
 };
 

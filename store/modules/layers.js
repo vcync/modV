@@ -33,15 +33,14 @@ const actions = {
     commit('setLayerFocus', {
       LayerIndex: state.layers.length - 1
     });
-    return layer;
+    return { Layer: layer, index: state.layers.length - 1 };
   },
   removeFocusedLayer({ commit, state }) {
     const Layer = state.layers[state.focusedLayer];
     Object.keys(Layer.modules).forEach((moduleName) => {
-      commit(
+      store.dispatch(
         'modVModules/removeActiveModule',
-        { moduleName },
-        { root: true }
+        { moduleName }
       );
     });
     commit('removeLayer', { layerIndex: state.focusedLayer });
@@ -66,7 +65,7 @@ const actions = {
       }
     }
     commit('addModuleToLayer', { moduleName: module.info.name, layerIndex, position });
-    commit(
+    store.commit(
       'modVModules/setModuleFocus',
       { activeModuleName: module.info.name },
       { root: true }
@@ -85,6 +84,37 @@ const actions = {
 
     commit('addModuleInstanceToLayer', { moduleName, moduleInstance, layerIndex: toLayerIndex });
     commit('removeModuleInstanceFromLayer', { moduleName, layerIndex: fromLayerIndex });
+  },
+  removeAllLayers({ commit, state }) {
+    state.layers.forEach((Layer, layerIndex) => {
+      Object.keys(Layer.modules).forEach((moduleName) => {
+        console.log('Should remove', moduleName);
+        store.dispatch(
+          'modVModules/removeActiveModule',
+          { moduleName }
+        );
+      });
+
+      commit('removeLayer', { layerIndex });
+    });
+  },
+  presetData({ state }) {
+    return state.layers.map((Layer) => {
+      const layerData = {};
+      layerData.alpha = Layer.alpha;
+      layerData.blending = Layer.blending;
+      layerData.clearing = Layer.clearing;
+      layerData.collapsed = Layer.collapsed;
+      layerData.drawToOutput = Layer.drawToOutput;
+      layerData.enabled = Layer.enabled;
+      layerData.inherit = Layer.inherit;
+      layerData.inheritFrom = Layer.inheritFrom;
+      layerData.locked = Layer.locked;
+      layerData.moduleOrder = Layer.moduleOrder;
+      layerData.name = Layer.name;
+      layerData.pipeline = Layer.pipeline;
+      return layerData;
+    });
   }
 };
 
@@ -125,27 +155,78 @@ const mutations = {
   setLayerName(state, { LayerIndex, name }) {
     state.layers[LayerIndex].setName(name);
   },
+  setName(state, { layerIndex, name }) {
+    state.layers[layerIndex].setName(name);
+  },
   setLayerFocus(state, { LayerIndex }) {
-    state.focusedLayer = LayerIndex;
+    Vue.set(state, 'focusedLayer', LayerIndex);
   },
   lock(state, { layerIndex }) {
-    state.layers[layerIndex].locked = true;
+    const Layer = state.layers[layerIndex];
+    Vue.set(Layer, 'locked', true);
   },
   unlock(state, { layerIndex }) {
-    state.layers[layerIndex].locked = false;
+    const Layer = state.layers[layerIndex];
+    Vue.set(Layer, 'locked', false);
+  },
+  setLocked(state, { layerIndex, locked }) {
+    const Layer = state.layers[layerIndex];
+    Vue.set(Layer, 'locked', locked);
   },
   collapse(state, { layerIndex }) {
-    state.layers[layerIndex].collapsed = true;
+    const Layer = state.layers[layerIndex];
+    Vue.set(Layer, 'collapsed', true);
   },
   uncollapse(state, { layerIndex }) {
-    state.layers[layerIndex].collapsed = false;
+    const Layer = state.layers[layerIndex];
+    Vue.set(Layer, 'collapsed', false);
+  },
+  setCollapsed(state, { layerIndex, collapsed }) {
+    const Layer = state.layers[layerIndex];
+    Vue.set(Layer, 'collapsed', collapsed);
   },
   updateLayers(state, { layers }) {
     state.layers = layers;
   },
   updateModuleOrder(state, { layerIndex, order }) {
     const Layer = state.layers[layerIndex];
-    Layer.moduleOrder = order;
+    Vue.set(Layer, 'moduleOrder', order);
+  },
+  setClearing(state, { layerIndex, clearing }) {
+    const Layer = state.layers[layerIndex];
+    Vue.set(Layer, 'clearing', clearing);
+  },
+  setAlpha(state, { layerIndex, alpha }) {
+    const Layer = state.layers[layerIndex];
+    Vue.set(Layer, 'alpha', alpha);
+  },
+  setEnabled(state, { layerIndex, enabled }) {
+    const Layer = state.layers[layerIndex];
+    Vue.set(Layer, 'enabled', enabled);
+  },
+  setInherit(state, { layerIndex, inherit }) {
+    const Layer = state.layers[layerIndex];
+    Vue.set(Layer, 'inherit', inherit);
+  },
+  setInheritFrom(state, { layerIndex, inheritFrom }) {
+    const Layer = state.layers[layerIndex];
+    Vue.set(Layer, 'inheritFrom', inheritFrom);
+  },
+  setPipeline(state, { layerIndex, pipeline }) {
+    const Layer = state.layers[layerIndex];
+    Vue.set(Layer, 'pipeline', pipeline);
+  },
+  setBlending(state, { layerIndex, blending }) {
+    const Layer = state.layers[layerIndex];
+    Vue.set(Layer, 'blending', blending);
+  },
+  setDrawToOutput(state, { layerIndex, drawToOutput }) {
+    const Layer = state.layers[layerIndex];
+    Vue.set(Layer, 'drawToOutput', drawToOutput);
+  },
+  setModuleOrder(state, { layerIndex, moduleOrder }) {
+    const Layer = state.layers[layerIndex];
+    Vue.set(Layer, 'moduleOrder', moduleOrder);
   }
 };
 

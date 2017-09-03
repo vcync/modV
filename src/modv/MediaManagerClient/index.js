@@ -23,10 +23,9 @@ class MediaManagerClient {
     });
 
     ws.addEventListener('open', () => {
-      console.log(this);
       this.update();
       this.available = true;
-      console.info('Media Manager connected, retriveing media list');
+      console.info('Media Manager connected, retrieving media list');
     });
 
     window.addEventListener('beforeunload', () => {
@@ -50,11 +49,6 @@ class MediaManagerClient {
   messageHandler(message) { //eslint-disable-line
     const parsed = JSON.parse(message.data);
     console.log('Media Manager says:', parsed);
-
-    // let data;
-    // let type;
-    // let profile;
-    // let name;
 
     if('type' in parsed) {
       switch(parsed.type) {

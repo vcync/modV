@@ -1,6 +1,6 @@
 {
   "name": "modv",
-  "version": "1.0.0",
+  "version": "2.0.0",
   "description": "Audio visualisation environment",
   "author": "Sam Wray <sam@wray.pro>",
   "private": true,
