@@ -60,8 +60,8 @@
       ])
     },
     created() {
-      this.addLayer().then((layer) => {
-        this.Layer = layer;
+      this.addLayer().then(({ Layer }) => {
+        this.Layer = Layer;
       });
     }
   };
