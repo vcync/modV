@@ -57,47 +57,6 @@ const getters = {
       raw: state.active[moduleName][controlVariable],
       processed
     }
-  },
-  presetData: (state) => {
-    // @TODO: figure out a better clone than JSONparse(JSONstringify())
-    const ajv = new Ajv({
-      removeAdditional: 'all'
-    });
-
-    const moduleNames = Object.keys(state.active)
-      .filter(key => key.substring(key.length - 8, key.length) !== '-gallery');
-
-    const moduleData = moduleNames.reduce((obj, moduleName) => {
-      obj[moduleName] = JSON.parse(JSON.stringify(state.active[moduleName]));
-      return obj;
-    }, {});
-
-    moduleNames.forEach((moduleName) => {
-      const Module = externalState.active[moduleName];
-
-      if(!('saveData' in Module.info)) {
-        console.warn(`generatePreset: Module ${Module.info.name} has no saveData schema, falling back to Vuex store data`);
-        return;
-      }
-
-      const schema = makeSchema(JSON.parse(JSON.stringify(Module.info.saveData)));
-      let validate = ajv.compile(schema);
-
-      let copiedModule = JSON.parse(JSON.stringify(Module));
-      let validated = validate(copiedModule);
-      if(!validated) {
-        console.error(
-          `generatePreset: Module ${Module.info.name} failed saveData validation, skipping`,
-          validate.errors
-        );
-        return;
-      }
-
-      // Merge validated data onto existing data
-      moduleData[moduleName] = Object.assign(moduleData[moduleName], copiedModule);
-    });
-
-    return moduleData;
   }
 };
 
@@ -198,6 +157,61 @@ const actions = {
         module.resize(canvas);
       }
     });
+  },
+  presetData({ state }) {
+    // @TODO: figure out a better clone than JSONparse(JSONstringify())
+    const ajv = new Ajv({
+      removeAdditional: 'all'
+    });
+
+    const moduleNames = Object.keys(state.active)
+      .filter(key => key.substring(key.length - 8, key.length) !== '-gallery');
+
+    const moduleData = moduleNames.reduce((obj, moduleName) => {
+      obj[moduleName] = {};
+      obj[moduleName].values = JSON.parse(JSON.stringify(state.active[moduleName]));
+      return obj;
+    }, {});
+
+    moduleNames.forEach((moduleName) => {
+      const Module = externalState.active[moduleName];
+
+      const moduleInfo = {
+        alpha: Module.info.alpha,
+        author: Module.info.author,
+        compositeOperation: Module.info.compositeOperation,
+        enabled: Module.info.enabled,
+        originalName: Module.info.originalName,
+        version: Module.info.version
+      };
+
+      // Merge Module data onto existing data
+      moduleData[moduleName] = Object.assign(moduleData[moduleName], moduleInfo);
+      delete moduleData[moduleName].values.info;
+
+      if(!('saveData' in Module.info)) {
+        console.warn(`generatePreset: Module ${Module.info.name} has no saveData schema, falling back to Vuex store data`);
+        return;
+      }
+
+      const schema = makeSchema(JSON.parse(JSON.stringify(Module.info.saveData)));
+      let validate = ajv.compile(schema);
+
+      let copiedModule = JSON.parse(JSON.stringify(Module));
+      let validated = validate(copiedModule);
+      if(!validated) {
+        console.error(
+          `generatePreset: Module ${Module.info.name} failed saveData validation, skipping`,
+          validate.errors
+        );
+        return;
+      }
+
+      // Merge validated data onto existing data
+      moduleData[moduleName].values = Object.assign(moduleData[moduleName].values, copiedModule);
+    });
+
+    return moduleData;
   }
 };
 
@@ -217,6 +231,7 @@ const mutations = {
     });
 
     Vue.set(state.active, moduleName, values);
+    Vue.set(state.active[moduleName], 'info', {});
     externalState.active[moduleName] = module;
   },
   setActiveModuleControlValue(state, { moduleName, variable, value }) {
@@ -255,6 +270,18 @@ const mutations = {
   },
   setCurrentDragged(state, { moduleName }) {
     state.currentDragged = moduleName;
+  },
+  setActiveModuleAlpha(state, { moduleName, alpha }) {
+    Vue.set(state.active[moduleName].info, 'alpha', alpha);
+    externalState.active[moduleName].info.alpha = alpha;
+  },
+  setActiveModuleEnabled(state, { moduleName, enabled }) {
+    Vue.set(state.active[moduleName].info, 'enabled', enabled);
+    externalState.active[moduleName].info.enabled = enabled;
+  },
+  setActiveModuleCompositeOperation(state, { moduleName, compositeOperation }) {
+    Vue.set(state.active[moduleName].info, 'compositeOperation', compositeOperation);
+    externalState.active[moduleName].info.compositeOperation = compositeOperation;
   }
 };
 
