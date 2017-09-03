@@ -17,11 +17,12 @@ body {
 .hsy-dropdown {
 	background-color: #fff;
 	border-radius: 3px;
+  height: 20px !important;
 
 	& > .selected {
 		background-color: rgba(221, 221, 221, 0.32);
-		height: 18px;
-  	line-height: 18px;
+		height: 18px !important;
+  	line-height: 18px !important;
   }
 
 	.list {
