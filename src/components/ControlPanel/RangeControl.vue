@@ -17,9 +17,9 @@
       ref='canvas'
       @mousedown='mouseDown'
 
-      @mousemove='mouseMove'
       @click='click'
     ></canvas>
+    <!-- @mousemove='mouseMove' -->
     <input
         class="pure-form-message-inline"
         type='number'
@@ -167,14 +167,16 @@
     },
     mounted() {
       window.addEventListener('mouseup', this.mouseUp.bind(this));
+      window.addEventListener('mousemove', this.mouseMove.bind(this));
       this.$refs.canvas.width = 170;
-      this.$refs.canvas.height = 30;
+      this.$refs.canvas.height = 32;
       this.context = this.$refs.canvas.getContext('2d');
       this.canvasX = this.unmapValue(this.currentValue);
       this.draw();
     },
     destroy() {
       window.removeEventListener('mouseup', this.mouseUp.bind(this));
+      window.removeEventListener('mousemove', this.mouseMove.bind(this));
     },
     watch: {
       valueIn() {
@@ -203,10 +205,11 @@
 <style scoped lang='scss'>
   canvas {
     width: 170px;
-    height: 30px;
+    height: 32px;
     display: inline-block;
     vertical-align: top;
     cursor: col-resize;
+    border-radius: 4px;
   }
 
   input.pure-form-message-inline {
