@@ -179,30 +179,36 @@ class Ball extends Module2D {
     // >
   }
 
-  // import(/* key, value*/) {
+  import(data) {
+    Object.keys(data).forEach((key) => {
+      const value = data[key];
 
-  //   // switch(key) {
-  //   //   case 'balls':
-  //   //     let balls = value;
-  //   //     this.balls = [];
-  //   //     for(var i=0; i < balls.length; i++) {
-  //   //       let ball = balls[i];
-  //   //       var newBall = new (this.ballObj())();
-  //   //       newBall.speed = this.speed;
-  //   //       newBall.bounds.width = this.canvas.width;
-  //   //       newBall.bounds.height = this.canvas.height;
-  //   //       newBall.position.x = ball.position.x;
-  //   //       newBall.position.y = ball.position.y;
-  //   //       newBall.velocity.x = ball.velocity.x;
-  //   //       newBall.velocity.y = ball.velocity.y;
-  //   //       newBall.xReverse = ball.xReverse;
-  //   //       newBall.yReverse = ball.xReverse;
-  //   //       this.balls.push(newBall);
-  //   //     }
+      switch(key) {
+        default:
+          this[key] = value;
+          break;
 
-  //   //   break;
-  //   // }
-  // }
+        case 'balls':
+          const balls = value;
+          this.balls = [];
+          for(let i = 0; i < balls.length; i += 1) {
+            const ball = balls[i];
+            const newBall = new (this.ballObj())();
+            newBall.speed = this.speed;
+            newBall.bounds.width = this.canvas.width;
+            newBall.bounds.height = this.canvas.height;
+            newBall.position.x = ball.position.x;
+            newBall.position.y = ball.position.y;
+            newBall.velocity.x = ball.velocity.x;
+            newBall.velocity.y = ball.velocity.y;
+            newBall.xReverse = ball.xReverse;
+            newBall.yReverse = ball.xReverse;
+            this.balls.push(newBall);
+          }
+          break;
+      }
+    });
+  }
 
   init(canvas) {
     this.canvas = canvas;
@@ -223,10 +229,6 @@ class Ball extends Module2D {
 
   resize(canvas) {
     this.setupBalls(canvas);
-
-    // for(let i = 0; i < this.balls.length; i += 1) {
-    //   this.balls[i].setBounds(canvas.width, canvas.height);
-    // }
   }
 
   draw({ canvas, context, features }) {
@@ -320,5 +322,4 @@ class Ball extends Module2D {
   }
 }
 
-// modV.register(Ball);
 export default Ball;

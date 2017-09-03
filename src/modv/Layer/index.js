@@ -47,183 +47,60 @@ class Layer extends EventEmitter2 {
      */
     this.modV = modV;
 
-    let clearing = clearingIn || false;
-    let alpha = 1;
-    let enabled = true;
-    let inherit = true;
-    let inheritFrom = -1; // -1 = canvas before, any other number corresponds to modV.layers index
-    let pipeline = false;
-    let drawToOutput = true;
-    // let locked = false;
-    let blending = 'normal';
-
     /**
      * Indicates whether the Layer should clear before redraw
      * @type {Boolean}
      * @name Layer#clearing
      */
-    Object.defineProperty(this, 'clearing', {
-      get: () => clearing,
-      set: (clearingSet) => {
-        clearing = clearingSet;
-
-        /**
-         * {@link Layer#clearing} state change event
-         * @event Layer#clearingSet
-         * @type {Boolean}
-         */
-        this.emit('clearingSet',
-          clearing
-        );
-      }
-    });
+    this.clearing = clearingIn || false;
 
     /**
      * The level of opacity between 0 and 1 the Layer should be muxed at
      * @type {Number}
      * @name Layer#alpha
      */
-    Object.defineProperty(this, 'alpha', {
-      get: () => alpha,
-      set: (alphaIn) => {
-        alpha = alphaIn;
-
-        /**
-         * {@link Layer#alpha} state change event
-         * @event Layer#alphaSet
-         * @type {Number}
-         */
-        this.emit('alphaSet',
-          alpha
-        );
-      }
-    });
+    this.alpha = 1;
 
     /**
      * Indicates whether the Layer should be drawn
      * @type {Boolean}
      * @name Layer#enabled
      */
-    Object.defineProperty(this, 'enabled', {
-      get: () => enabled,
-      set: (enabledIn) => {
-        enabled = enabledIn;
-
-        /**
-         * {@link Layer#enabled} state change event
-         * @event Layer#enabledSet
-         * @type {Boolean}
-         */
-        this.emit('enabledSet',
-          enabled
-        );
-      }
-    });
+    this.enabled = true;
 
     /**
      * Indicates whether the Layer should inherit from another Layer at redraw
      * @type {Boolean}
      * @name Layer#inherit
      */
-    Object.defineProperty(this, 'inherit', {
-      get: () => inherit,
-      set: (inheritIn) => {
-        inherit = inheritIn;
-
-        /**
-         * {@link Layer#inherit} state change event
-         * @event Layer#inheritSet
-         * @type {Boolean}
-         */
-        this.emit('inheritSet',
-          inherit
-        );
-      }
-    });
+    this.inherit = true;
 
     /**
      * The target Layer to inherit from, -1 being the previous Layer in modV#layers, 0-n being the index of another Layer within modV#layers
      * @type {Number}
      * @name Layer#inheritFrom
      */
-    Object.defineProperty(this, 'inheritFrom', {
-      get: () => inheritFrom,
-      set: (inheritFromIn) => {
-        inheritFrom = inheritFromIn;
-
-        /**
-         * {@link Layer#inheritFrom} state change event
-         * @event Layer#inheritFromSet
-         * @type {Number}
-         */
-        this.emit('inheritFromSet',
-          inheritFrom
-        );
-      }
-    });
+    this.inheritFrom = -1;
 
     /**
      * Indicates whether the Layer should render using pipeline at redraw
      * @type {Boolean}
      * @name Layer#pipeline
      */
-    Object.defineProperty(this, 'pipeline', {
-      get: () => pipeline,
-      set: (pipelineIn) => {
-        pipeline = pipelineIn;
-
-        /**
-         * {@link Layer#pipeline} state change event
-         * @event Layer#pipelineSet
-         * @type {Boolean}
-         */
-        this.emit('pipelineSet',
-          pipeline
-        );
-      }
-    });
+    this.pipeline = false;
 
     /**
      * Indicates whether the Layer should mux to the output canvas on the output window
      * @type {Boolean}
      * @name Layer#drawToOutput
      */
-    Object.defineProperty(this, 'drawToOutput', {
-      get: () => drawToOutput,
-      set: (drawToOutputIn) => {
-        drawToOutput = drawToOutputIn;
-
-        /**
-         * {@link Layer#drawToOutput} state change event
-         * @event Layer#drawToOutputSet
-         * @type {Boolean}
-         */
-        this.emit('drawToOutputSet',
-          drawToOutput
-        );
-      }
-    });
+    this.drawToOutput = true;
 
     /**
      * Indicates whether the Layer is Locked
      * @type {Boolean}
      * @name Layer#locked
      */
-    // Object.defineProperty(this, 'locked', {
-    //   get: () => locked,
-    //   set: (lockedIn) => {
-    //     locked = lockedIn;
-
-    //     *
-    //      * {@link Layer#locked} state change event
-    //      * @event Layer#lockedSet
-    //      * @type {Boolean}
-
-    //     this.emit('lockedSet',
-    //       locked
-    //     );
-    //   }
-    // });
     this.locked = false;
 
     this.collapsed = false;
@@ -233,29 +110,7 @@ class Layer extends EventEmitter2 {
      * @type {String}
      * @name Layer#blending
      */
-    Object.defineProperty(this, 'blending', {
-      get: () => blending,
-      set: (blendingIn) => {
-        blending = blendingIn;
-
-        /**
-         * {@link Layer#blending} state change event
-         * @event Layer#blendingSet
-         * @type {String}
-         */
-        this.emit('blendingSet',
-          blending
-        );
-      }
-    });
-
-    // this.canvas.width = modV.outputCanvas.width;
-    // this.canvas.height = modV.outputCanvas.height;
-
-    this.nodes = {};
-
-    // this.makeNode();
-    // this.makeSortable(this.node);
+    this.blending = 'normal';
   }
 
   /**

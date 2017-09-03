@@ -63,6 +63,18 @@ const actions = {
 
     commit('updateBpmDivision', { id, bpmDivision });
   },
+  presetData({ state }, modulesToGet) {
+    const data = {};
+
+    Object.keys(state.palettes).forEach((key) => {
+      const paletteData = state.palettes[key];
+      if(modulesToGet.includes(paletteData.moduleName)) {
+        data[key] = paletteData;
+      }
+    });
+
+    return data;
+  }
 };
 
 // mutations
