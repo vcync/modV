@@ -3,6 +3,8 @@ modV is a modular audio visualisation environment written in JavaScript and runs
 
 All documentation so far is available in [this repo's Wiki](https://github.com/2xAA/modV/wiki). There's more to come!
 
+[![Flattr this](https://button.flattr.com/flattr-badge-large.png "Flattr this")](https://flattr.com/submit/auto?fid=xvwndw&url=https%3A%2F%2Fgithub.com%2F2xAA%2FmodV)
+
 ## Sample images
 [![](https://github.com/2xAA/modV/raw/master/docs/example-images/1.jpg)](https://github.com/2xAA/modV/raw/master/docs/example-images/1.png)
 [![](https://github.com/2xAA/modV/raw/master/docs/example-images/2.jpg)](https://github.com/2xAA/modV/raw/master/docs/example-images/2.png)
