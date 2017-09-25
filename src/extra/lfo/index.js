@@ -38,7 +38,7 @@ class LFOPlugin {
 
     store.subscribe((mutation) => {
       if(mutation.type === 'modVModules/removeActiveModule') {
-        store.commit('lfo/removeAssignments', mutation.payload.moduleName);
+        store.commit('lfo/removeAssignments', { moduleName: mutation.payload.moduleName });
       }
     });
   }
