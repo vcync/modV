@@ -78,7 +78,6 @@ window.modVVue = new Vue({
       'Pixelate',
       'Plasma',
       'MattiasCRT',
-      'FilmGrain',
       'ChromaticAbberation',
       'Stretch',
       'Wobble',
@@ -86,7 +85,9 @@ window.modVVue = new Vue({
       'Neon',
       'Fisheye',
       'MirrorEdge',
-      'EdgeDistort'/* ,
+      'EdgeDistort',
+      'Polygon',
+      'Concentrics'/* ,
       'SolidColor'*/
     ];
 
@@ -97,6 +98,7 @@ window.modVVue = new Vue({
     });
 
     const isfSamples = [
+      'film-grain.fs',
       'block-color.fs',
       'plasma.fs',
       'Random Shape.fs',
@@ -137,7 +139,12 @@ window.modVVue = new Vue({
       'Interlace.fs',
       'Convergence.fs',
       'Collage.fs',
-      'bokeh.fs'
+      'bokeh.fs',
+      'Pinch.fs',
+      'Slice.fs',
+      'digital-crystal-tunnel.fs',
+      'film-grain.fs',
+      'spherical-shader-tut.fs'
     ];
 
     isfSamples.forEach((fileName) => {
