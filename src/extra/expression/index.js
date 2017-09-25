@@ -20,7 +20,8 @@ class Expression {
 
     store.subscribe((mutation) => {
       if(mutation.type === 'modVModules/removeActiveModule') {
-        store.commit('expression/removeExpressions', mutation.payload.moduleName);
+        console.log(mutation.payload.moduleName);
+        store.commit('expression/removeExpressions', { moduleName: mutation.payload.moduleName });
       }
     });
   }
