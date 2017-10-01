@@ -44,9 +44,9 @@
       </div>
 
     </section>
-    <component v-for='pluginComponent in pluginComponents' :is='pluginComponent'></component>
     <canvas-preview></canvas-preview>
     <side-menu :menuState='menuOpen'></side-menu>
+    <component v-for='pluginComponent in pluginComponents' :is='pluginComponent'></component>
   </div>
 </template>
 

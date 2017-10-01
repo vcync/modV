@@ -9,7 +9,7 @@ function searchForSubMenus(menu) {
 
   menu.items.filter(item => !!item.submenu).forEach((item, idx) => {
     item.submenu.$id = `${menu.$id}-${idx}`;
-    item.isSubmenu = true;
+    item.submenu.isSubmenu = true;
     menus.push(item.submenu);
     submenus.push(item.submenu);
     menus = menus.concat(searchForSubMenus(item.submenu));
