@@ -54,6 +54,43 @@
         ) {
           this.popdownAll();
         }
+      },
+      reposition() {
+        const menuEl = this.$refs.menu;
+        this.$data.offsetWidth = menuEl.offsetWidth;
+        this.$data.offsetHeight = menuEl.offsetHeight;
+
+        let setRight = false;
+
+        let x = this.options.x;
+        let y = this.options.y;
+
+        const width = menuEl.clientWidth;
+        const height = menuEl.clientHeight;
+
+        if((x + width) > window.innerWidth) {
+          setRight = true;
+          if(this.isSubmenu) {
+            const node = this.parentMenu.node;
+            x = (node.offsetWidth + ((window.innerWidth - node.offsetLeft) - node.offsetWidth)) - 2;
+          } else {
+            x = 0;
+          }
+        }
+
+        if((y + height) > window.innerHeight) {
+          y = window.innerHeight - height;
+        }
+
+        if(!setRight) {
+          menuEl.style.left = `${x}px`;
+          menuEl.style.right = 'auto';
+        } else {
+          menuEl.style.right = `${x}px`;
+          menuEl.style.left = 'auto';
+        }
+
+        menuEl.style.top = `${y}px`;
       }
     },
     beforeMount() {
@@ -62,13 +99,12 @@
       }
     },
     mounted() {
-      const menuEl = this.$refs.menu;
-      this.$data.offsetWidth = menuEl.offsetWidth;
-      this.$data.offsetHeight = menuEl.offsetHeight;
-      menuEl.style.left = `${this.options.x}px`;
-      menuEl.style.top = `${this.options.y}px`;
+      this.reposition();
 
       window.addEventListener('click', this.checkIfClickedMenu);
+    },
+    updated() {
+      this.reposition();
     },
     beforeDestroy() {
       window.removeEventListener('click', this.checkIfClickedMenu);

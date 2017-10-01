@@ -67,7 +67,7 @@
       mouseover() {
         if(this.submenu) {
           let x = this.$refs.menuitem.offsetLeft;
-          const y = this.$refs.menuitem.clientHeight + this.parentPosition.y;
+          const y = this.$refs.menuitem.offsetTop + (this.parentPosition.y - 4);
 
           x = this.parentOffsetWidth + this.parentPosition.x;
 
