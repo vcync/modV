@@ -10,6 +10,9 @@
         @mousedown='mouseDown'
         @mouseup='mouseUp'
         @mousemove='mouseMove'
+        @touchstart='touchstart'
+        @touchmove='touchmove'
+        @touchend='touchend'
         @click='click'
       ></canvas>
       <br>
@@ -58,11 +61,13 @@
         return this.control.variable;
       },
       min() {
-        const min = isNaN(this.control.min) ? -1.0 : this.control.min;
+        let min = isNaN(this.control.min) ? -1.0 : this.control.min;
+        min = Array.isArray(this.control.min) ? this.control.min[0] : min;
         return min;
       },
       max() {
-        const max = isNaN(this.control.max) ? 1.0 : this.control.max;
+        let max = isNaN(this.control.max) ? 1.0 : this.control.max;
+        max = Array.isArray(this.control.max) ? this.control.max[0] : max;
         return max;
       },
       step() {
@@ -95,13 +100,40 @@
       mouseMove(e) {
         this.calculateValues(e);
       },
+      touchstart() {
+        this.mousePressed = true;
+      },
+      touchmove(e) {
+        this.calculateValues(e);
+      },
+      touchend() {
+        this.mousePressed = false;
+      },
       click(e) {
         this.calculateValues(e, true);
       },
       calculateValues(e, clicked = false) {
         const rect = this.$refs.pad.getBoundingClientRect();
-        const x = e.clientX - Math.round(rect.left);
-        const y = e.clientY - Math.round(rect.top);
+
+        let clientX;
+
+        if('clientX' in e) {
+          clientX = e.clientX;
+        } else {
+          e.preventDefault();
+          clientX = e.targetTouches[0].clientX;
+        }
+
+        let clientY;
+
+        if('clientY' in e) {
+          clientY = e.clientY;
+        } else {
+          clientY = e.targetTouches[0].clientY;
+        }
+
+        const x = clientX - Math.round(rect.left);
+        const y = clientY - Math.round(rect.top);
 
         if(this.mousePressed || clicked) {
           this.value = this.mapValues(x, y);

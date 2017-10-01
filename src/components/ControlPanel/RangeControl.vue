@@ -16,7 +16,10 @@
       :id='inputId'
       ref='canvas'
       @mousedown='mouseDown'
-
+      @touchstart='touchstart'
+      @touchmove='touchmove'
+      @touchend='touchend'
+      @mousemove='mouseMove'
       @click='click'
     ></canvas>
     <!-- @mousemove='mouseMove' -->
@@ -99,6 +102,9 @@
       },
       defaultValue() {
         return this.control.default;
+      },
+      strict() {
+        return this.control.strict || false;
       }
     },
     methods: {
@@ -106,11 +112,11 @@
         'setActiveModuleControlValue'
       ]),
       numberInput(e) {
-        this.$data.valueIn = e.target.value;
+        this.valueIn = this.formatValue(e.target.value);
       },
       mapValue(x) {
         const mappedX = Math.map(x, 0, 170, this.min, this.max);
-        return +mappedX.toFixed(2);
+        return this.formatValue(+mappedX.toFixed(2));
       },
       unmapValue(x) {
         const unmappedX = Math.map(x, this.min, this.max, 0, 170);
@@ -126,12 +132,30 @@
         if(!this.mousePressed) return;
         this.calculateValues(e);
       },
+      touchstart() {
+        this.mousePressed = true;
+      },
+      touchmove(e) {
+        this.calculateValues(e);
+      },
+      touchend() {
+        this.mousePressed = false;
+      },
       click(e) {
         this.calculateValues(e, true);
       },
       calculateValues(e, clicked = false) {
         const rect = this.$refs.canvas.getBoundingClientRect();
-        const x = e.clientX - Math.round(rect.left);
+        let clientX;
+
+        if('clientX' in e) {
+          clientX = e.clientX;
+        } else {
+          e.preventDefault();
+          clientX = e.targetTouches[0].clientX;
+        }
+
+        const x = clientX - Math.round(rect.left);
 
         if(this.mousePressed || clicked) {
           this.valueIn = this.mapValue(x);
@@ -139,6 +163,25 @@
           this.canvasX = x;
           this.currentX = this.value;
         }
+      },
+      formatValue(valueIn) {
+        let value = valueIn;
+
+        if(this.strict) {
+          if(value < this.min) {
+            value = this.min;
+          }
+
+          if(value > this.max) {
+            value = this.max;
+          }
+
+          if(this.varType === 'int') {
+            value = parseInt(value, 10);
+          }
+        }
+
+        return value;
       },
       draw() {
         const x = this.canvasX;
@@ -185,6 +228,7 @@
         let val;
         if(this.varType === 'int') val = parseInt(value, 10);
         else if(this.varType === 'float') val = parseFloat(value, 10);
+
         this.setActiveModuleControlValue({
           moduleName: this.moduleName,
           variable: this.variable,
