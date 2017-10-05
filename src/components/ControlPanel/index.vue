@@ -1,7 +1,7 @@
 <template>
   <div class='pure-u-1-1 control-panel' v-if='focusedModule'>
     <div class='title'><h1>{{ name }}</h1></div>
-    <div class='pure-form pure-form-aligned'>
+    <div class='pure-form pure-form-aligned' v-simplebar>
       <component
         class='pure-control-group'
         v-for='control in controls'

@@ -188,7 +188,7 @@ class Ball extends Module2D {
           this[key] = value;
           break;
 
-        case 'balls':
+        case 'balls': {
           const balls = value;
           this.balls = [];
           for(let i = 0; i < balls.length; i += 1) {
@@ -206,6 +206,7 @@ class Ball extends Module2D {
             this.balls.push(newBall);
           }
           break;
+        }
       }
     });
   }
