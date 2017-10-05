@@ -26,18 +26,10 @@
             </div>
           </div>
 
-          <div class="pure-u-1-3 pure-g main-control-area">
-            <tabs :titles="['Layer']">
-              <div slot="tab-1" class="pure-u-1-1 layer-control-panel-wrapper control-panel-wrapper pure-g">
-                <layer-controls></layer-controls>
-              </div>
-              <!-- <div slot="tab-2" class="pure-u-1-1 global-control-panel-wrapper control-panel-wrapper pure-g">
-                <global-controls></global-controls>
-              </div>
-              <div slot="tab-3" class="pure-u-1-1 preset-control-panel-wrapper control-panel-wrapper pure-g">
-
-              </div> -->
-            </tabs>
+          <div class="pure-u-1-3 pure-g main-control-area" data-simplebar-direction="vertical">
+            <div class="control-panel-wrapper pure-g">
+              <layer-controls></layer-controls>
+            </div>
           </div>
         </div>
         <resize-handle-top></resize-handle-top>

@@ -137,7 +137,6 @@ class ModV extends EventEmitter2 {
 
   loop(δ) {
     stats.begin();
-    this.mainRaf = requestAnimationFrame(this.loop.bind(this));
     let features = [];
     if(this.audioFeatures.length > 0) features = this.meyda.get(this.audioFeatures);
     if(features) {
@@ -168,9 +167,12 @@ class ModV extends EventEmitter2 {
     this.kick = this.beatDetektorKick.isKick();
 
 
-    draw(δ);
-    stats.end();
-    this.emit('tick', δ);
+    draw(δ).then(() => {
+      this.mainRaf = requestAnimationFrame(this.loop.bind(this));
+      stats.end();
+    }).then(() => {
+      this.emit('tick', δ);
+    });
   }
 
   use(plugin) {
