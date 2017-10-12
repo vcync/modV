@@ -215,7 +215,7 @@
         opacity: 0.7;
         pointer-events: none;
         content: 'Drag Modules Here';
-        letter-spacing: -0.008em;
+        letter-spacing: normal;
       }
     }
 
@@ -237,7 +237,7 @@
     }
 
     &.active {
-      background-color: hsla(199,92%,92%,1);
+      background-color: hsla(39, 100%, 50%, 1);
       border-bottom: 1px solid rgba(0, 0, 0, 0.5);
 
       .control-bar {
@@ -248,8 +248,8 @@
         border-top: 1px solid rgba(0, 0, 0, 0.5);
 
         &:before {
-          color: hsla(199,92%,86%,1);
-          text-shadow: 1px 1px hsla(208,100%,100%,1), -1px -1px hsla(208,100%,73%,1);
+          color: orange;
+          text-shadow: 1px 1px #ffe3a5, -1px -1px #ff8675;
         }
       }
     }

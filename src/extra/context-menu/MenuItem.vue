@@ -9,7 +9,7 @@
 </template>
 
 <script>
-  import { mapActions, mapMutations } from 'vuex';
+  import { mapGetters, mapActions, mapMutations } from 'vuex';
 
   export default {
     name: 'contextMenuItem',
@@ -27,6 +27,9 @@
       };
     },
     computed: {
+      ...mapGetters('contextMenu', [
+        'realActiveMenus'
+      ]),
       type() {
         return this.options.type;
       },
@@ -39,6 +42,10 @@
       submenu() {
         return this.options.submenu;
       },
+      submenuActive() {
+        if(!this.submenu) return false;
+        return this.realActiveMenus.indexOf(this.submenu.$id) > 0;
+      },
       checked() {
         if(this.type !== 'checkbox') return false;
         return this.options.checked;
@@ -50,6 +57,10 @@
 
         if(this.type === 'checkbox') {
           classes.checked = this.checked;
+        }
+
+        if(this.submenuActive) {
+          classes['submenu-active'] = true;
         }
 
         return classes;
@@ -110,5 +121,4 @@
 </script>
 
 <style scoped lang='scss'>
-
 </style>

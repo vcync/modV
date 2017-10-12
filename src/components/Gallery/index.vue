@@ -192,7 +192,7 @@
   }
 
   .gallery {
-    background-color: #383838;
+    background-color: #303030;
     box-sizing: border-box;
     min-width: 600px;
     overflow: hidden;

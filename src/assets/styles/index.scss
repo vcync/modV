@@ -1,7 +1,4 @@
-@font-face {
-  font-family: 'SourceHanSans';
-  src: url('../SourceHanSans-Regular.otf');
-}
+@import '../fonts/rubik.scss';
 
 html, body {
   height: 100%;
@@ -14,10 +11,15 @@ body {
   margin: 0;
 }
 
+.pure-g [class *="pure-u"] {
+  font-family: 'Rubik', sans-serif;
+  font-weight: 300;
+}
+
 .hsy-dropdown {
   background-color: #fff;
   border-radius: 3px;
-  height: 20px !important;
+  // height: 20px !important;
 
   & > .selected {
     background-color: rgba(221, 221, 221, 0.32);
@@ -54,11 +56,6 @@ body {
   height: 100%;
   vertical-align: middle;
   display: inline-block;
-}
-
-h1,
-.title {
-  letter-spacing: -2px;
 }
 
 /* cursor classes */

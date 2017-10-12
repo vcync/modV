@@ -222,9 +222,8 @@ function draw(δ) {
         previewValues.width,
         previewValues.height
       );
+      resolve();
     });
-
-    resolve();
   });
 }
 

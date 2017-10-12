@@ -1,5 +1,5 @@
 import { Menu } from 'nwjs-menu-browser';
-import '@/../node_modules/nwjs-menu-browser/nwjs-menu-browser.css';
+// import '@/../node_modules/nwjs-menu-browser/nwjs-menu-browser.css';
 import contextMenuStore from './store';
 import ContextMenuHandler from './MenuHandler';
 

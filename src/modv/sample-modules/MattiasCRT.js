@@ -22,7 +22,7 @@ class MattiasCRT extends ModuleShader {
           centerY: {
             type: 'f',
             value: 0.5
-          }*/
+          } */
         } // Three.JS uniforms
       },
       fragmentShader: crtFrag

@@ -191,7 +191,7 @@
         context.fillStyle = '#393939';
         context.fillRect(0, 0, canvas.width, canvas.height);
 
-        context.fillStyle = '#ef8d00';
+        context.fillStyle = '#ffa500';
         context.fillRect(0, 0, x, canvas.height);
       }
     },

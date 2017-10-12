@@ -1,5 +1,6 @@
 import Vue from 'vue';
 import EventEmitter2 from 'eventemitter2';
+
 import BeatDetektor from '@/extra/beatdetektor';
 import store from '@/../store/';
 import stats from '@/extra/stats';
@@ -88,10 +89,6 @@ class ModV extends EventEmitter2 {
 
     this.previewCanvas = document.getElementById('preview-canvas');
     this.previewContext = this.previewCanvas.getContext('2d');
-
-    window.addEventListener('resize', () => {
-      store.dispatch('size/resizePreviewCanvas');
-    });
 
     this.videoStream = document.createElement('video');
     this.videoStream.autoplay = true;

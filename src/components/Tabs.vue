@@ -67,7 +67,6 @@
   .tab-menu {
     border-bottom: 1px solid rgba(0,0,0,0.1);
     box-sizing: border-box;
-    letter-spacing: -.31em;
 
     .tab {
       display: inline-block;
@@ -75,7 +74,6 @@
       background-color: #ce8602;
       box-sizing: border-box;
       padding: 6px;
-      letter-spacing: -1px;
       cursor: pointer;
 
       &.selected {

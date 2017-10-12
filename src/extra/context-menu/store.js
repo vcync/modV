@@ -14,6 +14,7 @@ const getters = {
   menus: state => state.menus,
   menu: state => id => state.menus[id],
   activeMenus: state => state.activeMenus.map(id => state.menus[id]),
+  realActiveMenus: state => state.activeMenus,
   hooks: state => state.hooks
 };
 

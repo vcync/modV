@@ -133,7 +133,7 @@ class Module {
    * @param  {any} value                The value to set
    * @param  {ModV} modV                Reference to an instance of {@link ModV}
    */
-  updateVariable(variable, value/* , modV*/) {
+  updateVariable(variable, value/* , modV */) {
     this[variable] = value;
 
     // modV.remote.update('moduleValueChange', {

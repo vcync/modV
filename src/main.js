@@ -88,7 +88,7 @@ window.modVVue = new Vue({
       'EdgeDistort',
       'Polygon',
       'Concentrics'/* ,
-      'SolidColor'*/
+      'SolidColor' */
     ];
 
     modules.forEach((fileName) => {

@@ -102,7 +102,7 @@
   }
 
   #app {
-    background-color: #383838;
+    background-color: #303030;
     width: 100vw;
     height: 100vh;
     position: relative;

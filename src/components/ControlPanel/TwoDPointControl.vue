@@ -219,7 +219,7 @@
           value: this.value
         });
         this.canvasCoords = this.unmapValues(this.value[0], this.value[1]);
-      },*/
+      }, */
       value() {
         this.currentX = this.value[0];
         this.currentY = this.value[1];

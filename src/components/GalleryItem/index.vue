@@ -179,7 +179,7 @@
         vertical-align: middle;
         transition: all 300ms;
         font-size: 18px;
-        letter-spacing: -1px;
+        word-break: break-all;
       }
     }
 
@@ -258,7 +258,7 @@
         top: 8px;
         left: 8px;
         font-size: 25.6px;
-        letter-spacing: -2px;
+        word-break: break-all;
       }
 
       .title-wrapper {

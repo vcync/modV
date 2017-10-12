@@ -135,7 +135,7 @@ class Layer extends EventEmitter2 {
       name,
       order,
       layer: Module.getLayer()
-    });*/
+    }); */
 
     this.emit('moduleAdd',
       moduleName,
