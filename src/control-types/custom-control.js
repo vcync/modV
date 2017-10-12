@@ -73,7 +73,7 @@ module.exports = function(modV) {
 			return this.settings.variable;
 		}
 
-		makeNode(ModuleRef, modV, isPreset, internalPresetValue) {
+		makeNode(modV, ModuleRef, isPreset, internalPresetValue) {
 			let id;
 			let Module;
 			let variable = this.variable;
