@@ -14,7 +14,7 @@ module.exports = function(modV) {
 			super(settings);
 		}
 
-		makeNode(ModuleRef, modV, isPreset, internalPresetValue) {
+		makeNode(modV, ModuleRef, isPreset, internalPresetValue) {
 			let id;
 			let Module;
 			let variable = this.variable;
