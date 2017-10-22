@@ -17,7 +17,7 @@ const getters = {
 // actions
 const actions = {
   addLayer({ commit, state }) {
-    return new Promise((resolve, reject) => {
+    return new Promise((resolve) => {
       const layerName = `Layer ${state.layers.length + 1}`;
       const layer = new Layer();
       layer.setName(layerName);
@@ -34,7 +34,7 @@ const actions = {
       commit('setLayerFocus', {
         LayerIndex: state.layers.length - 1
       });
-      
+
       resolve({
         Layer: layer,
         index: state.layers.length - 1
@@ -65,12 +65,13 @@ const actions = {
     else commit('collapse', { layerIndex });
   },
   addModuleToLayer({ commit, state }, { module, layerIndex, position }) {
-    if(typeof position !== 'number') {
-      if(position < 0) {
-        position = 0;
+    let positionShadow = position;
+    if(typeof positionShadow !== 'number') {
+      if(positionShadow < 0) {
+        positionShadow = 0;
       }
     }
-    commit('addModuleToLayer', { moduleName: module.info.name, layerIndex, position });
+    commit('addModuleToLayer', { moduleName: module.info.name, layerIndex, position: positionShadow });
     store.commit(
       'modVModules/setModuleFocus',
       { activeModuleName: module.info.name },
@@ -131,7 +132,7 @@ const mutations = {
     if(Layer.locked) return;
 
     if (!Layer) {
-      throw `Cannot find Layer with index ${layerIndex}`;
+      throw `Cannot find Layer with index ${layerIndex}`; //eslint-disable-line
     } else {
       Layer.addModule(moduleName, position);
     }

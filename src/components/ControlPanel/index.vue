@@ -1,15 +1,17 @@
 <template>
-  <div class='pure-u-1-1 control-panel' v-if='focusedModule'>
-    <div class='title'><h1>{{ name }}</h1></div>
-    <div class='pure-form pure-form-aligned' v-simplebar>
-      <component
-        class='pure-control-group'
-        v-for='control in controls'
-        :is='control.type'
-        :module='focusedModule'
-        :control='control'
-        :key='control'
-      ></component>
+  <div class="column control-panel" v-if="focusedModule">
+    <div class="title"><h1>{{ name }}</h1></div>
+    <div class="form-wrap" v-bar="{ useScrollbarPseudo: true }">
+      <div class="pure-form pure-form-aligned">
+        <component
+          class="pure-control-group"
+          v-for="control in controls"
+          :is="control.type"
+          :module="focusedModule"
+          :control="control"
+          :key="control.variable"
+        ></component>
+      </div>
     </div>
   </div>
 </template>
@@ -87,10 +89,25 @@
     letter-spacing: normal;
   }
 
-  .control-panel label {
-    font-size: 12px !important;
-    letter-spacing: normal;
-    text-align: left !important;
+  .control-panel {
+    label {
+      font-size: 12px !important;
+      letter-spacing: normal;
+      text-align: left !important;
+      display: inline-block;
+      min-width: 70px;
+      vertical-align: middle;
+    }
+
+    canvas {
+      display: inline-block;
+      vertical-align: middle;
+    }
+
+    div.control {
+      display: inline-block;
+      vertical-align: middle;
+    }
   }
 
   .control-panel .pure-control-group {
@@ -112,5 +129,9 @@
     &:nth-child(even) {
       background-color: rgba(238, 238, 238, 0.22);
     }
+  }
+
+  .form-wrap {
+    height: 100%;
   }
 </style>

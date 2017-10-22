@@ -16,39 +16,38 @@ const getters = {
   width: state => state.width,
   height: state => state.height,
   area: state => state.width * state.height,
-  dimensions: (state) => {
-    return { width: state.width, height: state.height };
-  },
-  previewValues: (state) => {
-    return {
-      width: state.previewWidth,
-      height: state.previewHeight,
-      x: state.previewX,
-      y: state.previewY
-    };
-  }
+  dimensions: state => ({ width: state.width, height: state.height }),
+  previewValues: state => ({
+    width: state.previewWidth,
+    height: state.previewHeight,
+    x: state.previewX,
+    y: state.previewY
+  })
 };
 
 // actions
 const actions = {
-  updateSize({ commit, state }) {
+  updateSize({ state }) {
     store.dispatch('size/setDimensions', {
       width: state.width,
       height: state.height
     });
   },
   setDimensions({ commit, state }, { width, height }) {
+    let widthShadow = width;
+    let heightShadow = height;
+
     const largestWindowReference = store.getters['windows/largestWindowReference']();
-    if(width >= largestWindowReference.innerWidth && height >= largestWindowReference.innerHeight) {
+    if(widthShadow >= largestWindowReference.innerWidth && heightShadow >= largestWindowReference.innerHeight) {
       if(store.getters['user/constrainToOneOne']) {
-        if(width > height) {
-          width = height;
+        if(widthShadow > heightShadow) {
+          widthShadow = heightShadow;
         } else {
-          height = width;
+          heightShadow = widthShadow;
         }
       }
 
-      commit('setDimensions', { width, height });
+      commit('setDimensions', { width: widthShadow, height: heightShadow });
 
       let dpr = window.devicePixelRatio || 1;
       if(!store.getters['user/useRetina']) dpr = 1;

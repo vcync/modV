@@ -1,17 +1,25 @@
 <template>
-  <div class="pure-u-6-24 gallery-item" @mouseout='mouseout' @mouseover='mouseover' @dblclick='doubleclick' draggable @dragstart='dragstart' :data-module-name='name'>
-    <canvas class="preview" ref='canvas'></canvas>
+  <div
+    class="pure-u-6-24 gallery-item"
+    @mouseout="mouseout"
+    @mouseover="mouseover"
+    @dblclick="doubleclick"
+    draggable
+    @dragstart="dragstart"
+    :data-module-name="name"
+  >
+    <canvas class="preview" ref="canvas"></canvas>
     <div class="title-wrapper">
-      <span class="title">{{ name }}</span>
+      <span class="module-title">{{ name }}</span>
       <span class="ibvf"></span>
     </div>
-    <i class='fa fa-info-circle fa-lg' aria-hidden='true'></i>
-    <div class='information'>
-      <div class='module'>Module: {{ name }}</div>
-      <div v-if='credit' class='author'>Credit: {{ credit }}</div>
-      <div v-if='version' class='version'>Version: {{ version }}</div>
-      <div v-if='isIsf' class='isf-version'>ISF Version: {{ isfVersion }}</div>
-      <div v-if='description' class='desciption'>{{ description }}</div>
+    <i class="fa fa-info-circle fa-lg" aria-hidden="true"></i>
+    <div class="information">
+      <div class="module">Module: {{ name }}</div>
+      <div v-if="credit" class="author">Credit: {{ credit }}</div>
+      <div v-if="version" class="version">Version: {{ version }}</div>
+      <div v-if="isIsf" class="isf-version">ISF Version: {{ isfVersion }}</div>
+      <div v-if="description" class="desciption">{{ description }}</div>
     </div>
   </div>
 </template>
@@ -174,7 +182,7 @@
       align-items: center;
       padding: 2pt;
 
-      .title {
+      .module-title {
         color: #fff;
         vertical-align: middle;
         transition: all 300ms;
@@ -222,7 +230,7 @@
         background-color: rgba(0,0,0,0);
       }
 
-      .title {
+      .module-title {
         color: rgba(255,255,255,0);
       }
 
@@ -252,8 +260,9 @@
 
     &.sortable-ghost {
       padding: 0;
+      height: 135px;
 
-      .title {
+      .module-title {
         position: absolute;
         top: 8px;
         left: 8px;

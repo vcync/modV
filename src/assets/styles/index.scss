@@ -1,4 +1,13 @@
+@import "~bulma/sass/utilities/_all";
 @import '../fonts/rubik.scss';
+
+$primary: #ffa600;
+$primary-invert: findColorInvert($primary);
+$family-sans-serif: 'Rubik', sans-serif;
+$family-primary: $family-sans-serif; // Use the new sans-serif family
+
+@import "~bulma";
+@import "~buefy/src/scss/buefy";
 
 html, body {
   height: 100%;
@@ -9,11 +18,6 @@ html, body {
 body {
   position: relative;
   margin: 0;
-}
-
-.pure-g [class *="pure-u"] {
-  font-family: 'Rubik', sans-serif;
-  font-weight: 300;
 }
 
 .hsy-dropdown {
@@ -65,78 +69,6 @@ body {
 
 .ew-resize {
   cursor: ew-resize;
-}
-
-section {
-  height: 100%;
-  position: fixed;
-  top: 0;
-  bottom: 0;
-  right: 0;
-  left: 0;
-}
-
-section > .pure-g {
-  height: 100%;
-}
-
-section .top {
-  height: 75%;
-  max-height: calc(100% - 170px);
-  min-height: 170px;
-}
-
-section .top > .pure-g {
-  height: 100%;
-}
-
-section .top .active-list {
-  min-height: 100%;
-  box-sizing: border-box;
-  position: relative;
-  background-color: hsla(70,8%,4%,1);
-}
-
-.active-list .gallery-item.sortable-ghost {
-  height: 115px;
-  width: 100%;
-  overflow: hidden;
-}
-.active-list .gallery-item.sortable-ghost canvas {
-  height: auto;
-  position: relative;
-  top: -10%;
-}
-section .top .active-list-wrapper:before {
-  position: absolute;
-  top: 50%;
-  width: 100%;
-  height: auto;
-  text-align: center;
-  font-size: 2em;
-  color: rgba(210, 210, 210, 0.8);
-  text-shadow: 1px 4px 6px #fff, 0 0 0 #000, 1px 4px 6px #fff;
-  opacity: 0.7;
-  pointer-events: none;
-  content: 'Drag Modules Here';
-}
-
-section .top .active-list-wrapper {
-  min-width: 306px;
-}
-
-section .top .active-list-wrapper,
-.simplebar-content {
-  height: 100%;
-}
-
-.top > .pure-g {
-  display: flex;
-  flex-direction: row;
-  flex-wrap: nowrap;
-  justify-content: flex-start;
-  align-content: stretch;
-  width: 100%;
 }
 
 .gallery-wrapper {

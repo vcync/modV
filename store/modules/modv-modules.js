@@ -1,9 +1,9 @@
 import Vue from 'vue';
-import Ajv from 'ajv';
+import Ajv from 'ajv'; //eslint-disable-line
 import { modV } from '@/modv';
 import store from '../index';
 
-const makeSchema = function(properties) {
+const makeSchema = function makeSchema(properties) {
   return {
     $schema: 'http://json-schema.org/draft-04/schema#',
     type: 'object',
@@ -56,14 +56,14 @@ const getters = {
     return {
       raw: state.active[moduleName][controlVariable],
       processed
-    }
+    };
   }
 };
 
 // actions
 const actions = {
   createActiveModule({ commit, state }, { moduleName, appendToName, skipInit, enabled }) {
-    return new Promise((resolve, reject) => {
+    return new Promise((resolve) => {
       const module = new state.registry[moduleName]();
       let newModuleName = generateName(module.info.name);
       module.info.name = newModuleName;
@@ -197,10 +197,10 @@ const actions = {
       }
 
       const schema = makeSchema(JSON.parse(JSON.stringify(Module.info.saveData)));
-      let validate = ajv.compile(schema);
+      const validate = ajv.compile(schema);
 
-      let copiedModule = JSON.parse(JSON.stringify(Module));
-      let validated = validate(copiedModule);
+      const copiedModule = JSON.parse(JSON.stringify(Module));
+      const validated = validate(copiedModule);
       if(!validated) {
         console.error(
           `generatePreset: Module ${Module.info.name} failed saveData validation, skipping`,

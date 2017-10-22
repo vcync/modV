@@ -5,72 +5,73 @@
       class='search-bar-wrapper'
       @menuIconClicked='menuIconClicked'
     ></search-bar>
-    <div class='gallery-items-wrapper' data-simplebar-direction="vertical">
+      <div class='gallery-items-wrapper' v-bar="{ useScrollbarPseudo: true }">
+        <div>
+          <div class='pure-u-1-1 title' :class="{ hidden: phrase.length < 1 }">
+            <h2>All Modules</h2>
+          </div>
+          <draggable
+            class='gallery-items'
+            :class="{ hidden: phrase.length < 1 }"
+            :options="{ group: { name: 'modules',  pull: 'clone', put: false }, sort: false }"
+          >
+            <gallery-item
+              v-for="(module, key) in modules"
+              :ModuleIn='module'
+              :moduleName='key'
+              :key='key'
+              :class="{ hidden: !search(key, phrase) }"
+            ></gallery-item>
+          </draggable>
 
-      <div class='pure-u-1-1 title' :class="{ hidden: phrase.length < 1 }">
-        <h2>All Modules</h2>
-      </div>
-      <draggable
-        class='gallery-items'
-        :class="{ hidden: phrase.length < 1 }"
-        :options="{ group: { name: 'modules',  pull: 'clone', put: false }, sort: false }"
-      >
-        <gallery-item
-          v-for="(module, key) in modules"
-          :ModuleIn='module'
-          :moduleName='key'
-          :key='key'
-          :class="{ hidden: !search(key, phrase) }"
-        ></gallery-item>
-      </draggable>
+          <div class='pure-u-1-1 title' :class="{ hidden: phrase.length > 0 }">
+            <h2>Module 2D</h2>
+          </div>
+          <draggable
+            class='gallery-items'
+            :class="{ hidden: phrase.length > 0 }"
+            :options="{ group: { name: 'modules',  pull: 'clone', put: false }, sort: false }"
+          >
+            <gallery-item
+              v-for="(module, key) in module2d"
+              :ModuleIn='module'
+              :moduleName='key'
+              :key='key'
+            ></gallery-item>
+          </draggable>
 
-      <div class='pure-u-1-1 title' :class="{ hidden: phrase.length > 0 }">
-        <h2>Module 2D</h2>
-      </div>
-      <draggable
-        class='gallery-items'
-        :class="{ hidden: phrase.length > 0 }"
-        :options="{ group: { name: 'modules',  pull: 'clone', put: false }, sort: false }"
-      >
-        <gallery-item
-          v-for="(module, key) in module2d"
-          :ModuleIn='module'
-          :moduleName='key'
-          :key='key'
-        ></gallery-item>
-      </draggable>
+          <div class='pure-u-1-1 title' :class="{ hidden: phrase.length > 0 }">
+            <h2>Module Shader</h2>
+          </div>
+          <draggable
+            class='gallery-items'
+            :class="{ hidden: phrase.length > 0 }"
+            :options="{ group: { name: 'modules',  pull: 'clone', put: false }, sort: false }"
+          >
+            <gallery-item
+              v-for='(module, key) in moduleShader'
+              :ModuleIn='module'
+              :moduleName='key'
+              :key='key'
+            ></gallery-item>
+          </draggable>
 
-      <div class='pure-u-1-1 title' :class="{ hidden: phrase.length > 0 }">
-        <h2>Module Shader</h2>
-      </div>
-      <draggable
-        class='gallery-items'
-        :class="{ hidden: phrase.length > 0 }"
-        :options="{ group: { name: 'modules',  pull: 'clone', put: false }, sort: false }"
-      >
-        <gallery-item
-          v-for='(module, key) in moduleShader'
-          :ModuleIn='module'
-          :moduleName='key'
-          :key='key'
-        ></gallery-item>
-      </draggable>
-
-      <div class='pure-u-1-1 title' :class="{ hidden: phrase.length > 0 }">
-        <h2>Module ISF</h2>
-      </div>
-      <draggable
-        class='gallery-items'
-        :class="{ hidden: phrase.length > 0 }"
-        :options="{ group: { name: 'modules',  pull: 'clone', put: false }, sort: false }"
-      >
-        <gallery-item
-          v-for='(module, key) in moduleISF'
-          :ModuleIn='module'
-          :moduleName='key'
-          :key='key'
-        ></gallery-item>
-      </draggable>
+          <div class='pure-u-1-1 title' :class="{ hidden: phrase.length > 0 }">
+            <h2>Module ISF</h2>
+          </div>
+          <draggable
+            class='gallery-items'
+            :class="{ hidden: phrase.length > 0 }"
+            :options="{ group: { name: 'modules',  pull: 'clone', put: false }, sort: false }"
+          >
+            <gallery-item
+              v-for='(module, key) in moduleISF'
+              :ModuleIn='module'
+              :moduleName='key'
+              :key='key'
+            ></gallery-item>
+          </draggable>
+        </div>
     </div>
   </div>
 </template>
@@ -173,12 +174,9 @@
 </script>
 
 <style scoped lang='scss'>
-  .hidden {
-    display: none;
-  }
-
   .gallery-items-wrapper {
     flex: 1 1 auto;
+    height: 100%;
   }
 
   .gallery-items {
@@ -217,5 +215,9 @@
     cursor: default;
     font-weight: normal;
     margin: 0.82em 5pt 0.2em 5pt;
+  }
+
+  .hidden {
+    display: none;
   }
 </style>

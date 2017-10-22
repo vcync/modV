@@ -15,7 +15,7 @@ const getters = {
 
 // actions
 const actions = {
-  async savePresetToProfile({ commit }, { profileName, presetName }) {
+  async savePresetToProfile({ commit }, { presetName }) {
     const preset = {};
 
     const datetime = Date.now();
@@ -32,7 +32,7 @@ const actions = {
       datetime,
       modvVersion: packageData.version,
       author: store.getters['user/name']
-    }
+    };
 
     return preset;
   },
@@ -42,7 +42,6 @@ const actions = {
   },
   loadPreset({ commit }, { presetData }) {
     store.dispatch('layers/removeAllLayers').then(() => {
-
       presetData.layers.forEach((Layer) => {
         store.dispatch('layers/addLayer').then(({ index }) => {
           const layerIndex = index;
@@ -88,7 +87,7 @@ const actions = {
 
               store.dispatch('layers/addModuleToLayer', {
                 module,
-                layerIndex: layerIndex,
+                layerIndex,
                 position: idx
               });
             });

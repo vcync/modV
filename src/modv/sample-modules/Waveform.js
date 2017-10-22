@@ -20,7 +20,8 @@ class Waveform extends Module2D {
       varType: 'int',
       min: 1,
       max: 30,
-      default: 1
+      default: 1,
+      strict: true
     });
 
     this.add({

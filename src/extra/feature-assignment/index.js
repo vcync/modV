@@ -12,7 +12,6 @@ class FeatureAssignment {
     if(!store) throw new Error('No Vuex store detected');
     this.store = store;
     this.vue = Vue;
-    // store.registerModule('midiAssignment', midiAssignmentStore);
 
     store.subscribe((mutation) => {
       if(mutation.type === 'modVModules/removeActiveModule') {
@@ -46,10 +45,40 @@ class FeatureAssignment {
       });
     }
 
+    function clickRemoveAssignment() {
+      store.commit('meyda/removeAssignments', { moduleName });
+    }
+
+    const assignments = store.getters['meyda/assignment'](moduleName, controlVariable);
+    const assignedFeatures = [];
+
+    if(assignments) {
+      assignments
+        .map(assignment => assignment.feature)
+        .forEach(feature => assignedFeatures.push(feature));
+
+      MeydaFeaturesSubmenu.append(new MenuItem({
+        label: 'Remove Feature Assignment',
+        type: 'normal',
+        click: clickRemoveAssignment
+      }));
+
+      MeydaFeaturesSubmenu.append(new MenuItem({
+        type: 'separator'
+      }));
+    }
+
     Object.keys(meyda.featureExtractors).forEach((feature) => {
+      let shouldBeChecked = false;
+
+      if(assignments) {
+        shouldBeChecked = assignedFeatures.indexOf(feature) > -1;
+      }
+
       MeydaFeaturesSubmenu.append(new MenuItem({
         label: feature,
         type: 'checkbox',
+        checked: shouldBeChecked,
         click: clickFeature
       }));
     });

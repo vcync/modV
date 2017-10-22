@@ -8,7 +8,14 @@ const state = {
 // getters
 const getters = {
   features: state => state.features,
-  controlAssignments: state => state.controlAssignments
+  controlAssignments: state => state.controlAssignments,
+  assignment: state => (moduleName) => {
+    const assignmentsToModule = state.controlAssignments
+      .filter(assignment => assignment.moduleName === moduleName);
+
+    if(assignmentsToModule.length === 0) return false;
+    return assignmentsToModule;
+  }
 };
 
 // actions

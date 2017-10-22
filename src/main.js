@@ -5,6 +5,8 @@ import Dropdown from 'hsy-vue-dropdown';
 import Shortkey from 'vue-shortkey';
 import vmodal from 'vue-js-modal';
 import VueThrottleEvent from 'vue-throttle-event';
+import Buefy from 'buefy';
+import Vuebar from 'vuebar';
 
 import stats from '@/extra/stats';
 import { ModuleISF, modV } from './modv';
@@ -32,6 +34,8 @@ stats.dom.style.left = null;
 stats.dom.style.right = 0;
 stats.dom.classList.add('hidden');
 
+Vue.use(Vuebar);
+Vue.use(Buefy);
 Vue.use(VueThrottleEvent);
 Vue.use(Dropdown);
 Vue.use(Shortkey);

@@ -1,8 +1,8 @@
 <template>
   <li class="menu-item" :class="classes" ref="menuitem" @mouseover='mouseover' @click='clicked'>
     <div class="checkmark"></div>
-    <div class="label">
-      <span class="label-text">{{ label }}</span>
+    <div class="context-menu-label">
+      <span class="context-menu-label-text">{{ label }}</span>
     </div>
     <div class="modifiers">{{ modifiers }}</div>
   </li>

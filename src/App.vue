@@ -2,15 +2,15 @@
   <div id="app">
     <section>
       <div class="top">
-        <div class="pure-g">
-          <div class="active-list-wrapper"> <!-- pure-u-1-5 -->
-            <div data-simplebar-direction="vertical">
+        <div class="columns is-gapless">
+          <div class="column is-3 active-list-wrapper"> <!-- 1-5 -->
+            <div v-bar="{ useScrollbarPseudo: true }">
               <list></list>
             </div>
 
             <layer-menu></layer-menu>
           </div>
-          <div class="gallery-wrapper"> <!-- pure-u-4-5 -->
+          <div class="column gallery-wrapper"> <!-- 4-5 -->
             <gallery @menuIconClicked='menuIconClicked'></gallery>
             <resize-handle-left></resize-handle-left>
           </div>
@@ -18,16 +18,16 @@
       </div>
 
       <div class="bottom">
-        <div class="pure-g">
+        <div class="columns is-gapless">
 
-          <div class="pure-u-1-3" data-simplebar-direction="vertical">
-            <div class="control-panel-wrapper pure-g">
+          <div class="column is-3">
+            <div class="control-panel-wrapper columns is-gapless">
               <control-panel></control-panel>
             </div>
           </div>
 
-          <div class="pure-u-1-3 pure-g main-control-area" data-simplebar-direction="vertical">
-            <div class="control-panel-wrapper pure-g">
+          <div class="column is-3 main-control-area">
+            <div class="control-panel-wrapper columns is-gapless">
               <layer-controls></layer-controls>
             </div>
           </div>
@@ -38,7 +38,11 @@
     </section>
     <canvas-preview></canvas-preview>
     <side-menu :menuState='menuOpen'></side-menu>
-    <component v-for='pluginComponent in pluginComponents' :is='pluginComponent'></component>
+    <component
+      v-for="pluginComponent in pluginComponents"
+      :is="pluginComponent"
+      :key="pluginComponent"
+    ></component>
   </div>
 </template>
 
@@ -88,9 +92,9 @@
   };
 </script>
 
-<style>
-  body {
-    font-family: 'SourceHanSans', sans-serif;
+<style lang="scss">
+  html {
+    overflow: hidden;
   }
 
   .active-list-wrapper {
@@ -113,7 +117,107 @@
     padding: 10px;
   }
 
-  .gallery-wrapper {
-    overflow-y: auto;
+  section {
+    height: 100%;
+    position: fixed;
+    top: 0;
+    bottom: 0;
+    right: 0;
+    left: 0;
+  }
+
+  section > .columns {
+    height: 100%;
+  }
+
+  section .top {
+    height: 75%;
+    max-height: calc(100% - 170px);
+    min-height: 170px;
+  }
+
+  section .top > .columns {
+    height: 100%;
+  }
+
+  section .top .active-list {
+    min-height: 100%;
+    box-sizing: border-box;
+    position: relative;
+    background-color: hsla(70,8%,4%,1);
+  }
+
+  .active-list .gallery-item.sortable-ghost {
+    height: 115px;
+    width: 100%;
+    overflow: hidden;
+  }
+  .active-list .gallery-item.sortable-ghost canvas {
+    height: auto;
+    position: relative;
+    top: -10%;
+  }
+  section .top .active-list-wrapper:before {
+    position: absolute;
+    top: 50%;
+    width: 100%;
+    height: auto;
+    text-align: center;
+    font-size: 2em;
+    color: rgba(210, 210, 210, 0.8);
+    text-shadow: 1px 4px 6px #fff, 0 0 0 #000, 1px 4px 6px #fff;
+    opacity: 0.7;
+    pointer-events: none;
+    content: 'Drag Modules Here';
+  }
+
+  section .top .active-list-wrapper {
+    min-width: 306px;
+  }
+
+  section .top .active-list-wrapper,
+  .simplebar-content {
+    height: 100%;
+  }
+
+  .vb > .vb-dragger {
+      z-index: 5;
+      width: 12px;
+      right: 0;
+      text-align: center;
+  }
+
+  .vb > .vb-dragger > .vb-dragger-styler {
+      width: 9px;
+
+      transition:
+          background-color 100ms ease-out,
+          width 100ms ease-out,
+          height 100ms ease-out;
+
+      background-color: rgba(255, 166, 0, 0.6);
+      border-radius: 20px;
+      height: calc(100% - 10px);
+      display: inline-block;
+  }
+
+  .vb.vb-scrolling-phantom > .vb-dragger > .vb-dragger-styler {
+      background-color: rgba(255, 166, 0, 0.6);
+  }
+
+  .vb > .vb-dragger:hover > .vb-dragger-styler {
+      background-color: rgba(255, 166, 0, 1);
+      width: 12px;
+      height: 100%;
+  }
+
+  .vb.vb-dragging > .vb-dragger > .vb-dragger-styler {
+      background-color: rgba(255, 166, 0, 1);
+      width: 12px;
+      height: 100%;
+  }
+
+  .vb.vb-dragging-phantom > .vb-dragger > .vb-dragger-styler {
+      background-color: rgba(255, 166, 0, 1);
   }
 </style>

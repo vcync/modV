@@ -4,7 +4,6 @@ import store from '@/../store';
 import modvVue from '@/main';
 
 const state = {
-  // menus: {},
   assignments: {},
   visible: false,
   activeControlData: {
@@ -13,7 +12,6 @@ const state = {
   }
 };
 
-// getters
 const getters = {
   assignments: state => state.assignments,
   activeControlData: state => state.activeControlData,
@@ -21,11 +19,8 @@ const getters = {
     if(!state.assignments[moduleName]) return false;
     return state.assignments[moduleName][controlVariable];
   }
-  // menu: state => id => state.menus[id],
-  // activeMenus: state => state.activeMenus.map(id => state.menus[id])
 };
 
-// actions
 const actions = {
   addAssignment({ commit }, { moduleName, controlVariable, waveform, frequency }) {
     const Module = store.getters['modVModules/getActiveModule'](moduleName);
@@ -51,7 +46,6 @@ const actions = {
   }
 };
 
-// mutations
 const mutations = {
   addAssignment(state, { assignment }) {
     if(!state.assignments[assignment.moduleName]) {
@@ -64,6 +58,11 @@ const mutations = {
     if(!state.assignments[moduleName][controlVariable]) return;
 
     Vue.set(state.assignments[moduleName][controlVariable], 'func', expressionFunction);
+  },
+  setLfoFrequency(state, { moduleName, controlVariable, frequency }) {
+    if(!state.assignments[moduleName][controlVariable]) return;
+
+    Vue.set(state.assignments[moduleName][controlVariable], 'freq', frequency);
   },
   removeAssignment(state, { moduleName, controlVariable }) {
     Vue.delete(state.assignments[moduleName], controlVariable);
