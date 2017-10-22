@@ -1,16 +1,12 @@
 <template>
-  <div class="range-control" :data-moduleName='moduleName'>
-    <label :for='inputId'>
+  <div class="checkbox-control" :data-moduleName="moduleName">
+    <label :for="inputId" @click="labelClicked">
       {{ label }}
     </label>
-    <div class='customCheckbox'>
-      <input
-        :id='inputId'
-        type='checkbox'
-        v-model='value'
-      >
-      <label :for='inputId'></label>
-    </div>
+    <b-checkbox
+      v-model="value"
+      :id="inputId"
+    ></b-checkbox>
   </div>
 </template>
 
@@ -47,6 +43,11 @@
       this.value = this.module[this.variable];
       if(typeof this.value === 'undefined') this.value = this.defaultValue;
     },
+    methods: {
+      labelClicked() {
+        this.value = !this.value;
+      }
+    },
     watch: {
       module() {
         this.value = this.module[this.variable];
@@ -59,11 +60,5 @@
 </script>
 
 <style scoped lang='scss'>
-  .customCheckbox label {
-    text-align: initial;
-    display: initial;
-    vertical-align: initial;
-    width: 20px;
-    margin: initial;
-  }
+
 </style>

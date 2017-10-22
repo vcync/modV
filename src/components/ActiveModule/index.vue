@@ -1,42 +1,71 @@
 <template>
-  <div class="pure-u-1-1 active-item" :class='{current: focused}' tabindex="0" @focus='focusActiveModule' @dragstart='dragstart'>
-    <div class="pure-g">
+  <div class="column active-item" :class="{current: focused}" tabindex="0" @focus="focusActiveModule" @dragstart="dragstart">
+    <div class="columns is-gapless">
       <!-- <canvas class="preview"></canvas> --><!-- TODO: create preview option on mouseover item -->
-      <div class='pure-u-1-1'>
-        <div class='pure-g'>
-          <div class='pure-u-4-5'>
-            <div class='pure-g'>
-              <div class="pure-u-1-1 title">
-                {{ moduleName }}
-              </div>
-              <div class="pure-u-1-1 options">
-                <div class="control-group enable-group">
-                  <label :for='enabledCheckboxId'>Enabled</label>
-                  <div class="customCheckbox">
-                    <input type="checkbox" checked="true" class="enable" v-model='enabled' :id='enabledCheckboxId'>
-                    <label :for='enabledCheckboxId'></label>
-                  </div>
+      <div class="column is-12">
+        <div class="active-module-wrapper">
+          <div class="columns is-gapless">
+            <div class="column is-10">
+              <div class="columns is-gapless">
+                <div class="column is-12">
+                  <span class="active-item-title">{{ moduleName }}</span>
 
-                </div>
-                <div class="control-group opacity-group">
-                  <label for="">Opacity</label>
-                  <input type="range" min="0" max="1" value = "1" step="0.01" class="opacity" v-model='opacity'>
-                </div>
-                <div class="control-group blending-group">
-                  <label for="">Blending</label>
-                  <dropdown :data="operations" grouped placeholder='Normal' :width='150' :cbChanged="compositeOperationChanged"></dropdown>
+                  <div class="columns is-gapless">
+                    <div class="column options">
+                      <div class="control-group enable-group">
+                        <label
+                          :for="enabledCheckboxId"
+                          @click="checkboxClick"
+                        >Enabled</label>
+                        <b-checkbox
+                          v-model="enabled"
+                          :id="enabledCheckboxId"
+                        ></b-checkbox>
+                      </div>
+                      <div class="control-group opacity-group">
+                        <label for="">Opacity</label>
+                        <input type="range" min="0" max="1" value = "1" step="0.01" class="opacity" v-model="opacity">
+                      </div>
+                      <div class="control-group blending-group">
+                        <label for="">Blending</label>
+                        <!-- <dropdown :data="operations" grouped placeholder="Normal" :width="150" :cbChanged="compositeOperationChanged"></dropdown> -->
+                        <b-dropdown class="dropdown" v-model="compositeOperation">
+                          <p class="tag is-success" slot="trigger">
+                            {{ compositeOperation | capitalize }}
+                          </p>
+
+                          <b-dropdown-item
+                            disabled="true"
+                          >{{ blendModes.label }}</b-dropdown-item>
+                          <b-dropdown-item
+                            v-for="item in blendModes.children"
+                            :key="item.value"
+                            :value="item.value"
+                          >{{ item.label }}</b-dropdown-item>
+                          <hr class="dropdown-divider">
+                          <b-dropdown-item
+                            disabled="true"
+                          >{{ compositeOperations.label }}</b-dropdown-item>
+                          <b-dropdown-item
+                            v-for="item in compositeOperations.children"
+                            :key="item.value"
+                            :value="item.value"
+                          >{{ item.label }}</b-dropdown-item>
+                        </b-dropdown>
+                      </div>
+                    </div>
+                  </div>
                 </div>
               </div>
             </div>
-          </div>
-          <div class='pure-u-1-5 handle-container'>
-            <span class="ibvf"></span>
-            <i class="handle fa fa-reorder fa-3x"></i>
+            <div class="column is-2 handle-container">
+              <span class="ibvf"></span>
+              <i class="handle fa fa-reorder fa-3x"></i>
+            </div>
           </div>
         </div>
       </div>
     </div>
-
   </div>
 </template>
 
@@ -159,6 +188,12 @@
       },
       focused() {
         return this.moduleName === this.focusedModuleName;
+      },
+      blendModes() {
+        return this.operations[0];
+      },
+      compositeOperations() {
+        return this.operations[1];
       }
     },
     methods: {
@@ -189,6 +224,9 @@
       },
       compositeOperationChanged(item) {
         this.compositeOperation = item[0].value;
+      },
+      checkboxClick() {
+        this.enabled = !this.enabled;
       }
     },
     mounted() {
@@ -207,22 +245,28 @@
       opacity() {
         this.setActiveModuleAlpha({ moduleName: this.moduleName, alpha: parseFloat(this.opacity) });
       }
+    },
+    filters: {
+      capitalize(valueIn) {
+        let value = valueIn;
+        if (!value) return '';
+        value = value.toString();
+        return value.charAt(0).toUpperCase() + value.slice(1);
+      }
     }
   };
 </script>
 
-<style scoped lang='scss'>
+<style lang='scss'>
   .active-item {
     background-color: #222;
     border-bottom: 1px #333 solid;
     box-sizing: border-box;
     color: #fff;
     display: inline-block;
-    max-height: 115px;
-    padding: 8px;
     position: relative;
     transition: background 150ms;
-
+    width: 100%;
 
     &:nth-child(even) {
       background-color: #000;
@@ -270,11 +314,14 @@
       vertical-align: middle;
     }
 
-    .title {
+    .active-item-title {
       font-size: 1.6em;
       overflow: hidden;
       text-overflow: ellipsis;
       white-space: nowrap;
+      width: 100%;
+      display: block;
+      margin: 0;
     }
 
     .options label {
@@ -290,6 +337,18 @@
       display: inline-block;
       text-align: center;
       vertical-align: middle;
+    }
+
+    .active-module-wrapper {
+      padding: 8px;
+      box-sizing: border-box;
+      height: 135px;
+    }
+
+    .dropdown .dropdown-content {
+      height: 220px;
+      overflow-y: scroll;
+      overflow-x: hidden;
     }
   }
 </style>

@@ -1,14 +1,14 @@
 <template>
   <draggable
-    :options='dragOptions'
-    v-model='layers'
-    class="left-top active-list pure-g"
+    :options="dragOptions"
+    v-model="layers"
+    class="left-top active-list columns is-gapless"
   >
     <layer
-      v-for='(layer, index) in layers'
-      :Layer='layer'
-      :LayerIndex='index'
-      :key='index'
+      v-for="(layer, index) in layers"
+      :Layer="layer"
+      :LayerIndex="index"
+      :key="index"
     ></layer>
   </draggable>
 </template>

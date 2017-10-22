@@ -3,14 +3,15 @@
     <transition name="fade">
       <ul class="nwjs-menu contextmenu" ref="menu" v-if="visible">
         <component
-          is='contextMenuItem'
-          v-for='item, idx in items'
-          :options='item'
-          :parentOptions='options'
-          :parentOffsetWidth='offsetWidth'
-          :parentOffsetHeight='offsetHeight'
-          :parentPosition='{ x: options.x, y: options.y }'
-          :index='idx'
+          is="contextMenuItem"
+          v-for="item, idx in items"
+          :key="item"
+          :options="item"
+          :parentOptions="options"
+          :parentOffsetWidth="offsetWidth"
+          :parentOffsetHeight="offsetHeight"
+          :parentPosition="{ x: options.x, y: options.y }"
+          :index="idx"
         ></component>
       </ul>
     </transition>
@@ -120,16 +121,8 @@
 </script>
 
 <style lang='scss'>
-  @import url('https://fonts.googleapis.com/css?family=Arimo:400,400i,700,700i');
-
-  html, body {
-    margin: 0;
-    background-color: white;
-    height: 100%;
-  }
-
   .nwjs-menu {
-    font-family: 'Helvetica Neue', HelveticaNeue, 'TeX Gyre Heros', TeXGyreHeros, FreeSans, 'Nimbus Sans L', 'Liberation Sans', Arimo, Helvetica, Arial, sans-serif;
+    font-family: 'Rubik', sans-serif;
     font-size: 14px;
     color: #2c2c2c;
     -webkit-user-select: none;
@@ -235,7 +228,7 @@
       align-self: center;
   }
 
-  .menu-item .label {
+  .menu-item .context-menu-label {
       padding: 0 22px 0 0;
       order: 0;
       flex: 1 0 auto;
@@ -259,7 +252,7 @@
       align-self: center;
   }
 
-  .menu-item .label-text {
+  .menu-item .context-menu-label-text {
       align-items: center;
       vertical-align: middle;
   }
@@ -297,7 +290,7 @@
       display: none;
   }
 
-  .menubar .menu-item.normal .label {
+  .menubar .menu-item.normal .context-menu-label {
       padding: 0 9px;
   }
 

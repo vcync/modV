@@ -1,6 +1,10 @@
 <template>
   <div>
-    <context-menu v-for='menu in activeMenus' :options='menu'></context-menu>
+    <context-menu
+      v-for="menu in activeMenus"
+      :options="menu"
+      :key="menu"
+    ></context-menu>
   </div>
 </template>
 

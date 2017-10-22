@@ -1,52 +1,59 @@
 <template>
   <div
-      class="layer-item"
+      class="column layer-item"
       :class="{
         active: focusedLayerIndex === LayerIndex,
         locked: locked,
         collapsed: collapsed
       }"
-      @click='focusLayer'
+      @click="focusLayer"
     >
-    <div class="control-bar handle pure-g">
-      <div class="pure-u-3-5">
-        <div class="title" @dblclick='startNameEdit' @keydown.enter='stopNameEdit'>{{ name }}</div>
+    <div class="columns is-gapless is-multiline">
+      <div class="column is-12">
+        <div class="control-bar handle columns is-gapless">
+          <div class="column is-three-quarters">
+            <div class="layer-title" @dblclick="startNameEdit" @keydown.enter="stopNameEdit">{{ name }}</div>
+          </div>
+
+          <div class="column is-one-quarter layer-item-controls">
+            <div class="ibvf"></div>
+            <div class="lock" @click="clickToggleLock">
+              <i class="fa fa-unlock-alt"></i>
+              <i class="fa fa-lock"></i>
+            </div>
+
+            <div class="collapse" @click="clickToggleCollapse">
+              <i class="fa fa-toggle-down"></i>
+              <i class="fa fa-toggle-up"></i>
+            </div>
+          </div>
+        </div>
       </div>
-
-      <div class="pure-u-2-5 layer-item-controls">
-        <div class="lock" @click='clickToggleLock'>
-          <i class="fa fa-unlock-alt"></i>
-          <i class="fa fa-lock"></i>
-        </div>
-
-        <div class="collapse" @click='clickToggleCollapse'>
-          <i class="fa fa-toggle-down"></i>
-          <i class="fa fa-toggle-up"></i>
-        </div>
+      <div class="column is-12">
+        <draggable
+          class="module-list columns is-gapless"
+          v-model="modules"
+          :options="{
+            group: 'modules',
+            handle: '.handle',
+            chosenClass: 'chosen',
+            animation: 100,
+            disabled: locked,
+          }"
+          :data-layer-index="LayerIndex"
+          @add="drop"
+          @end="end"
+        >
+          <active-module
+            v-for="module in modules"
+            :moduleName="module"
+            :key="module"
+            :data-module-name="module"
+            @dragstart.native="dragstart"
+          ></active-module>
+        </draggable>
       </div>
     </div>
-    <draggable
-      class="module-list"
-      v-model='modules'
-      :options="{
-        group: 'modules',
-        handle: '.handle',
-        chosenClass: 'chosen',
-        animation: 100,
-        disabled: locked,
-      }"
-      :data-layer-index='LayerIndex'
-      @add='drop'
-      @end='end'
-    >
-      <active-module
-        v-for='module in modules'
-        :moduleName='module'
-        :key='module'
-        :data-module-name='module'
-        @dragstart.native='dragstart'
-      ></active-module>
-    </draggable>
   </div>
 </template>
 
@@ -131,7 +138,7 @@
         'setLayerFocus'
       ]),
       startNameEdit() {
-        const node = this.$el.querySelector('.title');
+        const node = this.$el.querySelector('.layer-title');
         if(node.classList.contains('editable')) return;
 
         node.classList.add('editable');
@@ -140,7 +147,7 @@
         node.addEventListener('blur', this.stopNameEdit);
       },
       stopNameEdit(e) {
-        const node = this.$el.querySelector('.title');
+        const node = this.$el.querySelector('.layer-title');
         node.removeEventListener('blur', this.stopNameEdit);
         e.preventDefault();
 
@@ -193,7 +200,6 @@
   .layer-item {
     width: 100%;
     min-height: 115px;
-    height: 100%;
     border-bottom: 1px solid rgba(255, 255, 255, 0.5);
     background-color: hsla(70,0%,22%,1);
 
@@ -205,7 +211,7 @@
 
       &:before {
         position: absolute;
-        top: 35%;
+        top: 28%;
         width: 100%;
         height: auto;
         text-align: center;
@@ -222,12 +228,12 @@
     .control-bar {
       letter-spacing: 0px;
       padding: 2px 2px;
-      height: 18px;
+      height: 26px;
       position: relative;
       color: #fff;
     }
 
-    .title {
+    .layer-title {
       display: inline-block;
       min-width: 100px;
 
@@ -257,7 +263,6 @@
     .collapse,
     .lock {
       width: 18px;
-      height: 18px;
       display: inline-block;
       text-align: center;
       vertical-align: middle;
@@ -299,7 +304,9 @@
 
     .layer-item-controls {
       text-align: right;
+      height: 100%;
     }
+
     .fa-toggle-down,
     .fa-lock {
       display: none;

@@ -13,23 +13,31 @@
       @input='numberInput'
     > -->
     <canvas
-      :id='inputId'
-      ref='canvas'
-      @mousedown='mouseDown'
-      @touchstart='touchstart'
-      @touchmove='touchmove'
-      @touchend='touchend'
-      @mousemove='mouseMove'
-      @click='click'
+      :id="inputId"
+      ref="canvas"
+      @mousedown="mouseDown"
+      @touchstart="touchstart"
+      @touchmove="touchmove"
+      @touchend="touchend"
+      @mousemove="mouseMove"
+      @click="click"
     ></canvas>
     <!-- @mousemove='mouseMove' -->
-    <input
+<!--     <input
         class="pure-form-message-inline"
-        type='number'
-        v-model='currentValue'
-        step='any'
-        @input='numberInput'
-      >
+        type="number"
+        v-model="currentValue"
+        step="any"
+        @input="numberInput"
+      > -->
+    <b-input
+      class="pure-form-message-inline"
+      placeholder="Number"
+      type="number"
+      step="any"
+      v-model="currentValue"
+      @input="numberInput"
+    ></b-input>
   </div>
 </template>
 
@@ -111,8 +119,8 @@
       ...mapMutations('modVModules', [
         'setActiveModuleControlValue'
       ]),
-      numberInput(e) {
-        this.valueIn = this.formatValue(e.target.value);
+      numberInput(value) {
+        this.valueIn = this.formatValue(value);
       },
       mapValue(x) {
         const mappedX = Math.map(x, 0, 170, this.min, this.max);
@@ -249,14 +257,15 @@
 <style scoped lang='scss'>
   canvas {
     width: 170px;
-    height: 32px;
+    height: 36px;
     display: inline-block;
     vertical-align: top;
     cursor: col-resize;
     border-radius: 4px;
   }
 
-  input.pure-form-message-inline {
+  .control {
     max-width: 70px;
+    display: inline-block;
   }
 </style>
