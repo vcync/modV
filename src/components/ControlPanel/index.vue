@@ -130,8 +130,4 @@
       background-color: rgba(238, 238, 238, 0.22);
     }
   }
-
-  .form-wrap {
-    height: 100%;
-  }
 </style>

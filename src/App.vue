@@ -102,7 +102,7 @@
   }
 
   .active-list-wrapper > div {
-    height: calc(100% - 33px);
+    height: calc(100% - 38px);
   }
 
   #app {
@@ -177,6 +177,10 @@
 
   section .top .active-list-wrapper,
   .simplebar-content {
+    height: 100%;
+  }
+
+  .bottom > div {
     height: 100%;
   }
 

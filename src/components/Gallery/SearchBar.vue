@@ -1,13 +1,23 @@
 <template>
   <div class='search-bar-container' v-shortkey="['esc']" @shortkey="clearSearch">
-    <input
+    <!-- <input
       type="text"
       v-model='phrase'
       placeholder="Search Gallery"
       v-shortkey.focus="['ctrl', 'f']"
       @shortkey="focus"
       ref="gallery-search"
-    />
+    /> -->
+    <b-input
+      icon="search"
+      type="text"
+      v-model="phrase"
+      placeholder="Search Gallery"
+      v-shortkey.focus="['ctrl', 'f']"
+      @shortkey="focus"
+      ref="gallery-search"
+      id="gallery-search"
+    ></b-input>
     <i class="fa fa-bars fa-2x" aria-hidden="true" @click='menuIconClicked'></i>
   </div>
 </template>
@@ -55,13 +65,9 @@
     padding: 5pt;
     box-sizing: border-box;
 
-    input {
-      padding: 3px;
+    .control {
       display: inline-block;
       width: 90%;
-      box-sizing: border-box;
-      margin: 0 20px 0 0;
-      vertical-align: top;
     }
 
     i {

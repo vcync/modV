@@ -35,7 +35,9 @@ stats.dom.style.right = 0;
 stats.dom.classList.add('hidden');
 
 Vue.use(Vuebar);
-Vue.use(Buefy);
+Vue.use(Buefy, {
+  defaultIconPack: 'fa'
+});
 Vue.use(VueThrottleEvent);
 Vue.use(Dropdown);
 Vue.use(Shortkey);

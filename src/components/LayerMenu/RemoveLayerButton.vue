@@ -1,8 +1,11 @@
 <template>
-  <div class="icon trash-layer" @click='removeFocusedLayer' title="Remove Focused Layer">
+  <!-- <div class="icon trash-layer" @click='removeFocusedLayer' title="Remove Focused Layer">
     <span class="ibvf"></span>
       <i class="fa fa-trash" aria-hidden="true"></i>
-  </div>
+  </div> -->
+  <button class="button is-primary is-small" @click="removeFocusedLayer" title="Remove Focused Layer">
+    <b-icon icon="trash"></b-icon>
+  </button>
 </template>
 
 <script>

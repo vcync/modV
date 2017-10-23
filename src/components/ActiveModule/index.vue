@@ -24,15 +24,16 @@
                       </div>
                       <div class="control-group opacity-group">
                         <label for="">Opacity</label>
-                        <input type="range" min="0" max="1" value = "1" step="0.01" class="opacity" v-model="opacity">
+                        <input type="range" min="0" max="1" value = "1" step="any" class="opacity" v-model="opacity">
                       </div>
                       <div class="control-group blending-group">
                         <label for="">Blending</label>
                         <!-- <dropdown :data="operations" grouped placeholder="Normal" :width="150" :cbChanged="compositeOperationChanged"></dropdown> -->
                         <b-dropdown class="dropdown" v-model="compositeOperation">
-                          <p class="tag is-success" slot="trigger">
-                            {{ compositeOperation | capitalize }}
-                          </p>
+                          <button class="button is-primary is-small" slot="trigger">
+                            <span>{{ compositeOperation | capitalize }}</span>
+                            <b-icon icon="angle-down"></b-icon>
+                          </button>
 
                           <b-dropdown-item
                             disabled="true"
@@ -275,7 +276,7 @@
     &.current {
       background-color: aliceblue;
       color: black;
-      z-index: 100;
+      z-index: 1;
     }
 
     &.chosen {

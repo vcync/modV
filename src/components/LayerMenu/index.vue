@@ -24,7 +24,7 @@
     bottom: 0;
     left: 0;
     right: 0;
-    height: 33px;
+    height: 38px;
     background-color: #383838;
     padding: 5px;
     box-sizing: border-box;

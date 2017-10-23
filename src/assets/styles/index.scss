@@ -310,42 +310,6 @@ input[disabled][type="range"]::-webkit-slider-runnable-track {
   background-color: transparent;
 }
 
-/* layer menu */
-.layer-menu {
-  position: absolute;
-  bottom: 0;
-  left: 0;
-  right: 0;
-  height: 33px;
-  background-color: hsla(70,0%,22%,1);;
-  padding: 5px;
-  box-sizing: border-box;
-  border-top: 1px solid rgba(255, 255, 255, 0.5);
-}
-
-.layer-menu .icon {
-  height: 22px;
-  background-color: #ffa500;
-  width: 22px;
-  color: #fff;
-  font-size: 0;
-  display: inline-block;
-  cursor: pointer;
-  border-radius: 3px;
-  vertical-align: middle;
-  text-align: center;
-}
-
-.layer-menu .icon i.fa {
-  font-size: 18px;
-  vertical-align: middle;
-  letter-spacing: 0;
-}
-
-.layer-menu .icon:not(:last-child) {
-  margin: 0 5px 0 0;
-}
-
 .right-controls {
   position: relative;
 }

@@ -1,32 +1,42 @@
 <template>
-  <div class="column control-panel layer-controls" v-if="Layer">
+  <div class="column control-panel layer-controls" v-show="Layer">
     <div class="title"><h1>{{ name }}</h1></div>
-    <div class="overflow-group">
-      <div class="control-group clearing-group">
-        <label for="clearingLayers">Clearing</label>
-        <input id="clearingLayers" type="checkbox" class="enable" v-model="clearingChecked">
-      </div>
-      <div class="control-group inherit-group no-border">
-        <label for="inheritLayers">Inherit</label>
-        <input id="inheritLayers" type="checkbox" class="enable" v-model="inheritChecked">
-      </div>
-      <div class="control-group inherit-group">
-        <label for="inheritLayers">Inherit From</label>
-        <select id="inheritFromLayers" v-model="inheritanceIndex">
-          <option value="-1">Last Layer</option>
-          <option v-for="layer, idx in layers" :value="idx">
-            {{ layer.name }}
-          </option>
-        </select>
-      </div>
-      <div class="control-group pipeline-group">
-        <label for="pipeLineLayers">Pipline</label>
-        <input id="pipeLineLayers" type="checkbox" class="enable" v-model="pipelineChecked">
-      </div>
+    <div class="overflow-group" v-bar>
+      <div>
+        <div class="control-group clearing-group">
+          <label for="clearingLayers">Clearing</label>
+          <b-checkbox id="clearingLayers" v-model="clearingChecked"></b-checkbox>
+        </div>
+        <div class="control-group inherit-group no-border">
+          <label for="inheritLayers">Inherit</label>
+          <b-checkbox id="inheritLayers" v-model="inheritChecked"></b-checkbox>
+        </div>
+        <div class="control-group inherit-group">
+          <label for="inheritLayers">Inherit From</label>
+          <b-dropdown class="dropdown" v-model="inheritanceIndex">
+            <button class="button is-primary is-small" slot="trigger">
+              <span>{{ inheritedLayerName | capitalize }}</span>
+              <b-icon icon="angle-down"></b-icon>
+            </button>
 
-      <div class="control-group output-group">
-        <label for="outputLayers">Draw to output</label>
-        <input id="outputLayers" type="checkbox" class="enable" v-model="drawToOutputChecked">
+            <b-dropdown-item value="-1">Last Layer</b-dropdown-item>
+            <b-dropdown-item
+              v-for="layer, idx in layers"
+              :key="idx"
+              :value="idx"
+            >{{ layer.name }}</b-dropdown-item>
+
+          </b-dropdown>
+        </div>
+        <div class="control-group pipeline-group">
+          <label for="pipeLineLayers">Pipeline</label>
+          <b-checkbox id="pipeLineLayers" v-model="pipelineChecked"></b-checkbox>
+        </div>
+
+        <div class="control-group output-group">
+          <label for="outputLayers">Draw to output</label>
+          <b-checkbox id="outputLayers" v-model="drawToOutputChecked"></b-checkbox>
+        </div>
       </div>
     </div>
   </div>
@@ -56,6 +66,13 @@
         if(!this.Layer) return '';
         if(!('name' in this.Layer)) return '';
         return this.Layer.name;
+      },
+      inheritedLayerName() {
+        if(this.inheritanceIndex < 0) {
+          return 'Last Layer';
+        }
+
+        return this.layers[this.inheritanceIndex].name;
       }
     },
     methods: {

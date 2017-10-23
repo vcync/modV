@@ -40,12 +40,12 @@
             ></gallery-item>
           </draggable>
 
-          <div class='pure-u-1-1 title' :class="{ hidden: phrase.length > 0 }">
+          <div class='pure-u-1-1 title' :class="{ hidden: phrase.length > 0 || moduleShader.length < 1 }">
             <h2>Module Shader</h2>
           </div>
           <draggable
             class='gallery-items'
-            :class="{ hidden: phrase.length > 0 }"
+            :class="{ hidden: phrase.length > 0 || moduleShader.length < 1 }"
             :options="{ group: { name: 'modules',  pull: 'clone', put: false }, sort: false }"
           >
             <gallery-item

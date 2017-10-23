@@ -198,7 +198,7 @@
 <style scoped lang='scss'>
   /* layer item */
   .layer-item {
-    width: 100%;
+    width: calc(100% - 11px);
     min-height: 115px;
     border-bottom: 1px solid rgba(255, 255, 255, 0.5);
     background-color: hsla(70,0%,22%,1);
