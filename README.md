@@ -1,9 +1,22 @@
 # modV
 modV is a modular audio visualisation environment written in JavaScript and runs in Google Chrome.
 
-All documentation so far is available in [this repo's Wiki](https://github.com/2xAA/modV/wiki). There's more to come!
+All documentation so far is available in [this repo's Wiki](https://github.com/2xAA/modV/wiki).
 
 [![Flattr this](https://button.flattr.com/flattr-badge-large.png "Flattr this")](https://flattr.com/submit/auto?fid=xvwndw&url=https%3A%2F%2Fgithub.com%2F2xAA%2FmodV)
+
+## Important version information
+
+modV has three versions.  
+1.0 is found in the `master` branch.  
+1.5 is found in the `1.5` branch.  
+2.0 - the only version with active development, can be found in the `2.0` branch.
+
+modV is still active, but only on the 2.0 branch.  
+When 2.0 reaches maturity, 1.0 will be archived onto its own branch and 2.0 will become the master branch.  
+Releases will start upon 2.0's move to the master branch.
+
+There is no support for 1.0. 1.5 will be bugfixed upon request.
 
 ## Sample images
 [![](https://github.com/2xAA/modV/raw/master/docs/example-images/1.jpg)](https://github.com/2xAA/modV/raw/master/docs/example-images/1.png)
