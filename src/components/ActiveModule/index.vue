@@ -36,7 +36,7 @@
                           </button>
 
                           <b-dropdown-item
-                            disabled="true"
+                            :disabled="true"
                           >{{ blendModes.label }}</b-dropdown-item>
                           <b-dropdown-item
                             v-for="item in blendModes.children"
@@ -45,7 +45,7 @@
                           >{{ item.label }}</b-dropdown-item>
                           <hr class="dropdown-divider">
                           <b-dropdown-item
-                            disabled="true"
+                            :disabled="true"
                           >{{ compositeOperations.label }}</b-dropdown-item>
                           <b-dropdown-item
                             v-for="item in compositeOperations.children"
@@ -346,10 +346,12 @@
       height: 135px;
     }
 
-    .dropdown .dropdown-content {
-      height: 220px;
-      overflow-y: scroll;
-      overflow-x: hidden;
+    @media screen and (min-width: 1023px) {
+      .dropdown .dropdown-content {
+        height: 220px;
+        overflow-y: scroll;
+        overflow-x: hidden;
+      }
     }
   }
 </style>
