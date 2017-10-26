@@ -85,7 +85,6 @@ window.modVVue = new Vue({
       'Plasma',
       'MattiasCRT',
       'ChromaticAbberation',
-      'Stretch',
       'Wobble',
       'OpticalFlowDistort',
       'Neon',
@@ -150,7 +149,8 @@ window.modVVue = new Vue({
       'Slice.fs',
       'digital-crystal-tunnel.fs',
       'film-grain.fs',
-      'spherical-shader-tut.fs'
+      'spherical-shader-tut.fs',
+      'scale.fs',
     ];
 
     isfSamples.forEach((fileName) => {
