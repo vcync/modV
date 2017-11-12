@@ -12,15 +12,15 @@ class Wobble extends ModuleShader {
         uniforms: {
           strength: {
             type: 'f',
-            value: 0.001
+            value: 0.001,
           },
           size: {
             type: 'f',
-            value: 1.0
-          }
-        } // Three.JS style uniforms
+            value: 1.0,
+          },
+        }, // Three.JS style uniforms
       },
-      fragmentShader: wobbleFrag
+      fragmentShader: wobbleFrag,
     });
 
     this.add({
@@ -31,7 +31,7 @@ class Wobble extends ModuleShader {
       min: 0.0,
       max: 0.05,
       step: 0.001,
-      default: 0.001
+      default: 0.001,
     });
 
     this.add({
@@ -42,7 +42,7 @@ class Wobble extends ModuleShader {
       min: 1,
       max: 50,
       step: 1.0,
-      default: 1.0
+      default: 1.0,
     });
   }
 }

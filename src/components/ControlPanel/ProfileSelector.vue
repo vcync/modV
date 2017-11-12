@@ -13,16 +13,16 @@
   export default {
     name: 'profileSelector',
     props: [
-      'value'
+      'value',
     ],
     data() {
       return {
-        currentProfile: 'default'
+        currentProfile: 'default',
       };
     },
     computed: {
       ...mapGetters('profiles', [
-        'allProfiles'
+        'allProfiles',
       ]),
       profileNames() {
         const data = [];
@@ -32,19 +32,19 @@
           data.push({
             label: profileName,
             value: profileName,
-            selected: this.currentProfile === profileName
+            selected: this.currentProfile === profileName,
           });
         });
 
         return data;
-      }
+      },
     },
     methods: {
       profileChanged(e) {
         this.currentProfile = e[0].value;
         this.$emit('input', this.currentProfile);
-      }
-    }
+      },
+    },
   };
 </script>
 

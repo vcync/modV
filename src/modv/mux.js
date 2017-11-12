@@ -7,7 +7,7 @@ const capturer = new CCapture({
   framerate: 60,
   // motionBlurFrames: 16,
   quality: 10,
-  format: 'webm'
+  format: 'webm',
 });
 
 window.capturer = capturer;
@@ -25,7 +25,7 @@ function mux() {
     outputContext.clearRect(0, 0, width, height);
 
     layers.forEach((Layer) => {
-      if(!Layer.enabled || Layer.alpha === 0 || !Layer.drawToOutput) return;
+      if (!Layer.enabled || Layer.alpha === 0 || !Layer.drawToOutput) return;
       const canvas = Layer.canvas;
       outputContext.drawImage(canvas, 0, 0, width, height);
     });

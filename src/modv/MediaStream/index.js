@@ -3,5 +3,5 @@ import setSource from './set-source';
 
 export {
   scan,
-  setSource
+  setSource,
 };

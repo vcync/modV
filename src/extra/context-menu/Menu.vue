@@ -26,12 +26,12 @@
   export default {
     name: 'contextMenu',
     props: [
-      'options'
+      'options',
     ],
     data() {
       return {
         offsetWidth: 0,
-        offsetHeight: 0
+        offsetHeight: 0,
       };
     },
     computed: {
@@ -46,15 +46,15 @@
       },
       id() {
         return this.options.$id;
-      }
+      },
     },
     methods: {
       ...mapActions('contextMenu', [
-        'popdownAll'
+        'popdownAll',
       ]),
       checkIfClickedMenu(e) {
         e.preventDefault();
-        if(
+        if (
           !e.target === this.$refs.menu || !isDescendant(this.$refs.menu, e.target)
         ) {
           this.popdownAll();
@@ -73,9 +73,9 @@
         const width = menuEl.clientWidth;
         const height = menuEl.clientHeight;
 
-        if((x + width) > window.innerWidth) {
+        if ((x + width) > window.innerWidth) {
           setRight = true;
-          if(this.isSubmenu) {
+          if (this.isSubmenu) {
             const node = this.parentMenu.node;
             x = (node.offsetWidth + ((window.innerWidth - node.offsetLeft) - node.offsetWidth)) - 2;
           } else {
@@ -83,11 +83,11 @@
           }
         }
 
-        if((y + height) > window.innerHeight) {
+        if ((y + height) > window.innerHeight) {
           y = window.innerHeight - height;
         }
 
-        if(!setRight) {
+        if (!setRight) {
           menuEl.style.left = `${x}px`;
           menuEl.style.right = 'auto';
         } else {
@@ -96,10 +96,10 @@
         }
 
         menuEl.style.top = `${y}px`;
-      }
+      },
     },
     beforeMount() {
-      if(!this.isSubmenu) {
+      if (!this.isSubmenu) {
         this.popdownAll([this.id]);
       }
     },
@@ -115,8 +115,8 @@
       window.removeEventListener('click', this.checkIfClickedMenu);
     },
     components: {
-      contextMenuItem
-    }
+      contextMenuItem,
+    },
   };
 </script>
 

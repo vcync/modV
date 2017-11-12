@@ -6,8 +6,8 @@ class SolidColor extends Module2D {
       info: {
         name: 'Solid Colour',
         author: '2xAA',
-        version: 0.1
-      }
+        version: 0.1,
+      },
     });
 
 
@@ -15,7 +15,7 @@ class SolidColor extends Module2D {
       type: 'colorControl',
       variable: 'color',
       label: 'Color',
-      returnFormat: 'hexString'
+      returnFormat: 'hexString',
     });
   }
 

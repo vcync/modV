@@ -9,12 +9,12 @@ class FeatureAssignment {
   }
 
   install(Vue, { store }) {
-    if(!store) throw new Error('No Vuex store detected');
+    if (!store) throw new Error('No Vuex store detected');
     this.store = store;
     this.vue = Vue;
 
     store.subscribe((mutation) => {
-      if(mutation.type === 'modVModules/removeActiveModule') {
+      if (mutation.type === 'modVModules/removeActiveModule') {
         store.commit('meyda/removeAssignments', { moduleName: mutation.payload.moduleName });
       }
     });
@@ -34,14 +34,14 @@ class FeatureAssignment {
 
       MeydaFeaturesSubmenu.items.forEach((item) => {
         item.checked = false;
-        if(item.label === activeFeature) item.checked = true;
+        if (item.label === activeFeature) item.checked = true;
       });
       MeydaFeaturesSubmenu.rebuild();
 
       store.commit('meyda/assignFeatureToControl', {
         feature: this.label,
         moduleName,
-        controlVariable
+        controlVariable,
       });
     }
 
@@ -52,7 +52,7 @@ class FeatureAssignment {
     const assignments = store.getters['meyda/assignment'](moduleName, controlVariable);
     const assignedFeatures = [];
 
-    if(assignments) {
+    if (assignments) {
       assignments
         .map(assignment => assignment.feature)
         .forEach(feature => assignedFeatures.push(feature));
@@ -60,18 +60,18 @@ class FeatureAssignment {
       MeydaFeaturesSubmenu.append(new MenuItem({
         label: 'Remove Feature Assignment',
         type: 'normal',
-        click: clickRemoveAssignment
+        click: clickRemoveAssignment,
       }));
 
       MeydaFeaturesSubmenu.append(new MenuItem({
-        type: 'separator'
+        type: 'separator',
       }));
     }
 
     Object.keys(meyda.featureExtractors).forEach((feature) => {
       let shouldBeChecked = false;
 
-      if(assignments) {
+      if (assignments) {
         shouldBeChecked = assignedFeatures.indexOf(feature) > -1;
       }
 
@@ -79,7 +79,7 @@ class FeatureAssignment {
         label: feature,
         type: 'checkbox',
         checked: shouldBeChecked,
-        click: clickFeature
+        click: clickFeature,
       }));
     });
 

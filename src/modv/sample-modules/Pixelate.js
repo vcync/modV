@@ -8,8 +8,8 @@ class Pixelate extends Module2D {
         author: '2xAA',
         version: 0.1,
         previewWithOutput: true,
-        meyda: ['rms', 'zcr']
-      }
+        meyda: ['rms', 'zcr'],
+      },
     });
 
     const controls = [];
@@ -22,14 +22,14 @@ class Pixelate extends Module2D {
       min: 2,
       max: 30,
       step: 1,
-      default: 5
+      default: 5,
     });
 
     controls.push({
       type: 'checkboxControl',
       variable: 'soundReactive',
       label: 'Sound Reactive',
-      checked: false
+      checked: false,
     });
 
     controls.push({
@@ -40,14 +40,14 @@ class Pixelate extends Module2D {
       min: 0,
       max: 30,
       step: 1,
-      default: 15
+      default: 15,
     });
 
     controls.push({
       type: 'checkboxControl',
       variable: 'soundType',
       label: 'RMS (unchecked) / ZCR (checked)',
-      checked: false
+      checked: false,
     });
 
     this.add(controls);
@@ -77,8 +77,8 @@ class Pixelate extends Module2D {
     let h;
     let analysed;
 
-    if(this.soundReactive) {
-      if(this.soundType) {
+    if (this.soundReactive) {
+      if (this.soundType) {
         analysed = features.zcr / (10 * this.intensity);
       } else {
         analysed = (features.rms * 10) * this.intensity;

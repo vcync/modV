@@ -4,14 +4,14 @@ import store from '@/../store';
 
 const state = {
   focusedLayer: 0,
-  layers: []
+  layers: [],
 };
 
 // getters
 const getters = {
   allLayers: state => state.layers,
   focusedLayerIndex: state => state.focusedLayer,
-  focusedLayer: state => state.layers[state.focusedLayer]
+  focusedLayer: state => state.layers[state.focusedLayer],
 };
 
 // actions
@@ -25,19 +25,19 @@ const actions = {
       const width = store.getters['size/width'];
       const height = store.getters['size/height'];
       let dpr = 1;
-      if(store.getters['user/useRetina']) {
+      if (store.getters['user/useRetina']) {
         dpr = window.devicePixelRatio;
       }
 
       layer.resize({ width, height, dpr });
       commit('addLayer', { layer });
       commit('setLayerFocus', {
-        LayerIndex: state.layers.length - 1
+        LayerIndex: state.layers.length - 1,
       });
 
       resolve({
         Layer: layer,
-        index: state.layers.length - 1
+        index: state.layers.length - 1,
       });
     });
   },
@@ -46,28 +46,28 @@ const actions = {
     Object.keys(Layer.modules).forEach((moduleName) => {
       store.dispatch(
         'modVModules/removeActiveModule',
-        { moduleName }
+        { moduleName },
       );
     });
     commit('removeLayer', { layerIndex: state.focusedLayer });
-    if(state.focusedLayer > 0) commit('setLayerFocus', { LayerIndex: state.focusedLayer - 1 });
+    if (state.focusedLayer > 0) commit('setLayerFocus', { LayerIndex: state.focusedLayer - 1 });
   },
   toggleLocked({ commit, state }, { layerIndex }) {
     const Layer = state.layers[layerIndex];
 
-    if(Layer.locked) commit('unlock', { layerIndex });
+    if (Layer.locked) commit('unlock', { layerIndex });
     else commit('lock', { layerIndex });
   },
   toggleCollapsed({ commit, state }, { layerIndex }) {
     const Layer = state.layers[layerIndex];
 
-    if(Layer.collapsed) commit('uncollapse', { layerIndex });
+    if (Layer.collapsed) commit('uncollapse', { layerIndex });
     else commit('collapse', { layerIndex });
   },
   addModuleToLayer({ commit, state }, { module, layerIndex, position }) {
     let positionShadow = position;
-    if(typeof positionShadow !== 'number') {
-      if(positionShadow < 0) {
+    if (typeof positionShadow !== 'number') {
+      if (positionShadow < 0) {
         positionShadow = 0;
       }
     }
@@ -75,7 +75,7 @@ const actions = {
     store.commit(
       'modVModules/setModuleFocus',
       { activeModuleName: module.info.name },
-      { root: true }
+      { root: true },
     );
   },
   updateModuleOrder({ commit, state }, { layerIndex, order }) {
@@ -98,7 +98,7 @@ const actions = {
         console.log('Should remove', moduleName);
         store.dispatch(
           'modVModules/removeActiveModule',
-          { moduleName }
+          { moduleName },
         );
       });
 
@@ -122,14 +122,14 @@ const actions = {
       layerData.pipeline = Layer.pipeline;
       return layerData;
     });
-  }
+  },
 };
 
 // mutations
 const mutations = {
   addModuleToLayer(state, { moduleName, layerIndex, position }) {
     const Layer = state.layers[layerIndex];
-    if(Layer.locked) return;
+    if (Layer.locked) return;
 
     if (!Layer) {
       throw `Cannot find Layer with index ${layerIndex}`; //eslint-disable-line
@@ -141,7 +141,7 @@ const mutations = {
     const Layer = state.layers[layerIndex];
 
     const moduleIndex = Layer.moduleOrder.indexOf(moduleName);
-    if(moduleIndex < 0) return;
+    if (moduleIndex < 0) return;
 
     Layer.moduleOrder.splice(moduleIndex, 1);
     Vue.delete(Layer.modules, moduleName);
@@ -234,7 +234,7 @@ const mutations = {
   setModuleOrder(state, { layerIndex, moduleOrder }) {
     const Layer = state.layers[layerIndex];
     Vue.set(Layer, 'moduleOrder', moduleOrder);
-  }
+  },
 };
 
 export default {
@@ -242,5 +242,5 @@ export default {
   state,
   getters,
   actions,
-  mutations
+  mutations,
 };

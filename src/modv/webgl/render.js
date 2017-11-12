@@ -17,7 +17,7 @@ export default function render({ delta, canvas, pixelRatio, Module }) {
     iDelta: delta,
     u_delta: delta,
     u_time: delta,
-    iResolution: [canvas.width, canvas.height, pixelRatio || 1.0]
+    iResolution: [canvas.width, canvas.height, pixelRatio || 1.0],
   };
 
   Module.uniformValues.forEach((value, key) => {
@@ -27,8 +27,8 @@ export default function render({ delta, canvas, pixelRatio, Module }) {
   setActiveProgramFromIndex(programIndex);
   twgl.setUniforms(programInfo, uniforms);
 
-  if('meyda' in Module.info) {
-    if(Module.info.meyda.length > 0) {
+  if ('meyda' in Module.info) {
+    if (Module.info.meyda.length > 0) {
       const meydaFeatures = modV.meyda.get(modV.audioFeatures);
       Module.info.meyda.forEach((feature) => {
         const uniLoc = gl.getUniformLocation(webgl.programs[webgl.activeProgram], feature);

@@ -25,7 +25,7 @@ class Module2D extends Module {
       },
       set() {
         throw new Error('Module2D\'s method "render" cannot be overwritten');
-      }
+      },
     });
   }
 
@@ -35,10 +35,13 @@ class Module2D extends Module {
    * @param  {CanvasRenderingContext2D} context       The Context of the Canvas
    * @param  {HTMLVideoElement}         video         The video stream requested by modV
    * @param  {Array<MeydaFeatures>}     meydaFeatures Requested Meyda features
-   * @param  {Meyda}                    meyda         The Meyda instance (for Windowing functions etc.)
+   * @param  {Meyda}                    meyda         The Meyda instance
+   *                                                  (for Windowing functions etc.)
+   *
    * @param  {DOMHighResTimeStamp}      delta         Timestamp returned by requestAnimationFrame
    * @param  {Number}                   bpm           The detected or tapped BPM
-   * @param  {Boolean}                  kick          Indicates if BeatDetektor detected a kick in the audio stream
+   * @param  {Boolean}                  kick          Indicates if BeatDetektor detected a
+   *                                                  kick in the audio stream
    */
   draw({ canvas, context, video, features, meyda, delta, bpm, kick }) {} //eslint-disable-line
 }

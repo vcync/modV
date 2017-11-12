@@ -19,8 +19,6 @@ function compareWindowsSize(windowOne, windowTwo) {
   const windowOneArea = getWindowSize(windowOne);
   const windowTwoArea = getWindowSize(windowTwo);
 
-  console.log(windowOneArea, windowTwoArea);
-
   return windowOneArea > windowTwoArea ? windowOne : windowTwo;
 }
 
@@ -36,17 +34,19 @@ function getLargestWindow(windowControllers) {
     windows.push(windowReference(windowC.window));
   });
 
-  if(windows.length === 0) {
+  if (windows.length === 0) {
     return null;
   }
 
-  const reference = windows.reduce((accumulator, currentValue) => compareWindowsSize(accumulator, currentValue));
+  const reference = windows.reduce(
+    (accumulator, currentValue) => compareWindowsSize(accumulator, currentValue),
+  );
 
   const index = windows.indexOf(reference);
 
   return {
     window: windows[index],
-    controller: windowControllers[index]
+    controller: windowControllers[index],
   };
 }
 

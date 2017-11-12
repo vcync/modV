@@ -1,7 +1,7 @@
 function colorToRGBString(colour) {
   try {
     return `rgb(${colour[0]},${colour[1]},${colour[2]})`;
-  } catch(e) {
+  } catch (e) {
     return 'rgb(0,0,0)';
   }
 }
@@ -15,7 +15,7 @@ function calculateStep(colors, currentColor, currentTime, timePeriod) {
     r1 = colors[currentColor][0];
     g1 = colors[currentColor][1];
     b1 = colors[currentColor][2];
-  } catch(e) {
+  } catch (e) {
     // try catch because the user may delete the current colour which throws the array and nextIndex out of sync
     // TODO: fix case where user deletes current colour
     return [0, 0, 0];
@@ -23,7 +23,7 @@ function calculateStep(colors, currentColor, currentTime, timePeriod) {
 
   let nextColor = currentColor + 1;
 
-  if(nextColor > colors.length - 1) {
+  if (nextColor > colors.length - 1) {
     nextColor = 0;
   }
 
@@ -44,7 +44,7 @@ function hexToRgb(hex) {
   return result ? [
     parseInt(result[1], 16),
     parseInt(result[2], 16),
-    parseInt(result[3], 16)
+    parseInt(result[3], 16),
   ] : null;
 }
 
@@ -61,8 +61,8 @@ function Palette(colorsIn, timePeriod, id) {
 
   this.profilesList = [];
 
-  this.currentColor = 0; // jshint ignore:line
-  this.currentTime = 0; // jshint ignore:line
+  this.currentColor = 0;
+  this.currentTime = 0;
   // this.timePeriod = Math.round((this.timePeriod/1000) * 60);
 
   this.getId = function getId() {
@@ -72,10 +72,10 @@ function Palette(colorsIn, timePeriod, id) {
 
 Palette.prototype.addColor = function addColor(color) {
   let rgbFromHex;
-  if(typeof color === 'string') {
+  if (typeof color === 'string') {
     rgbFromHex = hexToRgb(color);
     this.colors.push(rgbFromHex);
-  } else if(Array.isArray(color.constructor)) {
+  } else if (Array.isArray(color.constructor)) {
     this.colors.push(rgbFromHex);
   } else return false;
 
@@ -92,23 +92,23 @@ Palette.prototype.removeAtIndex = function removeAtIndex(index) {
 };
 
 Palette.prototype.nextStep = function nextStep(cb) {
-  if(this.useBpm) {
+  if (this.useBpm) {
     // fps * 60 seconds / bpm / BpmDiv
     this.timePeriod = (((60 * 60) / this.bpm) * this.bpmDivision);
   }
 
-  if(this.colors.length < 1) {
+  if (this.colors.length < 1) {
     // If there are no colours, return false
     return false;
-  } else if(this.colors.length < 2) {
+  } else if (this.colors.length < 2) {
     // If there are less than two colours, just return the only colour
     return colorToRGBString(this.colors[0]);
   }
 
   this.currentTime += (1000 / 60);
 
-  if(this.currentTime >= this.timePeriod) {
-    if(this.currentColor > this.colors.length - 2) {
+  if (this.currentTime >= this.timePeriod) {
+    if (this.currentColor > this.colors.length - 2) {
       this.currentColor = 0;
     } else {
       this.currentColor += 1;
@@ -117,7 +117,7 @@ Palette.prototype.nextStep = function nextStep(cb) {
   }
 
   const returned = colorToRGBString(
-    calculateStep(this.colors, this.currentColor, this.currentTime, this.timePeriod)
+    calculateStep(this.colors, this.currentColor, this.currentTime, this.timePeriod),
   );
 
   cb(returned);

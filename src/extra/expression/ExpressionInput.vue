@@ -43,7 +43,7 @@
     computed: {
       ...mapGetters('expression', {
         activeControlData: 'activeControlData',
-        getAssignment: 'assignment'
+        getAssignment: 'assignment',
       }),
       moduleName() {
         return this.activeControlData.moduleName;
@@ -56,37 +56,37 @@
       },
       expression: {
         get() {
-          if(!this.assignment) return 'value';
+          if (!this.assignment) return 'value';
           return this.assignment.expression;
         },
         set(expression) {
           this.addExpression({
             expression,
             moduleName: this.moduleName,
-            controlVariable: this.controlVariable
+            controlVariable: this.controlVariable,
           });
-        }
+        },
       },
       additionalScope: {
         get() {
-          if(!this.assignment) return {};
+          if (!this.assignment) return {};
           return this.assignment.additionalScope;
         },
         set(expression) {
           this.addExpression({
             expression,
             moduleName: this.moduleName,
-            controlVariable: this.controlVariable
+            controlVariable: this.controlVariable,
           });
-        }
-      }
+        },
+      },
     },
     methods: {
       ...mapActions('expression', [
         'addExpression',
         'addToScope',
         'renameScopeItem',
-        'updateScopeItem'
+        'updateScopeItem',
       ]),
       addNewScopeItem() {
         const scopeAdditions = {};
@@ -94,7 +94,7 @@
         this.addToScope({
           moduleName: this.moduleName,
           controlVariable: this.controlVariable,
-          scopeAdditions
+          scopeAdditions,
         });
       },
       updateScopeItemName(oldName, newName) {
@@ -102,7 +102,7 @@
           oldName,
           newName,
           moduleName: this.moduleName,
-          controlVariable: this.controlVariable
+          controlVariable: this.controlVariable,
         });
       },
       updateScopeItemContents(name, contents) {
@@ -110,13 +110,13 @@
           name,
           contents,
           moduleName: this.moduleName,
-          controlVariable: this.controlVariable
+          controlVariable: this.controlVariable,
         });
-      }
+      },
     },
     components: {
-      scopeItem
-    }
+      scopeItem,
+    },
   };
 </script>
 

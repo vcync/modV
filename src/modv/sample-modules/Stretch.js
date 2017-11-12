@@ -12,11 +12,12 @@ class Stretch extends ModuleShader {
         uniforms: {
           intensity: {
             type: 'f',
-            value: 1.0
-          }
-        } // Three.JS uniforms
+            value: 1.0,
+          },
+        }, // Three.JS uniforms
       },
-      fragmentShader: stretchFrag // path to HTML file within modules directory with shader script tags
+       // path to HTML file within modules directory with shader script tags
+      fragmentShader: stretchFrag,
     });
 
     this.add({
@@ -27,7 +28,7 @@ class Stretch extends ModuleShader {
       min: 0.0,
       max: 6.0,
       step: 0.001,
-      default: 1.0
+      default: 1.0,
     });
   }
 

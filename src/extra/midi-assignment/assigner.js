@@ -14,22 +14,22 @@ class MIDIAssigner extends EventEmitter2 {
       this.assignments.get(key);
     };
 
-    if(settings.get) this.get = settings.get;
+    if (settings.get) this.get = settings.get;
 
     this.set = (key, value) => {
       this.assignments.set(key, value);
     };
 
-    if(settings.set) this.set = settings.set;
+    if (settings.set) this.set = settings.set;
 
     this.handleInputBound = this.handleInput.bind(this);
   }
 
   start() {
     // request MIDI access
-    if(navigator.requestMIDIAccess) {
+    if (navigator.requestMIDIAccess) {
       navigator.requestMIDIAccess({
-        sysex: false
+        sysex: false,
       }).then((access) => {
         this.access = access;
         this.inputs = access.inputs;
@@ -61,14 +61,14 @@ class MIDIAssigner extends EventEmitter2 {
     const data = message.data;
     const midiChannel = parseInt(data[1], 10);
 
-    if(this.learning) {
+    if (this.learning) {
       this.set(midiChannel, { variable: this.toLearn, value: null });
       this.learning = false;
       this.toLearn = '';
     }
 
     const assignment = this.get(midiChannel);
-    if(assignment) this.emit('midiAssignmentInput', midiChannel, assignment, message);
+    if (assignment) this.emit('midiAssignmentInput', midiChannel, assignment, message);
   }
 
   learn(variableName) {
@@ -78,17 +78,3 @@ class MIDIAssigner extends EventEmitter2 {
 }
 
 export default MIDIAssigner;
-
-// const m = new MIDI({
-//   // You can override the built-in getters and setters with your own functions to store assignments
-//   get(key) {
-//     console.log(`Search for ${key}`);
-//     return { variable: 'overridden', value: null };
-//   },
-//   set(key, value) {
-//     console.log(`Set ${key} with ${value}`);
-//   }
-// });
-// m.start();
-
-// m.learn('foo');

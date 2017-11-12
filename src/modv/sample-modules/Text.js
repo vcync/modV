@@ -8,15 +8,15 @@ class Text extends Module2D {
       info: {
         name: 'Text',
         author: '2xAA',
-        version: 0.1
-      }
+        version: 0.1,
+      },
     });
 
     this.add({
       type: 'textControl',
       variable: 'text',
       label: 'Text',
-      default: 'modV'
+      default: 'modV',
     });
 
     this.add({
@@ -27,14 +27,14 @@ class Text extends Module2D {
       varType: 'int',
       min: 50,
       max: 200,
-      default: 50
+      default: 50,
     });
 
     this.add({
       type: 'textControl',
       variable: 'customFont',
       label: 'Font',
-      default: 'Helvetica'
+      default: 'Helvetica',
     });
 
     this.add({
@@ -60,9 +60,9 @@ class Text extends Module2D {
         [132, 195, 223],
         [82, 127, 162],
         [209, 121, 211],
-        [181, 152, 220]
+        [181, 152, 220],
       ], // generated here: http://tools.medialab.sciences-po.fr/iwanthue/
-      timePeriod: 500
+      timePeriod: 500,
     });
   }
 
@@ -103,7 +103,7 @@ class Text extends Module2D {
       200 / 2,
       canvas.height / 2,
       Math.abs(this.h.height),
-      canvas.width - 200
+      canvas.width - 200,
     );
   }
 

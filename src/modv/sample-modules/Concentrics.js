@@ -8,7 +8,7 @@ class Concentrics extends Module2D {
         author: '2xAA',
         version: 0.2,
         meyda: ['zcr', 'rms'],
-      }
+      },
     });
 
     const controls = [];
@@ -17,7 +17,7 @@ class Concentrics extends Module2D {
       type: 'checkboxControl',
       variable: 'rms',
       label: 'Use RMS',
-      checked: false
+      checked: false,
     });
 
     controls.push({
@@ -27,7 +27,7 @@ class Concentrics extends Module2D {
       varType: 'int',
       min: 0,
       max: 30,
-      step: 1
+      step: 1,
     });
 
     controls.push({
@@ -38,7 +38,7 @@ class Concentrics extends Module2D {
       min: 0,
       max: 100,
       step: 1,
-      default: 5
+      default: 5,
     });
 
     controls.push({
@@ -49,7 +49,7 @@ class Concentrics extends Module2D {
       min: 0,
       max: 200,
       step: 1,
-      default: 40
+      default: 40,
     });
 
     controls.push({
@@ -61,7 +61,7 @@ class Concentrics extends Module2D {
       max: 20,
       step: 1,
       default: 1,
-      strict: true
+      strict: true,
     });
 
     this.add(controls);
@@ -77,14 +77,14 @@ class Concentrics extends Module2D {
         ctx.strokeStyle = `hsl(${this.hue}, 50%, 50%)`;
         ctx.lineWidth = strokeWeight;
 
-        for(let i = 0; i < zcr; i += 1) {
+        for (let i = 0; i < zcr; i += 1) {
           ctx.beginPath();
           ctx.arc(this.x, this.y, i * spacing, 0, 2 * Math.PI);
           ctx.closePath();
           ctx.stroke();
         }
 
-        if(this.hue > 360) this.hue = 0;
+        if (this.hue > 360) this.hue = 0;
         else this.hue += 0.2;
       };
     };
@@ -103,10 +103,10 @@ class Concentrics extends Module2D {
 
   draw({ canvas, context, features, delta }) {
     let zcr = features.zcr;
-    if(this.rms) zcr = features.rms;
+    if (this.rms) zcr = features.rms;
 
     zcr *= this.intensity;
-    if(this.rms) {
+    if (this.rms) {
       zcr *= 50;
     }
 

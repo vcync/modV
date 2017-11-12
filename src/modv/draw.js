@@ -16,7 +16,7 @@ function draw(δ) {
     const bufferCanvas = modV.bufferCanvas;
     const bufferContext = modV.bufferContext;
 
-    if(!modV.meyda) return;
+    if (!modV.meyda) return;
     const features = modV.meyda.get(audioFeatures);
 
     layers.forEach((Layer, LayerIndex) => {
@@ -30,19 +30,19 @@ function draw(δ) {
       const inheritFrom = Layer.inheritFrom;
       const pipeline = Layer.pipeline;
 
-      if(pipeline && clearing) {
+      if (pipeline && clearing) {
         bufferContext.clearRect(0, 0, bufferCanvas.width, bufferCanvas.height);
       }
 
-      if(clearing) {
+      if (clearing) {
         context.clearRect(0, 0, canvas.width, canvas.height);
       }
 
-      if(inherit) {
+      if (inherit) {
         let lastCanvas;
 
-        if(inheritFrom < 0) {
-          if(LayerIndex - 1 > -1) {
+        if (inheritFrom < 0) {
+          if (LayerIndex - 1 > -1) {
             lastCanvas = modV.layers[LayerIndex - 1].canvas;
           } else {
             lastCanvas = modV.outputCanvas;
@@ -53,31 +53,33 @@ function draw(δ) {
 
         context.drawImage(lastCanvas, 0, 0, lastCanvas.width, lastCanvas.height);
 
-        if(pipeline) bufferContext.drawImage(lastCanvas, 0, 0, lastCanvas.width, lastCanvas.height);
+        if (pipeline) {
+          bufferContext.drawImage(lastCanvas, 0, 0, lastCanvas.width, lastCanvas.height);
+        }
       }
 
-      if(!enabled || alpha === 0) return;
+      if (!enabled || alpha === 0) return;
 
       Layer.moduleOrder.forEach((moduleName, moduleIndex) => {
         const Module = getActiveModule(moduleName);
 
-        if(!Module.info.enabled || Module.info.alpha === 0) return;
+        if (!Module.info.enabled || Module.info.alpha === 0) return;
 
-        if(pipeline && moduleIndex !== 0) {
+        if (pipeline && moduleIndex !== 0) {
           canvas = bufferCanvas;
-        } else if(pipeline) {
+        } else if (pipeline) {
           canvas = Layer.canvas;
         }
 
-        if(Module instanceof Module2D) {
-          if(pipeline) {
+        if (Module instanceof Module2D) {
+          if (pipeline) {
             context.clearRect(0, 0, canvas.width, canvas.height);
             context.drawImage(
               bufferCanvas,
               0,
               0,
               canvas.width,
-              canvas.height
+              canvas.height,
             );
 
             Module.render({
@@ -86,7 +88,7 @@ function draw(δ) {
               video: modV.videoStream,
               features,
               meyda: modV.meyda,
-              delta: δ
+              delta: δ,
             });
 
             bufferContext.clearRect(0, 0, canvas.width, canvas.height);
@@ -95,7 +97,7 @@ function draw(δ) {
               0,
               0,
               canvas.width,
-              canvas.height
+              canvas.height,
             );
           } else {
             Module.render({
@@ -104,19 +106,19 @@ function draw(δ) {
               video: modV.videoStream,
               features,
               meyda: modV.meyda,
-              delta: δ
+              delta: δ,
             });
           }
         }
 
-        if(Module instanceof ModuleShader) {
+        if (Module instanceof ModuleShader) {
           webgl.texture = gl.texImage2D(
             gl.TEXTURE_2D,
             0,
             gl.RGBA,
             gl.RGBA,
             gl.UNSIGNED_BYTE,
-            canvas
+            canvas,
           );
 
           webgl.resize(canvas.width, canvas.height);
@@ -124,7 +126,7 @@ function draw(δ) {
           webglRender({
             Module,
             canvas,
-            delta: δ
+            delta: δ,
           });
 
           context.save();
@@ -132,12 +134,12 @@ function draw(δ) {
           context.globalCompositeOperation = Module.info.compositeOperation || 'normal';
 
           // Copy Shader Canvas to Main Canvas
-          if(pipeline) {
+          if (pipeline) {
             bufferContext.clearRect(
               0,
               0,
               canvas.width,
-              canvas.height
+              canvas.height,
             );
 
             bufferContext.drawImage(
@@ -145,7 +147,7 @@ function draw(δ) {
               0,
               0,
               canvas.width,
-              canvas.height
+              canvas.height,
             );
           } else {
             context.drawImage(
@@ -153,22 +155,22 @@ function draw(δ) {
               0,
               0,
               canvas.width,
-              canvas.height
+              canvas.height,
             );
           }
 
           context.restore();
         }
 
-        if(Module instanceof ModuleISF) {
-          if(pipeline) {
+        if (Module instanceof ModuleISF) {
+          if (pipeline) {
             context.clearRect(0, 0, canvas.width, canvas.height);
             context.drawImage(
               bufferCanvas,
               0,
               0,
               canvas.width,
-              canvas.height
+              canvas.height,
             );
 
             Module.render({
@@ -177,7 +179,7 @@ function draw(δ) {
               video: modV.videoStream,
               features,
               meyda: modV.meyda,
-              delta: δ
+              delta: δ,
             });
 
             bufferContext.clearRect(0, 0, canvas.width, canvas.height);
@@ -186,7 +188,7 @@ function draw(δ) {
               0,
               0,
               canvas.width,
-              canvas.height
+              canvas.height,
             );
           } else {
             Module.render({
@@ -195,19 +197,19 @@ function draw(δ) {
               video: modV.videoStream,
               features,
               meyda: modV.meyda,
-              delta: δ
+              delta: δ,
             });
           }
         }
 
-        if(pipeline) {
+        if (pipeline) {
           context.clearRect(0, 0, canvas.width, canvas.height);
           context.drawImage(
             bufferCanvas,
             0,
             0,
             canvas.width,
-            canvas.height
+            canvas.height,
           );
         }
       });
@@ -220,7 +222,7 @@ function draw(δ) {
         previewValues.x,
         previewValues.y,
         previewValues.width,
-        previewValues.height
+        previewValues.height,
       );
       resolve();
     });

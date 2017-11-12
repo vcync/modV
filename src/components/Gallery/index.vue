@@ -88,13 +88,13 @@
     data() {
       return {
         currentActiveDrag: null,
-        phrase: ''
+        phrase: '',
       };
     },
     computed: {
       ...mapGetters('modVModules', {
         currentDragged: 'currentDragged',
-        modules: 'registry'
+        modules: 'registry',
       }),
       moduleShader() {
         return Object.keys(this.modules)
@@ -119,17 +119,17 @@
             result[key] = this.modules[key];
             return result;
           }, {});
-      }
+      },
     },
     methods: {
       ...mapActions('modVModules', [
-        'removeActiveModule'
+        'removeActiveModule',
       ]),
       ...mapMutations('modVModules', [
-        'setCurrentDragged'
+        'setCurrentDragged',
       ]),
       ...mapMutations('layers', [
-        'removeModuleFromLayer'
+        'removeModuleFromLayer',
       ]),
       search(textIn, termIn) {
         const text = textIn.toLowerCase().trim();
@@ -150,26 +150,26 @@
       },
       dragover(e) {
         e.preventDefault();
-        if(!this.currentDragged) return;
+        if (!this.currentDragged) return;
         const draggedNode = document.querySelectorAll(`.active-item[data-module-name="${this.currentDragged}"]`)[1];
         draggedNode.classList.add('deletable');
       },
       dragleave(e) {
         console.log('leave gallery');
         e.preventDefault();
-        if(!this.currentDragged) return;
+        if (!this.currentDragged) return;
         const draggedNode = document.querySelectorAll(`.active-item[data-module-name="${this.currentDragged}"]`)[1];
         draggedNode.classList.remove('deletable');
       },
       menuIconClicked() {
         this.$emit('menuIconClicked');
-      }
+      },
     },
     components: {
       draggable,
       GalleryItem,
-      SearchBar
-    }
+      SearchBar,
+    },
   };
 </script>
 

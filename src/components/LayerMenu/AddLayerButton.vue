@@ -15,9 +15,9 @@
     name: 'addLayerButton',
     methods: {
       ...mapActions('layers', [
-        'addLayer'
-      ])
-    }
+        'addLayer',
+      ]),
+    },
   };
 </script>
 

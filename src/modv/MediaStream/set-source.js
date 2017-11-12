@@ -8,11 +8,11 @@ function userMediaSuccess(stream, ids) {
 
     // If we have opened a previous AudioContext, destroy it as the number of AudioContexts
     // are limited to 6
-    if(this.audioContext) this.audioContext.close();
+    if (this.audioContext) this.audioContext.close();
 
     // Create new Audio Context
     this.audioContext = new window.AudioContext({
-      latencyHint: 'playback'
+      latencyHint: 'playback',
     });
 
     // Create new Audio Analyser
@@ -41,7 +41,7 @@ function userMediaSuccess(stream, ids) {
       audioContext: this.audioContext,
       source: this.audioStream,
       bufferSize: 512,
-      windowingFunction: 'rect'
+      windowingFunction: 'rect',
     });
 
     // Tell the rest of the script we're all good.
@@ -56,24 +56,24 @@ function userMediaSuccess(stream, ids) {
 function userMediaError(reject) {
   console.log('Error setting up WebAudio - please make sure you\'ve allowed modV access.');
   alert('Please allow modV access to an audio input or additionally, a video input.'); //eslint-disable-line
-  if(reject) reject();
+  if (reject) reject();
 }
 
 function setMediaSource({ audioSourceId, videoSourceId }) {
   return new Promise((resolve, reject) => {
     const constraints = {};
 
-    if(audioSourceId) {
+    if (audioSourceId) {
       constraints.audio = {
         echoCancellation: { exact: false },
-        deviceId: audioSourceId
+        deviceId: audioSourceId,
       };
     }
 
-    if(videoSourceId) {
+    if (videoSourceId) {
       constraints.video = {
         echoCancellation: { exact: false },
-        deviceId: videoSourceId
+        deviceId: videoSourceId,
       };
     }
 
