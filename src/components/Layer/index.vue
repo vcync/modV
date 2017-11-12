@@ -66,7 +66,7 @@
     name: 'layer',
     props: [
       'Layer',
-      'LayerIndex'
+      'LayerIndex',
     ],
     computed: {
       modules: {
@@ -75,11 +75,11 @@
         },
         set(value) {
           this.updateModuleOrder({ layerIndex: this.LayerIndex, order: value });
-        }
+        },
       },
       name() {
-        if(!this.Layer) return '';
-        if(!('name' in this.Layer)) return '';
+        if (!this.Layer) return '';
+        if (!('name' in this.Layer)) return '';
         return this.Layer.name;
       },
       locked() {
@@ -89,8 +89,8 @@
         return this.Layer.collapsed;
       },
       ...mapGetters('layers', [
-        'focusedLayerIndex'
-      ])
+        'focusedLayerIndex',
+      ]),
     },
     methods: {
       drop(e) {
@@ -99,7 +99,7 @@
 
         console.log(e);
 
-        if(e.item.classList.contains('gallery-item')) {
+        if (e.item.classList.contains('gallery-item')) {
           e.clone.parentNode.insertBefore(e.item, e.clone);
           e.clone.parentNode.removeChild(e.clone);
 
@@ -107,7 +107,7 @@
             this.addModuleToLayer({
               module,
               layerIndex: this.LayerIndex,
-              position: e.newIndex
+              position: e.newIndex,
             });
           });
         } else {
@@ -118,7 +118,7 @@
         }
       },
       end(e) {
-        if(e.item) {
+        if (e.item) {
           e.item.classList.remove('deletable');
         }
       },
@@ -128,18 +128,18 @@
         'toggleCollapsed',
         'addModuleToLayer',
         'updateModuleOrder',
-        'moveModuleInstance'
+        'moveModuleInstance',
       ]),
       ...mapActions('modVModules', [
-        'createActiveModule'
+        'createActiveModule',
       ]),
       ...mapMutations('layers', [
         'setLayerName',
-        'setLayerFocus'
+        'setLayerFocus',
       ]),
       startNameEdit() {
         const node = this.$el.querySelector('.layer-title');
-        if(node.classList.contains('editable')) return;
+        if (node.classList.contains('editable')) return;
 
         node.classList.add('editable');
         node.contentEditable = true;
@@ -151,30 +151,30 @@
         node.removeEventListener('blur', this.stopNameEdit);
         e.preventDefault();
 
-        if(!node.classList.contains('editable')) return;
+        if (!node.classList.contains('editable')) return;
 
         const inputText = node.textContent.trim();
 
         node.contentEditable = false;
         node.classList.remove('editable');
 
-        if(inputText.length > 0) {
+        if (inputText.length > 0) {
           this.setLayerName({
             LayerIndex: this.LayerIndex,
-            name: inputText
+            name: inputText,
           });
         } else {
           node.textContent = this.Layer.name;
         }
       },
       focusLayer() {
-        if(this.focusedLayerIndex === this.LayerIndex) return;
+        if (this.focusedLayerIndex === this.LayerIndex) return;
         this.setLayerFocus({
-          LayerIndex: this.LayerIndex
+          LayerIndex: this.LayerIndex,
         });
       },
       dragover(e) {
-        if(this.locked) e.dataTransfer.dropEffect = 'none';
+        if (this.locked) e.dataTransfer.dropEffect = 'none';
       },
       dragstart(e) {
         const moduleName = e.target.dataset.moduleName;
@@ -186,12 +186,12 @@
       },
       clickToggleCollapse() {
         this.toggleCollapsed({ layerIndex: this.LayerIndex });
-      }
+      },
     },
     components: {
       ActiveModule,
-      draggable
-    }
+      draggable,
+    },
   };
 </script>
 

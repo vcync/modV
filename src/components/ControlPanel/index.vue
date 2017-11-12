@@ -31,16 +31,16 @@
     name: 'controlPanel',
     computed: {
       ...mapGetters('modVModules', [
-        'focusedModule'
+        'focusedModule',
       ]),
       name() {
-        if(!this.focusedModule) return '';
+        if (!this.focusedModule) return '';
         return this.focusedModule.info.name;
       },
       controls() {
-        if(!this.focusedModule) return [];
+        if (!this.focusedModule) return [];
         return this.focusedModule.info.controls;
-      }
+      },
     },
     methods: {
 
@@ -53,8 +53,8 @@
       rangeControl,
       selectControl,
       textControl,
-      twoDPointControl
-    }
+      twoDPointControl,
+    },
   };
 </script>
 

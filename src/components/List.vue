@@ -26,17 +26,17 @@
           group: {
             name: 'layers',
             pull: true,
-            put: true
+            put: true,
           },
           handle: '.handle',
-          chosenClass: 'chosen'
-        }
+          chosenClass: 'chosen',
+        },
       };
     },
     computed: {
       ...mapGetters('layers', {
         allLayers: 'allLayers',
-        focusedLayer: 'focusedLayer'
+        focusedLayer: 'focusedLayer',
       }),
       layers: {
         get() {
@@ -44,26 +44,26 @@
         },
         set(value) {
           this.updateLayers({ layers: value });
-        }
-      }
+        },
+      },
     },
     components: {
       draggable,
-      Layer: LayerComponent
+      Layer: LayerComponent,
     },
     methods: {
       ...mapActions('layers', [
-        'addLayer'
+        'addLayer',
       ]),
       ...mapMutations('layers', [
-        'updateLayers'
-      ])
+        'updateLayers',
+      ]),
     },
     created() {
       this.addLayer().then(({ Layer }) => {
         this.Layer = Layer;
       });
-    }
+    },
   };
 </script>
 

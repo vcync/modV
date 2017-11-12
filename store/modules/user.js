@@ -9,7 +9,7 @@ const state = {
   currentAudioId: '',
   currentVideoId: '',
   showStats: false,
-  constrainToOneOne: false
+  constrainToOneOne: false,
 };
 
 // getters
@@ -20,14 +20,14 @@ const getters = {
   currentAudioSource: state => state.currentAudioId,
   currentVideoSource: state => state.currentVideoId,
   showStats: state => state.showStats,
-  constrainToOneOne: state => state.constrainToOneOne
+  constrainToOneOne: state => state.constrainToOneOne,
 };
 
 // actions
 const actions = {
   setUseRetina({ commit, state }, { useRetina }) {
     let dpr = window.devicePixelRatio || 1;
-    if(!useRetina) dpr = 1;
+    if (!useRetina) dpr = 1;
 
     commit('setUseRetina', { useRetina });
 
@@ -40,17 +40,23 @@ const actions = {
     store.dispatch('windows/resize', { width, height, dpr });
   },
   setCurrentAudioSource({ commit, state }, { sourceId }) {
-    modV.setMediaStreamSource({ audioSourceId: sourceId, videoSourceId: state.currentVideoId }).then(() => {
+    modV.setMediaStreamSource({
+      audioSourceId: sourceId,
+      videoSourceId: state.currentVideoId,
+    }).then(() => {
       commit('setCurrentAudioSource', { sourceId });
     });
   },
   setCurrentVideoSource({ commit, state }, { sourceId }) {
-    modV.setMediaStreamSource({ audioSourceId: state.currentAudioId, videoSourceId: sourceId }).then(() => {
+    modV.setMediaStreamSource({
+      audioSourceId: state.currentAudioId,
+      videoSourceId: sourceId,
+    }).then(() => {
       commit('setCurrentVideoSource', { sourceId });
     });
   },
   setShowStats({ commit, state }, shouldShowStats) {
-    if(shouldShowStats) {
+    if (shouldShowStats) {
       stats.dom.classList.remove('hidden');
     } else {
       stats.dom.classList.add('hidden');
@@ -61,7 +67,7 @@ const actions = {
   setConstrainToOneOne({ commit, state }, shouldConstrain) {
     commit('setConstrainToOneOne', shouldConstrain);
     store.dispatch('size/updateSize');
-  }
+  },
 };
 
 // mutations
@@ -86,7 +92,7 @@ const mutations = {
   },
   setConstrainToOneOne(state, shouldConstrain) {
     state.constrainToOneOne = shouldConstrain;
-  }
+  },
 };
 
 export default {
@@ -94,5 +100,5 @@ export default {
   state,
   getters,
   actions,
-  mutations
+  mutations,
 };

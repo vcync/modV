@@ -5,15 +5,15 @@ function awesomeText(ctx, text, x, y, lineHeight, maxWidth, textAlign = 'center'
   const lines = [];
   let sliceFrom = 0;
 
-  for(let i = 0; i < words.length; i += 1) {
+  for (let i = 0; i < words.length; i += 1) {
     const chunk = words.slice(sliceFrom, i).join(' ');
     const last = i === words.length - 1;
     const bigger = ctx.measureText(chunk).width > maxWidth;
-    if(bigger) {
+    if (bigger) {
       lines.push(words.slice(sliceFrom, i).join(' '));
       sliceFrom = i;
     }
-    if(last) {
+    if (last) {
       lines.push(words.slice(sliceFrom, words.length).join(' '));
       sliceFrom = i;
     }
@@ -22,11 +22,11 @@ function awesomeText(ctx, text, x, y, lineHeight, maxWidth, textAlign = 'center'
   let offsetX = 0;
   let offsetY = 0;
 
-  if(textAlign === 'center') offsetX = maxWidth / 2;
+  if (textAlign === 'center') offsetX = maxWidth / 2;
 
   offsetY -= (lines.length - 1) * (lineHeight / 2);
 
-  for(let i = 0; i < lines.length; i += 1) {
+  for (let i = 0; i < lines.length; i += 1) {
     ctx.fillText(lines[i], x + offsetX, y + offsetY);
     offsetY += lineHeight;
   }

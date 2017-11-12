@@ -25,24 +25,24 @@
   export default {
     name: 'tabs',
     props: [
-      'titles'
+      'titles',
     ],
     data() {
       return {
-        focusedTabIndex: 1
+        focusedTabIndex: 1,
       };
     },
     computed: {
       amount() {
-        if(!this.titles) return 0;
+        if (!this.titles) return 0;
         return this.titles.length;
-      }
+      },
     },
     methods: {
       focusTab(tabIndex) {
         this.focusedTabIndex = tabIndex;
-      }
-    }
+      },
+    },
   };
 </script>
 

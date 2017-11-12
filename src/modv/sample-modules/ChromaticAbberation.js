@@ -12,19 +12,19 @@ class ChromaticAbberation extends ModuleShader {
         uniforms: {
           rOffset: {
             type: 'f',
-            value: 1.0
+            value: 1.0,
           },
           gOffset: {
             type: 'f',
-            value: 1.015
+            value: 1.015,
           },
           bOffset: {
             type: 'f',
-            value: 1.03
-          }
-        } // Three.JS style uniforms
+            value: 1.03,
+          },
+        }, // Three.JS style uniforms
       },
-      fragmentShader: chromaticAbberationFrag
+      fragmentShader: chromaticAbberationFrag,
     });
 
     this.add({
@@ -35,7 +35,7 @@ class ChromaticAbberation extends ModuleShader {
       min: 1.0,
       max: 2.0,
       step: 0.001,
-      default: 1.0
+      default: 1.0,
     });
 
     this.add({
@@ -46,7 +46,7 @@ class ChromaticAbberation extends ModuleShader {
       min: 1.0,
       max: 2.0,
       step: 0.001,
-      default: 1.015
+      default: 1.015,
     });
 
     this.add({
@@ -57,7 +57,7 @@ class ChromaticAbberation extends ModuleShader {
       min: 1.0,
       max: 2.0,
       step: 0.001,
-      default: 1.03
+      default: 1.03,
     });
   }
 }

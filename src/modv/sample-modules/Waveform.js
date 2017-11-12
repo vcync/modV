@@ -9,8 +9,8 @@ class Waveform extends Module2D {
         name: 'Waveform',
         author: '2xAA',
         version: 0.1,
-        meyda: ['buffer']
-      }
+        meyda: ['buffer'],
+      },
     });
 
     this.add({
@@ -21,7 +21,7 @@ class Waveform extends Module2D {
       min: 1,
       max: 30,
       default: 1,
-      strict: true
+      strict: true,
     });
 
     this.add({
@@ -31,7 +31,7 @@ class Waveform extends Module2D {
       varType: 'float',
       min: 1,
       max: 100,
-      default: 75
+      default: 75,
     });
 
     this.add({
@@ -43,8 +43,8 @@ class Waveform extends Module2D {
         { label: 'Hanning', value: 'hanning', selected: true },
         { label: 'Hamming', value: 'hamming' },
         { label: 'Blackman', value: 'blackman' },
-        { label: 'Sine', value: 'sine' }
-      ]
+        { label: 'Sine', value: 'sine' },
+      ],
     });
 
     this.add({
@@ -70,9 +70,9 @@ class Waveform extends Module2D {
         [111, 165, 141],
         [212, 201, 154],
         [159, 152, 107],
-        [209, 229, 175]
+        [209, 229, 175],
       ], // generated here: http://tools.medialab.sciences-po.fr/iwanthue/
-      timePeriod: 500
+      timePeriod: 500,
     });
   }
 
@@ -94,7 +94,9 @@ class Waveform extends Module2D {
     context.beginPath();
     for (let i = 0; i < ampArr.length - 1; i += this.strokeWeight) {
       const width = Math.round(Math.map(i, 0, ampArr.length - 1, 0, canvas.width));
-      const newWidth = Math.round(Math.map(i + this.strokeWeight, 0, ampArr.length - 1, 0, canvas.width));
+      const newWidth = Math.round(
+        Math.map(i + this.strokeWeight, 0, ampArr.length - 1, 0, canvas.width),
+      );
       let y = (canvas.height / 2) - ((height * ampArr[i]));
       y = Math.round(y);
       let yNext = (canvas.height / 2) - ((height * ampArr[i + this.strokeWeight]));

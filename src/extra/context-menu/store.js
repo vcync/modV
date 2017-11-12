@@ -5,8 +5,8 @@ const state = {
   activeMenus: [],
   visible: false,
   hooks: {
-    default: []
-  }
+    default: [],
+  },
 };
 
 // getters
@@ -15,7 +15,7 @@ const getters = {
   menu: state => id => state.menus[id],
   activeMenus: state => state.activeMenus.map(id => state.menus[id]),
   realActiveMenus: state => state.activeMenus,
-  hooks: state => state.hooks
+  hooks: state => state.hooks,
 };
 
 // actions
@@ -28,7 +28,7 @@ const actions = {
   },
   popup({ commit }, { id, x, y }) {
     commit('popup', { id, x, y });
-  }
+  },
 };
 
 // mutations
@@ -39,18 +39,18 @@ const mutations = {
   },
   popdown(state, { id }) {
     const indexToSplice = state.activeMenus.indexOf(id);
-    if(indexToSplice < 0) return;
+    if (indexToSplice < 0) return;
     state.activeMenus.splice(indexToSplice, 1);
   },
   popdownAll(state, not) {
     let toKeep = [];
-    if(not) toKeep = toKeep.concat(not);
+    if (not) toKeep = toKeep.concat(not);
 
     Vue.set(state, 'activeMenus', toKeep);
   },
   popup(state, { id, x, y }) {
     const existingMenuId = state.activeMenus.indexOf(id);
-    if(existingMenuId < 0) state.activeMenus.push(id);
+    if (existingMenuId < 0) state.activeMenus.push(id);
     Vue.set(state.menus[id], 'x', x);
     Vue.set(state.menus[id], 'y', y);
     Vue.set(state.menus[id], 'visible', true);
@@ -60,13 +60,13 @@ const mutations = {
     console.log(state.menus[id].items[index][property]);
   },
   addHook(state, { hookName, hook }) {
-    if(!(hookName in state.hooks)) {
+    if (!(hookName in state.hooks)) {
       Vue.set(state.hooks, hookName, []);
     }
 
     const hookArray = state.hooks[hookName];
     hookArray.push(hook);
-  }
+  },
 };
 
 export default {
@@ -74,5 +74,5 @@ export default {
   state,
   getters,
   actions,
-  mutations
+  mutations,
 };

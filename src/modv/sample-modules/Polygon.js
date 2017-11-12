@@ -8,8 +8,8 @@ class Polygon extends Module2D {
         name: 'Polygon',
         author: '2xAA',
         version: 0.2,
-        meyda: ['rms', 'zcr']
-      }
+        meyda: ['rms', 'zcr'],
+      },
     });
 
     const controls = [];
@@ -22,7 +22,7 @@ class Polygon extends Module2D {
       min: 0,
       max: 30,
       step: 1,
-      default: 15
+      default: 15,
     });
 
     controls.push({
@@ -33,7 +33,7 @@ class Polygon extends Module2D {
       min: 0,
       max: 300,
       step: 1,
-      default: 60
+      default: 60,
     });
 
     controls.push({
@@ -45,21 +45,21 @@ class Polygon extends Module2D {
       max: 20,
       step: 1,
       default: 1,
-      strict: true
+      strict: true,
     });
 
     controls.push({
       type: 'checkboxControl',
       variable: 'fill',
       label: 'Fill',
-      checked: false
+      checked: false,
     });
 
     controls.push({
       type: 'checkboxControl',
       variable: 'rotateToggle',
       label: 'Rotate',
-      checked: false
+      checked: false,
     });
 
     controls.push({
@@ -70,7 +70,7 @@ class Polygon extends Module2D {
       min: 0.1,
       max: 10.0,
       step: 0.1,
-      default: 5.0
+      default: 5.0,
     });
 
     controls.push({
@@ -96,9 +96,9 @@ class Polygon extends Module2D {
         [132, 195, 223],
         [82, 127, 162],
         [209, 121, 211],
-        [181, 152, 220]
+        [181, 152, 220],
       ], // generated here: http://tools.medialab.sciences-po.fr/iwanthue/
-      timePeriod: 16
+      timePeriod: 16,
     });
 
     this.add(controls);
@@ -140,9 +140,9 @@ class Polygon extends Module2D {
     let analysed;
     let rotate = 0;
 
-    if(this.rotateToggle) rotate = ((delta / 1000) * this.rotateSpeed);
+    if (this.rotateToggle) rotate = ((delta / 1000) * this.rotateSpeed);
 
-    if(this.soundType) {
+    if (this.soundType) {
       analysed = (features.zcr / 10) * this.intensity;
     } else {
       analysed = (features.rms * 10) * this.intensity;
@@ -159,11 +159,11 @@ class Polygon extends Module2D {
       Math.round((canvas.height / 2)),
       analysed + this.shapeSize,
       3 + Math.round(analysed / 10),
-      -(Math.PI / 2) + rotate
+      -(Math.PI / 2) + rotate,
     );
     context.closePath();
     context.stroke();
-    if(this.fill) context.fill();
+    if (this.fill) context.fill();
   }
 
 

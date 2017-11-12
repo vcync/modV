@@ -18,11 +18,11 @@
     name: 'selectControl',
     props: [
       'module',
-      'control'
+      'control',
     ],
     data() {
       return {
-        value: undefined
+        value: undefined,
       };
     },
     computed: {
@@ -43,16 +43,16 @@
       },
       grouped() {
         return this.control.grouped;
-      }
+      },
     },
     methods: {
       dropdownChanged(item) {
         this.value = item[0].value;
-      }
+      },
     },
     beforeMount() {
       this.value = this.module[this.variable];
-      if(typeof this.value === 'undefined') this.value = this.defaultValue;
+      if (typeof this.value === 'undefined') this.value = this.defaultValue;
     },
     watch: {
       module() {
@@ -60,8 +60,8 @@
       },
       value() {
         this.module[this.variable] = this.value;
-      }
-    }
+      },
+    },
   };
 </script>
 

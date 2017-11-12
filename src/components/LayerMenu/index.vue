@@ -13,8 +13,8 @@
     name: 'layerMenu',
     components: {
       AddLayerButton,
-      RemoveLayerButton
-    }
+      RemoveLayerButton,
+    },
   };
 </script>
 

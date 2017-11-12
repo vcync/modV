@@ -14,46 +14,46 @@
     name: 'paletteSelector',
     props: [
       'value',
-      'profile'
+      'profile',
     ],
     data() {
       return {
-        currentPalette: null
+        currentPalette: null,
       };
     },
     computed: {
       ...mapGetters('profiles', [
-        'allProfiles'
+        'allProfiles',
       ]),
       selectData() {
         const data = [];
         const allProfiles = this.allProfiles;
 
-        if(!Object.prototype.hasOwnProperty.call(allProfiles, this.profile)) return [];
+        if (!Object.prototype.hasOwnProperty.call(allProfiles, this.profile)) return [];
         const profile = allProfiles[this.profile];
 
         Object.keys(profile.palettes).forEach((paletteName) => {
           data.push({
             label: paletteName,
-            value: paletteName
+            value: paletteName,
           });
         });
 
         data.sort((a, b) => {
-          if(a.label < b.label) return -1;
-          if(a.label > b.label) return 1;
+          if (a.label < b.label) return -1;
+          if (a.label > b.label) return 1;
           return 0;
         });
 
         return data;
-      }
+      },
     },
     methods: {
       dropdownChanged(e) {
         this.currentPalette = e[0].value;
         this.$emit('input', this.currentPalette);
-      }
-    }
+      },
+    },
   };
 </script>
 

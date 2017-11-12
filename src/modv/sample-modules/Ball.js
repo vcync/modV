@@ -10,28 +10,28 @@ class Ball extends Module2D {
         meyda: ['rms', 'zcr'],
         saveData: {
           soundType: {
-            type: 'boolean'
+            type: 'boolean',
           },
           intensity: {
-            type: 'number'
+            type: 'number',
           },
           amount: {
-            type: 'number'
+            type: 'number',
           },
           baseSize: {
-            type: 'number'
+            type: 'number',
           },
           size: {
-            type: 'number'
+            type: 'number',
           },
           colour: {
-            type: 'string'
+            type: 'string',
           },
           speed: {
-            type: 'number'
+            type: 'number',
           },
           wrap: {
-            type: 'boolean'
+            type: 'boolean',
           },
           balls: {
             type: 'array',
@@ -54,36 +54,36 @@ class Ball extends Module2D {
                     type: 'object',
                     properties: {
                       x: {
-                        type: 'number'
+                        type: 'number',
                       },
                       y: {
-                        type: 'number'
-                      }
-                    }
+                        type: 'number',
+                      },
+                    },
                   },
                   velocity: {
                     type: 'object',
                     properties: {
                       x: {
-                        type: 'number'
+                        type: 'number',
                       },
                       y: {
-                        type: 'number'
-                      }
-                    }
+                        type: 'number',
+                      },
+                    },
                   },
                   xReverse: {
-                    type: 'boolean'
+                    type: 'boolean',
                   },
                   yReverse: {
-                    type: 'boolean'
-                  }
-                }
-              }
-            ]
-          }
-        }
-      }
+                    type: 'boolean',
+                  },
+                },
+              },
+            ],
+          },
+        },
+      },
     });
 
     // <
@@ -93,7 +93,7 @@ class Ball extends Module2D {
       type: 'checkboxControl',
       variable: 'wrap',
       label: 'Wrap',
-      checked: false
+      checked: false,
     });
 
     controls.push({
@@ -104,7 +104,7 @@ class Ball extends Module2D {
       min: 0,
       max: 50,
       step: 1,
-      default: 15
+      default: 15,
     });
 
     controls.push({
@@ -115,7 +115,7 @@ class Ball extends Module2D {
       min: 1,
       max: 50,
       step: 1,
-      default: 5
+      default: 5,
     });
 
     controls.push({
@@ -126,7 +126,7 @@ class Ball extends Module2D {
       min: 1,
       max: 50,
       step: 1,
-      default: 2
+      default: 2,
     });
 
     controls.push({
@@ -137,14 +137,14 @@ class Ball extends Module2D {
       min: 0,
       max: 30,
       step: 1,
-      default: 15
+      default: 15,
     });
 
     controls.push({
       type: 'checkboxControl',
       variable: 'soundType',
       label: 'RMS (unchecked) / ZCR (checked)',
-      checked: false
+      checked: false,
     });
 
     controls.push({
@@ -170,9 +170,9 @@ class Ball extends Module2D {
         [132, 195, 223],
         [82, 127, 162],
         [209, 121, 211],
-        [181, 152, 220]
+        [181, 152, 220],
       ], // generated here: http://tools.medialab.sciences-po.fr/iwanthue/
-      timePeriod: 500
+      timePeriod: 500,
     });
 
     this.add(controls);
@@ -183,7 +183,7 @@ class Ball extends Module2D {
     Object.keys(data).forEach((key) => {
       const value = data[key];
 
-      switch(key) {
+      switch (key) {
         default:
           this[key] = value;
           break;
@@ -191,7 +191,7 @@ class Ball extends Module2D {
         case 'balls': {
           const balls = value;
           this.balls = [];
-          for(let i = 0; i < balls.length; i += 1) {
+          for (let i = 0; i < balls.length; i += 1) {
             const ball = balls[i];
             const newBall = new (this.ballObj())();
             newBall.speed = this.speed;
@@ -233,13 +233,13 @@ class Ball extends Module2D {
   }
 
   draw({ canvas, context, features }) {
-    if(this.soundType) {
+    if (this.soundType) {
       this.analysed = (features.zcr / 10) * this.intensity;
     } else {
       this.analysed = (features.rms * 10) * this.intensity;
     }
 
-    for(let i = 0; i < this.amount; i += 1) {
+    for (let i = 0; i < this.amount; i += 1) {
       this.balls[i].speed = this.speed;
       this.balls[i].wrap = this.wrap;
       this.balls[i].drawUpdate(canvas, context, this.analysed, this.colour);
@@ -248,7 +248,7 @@ class Ball extends Module2D {
 
   setupBalls(canvas) {
     this.balls = [];
-    for(let i = 0; i < 50; i += 1) {
+    for (let i = 0; i < 50; i += 1) {
       const newBall = new (this.ballObj())();
       newBall.speed = this.speed;
       newBall.bounds.width = canvas.width;
@@ -283,41 +283,67 @@ class Ball extends Module2D {
         this.bounds.height = canvas.height;
         ctx.beginPath();
         ctx.fillStyle = colour;
-        ctx.arc(this.position.x, this.position.y, self.baseSize + (self.size * amp), 0, 2 * Math.PI, true);
+        ctx.arc(
+          this.position.x,
+          this.position.y,
+          self.baseSize + (self.size * amp),
+          0,
+          2 * Math.PI,
+          true,
+        );
         ctx.fill();
         ctx.closePath();
 
-        if(this.wrap) {
-          if(this.position.x - self.baseSize < 1) this.position.x = (this.bounds.width - 1) - self.baseSize;
-          if(this.position.y - self.baseSize < 1) this.position.y = (this.bounds.height - 1) - self.baseSize;
+        if (this.wrap) {
+          if (this.position.x - self.baseSize < 1) {
+            this.position.x = (this.bounds.width - 1) - self.baseSize;
+          }
+          if (this.position.y - self.baseSize < 1) {
+            this.position.y = (this.bounds.height - 1) - self.baseSize;
+          }
 
-          if(this.position.x + self.baseSize > this.bounds.width - 1) this.position.x = self.baseSize + 1;
-          if(this.position.y + self.baseSize > this.bounds.height - 1) this.position.y = self.baseSize + 1;
+          if (this.position.x + self.baseSize > this.bounds.width - 1) {
+            this.position.x = self.baseSize + 1;
+          }
+          if (this.position.y + self.baseSize > this.bounds.height - 1) {
+            this.position.y = self.baseSize + 1;
+          }
         } else {
-          if(this.position.x - self.baseSize < 1 || this.position.x + self.baseSize > this.bounds.width - 1) this.xReverse = !this.xReverse;
-          if(this.position.y - self.baseSize < 1 || this.position.y + self.baseSize > this.bounds.height - 1) this.yReverse = !this.yReverse;
+          if (
+            this.position.x - self.baseSize < 1 ||
+            this.position.x + self.baseSize > this.bounds.width - 1
+          ) {
+            this.xReverse = !this.xReverse;
+          }
+
+          if (
+            this.position.y - self.baseSize < 1 ||
+            this.position.y + self.baseSize > this.bounds.height - 1
+          ) {
+            this.yReverse = !this.yReverse;
+          }
         }
 
-        if(this.xReverse) this.velocity.x = -this.speed;
+        if (this.xReverse) this.velocity.x = -this.speed;
         else this.velocity.x = this.speed;
 
-        if(this.yReverse) this.velocity.y = -this.speed;
+        if (this.yReverse) this.velocity.y = -this.speed;
         else this.velocity.y = this.speed;
 
         this.position.x += this.velocity.x;
         this.position.y += this.velocity.y;
 
-        if(this.velocity.y === 0) this.velocity.y = -this.velocity.y + 1;
+        if (this.velocity.y === 0) this.velocity.y = -this.velocity.y + 1;
       };
 
       this.setBounds = function setBounds(width, height) {
         this.bounds = {
           width,
-          height
+          height,
         };
 
-        if(this.position.x > this.bounds.width) this.position.x = this.bounds.width - 1;
-        if(this.position.y > this.bounds.height) this.position.y = this.bounds.height - 1;
+        if (this.position.x > this.bounds.width) this.position.x = this.bounds.width - 1;
+        if (this.position.y > this.bounds.height) this.position.y = this.bounds.height - 1;
       };
     };
   }

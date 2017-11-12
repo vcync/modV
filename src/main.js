@@ -26,7 +26,7 @@ Vue.config.productionTip = false;
 Object.defineProperty(Vue.prototype, '$modV', {
   get() {
     return modV;
-  }
+  },
 });
 
 document.body.appendChild(stats.dom);
@@ -36,25 +36,25 @@ stats.dom.classList.add('hidden');
 
 Vue.use(Vuebar);
 Vue.use(Buefy, {
-  defaultIconPack: 'fa'
+  defaultIconPack: 'fa',
 });
 Vue.use(VueThrottleEvent);
 Vue.use(Dropdown);
 Vue.use(Shortkey);
 Vue.use(contextMenu, {
-  store
+  store,
 });
 Vue.use(featureAssignment, {
-  store
+  store,
 });
 Vue.use(expression, {
-  store
+  store,
 });
 Vue.use(midiAssignment, {
-  store
+  store,
 });
 Vue.use(lfo, {
-  store
+  store,
 });
 Vue.use(vmodal);
 
@@ -71,7 +71,7 @@ window.modVVue = new Vue({
   components: { App },
   store,
   data: {
-    modV
+    modV,
   },
   mounted() {
     modV.start();
@@ -92,7 +92,7 @@ window.modVVue = new Vue({
       'MirrorEdge',
       'EdgeDistort',
       'Polygon',
-      'Concentrics'/* ,
+      'Concentrics', /* ,
       'SolidColor' */
     ];
 
@@ -162,9 +162,9 @@ window.modVVue = new Vue({
                 name: fileName,
                 author: '2xAA',
                 version: 0.1,
-                meyda: []
+                meyda: [],
               },
-              fragmentShader
+              fragmentShader,
             });
           }
         }
@@ -176,7 +176,7 @@ window.modVVue = new Vue({
     });
 
     attachResizeHandles();
-  }
+  },
 });
 
 export default window.modVVue;

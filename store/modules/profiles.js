@@ -4,13 +4,16 @@ import { modV } from '@/modv';
 import packageData from '@/../package.json';
 
 const state = {
-  profiles: {}
+  profiles: {},
 };
 
 // getters
 const getters = {
   allProfiles: state => state.profiles,
-  getPaletteFromProfile: state => ({ paletteName, profileName }) => state.profiles[profileName].palettes[paletteName]
+  getPaletteFromProfile: state => ({
+    paletteName,
+    profileName,
+  }) => state.profiles[profileName].palettes[paletteName],
 };
 
 // actions
@@ -31,7 +34,7 @@ const actions = {
       name: presetName || `Preset by ${author} at ${datetime}`,
       datetime,
       modvVersion: packageData.version,
-      author: store.getters['user/name']
+      author: store.getters['user/name'],
     };
 
     return preset;
@@ -70,7 +73,7 @@ const actions = {
               module.info.originalName = data.originalName;
               module.info.version = data.version;
 
-              if('import' in module) {
+              if ('import' in module) {
                 console.log('import found in', module);
                 module.import(data.values);
               } else {
@@ -80,7 +83,7 @@ const actions = {
                   store.commit('modVModules/setActiveModuleControlValue', {
                     moduleName,
                     variable,
-                    value
+                    value,
                   });
                 });
               }
@@ -88,7 +91,7 @@ const actions = {
               store.dispatch('layers/addModuleToLayer', {
                 module,
                 layerIndex,
-                position: idx
+                position: idx,
               });
             });
           });
@@ -103,9 +106,9 @@ const actions = {
       request: 'save-palette',
       profile: profileName,
       name: paletteName,
-      payload: colors
+      payload: colors,
     });
-  }
+  },
 };
 
 // mutations
@@ -123,7 +126,7 @@ const mutations = {
   addPaletteToProfile(state, { profileName, paletteName, colors }) {
     const profile = state.profiles[profileName];
     Vue.set(profile.palettes, paletteName, colors);
-  }
+  },
 };
 
 export default {
@@ -131,5 +134,5 @@ export default {
   state,
   getters,
   actions,
-  mutations
+  mutations,
 };

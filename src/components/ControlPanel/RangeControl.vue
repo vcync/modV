@@ -45,10 +45,10 @@
   import { mapGetters, mapMutations } from 'vuex';
   import { Menu, MenuItem } from 'nwjs-menu-browser';
 
-  if(!window.nw) {
+  if (!window.nw) {
     window.nw = {
       Menu,
-      MenuItem
+      MenuItem,
     };
   }
 
@@ -58,13 +58,13 @@
     name: 'rangeControl',
     props: [
       'module',
-      'control'
+      'control',
     ],
     data() {
       return {
         menuOptions: {
           match: ['rangeControl'],
-          menuItems: []
+          menuItems: [],
         },
         valueIn: 0,
         updateQueue: [],
@@ -74,7 +74,7 @@
         context: null,
         mousePressed: false,
         value: 0,
-        canvasX: 0
+        canvasX: 0,
       };
     },
     computed: {
@@ -82,7 +82,7 @@
         return this.getValueFromActiveModule(this.moduleName, this.variable).processed;
       },
       ...mapGetters('modVModules', [
-        'getValueFromActiveModule'
+        'getValueFromActiveModule',
       ]),
       moduleName() {
         return this.module.info.name;
@@ -113,11 +113,11 @@
       },
       strict() {
         return this.control.strict || false;
-      }
+      },
     },
     methods: {
       ...mapMutations('modVModules', [
-        'setActiveModuleControlValue'
+        'setActiveModuleControlValue',
       ]),
       numberInput(value) {
         this.valueIn = this.formatValue(value);
@@ -137,7 +137,7 @@
         this.mousePressed = false;
       },
       mouseMove(e) {
-        if(!this.mousePressed) return;
+        if (!this.mousePressed) return;
         this.calculateValues(e);
       },
       touchstart() {
@@ -156,7 +156,7 @@
         const rect = this.$refs.canvas.getBoundingClientRect();
         let clientX;
 
-        if('clientX' in e) {
+        if ('clientX' in e) {
           clientX = e.clientX;
         } else {
           e.preventDefault();
@@ -165,7 +165,7 @@
 
         const x = clientX - Math.round(rect.left);
 
-        if(this.mousePressed || clicked) {
+        if (this.mousePressed || clicked) {
           this.valueIn = this.mapValue(x);
           this.currentValue = this.valueIn;
           this.canvasX = x;
@@ -175,16 +175,16 @@
       formatValue(valueIn) {
         let value = valueIn;
 
-        if(this.strict) {
-          if(value < this.min) {
+        if (this.strict) {
+          if (value < this.min) {
             value = this.min;
           }
 
-          if(value > this.max) {
+          if (value > this.max) {
             value = this.max;
           }
 
-          if(this.varType === 'int') {
+          if (this.varType === 'int') {
             value = parseInt(value, 10);
           }
         }
@@ -201,7 +201,7 @@
 
         context.fillStyle = '#ffa500';
         context.fillRect(0, 0, x, canvas.height);
-      }
+      },
     },
     beforeMount() {
       this.$data.currentValue = this.processedValue;
@@ -209,11 +209,11 @@
       this.$data.menuOptions.menuItems.push(
         new nw.MenuItem({
           label: this.label,
-          enabled: false
+          enabled: false,
         }),
         new nw.MenuItem({
-          type: 'separator'
-        })
+          type: 'separator',
+        }),
       );
     },
     mounted() {
@@ -234,13 +234,13 @@
         const value = this.valueIn;
 
         let val;
-        if(this.varType === 'int') val = parseInt(value, 10);
-        else if(this.varType === 'float') val = parseFloat(value, 10);
+        if (this.varType === 'int') val = parseInt(value, 10);
+        else if (this.varType === 'float') val = parseFloat(value, 10);
 
         this.setActiveModuleControlValue({
           moduleName: this.moduleName,
           variable: this.variable,
-          value: val
+          value: val,
         });
       },
       processedValue() {
@@ -249,8 +249,8 @@
       },
       canvasX() {
         this.draw();
-      }
-    }
+      },
+    },
   };
 </script>
 

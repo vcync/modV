@@ -8,34 +8,34 @@ const state = {
   visible: false,
   activeControlData: {
     moduleName: '',
-    controlVariable: ''
-  }
+    controlVariable: '',
+  },
 };
 
 const getters = {
   assignments: state => state.assignments,
   activeControlData: state => state.activeControlData,
   assignment: state => (moduleName, controlVariable) => {
-    if(!state.assignments[moduleName]) return false;
+    if (!state.assignments[moduleName]) return false;
     return state.assignments[moduleName][controlVariable];
-  }
+  },
 };
 
 const actions = {
   addAssignment({ commit }, { moduleName, controlVariable, waveform, frequency }) {
     const Module = store.getters['modVModules/getActiveModule'](moduleName);
-    if(!Module) return;
-    if(typeof Module.info.controls[controlVariable] === 'undefined') return;
+    if (!Module) return;
+    if (typeof Module.info.controls[controlVariable] === 'undefined') return;
 
     const controller = new LFO({
       waveform,
-      freq: frequency
+      freq: frequency,
     });
 
     const assignment = {
       moduleName,
       controlVariable,
-      controller
+      controller,
     };
 
     commit('addAssignment', { assignment });
@@ -43,24 +43,24 @@ const actions = {
   setActiveControlData({ commit }, { moduleName, controlVariable }) {
     modvVue.$modal.show('expression-input');
     commit('setActiveControlData', { moduleName, controlVariable });
-  }
+  },
 };
 
 const mutations = {
   addAssignment(state, { assignment }) {
-    if(!state.assignments[assignment.moduleName]) {
+    if (!state.assignments[assignment.moduleName]) {
       Vue.set(state.assignments, assignment.moduleName, {});
     }
 
     Vue.set(state.assignments[assignment.moduleName], assignment.controlVariable, assignment);
   },
   setLfoFunction(state, { moduleName, controlVariable, expressionFunction }) {
-    if(!state.assignments[moduleName][controlVariable]) return;
+    if (!state.assignments[moduleName][controlVariable]) return;
 
     Vue.set(state.assignments[moduleName][controlVariable], 'func', expressionFunction);
   },
   setLfoFrequency(state, { moduleName, controlVariable, frequency }) {
-    if(!state.assignments[moduleName][controlVariable]) return;
+    if (!state.assignments[moduleName][controlVariable]) return;
 
     Vue.set(state.assignments[moduleName][controlVariable], 'freq', frequency);
   },
@@ -73,7 +73,7 @@ const mutations = {
   setActiveControlData(state, { moduleName, controlVariable }) {
     Vue.set(state.activeControlData, 'moduleName', moduleName);
     Vue.set(state.activeControlData, 'controlVariable', controlVariable);
-  }
+  },
 };
 
 export default {
@@ -81,5 +81,5 @@ export default {
   state,
   getters,
   actions,
-  mutations
+  mutations,
 };

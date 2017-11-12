@@ -17,9 +17,9 @@
     },
     methods: {
       ...mapActions('windows', [
-        'createWindow'
-      ])
-    }
+        'createWindow',
+      ]),
+    },
   };
 </script>
 

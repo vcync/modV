@@ -6,7 +6,7 @@ export default function left(resizeTargetIn) {
     const galleryOuterNode = document.querySelector('.gallery-wrapper');
 
     window.addEventListener('mousedown', (e) => {
-      if(e.which > 1) return;
+      if (e.which > 1) return;
       allowDrag = true;
       resizeTarget = e.target;
     });
@@ -17,8 +17,8 @@ export default function left(resizeTargetIn) {
     });
 
     window.addEventListener('mousemove', (e) => {
-      if(!allowDrag) return;
-      if(resizeTarget !== handle) return;
+      if (!allowDrag) return;
+      if (resizeTarget !== handle) return;
 
       const percentageWidth = (e.clientX / window.innerWidth) * 100;
 
