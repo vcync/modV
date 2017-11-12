@@ -9,8 +9,8 @@ class ModuleShader extends Module {
   /**
    * The usual ModuleSettings Object with some extra keys
    * @param {ModuleSettings} settings
-   * @param {String} settings.vertexFile (optional) Location of the Vertex shader file
-   * @param {String} settings.fragmentFile (optional) Location of the Fragment shader file
+   * @param {String} settings.vertexFile    (optional) Location of the Vertex shader file
+   * @param {String} settings.fragmentFile  (optional) Location of the Fragment shader file
    * @param {Object} settings.info.uniforms (optional) (THREE.js style) Uniforms to pass the shader
    */
   constructor(settings) {
@@ -100,8 +100,8 @@ class ModuleShader extends Module {
   }
 
   /**
-   * Make program information (used by twgl) from a previously compiled and
-   * stored program in modV's Shader Environment, then store it on the Module (Module.programInfo)
+   * Make program information (used by twgl) from a previously compiled and stored program
+   * in modV's Shader Environment, then store it on the Module (Module.programInfo)
    * @private
    * @param  {modV}   modV A reference to a modV instance
    */

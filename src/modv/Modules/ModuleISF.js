@@ -10,9 +10,9 @@ class ModuleISF extends Module {
   /**
    * The usual ModuleSettings Object with some extra keys
    * @param {ModuleSettings} settings
-   * @param {String} settings.vertexShader (optional) Location of the Vertex shader file
+   * @param {String} settings.vertexShader   (optional) Location of the Vertex shader file
    * @param {String} settings.fragmentShader (optional) Location of the Fragment shader file
-   * @param {Object} settings.info.uniforms (optional) (THREE.js style) Uniforms to pass the shader
+   * @param {Object} settings.info.uniforms  (optional) (THREE.js style) Uniforms to pass the shader
    */
   constructor(settings) {
     super(settings);
@@ -123,8 +123,8 @@ class ModuleISF extends Module {
             type: 'selectControl',
             variable: input.NAME,
             label: input.NAME,
-            enum: input.VALUES.map(
-              (value, idx) => ({
+            enum: input.VALUES
+              .map((value, idx) => ({
                 label: input.LABELS[idx],
                 value,
                 selected: (value === input.DEFAULT),

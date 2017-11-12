@@ -1,11 +1,5 @@
 <template>
-  <div
-    class="column active-item"
-    :class="{current: focused}"
-    tabindex="0"
-    @focus="focusActiveModule"
-    @dragstart="dragstart"
-  >
+  <div class="column active-item" :class="{current: focused}" tabindex="0" @focus="focusActiveModule" @dragstart="dragstart">
     <div class="columns is-gapless">
       <!-- <canvas class="preview"></canvas> --><!-- TODO: create preview option on mouseover item -->
       <div class="column is-12">
@@ -30,15 +24,7 @@
                       </div>
                       <div class="control-group opacity-group">
                         <label for="">Opacity</label>
-                        <input
-                          type="range"
-                          min="0"
-                          max="1"
-                          value="1"
-                          step="any"
-                          class="opacity"
-                          v-model="opacity"
-                        >
+                        <input type="range" min="0" max="1" value = "1" step="any" class="opacity" v-model="opacity">
                       </div>
                       <div class="control-group blending-group">
                         <label for="">Blending</label>
@@ -248,8 +234,7 @@
       this.enabled = this.module.info.enabled;
       this.opacity = this.module.info.alpha;
 
-      this.operations[0].children
-        .find(item => item.value === this.module.info.compositeOperation).selected = true;
+      this.operations[0].children.find(item => item.value === this.module.info.compositeOperation).selected = true; //eslint-disable-line
     },
     watch: {
       compositeOperation() {

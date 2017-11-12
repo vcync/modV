@@ -40,8 +40,8 @@ class Module2D extends Module {
    *
    * @param  {DOMHighResTimeStamp}      delta         Timestamp returned by requestAnimationFrame
    * @param  {Number}                   bpm           The detected or tapped BPM
-   * @param  {Boolean}                  kick          Indicates if BeatDetektor detected a
-   *                                                  kick in the audio stream
+   * @param  {Boolean}                  kick          Indicates if BeatDetektor detected a kick in
+   *                                                  the audio stream
    */
   draw({ canvas, context, video, features, meyda, delta, bpm, kick }) {} //eslint-disable-line
 }
