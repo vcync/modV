@@ -112,9 +112,10 @@
       collapsed() {
         return this.Layer.collapsed;
       },
-      ...mapGetters('layers', [
-        'focusedLayerIndex',
-      ]),
+      ...mapGetters('layers', {
+        focusedLayerIndex: 'focusedLayerIndex',
+        layers: 'allLayers',
+      }),
     },
     methods: {
       ...mapActions('layers', [
@@ -230,6 +231,52 @@
 
         this.menuOptions.menuItems.splice(0, this.menuOptions.menuItems.length);
 
+        // Create inheritance index options
+
+        // <b-dropdown-item value="-1">Last Layer</b-dropdown-item>
+        //     <b-dropdown-item
+        //       v-for="layer, idx in layers"
+        //       :key="idx"
+        //       :value="idx"
+        //     >{{ layer.name }}</b-dropdown-item>
+
+        const inheritFromSubmenu = new nw.Menu({});
+
+        const item = new nw.MenuItem({
+          type: 'checkbox',
+          label: 'Last Layer',
+          checked: this.Layer.inheritFrom === -1,
+          click: function click() {
+            that.setInheritFrom({
+              layerIndex: that.LayerIndex,
+              inheritFrom: -1,
+            });
+          },
+        });
+
+        inheritFromSubmenu.append(item);
+
+        this.layers.forEach((layer, idx) => {
+          const item = new nw.MenuItem({
+            type: 'checkbox',
+            label: layer.name,
+            checked: this.Layer.inheritFrom === idx,
+            click: function click() {
+              that.setInheritFrom({
+                layerIndex: that.LayerIndex,
+                inheritFrom: idx,
+              });
+            },
+          });
+
+          inheritFromSubmenu.append(item);
+        });
+
+        const inheritFromItem = new nw.MenuItem({
+          label: 'Inherit From',
+          submenu: inheritFromSubmenu,
+        });
+
         this.menuOptions.menuItems.push(
           new nw.MenuItem({
             label: this.name,
@@ -260,6 +307,9 @@
               });
             },
           }),
+
+          inheritFromItem,
+
           new nw.MenuItem({
             type: 'checkbox',
             label: 'Pipeline',
