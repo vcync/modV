@@ -7,6 +7,7 @@
         collapsed: collapsed
       }"
       @click="focusLayer"
+      v-context-menu="menuOptions"
     >
     <div class="columns is-gapless is-multiline">
       <div class="column is-12">
@@ -61,6 +62,16 @@
   import { mapActions, mapGetters, mapMutations } from 'vuex';
   import ActiveModule from '@/components/ActiveModule';
   import draggable from 'vuedraggable';
+  import { Menu, MenuItem } from 'nwjs-menu-browser';
+
+  if (!window.nw) {
+    window.nw = {
+      Menu,
+      MenuItem,
+    };
+  }
+
+  const nw = window.nw;
 
   export default {
     name: 'layer',
@@ -68,6 +79,19 @@
       'Layer',
       'LayerIndex',
     ],
+    data() {
+      return {
+        menuOptions: {
+          match: ['layerItem'],
+          menuItems: [],
+          createMenus: this.createMenus,
+        },
+        clearingChecked: false,
+        inheritChecked: false,
+        pipelineChecked: false,
+        drawToOutputChecked: false,
+      };
+    },
     computed: {
       modules: {
         get() {
@@ -93,6 +117,26 @@
       ]),
     },
     methods: {
+      ...mapActions('layers', [
+        'addLayer',
+        'toggleLocked',
+        'toggleCollapsed',
+        'addModuleToLayer',
+        'updateModuleOrder',
+        'moveModuleInstance',
+      ]),
+      ...mapActions('modVModules', [
+        'createActiveModule',
+      ]),
+      ...mapMutations('layers', [
+        'setLayerName',
+        'setLayerFocus',
+        'setClearing',
+        'setInherit',
+        'setInheritFrom',
+        'setPipeline',
+        'setDrawToOutput',
+      ]),
       drop(e) {
         e.preventDefault();
         const moduleName = e.item.dataset.moduleName;
@@ -122,21 +166,6 @@
           e.item.classList.remove('deletable');
         }
       },
-      ...mapActions('layers', [
-        'addLayer',
-        'toggleLocked',
-        'toggleCollapsed',
-        'addModuleToLayer',
-        'updateModuleOrder',
-        'moveModuleInstance',
-      ]),
-      ...mapActions('modVModules', [
-        'createActiveModule',
-      ]),
-      ...mapMutations('layers', [
-        'setLayerName',
-        'setLayerFocus',
-      ]),
       startNameEdit() {
         const node = this.$el.querySelector('.layer-title');
         if (node.classList.contains('editable')) return;
@@ -186,6 +215,85 @@
       },
       clickToggleCollapse() {
         this.toggleCollapsed({ layerIndex: this.LayerIndex });
+      },
+      updateChecked() {
+        const Layer = this.Layer;
+
+        this.clearingChecked = Layer.clearing;
+        this.inheritChecked = Layer.inherit;
+        this.inheritanceIndex = Layer.inheritFrom;
+        this.pipelineChecked = Layer.pipeline;
+        this.drawToOutputChecked = Layer.drawToOutput;
+      },
+      createMenus() {
+        const that = this;
+
+        this.menuOptions.menuItems.splice(0, this.menuOptions.menuItems.length);
+
+        this.menuOptions.menuItems.push(
+          new nw.MenuItem({
+            label: this.name,
+            enabled: false,
+          }),
+          new nw.MenuItem({
+            type: 'separator',
+          }),
+          new nw.MenuItem({
+            type: 'checkbox',
+            label: 'Clearing',
+            checked: this.clearingChecked,
+            click: function click() {
+              that.setClearing({
+                layerIndex: that.LayerIndex,
+                clearing: this.checked,
+              });
+            },
+          }),
+          new nw.MenuItem({
+            type: 'checkbox',
+            label: 'Inherit',
+            checked: this.inheritChecked,
+            click: function click() {
+              that.setInherit({
+                layerIndex: that.LayerIndex,
+                inherit: this.checked,
+              });
+            },
+          }),
+          new nw.MenuItem({
+            type: 'checkbox',
+            label: 'Pipeline',
+            checked: this.pipelineChecked,
+            click: function click() {
+              that.setPipeline({
+                layerIndex: that.LayerIndex,
+                pipeline: this.checked,
+              });
+            },
+          }),
+          new nw.MenuItem({
+            type: 'checkbox',
+            label: 'Draw To Output',
+            checked: this.drawToOutputChecked,
+            click: function click() {
+              that.setDrawToOutput({
+                layerIndex: that.LayerIndex,
+                drawToOutput: this.checked,
+              });
+            },
+          }),
+        );
+      },
+    },
+    beforeMount() {
+      this.updateChecked();
+    },
+    watch: {
+      Layer: {
+        handler() {
+          this.updateChecked();
+        },
+        deep: true,
       },
     },
     components: {

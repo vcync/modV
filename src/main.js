@@ -8,6 +8,8 @@ import VueThrottleEvent from 'vue-throttle-event';
 import Buefy from 'buefy';
 import Vuebar from 'vuebar';
 
+import Capitalize from '@/vuePlugins/capitalize-filter';
+
 import stats from '@/extra/stats';
 import { ModuleISF, modV } from './modv';
 import App from './App';
@@ -33,6 +35,8 @@ document.body.appendChild(stats.dom);
 stats.dom.style.left = null;
 stats.dom.style.right = 0;
 stats.dom.classList.add('hidden');
+
+Vue.use(Capitalize);
 
 Vue.use(Vuebar);
 Vue.use(Buefy, {

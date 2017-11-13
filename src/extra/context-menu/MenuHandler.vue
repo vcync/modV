@@ -1,9 +1,9 @@
 <template>
   <div>
     <context-menu
-      v-for="menu in activeMenus"
+      v-for="menu, idx in activeMenus"
       :options="menu"
-      :key="menu"
+      :key="idx"
     ></context-menu>
   </div>
 </template>

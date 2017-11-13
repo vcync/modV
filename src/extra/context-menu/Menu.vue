@@ -5,7 +5,7 @@
         <component
           is="contextMenuItem"
           v-for="item, idx in items"
-          :key="item"
+          :key="idx"
           :options="item"
           :parentOptions="options"
           :parentOffsetWidth="offsetWidth"

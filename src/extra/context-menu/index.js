@@ -25,6 +25,12 @@ function buildMenu(e, id, options, vnode, store) {
   menu.$id = id;
   menu.isSubmenu = false;
 
+  if ('createMenus' in options) {
+    if (typeof options.createMenus === 'function') {
+      options.createMenus();
+    }
+  }
+
   options.menuItems.forEach((item, idx) => menu.insert(item, idx));
 
   const moduleName = vnode.context.moduleName;
