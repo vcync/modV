@@ -275,6 +275,7 @@
         const inheritFromItem = new nw.MenuItem({
           label: 'Inherit From',
           submenu: inheritFromSubmenu,
+          tooltip: 'The Layer to inherit frames from',
         });
 
         this.menuOptions.menuItems.push(
@@ -288,6 +289,7 @@
           new nw.MenuItem({
             type: 'checkbox',
             label: 'Clearing',
+            tooltip: 'Clear this Layer at the beginning of its draw cycle',
             checked: this.clearingChecked,
             click: function click() {
               that.setClearing({
@@ -299,6 +301,7 @@
           new nw.MenuItem({
             type: 'checkbox',
             label: 'Inherit',
+            tooltip: 'Inherit frames from the \'Inherit From\' Layer',
             checked: this.inheritChecked,
             click: function click() {
               that.setInherit({
@@ -313,6 +316,9 @@
           new nw.MenuItem({
             type: 'checkbox',
             label: 'Pipeline',
+            tooltip: `Modules pass frames directly to the next Module,
+              bypassing drawing to the Layer until the end Module's draw cycle`
+              .replace(/\s\s+/g, ' '),
             checked: this.pipelineChecked,
             click: function click() {
               that.setPipeline({
@@ -324,6 +330,7 @@
           new nw.MenuItem({
             type: 'checkbox',
             label: 'Draw To Output',
+            tooltip: 'Draw the Layer to the Output Window(s) at the end of the Layer\'s draw cycle',
             checked: this.drawToOutputChecked,
             click: function click() {
               that.setDrawToOutput({

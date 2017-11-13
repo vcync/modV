@@ -6,7 +6,7 @@ export default function attachResizeHandles() {
   const attachResizeTop = top();
   const attachResizeLeft = left();
 
-  attachResizeTop(document.querySelector('resize-handle-top'), () => {
+  attachResizeTop(document.querySelector('.resize-handle-top'), () => {
     store.dispatch('size/resizePreviewCanvas');
 
     const vuebarContainers = document.querySelectorAll('.vb');
@@ -16,5 +16,5 @@ export default function attachResizeHandles() {
       element => window.modVVue.$vuebar.refreshScrollbar(element),
     );
   });
-  attachResizeLeft(document.querySelector('resize-handle-left'));
+  attachResizeLeft(document.querySelector('.resize-handle-left'));
 }

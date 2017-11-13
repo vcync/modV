@@ -57,7 +57,6 @@ const mutations = {
   },
   editItemProperty(state, { id, index, property, value }) {
     Vue.set(state.menus[id].items[index], property, value);
-    console.log(state.menus[id].items[index][property]);
   },
   addHook(state, { hookName, hook }) {
     if (!(hookName in state.hooks)) {

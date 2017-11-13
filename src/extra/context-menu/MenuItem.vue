@@ -2,7 +2,7 @@
   <li class="menu-item" :class="classes" ref="menuitem" @mouseover='mouseover' @click='clicked'>
     <div class="checkmark"></div>
     <div class="context-menu-label">
-      <span class="context-menu-label-text">{{ label }}</span>
+      <span class="context-menu-label-text" :title="tooltip">{{ label }}</span>
     </div>
     <div class="modifiers">{{ modifiers }}</div>
   </li>
@@ -41,6 +41,9 @@
       },
       submenu() {
         return this.options.submenu;
+      },
+      tooltip() {
+        return this.options.tooltip;
       },
       submenuActive() {
         if (!this.submenu) return false;
