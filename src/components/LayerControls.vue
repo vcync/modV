@@ -83,10 +83,7 @@
         'setPipeline',
         'setDrawToOutput',
       ]),
-    },
-    watch: {
-      name() {
-        if (!this.Layer) return;
+      updateChecked() {
         const Layer = this.Layer;
 
         this.clearingChecked = Layer.clearing;
@@ -94,6 +91,15 @@
         this.inheritanceIndex = Layer.inheritFrom;
         this.pipelineChecked = Layer.pipeline;
         this.drawToOutputChecked = Layer.drawToOutput;
+      },
+    },
+    watch: {
+      Layer: {
+        handler() {
+          if (!this.Layer) return;
+          this.updateChecked();
+        },
+        deep: true,
       },
       clearingChecked() {
         this.setClearing({
@@ -116,12 +122,8 @@
     },
     mounted() {
       if (!this.Layer) return;
-      const Layer = this.Layer;
-      this.clearingChecked = Layer.clearing;
-      this.inheritChecked = Layer.inherit;
-      this.inheritanceIndex = Layer.inheritFrom;
-      this.pipelineChecked = Layer.pipeline;
-      this.drawToOutputChecked = Layer.drawToOutput;
+
+      this.updateChecked();
     },
   };
 </script>
