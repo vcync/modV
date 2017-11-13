@@ -320,9 +320,10 @@ input[disabled][type="range"]::-webkit-slider-runnable-track {
 }
 
 /* Resize handles */
-resize-handle-top {
+.resize-handle-top {
   position: absolute;
   width: 100%;
+  max-height: 5px;
 
   top: 0;
   left: 0;
@@ -334,13 +335,13 @@ resize-handle-top {
   z-index: 102;
 }
 
-resize-handle-top:hover {
+.resize-handle-top:hover {
   border-top-width: 5px;
   cursor: ns-resize;
   top: -2px;
 }
 
-resize-handle-left {
+.resize-handle-left {
   position: absolute;
   height: 100%;
 
@@ -351,9 +352,10 @@ resize-handle-left {
 
   border-left: 1px solid #BBBBBB;
   transition: 50ms;
+  z-index: 102;
 }
 
-resize-handle-left:hover {
+.resize-handle-left:hover {
   border-left-width: 5px;
   cursor: ew-resize;
   left: -2px;

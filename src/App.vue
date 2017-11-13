@@ -12,7 +12,7 @@
           </div>
           <div class="column gallery-wrapper"> <!-- 4-5 -->
             <gallery @menuIconClicked='menuIconClicked'></gallery>
-            <resize-handle-left></resize-handle-left>
+            <div class="resize-handle-left"></div>
           </div>
         </div>
       </div>
@@ -32,7 +32,7 @@
             </div>
           </div>
         </div>
-        <resize-handle-top></resize-handle-top>
+        <div class="resize-handle-top"></div>
       </div>
 
     </section>
