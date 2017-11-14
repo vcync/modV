@@ -1,5 +1,5 @@
 import Vue from 'vue';
-import Ajv from 'ajv'; //eslint-disable-line
+import Ajv from 'ajv';
 import { modV } from '@/modv';
 import store from '../index';
 
