@@ -1,14 +1,21 @@
 <template>
-  <div class="image-control" :data-moduleName='moduleName'>
-    <label :for='inputId'>
+  <div class="image-control" :data-moduleName="moduleName">
+    <label :for="inputId">
       {{ label }}
     </label>
-    <dropdown
-      :data="layerNames"
-      :width='129'
-      :cbChanged="layerChanged"
-      :class="{'profile-selector': true}"
-    ></dropdown>
+
+    <b-dropdown class="dropdown" v-model="currentLayerIndex" :id="inputId">
+    <button class="button is-primary is-small" slot="trigger">
+      <span>{{ selectedLabel | capitalize }}</span>
+      <b-icon icon="angle-down"></b-icon>
+    </button>
+
+    <b-dropdown-item
+      v-for="data, idx in layerNames"
+      :key="idx"
+      :value="data.value"
+    >{{ data.label | capitalize }}</b-dropdown-item>
+  </b-dropdown>
   </div>
 </template>
 
@@ -23,7 +30,7 @@
     ],
     data() {
       return {
-        currentLayerIndex: undefined,
+        currentLayerIndex: -1,
       };
     },
     computed: {
@@ -38,7 +45,7 @@
 
         data.push({
           label: 'Inherit',
-          value: undefined,
+          value: -1,
           selected: typeof this.currentLayerIndex === 'undefined',
         });
 
@@ -72,10 +79,8 @@
       label() {
         return this.control.label;
       },
-    },
-    methods: {
-      layerChanged(e) {
-        this.currentLayerIndex = e[0].value;
+      selectedLabel() {
+        return this.currentLayerIndex < 0 ? 'Inherit' : this.layers[this.currentLayerIndex].name;
       },
     },
     watch: {

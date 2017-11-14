@@ -1,10 +1,16 @@
 <template>
-  <dropdown
-    :data="profileNames"
-    :width='129'
-    :cbChanged="profileChanged"
-    :class="{'profile-selector': true}"
-  ></dropdown>
+  <b-dropdown class="dropdown" v-model="currentProfile">
+    <button class="button is-primary is-small" slot="trigger">
+      <span>{{ currentProfile }}</span>
+      <b-icon icon="angle-down"></b-icon>
+    </button>
+
+    <b-dropdown-item
+      v-for="name, idx in profileNames"
+      :key="idx"
+      :value="name.value"
+    >{{ name.label }}</b-dropdown-item>
+  </b-dropdown>
 </template>
 
 <script>
@@ -39,9 +45,8 @@
         return data;
       },
     },
-    methods: {
-      profileChanged(e) {
-        this.currentProfile = e[0].value;
+    watch: {
+      currentProfile() {
         this.$emit('input', this.currentProfile);
       },
     },

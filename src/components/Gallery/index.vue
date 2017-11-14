@@ -155,7 +155,6 @@
         draggedNode.classList.add('deletable');
       },
       dragleave(e) {
-        console.log('leave gallery');
         e.preventDefault();
         if (!this.currentDragged) return;
         const draggedNode = document.querySelectorAll(`.active-item[data-module-name="${this.currentDragged}"]`)[1];

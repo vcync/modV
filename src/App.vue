@@ -1,8 +1,8 @@
 <template>
   <div id="app">
-    <section>
+    <section class="section">
       <div class="top">
-        <div class="columns is-gapless">
+        <div class="columns is-gapless is-mobile">
           <div class="column is-3 active-list-wrapper"> <!-- 1-5 -->
             <div v-bar="{ useScrollbarPseudo: true }">
               <list></list>
@@ -18,16 +18,16 @@
       </div>
 
       <div class="bottom">
-        <div class="columns is-gapless">
+        <div class="columns is-gapless is-mobile">
 
           <div class="column is-3">
-            <div class="control-panel-wrapper columns is-gapless">
+            <div class="control-panel-wrapper columns is-gapless is-mobile">
               <control-panel></control-panel>
             </div>
           </div>
 
           <div class="column is-3 main-control-area">
-            <div class="control-panel-wrapper columns is-gapless">
+            <div class="control-panel-wrapper columns is-gapless is-mobile">
               <layer-controls></layer-controls>
             </div>
           </div>
@@ -43,6 +43,13 @@
       :is="pluginComponent"
       :key="pluginComponent"
     ></component>
+    <notifications group="custom-template" position="top center">
+      <template slot="body" scope="props">
+        <b-message :title="props.item.title" type="is-danger" has-icon closable @close="props.close">
+          {{ props.item.text }}
+        </b-message>
+      </template>
+    </notifications>
   </div>
 </template>
 
@@ -117,30 +124,31 @@
     padding: 10px;
   }
 
-  section {
+  section.section {
     height: 100%;
     position: fixed;
     top: 0;
     bottom: 0;
     right: 0;
     left: 0;
+    padding: 0;
   }
 
-  section > .columns {
+  section.section > .columns {
     height: 100%;
   }
 
-  section .top {
+  section.section .top {
     height: 75%;
     max-height: calc(100% - 170px);
     min-height: 170px;
   }
 
-  section .top > .columns {
+  section.section .top > .columns {
     height: 100%;
   }
 
-  section .top .active-list {
+  section.section .top .active-list {
     min-height: 100%;
     box-sizing: border-box;
     position: relative;
@@ -157,7 +165,7 @@
     position: relative;
     top: -10%;
   }
-  section .top .active-list-wrapper:before {
+  section.section .top .active-list-wrapper:before {
     position: absolute;
     top: 50%;
     width: 100%;
@@ -171,11 +179,11 @@
     content: 'Drag Modules Here';
   }
 
-  section .top .active-list-wrapper {
+  section.section .top .active-list-wrapper {
     min-width: 306px;
   }
 
-  section .top .active-list-wrapper,
+  section.section .top .active-list-wrapper,
   .simplebar-content {
     height: 100%;
   }

@@ -142,8 +142,6 @@
         e.preventDefault();
         const moduleName = e.item.dataset.moduleName;
 
-        console.log(e);
-
         if (e.item.classList.contains('gallery-item')) {
           e.clone.parentNode.insertBefore(e.item, e.clone);
           e.clone.parentNode.removeChild(e.clone);

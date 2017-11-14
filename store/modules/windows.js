@@ -23,8 +23,8 @@ const getters = {
 
 // actions
 const actions = {
-  createWindow({ commit }) {
-    return new WindowController().then((windowController) => {
+  createWindow({ commit }, { Vue }) {
+    return new WindowController(Vue).then((windowController) => {
       const windowRef = windowController.window;
       delete windowController.window;
       windowController.on('resize', (width, height) => {

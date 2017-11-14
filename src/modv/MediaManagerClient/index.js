@@ -10,7 +10,7 @@ class MediaManagerClient {
     try {
       ws = new WebSocket('ws://localhost:3132/');
     } catch (e) {
-      console.warn('Media Manager not connected, retrying');
+      console.warn('Media Manager not connected, retrying'); //eslint-disable-line
     }
 
     this.ws = ws;
@@ -19,13 +19,13 @@ class MediaManagerClient {
 
     ws.addEventListener('error', () => {
       this.available = false;
-      console.warn('Media Manager not connected, retrying');
+      console.warn('Media Manager not connected, retrying'); //eslint-disable-line
     });
 
     ws.addEventListener('open', () => {
       this.update();
       this.available = true;
-      console.info('Media Manager connected, retrieving media list');
+      console.info('Media Manager connected, retrieving media list'); //eslint-disable-line
     });
 
     window.addEventListener('beforeunload', () => {
@@ -48,7 +48,7 @@ class MediaManagerClient {
 
   messageHandler(message) { //eslint-disable-line
     const parsed = JSON.parse(message.data);
-    console.log('Media Manager says:', parsed);
+    console.log('Media Manager says:', parsed); //eslint-disable-line
 
     if ('type' in parsed) {
       switch (parsed.type) {

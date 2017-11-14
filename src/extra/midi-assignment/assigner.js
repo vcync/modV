@@ -1,4 +1,5 @@
 import EventEmitter2 from 'eventemitter2';
+import Vue from '@/main';
 
 class MIDIAssigner extends EventEmitter2 {
   constructor(settings) {
@@ -37,14 +38,27 @@ class MIDIAssigner extends EventEmitter2 {
         this.handleDevices(access.inputs);
 
         access.addEventListener('statechange', (e) => {
-          console.log(e);
           this.handleDevices(e.currentTarget.inputs);
         });
-      }, (error) => {
-        console.error('MIDI access was refused. Please check your MIDI permissions', error);
+      }).catch(() => {
+        Vue.$notify({
+          title: 'MIDI Access Refused',
+          text: 'MIDI access was refused. Please check your MIDI permissions for modV and refresh the page',
+          type: 'error',
+          position: 'top center',
+          group: 'custom-template',
+          duration: -1,
+        });
       });
     } else {
-      console.error('No MIDI support in your browser.');
+      Vue.$notify({
+        title: 'Outdated Browser',
+        text: 'Unfortunately your browser does not support WebMIDI, please update to the latest Google Chrome release',
+        type: 'error',
+        position: 'top center',
+        group: 'custom-template',
+        duration: -1,
+      });
     }
   }
 

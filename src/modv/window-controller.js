@@ -3,7 +3,7 @@ import EventEmitter2 from 'eventemitter2';
 import { modV, draw } from '@/modv';
 
 class WindowController extends EventEmitter2 {
-  constructor() {
+  constructor(Vue) {
     super();
 
     return new Promise((resolve) => {
@@ -25,6 +25,19 @@ class WindowController extends EventEmitter2 {
             '_blank',
             'width=250, height=250, location=no, menubar=no, left=0',
           );
+
+          if (this.window === null || typeof this.window === 'undefined') {
+            Vue.$notify({
+              title: 'Could not open Output Window',
+              text: 'modV couldn\'t open an Output Window. Please check you\'ve allowed pop-ups - then reload',
+              type: 'error',
+              position: 'top center',
+              group: 'custom-template',
+              duration: -1,
+            });
+            return;
+          }
+
           if (this.window.document.readyState === 'complete') {
             this.configureWindow(resolve);
           } else {

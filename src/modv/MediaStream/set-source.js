@@ -1,5 +1,5 @@
 import Meyda from 'meyda';
-// import { modV } from '@/modv';
+import Vue from '@/main';
 
 function userMediaSuccess(stream, ids) {
   return new Promise((resolve) => {
@@ -41,21 +41,24 @@ function userMediaSuccess(stream, ids) {
       audioContext: this.audioContext,
       source: this.audioStream,
       bufferSize: 512,
-      windowingFunction: 'rect',
     });
 
     // Tell the rest of the script we're all good.
     this.mediaSourcesInited = true;
 
-    // if(!modV.mainRaf) modV.mainRaf = requestAnimationFrame(modV.loop.bind(modV));
-
     resolve(ids);
   });
 }
 
-function userMediaError(reject) {
-  console.log('Error setting up WebAudio - please make sure you\'ve allowed modV access.');
-  alert('Please allow modV access to an audio input or additionally, a video input.'); //eslint-disable-line
+function userMediaError(err, reject) {
+  Vue.$notify({
+    title: `WebAudio ${err.name}`,
+    text: 'Error gaining access to audio and video inputs - please make sure you\'ve allowed modV access.',
+    type: 'error',
+    position: 'top center',
+    group: 'custom-template',
+    duration: -1,
+  });
   if (reject) reject();
 }
 
@@ -82,8 +85,7 @@ function setMediaSource({ audioSourceId, videoSourceId }) {
       userMediaSuccess.bind(this)(mediaStream, { audioSourceId, videoSourceId })
         .then(resolve);
     }).catch((err) => {
-      console.error(err);
-      userMediaError(reject);
+      userMediaError(err, reject);
     });
   });
 }

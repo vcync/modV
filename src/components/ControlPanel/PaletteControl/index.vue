@@ -27,7 +27,7 @@
     </div>
 
     <div class="picker-wrapper">
-      <sketch-picker v-model="pickerColors" :class="{'hidden': !showPicker}" />
+      <sketch-picker v-model="pickerColors" v-show="showPicker" />
     </div>
 
     <div class="pure-control-group">
@@ -50,17 +50,10 @@
       >
     </div>
     <div class="pure-control-group">
-      <label :for='`${inputId}-useBpm`'>Sync duration to BPM</label>
-      <div class='customCheckbox'>
-        <input
-          :id='`${inputId}-useBpm`'
-          type='checkbox'
-          v-model='useBpmInput'
-        >
-        <label :for='`${inputId}-useBpm`'></label>
-      </div>
+      <label :for="`${inputId}-useBpm`">Sync duration to BPM</label>
+      <b-checkbox :id="`${inputId}-useBpm`" v-model="useBpmInput"></b-checkbox>
     </div>
-    <div class="pure-control-group" :class="{'hidden': !useBpmInput}">
+    <div class="pure-control-group" v-show="useBpmInput">
       <label :for='`${inputId}-bpmDivision`'>BPM Division</label>
       <input
         :id='`${inputId}-bpmDivision`'
@@ -77,9 +70,6 @@
         min='1'
         step='1'
       >
-    </div>
-    <div class="pure-control-group">
-      <hr>
     </div>
     <div class="pure-control-group">
       <label :for='`${inputId}-load-palette`'>Profile</label>

@@ -38,7 +38,6 @@ function compileExpression(expression, additionalScope = {}) {
   try {
     newFunction.eval(scope);
   } catch (e) {
-    console.error(e);
     return false;
   }
 
