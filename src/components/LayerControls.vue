@@ -19,7 +19,7 @@
               <b-icon icon="angle-down"></b-icon>
             </button>
 
-            <b-dropdown-item value="-1">Last Layer</b-dropdown-item>
+            <b-dropdown-item :value="-1">Last Layer</b-dropdown-item>
             <b-dropdown-item
               v-for="layer, idx in layers"
               :key="idx"
@@ -108,16 +108,28 @@
         });
       },
       inheritChecked() {
-        this.Layer.inherit = this.inheritChecked;
+        this.setInherit({
+          layerIndex: this.layerIndex,
+          inherit: this.inheritChecked,
+        });
       },
       inheritanceIndex() {
-        this.Layer.inheritFrom = this.inheritanceIndex;
+        this.setInheritFrom({
+          layerIndex: this.layerIndex,
+          inheritFrom: this.inheritanceIndex,
+        });
       },
       pipelineChecked() {
-        this.Layer.pipeline = this.pipelineChecked;
+        this.setPipeline({
+          layerIndex: this.layerIndex,
+          pipeline: this.pipelineChecked,
+        });
       },
       drawToOutputChecked() {
-        this.Layer.drawToOutput = this.drawToOutputChecked;
+        this.setDrawToOutput({
+          layerIndex: this.layerIndex,
+          drawToOutput: this.drawToOutputChecked,
+        });
       },
     },
     mounted() {
