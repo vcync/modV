@@ -25,6 +25,12 @@ function buildMenu(e, id, options, vnode, store) {
   menu.$id = id;
   menu.isSubmenu = false;
 
+  if ('createMenus' in options) {
+    if (typeof options.createMenus === 'function') {
+      options.createMenus();
+    }
+  }
+
   options.menuItems.forEach((item, idx) => menu.insert(item, idx));
 
   const moduleName = vnode.context.moduleName;
@@ -34,7 +40,7 @@ function buildMenu(e, id, options, vnode, store) {
   let hookItems = [];
 
   options.match.forEach((hook) => {
-    if(hook in hooks) hookItems = hookItems.concat(hooks[hook]);
+    if (hook in hooks) hookItems = hookItems.concat(hooks[hook]);
   });
 
   hookItems.forEach(item => menu.append(item.buildMenuItem(moduleName, controlVariable)));
@@ -51,7 +57,7 @@ function buildMenu(e, id, options, vnode, store) {
 
 const ContextMenu = {
   install(Vue, { store }) {
-    if(!store) throw new Error('No Vuex store detected');
+    if (!store) throw new Error('No Vuex store detected');
 
     Vue.component('contextMenuHandler', ContextMenuHandler);
 
@@ -60,12 +66,12 @@ const ContextMenu = {
         el.addEventListener('contextmenu', (e) => {
           buildMenu(e, vnode.context._uid, binding.value, vnode, store); //eslint-disable-line
         });
-      }
+      },
     });
 
     store.registerModule('contextMenu', contextMenuStore);
   },
-  component: ContextMenuHandler
+  component: ContextMenuHandler,
 };
 
 export default ContextMenu;

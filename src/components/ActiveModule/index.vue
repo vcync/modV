@@ -36,7 +36,7 @@
                           </button>
 
                           <b-dropdown-item
-                            disabled="true"
+                            :disabled="true"
                           >{{ blendModes.label }}</b-dropdown-item>
                           <b-dropdown-item
                             v-for="item in blendModes.children"
@@ -45,7 +45,7 @@
                           >{{ item.label }}</b-dropdown-item>
                           <hr class="dropdown-divider">
                           <b-dropdown-item
-                            disabled="true"
+                            :disabled="true"
                           >{{ compositeOperations.label }}</b-dropdown-item>
                           <b-dropdown-item
                             v-for="item in compositeOperations.children"
@@ -84,102 +84,102 @@
           label: 'Blend Modes',
           children: [{
             label: 'Normal',
-            value: 'normal'
+            value: 'normal',
           }, {
             label: 'Multiply',
-            value: 'multiply'
+            value: 'multiply',
           }, {
             label: 'Overlay',
-            value: 'overlay'
+            value: 'overlay',
           }, {
             label: 'Darken',
-            value: 'darken'
+            value: 'darken',
           }, {
             label: 'Lighten',
-            value: 'lighten'
+            value: 'lighten',
           }, {
             label: 'Color Dodge',
-            value: 'color-dodge'
+            value: 'color-dodge',
           }, {
             label: 'Color Burn',
-            value: 'color-burn'
+            value: 'color-burn',
           }, {
             label: 'Hard Light',
-            value: 'hard-light'
+            value: 'hard-light',
           }, {
             label: 'Soft Light',
-            value: 'soft-light'
+            value: 'soft-light',
           }, {
             label: 'Difference',
-            value: 'difference'
+            value: 'difference',
           }, {
             label: 'Exclusion',
-            value: 'exclusion'
+            value: 'exclusion',
           }, {
             label: 'Hue',
-            value: 'hue'
+            value: 'hue',
           }, {
             label: 'Saturation',
-            value: 'saturation'
+            value: 'saturation',
           }, {
             label: 'Color',
-            value: 'color'
+            value: 'color',
           }, {
             label: 'Luminosity',
-            value: 'luminosity'
-          }]
+            value: 'luminosity',
+          }],
         },
         {
           label: 'Composite Modes',
           children: [{
             label: 'Clear',
-            value: 'clear'
+            value: 'clear',
           }, {
             label: 'Copy',
-            value: 'copy'
+            value: 'copy',
           }, {
             label: 'Destination',
-            value: 'destination'
+            value: 'destination',
           }, {
             label: 'Source Over',
-            value: 'source-over'
+            value: 'source-over',
           }, {
             label: 'Destination Over',
-            value: 'destination-over'
+            value: 'destination-over',
           }, {
             label: 'Source In',
-            value: 'source-in'
+            value: 'source-in',
           }, {
             label: 'Destination In',
-            value: 'destination-in'
+            value: 'destination-in',
           }, {
             label: 'Source Out',
-            value: 'source-out'
+            value: 'source-out',
           }, {
             label: 'Destination Out',
-            value: 'destination-out'
+            value: 'destination-out',
           }, {
             label: 'Source Atop',
-            value: 'source-atop'
+            value: 'source-atop',
           }, {
             label: 'Destination Atop',
-            value: 'destination-atop'
+            value: 'destination-atop',
           }, {
             label: 'Xor',
-            value: 'xor'
+            value: 'xor',
           }, {
             label: 'Lighter',
-            value: 'lighter'
-          }]
-        }]
+            value: 'lighter',
+          }],
+        }],
       };
     },
     props: [
-      'moduleName'
+      'moduleName',
     ],
     computed: {
       ...mapGetters('modVModules', [
-        'focusedModuleName'
+        'focusedModuleName',
       ]),
       module() {
         return this.getActiveModule()(this.moduleName);
@@ -195,7 +195,7 @@
       },
       compositeOperations() {
         return this.operations[1];
-      }
+      },
     },
     methods: {
       ...mapMutations('modVModules', [
@@ -203,10 +203,10 @@
         'setModuleFocus',
         'setActiveModuleAlpha',
         'setActiveModuleEnabled',
-        'setActiveModuleCompositeOperation'
+        'setActiveModuleCompositeOperation',
       ]),
       ...mapGetters('modVModules', [
-        'getActiveModule'
+        'getActiveModule',
       ]),
       inputOpacity(e) {
         console.log(e);
@@ -228,24 +228,28 @@
       },
       checkboxClick() {
         this.enabled = !this.enabled;
-      }
+      },
     },
     mounted() {
       this.enabled = this.module.info.enabled;
       this.opacity = this.module.info.alpha;
 
-      this.operations[0].children.find(item => item.value === this.module.info.compositeOperation).selected = true; //eslint-disable-line
+      this.operations[0]
+        .children.find(item => item.value === this.module.info.compositeOperation).selected = true;
     },
     watch: {
       compositeOperation() {
-        this.setActiveModuleCompositeOperation({ moduleName: this.moduleName, compositeOperation: this.compositeOperation });
+        this.setActiveModuleCompositeOperation({
+          moduleName: this.moduleName,
+          compositeOperation: this.compositeOperation,
+        });
       },
       enabled() {
         this.setActiveModuleEnabled({ moduleName: this.moduleName, enabled: this.enabled });
       },
       opacity() {
         this.setActiveModuleAlpha({ moduleName: this.moduleName, alpha: parseFloat(this.opacity) });
-      }
+      },
     },
     filters: {
       capitalize(valueIn) {
@@ -253,8 +257,8 @@
         if (!value) return '';
         value = value.toString();
         return value.charAt(0).toUpperCase() + value.slice(1);
-      }
-    }
+      },
+    },
   };
 </script>
 
@@ -346,10 +350,12 @@
       height: 135px;
     }
 
-    .dropdown .dropdown-content {
-      height: 220px;
-      overflow-y: scroll;
-      overflow-x: hidden;
+    @media screen and (min-width: 1023px) {
+      .dropdown .dropdown-content {
+        height: 220px;
+        overflow-y: scroll;
+        overflow-x: hidden;
+      }
     }
   }
 </style>

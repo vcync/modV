@@ -12,15 +12,15 @@ class FilmGrain extends ModuleShader {
         uniforms: {
           strength: {
             type: 'f',
-            value: 16.0
+            value: 16.0,
           },
           secondaryOperation: {
             type: 'b',
-            value: false
-          }
-        } // Three.JS style uniforms
+            value: false,
+          },
+        }, // Three.JS style uniforms
       },
-      fragmentShader: filmGrainFrag
+      fragmentShader: filmGrainFrag,
     });
 
     this.add({
@@ -31,14 +31,14 @@ class FilmGrain extends ModuleShader {
       min: 0.0,
       max: 50.0,
       step: 0.5,
-      default: 16.0
+      default: 16.0,
     });
 
     this.add({
       type: 'checkboxControl',
       variable: 'secondaryOperation',
       label: 'Operation Type',
-      checked: false
+      checked: false,
     });
   }
 }

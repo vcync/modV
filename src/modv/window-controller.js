@@ -7,11 +7,11 @@ class WindowController extends EventEmitter2 {
     super();
 
     return new Promise((resolve) => {
-      if(window.nw) {
-        if(window.nw.open) {
+      if (window.nw) {
+        if (window.nw.open) {
           window.nw.Window.open('output.html', (newWindow) => {
             this.window = newWindow.window;
-            if(this.window.document.readyState === 'complete') {
+            if (this.window.document.readyState === 'complete') {
               this.configureWindow(resolve);
             } else {
               this.window.onload = () => {
@@ -23,7 +23,7 @@ class WindowController extends EventEmitter2 {
           this.window = window.open(
             '',
             '_blank',
-            'width=250, height=250, location=no, menubar=no, left=0'
+            'width=250, height=250, location=no, menubar=no, left=0',
           );
 
           if (this.window === null || typeof this.window === 'undefined') {
@@ -70,7 +70,7 @@ class WindowController extends EventEmitter2 {
     this.canvas.style.backgroundColor = 'transparent';
 
     this.canvas.addEventListener('dblclick', () => {
-      if(!this.canvas.ownerDocument.webkitFullscreenElement) {
+      if (!this.canvas.ownerDocument.webkitFullscreenElement) {
         this.canvas.webkitRequestFullscreen();
       } else {
         this.canvas.ownerDocument.webkitExitFullscreen();
@@ -80,12 +80,12 @@ class WindowController extends EventEmitter2 {
     let mouseTimer;
 
     function movedMouse() {
-      if(mouseTimer) mouseTimer = null;
+      if (mouseTimer) mouseTimer = null;
       this.canvas.ownerDocument.body.style.cursor = 'none';
     }
 
     this.canvas.addEventListener('mousemove', () => {
-      if(mouseTimer) clearTimeout(mouseTimer);
+      if (mouseTimer) clearTimeout(mouseTimer);
       this.canvas.ownerDocument.body.style.cursor = 'default';
       mouseTimer = setTimeout(movedMouse.bind(this), 200);
     });
@@ -96,9 +96,9 @@ class WindowController extends EventEmitter2 {
     let lastLength = 0;
     // Roughly attach to the main RAF loop for smoother resizing
     modV.on('tick', (δ) => {
-      if(resizeQueue.length < 1) return;
+      if (resizeQueue.length < 1) return;
 
-      if(resizeQueue.length !== lastLength) {
+      if (resizeQueue.length !== lastLength) {
         lastLength = resizeQueue.length;
         return;
       }
@@ -114,7 +114,7 @@ class WindowController extends EventEmitter2 {
       this.canvas.height = height * dpr;
       this.canvas.style.width = `${width}px`;
       this.canvas.style.height = `${height}px`;
-      if(emit) this.emit('resize', width, height);
+      if (emit) this.emit('resize', width, height);
 
       resizeQueue.splice(0, index + 1);
       draw(δ);
@@ -125,14 +125,14 @@ class WindowController extends EventEmitter2 {
         width,
         height,
         dpr,
-        emit
+        emit,
       });
     };
 
     windowRef.addEventListener('resize', () => {
       let dpr = windowRef.devicePixelRatio;
 
-      if(!store.getters['user/useRetina']) {
+      if (!store.getters['user/useRetina']) {
         dpr = 1;
       }
 
@@ -143,7 +143,7 @@ class WindowController extends EventEmitter2 {
       store.dispatch('windows/destroyWindow', { windowRef: this.window });
     });
 
-    if(callback) callback(this);
+    if (callback) callback(this);
   }
 }
 

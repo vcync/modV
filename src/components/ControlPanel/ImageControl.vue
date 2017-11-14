@@ -26,7 +26,7 @@
     name: 'imageControl',
     props: [
       'module',
-      'control'
+      'control',
     ],
     data() {
       return {
@@ -35,13 +35,13 @@
     },
     computed: {
       ...mapGetters('layers', {
-        layers: 'allLayers'
+        layers: 'allLayers',
       }),
       layerNames() {
         const data = [];
         const allLayers = this.layers;
 
-        if(allLayers.length < 1) return data;
+        if (allLayers.length < 1) return data;
 
         data.push({
           label: 'Inherit',
@@ -54,14 +54,14 @@
           data.push({
             label: name,
             value: idx,
-            selected: this.currentLayerIndex === idx
+            selected: this.currentLayerIndex === idx,
           });
         });
 
         return data;
       },
       value() {
-        if(!this.currentLayer) return undefined;
+        if (!this.currentLayer) return undefined;
         return this.currentLayer.canvas;
       },
       currentLayer() {
@@ -86,11 +86,11 @@
     watch: {
       value() {
         this.module[this.variable] = this.value;
-      }
+      },
     },
     mounted() {
       this.module[this.variable] = this.value;
-    }
+    },
   };
 </script>
 

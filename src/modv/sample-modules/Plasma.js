@@ -12,19 +12,19 @@ class Plasma extends ModuleShader {
         uniforms: {
           u_scaleX: {
             type: 'f',
-            value: 50
+            value: 50,
           },
           u_scaleY: {
             type: 'f',
-            value: 50
+            value: 50,
           },
           u_timeScale: {
             type: 'f',
-            value: 100.0
-          }
-        } // Three.JS uniforms
+            value: 100.0,
+          },
+        }, // Three.JS uniforms
       },
-      fragmentShader: plasmaFrag
+      fragmentShader: plasmaFrag,
     });
 
     this.add({
@@ -35,7 +35,7 @@ class Plasma extends ModuleShader {
       min: 1.0,
       max: 150.0,
       step: 1.0,
-      default: 50.0
+      default: 50.0,
     });
 
     this.add({
@@ -46,7 +46,7 @@ class Plasma extends ModuleShader {
       min: 1.0,
       max: 150.0,
       step: 1.0,
-      default: 50.0
+      default: 50.0,
     });
 
     this.add({
@@ -57,7 +57,7 @@ class Plasma extends ModuleShader {
       min: 1.0,
       max: 1000.0,
       step: 1.0,
-      default: 100.0
+      default: 100.0,
     });
   }
 }

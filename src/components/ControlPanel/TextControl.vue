@@ -16,10 +16,10 @@
   import { mapGetters, mapMutations } from 'vuex';
   import { Menu, MenuItem } from 'nwjs-menu-browser';
 
-  if(!window.nw) {
+  if (!window.nw) {
     window.nw = {
       Menu,
-      MenuItem
+      MenuItem,
     };
   }
 
@@ -29,15 +29,15 @@
     name: 'textControl',
     props: [
       'module',
-      'control'
+      'control',
     ],
     data() {
       return {
         menuOptions: {
           match: ['textControl'],
-          menuItems: []
+          menuItems: [],
         },
-        valueIn: 0
+        valueIn: 0,
       };
     },
     computed: {
@@ -45,7 +45,7 @@
         return this.getValueFromActiveModule(this.moduleName, this.variable).processed;
       },
       ...mapGetters('modVModules', [
-        'getValueFromActiveModule'
+        'getValueFromActiveModule',
       ]),
       moduleName() {
         return this.module.info.name;
@@ -61,25 +61,25 @@
       },
       defaultValue() {
         return this.control.default;
-      }
+      },
     },
     methods: {
       ...mapMutations('modVModules', [
-        'setActiveModuleControlValue'
+        'setActiveModuleControlValue',
       ]),
       textInput(e) {
         this.$data.valueIn = e.target.value;
-      }
+      },
     },
     beforeMount() {
       this.$data.menuOptions.menuItems.push(
         new nw.MenuItem({
           label: this.label,
-          enabled: false
+          enabled: false,
         }),
         new nw.MenuItem({
-          type: 'separator'
-        })
+          type: 'separator',
+        }),
       );
     },
     watch: {
@@ -89,10 +89,10 @@
         this.setActiveModuleControlValue({
           moduleName: this.moduleName,
           variable: this.variable,
-          value
+          value,
         });
-      }
-    }
+      },
+    },
   };
 </script>
 

@@ -24,12 +24,12 @@ class LFOPlugin {
       'sine',
       'sawtooth',
       'square',
-      'noise'
+      'noise',
     ];
   }
 
   install(Vue, { store }) {
-    if(!store) throw new Error('No Vuex store detected');
+    if (!store) throw new Error('No Vuex store detected');
     this.store = store;
     this.vue = Vue;
     store.registerModule('lfo', lfoStore);
@@ -37,7 +37,7 @@ class LFOPlugin {
     // Vue.component('expression', ExpressionComponent);
 
     store.subscribe((mutation) => {
-      if(mutation.type === 'modVModules/removeActiveModule') {
+      if (mutation.type === 'modVModules/removeActiveModule') {
         store.commit('lfo/removeAssignments', { moduleName: mutation.payload.moduleName });
       }
     });
@@ -61,14 +61,14 @@ class LFOPlugin {
         moduleName,
         controlVariable,
         waveform: toLower(this.label),
-        frequency: hzFromBpm(store.getters['tempo/bpm'])
+        frequency: hzFromBpm(store.getters['tempo/bpm']),
       });
     }
 
     function removeClick() {
       store.commit('lfo/removeAssignment', {
         moduleName,
-        controlVariable
+        controlVariable,
       });
     }
 
@@ -77,26 +77,26 @@ class LFOPlugin {
     }
 
     const assignment = store.getters['lfo/assignment'](moduleName, controlVariable);
-    if(assignment) {
+    if (assignment) {
       label = 'LFO';
 
       LfoSubmenu.append(new MenuItem({
         label: 'Edit LFO',
         type: 'normal',
-        click: editClick
+        click: editClick,
       }));
 
       LfoSubmenu.append(new MenuItem({
         label: 'Remove LFO',
         type: 'normal',
-        click: removeClick
+        click: removeClick,
       }));
     } else {
       this.waveforms.forEach((waveform) => {
         LfoSubmenu.append(new MenuItem({
           label: startCase(waveform),
           type: 'normal',
-          click: attatchClick
+          click: attatchClick,
         }));
       });
     }
@@ -118,18 +118,18 @@ class LFOPlugin {
 
         let value = currentValue;
 
-        if(assignment) {
+        if (assignment) {
           const lfoController = assignment.controller;
           const min = control.min;
           const max = control.max;
           value = Math.map(lfoController.value, -1, 1, min, max);
 
-          if(currentValue === value) return;
+          if (currentValue === value) return;
 
           store.commit('modVModules/setActiveModuleControlValue', {
             moduleName,
             variable: controlVariable,
-            value
+            value,
           });
         }
       });
@@ -143,7 +143,7 @@ class LFOPlugin {
 
     let value = currentValue;
 
-    if(assignment) {
+    if (assignment) {
       const lfoController = assignment.controller;
       const min = control.min;
       const max = control.max;

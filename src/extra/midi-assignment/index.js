@@ -12,13 +12,13 @@ class Expression {
   }
 
   install(Vue, { store }) {
-    if(!store) throw new Error('No Vuex store detected');
+    if (!store) throw new Error('No Vuex store detected');
     this.store = store;
     this.vue = Vue;
     store.registerModule('midiAssignment', midiAssignmentStore);
 
     store.subscribe((mutation) => {
-      if(mutation.type === 'modVModules/removeActiveModule') {
+      if (mutation.type === 'modVModules/removeActiveModule') {
         store.commit('midiAssignment/removeAssignments', mutation.payload.moduleName);
       }
     });
@@ -27,7 +27,7 @@ class Expression {
       get: store.getters['midiAssignment/assignment'],
       set(key, value) {
         store.commit('midiAssignment/setAssignment', { key, value });
-      }
+      },
     });
 
     this.assigner.start();
@@ -40,12 +40,12 @@ class Expression {
 
       let newValue = Math.map(midiEvent.data[2], 0, 127, control.min || 0, control.max || 1);
 
-      if(control.varType === 'int') newValue = Math.round(newValue);
+      if (control.varType === 'int') newValue = Math.round(newValue);
 
       store.commit('modVModules/setActiveModuleControlValue', {
         moduleName,
         variable: variableName,
-        value: newValue
+        value: newValue,
       });
     });
   }
@@ -61,7 +61,7 @@ class Expression {
 
     const MidiItem = new MenuItem({
       label: 'Learn MIDI assignment',
-      click: click.bind(this)
+      click: click.bind(this),
     });
 
     return MidiItem;

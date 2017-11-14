@@ -53,27 +53,27 @@
         inheritChecked: false,
         pipelineChecked: false,
         drawToOutputChecked: false,
-        inheritanceIndex: -1
+        inheritanceIndex: -1,
       };
     },
     computed: {
       ...mapGetters('layers', {
         Layer: 'focusedLayer',
         layers: 'allLayers',
-        layerIndex: 'focusedLayerIndex'
+        layerIndex: 'focusedLayerIndex',
       }),
       name() {
-        if(!this.Layer) return '';
-        if(!('name' in this.Layer)) return '';
+        if (!this.Layer) return '';
+        if (!('name' in this.Layer)) return '';
         return this.Layer.name;
       },
       inheritedLayerName() {
-        if(this.inheritanceIndex < 0) {
+        if (this.inheritanceIndex < 0) {
           return 'Last Layer';
         }
 
         return this.layers[this.inheritanceIndex].name;
-      }
+      },
     },
     methods: {
       ...mapMutations('layers', [
@@ -81,12 +81,9 @@
         'setInherit',
         'setInheritFrom',
         'setPipeline',
-        'setDrawToOutput'
-      ])
-    },
-    watch: {
-      name() {
-        if(!this.Layer) return;
+        'setDrawToOutput',
+      ]),
+      updateChecked() {
         const Layer = this.Layer;
 
         this.clearingChecked = Layer.clearing;
@@ -95,10 +92,19 @@
         this.pipelineChecked = Layer.pipeline;
         this.drawToOutputChecked = Layer.drawToOutput;
       },
+    },
+    watch: {
+      Layer: {
+        handler() {
+          if (!this.Layer) return;
+          this.updateChecked();
+        },
+        deep: true,
+      },
       clearingChecked() {
         this.setClearing({
           layerIndex: this.layerIndex,
-          clearing: this.clearingChecked
+          clearing: this.clearingChecked,
         });
       },
       inheritChecked() {
@@ -112,17 +118,13 @@
       },
       drawToOutputChecked() {
         this.Layer.drawToOutput = this.drawToOutputChecked;
-      }
+      },
     },
     mounted() {
-      if(!this.Layer) return;
-      const Layer = this.Layer;
-      this.clearingChecked = Layer.clearing;
-      this.inheritChecked = Layer.inherit;
-      this.inheritanceIndex = Layer.inheritFrom;
-      this.pipelineChecked = Layer.pipeline;
-      this.drawToOutputChecked = Layer.drawToOutput;
-    }
+      if (!this.Layer) return;
+
+      this.updateChecked();
+    },
   };
 </script>
 

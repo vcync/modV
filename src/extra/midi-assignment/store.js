@@ -2,14 +2,14 @@ import Vue from 'vue';
 
 const state = {
   devices: {},
-  assignments: {}
+  assignments: {},
 };
 
 // getters
 const getters = {
   assignments: state => state.assignments,
   assignment: state => key => state.assignments[key],
-  devices: state => state.devices
+  devices: state => state.devices,
 };
 
 // actions
@@ -27,7 +27,7 @@ const mutations = {
   },
   removeAssignments() {
     console.log('@TODO - update MIDI assignment storage');
-  }
+  },
 };
 
 export default {
@@ -35,5 +35,5 @@ export default {
   state,
   getters,
   actions,
-  mutations
+  mutations,
 };

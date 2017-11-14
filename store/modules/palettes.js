@@ -2,24 +2,24 @@ import Vue from 'vue';
 import { modV } from '@/modv';
 
 const state = {
-  palettes: {}
+  palettes: {},
 };
 
 // getters
 const getters = {
-  allPalettes: state => state.palettes
+  allPalettes: state => state.palettes,
 };
 
 // actions
 const actions = {
   createPalette({ commit }, { id, colors, duration, moduleName, variable }) {
-    if(id in state.palettes === true) return;
+    if (id in state.palettes === true) return;
 
     let colorsPassed = [];
     let durationPassed = 300;
 
-    if(colors) colorsPassed = colors;
-    if(duration) durationPassed = duration;
+    if (colors) colorsPassed = colors;
+    if (duration) durationPassed = duration;
 
     modV.workers.palette.createPalette(id, colorsPassed, durationPassed);
     commit('addPalette', { id, colors, duration, moduleName, variable });
@@ -31,13 +31,13 @@ const actions = {
   updateBpm({ commit }, { bpm }) {
     Object.keys(state.palettes).forEach((id) => {
       modV.workers.palette.setPalette(id, {
-        bpm
+        bpm,
       });
     });
   },
   updateColors({ commit }, { id, colors }) {
     modV.workers.palette.setPalette(id, {
-      colors
+      colors,
     });
 
     commit('updateColors', { id, colors });
@@ -46,19 +46,19 @@ const actions = {
     commit('updateDuration', { id, duration });
 
     modV.workers.palette.setPalette(id, {
-      timePeriod: duration
+      timePeriod: duration,
     });
   },
   updateUseBpm({ commit }, { id, useBpm }) {
     modV.workers.palette.setPalette(id, {
-      useBpm
+      useBpm,
     });
 
     commit('updateUseBpm', { id, useBpm });
   },
   updateBpmDivision({ commit }, { id, bpmDivision }) {
     modV.workers.palette.setPalette(id, {
-      bpmDivision
+      bpmDivision,
     });
 
     commit('updateBpmDivision', { id, bpmDivision });
@@ -68,26 +68,26 @@ const actions = {
 
     Object.keys(state.palettes).forEach((key) => {
       const paletteData = state.palettes[key];
-      if(modulesToGet.includes(paletteData.moduleName)) {
+      if (modulesToGet.includes(paletteData.moduleName)) {
         data[key] = paletteData;
       }
     });
 
     return data;
-  }
+  },
 };
 
 // mutations
 const mutations = {
   addPalette(state, { id, colors, duration, useBpm, bpmDivision, moduleName, variable }) {
-    if(id in state.palettes === false) {
+    if (id in state.palettes === false) {
       Vue.set(state.palettes, id, {
         bpmDivision: bpmDivision || 16,
         duration: duration || 500,
         useBpm: useBpm || false,
         moduleName,
         colors,
-        variable
+        variable,
       });
     }
   },
@@ -95,7 +95,7 @@ const mutations = {
     Vue.delete(state.palettes, id);
   },
   updateColors(state, { id, colors }) {
-    if(id in state.palettes) {
+    if (id in state.palettes) {
       const palette = state.palettes[id];
       palette.colors = colors;
 
@@ -103,7 +103,7 @@ const mutations = {
     }
   },
   updateDuration(state, { id, duration }) {
-    if(id in state.palettes) {
+    if (id in state.palettes) {
       const palette = state.palettes[id];
       palette.duration = duration;
 
@@ -111,7 +111,7 @@ const mutations = {
     }
   },
   updateUseBpm(state, { id, useBpm }) {
-    if(id in state.palettes) {
+    if (id in state.palettes) {
       const palette = state.palettes[id];
       palette.useBpm = useBpm;
 
@@ -119,13 +119,13 @@ const mutations = {
     }
   },
   updateBpmDivision(state, { id, bpmDivision }) {
-    if(id in state.palettes) {
+    if (id in state.palettes) {
       const palette = state.palettes[id];
       palette.bpmDivision = bpmDivision;
 
       Vue.set(state.palettes, id, palette);
     }
-  }
+  },
 };
 
 export default {
@@ -133,5 +133,5 @@ export default {
   state,
   getters,
   actions,
-  mutations
+  mutations,
 };

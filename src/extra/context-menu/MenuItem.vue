@@ -2,7 +2,7 @@
   <li class="menu-item" :class="classes" ref="menuitem" @mouseover='mouseover' @click='clicked'>
     <div class="checkmark"></div>
     <div class="context-menu-label">
-      <span class="context-menu-label-text">{{ label }}</span>
+      <span class="context-menu-label-text" :title="tooltip">{{ label }}</span>
     </div>
     <div class="modifiers">{{ modifiers }}</div>
   </li>
@@ -19,16 +19,16 @@
       'parentOptions',
       'parentOffsetWidth',
       'parentOffsetHeight',
-      'parentPosition'
+      'parentPosition',
     ],
     data() {
       return {
-        modifiers: ''
+        modifiers: '',
       };
     },
     computed: {
       ...mapGetters('contextMenu', [
-        'realActiveMenus'
+        'realActiveMenus',
       ]),
       type() {
         return this.options.type;
@@ -42,41 +42,44 @@
       submenu() {
         return this.options.submenu;
       },
+      tooltip() {
+        return this.options.tooltip;
+      },
       submenuActive() {
-        if(!this.submenu) return false;
+        if (!this.submenu) return false;
         return this.realActiveMenus.indexOf(this.submenu.$id) > 0;
       },
       checked() {
-        if(this.type !== 'checkbox') return false;
+        if (this.type !== 'checkbox') return false;
         return this.options.checked;
       },
       classes() {
         const classes = {};
-        if(!this.enabled) classes.disabled = true;
+        if (!this.enabled) classes.disabled = true;
         classes[this.type] = true;
 
-        if(this.type === 'checkbox') {
+        if (this.type === 'checkbox') {
           classes.checked = this.checked;
         }
 
-        if(this.submenuActive) {
+        if (this.submenuActive) {
           classes['submenu-active'] = true;
         }
 
         return classes;
-      }
+      },
     },
     methods: {
       ...mapActions('contextMenu', [
         'popup',
         'popdown',
-        'popdownAll'
+        'popdownAll',
       ]),
       ...mapMutations('contextMenu', [
-        'editItemProperty'
+        'editItemProperty',
       ]),
       mouseover() {
-        if(this.submenu) {
+        if (this.submenu) {
           let x = this.$refs.menuitem.offsetLeft;
           const y = this.$refs.menuitem.offsetTop + (this.parentPosition.y - 4);
 
@@ -89,7 +92,7 @@
           this.popup({
             id: this.submenu.$id,
             x,
-            y
+            y,
           });
         } else {
           this.parentOptions.submenus
@@ -97,26 +100,26 @@
         }
       },
       clicked() {
-        if(this.type === 'checkbox') {
+        if (this.type === 'checkbox') {
           this.editItemProperty({
             id: this.parentOptions.$id,
             index: this.index,
             property: 'checked',
-            value: !this.checked
+            value: !this.checked,
           });
         }
-        if(this.options.click) this.options.click();
+        if (this.options.click) this.options.click();
         this.popdownAll();
-      }
+      },
     },
     beforeMount() {
-      if(this.submenu) {
+      if (this.submenu) {
         this.$data.modifiers = '▶︎';
       }
     },
     beforeDestroy() {
 
-    }
+    },
   };
 </script>
 

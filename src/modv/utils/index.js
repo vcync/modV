@@ -17,5 +17,5 @@ export {
   hexToRgb,
   loadJS,
   replaceAll,
-  swapElements
+  swapElements,
 };

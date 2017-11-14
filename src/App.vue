@@ -12,7 +12,7 @@
           </div>
           <div class="column gallery-wrapper"> <!-- 4-5 -->
             <gallery @menuIconClicked='menuIconClicked'></gallery>
-            <resize-handle-left></resize-handle-left>
+            <div class="resize-handle-left"></div>
           </div>
         </div>
       </div>
@@ -32,7 +32,7 @@
             </div>
           </div>
         </div>
-        <resize-handle-top></resize-handle-top>
+        <div class="resize-handle-top"></div>
       </div>
 
     </section>
@@ -70,7 +70,7 @@
     name: 'app',
     data() {
       return {
-        menuOpen: false
+        menuOpen: false,
       };
     },
     computed: {
@@ -83,7 +83,7 @@
     methods: {
       menuIconClicked() {
         this.$data.menuOpen = !this.$data.menuOpen;
-      }
+      },
     },
     components: {
       CanvasPreview,
@@ -94,7 +94,7 @@
       LayerMenu,
       List,
       SideMenu,
-      Tabs
+      Tabs,
     },
   };
 </script>
@@ -193,43 +193,43 @@
   }
 
   .vb > .vb-dragger {
-      z-index: 5;
-      width: 12px;
-      right: 0;
-      text-align: center;
+    z-index: 5;
+    width: 12px;
+    right: 0;
+    text-align: center;
   }
 
   .vb > .vb-dragger > .vb-dragger-styler {
-      width: 9px;
+    width: 9px;
 
-      transition:
-          background-color 100ms ease-out,
-          width 100ms ease-out,
-          height 100ms ease-out;
+    transition:
+    background-color 100ms ease-out,
+    width 100ms ease-out,
+    height 100ms ease-out;
 
-      background-color: rgba(255, 166, 0, 0.6);
-      border-radius: 20px;
-      height: calc(100% - 10px);
-      display: inline-block;
+    background-color: rgba(255, 166, 0, 0.6);
+    border-radius: 20px;
+    height: calc(100% - 10px);
+    display: inline-block;
   }
 
   .vb.vb-scrolling-phantom > .vb-dragger > .vb-dragger-styler {
-      background-color: rgba(255, 166, 0, 0.6);
+    background-color: rgba(255, 166, 0, 0.6);
   }
 
   .vb > .vb-dragger:hover > .vb-dragger-styler {
-      background-color: rgba(255, 166, 0, 1);
-      width: 12px;
-      height: 100%;
+    background-color: rgba(255, 166, 0, 1);
+    width: 12px;
+    height: 100%;
   }
 
   .vb.vb-dragging > .vb-dragger > .vb-dragger-styler {
-      background-color: rgba(255, 166, 0, 1);
-      width: 12px;
-      height: 100%;
+    background-color: rgba(255, 166, 0, 1);
+    width: 12px;
+    height: 100%;
   }
 
   .vb.vb-dragging-phantom > .vb-dragger > .vb-dragger-styler {
-      background-color: rgba(255, 166, 0, 1);
+    background-color: rgba(255, 166, 0, 1);
   }
 </style>

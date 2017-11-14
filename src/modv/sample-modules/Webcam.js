@@ -6,8 +6,8 @@ class Webcam extends Module2D {
       info: {
         name: 'Webcam',
         author: '2xAA',
-        version: 0.1
-      }
+        version: 0.1,
+      },
     });
   }
 

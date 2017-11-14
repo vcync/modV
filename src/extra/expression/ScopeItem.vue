@@ -21,13 +21,13 @@
     name: 'scope-item',
     props: [
       'contents',
-      'name'
+      'name',
     ],
     data() {
       return {
         editable: false,
         contentsInput: '',
-        nameInput: ''
+        nameInput: '',
       };
     },
     computed: {
@@ -43,7 +43,7 @@
       endEditable() {
         this.$data.editable = false;
         this.$emit('updateName', this.name, this.nameInput);
-      }
+      },
     },
     beforeMount() {
       this.$data.contentsInput = this.contents;
@@ -58,8 +58,8 @@
       },
       name() {
         this.$data.nameInput = this.name;
-      }
-    }
+      },
+    },
   };
 </script>
 

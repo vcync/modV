@@ -1,12 +1,12 @@
 const state = {
   audio: [],
-  video: []
+  video: [],
 };
 
 // getters
 const getters = {
   audioSources: state => state.audio,
-  videoSources: state => state.video
+  videoSources: state => state.video,
 };
 
 // actions
@@ -27,7 +27,7 @@ const mutations = {
   },
   clearVideoSources(state) {
     state.video = [];
-  }
+  },
 };
 
 export default {
@@ -35,5 +35,5 @@ export default {
   state,
   getters,
   actions,
-  mutations
+  mutations,
 };

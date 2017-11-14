@@ -9,14 +9,13 @@ class ModuleShader extends Module {
   /**
    * The usual ModuleSettings Object with some extra keys
    * @param {ModuleSettings} settings
-   * @param {String} settings.vertexFile        (optional) Location of the Vertex shader file
-   * @param {String} settings.fragmentFile      (optional) Location of the Fragment shader file
-   * @param {Object} settings.info.uniforms     (optional) (THREE.js style) Uniforms to pass to the shader
+   * @param {String} settings.vertexFile    (optional) Location of the Vertex shader file
+   * @param {String} settings.fragmentFile  (optional) Location of the Fragment shader file
+   * @param {Object} settings.info.uniforms (optional) (THREE.js style) Uniforms to pass the shader
    */
   constructor(settings) {
     super(settings);
 
-    // if(!('shaderFile' in settings)) throw new this.ModuleError('Module had no path to shader in settings.shaderFile');
     this.programIndex = -1;
     this.uniformValues = new Map();
     this._makeProgram().then(() => { //eslint-disable-line
@@ -42,13 +41,13 @@ class ModuleShader extends Module {
       // Read shader documents
       const shaderStrings = [];
 
-      if('vertexShader' in settings) {
+      if ('vertexShader' in settings) {
         shaderStrings.push(settings.vertexShader);
       } else {
         shaderStrings.push(webgl.defaultShader.v);
       }
 
-      if('fragmentShader' in settings) {
+      if ('fragmentShader' in settings) {
         shaderStrings.push(settings.fragmentShader);
       } else {
         shaderStrings.push(webgl.defaultShader.f);
@@ -60,8 +59,8 @@ class ModuleShader extends Module {
 
         const morePromises = [];
 
-        if(typeof vs !== 'string') vs = vs.text();
-        if(typeof fs !== 'string') fs = fs();
+        if (typeof vs !== 'string') vs = vs.text();
+        if (typeof fs !== 'string') fs = fs();
 
         morePromises.push(vs);
         morePromises.push(fs);
@@ -70,10 +69,10 @@ class ModuleShader extends Module {
           let vs = values[0];
           let fs = values[1];
 
-          if(fs.search('gl_FragColor') < 0) {
+          if (fs.search('gl_FragColor') < 0) {
             fs = webgl.defaultShader.fWrap.replace(
               /(%MAIN_IMAGE_INJECT%)/,
-              fs
+              fs,
             );
 
             vs = webgl.defaultShader.v300;
@@ -101,7 +100,8 @@ class ModuleShader extends Module {
   }
 
   /**
-   * Make program information (used by twgl) from a previously compiled and stored program in modV's Shader Environment, then store it on the Module (Module.programInfo)
+   * Make program information (used by twgl) from a previously compiled and stored program
+   * in modV's Shader Environment, then store it on the Module (Module.programInfo)
    * @private
    * @param  {modV}   modV A reference to a modV instance
    */
@@ -124,13 +124,13 @@ class ModuleShader extends Module {
     const twGLUniforms = programInfo.uniformSetters;
 
     forIn(settings.info.uniforms, (uniformKey, uniform) => {
-      if(uniformKey in twGLUniforms) {
+      if (uniformKey in twGLUniforms) {
         const uniformSetter = twGLUniforms[uniformKey];
         Object.defineProperty(this, uniformKey, {
           set: (value) => {
             this.uniformValues.set(uniformKey, value);
           },
-          get: () => this.uniformValues.get(uniformKey)
+          get: () => this.uniformValues.get(uniformKey),
         });
 
         gl.useProgram(this.programInfo.program);
@@ -149,7 +149,7 @@ class ModuleShader extends Module {
       gl.RGBA,
       gl.RGBA,
       gl.UNSIGNED_BYTE,
-      modV.outputCanvas
+      modV.outputCanvas,
     );
 
     // Clear WebGL canvas
@@ -163,7 +163,7 @@ class ModuleShader extends Module {
       iDelta: delta,
       u_delta: delta,
       u_time: delta,
-      iResolution: [canvas.width, canvas.height, pixelRatio || 1.0]
+      iResolution: [canvas.width, canvas.height, pixelRatio || 1.0],
     };
 
     Object.keys(this.uniformValues).forEach((key) => {
@@ -174,8 +174,8 @@ class ModuleShader extends Module {
     setActiveProgramFromIndex(programIndex);
     twgl.setUniforms(programInfo, uniforms);
 
-    if('meyda' in this.info) {
-      if(this.info.meyda.length > 0) {
+    if ('meyda' in this.info) {
+      if (this.info.meyda.length > 0) {
         const meydaFeatures = modV.meyda.get(modV.audioFeatures);
         this.info.meyda.forEach((feature) => {
           const uniLoc = gl.getUniformLocation(webgl.programs[webgl.activeProgram], feature);
@@ -199,7 +199,7 @@ class ModuleShader extends Module {
       0,
       0,
       canvas.width,
-      canvas.height
+      canvas.height,
     );
   }
 }

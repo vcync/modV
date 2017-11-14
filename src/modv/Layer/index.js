@@ -76,7 +76,8 @@ class Layer extends EventEmitter2 {
     this.inherit = true;
 
     /**
-     * The target Layer to inherit from, -1 being the previous Layer in modV#layers, 0-n being the index of another Layer within modV#layers
+     * The target Layer to inherit from, -1 being the previous Layer in modV#layers,
+     * 0-n being the index of another Layer within modV#layers
      * @type {Number}
      * @name Layer#inheritFrom
      */
@@ -116,7 +117,9 @@ class Layer extends EventEmitter2 {
   /**
    * Add a Module to the Layer
    * @param {String} moduleName
-   * @param {Number} order  The position within {@link Layer#moduleOrder} the Module should be inserted at
+   * @param {Number} order  The position within {@link Layer#moduleOrder} the Module
+   *                        should be inserted at
+   *
    * @return {Number}       The position within {@link Layer#moduleOrder} the Module was inserted at
    */
   addModule(moduleName, orderIn) {
@@ -124,7 +127,7 @@ class Layer extends EventEmitter2 {
     // const modV = this.modV;
     this.modules[moduleName] = moduleName;
 
-    if(typeof order !== 'undefined') {
+    if (typeof order !== 'undefined') {
       this.setOrder(moduleName, order, true);
     } else {
       order = this.moduleOrder.push(moduleName) - 1;
@@ -139,7 +142,7 @@ class Layer extends EventEmitter2 {
 
     this.emit('moduleAdd',
       moduleName,
-      order
+      order,
     );
 
     return order;
@@ -155,22 +158,22 @@ class Layer extends EventEmitter2 {
 
     // Remove from order array
     const index = this.moduleOrder.indexOf(name);
-    if(index > -1) this.moduleOrder.splice(index, 1);
+    if (index > -1) this.moduleOrder.splice(index, 1);
     else {
       STError('Module was not found in Layer module array');
     }
 
     // Send to remote
-    if(!sentToRemote) {
+    if (!sentToRemote) {
       this.modV.remote.update('removeModule', {
         name,
-        layerIndex: Module.getLayer()
+        layerIndex: Module.getLayer(),
       });
     }
 
     this.emit('moduleRemove',
       Module,
-      index
+      index,
     );
 
     // Remove from module store
@@ -178,7 +181,8 @@ class Layer extends EventEmitter2 {
   }
 
   /**
-   * Update the Layer's index. Will also call {@link Module#setLayer} of all the Modules contained within the Layer
+   * Update the Layer's index. Will also call {@link Module#setLayer} of
+   * all the Modules contained within the Layer
    * @param  {Number} index
    */
   updateIndex(index) {
@@ -197,18 +201,18 @@ class Layer extends EventEmitter2 {
   setOrder(moduleName, order, sentToRemote, moveNodes) {
     const name = moduleName;
 
-    if(this.moduleOrder[order] === 'undefined') this.moduleOrder[order] = name;
+    if (this.moduleOrder[order] === 'undefined') this.moduleOrder[order] = name;
     else {
       let index = -1;
       this.moduleOrder.forEach((mod, idx) => {
-        if(name === mod) index = idx;
+        if (name === mod) index = idx;
       });
 
-      if(index > -1) this.moduleOrder.splice(index, 1);
+      if (index > -1) this.moduleOrder.splice(index, 1);
 
       this.moduleOrder.splice(order, 0, name);
 
-      if(moveNodes) {
+      if (moveNodes) {
         const children = this.node.querySelector('.module-list').children;
         children[index].parentNode.insertBefore(children[index], children[order]);
       }
@@ -216,7 +220,7 @@ class Layer extends EventEmitter2 {
 
     this.emit('moduleReorder',
       moduleName,
-      order
+      order,
     );
   }
 
@@ -227,7 +231,7 @@ class Layer extends EventEmitter2 {
    */
   reverse(moveNodes) {
     // this.moduleOrder.reverse();
-    for(let i = 0; i < this.moduleOrder.length; i += 1) {
+    for (let i = 0; i < this.moduleOrder.length; i += 1) {
       const Module = this.modules[this.moduleOrder[i]];
 
       this.setOrder(Module, this.moduleOrder.length - i, true, moveNodes);
@@ -244,7 +248,7 @@ class Layer extends EventEmitter2 {
     this.enabled = !this.enabled;
 
     this.emit('enabled',
-      this.enabled
+      this.enabled,
     );
 
     return this.enabled;
@@ -256,12 +260,12 @@ class Layer extends EventEmitter2 {
    */
   setName(nameIn) {
     const name = nameIn.trim();
-    if(name.length === 0) return false;
+    if (name.length === 0) return false;
 
     this.name = name;
 
     this.emit('nameChange',
-      name
+      name,
     );
 
     return true;
@@ -278,7 +282,7 @@ class Layer extends EventEmitter2 {
       group: {
         name: 'modV',
         pull: true,
-        put: true
+        put: true,
       },
       handle: '.handle',
       chosenClass: 'chosen',
@@ -286,7 +290,7 @@ class Layer extends EventEmitter2 {
         // Dragged HTMLElement
         const itemEl = evt.item;
 
-        if(itemEl.classList.contains('gallery-item')) {
+        if (itemEl.classList.contains('gallery-item')) {
           // Cloned element
           const clone = gallery.querySelector(`.gallery-item[data-module-name="${itemEl.dataset.moduleName}"]`);
 
@@ -296,7 +300,7 @@ class Layer extends EventEmitter2 {
           const Module = modV.createModule(oldModule, this.canvas, this.context);
 
           // If shift is held when dropped, disable Module's output
-          if(evt.originalEvent.shiftKey) {
+          if (evt.originalEvent.shiftKey) {
             Module.info.disabled = true;
           }
 
@@ -319,7 +323,7 @@ class Layer extends EventEmitter2 {
           // Replace clone
           try {
             this.moduleListNode.replaceChild(activeItemNode, clone);
-          } catch(e) {
+          } catch (e) {
             // fail gracefully, remove clone in gallery
             const clone = evt.clone;
             clone.parentNode.removeChild(clone);
@@ -340,7 +344,7 @@ class Layer extends EventEmitter2 {
           modV.createControls(Module);
 
           activeItemNode.focus();
-        } else if(itemEl.classList.contains('active-item')) {
+        } else if (itemEl.classList.contains('active-item')) {
           const name = replaceAll(itemEl.dataset.moduleName, '-', ' ');
           const Module = modV.activeModules[name];
 
@@ -363,21 +367,21 @@ class Layer extends EventEmitter2 {
           modV.remote.update('moduleLayerMove', {
             oldLayerIndex: oldIndex,
             newLayerIndex: newIndex,
-            order: evt.newIdex
+            order: evt.newIdex,
           });
         }
       },
       onEnd: (evt) => {
-        if(!evt.item.classList.contains('deletable')) {
+        if (!evt.item.classList.contains('deletable')) {
           const name = replaceAll(evt.item.dataset.moduleName, '-', ' ');
           const Module = modV.activeModules[name];
 
           // modV.setModOrder(name, evt.newIndex);
-          if(evt.item.parentNode.parentNode === this.node) {
+          if (evt.item.parentNode.parentNode === this.node) {
             this.setOrder(Module, evt.newIndex);
           }
         }
-      }
+      },
     });
   }
 

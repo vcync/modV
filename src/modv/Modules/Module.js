@@ -25,18 +25,18 @@ class Module {
     this.ModuleError.prototype.constructor = ModuleError;
 
     // Check for settings Object
-    if(!settings) throw new this.ModuleError('Module had no settings');
+    if (!settings) throw new this.ModuleError('Module had no settings');
     // Check for info Object
-    if(!('info' in settings)) throw new this.ModuleError('Module had no info in settings');
+    if (!('info' in settings)) throw new this.ModuleError('Module had no info in settings');
     // Check for info.name
-    if(!('name' in settings.info)) throw new this.ModuleError('Module had no name in settings.info');
+    if (!('name' in settings.info)) throw new this.ModuleError('Module had no name in settings.info');
     // Check for info.author
-    if(!('author' in settings.info)) throw new this.ModuleError('Module had no author in settings.info');
+    if (!('author' in settings.info)) throw new this.ModuleError('Module had no author in settings.info');
     // Check for info.version
-    if(!('version' in settings.info)) throw new this.ModuleError('Module had no version in settings.info');
+    if (!('version' in settings.info)) throw new this.ModuleError('Module had no version in settings.info');
 
     // Create control Array
-    if(!settings.info.controls) settings.info.controls = {};
+    if (!settings.info.controls) settings.info.controls = {};
 
     /**
      * The information Object from the settings Object passed to {@link Module}
@@ -49,12 +49,13 @@ class Module {
     this.info.layer = 0;
 
     /**
-     * Indicates whether the current output be passed into the Module's draw loop when displayed in the gallery
+     * Indicates whether the current output be passed into the
+     * Module's draw loop when displayed in the gallery
      * @type {Boolean}
      */
     this.previewWithOutput = false;
 
-    if('previewWithOutput' in settings) {
+    if ('previewWithOutput' in settings) {
       this.previewWithOutput = settings.previewWithOutput;
     }
 
@@ -66,7 +67,7 @@ class Module {
     Object.defineProperty(this, 'settings', {
       get() {
         return settings;
-      }
+      },
     });
   }
 
@@ -78,7 +79,8 @@ class Module {
   init(canvas, context) {} //eslint-disable-line
 
   /**
-   * Key/Value pairs to import onto the Module - called internally when loading saveData from {@link ModuleSettings} from a {@link Preset}
+   * Key/Value pairs to import onto the Module - called internally when
+   * loading saveData from {@link ModuleSettings} from a {@link Preset}
    * @param  {(String|Number)} key
    * @param  {any}             value
    */
@@ -97,13 +99,13 @@ class Module {
    * @todo For Plugins (1.6/1.7) allow other Objects to be passed and stored in Modules
    */
   add(item) {
-    if(item instanceof Array) {
+    if (item instanceof Array) {
       item.forEach((thing) => {
         this.add(thing);
       });
     } else {
       this.info.controls[item.variable] = item;
-      if('default' in item) {
+      if ('default' in item) {
         this[item.variable] = item.default;
       }
     }

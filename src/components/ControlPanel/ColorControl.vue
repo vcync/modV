@@ -16,33 +16,33 @@
       h: 150,
       s: 0.5,
       l: 0.2,
-      a: 1
+      a: 1,
     },
     hsv: {
       h: 150,
       s: 0.66,
       v: 0.30,
-      a: 1
+      a: 1,
     },
     rgba: {
       r: 25,
       g: 77,
       b: 51,
-      a: 1
+      a: 1,
     },
-    a: 1
+    a: 1,
   };
 
   export default {
     name: 'colorControl',
     props: [
       'module',
-      'control'
+      'control',
     ],
     data() {
       return {
         value: undefined,
-        pickerColors: defaultProps
+        pickerColors: defaultProps,
       };
     },
     computed: {
@@ -120,13 +120,13 @@
       },
       hslaString() {
 
-      }
+      },
     },
     beforeMount() {
       this.value = this.module[this.variable];
       this.pickerColors = this.module[this.pickerCacheVariable] || defaultProps;
 
-      if(typeof this.value === 'undefined') this.value = this.defaultValue;
+      if (typeof this.value === 'undefined') this.value = this.defaultValue;
     },
     watch: {
       module() {
@@ -139,11 +139,11 @@
       pickerColors() {
         this.value = this[this.returnFormat || 'rgbaArray'];
         this.module[this.pickerCacheVariable] = this.pickerColors;
-      }
+      },
     },
     components: {
-      'sketch-picker': Sketch
-    }
+      'sketch-picker': Sketch,
+    },
   };
 </script>
 
