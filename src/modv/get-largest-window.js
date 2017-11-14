@@ -19,8 +19,6 @@ function compareWindowsSize(windowOne, windowTwo) {
   const windowOneArea = getWindowSize(windowOne);
   const windowTwoArea = getWindowSize(windowTwo);
 
-  console.log(windowOneArea, windowTwoArea);
-
   return windowOneArea > windowTwoArea ? windowOne : windowTwo;
 }
 

@@ -19,8 +19,7 @@ class Expression {
     Vue.component('expression', ExpressionComponent);
 
     store.subscribe((mutation) => {
-      if(mutation.type === 'modVModules/removeActiveModule') {
-        console.log(mutation.payload.moduleName);
+      if (mutation.type === 'modVModules/removeActiveModule') {
         store.commit('expression/removeExpressions', { moduleName: mutation.payload.moduleName });
       }
     });

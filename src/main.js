@@ -7,6 +7,7 @@ import vmodal from 'vue-js-modal';
 import VueThrottleEvent from 'vue-throttle-event';
 import Buefy from 'buefy';
 import Vuebar from 'vuebar';
+import Notifications from 'vue-notification';
 
 import stats from '@/extra/stats';
 import { ModuleISF, modV } from './modv';
@@ -33,6 +34,10 @@ document.body.appendChild(stats.dom);
 stats.dom.style.left = null;
 stats.dom.style.right = 0;
 stats.dom.classList.add('hidden');
+
+Vue.use(Notifications);
+
+Vue.use(Capitalize);
 
 Vue.use(Vuebar);
 Vue.use(Buefy, {
@@ -65,7 +70,7 @@ modV.use(midiAssignment);
 modV.use(lfo);
 
 /* eslint-disable no-new */
-window.modVVue = new Vue({
+export default window.modVVue = new Vue({
   el: '#app',
   template: '<App/>',
   components: { App },
@@ -74,7 +79,7 @@ window.modVVue = new Vue({
     modV
   },
   mounted() {
-    modV.start();
+    modV.start(this);
 
     const modules = [
       'Waveform',
@@ -93,8 +98,7 @@ window.modVVue = new Vue({
       'MirrorEdge',
       'EdgeDistort',
       'Polygon',
-      'Concentrics'/* ,
-      'SolidColor' */
+      'Concentrics',
     ];
 
     modules.forEach((fileName) => {
@@ -145,7 +149,6 @@ window.modVVue = new Vue({
       'Interlace.fs',
       'Convergence.fs',
       'Collage.fs',
-      'bokeh.fs',
       'Pinch.fs',
       'Slice.fs',
       'digital-crystal-tunnel.fs',
@@ -171,12 +174,10 @@ window.modVVue = new Vue({
 
         modV.register(Module);
       }).catch((e) => {
-        console.log(e);
+        throw new Error(e);
       });
     });
 
     attachResizeHandles();
   }
 });
-
-export default window.modVVue;

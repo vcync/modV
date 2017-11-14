@@ -37,8 +37,7 @@ function compileExpression(expression, additionalScope = {}) {
   const newFunction = node.compile();
   try {
     newFunction.eval(scope);
-  } catch(e) {
-    console.error(e);
+  } catch (e) {
     return false;
   }
 

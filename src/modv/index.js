@@ -77,7 +77,7 @@ class ModV extends EventEmitter2 {
     this.ModuleShader = ModuleShader;
   }
 
-  start() {
+  start(Vue) {
     const mediaStreamScan = this.mediaStreamScan;
     const setMediaStreamSource = this.setMediaStreamSource;
 
@@ -94,7 +94,7 @@ class ModV extends EventEmitter2 {
     this.videoStream.autoplay = true;
     this.videoStream.muted = true;
 
-    store.dispatch('windows/createWindow');
+    store.dispatch('windows/createWindow', { Vue });
 
     mediaStreamScan().then((mediaStreamDevices) => {
       mediaStreamDevices.audio.forEach(source => store.commit('mediaStream/addAudioSource', { source }));
@@ -135,8 +135,11 @@ class ModV extends EventEmitter2 {
   loop(δ) {
     stats.begin();
     let features = [];
-    if(this.audioFeatures.length > 0) features = this.meyda.get(this.audioFeatures);
-    if(features) {
+    if (this.audioFeatures.length > 0) {
+      features = this.meyda.get(this.audioFeatures);
+    }
+
+    if (features) {
       this.activeFeatures = features;
 
       const assignments = store.getters['meyda/controlAssignments'];
@@ -162,7 +165,6 @@ class ModV extends EventEmitter2 {
 
     this.beatDetektorKick.process(this.beatDetektor);
     this.kick = this.beatDetektorKick.isKick();
-
 
     draw(δ).then(() => {
       this.mainRaf = requestAnimationFrame(this.loop.bind(this));

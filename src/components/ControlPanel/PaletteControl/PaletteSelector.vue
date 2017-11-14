@@ -1,10 +1,16 @@
 <template>
-  <dropdown
-    :data="selectData"
-    :width='129'
-    :cbChanged="dropdownChanged"
-    :class="{'palette-selector': true}"
-  ></dropdown>
+  <b-dropdown class="dropdown" v-model="currentPalette">
+    <button class="button is-primary is-small" slot="trigger">
+      <span>{{ currentPalette | capitalize }}</span>
+      <b-icon icon="angle-down"></b-icon>
+    </button>
+
+    <b-dropdown-item
+      v-for="data, idx in selectData"
+      :key="idx"
+      :value="data.value"
+    >{{ data.label | capitalize }}</b-dropdown-item>
+  </b-dropdown>
 </template>
 
 <script>
@@ -48,9 +54,8 @@
         return data;
       }
     },
-    methods: {
-      dropdownChanged(e) {
-        this.currentPalette = e[0].value;
+    watch: {
+      currentPalette() {
         this.$emit('input', this.currentPalette);
       }
     }

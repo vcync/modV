@@ -44,6 +44,5 @@ module.exports = {
     'no-param-reassign': [2, {
         'props': false
     }],
-    'no-console': 0
   }
 };
