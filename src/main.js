@@ -3,11 +3,9 @@
 import Vue from 'vue';
 import Dropdown from 'hsy-vue-dropdown';
 import Shortkey from 'vue-shortkey';
-import vmodal from 'vue-js-modal';
 import VueThrottleEvent from 'vue-throttle-event';
 import Buefy from 'buefy';
 import Vuebar from 'vuebar';
-import Notifications from 'vue-notification';
 
 import Capitalize from '@/vuePlugins/capitalize-filter';
 
@@ -37,7 +35,6 @@ stats.dom.style.left = null;
 stats.dom.style.right = 0;
 stats.dom.classList.add('hidden');
 
-Vue.use(Notifications);
 Vue.use(Capitalize);
 
 Vue.use(Vuebar);
@@ -62,7 +59,6 @@ Vue.use(midiAssignment, {
 Vue.use(lfo, {
   store,
 });
-Vue.use(vmodal);
 
 modV.use(contextMenu);
 modV.use(featureAssignment);

@@ -19,12 +19,11 @@ class ModuleISF extends Module {
 
     this.gl = isf.gl;
     this.ISFcanvas = isf.canvas;
-    this.ISFcontext = isf.context;
-    this.time = 0;
     this.imageInputs = [];
     this.inputs = [];
+    this.paused = false;
 
-    function render({ canvas, context, video, features, meyda, delta, bpm, kick }) { //eslint-disable-line
+    function render({ canvas, context, video, features, meyda, delta, bpm, kick, pipeline }) { //eslint-disable-line
       if (this.inputs) {
         this.imageInputs.forEach((input) => {
           if (input.NAME in this.info.controls) {
@@ -35,14 +34,13 @@ class ModuleISF extends Module {
         });
       }
 
-      this.renderer.setValue('TIME', this.time);
-
+      this.gl.clear(this.gl.COLOR_BUFFER_BIT);
       this.renderer.draw(this.ISFcanvas);
-      this.time += 0.01;
 
       context.save();
       context.globalAlpha = this.info.alpha || 1;
       context.globalCompositeOperation = this.info.compositeOperation || 'normal';
+      if (pipeline) context.clearRect(0, 0, canvas.width, canvas.height);
       context.drawImage(this.ISFcanvas, 0, 0, canvas.width, canvas.height);
       context.restore();
     }

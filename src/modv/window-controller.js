@@ -27,13 +27,13 @@ class WindowController extends EventEmitter2 {
           );
 
           if (this.window === null || typeof this.window === 'undefined') {
-            Vue.$notify({
-              title: 'Could not open Output Window',
-              text: 'modV couldn\'t open an Output Window. Please check you\'ve allowed pop-ups - then reload',
-              type: 'error',
-              position: 'top center',
-              group: 'custom-template',
-              duration: -1,
+            Vue.$dialog.alert({
+              title: 'Could not create Output Window',
+              message: 'modV couldn\'t open an Output Window. Please check you\'ve allowed pop-ups - then reload',
+              type: 'is-danger',
+              hasIcon: true,
+              icon: 'times-circle',
+              iconPack: 'fa',
             });
             return;
           }

@@ -4,38 +4,43 @@
     <div class="overflow-group" v-bar>
       <div>
         <div class="control-group clearing-group">
-          <label for="clearingLayers">Clearing</label>
-          <b-checkbox id="clearingLayers" v-model="clearingChecked"></b-checkbox>
+          <b-field label="Clearing">
+            <b-checkbox v-model="clearingChecked" />
+          </b-field>
         </div>
         <div class="control-group inherit-group no-border">
-          <label for="inheritLayers">Inherit</label>
-          <b-checkbox id="inheritLayers" v-model="inheritChecked"></b-checkbox>
+          <b-field label="Inherit">
+            <b-checkbox v-model="inheritChecked" />
+          </b-field>
         </div>
         <div class="control-group inherit-group">
-          <label for="inheritLayers">Inherit From</label>
-          <b-dropdown class="dropdown" v-model="inheritanceIndex">
-            <button class="button is-primary is-small" slot="trigger">
-              <span>{{ inheritedLayerName | capitalize }}</span>
-              <b-icon icon="angle-down"></b-icon>
-            </button>
+          <b-field label="Inherit From">
+            <b-dropdown class="dropdown" v-model="inheritanceIndex">
+              <button class="button is-primary is-small" slot="trigger">
+                <span>{{ inheritedLayerName | capitalize }}</span>
+                <b-icon icon="angle-down"></b-icon>
+              </button>
 
-            <b-dropdown-item :value="-1">Last Layer</b-dropdown-item>
-            <b-dropdown-item
-              v-for="layer, idx in layers"
-              :key="idx"
-              :value="idx"
-            >{{ layer.name }}</b-dropdown-item>
+              <b-dropdown-item :value="-1">Last Layer</b-dropdown-item>
+              <b-dropdown-item
+                v-for="layer, idx in layers"
+                :key="idx"
+                :value="idx"
+              >{{ layer.name }}</b-dropdown-item>
 
-          </b-dropdown>
+            </b-dropdown>
+          </b-field>
         </div>
         <div class="control-group pipeline-group">
-          <label for="pipeLineLayers">Pipeline</label>
-          <b-checkbox id="pipeLineLayers" v-model="pipelineChecked"></b-checkbox>
+          <b-field label="Pipeline">
+            <b-checkbox v-model="pipelineChecked" />
+          </b-field>
         </div>
 
         <div class="control-group output-group">
-          <label for="outputLayers">Draw to output</label>
-          <b-checkbox id="outputLayers" v-model="drawToOutputChecked"></b-checkbox>
+          <b-field label="Draw to output">
+            <b-checkbox v-model="drawToOutputChecked" />
+          </b-field>
         </div>
       </div>
     </div>

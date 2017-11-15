@@ -180,6 +180,7 @@ function draw(δ) {
               features,
               meyda: modV.meyda,
               delta: δ,
+              pipeline,
             });
 
             bufferContext.clearRect(0, 0, canvas.width, canvas.height);
@@ -198,6 +199,7 @@ function draw(δ) {
               features,
               meyda: modV.meyda,
               delta: δ,
+              pipeline,
             });
           }
         }

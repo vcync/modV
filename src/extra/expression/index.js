@@ -1,7 +1,6 @@
 import { modV } from 'modv';
 import { MenuItem } from 'nwjs-menu-browser';
 import expressionStore from './store';
-import ExpressionComponent from './ExpressionInput';
 
 class Expression {
   constructor() {
@@ -16,8 +15,6 @@ class Expression {
     this.vue = Vue;
     store.registerModule('expression', expressionStore);
 
-    Vue.component('expression', ExpressionComponent);
-
     store.subscribe((mutation) => {
       if (mutation.type === 'modVModules/removeActiveModule') {
         store.commit('expression/removeExpressions', { moduleName: mutation.payload.moduleName });
@@ -27,10 +24,6 @@ class Expression {
 
   modvInstall() {
     modV.addContextMenuHook({ hook: 'rangeControl', buildMenuItem: this.createMenuItem.bind(this) });
-  }
-
-  get component() { //eslint-disable-line
-    return ExpressionComponent;
   }
 
   createMenuItem(moduleName, controlVariable) {

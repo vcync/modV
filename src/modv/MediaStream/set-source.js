@@ -51,13 +51,13 @@ function userMediaSuccess(stream, ids) {
 }
 
 function userMediaError(err, reject) {
-  Vue.$notify({
+  Vue.$dialog.alert({
     title: `WebAudio ${err.name}`,
-    text: 'Error gaining access to audio and video inputs - please make sure you\'ve allowed modV access.',
-    type: 'error',
-    position: 'top center',
-    group: 'custom-template',
-    duration: -1,
+    message: 'Error gaining access to audio and video inputs - please make sure you\'ve allowed modV access.',
+    type: 'is-danger',
+    hasIcon: true,
+    icon: 'times-circle',
+    iconPack: 'fa',
   });
   if (reject) reject();
 }

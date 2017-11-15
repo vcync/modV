@@ -10,6 +10,7 @@ class MIDIAssigner extends EventEmitter2 {
     this.assignments = new Map();
     this.learning = false;
     this.toLearn = '';
+    this.snack = null;
 
     this.get = (key) => {
       this.assignments.get(key);
@@ -41,23 +42,23 @@ class MIDIAssigner extends EventEmitter2 {
           this.handleDevices(e.currentTarget.inputs);
         });
       }).catch(() => {
-        Vue.$notify({
+        Vue.$dialog.alert({
           title: 'MIDI Access Refused',
-          text: 'MIDI access was refused. Please check your MIDI permissions for modV and refresh the page',
-          type: 'error',
-          position: 'top center',
-          group: 'custom-template',
-          duration: -1,
+          message: 'MIDI access was refused. Please check your MIDI permissions for modV and refresh the page',
+          type: 'is-danger',
+          hasIcon: true,
+          icon: 'times-circle',
+          iconPack: 'fa',
         });
       });
     } else {
-      Vue.$notify({
+      Vue.$dialog.alert({
         title: 'Outdated Browser',
-        text: 'Unfortunately your browser does not support WebMIDI, please update to the latest Google Chrome release',
-        type: 'error',
-        position: 'top center',
-        group: 'custom-template',
-        duration: -1,
+        message: 'Unfortunately your browser does not support WebMIDI, please update to the latest Google Chrome release',
+        type: 'is-danger',
+        hasIcon: true,
+        icon: 'times-circle',
+        iconPack: 'fa',
       });
     }
   }
@@ -77,8 +78,14 @@ class MIDIAssigner extends EventEmitter2 {
 
     if (this.learning) {
       this.set(midiChannel, { variable: this.toLearn, value: null });
+      Vue.$toast.open({
+        message: `Learned MIDI control for ${this.toLearn.replace(',', '.')}`,
+        type: 'is-success',
+      });
       this.learning = false;
       this.toLearn = '';
+      if (this.snack) this.snack.close();
+      this.snack = null;
     }
 
     const assignment = this.get(midiChannel);
@@ -88,6 +95,21 @@ class MIDIAssigner extends EventEmitter2 {
   learn(variableName) {
     this.learning = true;
     this.toLearn = variableName;
+
+    this.snack = Vue.$snackbar.open({
+      duration: 1000 * 60 * 60,
+      message: `Waiting for MIDI input to learn ${variableName.replace(',', '.')}`,
+      type: 'is-primary',
+      position: 'is-bottom-right',
+      actionText: 'Cancel',
+      onAction: () => {
+        this.learning = false;
+        Vue.$toast.open({
+          message: `MIDI learning cancelled for ${variableName.replace(',', '.')}`,
+          type: 'is-info',
+        });
+      },
+    });
   }
 }
 

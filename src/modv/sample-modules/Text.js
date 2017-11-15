@@ -34,7 +34,7 @@ class Text extends Module2D {
       type: 'textControl',
       variable: 'customFont',
       label: 'Font',
-      default: 'Helvetica',
+      default: 'Rubik',
     });
 
     this.add({

@@ -1,43 +1,25 @@
 <template>
   <div class="range-control" :data-moduleName='moduleName' v-context-menu='menuOptions'>
-    <label :for='inputId'>
-      {{ label }}
-    </label>
-    <!-- <input
-      :id='inputId'
-      type='range'
-      :min='min'
-      :max='max'
-      :step='step'
-      v-model='currentValue'
-      @input='numberInput'
-    > -->
-    <canvas
-      :id="inputId"
-      ref="canvas"
-      @mousedown="mouseDown"
-      @touchstart="touchstart"
-      @touchmove="touchmove"
-      @touchend="touchend"
-      @mousemove="mouseMove"
-      @click="click"
-    ></canvas>
-    <!-- @mousemove='mouseMove' -->
-<!--     <input
+    <b-field :label="label" :addons="false">
+      <canvas
+        class="control"
+        ref="canvas"
+        @mousedown="mouseDown"
+        @touchstart="touchstart"
+        @touchmove="touchmove"
+        @touchend="touchend"
+        @mousemove="mouseMove"
+        @click="click"
+      ></canvas>
+      <b-input
         class="pure-form-message-inline"
+        placeholder="Number"
         type="number"
-        v-model="currentValue"
         step="any"
+        v-model="currentValue"
         @input="numberInput"
-      > -->
-    <b-input
-      class="pure-form-message-inline"
-      placeholder="Number"
-      type="number"
-      step="any"
-      v-model="currentValue"
-      @input="numberInput"
-    ></b-input>
+      ></b-input>
+    </b-field>
   </div>
 </template>
 
@@ -262,10 +244,5 @@
     vertical-align: top;
     cursor: col-resize;
     border-radius: 4px;
-  }
-
-  .control {
-    max-width: 70px;
-    display: inline-block;
   }
 </style>

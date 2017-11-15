@@ -15,6 +15,8 @@ const externalState = {
   active: {},
 };
 
+window.externalState = externalState;
+
 const state = {
   active: {},
   registry: {},
