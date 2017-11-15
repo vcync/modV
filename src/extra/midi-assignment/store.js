@@ -25,8 +25,14 @@ const mutations = {
   removeAssignment(state, { key }) {
     Vue.delete(state.assignments, key);
   },
-  removeAssignments() {
-    console.log('@TODO - update MIDI assignment storage');
+  removeAssignments(state, { moduleName }) {
+    Object.keys(state.assignments).forEach((key) => {
+      const assignment = state.assignments[key];
+      const data = assignment.variable.split(',');
+      if (moduleName === data[0]) {
+        Vue.delete(state.assignments, key);
+      }
+    });
   },
 };
 
