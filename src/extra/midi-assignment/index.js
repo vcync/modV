@@ -19,7 +19,7 @@ class Expression {
 
     store.subscribe((mutation) => {
       if (mutation.type === 'modVModules/removeActiveModule') {
-        store.commit('midiAssignment/removeAssignments', mutation.payload.moduleName);
+        store.commit('midiAssignment/removeAssignments', { moduleName: mutation.payload.moduleName });
       }
     });
 
