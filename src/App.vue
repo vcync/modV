@@ -43,13 +43,6 @@
       :is="pluginComponent"
       :key="pluginComponent"
     ></component>
-    <notifications group="custom-template" position="top center">
-      <template slot="body" scope="props">
-        <b-message :title="props.item.title" type="is-danger" has-icon closable @close="props.close">
-          {{ props.item.text }}
-        </b-message>
-      </template>
-    </notifications>
   </div>
 </template>
 

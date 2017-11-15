@@ -2,6 +2,8 @@ import Vue from 'vue';
 import store from '@/../store';
 import math from 'mathjs';
 import modvVue from '@/main';
+import { ModalProgrammatic } from 'buefy';
+import ExpressionComponent from './ExpressionInput';
 
 const state = {
   // menus: {},
@@ -82,8 +84,13 @@ const actions = {
     commit('addExpression', { assignment });
   },
   setActiveControlData({ commit }, { moduleName, controlVariable }) {
-    modvVue.$modal.show('expression-input');
     commit('setActiveControlData', { moduleName, controlVariable });
+
+    ModalProgrammatic.open({
+      parent: modvVue,
+      component: ExpressionComponent,
+      hasModalCard: true,
+    });
   },
   addToScope({ commit, dispatch }, { moduleName, controlVariable, scopeAdditions }) {
     const assignmentModule = state.assignments[moduleName];
