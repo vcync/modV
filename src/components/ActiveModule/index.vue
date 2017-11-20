@@ -1,16 +1,16 @@
 <template>
   <div class="column active-item" :class="{current: focused}" tabindex="0" @focus="focusActiveModule" @dragstart="dragstart">
-    <div class="columns is-gapless">
+    <div class="columns is-gapless is-mobile">
       <!-- <canvas class="preview"></canvas> --><!-- TODO: create preview option on mouseover item -->
       <div class="column is-12">
         <div class="active-module-wrapper">
-          <div class="columns is-gapless">
+          <div class="columns is-gapless is-mobile">
             <div class="column is-10">
-              <div class="columns is-gapless">
+              <div class="columns is-gapless is-mobile">
                 <div class="column is-12">
                   <span class="active-item-title">{{ moduleName }}</span>
 
-                  <div class="columns is-gapless">
+                  <div class="columns is-gapless is-mobile">
                     <div class="column options">
                       <div class="control-group enable-group">
                         <label

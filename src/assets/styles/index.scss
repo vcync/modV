@@ -9,8 +9,12 @@ $family-primary: $family-sans-serif; // Use the new sans-serif family
 @import "~bulma";
 @import "~buefy/src/scss/buefy";
 
+@import "./controlPanel.scss";
+@import "./transitions.scss";
+
 html, body {
   height: 100%;
+  overflow: hidden;
   -webkit-user-select: none;
   user-select: none;
 }
@@ -20,38 +24,13 @@ body {
   margin: 0;
 }
 
-.hsy-dropdown {
-  background-color: #fff;
-  border-radius: 3px;
-  // height: 20px !important;
-
-  & > .selected {
-    background-color: rgba(221, 221, 221, 0.32);
-    height: 18px !important;
-    line-height: 18px !important;
+.dropdown {
+  .background {
+    z-index: 1000;
   }
 
-  .list {
-    max-height: 190px;
-    overflow-y: scroll;
-  }
-
-  & > .list {
-    top: 20px;
-  }
-
-  .group h3 {
-    margin: 6px 0px;
-  }
-
-  .group .item {
-    line-height: 20px;
-    height: 20px;
-  }
-
-  .animated {
-    animation-duration: 100ms;
-    animation-fill-mode: both;
+  &.is-active .dropdown-menu {
+    z-index: 1100;
   }
 }
 

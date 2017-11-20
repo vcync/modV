@@ -1,10 +1,11 @@
 <template>
-  <div class="column is-12 columns is-gapless is-mobile">
+  <div class="column is-12 columns is-mobile is-multiline">
     <control-panel
       v-for="moduleName in panels"
       :moduleName="moduleName"
       :pinned="isPinned(moduleName)"
       :focused="isFocused(moduleName)"
+      :key="moduleName"
     />
   </div>
 </template>
