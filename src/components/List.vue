@@ -2,14 +2,19 @@
   <draggable
     :options="dragOptions"
     v-model="layers"
-    class="left-top active-list columns is-gapless"
   >
-    <layer
-      v-for="(layer, index) in layers"
-      :Layer="layer"
-      :LayerIndex="index"
-      :key="index"
-    ></layer>
+    <transition-group
+      name="list"
+      tag="div"
+      class="left-topactive-list columns is-gapless is-multiline"
+    >
+      <layer
+        v-for="(layer, index) in layers"
+        :Layer="layer"
+        :LayerIndex="index"
+        :key="index"
+      ></layer>
+    </transition-group>
   </draggable>
 </template>
 

@@ -35,7 +35,7 @@
     props: [],
     data() {
       return {
-
+        expression: 'value',
       };
     },
     computed: {
@@ -52,19 +52,6 @@
       assignment() {
         return this.getAssignment(this.moduleName, this.controlVariable) || false;
       },
-      expression: {
-        get() {
-          if (!this.assignment) return 'value';
-          return this.assignment.expression;
-        },
-        set(expression) {
-          this.addExpression({
-            expression,
-            moduleName: this.moduleName,
-            controlVariable: this.controlVariable,
-          });
-        },
-      },
       additionalScope: {
         get() {
           if (!this.assignment) return {};
@@ -78,6 +65,9 @@
           });
         },
       },
+    },
+    created() {
+      this.expression = this.assignment.expression || 'value';
     },
     methods: {
       ...mapActions('expression', [
@@ -114,6 +104,15 @@
     },
     components: {
       scopeItem,
+    },
+    watch: {
+      expression(expression) {
+        this.addExpression({
+          expression,
+          moduleName: this.moduleName,
+          controlVariable: this.controlVariable,
+        });
+      },
     },
   };
 </script>

@@ -18,7 +18,9 @@ const getters = {
 
 // actions
 const actions = {
-  async savePresetToProfile({ commit }, { presetName }) {
+  async savePresetToProfile({ commit }, { profileName, presetName }) {
+    const MediaManager = modV.MediaManagerClient;
+
     const preset = {};
 
     const datetime = Date.now();
@@ -36,6 +38,13 @@ const actions = {
       modvVersion: packageData.version,
       author: store.getters['user/name'],
     };
+
+    MediaManager.send({
+      request: 'save-preset',
+      profile: profileName,
+      name: presetName,
+      payload: preset,
+    });
 
     return preset;
   },
@@ -79,6 +88,8 @@ const actions = {
               } else {
                 Object.keys(data.values).forEach((variable) => {
                   const value = data.values[variable];
+
+                  console.log(variable, value);
 
                   store.commit('modVModules/setActiveModuleControlValue', {
                     moduleName,

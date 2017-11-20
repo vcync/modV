@@ -35,9 +35,11 @@ function compileExpression(expression, additionalScope = {}) {
   });
 
   // provide a scope
-  const node = math.parse(expression, scope);
-  const newFunction = node.compile();
+  let newFunction;
   try {
+    const node = math.parse(expression, scope);
+
+    newFunction = node.compile();
     newFunction.eval(scope);
   } catch (e) {
     return false;

@@ -84,7 +84,7 @@ class Module {
    * @param  {(String|Number)} key
    * @param  {any}             value
    */
-  import(key, value) {} //eslint-disable-line
+  // import(key, value) {} //eslint-disable-line
 
   /**
    * Called when an output window canvas resizes

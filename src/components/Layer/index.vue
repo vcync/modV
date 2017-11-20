@@ -1,6 +1,6 @@
 <template>
   <div
-      class="column layer-item"
+      class="column layer-item is-12"
       :class="{
         active: focusedLayerIndex === LayerIndex,
         locked: locked,
@@ -359,10 +359,17 @@
 </script>
 
 <style scoped lang='scss'>
-  /* layer item */
+  .list-enter-active, .list-leave-active {
+    transition: all 200ms;
+  }
+  .list-enter, .list-leave-to {
+    opacity: 0;
+  }
+
+
   .layer-item {
     width: calc(100% - 11px);
-    min-height: 115px;
+    min-height: 163px;
     border-bottom: 1px solid rgba(255, 255, 255, 0.5);
     background-color: hsla(70,0%,22%,1);
 
@@ -374,7 +381,7 @@
 
       &:before {
         position: absolute;
-        top: 28%;
+        top: 36%;
         width: 100%;
         height: auto;
         text-align: center;

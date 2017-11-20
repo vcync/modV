@@ -1,7 +1,9 @@
 import Vue from 'vue';
-import Ajv from 'ajv';
+import Ajv from 'ajv/lib/ajv';
 import { modV } from '@/modv';
 import store from '../index';
+
+const jsd4 = require('ajv/lib/refs/json-schema-draft-04.json');
 
 const makeSchema = function makeSchema(properties) {
   return {
@@ -167,6 +169,8 @@ const actions = {
     const ajv = new Ajv({
       removeAdditional: 'all',
     });
+    ajv.addMetaSchema(jsd4);
+
 
     const moduleNames = Object.keys(state.active)
       .filter(key => key.substring(key.length - 8, key.length) !== '-gallery');

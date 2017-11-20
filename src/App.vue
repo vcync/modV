@@ -158,19 +158,6 @@
     position: relative;
     top: -10%;
   }
-  section.section .top .active-list-wrapper:before {
-    position: absolute;
-    top: 50%;
-    width: 100%;
-    height: auto;
-    text-align: center;
-    font-size: 2em;
-    color: rgba(210, 210, 210, 0.8);
-    text-shadow: 1px 4px 6px #fff, 0 0 0 #000, 1px 4px 6px #fff;
-    opacity: 0.7;
-    pointer-events: none;
-    content: 'Drag Modules Here';
-  }
 
   section.section .top .active-list-wrapper {
     min-width: 306px;
