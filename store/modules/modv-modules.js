@@ -122,6 +122,8 @@ const actions = {
   removeActiveModule({ commit }, { moduleName }) {
     const Module = externalState.active[moduleName];
 
+    store.commit('controlPanels/unpinPanel', { moduleName });
+
     if (state.focusedModule === moduleName) {
       commit('setModuleFocus', { activeModuleName: null });
     }

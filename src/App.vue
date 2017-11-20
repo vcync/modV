@@ -17,17 +17,17 @@
         </div>
       </div>
 
-      <div class="bottom">
-        <div class="columns is-gapless is-mobile is-multiline">
+      <div class="bottom" v-bar="{ useScrollbarPseudo: true }">
+        <div class="bottom-inner columns is-gapless is-mobile is-multiline">
 
           <div class="column is-9">
-            <div class="control-panel-wrapper columns is-gapless is-mobile">
+            <div class="control-panel-wrapper columns is-gapless is-mobile module-controls-wrapper">
               <control-panel-handler></control-panel-handler>
             </div>
           </div>
 
           <div class="column is-3 main-control-area">
-            <div class="control-panel-wrapper columns is-gapless is-mobile">
+            <div class="control-panel-wrapper columns is-gapless is-mobile layer-controls-wrapper">
               <layer-controls></layer-controls>
             </div>
           </div>
@@ -168,8 +168,9 @@
     height: 100%;
   }
 
-  .bottom > div {
+  .bottom .bottom-inner {
     height: 100%;
+    display: flex !important;
   }
 
   .vb > .vb-dragger {
@@ -211,5 +212,13 @@
 
   .vb.vb-dragging-phantom > .vb-dragger > .vb-dragger-styler {
     background-color: rgba(255, 166, 0, 1);
+  }
+
+  .layer-controls-wrapper {
+    padding-left: 0;
+  }
+
+  .module-controls-wrapper {
+    padding-right: 0;
   }
 </style>

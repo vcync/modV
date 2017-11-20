@@ -1,5 +1,5 @@
 <template>
-  <div class="column control-panel" :class="{ focused }">
+  <div class="column control-panel is-6" :class="{ focused }">
     <article class="message">
       <div class="message-header">
         <p>{{ name }}</p>
@@ -88,88 +88,5 @@
 </script>
 
 <style lang="scss">
-  .control-panel {
-    label {
-      font-size: 12px !important;
-      letter-spacing: normal;
-      text-align: left !important;
-      display: inline-block;
-      min-width: 70px;
-      vertical-align: middle;
-    }
 
-    canvas {
-      display: inline-block;
-      vertical-align: middle;
-    }
-
-    div.control {
-      display: inline-block;
-      vertical-align: middle;
-    }
-  }
-
-  .control-panel .pure-control-group {
-    border-bottom: 1px solid #aaa;
-  }
-
-  .control-panel {
-    height: 100%;
-  }
-
-  .pure-control-group {
-    margin: 0;
-    padding: .5em 8px;
-
-    &:nth-child(odd) {
-      background-color: rgba(221, 221, 221, 0.32);
-    }
-
-    &:nth-child(even) {
-      background-color: rgba(238, 238, 238, 0.22);
-    }
-  }
-
-  .control-panel .message button.delete {
-    &:before {
-      content: unset;
-    }
-
-    &:after {
-      content: unset;
-    }
-
-    padding: 0 0.15em;
-    color: #fff;
-    font-size: 0.8em;
-
-    transform: rotateZ(45deg);
-    transition: transform 300ms;
-    will-change: transform;
-
-    &.pinned {
-      transform: rotateZ(0deg) scale(1.2);
-    }
-  }
-
-  .control-panel.focused {
-    .message-header {
-      background-color: aliceblue;
-      color: black;
-    }
-  }
-
-  .message {
-    background-color: #bdbdbd;
-    height: 100%;
-    overflow: hidden;
-
-    .message-body {
-      height: 100%;
-    }
-  }
-
-  .control-panel:not(:last-child) {
-    margin-right: 10px !important;
-  }
 </style>

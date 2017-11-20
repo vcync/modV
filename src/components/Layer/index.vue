@@ -9,9 +9,9 @@
       @click="focusLayer"
       v-context-menu="menuOptions"
     >
-    <div class="columns is-gapless is-multiline">
+    <div class="columns is-gapless is-multiline is-mobile">
       <div class="column is-12">
-        <div class="control-bar handle columns is-gapless">
+        <div class="control-bar handle columns is-gapless is-mobile">
           <div class="column is-three-quarters">
             <div class="layer-title" @dblclick="startNameEdit" @keydown.enter="stopNameEdit">{{ name }}</div>
           </div>
@@ -32,7 +32,7 @@
       </div>
       <div class="column is-12">
         <draggable
-          class="module-list columns is-gapless"
+          class="module-list columns is-gapless is-mobile"
           v-model="modules"
           :options="{
             group: 'modules',
@@ -358,15 +358,7 @@
   };
 </script>
 
-<style scoped lang='scss'>
-  .list-enter-active, .list-leave-active {
-    transition: all 200ms;
-  }
-  .list-enter, .list-leave-to {
-    opacity: 0;
-  }
-
-
+<style scoped lang="scss">
   .layer-item {
     width: calc(100% - 11px);
     min-height: 163px;

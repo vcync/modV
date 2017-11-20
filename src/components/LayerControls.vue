@@ -1,49 +1,58 @@
 <template>
-  <div class="column control-panel layer-controls" v-show="Layer">
-    <div class="title"><h1>{{ name }}</h1></div>
-    <div class="overflow-group" v-bar>
-      <div>
-        <div class="control-group clearing-group">
-          <b-field label="Clearing">
-            <b-checkbox v-model="clearingChecked" />
-          </b-field>
-        </div>
-        <div class="control-group inherit-group no-border">
-          <b-field label="Inherit">
-            <b-checkbox v-model="inheritChecked" />
-          </b-field>
-        </div>
-        <div class="control-group inherit-group">
-          <b-field label="Inherit From">
-            <b-dropdown class="dropdown" v-model="inheritanceIndex">
-              <button class="button is-primary is-small" slot="trigger">
-                <span>{{ inheritedLayerName | capitalize }}</span>
-                <b-icon icon="angle-down"></b-icon>
-              </button>
+  <div class="column control-panel is-12 layer-controls" v-show="Layer">
+    <article class="message">
+      <div class="message-header">
+        <p>{{ name }}</p>
+        <!-- <button class="delete" :class="{ pinned }" @click="pin" :title="pinTitle">
+          <b-icon icon="thumb-tack" size="is-small" />
+        </button> -->
+      </div>
+      <div class="message-body" v-bar="{ useScrollbarPseudo: true }">
+        <div class="overflow-group" v-bar>
+          <div>
+            <div class="control-group clearing-group">
+              <b-field label="Clearing">
+                <b-checkbox v-model="clearingChecked" />
+              </b-field>
+            </div>
+            <div class="control-group inherit-group no-border">
+              <b-field label="Inherit">
+                <b-checkbox v-model="inheritChecked" />
+              </b-field>
+            </div>
+            <div class="control-group inherit-group">
+              <b-field label="Inherit From">
+                <b-dropdown class="dropdown" v-model="inheritanceIndex">
+                  <button class="button is-primary is-small" slot="trigger">
+                    <span>{{ inheritedLayerName | capitalize }}</span>
+                    <b-icon icon="angle-down"></b-icon>
+                  </button>
 
-              <b-dropdown-item :value="-1">Last Layer</b-dropdown-item>
-              <b-dropdown-item
-                v-for="layer, idx in layers"
-                :key="idx"
-                :value="idx"
-              >{{ layer.name }}</b-dropdown-item>
+                  <b-dropdown-item :value="-1">Last Layer</b-dropdown-item>
+                  <b-dropdown-item
+                    v-for="layer, idx in layers"
+                    :key="idx"
+                    :value="idx"
+                  >{{ layer.name }}</b-dropdown-item>
 
-            </b-dropdown>
-          </b-field>
-        </div>
-        <div class="control-group pipeline-group">
-          <b-field label="Pipeline">
-            <b-checkbox v-model="pipelineChecked" />
-          </b-field>
-        </div>
+                </b-dropdown>
+              </b-field>
+            </div>
+            <div class="control-group pipeline-group">
+              <b-field label="Pipeline">
+                <b-checkbox v-model="pipelineChecked" />
+              </b-field>
+            </div>
 
-        <div class="control-group output-group">
-          <b-field label="Draw to output">
-            <b-checkbox v-model="drawToOutputChecked" />
-          </b-field>
+            <div class="control-group output-group">
+              <b-field label="Draw to output">
+                <b-checkbox v-model="drawToOutputChecked" />
+              </b-field>
+            </div>
+          </div>
         </div>
       </div>
-    </div>
+    </article>
   </div>
 </template>
 
@@ -145,66 +154,6 @@
   };
 </script>
 
-<style scoped lang="scss">
-  .no-border {
-    border: none;
-    padding-bottom: 0;
-  }
+<style lang="scss">
 
-  .control-panel {
-    box-sizing: border-box;
-    box-shadow: 0px 0px 20px 5px rgba(0,0,0,0.35);
-    background-color: #bdbdbd;
-    color: #010101;
-    border-radius: 4px;
-    overflow: hidden;
-    display: grid;
-    grid-template-rows: 28px auto;
-  }
-
-  .control-panel .overflow-group {
-    overflow-y: auto;
-  }
-
-  .control-panel .title {
-    margin: 0;
-    padding: 5px;
-    background-color: #454545;
-    color: #adadad;
-  }
-
-  .control-panel .title h1 {
-    padding: 0;
-    margin: 0;
-    font-size: medium;
-    font-weight: 400;
-    letter-spacing: normal;
-  }
-
-  .control-panel label {
-    font-size: 12px !important;
-    letter-spacing: normal;
-    text-align: left !important;
-  }
-
-  .control-panel .pure-control-group {
-    border-bottom: 1px solid #aaa;
-  }
-
-  // .control-panel {
-  //   height: 100%;
-  // }
-
-  .control-panel .pure-form-aligned .pure-control-group {
-    margin: 0;
-    padding: .5em 8px;
-
-    &:nth-child(odd) {
-      background-color: rgba(221, 221, 221, 0.32);
-    }
-
-    &:nth-child(even) {
-      background-color: rgba(238, 238, 238, 0.22);
-    }
-  }
 </style>
