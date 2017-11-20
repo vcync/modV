@@ -18,11 +18,11 @@
       </div>
 
       <div class="bottom">
-        <div class="columns is-gapless is-mobile">
+        <div class="columns is-gapless is-mobile is-multiline">
 
-          <div class="column is-3">
+          <div class="column is-9">
             <div class="control-panel-wrapper columns is-gapless is-mobile">
-              <control-panel></control-panel>
+              <control-panel-handler></control-panel-handler>
             </div>
           </div>
 
@@ -48,7 +48,7 @@
 
 <script>
   import CanvasPreview from '@/components/CanvasPreview';
-  import ControlPanel from '@/components/ControlPanel';
+  import ControlPanelHandler from '@/components/ControlPanelHandler';
   import Gallery from '@/components/Gallery';
   import GlobalControls from '@/components/GlobalControls';
   import LayerControls from '@/components/LayerControls';
@@ -80,7 +80,7 @@
     },
     components: {
       CanvasPreview,
-      ControlPanel,
+      ControlPanelHandler,
       Gallery,
       GlobalControls,
       LayerControls,

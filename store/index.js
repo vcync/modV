@@ -1,6 +1,7 @@
 import Vue from 'vue';
 import Vuex from 'vuex';
 import createPersist from 'vuex-localstorage';
+import controlPanels from './modules/control-panels';
 import layers from './modules/layers';
 import mediaStream from './modules/media-stream';
 import meyda from './modules/meyda';
@@ -30,6 +31,7 @@ export default new Vuex.Store({
     }),
   ],
   modules: {
+    controlPanels,
     layers,
     mediaStream,
     meyda,
