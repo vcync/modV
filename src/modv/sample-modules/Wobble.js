@@ -8,6 +8,7 @@ class Wobble extends ModuleShader {
         name: 'Wobble',
         author: '2xAA',
         version: 0.1,
+        previewWithOutput: true,
         meyda: [], // returned variables passed to the shader individually as uniforms
         uniforms: {
           strength: {

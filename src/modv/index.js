@@ -199,6 +199,8 @@ class ModV extends EventEmitter2 {
     this.bufferCanvas.height = this.height;
     this.outputCanvas.width = this.width;
     this.outputCanvas.height = this.height;
+
+    this.webgl.resize(this.width, this.height);
   }
 
   updateBPM(newBpm) {

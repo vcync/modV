@@ -8,6 +8,7 @@ class ChromaticAbberation extends ModuleShader {
         name: 'Chromatic Abberation',
         author: '2xAA',
         version: 0.1,
+        previewWithOutput: true,
         meyda: [], // returned variables passed to the shader individually as uniforms
         uniforms: {
           rOffset: {

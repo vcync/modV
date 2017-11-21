@@ -8,6 +8,7 @@ class MattiasCRT extends ModuleShader {
         name: 'MattiasCRT',
         author: 'Mattias',
         version: 0.1,
+        previewWithOutput: true,
         meyda: [], // returned variables passed to the shader individually as uniforms
         controls: [], // variabled passed to the shader individually as uniforms
         uniforms: {

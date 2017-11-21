@@ -128,6 +128,8 @@ class ModuleShader extends Module {
         const uniformSetter = twGLUniforms[uniformKey];
         Object.defineProperty(this, uniformKey, {
           set: (value) => {
+            gl.useProgram(this.programInfo.program);
+            uniformSetter(value);
             this.uniformValues.set(uniformKey, value);
           },
           get: () => this.uniformValues.get(uniformKey),
@@ -149,7 +151,7 @@ class ModuleShader extends Module {
       gl.RGBA,
       gl.RGBA,
       gl.UNSIGNED_BYTE,
-      modV.outputCanvas,
+      canvas,
     );
 
     // Clear WebGL canvas

@@ -8,6 +8,7 @@ class Fisheye extends ModuleShader {
         name: 'Fisheye',
         author: '???',
         version: 0.1,
+        previewWithOutput: true,
         meyda: [], // returned variables passed to the shader individually as uniforms
         uniforms: {
           aperture: {
