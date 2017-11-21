@@ -1,5 +1,5 @@
 import { Module2D, ModuleShader, ModuleISF, modV } from '@/modv';
-import webglRender from '@/modv/webgl/render';
+// import webglRender from '@/modv/webgl/render';
 import store from '@/../store';
 import mux from './mux';
 
@@ -10,8 +10,8 @@ function draw(δ) {
     const getActiveModule = store.getters['modVModules/getActiveModule'];
     const previewValues = store.getters['size/previewValues'];
 
-    const webgl = modV.webgl;
-    const gl = webgl.gl;
+    // const webgl = modV.webgl;
+    // const gl = webgl.gl;
 
     const bufferCanvas = modV.bufferCanvas;
     const bufferContext = modV.bufferContext;
@@ -112,20 +112,28 @@ function draw(δ) {
         }
 
         if (Module instanceof ModuleShader) {
-          webgl.texture = gl.texImage2D(
-            gl.TEXTURE_2D,
-            0,
-            gl.RGBA,
-            gl.RGBA,
-            gl.UNSIGNED_BYTE,
-            canvas,
-          );
+          // webgl.texture = gl.texImage2D(
+          //   gl.TEXTURE_2D,
+          //   0,
+          //   gl.RGBA,
+          //   gl.RGBA,
+          //   gl.UNSIGNED_BYTE,
+          //   canvas,
+          // );
 
-          webgl.resize(canvas.width, canvas.height);
+          // webgl.resize(canvas.width, canvas.height);
 
-          webglRender({
-            Module,
+          // webglRender({
+          //   Module,
+          //   canvas,
+          //   delta: δ,
+          // });
+
+          Module.draw({
             canvas,
+            context,
+            video: modV.videoStream,
+            pixelRatio: window.devicePixelRatio,
             delta: δ,
           });
 
@@ -133,31 +141,31 @@ function draw(δ) {
           context.globalAlpha = Module.info.alpha || 1;
           context.globalCompositeOperation = Module.info.compositeOperation || 'normal';
 
-          // Copy Shader Canvas to Main Canvas
-          if (pipeline) {
-            bufferContext.clearRect(
-              0,
-              0,
-              canvas.width,
-              canvas.height,
-            );
+          // // Copy Shader Canvas to Main Canvas
+          // if (pipeline) {
+          //   bufferContext.clearRect(
+          //     0,
+          //     0,
+          //     canvas.width,
+          //     canvas.height,
+          //   );
 
-            bufferContext.drawImage(
-              webgl.canvas,
-              0,
-              0,
-              canvas.width,
-              canvas.height,
-            );
-          } else {
-            context.drawImage(
-              webgl.canvas,
-              0,
-              0,
-              canvas.width,
-              canvas.height,
-            );
-          }
+          //   bufferContext.drawImage(
+          //     webgl.canvas,
+          //     0,
+          //     0,
+          //     canvas.width,
+          //     canvas.height,
+          //   );
+          // } else {
+          //   context.drawImage(
+          //     webgl.canvas,
+          //     0,
+          //     0,
+          //     canvas.width,
+          //     canvas.height,
+          //   );
+          // }
 
           context.restore();
         }

@@ -26,7 +26,7 @@
 
 <script>
   import { mapActions, mapGetters } from 'vuex';
-  import { webgl, modV, ModuleISF } from '@/modv';
+  import { modV, ModuleISF } from '@/modv';
 
   export default {
     name: 'galleryItem',
@@ -99,7 +99,7 @@
       mouseover() {
         if (this.raf) return;
         this.raf = requestAnimationFrame(this.draw);
-        webgl.resize(this.canvas.width, this.canvas.height);
+        // webgl.resize(this.canvas.width, this.canvas.height);
       },
       mouseout() {
         cancelAnimationFrame(this.raf);

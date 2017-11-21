@@ -1,7 +1,7 @@
-export default function resize(gl, canvas, width = 200, height = 200, dpr = 1) {
+export default function resize(gl, canvas, width = 200, height = 200) {
   // Set canvas width
-  canvas.width = width * dpr;
-  canvas.height = height * dpr;
+  canvas.width = width;
+  canvas.height = height;
 
   // Set viewport size from gl context
   gl.viewport(0, 0, width, height);
