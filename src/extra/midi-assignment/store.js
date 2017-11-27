@@ -2,14 +2,14 @@ import Vue from 'vue';
 
 const state = {
   devices: {},
-  assignments: {}
+  assignments: {},
 };
 
 // getters
 const getters = {
   assignments: state => state.assignments,
   assignment: state => key => state.assignments[key],
-  devices: state => state.devices
+  devices: state => state.devices,
 };
 
 // actions
@@ -25,9 +25,15 @@ const mutations = {
   removeAssignment(state, { key }) {
     Vue.delete(state.assignments, key);
   },
-  removeAssignments() {
-    console.log('@TODO - update MIDI assignment storage');
-  }
+  removeAssignments(state, { moduleName }) {
+    Object.keys(state.assignments).forEach((key) => {
+      const assignment = state.assignments[key];
+      const data = assignment.variable.split(',');
+      if (moduleName === data[0]) {
+        Vue.delete(state.assignments, key);
+      }
+    });
+  },
 };
 
 export default {
@@ -35,5 +41,5 @@ export default {
   state,
   getters,
   actions,
-  mutations
+  mutations,
 };

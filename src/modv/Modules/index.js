@@ -7,5 +7,5 @@ export {
   Module,
   Module2D,
   ModuleShader,
-  ModuleISF
+  ModuleISF,
 };

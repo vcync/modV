@@ -8,7 +8,7 @@ const state = {
   previewX: 0,
   previewY: 0,
   previewWidth: 0,
-  previewHeight: 0
+  previewHeight: 0,
 };
 
 // getters
@@ -21,8 +21,8 @@ const getters = {
     width: state.previewWidth,
     height: state.previewHeight,
     x: state.previewX,
-    y: state.previewY
-  })
+    y: state.previewY,
+  }),
 };
 
 // actions
@@ -30,7 +30,7 @@ const actions = {
   updateSize({ state }) {
     store.dispatch('size/setDimensions', {
       width: state.width,
-      height: state.height
+      height: state.height,
     });
   },
   setDimensions({ commit, state }, { width, height }) {
@@ -38,9 +38,12 @@ const actions = {
     let heightShadow = height;
 
     const largestWindowReference = store.getters['windows/largestWindowReference']();
-    if(widthShadow >= largestWindowReference.innerWidth && heightShadow >= largestWindowReference.innerHeight) {
-      if(store.getters['user/constrainToOneOne']) {
-        if(widthShadow > heightShadow) {
+    if (
+      widthShadow >= largestWindowReference.innerWidth &&
+      heightShadow >= largestWindowReference.innerHeight
+    ) {
+      if (store.getters['user/constrainToOneOne']) {
+        if (widthShadow > heightShadow) {
           widthShadow = heightShadow;
         } else {
           heightShadow = widthShadow;
@@ -50,7 +53,7 @@ const actions = {
       commit('setDimensions', { width: widthShadow, height: heightShadow });
 
       let dpr = window.devicePixelRatio || 1;
-      if(!store.getters['user/useRetina']) dpr = 1;
+      if (!store.getters['user/useRetina']) dpr = 1;
 
       modV.resize(state.width, state.height, dpr);
       store.dispatch('modVModules/resizeActive');
@@ -83,9 +86,9 @@ const actions = {
       x: Math.round((modV.previewCanvas.width / 2) - (newWidth / 2)),
       y: Math.round((modV.previewCanvas.height / 2) - (newHeight / 2)),
       width: newWidth,
-      height: newHeight
+      height: newHeight,
     });
-  }
+  },
 };
 
 // mutations
@@ -105,7 +108,7 @@ const mutations = {
     Vue.set(state, 'previewHeight', height);
     Vue.set(state, 'previewX', x);
     Vue.set(state, 'previewY', y);
-  }
+  },
 };
 
 export default {
@@ -113,5 +116,5 @@ export default {
   state,
   getters,
   actions,
-  mutations
+  mutations,
 };

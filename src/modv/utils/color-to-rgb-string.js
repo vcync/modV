@@ -6,7 +6,7 @@
 function colorToRGBString(color) {
   try {
     return `rgb(${color[0]},${color[1]},${color[2]})`;
-  } catch(e) {
+  } catch (e) {
     return 'rgb(0,0,0)';
   }
 }

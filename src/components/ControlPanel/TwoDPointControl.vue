@@ -30,7 +30,7 @@
     name: 'twoDPointControl',
     props: [
       'module',
-      'control'
+      'control',
     ],
     data() {
       return {
@@ -41,12 +41,12 @@
         currentX: 0,
         currentY: 0,
         inputX: 0,
-        inputY: 0
+        inputY: 0,
       };
     },
     computed: {
       ...mapGetters('modVModules', [
-        'getValueFromActiveModule'
+        'getValueFromActiveModule',
       ]),
       moduleName() {
         return this.module.info.name;
@@ -75,11 +75,11 @@
       },
       defaultValue() {
         return this.control.default;
-      }
+      },
     },
     methods: {
       ...mapMutations('modVModules', [
-        'setActiveModuleControlValue'
+        'setActiveModuleControlValue',
       ]),
       mapValues(x, y) {
         const mappedX = Math.map(x, 0, 130, this.min, this.max);
@@ -117,7 +117,7 @@
 
         let clientX;
 
-        if('clientX' in e) {
+        if ('clientX' in e) {
           clientX = e.clientX;
         } else {
           e.preventDefault();
@@ -126,7 +126,7 @@
 
         let clientY;
 
-        if('clientY' in e) {
+        if ('clientY' in e) {
           clientY = e.clientY;
         } else {
           clientY = e.targetTouches[0].clientY;
@@ -135,7 +135,7 @@
         const x = clientX - Math.round(rect.left);
         const y = clientY - Math.round(rect.top);
 
-        if(this.mousePressed || clicked) {
+        if (this.mousePressed || clicked) {
           this.value = this.mapValues(x, y);
           this.canvasCoords = [x, y];
           this.currentX = this.value[0];
@@ -165,7 +165,7 @@
         context.lineWidth = 1;
         const sections = 20;
         const step = width / sections;
-        for(let i = 0; i < sections; i += 1) {
+        for (let i = 0; i < sections; i += 1) {
           context.moveTo(i * step, 0);
           context.lineTo(i * step, height);
           context.moveTo(0, i * step);
@@ -198,11 +198,11 @@
       },
       yInput(e) {
         this.inputY = parseFloat(e.target.value);
-      }
+      },
     },
     beforeMount() {
       this.value = this.module[this.variable];
-      if(typeof this.value === 'undefined') this.value = this.defaultValue;
+      if (typeof this.value === 'undefined') this.value = this.defaultValue;
       this.canvasCoords = this.unmapValues(this.value[0], this.value[1]);
     },
     mounted() {
@@ -226,7 +226,7 @@
         this.setActiveModuleControlValue({
           moduleName: this.moduleName,
           variable: this.variable,
-          value: this.value
+          value: this.value,
         });
       },
       canvasCoords() {
@@ -238,7 +238,7 @@
         this.setActiveModuleControlValue({
           moduleName: this.moduleName,
           variable: this.variable,
-          value: [value, this.inputY]
+          value: [value, this.inputY],
         });
         this.canvasCoords = this.unmapValues(value, this.inputY);
       },
@@ -248,11 +248,11 @@
         this.setActiveModuleControlValue({
           moduleName: this.moduleName,
           variable: this.variable,
-          value: [this.inputX, value]
+          value: [this.inputX, value],
         });
         this.canvasCoords = this.unmapValues(this.inputX, value);
-      }
-    }
+      },
+    },
   };
 </script>
 

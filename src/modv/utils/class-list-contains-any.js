@@ -18,8 +18,8 @@ function classListContainsAny(node, classNames) {
    */
   const classList = node.classList.value;
 
-  for(let i = 0; i < classNames.length; i += 1) {
-    if(classList.includes(classNames[i])) {
+  for (let i = 0; i < classNames.length; i += 1) {
+    if (classList.includes(classNames[i])) {
       return true;
     }
   }

@@ -20,8 +20,8 @@ function classListContainsAll(node, classNames) {
    */
   const nodeClassName = node.classList.value;
 
-  for(let i = 0; i < classNames.length; i += 1) {
-    if(!nodeClassName.includes(classNames[i])) {
+  for (let i = 0; i < classNames.length; i += 1) {
+    if (!nodeClassName.includes(classNames[i])) {
       return false;
     }
   }

@@ -1,33 +1,37 @@
 import Vue from 'vue';
-import Ajv from 'ajv'; //eslint-disable-line
+import Ajv from 'ajv/lib/ajv';
 import { modV } from '@/modv';
 import store from '../index';
+
+const jsd4 = require('ajv/lib/refs/json-schema-draft-04.json');
 
 const makeSchema = function makeSchema(properties) {
   return {
     $schema: 'http://json-schema.org/draft-04/schema#',
     type: 'object',
-    properties
+    properties,
   };
 };
 
 const externalState = {
-  active: {}
+  active: {},
 };
+
+window.externalState = externalState;
 
 const state = {
   active: {},
   registry: {},
   focusedModule: null,
-  currentDragged: null
+  currentDragged: null,
 };
 
 function generateName(name) {
   let dupeNo = 1;
 
-  if(name in state.active) {
+  if (name in state.active) {
     let dupeName = `${name} (${dupeNo})`;
-    while(dupeName in state.active) {
+    while (dupeName in state.active) {
       dupeNo += 1;
       dupeName = `${name} (${dupeNo})`;
     }
@@ -49,15 +53,15 @@ const getters = {
     const module = externalState.active[moduleName];
     let processed = externalState.active[moduleName][controlVariable];
 
-    if('append' in module.info.controls[controlVariable]) {
+    if ('append' in module.info.controls[controlVariable]) {
       processed = processed.replace(module.info.controls[controlVariable].append, '');
     }
 
     return {
       raw: state.active[moduleName][controlVariable],
-      processed
+      processed,
     };
-  }
+  },
 };
 
 // actions
@@ -75,37 +79,37 @@ const actions = {
       const dimensions = store.getters['size/dimensions'];
       const useDpr = store.getters['user/useRetina'];
 
-      if(useDpr) {
+      if (useDpr) {
         dimensions.width *= window.devicePixelRatio;
         dimensions.height *= window.devicePixelRatio;
       }
 
       const canvas = modV.bufferCanvas;
 
-      if('init' in module && !skipInit) module.init(canvas);
+      if ('init' in module && !skipInit) module.init(canvas);
 
-      if('meyda' in module.info) {
-        if(Array.isArray(module.info.meyda)) {
+      if ('meyda' in module.info) {
+        if (Array.isArray(module.info.meyda)) {
           module.info.meyda.forEach(feature =>
-            store.commit('meyda/addFeature', { feature })
+            store.commit('meyda/addFeature', { feature }),
           );
         }
       }
 
       newModuleName = `${newModuleName}${appendToName || ''}`;
 
-      if('controls' in module.info) {
+      if ('controls' in module.info) {
         Object.keys(module.info.controls).forEach((key) => {
           const control = module.info.controls[key];
           const inputId = `${newModuleName}-${control.variable}`;
 
-          if(control.type === 'paletteControl') {
+          if (control.type === 'paletteControl') {
             store.dispatch('palettes/createPalette', {
               id: inputId,
               colors: control.colors || [],
               duration: control.timePeriod,
               moduleName: newModuleName,
-              variable: control.variable
+              variable: control.variable,
             });
           }
         });
@@ -118,18 +122,20 @@ const actions = {
   removeActiveModule({ commit }, { moduleName }) {
     const Module = externalState.active[moduleName];
 
-    if(state.focusedModule === moduleName) {
+    store.commit('controlPanels/unpinPanel', { moduleName });
+
+    if (state.focusedModule === moduleName) {
       commit('setModuleFocus', { activeModuleName: null });
     }
 
-    if('controls' in Module.info) {
+    if ('controls' in Module.info) {
       Object.keys(Module.info.controls).forEach((key) => {
         const control = Module.info.controls[key];
         const inputId = `${moduleName}-${control.variable}`;
 
-        if(control.type === 'paletteControl') {
+        if (control.type === 'paletteControl') {
           store.dispatch('palettes/removePalette', {
-            id: inputId
+            id: inputId,
           });
         }
       });
@@ -147,15 +153,15 @@ const actions = {
     Object.keys(state.active).forEach((moduleName) => {
       let module;
 
-      if(moduleName.indexOf('-gallery') > -1) return;
+      if (moduleName.indexOf('-gallery') > -1) return;
 
-      if(moduleName in externalState.active) {
+      if (moduleName in externalState.active) {
         module = externalState.active[moduleName];
       } else {
         return;
       }
 
-      if('resize' in module) {
+      if ('resize' in module) {
         module.resize(canvas);
       }
     });
@@ -163,8 +169,10 @@ const actions = {
   presetData({ state }) {
     // @TODO: figure out a better clone than JSONparse(JSONstringify())
     const ajv = new Ajv({
-      removeAdditional: 'all'
+      removeAdditional: 'all',
     });
+    ajv.addMetaSchema(jsd4);
+
 
     const moduleNames = Object.keys(state.active)
       .filter(key => key.substring(key.length - 8, key.length) !== '-gallery');
@@ -184,14 +192,14 @@ const actions = {
         compositeOperation: Module.info.compositeOperation,
         enabled: Module.info.enabled,
         originalName: Module.info.originalName,
-        version: Module.info.version
+        version: Module.info.version,
       };
 
       // Merge Module data onto existing data
       moduleData[moduleName] = Object.assign(moduleData[moduleName], moduleInfo);
       delete moduleData[moduleName].values.info;
 
-      if(!('saveData' in Module.info)) {
+      if (!('saveData' in Module.info)) {
         console.warn(`generatePreset: Module ${Module.info.name} has no saveData schema, falling back to Vuex store data`);
         return;
       }
@@ -201,10 +209,10 @@ const actions = {
 
       const copiedModule = JSON.parse(JSON.stringify(Module));
       const validated = validate(copiedModule);
-      if(!validated) {
+      if (!validated) {
         console.error(
           `generatePreset: Module ${Module.info.name} failed saveData validation, skipping`,
-          validate.errors
+          validate.errors,
         );
         return;
       }
@@ -214,7 +222,7 @@ const actions = {
     });
 
     return moduleData;
-  }
+  },
 };
 
 // mutations
@@ -245,18 +253,18 @@ const mutations = {
       processedValue = plugin.processValue({
         currentValue: value,
         controlVariable: variable,
-        moduleName
+        moduleName,
       });
     });
 
-    if(
+    if (
       Object.keys(controlValues)
         .filter(controlVariableName => controlVariableName === variable).length < 1
       ) {
       return;
     }
 
-    if('append' in module.info.controls[variable]) {
+    if ('append' in module.info.controls[variable]) {
       processedValue = `${processedValue}${module.info.controls[variable].append}`;
     }
 
@@ -284,7 +292,7 @@ const mutations = {
   setActiveModuleCompositeOperation(state, { moduleName, compositeOperation }) {
     Vue.set(state.active[moduleName].info, 'compositeOperation', compositeOperation);
     externalState.active[moduleName].info.compositeOperation = compositeOperation;
-  }
+  },
 };
 
 export default {
@@ -292,5 +300,5 @@ export default {
   state,
   getters,
   actions,
-  mutations
+  mutations,
 };

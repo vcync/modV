@@ -1,7 +1,6 @@
 import { modV } from 'modv';
 import { MenuItem } from 'nwjs-menu-browser';
 import expressionStore from './store';
-import ExpressionComponent from './ExpressionInput';
 
 class Expression {
   constructor() {
@@ -11,16 +10,13 @@ class Expression {
   }
 
   install(Vue, { store }) {
-    if(!store) throw new Error('No Vuex store detected');
+    if (!store) throw new Error('No Vuex store detected');
     this.store = store;
     this.vue = Vue;
     store.registerModule('expression', expressionStore);
 
-    Vue.component('expression', ExpressionComponent);
-
     store.subscribe((mutation) => {
-      if(mutation.type === 'modVModules/removeActiveModule') {
-        console.log(mutation.payload.moduleName);
+      if (mutation.type === 'modVModules/removeActiveModule') {
         store.commit('expression/removeExpressions', { moduleName: mutation.payload.moduleName });
       }
     });
@@ -30,23 +26,19 @@ class Expression {
     modV.addContextMenuHook({ hook: 'rangeControl', buildMenuItem: this.createMenuItem.bind(this) });
   }
 
-  get component() { //eslint-disable-line
-    return ExpressionComponent;
-  }
-
   createMenuItem(moduleName, controlVariable) {
     const store = this.store;
 
     function click() {
       store.dispatch('expression/setActiveControlData', {
         moduleName,
-        controlVariable
+        controlVariable,
       });
     }
 
     const menuItem = new MenuItem({
       label: 'Edit expression',
-      click: click.bind(this)
+      click: click.bind(this),
     });
 
     return menuItem;
@@ -62,12 +54,12 @@ class Expression {
 
     const assignment = store.getters['expression/assignment'](moduleName, controlVariable);
 
-    if(assignment) {
+    if (assignment) {
       const additionalScope = assignment.additionalScope;
 
       const scope = {
         value: currentValue,
-        delta: this.delta
+        delta: this.delta,
       };
 
       Object.keys(additionalScope).forEach((key) => {

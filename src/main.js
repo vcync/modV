@@ -3,10 +3,11 @@
 import Vue from 'vue';
 import Dropdown from 'hsy-vue-dropdown';
 import Shortkey from 'vue-shortkey';
-import vmodal from 'vue-js-modal';
 import VueThrottleEvent from 'vue-throttle-event';
 import Buefy from 'buefy';
 import Vuebar from 'vuebar';
+
+import Capitalize from '@/vuePlugins/capitalize-filter';
 
 import stats from '@/extra/stats';
 import { ModuleISF, modV } from './modv';
@@ -26,7 +27,7 @@ Vue.config.productionTip = false;
 Object.defineProperty(Vue.prototype, '$modV', {
   get() {
     return modV;
-  }
+  },
 });
 
 document.body.appendChild(stats.dom);
@@ -34,29 +35,30 @@ stats.dom.style.left = null;
 stats.dom.style.right = 0;
 stats.dom.classList.add('hidden');
 
+Vue.use(Capitalize);
+
 Vue.use(Vuebar);
 Vue.use(Buefy, {
-  defaultIconPack: 'fa'
+  defaultIconPack: 'fa',
 });
 Vue.use(VueThrottleEvent);
 Vue.use(Dropdown);
 Vue.use(Shortkey);
 Vue.use(contextMenu, {
-  store
+  store,
 });
 Vue.use(featureAssignment, {
-  store
+  store,
 });
 Vue.use(expression, {
-  store
+  store,
 });
 Vue.use(midiAssignment, {
-  store
+  store,
 });
 Vue.use(lfo, {
-  store
+  store,
 });
-Vue.use(vmodal);
 
 modV.use(contextMenu);
 modV.use(featureAssignment);
@@ -65,16 +67,16 @@ modV.use(midiAssignment);
 modV.use(lfo);
 
 /* eslint-disable no-new */
-window.modVVue = new Vue({
+export default window.modVVue = new Vue({
   el: '#app',
   template: '<App/>',
   components: { App },
   store,
   data: {
-    modV
+    modV,
   },
   mounted() {
-    modV.start();
+    modV.start(this);
 
     const modules = [
       'Waveform',
@@ -85,7 +87,6 @@ window.modVVue = new Vue({
       'Plasma',
       'MattiasCRT',
       'ChromaticAbberation',
-      'Stretch',
       'Wobble',
       'OpticalFlowDistort',
       'Neon',
@@ -93,8 +94,7 @@ window.modVVue = new Vue({
       'MirrorEdge',
       'EdgeDistort',
       'Polygon',
-      'Concentrics'/* ,
-      'SolidColor' */
+      'Concentrics',
     ];
 
     modules.forEach((fileName) => {
@@ -145,12 +145,12 @@ window.modVVue = new Vue({
       'Interlace.fs',
       'Convergence.fs',
       'Collage.fs',
-      'bokeh.fs',
       'Pinch.fs',
       'Slice.fs',
       'digital-crystal-tunnel.fs',
       'film-grain.fs',
-      'spherical-shader-tut.fs'
+      'spherical-shader-tut.fs',
+      'scale.fs',
     ];
 
     isfSamples.forEach((fileName) => {
@@ -162,21 +162,19 @@ window.modVVue = new Vue({
                 name: fileName,
                 author: '2xAA',
                 version: 0.1,
-                meyda: []
+                meyda: [],
               },
-              fragmentShader
+              fragmentShader,
             });
           }
         }
 
         modV.register(Module);
       }).catch((e) => {
-        console.log(e);
+        throw new Error(e);
       });
     });
 
     attachResizeHandles();
-  }
+  },
 });
-
-export default window.modVVue;

@@ -2,7 +2,7 @@ import store from '../index';
 
 const state = {
   features: ['complexSpectrum'],
-  controlAssignments: []
+  controlAssignments: [],
 };
 
 // getters
@@ -13,9 +13,9 @@ const getters = {
     const assignmentsToModule = state.controlAssignments
       .filter(assignment => assignment.moduleName === moduleName);
 
-    if(assignmentsToModule.length === 0) return false;
+    if (assignmentsToModule.length === 0) return false;
     return assignmentsToModule;
-  }
+  },
 };
 
 // actions
@@ -26,32 +26,32 @@ const actions = {
 // mutations
 const mutations = {
   addFeature(state, { feature }) {
-    if(state.features.find(element => element === feature)) return;
+    if (state.features.find(element => element === feature)) return;
     state.features.push(feature);
   },
   removeFeature(state, { feature }) {
     const index = state.features.findIndex(element => element === feature);
-    if(index < 0) return;
+    if (index < 0) return;
     state.features.splice(index, 1);
   },
   assignFeatureToControl(state, { feature, moduleName, controlVariable }) {
     const Module = store.getters['modVModules/getActiveModule'](moduleName);
-    if(!Module) return;
-    if(typeof Module.info.controls[controlVariable] === 'undefined') return;
+    if (!Module) return;
+    if (typeof Module.info.controls[controlVariable] === 'undefined') return;
 
     const assignment = {
       feature,
       moduleName,
-      controlVariable
+      controlVariable,
     };
 
-    if(state.features.indexOf(feature) < 0) state.features.push(feature);
+    if (state.features.indexOf(feature) < 0) state.features.push(feature);
     state.controlAssignments.push(assignment);
   },
   removeAssignments(state, { moduleName }) {
     state.controlAssignments = state.controlAssignments
       .filter(assignment => assignment.moduleName !== moduleName);
-  }
+  },
 };
 
 export default {
@@ -59,5 +59,5 @@ export default {
   state,
   getters,
   actions,
-  mutations
+  mutations,
 };

@@ -3,13 +3,13 @@ export default function scanMediaStreamSources() {
     navigator.mediaDevices.enumerateDevices().then((devices) => {
       const sources = {
         audio: [],
-        video: []
+        video: [],
       };
 
       devices.forEach((device) => {
-        if(device.kind === 'audioinput') {
+        if (device.kind === 'audioinput') {
           sources.audio.push(device);
-        } else if(device.kind === 'videoinput') {
+        } else if (device.kind === 'videoinput') {
           sources.video.push(device);
         }
       });

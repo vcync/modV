@@ -1,9 +1,9 @@
 <template>
   <div>
     <context-menu
-      v-for="menu in activeMenus"
+      v-for="menu, idx in activeMenus"
       :options="menu"
-      :key="menu"
+      :key="idx"
     ></context-menu>
   </div>
 </template>
@@ -17,17 +17,17 @@
     data() {
       return {
         offsetWidth: 0,
-        offsetHeight: 0
+        offsetHeight: 0,
       };
     },
     computed: {
       ...mapGetters('contextMenu', [
-        'activeMenus'
-      ])
+        'activeMenus',
+      ]),
     },
     components: {
-      contextMenu: Menu
-    }
+      contextMenu: Menu,
+    },
   };
 </script>
 

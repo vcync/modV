@@ -9,8 +9,8 @@ class MediaManagerClient {
 
     try {
       ws = new WebSocket('ws://localhost:3132/');
-    } catch(e) {
-      console.warn('Media Manager not connected, retrying');
+    } catch (e) {
+      console.warn('Media Manager not connected, retrying'); //eslint-disable-line
     }
 
     this.ws = ws;
@@ -19,18 +19,18 @@ class MediaManagerClient {
 
     ws.addEventListener('error', () => {
       this.available = false;
-      console.warn('Media Manager not connected, retrying');
+      console.warn('Media Manager not connected, retrying'); //eslint-disable-line
     });
 
     ws.addEventListener('open', () => {
       this.update();
       this.available = true;
-      console.info('Media Manager connected, retrieving media list');
+      console.info('Media Manager connected, retrieving media list'); //eslint-disable-line
     });
 
     window.addEventListener('beforeunload', () => {
       ws.close({
-        keepClosed: true
+        keepClosed: true,
       });
       this.available = false;
     });
@@ -48,10 +48,10 @@ class MediaManagerClient {
 
   messageHandler(message) { //eslint-disable-line
     const parsed = JSON.parse(message.data);
-    console.log('Media Manager says:', parsed);
+    console.log('Media Manager says:', parsed); //eslint-disable-line
 
-    if('type' in parsed) {
-      switch(parsed.type) {
+    if ('type' in parsed) {
+      switch (parsed.type) {
         default:
           break;
 
@@ -64,29 +64,29 @@ class MediaManagerClient {
               images: profile.images,
               palettes: profile.palettes,
               presets: profile.presets,
-              videos: profile.videos
+              videos: profile.videos,
             });
           });
           break;
 
         case 'file-update-add':
-          if('data' in parsed) {
+          if ('data' in parsed) {
             const data = parsed.data;
             const type = data.type;
             const profileName = data.profile;
             const name = data.name;
 
-            if(type === 'palette') {
+            if (type === 'palette') {
               store.commit('profiles/addPaletteToProfile', {
                 profileName,
                 paletteName: name,
-                colors: data.contents
+                colors: data.contents,
               });
-            } else if(type === 'preset') {
+            } else if (type === 'preset') {
               // modV.profiles[profile].presets[name] = data.contents;
-            } else if(type === 'image') {
+            } else if (type === 'image') {
               // modV.profiles[profile].images[name] = data.path;
-            } else if(type === 'video') {
+            } else if (type === 'video') {
              //  modV.profiles[profile].videos[name] = data.path;
             }
           }

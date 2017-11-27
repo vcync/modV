@@ -1,16 +1,17 @@
 <template>
   <div
-      class="column layer-item"
+      class="column layer-item is-12"
       :class="{
         active: focusedLayerIndex === LayerIndex,
         locked: locked,
         collapsed: collapsed
       }"
       @click="focusLayer"
+      v-context-menu="menuOptions"
     >
-    <div class="columns is-gapless is-multiline">
+    <div class="columns is-gapless is-multiline is-mobile">
       <div class="column is-12">
-        <div class="control-bar handle columns is-gapless">
+        <div class="control-bar handle columns is-gapless is-mobile">
           <div class="column is-three-quarters">
             <div class="layer-title" @dblclick="startNameEdit" @keydown.enter="stopNameEdit">{{ name }}</div>
           </div>
@@ -31,7 +32,7 @@
       </div>
       <div class="column is-12">
         <draggable
-          class="module-list columns is-gapless"
+          class="module-list columns is-gapless is-mobile"
           v-model="modules"
           :options="{
             group: 'modules',
@@ -61,13 +62,36 @@
   import { mapActions, mapGetters, mapMutations } from 'vuex';
   import ActiveModule from '@/components/ActiveModule';
   import draggable from 'vuedraggable';
+  import { Menu, MenuItem } from 'nwjs-menu-browser';
+
+  if (!window.nw) {
+    window.nw = {
+      Menu,
+      MenuItem,
+    };
+  }
+
+  const nw = window.nw;
 
   export default {
     name: 'layer',
     props: [
       'Layer',
-      'LayerIndex'
+      'LayerIndex',
     ],
+    data() {
+      return {
+        menuOptions: {
+          match: ['layerItem'],
+          menuItems: [],
+          createMenus: this.createMenus,
+        },
+        clearingChecked: false,
+        inheritChecked: false,
+        pipelineChecked: false,
+        drawToOutputChecked: false,
+      };
+    },
     computed: {
       modules: {
         get() {
@@ -75,11 +99,11 @@
         },
         set(value) {
           this.updateModuleOrder({ layerIndex: this.LayerIndex, order: value });
-        }
+        },
       },
       name() {
-        if(!this.Layer) return '';
-        if(!('name' in this.Layer)) return '';
+        if (!this.Layer) return '';
+        if (!('name' in this.Layer)) return '';
         return this.Layer.name;
       },
       locked() {
@@ -88,18 +112,37 @@
       collapsed() {
         return this.Layer.collapsed;
       },
-      ...mapGetters('layers', [
-        'focusedLayerIndex'
-      ])
+      ...mapGetters('layers', {
+        focusedLayerIndex: 'focusedLayerIndex',
+        layers: 'allLayers',
+      }),
     },
     methods: {
+      ...mapActions('layers', [
+        'addLayer',
+        'toggleLocked',
+        'toggleCollapsed',
+        'addModuleToLayer',
+        'updateModuleOrder',
+        'moveModuleInstance',
+      ]),
+      ...mapActions('modVModules', [
+        'createActiveModule',
+      ]),
+      ...mapMutations('layers', [
+        'setLayerName',
+        'setLayerFocus',
+        'setClearing',
+        'setInherit',
+        'setInheritFrom',
+        'setPipeline',
+        'setDrawToOutput',
+      ]),
       drop(e) {
         e.preventDefault();
         const moduleName = e.item.dataset.moduleName;
 
-        console.log(e);
-
-        if(e.item.classList.contains('gallery-item')) {
+        if (e.item.classList.contains('gallery-item')) {
           e.clone.parentNode.insertBefore(e.item, e.clone);
           e.clone.parentNode.removeChild(e.clone);
 
@@ -107,7 +150,7 @@
             this.addModuleToLayer({
               module,
               layerIndex: this.LayerIndex,
-              position: e.newIndex
+              position: e.newIndex,
             });
           });
         } else {
@@ -118,28 +161,13 @@
         }
       },
       end(e) {
-        if(e.item) {
+        if (e.item) {
           e.item.classList.remove('deletable');
         }
       },
-      ...mapActions('layers', [
-        'addLayer',
-        'toggleLocked',
-        'toggleCollapsed',
-        'addModuleToLayer',
-        'updateModuleOrder',
-        'moveModuleInstance'
-      ]),
-      ...mapActions('modVModules', [
-        'createActiveModule'
-      ]),
-      ...mapMutations('layers', [
-        'setLayerName',
-        'setLayerFocus'
-      ]),
       startNameEdit() {
         const node = this.$el.querySelector('.layer-title');
-        if(node.classList.contains('editable')) return;
+        if (node.classList.contains('editable')) return;
 
         node.classList.add('editable');
         node.contentEditable = true;
@@ -151,30 +179,30 @@
         node.removeEventListener('blur', this.stopNameEdit);
         e.preventDefault();
 
-        if(!node.classList.contains('editable')) return;
+        if (!node.classList.contains('editable')) return;
 
         const inputText = node.textContent.trim();
 
         node.contentEditable = false;
         node.classList.remove('editable');
 
-        if(inputText.length > 0) {
+        if (inputText.length > 0) {
           this.setLayerName({
             LayerIndex: this.LayerIndex,
-            name: inputText
+            name: inputText,
           });
         } else {
           node.textContent = this.Layer.name;
         }
       },
       focusLayer() {
-        if(this.focusedLayerIndex === this.LayerIndex) return;
+        if (this.focusedLayerIndex === this.LayerIndex) return;
         this.setLayerFocus({
-          LayerIndex: this.LayerIndex
+          LayerIndex: this.LayerIndex,
         });
       },
       dragover(e) {
-        if(this.locked) e.dataTransfer.dropEffect = 'none';
+        if (this.locked) e.dataTransfer.dropEffect = 'none';
       },
       dragstart(e) {
         const moduleName = e.target.dataset.moduleName;
@@ -186,20 +214,154 @@
       },
       clickToggleCollapse() {
         this.toggleCollapsed({ layerIndex: this.LayerIndex });
-      }
+      },
+      updateChecked() {
+        const Layer = this.Layer;
+
+        this.clearingChecked = Layer.clearing;
+        this.inheritChecked = Layer.inherit;
+        this.inheritanceIndex = Layer.inheritFrom;
+        this.pipelineChecked = Layer.pipeline;
+        this.drawToOutputChecked = Layer.drawToOutput;
+      },
+      createMenus() {
+        const that = this;
+
+        this.menuOptions.menuItems.splice(0, this.menuOptions.menuItems.length);
+
+        // Create inheritance index options
+
+        // <b-dropdown-item value="-1">Last Layer</b-dropdown-item>
+        //     <b-dropdown-item
+        //       v-for="layer, idx in layers"
+        //       :key="idx"
+        //       :value="idx"
+        //     >{{ layer.name }}</b-dropdown-item>
+
+        const inheritFromSubmenu = new nw.Menu({});
+
+        const item = new nw.MenuItem({
+          type: 'checkbox',
+          label: 'Last Layer',
+          checked: this.Layer.inheritFrom === -1,
+          click: function click() {
+            that.setInheritFrom({
+              layerIndex: that.LayerIndex,
+              inheritFrom: -1,
+            });
+          },
+        });
+
+        inheritFromSubmenu.append(item);
+
+        this.layers.forEach((layer, idx) => {
+          const item = new nw.MenuItem({
+            type: 'checkbox',
+            label: layer.name,
+            checked: this.Layer.inheritFrom === idx,
+            click: function click() {
+              that.setInheritFrom({
+                layerIndex: that.LayerIndex,
+                inheritFrom: idx,
+              });
+            },
+          });
+
+          inheritFromSubmenu.append(item);
+        });
+
+        const inheritFromItem = new nw.MenuItem({
+          label: 'Inherit From',
+          submenu: inheritFromSubmenu,
+          tooltip: 'The Layer to inherit frames from',
+        });
+
+        this.menuOptions.menuItems.push(
+          new nw.MenuItem({
+            label: this.name,
+            enabled: false,
+          }),
+          new nw.MenuItem({
+            type: 'separator',
+          }),
+          new nw.MenuItem({
+            type: 'checkbox',
+            label: 'Clearing',
+            tooltip: 'Clear this Layer at the beginning of its draw cycle',
+            checked: this.clearingChecked,
+            click: function click() {
+              that.setClearing({
+                layerIndex: that.LayerIndex,
+                clearing: this.checked,
+              });
+            },
+          }),
+          new nw.MenuItem({
+            type: 'checkbox',
+            label: 'Inherit',
+            tooltip: 'Inherit frames from the \'Inherit From\' Layer',
+            checked: this.inheritChecked,
+            click: function click() {
+              that.setInherit({
+                layerIndex: that.LayerIndex,
+                inherit: this.checked,
+              });
+            },
+          }),
+
+          inheritFromItem,
+
+          new nw.MenuItem({
+            type: 'checkbox',
+            label: 'Pipeline',
+            tooltip: `Modules pass frames directly to the next Module,
+              bypassing drawing to the Layer until the end Module's draw cycle`
+              .replace(/\s\s+/g, ' '),
+            checked: this.pipelineChecked,
+            click: function click() {
+              that.setPipeline({
+                layerIndex: that.LayerIndex,
+                pipeline: this.checked,
+              });
+            },
+          }),
+          new nw.MenuItem({
+            type: 'checkbox',
+            label: 'Draw To Output',
+            tooltip: 'Draw the Layer to the Output Window(s) at the end of the Layer\'s draw cycle',
+            checked: this.drawToOutputChecked,
+            click: function click() {
+              that.setDrawToOutput({
+                layerIndex: that.LayerIndex,
+                drawToOutput: this.checked,
+              });
+            },
+          }),
+        );
+      },
+    },
+    beforeMount() {
+      this.updateChecked();
+    },
+    watch: {
+      Layer: {
+        handler() {
+          this.updateChecked();
+        },
+        deep: true,
+      },
     },
     components: {
       ActiveModule,
-      draggable
-    }
+      draggable,
+    },
   };
 </script>
 
-<style scoped lang='scss'>
-  /* layer item */
+<style scoped lang="scss">
   .layer-item {
     width: calc(100% - 11px);
-    min-height: 115px;
+    min-height: 163px;
     border-bottom: 1px solid rgba(255, 255, 255, 0.5);
     background-color: hsla(70,0%,22%,1);
 
@@ -211,7 +373,7 @@
 
       &:before {
         position: absolute;
-        top: 28%;
+        top: 36%;
         width: 100%;
         height: auto;
         text-align: center;

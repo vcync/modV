@@ -6,7 +6,7 @@ export default function top(resizeTargetIn) {
     const bottomNode = document.querySelector('.bottom');
 
     window.addEventListener('mousedown', (e) => {
-      if(e.which > 1) return;
+      if (e.which > 1) return;
       allowDrag = true;
       resizeTarget = e.target;
     });
@@ -15,19 +15,19 @@ export default function top(resizeTargetIn) {
       allowDrag = false;
       resizeTarget = null;
 
-      if(cb) cb();
+      if (cb) cb();
     });
 
     window.addEventListener('mousemove', (e) => {
-      if(!allowDrag) return;
-      if(resizeTarget !== handle) return;
+      if (!allowDrag) return;
+      if (resizeTarget !== handle) return;
 
       const percentageHeight = (e.clientY / window.innerHeight) * 100;
 
       bottomNode.style.height = `${(100 - percentageHeight)}%`;
       topNode.style.height = `${percentageHeight}%`;
 
-      if(cb) cb();
+      if (cb) cb();
     });
   };
 }

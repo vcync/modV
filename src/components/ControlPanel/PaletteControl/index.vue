@@ -27,7 +27,7 @@
     </div>
 
     <div class="picker-wrapper">
-      <sketch-picker v-model="pickerColors" :class="{'hidden': !showPicker}" />
+      <sketch-picker v-model="pickerColors" v-show="showPicker" />
     </div>
 
     <div class="pure-control-group">
@@ -50,17 +50,10 @@
       >
     </div>
     <div class="pure-control-group">
-      <label :for='`${inputId}-useBpm`'>Sync duration to BPM</label>
-      <div class='customCheckbox'>
-        <input
-          :id='`${inputId}-useBpm`'
-          type='checkbox'
-          v-model='useBpmInput'
-        >
-        <label :for='`${inputId}-useBpm`'></label>
-      </div>
+      <label :for="`${inputId}-useBpm`">Sync duration to BPM</label>
+      <b-checkbox :id="`${inputId}-useBpm`" v-model="useBpmInput"></b-checkbox>
     </div>
-    <div class="pure-control-group" :class="{'hidden': !useBpmInput}">
+    <div class="pure-control-group" v-show="useBpmInput">
       <label :for='`${inputId}-bpmDivision`'>BPM Division</label>
       <input
         :id='`${inputId}-bpmDivision`'
@@ -79,11 +72,11 @@
       >
     </div>
     <div class="pure-control-group">
-      <hr>
-    </div>
-    <div class="pure-control-group">
       <label :for='`${inputId}-load-palette`'>Profile</label>
-      <profile-selector :id='`${inputId}-profile`' v-model='profileSelectorInput'></profile-selector>
+      <profile-selector
+        :id='`${inputId}-profile`'
+        v-model='profileSelectorInput'
+      ></profile-selector>
     </div>
     <div class="pure-control-group">
       <label :for='`${inputId}-load-palette`'>Load Palette</label>
@@ -129,28 +122,28 @@
       h: 150,
       s: 0.5,
       l: 0.2,
-      a: 1
+      a: 1,
     },
     hsv: {
       h: 150,
       s: 0.66,
       v: 0.30,
-      a: 1
+      a: 1,
     },
     rgba: {
       r: 25,
       g: 77,
       b: 51,
-      a: 1
+      a: 1,
     },
-    a: 1
+    a: 1,
   };
 
   export default {
     name: 'paletteControl',
     props: [
       'module',
-      'control'
+      'control',
     ],
     data() {
       return {
@@ -158,8 +151,8 @@
           group: {
             name: 'palette',
             pull: true,
-            put: true
-          }
+            put: true,
+          },
         },
         value: undefined,
         currentColor: 0,
@@ -170,7 +163,7 @@
         bpmDivisionInput: 16,
         profileSelectorInput: 'default',
         paletteSelectorInput: '',
-        savePaletteNameInput: ''
+        savePaletteNameInput: '',
       };
     },
     computed: {
@@ -193,10 +186,12 @@
         return this.control.default;
       },
       ...mapGetters('palettes', [
-        'allPalettes'
+        'allPalettes',
       ]),
       palette() {
-        return this.allPalettes[Object.keys(this.allPalettes).find(paletteId => paletteId === this.inputId)];
+        return this.allPalettes[
+          Object.keys(this.allPalettes).find(paletteId => paletteId === this.inputId)
+        ];
       },
       colors: {
         get() {
@@ -205,9 +200,9 @@
         set(value) {
           this.updateColors({
             id: this.inputId,
-            colors: value
+            colors: value,
           });
-        }
+        },
       },
       duration() {
         return this.palette.duration;
@@ -231,7 +226,7 @@
       },
       boundUpdate() {
         return this.update.bind(this);
-      }
+      },
     },
     methods: {
       ...mapActions('palettes', [
@@ -239,16 +234,16 @@
         'updateColors',
         'updateDuration',
         'updateUseBpm',
-        'updateBpmDivision'
+        'updateBpmDivision',
       ]),
       ...mapGetters('profiles', [
-        'getPaletteFromProfile'
+        'getPaletteFromProfile',
       ]),
       ...mapActions('profiles', [
-        'savePaletteToProfile'
+        'savePaletteToProfile',
       ]),
       update(id, currentColor) {
-        if(id === this.inputId) {
+        if (id === this.inputId) {
           this.currentColor = currentColor;
         }
       },
@@ -258,7 +253,7 @@
 
         this.updateColors({
           id: this.inputId,
-          colors: updatedColors
+          colors: updatedColors,
         });
       },
       removeSwatch(idx) {
@@ -267,7 +262,7 @@
 
         this.updateColors({
           id: this.inputId,
-          colors: updatedColors
+          colors: updatedColors,
         });
       },
       togglePicker() {
@@ -276,21 +271,21 @@
       clickLoadPalette() {
         const palette = this.getPaletteFromProfile()({
           paletteName: this.paletteSelectorInput,
-          profileName: this.profileSelectorInput
+          profileName: this.profileSelectorInput,
         });
 
         this.updateColors({
           id: this.inputId,
-          colors: palette
+          colors: palette,
         });
       },
       clickSavePalette() {
         this.savePaletteToProfile({
           profileName: this.profileSelectorInput,
           paletteName: this.savePaletteNameInput,
-          colors: this.colors
+          colors: this.colors,
         });
-      }
+      },
     },
     created() {
       modV.workers.palette.on(PaletteWorker.EventType.PALETTE_UPDATED, this.boundUpdate);
@@ -300,7 +295,7 @@
     },
     beforeMount() {
       this.value = this.module[this.variable];
-      if(typeof this.value === 'undefined') this.value = this.defaultValue;
+      if (typeof this.value === 'undefined') this.value = this.defaultValue;
 
       this.durationInput = this.duration;
       this.useBpmInput = this.useBpm;
@@ -316,28 +311,28 @@
       durationInput() {
         this.updateDuration({
           id: this.inputId,
-          duration: this.durationInput
+          duration: this.durationInput,
         });
       },
       useBpmInput() {
         this.updateUseBpm({
           id: this.inputId,
-          useBpm: this.useBpmInput
+          useBpm: this.useBpmInput,
         });
       },
       bpmDivisionInput() {
         this.updateBpmDivision({
           id: this.inputId,
-          bpmDivision: this.bpmDivisionInput
+          bpmDivision: this.bpmDivisionInput,
         });
-      }
+      },
     },
     components: {
       'sketch-picker': Sketch,
       PaletteSelector,
       ProfileSelector,
-      draggable
-    }
+      draggable,
+    },
   };
 </script>
 

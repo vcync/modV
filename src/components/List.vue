@@ -2,14 +2,19 @@
   <draggable
     :options="dragOptions"
     v-model="layers"
-    class="left-top active-list columns is-gapless"
   >
-    <layer
-      v-for="(layer, index) in layers"
-      :Layer="layer"
-      :LayerIndex="index"
-      :key="index"
-    ></layer>
+    <transition-group
+      name="list"
+      tag="div"
+      class="left-topactive-list columns is-gapless is-multiline"
+    >
+      <layer
+        v-for="(layer, index) in layers"
+        :Layer="layer"
+        :LayerIndex="index"
+        :key="index"
+      ></layer>
+    </transition-group>
   </draggable>
 </template>
 
@@ -26,17 +31,17 @@
           group: {
             name: 'layers',
             pull: true,
-            put: true
+            put: true,
           },
           handle: '.handle',
-          chosenClass: 'chosen'
-        }
+          chosenClass: 'chosen',
+        },
       };
     },
     computed: {
       ...mapGetters('layers', {
         allLayers: 'allLayers',
-        focusedLayer: 'focusedLayer'
+        focusedLayer: 'focusedLayer',
       }),
       layers: {
         get() {
@@ -44,26 +49,26 @@
         },
         set(value) {
           this.updateLayers({ layers: value });
-        }
-      }
+        },
+      },
     },
     components: {
       draggable,
-      Layer: LayerComponent
+      Layer: LayerComponent,
     },
     methods: {
       ...mapActions('layers', [
-        'addLayer'
+        'addLayer',
       ]),
       ...mapMutations('layers', [
-        'updateLayers'
-      ])
+        'updateLayers',
+      ]),
     },
     created() {
       this.addLayer().then(({ Layer }) => {
         this.Layer = Layer;
       });
-    }
+    },
   };
 </script>
 

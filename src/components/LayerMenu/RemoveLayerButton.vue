@@ -15,9 +15,9 @@
     name: 'removeLayerButton',
     methods: {
       ...mapActions('layers', [
-        'removeFocusedLayer'
-      ])
-    }
+        'removeFocusedLayer',
+      ]),
+    },
   };
 </script>
 

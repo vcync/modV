@@ -93,7 +93,7 @@
         nameInput: '',
         useRetinaInput: true,
         showStatsInput: false,
-        constrainToOneOneInput: false
+        constrainToOneOneInput: false,
       };
     },
     computed: {
@@ -103,7 +103,7 @@
       ]),
       ...mapGetters('tempo', [
         'bpm',
-        'detect'
+        'detect',
       ]),
       ...mapGetters('user', [
         'mediaPath',
@@ -112,29 +112,29 @@
         'currentAudioSource',
         'currentVideoSource',
         'showStats',
-        'constrainToOneOne'
+        'constrainToOneOne',
       ]),
     },
     methods: {
       ...mapActions('tempo', [
-        'setBpm'
+        'setBpm',
       ]),
       ...mapMutations('tempo', [
-        'setBpmDetect'
+        'setBpmDetect',
       ]),
       ...mapMutations('user', [
         'setMediaPath',
-        'setName'
+        'setName',
       ]),
       ...mapActions('user', [
         'setUseRetina',
         'setCurrentAudioSource',
         'setCurrentVideoSource',
         'setShowStats',
-        'setConstrainToOneOne'
+        'setConstrainToOneOne',
       ]),
       ...mapActions('windows', [
-        'createWindow'
+        'createWindow',
       ]),
       tempoTap() {
         tapTempo.tap();
@@ -144,7 +144,7 @@
       },
       mediaPathChanged(e) {
         this.mediaPathInput = e.target.value;
-      }
+      },
     },
     watch: {
       currentAudioSource() {
@@ -154,11 +154,11 @@
         this.videoSource = this.currentVideoSource;
       },
       audioSource() {
-        if(this.audioSource === this.currentAudioSource) return;
+        if (this.audioSource === this.currentAudioSource) return;
         this.setCurrentAudioSource({ sourceId: this.audioSource });
       },
       videoSource() {
-        if(this.videoSource === this.currentVideoSource) return;
+        if (this.videoSource === this.currentVideoSource) return;
         this.setCurrentVideoSource({ sourceId: this.videoSource });
       },
       detect() {
@@ -178,11 +178,11 @@
       },
       constrainToOneOneInput() {
         this.setConstrainToOneOne(this.constrainToOneOneInput);
-      }
+      },
     },
     created() {
       tapTempo.on('tempo', (bpm) => {
-        if(this.bpm === Math.round(bpm)) return;
+        if (this.bpm === Math.round(bpm)) return;
         this.setBpm({ bpm: Math.round(bpm) });
       });
 
@@ -192,7 +192,7 @@
       this.videoSource = this.currentVideoSource || 'default';
       this.showStatsInput = this.showStats;
       this.constrainToOneOneInput = this.constrainToOneOne;
-    }
+    },
   };
 </script>
 

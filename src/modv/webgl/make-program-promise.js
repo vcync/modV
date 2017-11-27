@@ -17,7 +17,7 @@ export default function makeProgram(vertexSource, fragmentSource) {
         verbose: true, // whether to emit console.warn messages when throwing errors
         // attributeLocations: { ... key:index pairs ... },
       });
-    } catch(e) {
+    } catch (e) {
       reject(e);
       return;
     }

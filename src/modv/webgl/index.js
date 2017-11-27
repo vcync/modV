@@ -18,7 +18,7 @@ function shaderEnvInit(modV) {
   env.canvas = document.createElement('canvas');
   env.gl = env.canvas.getContext('webgl2', {
     // antialias: false,
-    premultipliedAlpha: false
+    premultipliedAlpha: false,
   });
 
   const gl = env.gl;
@@ -32,7 +32,7 @@ function shaderEnvInit(modV) {
 
   // Make basic shader program
   Object.defineProperty(env, 'defaultShader', {
-    get: () => defaultShader
+    get: () => defaultShader,
   });
 
   const program = makeProgram(gl, defaultShader.v, defaultShader.f);
@@ -64,9 +64,9 @@ function shaderEnvInit(modV) {
     0,
     gl.RGBA,
     gl.UNSIGNED_BYTE,
-    new Uint8Array([0, 0, 0, 0])
+    new Uint8Array([0, 0, 0, 0]),
   );
-  if(env.useMipmap) gl.generateMipmap(gl.TEXTURE_2D);
+  if (env.useMipmap) gl.generateMipmap(gl.TEXTURE_2D);
 
   gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.MIRRORED_REPEAT);
   gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.MIRRORED_REPEAT);

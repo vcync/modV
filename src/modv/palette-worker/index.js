@@ -14,7 +14,7 @@ function createPalette(colors, duration, id) {
   palettes.set(id, pal);
   postMessage({
     message: 'palette-create',
-    paletteId: pal.getId()
+    paletteId: pal.getId(),
   });
 }
 
@@ -46,28 +46,28 @@ function loop() {
 }
 
 onmessage = function onmessage(e) {
-  if(!('message' in e.data)) return;
+  if (!('message' in e.data)) return;
 
-  if(e.data.message === 'create-palette') {
+  if (e.data.message === 'create-palette') {
     createPalette(e.data.colors, e.data.duration, e.data.paletteId);
   }
 
-  if(e.data.message === 'set-palette') {
+  if (e.data.message === 'set-palette') {
     setPalette(e.data.paletteId, e.data.options);
   }
 
-  if(e.data.message === 'remove-palette') {
+  if (e.data.message === 'remove-palette') {
     removePalette(e.data.paletteId);
   }
 
-  if(e.data.message === 'stop-loop') {
+  if (e.data.message === 'stop-loop') {
     ci.clearCorrectingInterval(timer);
     timer = undefined;
   }
 
-  if(e.data.message === 'start-loop') {
-    if(timer === undefined) ci.setCorrectingInterval(loop, 1000 / 60);
+  if (e.data.message === 'start-loop') {
+    if (timer === undefined) ci.setCorrectingInterval(loop, 1000 / 60);
   }
 };
 
-if(timer === undefined) ci.setCorrectingInterval(loop, 1000 / 60);
+if (timer === undefined) ci.setCorrectingInterval(loop, 1000 / 60);

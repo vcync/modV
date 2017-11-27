@@ -26,7 +26,7 @@
 
 <script>
   import { mapActions, mapGetters } from 'vuex';
-  import { webgl, modV, ModuleISF } from '@/modv';
+  import { modV, ModuleISF } from '@/modv';
 
   export default {
     name: 'galleryItem',
@@ -37,12 +37,12 @@
         Module: false,
         raf: false,
         appendToName: '-gallery',
-        isIsf: false
+        isIsf: false,
       };
     },
     props: [
       'ModuleIn',
-      'moduleName'
+      'moduleName',
     ],
     mounted() {
       this.canvas = this.$refs.canvas;
@@ -51,14 +51,14 @@
       this.createActiveModule({
         moduleName: this.moduleName,
         appendToName: this.appendToName,
-        skipInit: true
+        skipInit: true,
       }).then((Module) => {
         this.Module = Module;
-        if(Module instanceof ModuleISF) {
+        if (Module instanceof ModuleISF) {
           this.isIsf = true;
         }
 
-        if('init' in Module) {
+        if ('init' in Module) {
           Module.init({ width: this.canvas.width, height: this.canvas.height });
         }
       }).catch((e) => {
@@ -68,23 +68,23 @@
     },
     methods: {
       ...mapActions('layers', [
-        'addModuleToLayer'
+        'addModuleToLayer',
       ]),
       ...mapActions('modVModules', [
-        'createActiveModule'
+        'createActiveModule',
       ]),
       draw(delta) {
         this.raf = requestAnimationFrame(this.draw);
         this.context.clearRect(0, 0, this.canvas.width, this.canvas.height);
         const features = this.$modV.meyda.get(this.$modV.audioFeatures);
 
-        if(this.Module.info.previewWithOutput) {
+        if (this.Module.info.previewWithOutput) {
           this.context.drawImage(
             modV.outputCanvas,
             0,
             0,
             this.canvas.width,
-            this.canvas.height
+            this.canvas.height,
           );
         }
 
@@ -93,13 +93,13 @@
           context: this.context,
           video: this.$modV.videoStream,
           features,
-          delta
+          delta,
         });
       },
       mouseover() {
-        if(this.raf) return;
+        if (this.raf) return;
         this.raf = requestAnimationFrame(this.draw);
-        webgl.resize(this.canvas.width, this.canvas.height);
+        // webgl.resize(this.canvas.width, this.canvas.height);
       },
       mouseout() {
         cancelAnimationFrame(this.raf);
@@ -108,21 +108,21 @@
       doubleclick() {
         this.createActiveModule({
           moduleName: this.moduleName,
-          skipInit: false
+          skipInit: false,
         }).then((Module) => {
           this.addModuleToLayer({
             module: Module,
-            layerIndex: this.focusedLayerIndex
+            layerIndex: this.focusedLayerIndex,
           });
         });
       },
       dragstart(e) {
         e.dataTransfer.setData('module-name', this.Module.info.name);
-      }
+      },
     },
     computed: {
       ...mapGetters('layers', [
-        'focusedLayerIndex'
+        'focusedLayerIndex',
       ]),
       name() {
         const Module = this.Module;
@@ -132,25 +132,25 @@
         return Module.info.name;
       },
       credit() {
-        if(!this.Module) return '';
+        if (!this.Module) return '';
         return this.Module.info.author;
       },
       version() {
-        if(!this.Module) return '';
+        if (!this.Module) return '';
         return this.Module.info.version;
       },
       isfVersion() {
-        if(!this.Module) return '';
-        if(!this.isIsf) return 'N/A';
+        if (!this.Module) return '';
+        if (!this.isIsf) return 'N/A';
         let outputString = `${this.Module.info.isfVersion}`;
-        if(this.Module.info.isfVersion === 1) outputString += ' (auto upgraded to 2)';
+        if (this.Module.info.isfVersion === 1) outputString += ' (auto upgraded to 2)';
         return outputString;
       },
       description() {
-        if(!this.Module) return '';
+        if (!this.Module) return '';
         return this.Module.info.description;
-      }
-    }
+      },
+    },
   };
 </script>
 

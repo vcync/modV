@@ -32,7 +32,12 @@ class PaletteWorker extends EventEmitter2 {
         });
         break;
       case 'palette-update':
-        this.emit(PaletteWorker.EventType.PALETTE_UPDATED, evt.data.paletteId, evt.data.currentColor, evt.data.currentStep);
+        this.emit(
+          PaletteWorker.EventType.PALETTE_UPDATED,
+          evt.data.paletteId,
+          evt.data.currentColor,
+          evt.data.currentStep,
+        );
         break;
     }
   }
@@ -46,7 +51,7 @@ class PaletteWorker extends EventEmitter2 {
       message: 'create-palette',
       paletteId: id,
       colors,
-      duration
+      duration,
     });
   }
 
@@ -59,7 +64,7 @@ class PaletteWorker extends EventEmitter2 {
     this.worker.postMessage({
       message: 'set-palette',
       paletteId: id,
-      options
+      options,
     });
   }
 
@@ -67,7 +72,7 @@ class PaletteWorker extends EventEmitter2 {
   removePalette(id) {
     this.worker.postMessage({
       message: 'remove-palette',
-      paletteId: id
+      paletteId: id,
     });
   }
 }

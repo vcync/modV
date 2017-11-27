@@ -33,7 +33,7 @@ class ModV extends EventEmitter2 {
     this.audioFeatures = store.getters['meyda/features'];
     this.mediaStreamDevices = {
       audio: store.getters['mediaStream/audioSources'],
-      video: store.getters['mediaStream/videoSources']
+      video: store.getters['mediaStream/videoSources'],
     };
     this.palettes = store.getters['palettes/allPalettes'];
 
@@ -54,12 +54,12 @@ class ModV extends EventEmitter2 {
 
     const ISFcanvas = document.createElement('canvas');
     const ISFgl = ISFcanvas.getContext('webgl2', {
-      premultipliedAlpha: false
+      premultipliedAlpha: false,
     });
 
     this.isf = {
       canvas: ISFcanvas,
-      gl: ISFgl
+      gl: ISFgl,
     };
 
     this.mainRaf = null;
@@ -77,7 +77,7 @@ class ModV extends EventEmitter2 {
     this.ModuleShader = ModuleShader;
   }
 
-  start() {
+  start(Vue) {
     const mediaStreamScan = this.mediaStreamScan;
     const setMediaStreamSource = this.setMediaStreamSource;
 
@@ -94,7 +94,7 @@ class ModV extends EventEmitter2 {
     this.videoStream.autoplay = true;
     this.videoStream.muted = true;
 
-    store.dispatch('windows/createWindow');
+    store.dispatch('windows/createWindow', { Vue });
 
     mediaStreamScan().then((mediaStreamDevices) => {
       mediaStreamDevices.audio.forEach(source => store.commit('mediaStream/addAudioSource', { source }));
@@ -103,13 +103,13 @@ class ModV extends EventEmitter2 {
       let audioSourceId;
       let videoSourceId;
 
-      if(store.getters['user/currentAudioSource']) {
+      if (store.getters['user/currentAudioSource']) {
         audioSourceId = store.getters['user/currentAudioSource'];
-      } else if(mediaStreamDevices.audio.length > 0) {
+      } else if (mediaStreamDevices.audio.length > 0) {
         audioSourceId = mediaStreamDevices.audio[0].deviceId;
       }
 
-      if(store.getters['user/setCurrentVideoSource']) {
+      if (store.getters['user/setCurrentVideoSource']) {
         videoSourceId = store.getters['user/setCurrentVideoSource'];
       } else if (mediaStreamDevices.video.length > 0) {
         videoSourceId = mediaStreamDevices.video[0].deviceId;
@@ -117,7 +117,7 @@ class ModV extends EventEmitter2 {
 
       return {
         audioSourceId,
-        videoSourceId
+        videoSourceId,
       };
     }).then(setMediaStreamSource).then(({ audioSourceId, videoSourceId }) => {
       store.commit('user/setCurrentAudioSource', { sourceId: audioSourceId });
@@ -135,8 +135,12 @@ class ModV extends EventEmitter2 {
   loop(δ) {
     stats.begin();
     let features = [];
-    if(this.audioFeatures.length > 0) features = this.meyda.get(this.audioFeatures);
-    if(features) {
+
+    if (this.audioFeatures.length > 0) {
+      features = this.meyda.get(this.audioFeatures);
+    }
+
+    if (features) {
       this.activeFeatures = features;
 
       const assignments = store.getters['meyda/controlAssignments'];
@@ -148,7 +152,7 @@ class ModV extends EventEmitter2 {
         store.commit('modVModules/setActiveModuleControlValue', {
           moduleName: assignment.moduleName,
           variable: assignment.controlVariable,
-          value: Math.map(featureValue, 0, this.assignmentMax, control.min, control.max)
+          value: Math.map(featureValue, 0, this.assignmentMax, control.min, control.max),
         });
       });
 
@@ -157,12 +161,11 @@ class ModV extends EventEmitter2 {
     }
 
     this.plugins.filter(plugin => ('process' in plugin)).forEach(plugin => plugin.process({
-      delta: δ
+      delta: δ,
     }));
 
     this.beatDetektorKick.process(this.beatDetektor);
     this.kick = this.beatDetektorKick.isKick();
-
 
     draw(δ).then(() => {
       this.mainRaf = requestAnimationFrame(this.loop.bind(this));
@@ -174,13 +177,13 @@ class ModV extends EventEmitter2 {
 
   use(plugin) {
     this.plugins.push(plugin);
-    if('modvInstall' in plugin) plugin.modvInstall();
+    if ('modvInstall' in plugin) plugin.modvInstall();
   }
 
   addContextMenuHook(hook) { //eslint-disable-line
     store.commit('contextMenu/addHook', {
       hookName: hook.hook,
-      hook
+      hook,
     });
   }
 
@@ -196,16 +199,18 @@ class ModV extends EventEmitter2 {
     this.bufferCanvas.height = this.height;
     this.outputCanvas.width = this.width;
     this.outputCanvas.height = this.height;
+
+    this.webgl.resize(this.width, this.height);
   }
 
   updateBPM(newBpm) {
     this.bpm = store.getters['tempo/bpm'];
     this.useDetectedBpm = store.getters['tempo/detect'];
 
-    if(!newBpm || !this.useDetectedBpm) return;
+    if (!newBpm || !this.useDetectedBpm) return;
 
     const bpm = Math.round(newBpm);
-    if(this.bpm !== bpm) {
+    if (this.bpm !== bpm) {
       store.dispatch('tempo/setBpm', { bpm });
     }
   }
@@ -246,7 +251,7 @@ class ModV extends EventEmitter2 {
     this.palettes = store.getters['palettes/allPalettes'];
 
     const palette = this.palettes[id];
-    if(!palette) return;
+    if (!palette) return;
 
     palette.currentColor = currentColor;
     palette.currentStep = currentStep;
@@ -256,7 +261,7 @@ class ModV extends EventEmitter2 {
     Object.keys(this.palettes).forEach((paletteId) => {
       const palette = this.palettes[paletteId];
 
-      if(id === paletteId) {
+      if (id === paletteId) {
         const Module = this.getActiveModule(palette.moduleName);
         Module[palette.variable] = currentStep;
       }
@@ -293,5 +298,5 @@ export {
   Layer,
   webgl,
   isf,
-  draw
+  draw,
 };

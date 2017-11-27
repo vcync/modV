@@ -1,4 +1,5 @@
 import EventEmitter2 from 'eventemitter2';
+import Vue from '@/main';
 
 class MIDIAssigner extends EventEmitter2 {
   constructor(settings) {
@@ -9,27 +10,28 @@ class MIDIAssigner extends EventEmitter2 {
     this.assignments = new Map();
     this.learning = false;
     this.toLearn = '';
+    this.snack = null;
 
     this.get = (key) => {
       this.assignments.get(key);
     };
 
-    if(settings.get) this.get = settings.get;
+    if (settings.get) this.get = settings.get;
 
     this.set = (key, value) => {
       this.assignments.set(key, value);
     };
 
-    if(settings.set) this.set = settings.set;
+    if (settings.set) this.set = settings.set;
 
     this.handleInputBound = this.handleInput.bind(this);
   }
 
   start() {
     // request MIDI access
-    if(navigator.requestMIDIAccess) {
+    if (navigator.requestMIDIAccess) {
       navigator.requestMIDIAccess({
-        sysex: false
+        sysex: false,
       }).then((access) => {
         this.access = access;
         this.inputs = access.inputs;
@@ -37,14 +39,27 @@ class MIDIAssigner extends EventEmitter2 {
         this.handleDevices(access.inputs);
 
         access.addEventListener('statechange', (e) => {
-          console.log(e);
           this.handleDevices(e.currentTarget.inputs);
         });
-      }, (error) => {
-        console.error('MIDI access was refused. Please check your MIDI permissions', error);
+      }).catch(() => {
+        Vue.$dialog.alert({
+          title: 'MIDI Access Refused',
+          message: 'MIDI access was refused. Please check your MIDI permissions for modV and refresh the page',
+          type: 'is-danger',
+          hasIcon: true,
+          icon: 'times-circle',
+          iconPack: 'fa',
+        });
       });
     } else {
-      console.error('No MIDI support in your browser.');
+      Vue.$dialog.alert({
+        title: 'Outdated Browser',
+        message: 'Unfortunately your browser does not support WebMIDI, please update to the latest Google Chrome release',
+        type: 'is-danger',
+        hasIcon: true,
+        icon: 'times-circle',
+        iconPack: 'fa',
+      });
     }
   }
 
@@ -61,34 +76,41 @@ class MIDIAssigner extends EventEmitter2 {
     const data = message.data;
     const midiChannel = parseInt(data[1], 10);
 
-    if(this.learning) {
+    if (this.learning) {
       this.set(midiChannel, { variable: this.toLearn, value: null });
+      Vue.$toast.open({
+        message: `Learned MIDI control for ${this.toLearn.replace(',', '.')}`,
+        type: 'is-success',
+      });
       this.learning = false;
       this.toLearn = '';
+      if (this.snack) this.snack.close();
+      this.snack = null;
     }
 
     const assignment = this.get(midiChannel);
-    if(assignment) this.emit('midiAssignmentInput', midiChannel, assignment, message);
+    if (assignment) this.emit('midiAssignmentInput', midiChannel, assignment, message);
   }
 
   learn(variableName) {
     this.learning = true;
     this.toLearn = variableName;
+
+    this.snack = Vue.$snackbar.open({
+      duration: 1000 * 60 * 60,
+      message: `Waiting for MIDI input to learn ${variableName.replace(',', '.')}`,
+      type: 'is-primary',
+      position: 'is-bottom-right',
+      actionText: 'Cancel',
+      onAction: () => {
+        this.learning = false;
+        Vue.$toast.open({
+          message: `MIDI learning cancelled for ${variableName.replace(',', '.')}`,
+          type: 'is-info',
+        });
+      },
+    });
   }
 }
 
 export default MIDIAssigner;
-
-// const m = new MIDI({
-//   // You can override the built-in getters and setters with your own functions to store assignments
-//   get(key) {
-//     console.log(`Search for ${key}`);
-//     return { variable: 'overridden', value: null };
-//   },
-//   set(key, value) {
-//     console.log(`Set ${key} with ${value}`);
-//   }
-// });
-// m.start();
-
-// m.learn('foo');

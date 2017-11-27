@@ -8,6 +8,7 @@ class MattiasCRT extends ModuleShader {
         name: 'MattiasCRT',
         author: 'Mattias',
         version: 0.1,
+        previewWithOutput: true,
         meyda: [], // returned variables passed to the shader individually as uniforms
         controls: [], // variabled passed to the shader individually as uniforms
         uniforms: {
@@ -23,9 +24,9 @@ class MattiasCRT extends ModuleShader {
             type: 'f',
             value: 0.5
           } */
-        } // Three.JS uniforms
+        }, // Three.JS uniforms
       },
-      fragmentShader: crtFrag
+      fragmentShader: crtFrag,
     });
   }
 }

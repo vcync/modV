@@ -30,32 +30,32 @@
     name: 'searchBar',
     data() {
       return {
-        phrase: ''
+        phrase: '',
       };
     },
     computed: mapGetters({
-      modules: 'registeredModules'
+      modules: 'registeredModules',
     }),
     components: {
-      GalleryItem
+      GalleryItem,
     },
     methods: {
       focus() {
         // nothing here, but seems to be required for shortkey
       },
       clearSearch() {
-        if(this.$refs['gallery-search'] !== document.activeElement) return;
+        if (this.$refs['gallery-search'] !== document.activeElement) return;
         this.phrase = '';
       },
       menuIconClicked() {
         this.$emit('menuIconClicked');
-      }
+      },
     },
     watch: {
       phrase() {
         this.$emit('update:phrase', this.phrase);
-      }
-    }
+      },
+    },
   };
 </script>
 

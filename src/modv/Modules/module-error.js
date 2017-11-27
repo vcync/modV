@@ -7,7 +7,7 @@ export default function ModuleError(message) {
   let stackInfo = this.stack.split('\n').pop().trim();
   try {
     stackInfo = reg.exec(stackInfo)[0];
-  } catch(e) {
+  } catch (e) {
     //
   }
 

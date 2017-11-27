@@ -1,8 +1,8 @@
 <template>
   <div id="app">
-    <section>
+    <section class="section">
       <div class="top">
-        <div class="columns is-gapless">
+        <div class="columns is-gapless is-mobile">
           <div class="column is-3 active-list-wrapper"> <!-- 1-5 -->
             <div v-bar="{ useScrollbarPseudo: true }">
               <list></list>
@@ -12,27 +12,27 @@
           </div>
           <div class="column gallery-wrapper"> <!-- 4-5 -->
             <gallery @menuIconClicked='menuIconClicked'></gallery>
-            <resize-handle-left></resize-handle-left>
+            <div class="resize-handle-left"></div>
           </div>
         </div>
       </div>
 
-      <div class="bottom">
-        <div class="columns is-gapless">
+      <div class="bottom" v-bar="{ useScrollbarPseudo: true }">
+        <div class="bottom-inner columns is-gapless is-mobile is-multiline">
 
-          <div class="column is-3">
-            <div class="control-panel-wrapper columns is-gapless">
-              <control-panel></control-panel>
+          <div class="column is-9">
+            <div class="control-panel-wrapper columns is-gapless is-mobile module-controls-wrapper">
+              <control-panel-handler></control-panel-handler>
             </div>
           </div>
 
           <div class="column is-3 main-control-area">
-            <div class="control-panel-wrapper columns is-gapless">
+            <div class="control-panel-wrapper columns is-gapless is-mobile layer-controls-wrapper">
               <layer-controls></layer-controls>
             </div>
           </div>
         </div>
-        <resize-handle-top></resize-handle-top>
+        <div class="resize-handle-top"></div>
       </div>
 
     </section>
@@ -48,7 +48,7 @@
 
 <script>
   import CanvasPreview from '@/components/CanvasPreview';
-  import ControlPanel from '@/components/ControlPanel';
+  import ControlPanelHandler from '@/components/ControlPanelHandler';
   import Gallery from '@/components/Gallery';
   import GlobalControls from '@/components/GlobalControls';
   import LayerControls from '@/components/LayerControls';
@@ -63,7 +63,7 @@
     name: 'app',
     data() {
       return {
-        menuOpen: false
+        menuOpen: false,
       };
     },
     computed: {
@@ -76,18 +76,18 @@
     methods: {
       menuIconClicked() {
         this.$data.menuOpen = !this.$data.menuOpen;
-      }
+      },
     },
     components: {
       CanvasPreview,
-      ControlPanel,
+      ControlPanelHandler,
       Gallery,
       GlobalControls,
       LayerControls,
       LayerMenu,
       List,
       SideMenu,
-      Tabs
+      Tabs,
     },
   };
 </script>
@@ -117,30 +117,31 @@
     padding: 10px;
   }
 
-  section {
+  section.section {
     height: 100%;
     position: fixed;
     top: 0;
     bottom: 0;
     right: 0;
     left: 0;
+    padding: 0;
   }
 
-  section > .columns {
+  section.section > .columns {
     height: 100%;
   }
 
-  section .top {
+  section.section .top {
     height: 75%;
     max-height: calc(100% - 170px);
     min-height: 170px;
   }
 
-  section .top > .columns {
+  section.section .top > .columns {
     height: 100%;
   }
 
-  section .top .active-list {
+  section.section .top .active-list {
     min-height: 100%;
     box-sizing: border-box;
     position: relative;
@@ -157,71 +158,67 @@
     position: relative;
     top: -10%;
   }
-  section .top .active-list-wrapper:before {
-    position: absolute;
-    top: 50%;
-    width: 100%;
-    height: auto;
-    text-align: center;
-    font-size: 2em;
-    color: rgba(210, 210, 210, 0.8);
-    text-shadow: 1px 4px 6px #fff, 0 0 0 #000, 1px 4px 6px #fff;
-    opacity: 0.7;
-    pointer-events: none;
-    content: 'Drag Modules Here';
-  }
 
-  section .top .active-list-wrapper {
+  section.section .top .active-list-wrapper {
     min-width: 306px;
   }
 
-  section .top .active-list-wrapper,
+  section.section .top .active-list-wrapper,
   .simplebar-content {
     height: 100%;
   }
 
-  .bottom > div {
+  .bottom .bottom-inner {
     height: 100%;
+    display: flex !important;
   }
 
   .vb > .vb-dragger {
-      z-index: 5;
-      width: 12px;
-      right: 0;
-      text-align: center;
+    z-index: 5;
+    width: 12px;
+    right: 0;
+    text-align: center;
   }
 
   .vb > .vb-dragger > .vb-dragger-styler {
-      width: 9px;
+    width: 9px;
 
-      transition:
-          background-color 100ms ease-out,
-          width 100ms ease-out,
-          height 100ms ease-out;
+    transition:
+    background-color 100ms ease-out,
+    width 100ms ease-out,
+    height 100ms ease-out;
 
-      background-color: rgba(255, 166, 0, 0.6);
-      border-radius: 20px;
-      height: calc(100% - 10px);
-      display: inline-block;
+    background-color: rgba(255, 166, 0, 0.6);
+    border-radius: 20px;
+    height: calc(100% - 10px);
+    display: inline-block;
   }
 
   .vb.vb-scrolling-phantom > .vb-dragger > .vb-dragger-styler {
-      background-color: rgba(255, 166, 0, 0.6);
+    background-color: rgba(255, 166, 0, 0.6);
   }
 
   .vb > .vb-dragger:hover > .vb-dragger-styler {
-      background-color: rgba(255, 166, 0, 1);
-      width: 12px;
-      height: 100%;
+    background-color: rgba(255, 166, 0, 1);
+    width: 12px;
+    height: 100%;
   }
 
   .vb.vb-dragging > .vb-dragger > .vb-dragger-styler {
-      background-color: rgba(255, 166, 0, 1);
-      width: 12px;
-      height: 100%;
+    background-color: rgba(255, 166, 0, 1);
+    width: 12px;
+    height: 100%;
   }
 
   .vb.vb-dragging-phantom > .vb-dragger > .vb-dragger-styler {
-      background-color: rgba(255, 166, 0, 1);
+    background-color: rgba(255, 166, 0, 1);
+  }
+
+  .layer-controls-wrapper {
+    padding-left: 0;
+  }
+
+  .module-controls-wrapper {
+    padding-right: 0;
   }
 </style>

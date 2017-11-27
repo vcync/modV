@@ -3,13 +3,18 @@
     <label :for='inputId'>
       {{ label }}
     </label>
-    <dropdown
-      :data='enumVals'
-      :grouped='grouped'
-      :cbChanged="dropdownChanged"
-      :class="{'select-control-selector': true}"
-    ></dropdown>
-    <div class="pure-form-message-inline">{{ value }}</div>
+    <b-dropdown class="dropdown" v-model="value">
+      <button class="button is-primary is-small" slot="trigger">
+        <span>{{ selectedLabel | capitalize }}</span>
+        <b-icon icon="angle-down"></b-icon>
+      </button>
+
+      <b-dropdown-item
+        v-for="enumValue, idx in enumVals"
+        :key="idx"
+        :value="enumValue.value"
+      >{{ enumValue.label | capitalize }}</b-dropdown-item>
+    </b-dropdown>
   </div>
 </template>
 
@@ -18,11 +23,11 @@
     name: 'selectControl',
     props: [
       'module',
-      'control'
+      'control',
     ],
     data() {
       return {
-        value: undefined
+        value: undefined,
       };
     },
     computed: {
@@ -43,16 +48,19 @@
       },
       grouped() {
         return this.control.grouped;
-      }
+      },
+      selectedLabel() {
+        return this.control.enum.find(enumValue => enumValue.value === this.value).label;
+      },
     },
     methods: {
       dropdownChanged(item) {
         this.value = item[0].value;
-      }
+      },
     },
     beforeMount() {
       this.value = this.module[this.variable];
-      if(typeof this.value === 'undefined') this.value = this.defaultValue;
+      if (typeof this.value === 'undefined') this.value = this.defaultValue;
     },
     watch: {
       module() {
@@ -60,8 +68,8 @@
       },
       value() {
         this.module[this.variable] = this.value;
-      }
-    }
+      },
+    },
   };
 </script>
 

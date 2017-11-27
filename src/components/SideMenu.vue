@@ -11,11 +11,11 @@
     name: 'side-menu',
     props: {
       menuState: {
-        default: false
-      }
+        default: false,
+      },
     },
     components: {
-      GlobalControls
+      GlobalControls,
     },
   };
 </script>

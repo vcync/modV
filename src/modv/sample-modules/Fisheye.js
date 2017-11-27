@@ -8,15 +8,16 @@ class Fisheye extends ModuleShader {
         name: 'Fisheye',
         author: '???',
         version: 0.1,
+        previewWithOutput: true,
         meyda: [], // returned variables passed to the shader individually as uniforms
         uniforms: {
           aperture: {
             type: 'f',
-            value: 180.0
-          }
-        } // Three.JS uniforms
+            value: 180.0,
+          },
+        }, // Three.JS uniforms
       },
-      fragmentShader: fisheyeFrag
+      fragmentShader: fisheyeFrag,
     });
 
     this.add({
@@ -27,7 +28,7 @@ class Fisheye extends ModuleShader {
       min: 1.0,
       max: 360.0,
       step: 0.5,
-      default: 180.0
+      default: 180.0,
     });
   }
 }

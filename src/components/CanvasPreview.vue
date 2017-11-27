@@ -19,10 +19,10 @@
     const minX = 10;
     const minY = 10;
 
-    if(x >= maxX) x = maxX;
-    if(y >= maxY) y = maxY;
-    if(x <= minX) x = minX;
-    if(y <= minY) y = minY;
+    if (x >= maxX) x = maxX;
+    if (y >= maxY) y = maxY;
+    if (x <= minX) x = minX;
+    if (y <= minY) y = minY;
 
     // translate the element
     target.style.transform = `translate(${x}px, ${y}px)`;
@@ -35,7 +35,7 @@
   export default {
     name: 'canvas-preview',
     components: {
-      OutputWindowButton
+      OutputWindowButton,
     },
     mounted() {
       const preview = this.$refs.preview;
@@ -44,11 +44,11 @@
 
       interact(preview)
         .draggable({
-          onmove: dragMoveListener
+          onmove: dragMoveListener,
         })
         .resizable({
           preserveAspectRatio: true,
-          edges: { left: true, right: true, bottom: true, top: true }
+          edges: { left: true, right: true, bottom: true, top: true },
         })
         .on('resizemove', (event) => {
           const target = event.target;
@@ -61,10 +61,10 @@
           const maxWidth = initialWidth * 4;
           const maxHeight = initialHeight * 4;
 
-          if(eventWidth >= maxWidth) eventWidth = maxWidth;
-          if(eventHeight >= maxHeight) eventHeight = maxHeight;
-          if(eventWidth <= initialWidth) eventWidth = initialWidth;
-          if(eventHeight <= initialHeight) eventHeight = initialHeight;
+          if (eventWidth >= maxWidth) eventWidth = maxWidth;
+          if (eventHeight >= maxHeight) eventHeight = maxHeight;
+          if (eventWidth <= initialWidth) eventWidth = initialWidth;
+          if (eventHeight <= initialHeight) eventHeight = initialHeight;
 
           // update the element's style
           target.style.width = `${eventWidth}px`;
@@ -79,10 +79,10 @@
           const minX = 10;
           const minY = 10;
 
-          if(x >= maxX) x = maxX;
-          if(y >= maxY) y = maxY;
-          if(x <= minX) x = minX;
-          if(y <= minY) y = minY;
+          if (x >= maxX) x = maxX;
+          if (y >= maxY) y = maxY;
+          if (x <= minX) x = minX;
+          if (y <= minY) y = minY;
 
           target.style.transform = `translate(${x}px, ${y}px)`;
 
@@ -95,7 +95,7 @@
       preview.style.transform = `translate(${x}px, ${y}px)`;
       preview.setAttribute('data-x', x);
       preview.setAttribute('data-y', y);
-    }
+    },
   };
 </script>
 

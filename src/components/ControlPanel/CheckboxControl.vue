@@ -15,11 +15,11 @@
     name: 'rangeControl',
     props: [
       'module',
-      'control'
+      'control',
     ],
     data() {
       return {
-        value: undefined
+        value: undefined,
       };
     },
     computed: {
@@ -37,16 +37,16 @@
       },
       defaultValue() {
         return this.control.checked;
-      }
+      },
     },
     beforeMount() {
       this.value = this.module[this.variable];
-      if(typeof this.value === 'undefined') this.value = this.defaultValue;
+      if (typeof this.value === 'undefined') this.value = this.defaultValue;
     },
     methods: {
       labelClicked() {
         this.value = !this.value;
-      }
+      },
     },
     watch: {
       module() {
@@ -54,8 +54,8 @@
       },
       value() {
         this.module[this.variable] = this.value;
-      }
-    }
+      },
+    },
   };
 </script>
 
