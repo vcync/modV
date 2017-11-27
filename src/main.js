@@ -65,6 +65,7 @@ modV.use(featureAssignment);
 modV.use(expression);
 modV.use(midiAssignment);
 modV.use(lfo);
+// modV.use(grabCanvas);
 
 /* eslint-disable no-new */
 export default window.modVVue = new Vue({
@@ -95,6 +96,7 @@ export default window.modVVue = new Vue({
       'EdgeDistort',
       'Polygon',
       'Concentrics',
+      'Phyllotaxis',
     ];
 
     modules.forEach((fileName) => {
