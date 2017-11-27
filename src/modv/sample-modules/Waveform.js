@@ -1,4 +1,4 @@
-import Meyda from 'meyda';
+import Meyda from 'meyda/src/main';
 import { Module2D } from '../Modules';
 
 class Waveform extends Module2D {
@@ -84,26 +84,31 @@ class Waveform extends Module2D {
   }
 
   draw({ canvas, context, features }) {
-    let ampArr = features.buffer;
-    ampArr = Meyda.windowing(ampArr, this.windowing);
+    const { width, height } = canvas;
+    const bufferLength = features.buffer.length;
+    const buffer = Meyda.windowing(features.buffer, this.windowing);
 
-    const height = Math.map(this.maxHeight, 1, 100, 1, canvas.height);
-
-    context.strokeStyle = this.colour;
     context.lineWidth = this.strokeWeight;
+    context.strokeStyle = this.colour;
     context.beginPath();
-    for (let i = 0; i < ampArr.length - 1; i += this.strokeWeight) {
-      const width = Math.round(Math.map(i, 0, ampArr.length - 1, 0, canvas.width));
-      const newWidth = Math.round(Math.map(i + this.strokeWeight, 0, ampArr.length - 1, 0, canvas.width));
-      let y = (canvas.height / 2) - ((height * ampArr[i]));
-      y = Math.round(y);
-      let yNext = (canvas.height / 2) - ((height * ampArr[i + this.strokeWeight]));
-      yNext = Math.round(yNext);
 
-      context.moveTo(width, y);
-      context.lineTo(newWidth, yNext);
+    const sliceWidth = width / bufferLength;
+    let x = 0;
+
+    for (let i = 0; i < bufferLength; i += 1) {
+      const v = (buffer[i] / 100) * this.maxHeight;
+      const y = (height / 2) + ((height / 2) * v);
+
+      if (i === 0) {
+        context.moveTo(x, y);
+      } else {
+        context.lineTo(x, y);
+      }
+
+      x += sliceWidth;
     }
-    context.closePath();
+
+    context.lineTo(width, height / 2);
     context.stroke();
   }
 }
