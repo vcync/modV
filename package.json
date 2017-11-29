@@ -3,6 +3,7 @@
   "version": "2.0.0",
   "description": "Audio visualisation environment",
   "author": "Sam Wray <sam@wray.pro>",
+  "license": "MIT",
   "private": true,
   "scripts": {
     "dev": "node build/dev-server.js",
