@@ -1,0 +1,240 @@
+<!DOCTYPE HTML>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"">
+    <link type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/bulma/0.6.1/css/bulma.min.css">
+    <link type="text/css" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css">
+    <style>
+    @import url('https://fonts.googleapis.com/css?family=Rubik');
+
+      body {
+        font-family: 'Rubik', sans-serif;
+      }
+
+      #instafeed .column {
+        font-size: 0;
+      }
+
+      #instafeed img {
+        position: relative;
+        transition: all 200ms;
+      }
+
+      #instafeed img:hover {
+        z-index: 1;
+        transform: scale(1.05);
+        box-shadow: 0 0 2px 2px rgba(0,0,0,0.1);
+      }
+
+      .container ul {
+        list-style: disc outside;
+        margin-left: 2em;
+        margin-top: 1em;
+      }
+    </style>
+  </head>
+  <body>
+    <section class="hero is-small is-dark">
+      <div class="hero-head">
+        <header class="navbar">
+          <div class="container">
+            <div class="navbar-brand">
+              <a class="navbar-item">
+                <h1 class="title">
+                  modV
+                </h1>
+              </a>
+              <span class="navbar-burger burger" data-target="navbarMenuHeroC">
+                <span></span>
+                <span></span>
+                <span></span>
+              </span>
+            </div>
+            <div id="navbarMenuHeroC" class="navbar-menu">
+              <div class="navbar-end">
+                <a class="navbar-item is-active" href="/">
+                  Home
+                </a>
+                <a class="navbar-item" href="/docs">
+                  Documentation
+                </a>
+                <span class="navbar-item">
+                  <a class="button is-black" href="http://github.com/2xAA/modV/releases">
+                    <span class="icon">
+                      <i class="fa fa-github"></i>
+                    </span>
+                    <span>Download</span>
+                  </a>
+                </span>
+              </div>
+            </div>
+          </div>
+        </header>
+      </div>
+
+      <div class="hero-body">
+        <div class="container">
+          <h1 class="title">
+
+          </h1>
+          <h2 class="subtitle">
+            modular audio visualisation powered by JavaScript
+          </h2>
+        </div>
+      </div>
+    </section>
+
+    <div class="columns is-mobile is-multiline is-gapless" id="instafeed"></div>
+
+    <section class="section">
+      <h2 class="title">Requirements</h2>
+      <div class="container columns">
+        <div class="column is-6">
+          <h3 class="subtitle is-5">Minimum System Requirements</h3>
+          <ul>
+            <li>Mac, Linux or Windows</li>
+            <li>Node.JS</li>
+          </ul>
+        </div>
+        <div class="column is-6">
+          <h3 class="subtitle is-5">Recommended System Requirements</h3>
+          <ul>
+            <li>NVIDIA or ATI graphics card</li>
+            <li>Intel i5</li>
+            <li>4GB+ RAM</li>
+          </ul>
+        </div>
+      </div>
+      <h2 class="title">Features</h2>
+      <div class="container columns is-multiline">
+        <div class="column is-4">
+          <h3 class="subtitle is-5">Input / Output</h3>
+          <ul>
+            <li>Webcam and audio input</li>
+            <li>Multi window output, for displaying on multiple displays</li>
+          </ul>
+        </div>
+        <div class="column is-4">
+          <h3 class="subtitle is-5">Audio analysis</h3>
+          <ul>
+            <li>Advanced audio analysis using <a href="http://meyda.github.io/" target="_blank"><b>Meyda</b></a></li>
+            <li>Automatic BPM detection, tap tempo available</li>
+          </ul>
+        </div>
+        <div class="column is-4">
+          <h3 class="subtitle is-5">Media Manager</h3>
+          <ul>
+            <li>Save and load presets with modV's built-in Media Manager</li>
+            <li>Create profiles for presets, images, videos, GIFs, color palettes and more</li>
+          </ul>
+        </div>
+        <div class="column is-4">
+          <h3 class="subtitle is-5">Versatile controls</h3>
+          <ul>
+            <li>Assign LFOs, math expressions, MIDI inputs and audio features to controls</li>
+            <li>All assignments can be saved to presets</li>
+          </ul>
+        </div>
+        <div class="column is-4">
+          <h3 class="subtitle is-5">Mixing and compositing</h3>
+          <ul>
+            <li>Route, blend, pipe and control alpha per module and layer</li>
+            <li>Easily re-arrange modules or layers via drag and drop</li>
+          </ul>
+        </div>
+        <div class="column is-4">
+          <h3 class="subtitle is-5">Modular design</h3>
+          <ul>
+            <li>modV modules support OpenGL shaders, THREE.js scenes, ISF files and Canvas2D JavaScript</li>
+            <li>Using Vue.js as a base, modV has an extremely versatile plugin system</li>
+          </ul>
+        </div>
+      </div>
+    </section>
+    <section class="section">
+      <h2 class="title">Contribution</h2>
+      <div class="container">
+        modV is open source and contribution is welcome via our <a href="http://github.com/2xAA/modV">GitHub</a> :)
+      </div>
+    </section>
+
+    <footer class="footer">
+      <div class="container">
+        <div class="content has-text-centered">
+          <p>
+            <strong>modV</strong> by <a href="http://wray.pro">Sam Wray</a>.<br>
+            The source code is licensed
+            <a href="http://opensource.org/licenses/mit-license.php">MIT</a>. The website content
+            is licensed <a href="http://creativecommons.org/licenses/by-nc-sa/4.0/">CC BY NC SA 4.0</a>.
+          </p>
+        </div>
+      </div>
+    </footer>
+    <script>
+      const feed = document.querySelector('#instafeed');
+
+      function isModv(edge) {
+        if (edge.node.edge_media_to_caption.edges.length < 1) return false;
+
+        const caption = edge
+          .node
+          .edge_media_to_caption
+          .edges[0]
+          .node
+          .text;
+
+        return caption.toLowerCase().indexOf("#modv") > -1;
+      }
+
+      fetch('https://www.instagram.com/graphql/query/?query_id=17888483320059182&variables={"id":"40133316","first":100,"after":null}')
+        .then(response => response.json())
+        .then((data) => {
+          const output = 0;
+
+          data
+            .data
+            .user
+            .edge_owner_to_timeline_media
+            .edges
+            .filter(isModv)
+            .splice(0, 12)
+            .forEach((edge) => {
+              const post = edge.node;
+              const column = document.createElement('div');
+              const link = document.createElement('a');
+              const img = new Image();
+              column.classList.add('column', 'is-2');
+              link.href = 'https://www.instagram.com/p/' + post.shortcode;
+              link.target = '_blank';
+              img.src = post.thumbnail_src;
+
+              link.appendChild(img);
+              column.appendChild(link);
+              feed.appendChild(column);
+          });
+        });
+
+        // bulma navbar
+        // Get all "navbar-burger" elements
+        var $navbarBurgers = Array.prototype.slice.call(document.querySelectorAll('.navbar-burger'), 0);
+
+        // Check if there are any navbar burgers
+        if ($navbarBurgers.length > 0) {
+          // Add a click event on each of them
+          $navbarBurgers.forEach(function ($el) {
+            $el.addEventListener('click', function () {
+
+              // Get the target from the "data-target" attribute
+              var target = $el.dataset.target;
+              var $target = document.getElementById(target);
+
+              // Toggle the class on both the "navbar-burger" and the "navbar-menu"
+              $el.classList.toggle('is-active');
+              $target.classList.toggle('is-active');
+            });
+          });
+        }
+    </script>
+  </body>
+</html>
