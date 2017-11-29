@@ -13,7 +13,7 @@
     "email": "sam@wray.pro",
     "url": "https://github.com/2xAA"
   },
-  "license": "GPL-3.0",
+  "license": "MIT",
   "repository": {
     "type": "git",
     "url": "git://github.com/2xAA/modv.git"
