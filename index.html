@@ -3,14 +3,50 @@
   <head>
     <title>modV - modular audio visualisation powered by JavaScript</title>
     <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"">
+    <meta name="flattr:id" content="xvwndw">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
     <link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/bulma/0.6.1/css/bulma.min.css">
     <link rel="stylesheet" type="text/css" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css">
     <style>
-    @import url('https://fonts.googleapis.com/css?family=Rubik');
+      @import url('https://fonts.googleapis.com/css?family=Rubik');
+
+      @font-face {
+        font-family: flattr-icons;
+        src: url("/fonts/flattr-icons.eot");
+        src: url("./fonts/flattr-icons.eot") format("embedded-opentype"),
+          url("./fonts/flattr-icons.ttf") format("truetype"),
+          url("./fonts/flattr-icons.woff") format("woff"),
+          url("./fonts/flattr-icons.svg#flattr-icons") format("svg");
+
+          font-weight:400;
+          font-style:normalL
+      }
+
+      [class*=" icon-flattr"],
+      [class^=icon-flattr] {
+        font-family: flattr-icons;
+        speak: none;
+        font-style: normal;
+        font-weight: 400;
+        font-variant: normal;
+        text-transform: none;
+        line-height: 1;
+        font-size: 85%;
+        padding-right: 1px;
+        -webkit-font-smoothing: antialiased;
+        -moz-osx-font-smoothing: grayscale;
+      }
+
+      .flattr-icon:before {
+        content:"\E007";
+      }
 
       body {
         font-family: 'Rubik', sans-serif;
+      }
+
+      #instafeed {
+        width: 100%;
       }
 
       #instafeed .column {
@@ -33,15 +69,34 @@
         margin-left: 2em;
         margin-top: 1em;
       }
+
+      .is-gapless .column.image-placeholder {
+        width: 16.66667% !important;
+        height: 0;
+        padding-bottom: 16.66667% !important;
+      }
+
+      .tags.is-inline {
+        font-size: 0;
+      }
+
+      .tags.is-inline * {
+        vertical-align: top;
+      }
+
+      .tag:not(body).is-flattr {
+        background-color: #5cb85c;
+        color: #fff;
+      }
     </style>
   </head>
   <body>
-    <section class="hero is-small is-dark">
+    <section class="hero is-dark">
       <div class="hero-head">
         <header class="navbar">
           <div class="container">
             <div class="navbar-brand">
-              <a class="navbar-item">
+              <a class="navbar-item" href="//modv.js.org/">
                 <h1 class="title">
                   modV
                 </h1>
@@ -54,14 +109,14 @@
             </div>
             <div id="navbarMenuHeroC" class="navbar-menu">
               <div class="navbar-end">
-                <a class="navbar-item is-active" href="/">
+                <a class="navbar-item is-active" href="//modv.js.org/">
                   Home
                 </a>
-                <a class="navbar-item" href="/docs">
+                <a class="navbar-item" href="//modv.js.org/docs">
                   Documentation
                 </a>
                 <span class="navbar-item">
-                  <a class="button is-black" href="http://github.com/2xAA/modV/releases">
+                  <a class="button is-black" href="//github.com/2xAA/modV/releases">
                     <span class="icon">
                       <i class="fa fa-github"></i>
                     </span>
@@ -86,77 +141,104 @@
       </div>
     </section>
 
-    <div class="columns is-mobile is-multiline is-gapless" id="instafeed"></div>
+    <div class="columns is-mobile is-multiline is-gapless" id="instafeed">
+      <div class="image-placeholder column is-2"></div>
+      <div class="image-placeholder column is-2"></div>
+      <div class="image-placeholder column is-2"></div>
+      <div class="image-placeholder column is-2"></div>
+      <div class="image-placeholder column is-2"></div>
+      <div class="image-placeholder column is-2"></div>
+      <div class="image-placeholder column is-2"></div>
+      <div class="image-placeholder column is-2"></div>
+      <div class="image-placeholder column is-2"></div>
+      <div class="image-placeholder column is-2"></div>
+      <div class="image-placeholder column is-2"></div>
+      <div class="image-placeholder column is-2"></div>
+    </div>
 
     <section class="section">
-      <h2 class="title">Requirements</h2>
-      <div class="container columns">
-        <div class="column is-6">
-          <h3 class="subtitle is-5">Minimum System Requirements</h3>
-          <ul>
-            <li>Mac, Linux or Windows</li>
-            <li>Node.JS</li>
-          </ul>
+      <div class="container">
+        <h2 class="title">Requirements</h2>
+        <div class="columns">
+          <div class="column is-6">
+            <h3 class="subtitle is-5">Minimum System Requirements</h3>
+            <ul>
+              <li>Mac, Windows or Linux (with desktop shell)</li>
+              <li>
+                <a href="//nodejs.org" target="_blank">Node.js&#174;</a>
+              </li>
+            </ul>
+          </div>
+          <div class="column is-6">
+            <h3 class="subtitle is-5">Recommended System Requirements</h3>
+            <ul>
+              <li>NVIDIA or ATI graphics card</li>
+              <li>Intel i5 or better</li>
+              <li>4GB+ RAM</li>
+            </ul>
+          </div>
         </div>
-        <div class="column is-6">
-          <h3 class="subtitle is-5">Recommended System Requirements</h3>
-          <ul>
-            <li>NVIDIA or ATI graphics card</li>
-            <li>Intel i5</li>
-            <li>4GB+ RAM</li>
-          </ul>
-        </div>
-      </div>
-      <h2 class="title">Features</h2>
-      <div class="container columns is-multiline">
-        <div class="column is-4">
-          <h3 class="subtitle is-5">Input / Output</h3>
-          <ul>
-            <li>Webcam and audio input</li>
-            <li>Multi window output, for displaying on multiple displays</li>
-          </ul>
-        </div>
-        <div class="column is-4">
-          <h3 class="subtitle is-5">Audio analysis</h3>
-          <ul>
-            <li>Advanced audio analysis using <a href="http://meyda.github.io/" target="_blank"><b>Meyda</b></a></li>
-            <li>Automatic BPM detection, tap tempo available</li>
-          </ul>
-        </div>
-        <div class="column is-4">
-          <h3 class="subtitle is-5">Media Manager</h3>
-          <ul>
-            <li>Save and load presets with modV's built-in Media Manager</li>
-            <li>Create profiles for presets, images, videos, GIFs, color palettes and more</li>
-          </ul>
-        </div>
-        <div class="column is-4">
-          <h3 class="subtitle is-5">Versatile controls</h3>
-          <ul>
-            <li>Assign LFOs, math expressions, MIDI inputs and audio features to controls</li>
-            <li>All assignments can be saved to presets</li>
-          </ul>
-        </div>
-        <div class="column is-4">
-          <h3 class="subtitle is-5">Mixing and compositing</h3>
-          <ul>
-            <li>Route, blend, pipe and control alpha per module and layer</li>
-            <li>Easily re-arrange modules or layers via drag and drop</li>
-          </ul>
-        </div>
-        <div class="column is-4">
-          <h3 class="subtitle is-5">Modular design</h3>
-          <ul>
-            <li>modV modules support OpenGL shaders, THREE.js scenes, ISF files and Canvas2D JavaScript</li>
-            <li>Using Vue.js as a base, modV has an extremely versatile plugin system</li>
-          </ul>
+
+        <h2 class="title">Features</h2>
+        <div class="columns is-multiline">
+          <div class="column is-4">
+            <h3 class="subtitle is-5">Input / Output</h3>
+            <ul>
+              <li>Webcam and audio input</li>
+              <li>Multi window output, for displaying on multiple displays</li>
+            </ul>
+          </div>
+          <div class="column is-4">
+            <h3 class="subtitle is-5">Audio analysis</h3>
+            <ul>
+              <li>Advanced audio analysis using <a href="http://meyda.github.io/" target="_blank"><b>Meyda</b></a></li>
+              <li>Automatic BPM detection, tap tempo available</li>
+            </ul>
+          </div>
+          <div class="column is-4">
+            <h3 class="subtitle is-5">Media Manager</h3>
+            <ul>
+              <li>Save and load presets with modV's built-in Media Manager</li>
+              <li>Create profiles for presets, images, videos, GIFs, color palettes and more</li>
+            </ul>
+          </div>
+          <div class="column is-4">
+            <h3 class="subtitle is-5">Versatile controls</h3>
+            <ul>
+              <li>Assign LFOs, math expressions, MIDI inputs and audio features to controls</li>
+              <li>All assignments can be saved to presets</li>
+            </ul>
+          </div>
+          <div class="column is-4">
+            <h3 class="subtitle is-5">Mixing and compositing</h3>
+            <ul>
+              <li>Route, blend, pipe and control alpha per module and layer</li>
+              <li>Easily re-arrange modules or layers via drag and drop</li>
+            </ul>
+          </div>
+          <div class="column is-4">
+            <h3 class="subtitle is-5">Modular design</h3>
+            <ul>
+              <li>modV modules support OpenGL shaders, THREE.js scenes, ISF files and Canvas2D JavaScript</li>
+              <li>Using Vue.js as a base, modV has an extremely versatile plugin system</li>
+            </ul>
+          </div>
         </div>
       </div>
     </section>
     <section class="section">
-      <h2 class="title">Contribution</h2>
       <div class="container">
-        modV is open source and contribution is welcome via our <a href="http://github.com/2xAA/modV">GitHub</a> :)
+        <h2 class="title">Contribution</h2>
+        <p class="content">modV is open source and contribution is welcome via our <a href="//github.com/2xAA/modV">GitHub</a> :)</p>
+        <p class="content">We accept donations through Flatter too!</p>
+        <a class="tags has-addons is-inline" href="//flattr.com/submit/auto?fid=xvwndw&url=https%3A%2F%2Fmodv.js.org%2F">
+          <span class="tag">
+            <span class="icon">
+              <i class="icon-flattr flattr-icon"></i>
+            </span>
+          </span>
+          <span class="tag is-flattr">Flattr</span>
+        </a>
       </div>
     </section>
 
@@ -164,10 +246,10 @@
       <div class="container">
         <div class="content has-text-centered">
           <p>
-            <strong>modV</strong> by <a href="http://wray.pro">Sam Wray</a>.<br>
+            <strong>modV</strong> by <a href="//wray.pro">Sam Wray</a>.<br>
             The source code is licensed
-            <a href="http://opensource.org/licenses/mit-license.php">MIT</a>. The website content
-            is licensed <a href="http://creativecommons.org/licenses/by-nc-sa/4.0/">CC BY NC SA 4.0</a>.
+            <a href="//opensource.org/licenses/mit-license.php">MIT</a>. The website content
+            is licensed <a href="//creativecommons.org/licenses/by-nc-sa/4.0/">CC BY NC SA 4.0</a>.
           </p>
         </div>
       </div>
@@ -205,14 +287,20 @@
               const column = document.createElement('div');
               const link = document.createElement('a');
               const img = new Image();
+
               column.classList.add('column', 'is-2');
               link.href = 'https://www.instagram.com/p/' + post.shortcode;
               link.target = '_blank';
-              img.src = post.thumbnail_src;
 
               link.appendChild(img);
               column.appendChild(link);
-              feed.appendChild(column);
+
+              img.addEventListener('load', () => {
+                const placeholder = document.querySelector('.image-placeholder');
+                feed.replaceChild(column, placeholder);
+              });
+
+              img.src = post.thumbnail_src;
           });
         });
 
