@@ -68,7 +68,11 @@ To do this, find either cmd or PowerShell in your start menu, right click and se
 - SoundFlower is recommended to route audio to the browser, download that [here](https://github.com/mattingalls/Soundflower/releases/)
 
 ### Linux
-- Jack may be the way to go for audio routing to the browser, but I have not tested this. Please submit a PR for this README if you have any information on this.
+- One way of routing audio to the browser is using [Pulse Audio's](https://www.freedesktop.org/wiki/Software/PulseAudio/) Volume Control package.
+This [tutorial](https://www.kirsle.net/blog/entry/redirect-audio-out-to-mic-in-linux) shows how to setup the Input Devices to show your monitoring.
+When you start the modV application, your browser should appear as a recording device in the "Recording" tab and you should not have to do any extra
+to make it work.
+![Browser input device in pavucontrol](https://github.com/2xAA/modV/raw/master/docs/linux-audio/pavucontrol.png)
 
 ## Building standalone application
 modV can also be built using [NWJS](http://nwjs.io/) as a standalone application.
