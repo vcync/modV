@@ -1,0 +1,24 @@
+engines:
+  eslint:
+    enabled: true
+  csslint:
+    enabled: false
+  duplication:
+    enabled: true
+    config:
+      languages:
+      - javascript
+ratings:
+  paths:
+  - src/**
+  - store/**
+  # - test/**
+  # - "**.js"
+exclude_paths:
+- "lib/*"
+- "dist/*"
+- "build/*"
+- "nwjs/*"
+- "static/*"
+- "old/*"
+- "config/*"
