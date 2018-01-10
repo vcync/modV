@@ -5,6 +5,8 @@ All documentation so far is available in [this repo's Wiki](https://github.com/2
 
 [![Flattr this](https://button.flattr.com/flattr-badge-large.png "Flattr this")](https://flattr.com/submit/auto?fid=xvwndw&url=https%3A%2F%2Fgithub.com%2F2xAA%2FmodV)
 
+[2.0](https://github.com/2xAA/modV/tree/2.0/): [![Build Status](https://travis-ci.org/2xAA/modV.svg?branch=2.0)](https://travis-ci.org/2xAA/modV)
+
 ## Important version information
 
 modV has three versions.  
