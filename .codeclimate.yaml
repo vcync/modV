@@ -8,8 +8,6 @@ ratings:
   paths:
   - src/**
   - store/**
-  # - test/**
-  # - "**.js"
 exclude_paths:
 - "lib/*"
 - "dist/*"
