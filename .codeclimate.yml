@@ -9,10 +9,11 @@ ratings:
   - src/**
   - store/**
 exclude_paths:
-- "lib/*"
-- "dist/*"
-- "build/*"
-- "nwjs/*"
-- "static/*"
-- "old/*"
-- "config/*"
+- 'lib/*'
+- 'dist/*'
+- 'build/*'
+- 'nwjs/*'
+- 'static/*'
+- 'old/*'
+- 'config/*'
+- 'src/modv/sample-modules/*'
