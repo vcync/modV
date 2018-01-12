@@ -90,3 +90,6 @@ Thank you to:
 * Lebedev Konstantin for [Sortable](https://github.com/RubaXa/Sortable)
 * Charles J. Cliffe for [BeatDetektor](https://github.com/cjcliffe/beatdetektor)
 * mrdoob for [THREE.js](https://threejs.org/)
+
+## Project repos
+* [modV MediaManager](https://github.com/2xAA/modV-MediaManager)
