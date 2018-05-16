@@ -10,7 +10,7 @@
 </template>
 
 <script>
-  import { mapMutations } from 'vuex';
+  import { mapGetters, mapMutations } from 'vuex';
   import { Menu, MenuItem } from 'nwjs-menu-browser';
 
   if (!window.nw) {
@@ -38,6 +38,12 @@
       };
     },
     computed: {
+      ...mapGetters('modVModules', [
+        'getValueFromActiveModule',
+      ]),
+      currentValue() {
+        return this.getValueFromActiveModule(this.moduleName, this.variable).raw;
+      },
       moduleName() {
         return this.module.info.name;
       },
@@ -67,7 +73,7 @@
         }),
       );
 
-      this.valueIn = this.defaultValue;
+      this.valueIn = this.currentValue || this.defaultValue;
     },
     watch: {
       valueIn() {

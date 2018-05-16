@@ -186,7 +186,7 @@
       },
     },
     beforeMount() {
-      this.$data.currentValue = this.processedValue;
+      this.currentValue = this.processedValue || this.defaultValue;
 
       this.$data.menuOptions.menuItems.push(
         new nw.MenuItem({
