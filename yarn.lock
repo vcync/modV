@@ -2113,9 +2113,9 @@ decamelize@^1.0.0, decamelize@^1.1.1, decamelize@^1.1.2:
   version "1.2.0"
   resolved "https://registry.yarnpkg.com/decamelize/-/decamelize-1.2.0.tgz#f6534d15148269b20352e7bee26f501f9a191290"
 
-decimal.js@7.2.3:
-  version "7.2.3"
-  resolved "https://registry.yarnpkg.com/decimal.js/-/decimal.js-7.2.3.tgz#6434c3b8a8c375780062fc633d0d2bbdb264cc78"
+decimal.js@9.0.1:
+  version "9.0.1"
+  resolved "https://registry.yarnpkg.com/decimal.js/-/decimal.js-9.0.1.tgz#1cc8b228177da7ab6498c1cc06eb130a290e6e1e"
 
 decode-uri-component@^0.2.0:
   version "0.2.0"
@@ -2612,6 +2612,10 @@ es6-weak-map@^2.0.1:
 escape-html@~1.0.3:
   version "1.0.3"
   resolved "https://registry.yarnpkg.com/escape-html/-/escape-html-1.0.3.tgz#0258eae4d3d0c0974de1c169188ef0051d1d1988"
+
+escape-latex@^1.0.0:
+  version "1.0.3"
+  resolved "https://registry.yarnpkg.com/escape-latex/-/escape-latex-1.0.3.tgz#1b9085e3e66570faabe21f05655643f64e78717a"
 
 escape-string-regexp@1.0.5, escape-string-regexp@^1.0.2, escape-string-regexp@^1.0.5:
   version "1.0.5"
@@ -3230,9 +3234,9 @@ fps@0.0.3:
   dependencies:
     inherits "~1.0.0"
 
-fraction.js@4.0.2:
-  version "4.0.2"
-  resolved "https://registry.yarnpkg.com/fraction.js/-/fraction.js-4.0.2.tgz#0eae896626f334b1bde763371347a83b5575d7f0"
+fraction.js@4.0.4:
+  version "4.0.4"
+  resolved "https://registry.yarnpkg.com/fraction.js/-/fraction.js-4.0.4.tgz#04e567110718adf7b52974a10434ab4c67a5183e"
 
 frame-debounce@0.0.0:
   version "0.0.0"
@@ -5246,21 +5250,22 @@ material-colors@^1.0.0:
   version "1.2.5"
   resolved "https://registry.yarnpkg.com/material-colors/-/material-colors-1.2.5.tgz#5292593e6754cb1bcc2b98030e4e0d6a3afc9ea1"
 
-math-expression-evaluator@^1.2.14:
+math-expression-evaluator@^1.2.14, math-expression-evaluator@^1.2.17:
   version "1.2.17"
   resolved "https://registry.yarnpkg.com/math-expression-evaluator/-/math-expression-evaluator-1.2.17.tgz#de819fdbcd84dccd8fae59c6aeb79615b9d266ac"
 
-mathjs@^3.16.5:
-  version "3.16.5"
-  resolved "https://registry.yarnpkg.com/mathjs/-/mathjs-3.16.5.tgz#d75a5265435d2824b067b37a478771deebf6aacc"
+mathjs@^3.20.2:
+  version "3.20.2"
+  resolved "https://registry.yarnpkg.com/mathjs/-/mathjs-3.20.2.tgz#3218aebde7de8cb5627c8fe3a1a216bf399ba91d"
   dependencies:
     complex.js "2.0.4"
-    decimal.js "7.2.3"
-    fraction.js "4.0.2"
+    decimal.js "9.0.1"
+    escape-latex "^1.0.0"
+    fraction.js "4.0.4"
     javascript-natural-sort "0.7.1"
     seed-random "2.2.0"
-    tiny-emitter "2.0.0"
-    typed-function "0.10.5"
+    tiny-emitter "2.0.2"
+    typed-function "0.10.7"
 
 md5.js@^1.3.4:
   version "1.3.4"
@@ -5514,9 +5519,9 @@ module-not-found-error@^1.0.0:
   version "1.0.1"
   resolved "https://registry.yarnpkg.com/module-not-found-error/-/module-not-found-error-1.0.1.tgz#cf8b4ff4f29640674d6cdd02b0e3bc523c2bbdc0"
 
-"modv-media-manager@git+ssh://git@github.com/2xAA/modV-MediaManager.git":
+"modv-media-manager@https://github.com/2xAA/modV-MediaManager.git":
   version "1.0.0"
-  resolved "git+ssh://git@github.com/2xAA/modV-MediaManager.git#c756311cc135399afac22e9b0fd57e1f7df53e51"
+  resolved "https://github.com/2xAA/modV-MediaManager.git#c54c2b2ffda7ec7f54baaed492c6e4c1e7e53d20"
   dependencies:
     animated-gif-detector "^1.2.0"
     chokidar "^1.6.1"
@@ -8250,9 +8255,9 @@ timers-browserify@^2.0.4:
   dependencies:
     setimmediate "^1.0.4"
 
-tiny-emitter@2.0.0:
-  version "2.0.0"
-  resolved "https://registry.yarnpkg.com/tiny-emitter/-/tiny-emitter-2.0.0.tgz#bad327adb1804b42a231afa741532bd884cd09ad"
+tiny-emitter@2.0.2:
+  version "2.0.2"
+  resolved "https://registry.yarnpkg.com/tiny-emitter/-/tiny-emitter-2.0.2.tgz#82d27468aca5ade8e5fd1e6d22b57dd43ebdfb7c"
 
 tinycolor2@^1.1.2:
   version "1.4.1"
@@ -8353,9 +8358,9 @@ type-is@~1.6.15:
     media-typer "0.3.0"
     mime-types "~2.1.15"
 
-typed-function@0.10.5:
-  version "0.10.5"
-  resolved "https://registry.yarnpkg.com/typed-function/-/typed-function-0.10.5.tgz#2e0f18abd065219fab694a446a65c6d1981832c0"
+typed-function@0.10.7:
+  version "0.10.7"
+  resolved "https://registry.yarnpkg.com/typed-function/-/typed-function-0.10.7.tgz#f702af7d77a64b61abf86799ff2d74266ebc4477"
 
 typedarray@^0.0.6:
   version "0.0.6"
@@ -8727,9 +8732,9 @@ vuebar@0.0.17:
   version "0.0.17"
   resolved "https://registry.yarnpkg.com/vuebar/-/vuebar-0.0.17.tgz#62de08ffed46291d34588201013d887aa5d332fe"
 
-"vuedraggable@git+https://github.com/SortableJS/Vue.Draggable.git":
-  version "2.15.0"
-  resolved "git+https://github.com/SortableJS/Vue.Draggable.git#9cda2af11cfc9756217592f07b51e6a153653a13"
+"vuedraggable@https://github.com/SortableJS/Vue.Draggable.git":
+  version "2.16.0"
+  resolved "https://github.com/SortableJS/Vue.Draggable.git#d479d7bb9a11649b5e31ec5aa1ab840f5a6d4707"
   dependencies:
     sortablejs "^1.7.0"
 
