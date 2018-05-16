@@ -61,7 +61,7 @@
     },
     computed: {
       processedValue() {
-        return this.getValueFromActiveModule(this.moduleName, this.variable).processed;
+        return this.getValueFromActiveModule(this.moduleName, this.variable).raw;
       },
       ...mapGetters('modVModules', [
         'getValueFromActiveModule',

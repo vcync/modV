@@ -145,7 +145,7 @@ class Phyllotaxis extends Module2D {
       this.targetY = height / 2;
       this.easing = 0.02;
 
-      this.show = (context, radiusModifier) => {
+      this.show = (context, radiusModifier, color) => {
         context.fillStyle = this.c;
         // context.beginPath();
         // context.arc(
@@ -157,7 +157,7 @@ class Phyllotaxis extends Module2D {
         // );
 
         const size = this.r * radiusModifier;
-
+        context.fillStyle = color;
         context.fillRect(
           this.x - (size / 2),
           this.y - (size / 2),

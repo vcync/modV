@@ -247,11 +247,11 @@ const mutations = {
   setActiveModuleControlValue(state, { moduleName, variable, value }) {
     const module = externalState.active[moduleName];
     const controlValues = state.active[moduleName];
-    let processedValue = value;
+    let processedValue = value.valueOf();
 
     modV.plugins.filter(plugin => ('processValue' in plugin)).forEach((plugin) => {
       processedValue = plugin.processValue({
-        currentValue: value,
+        currentValue: processedValue,
         controlVariable: variable,
         moduleName,
       });

@@ -153,6 +153,7 @@ export default window.modVVue = new Vue({
       'film-grain.fs',
       'spherical-shader-tut.fs',
       'scale.fs',
+      'LogTransWarpSpiral.fs',
     ];
 
     isfSamples.forEach((fileName) => {
