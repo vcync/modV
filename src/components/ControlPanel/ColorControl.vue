@@ -123,20 +123,22 @@
       },
     },
     beforeMount() {
-      this.value = this.module[this.variable];
+      if (this.module[this.pickerCacheVariable]) {
+        this.pickerColors = this.module[this.pickerCacheVariable];
+      } else {
+        this.value = this.module[this.variable];
 
-      if (typeof this.value === 'undefined') {
-        this.value = this.defaultValue;
+        if (typeof this.value === 'undefined') {
+          this.value = this.defaultValue;
+        }
+
+        this.pickerColors = {
+          r: Math.map(this.value[0], 0.0, 1.0, 0, 255),
+          g: Math.map(this.value[1], 0.0, 1.0, 0, 255),
+          b: Math.map(this.value[2], 0.0, 1.0, 0, 255),
+          a: Math.map(this.value[3], 0, 1, 0, 1),
+        };
       }
-
-      console.log(this.value);
-
-      this.pickerColors = {
-        r: Math.map(this.value[0], 0.0, 1.0, 0, 255),
-        g: Math.map(this.value[1], 0.0, 1.0, 0, 255),
-        b: Math.map(this.value[2], 0.0, 1.0, 0, 255),
-        a: Math.map(this.value[3], 0, 1, 0, 1),
-      };
     },
     watch: {
       module() {

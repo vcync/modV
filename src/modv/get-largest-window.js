@@ -6,7 +6,11 @@ import store from '@/../store/';
  * @return {number}
  */
 function getWindowSize(win) {
-  return win.innerWidth * win.innerHeight;
+  return {
+    area: win.innerWidth * win.innerHeight,
+    width: win.innerWidth,
+    height: win.innerHeight,
+  };
 }
 
 /**
@@ -16,8 +20,8 @@ function getWindowSize(win) {
  * @return {Window}
  */
 function compareWindowsSize(windowOne, windowTwo) {
-  const windowOneArea = getWindowSize(windowOne);
-  const windowTwoArea = getWindowSize(windowTwo);
+  const windowOneArea = getWindowSize(windowOne).area;
+  const windowTwoArea = getWindowSize(windowTwo).area;
 
   return windowOneArea > windowTwoArea ? windowOne : windowTwo;
 }
@@ -46,6 +50,7 @@ function getLargestWindow(windowControllers) {
   return {
     window: windows[index],
     controller: windowControllers[index],
+    size: getWindowSize(windows[index]),
   };
 }
 

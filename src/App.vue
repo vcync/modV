@@ -43,6 +43,7 @@
       :is="pluginComponent"
       :key="pluginComponent"
     ></component>
+    <status-bar></status-bar>
   </div>
 </template>
 
@@ -55,6 +56,7 @@
   import LayerMenu from '@/components/LayerMenu';
   import List from '@/components/List';
   import SideMenu from '@/components/SideMenu';
+  import StatusBar from '@/components/StatusBar';
   import Tabs from '@/components/Tabs';
 
   import { modV } from 'modv';
@@ -87,6 +89,7 @@
       LayerMenu,
       List,
       SideMenu,
+      StatusBar,
       Tabs,
     },
   };
@@ -108,9 +111,8 @@
   #app {
     background-color: #303030;
     width: 100vw;
-    height: 100vh;
+    height: calc(100vh - 35px);
     position: relative;
-    overflow: hidden;
   }
 
   .control-panel-wrapper {
@@ -119,7 +121,7 @@
 
   section.section {
     height: 100%;
-    position: fixed;
+    position: absolute;
     top: 0;
     bottom: 0;
     right: 0;
