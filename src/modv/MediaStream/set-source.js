@@ -37,7 +37,7 @@ function userMediaSuccess(stream, ids) {
     this.gainNode.connect(this.audioContext.destination);
 
     // Set up Meyda
-    this.meyda = new Meyda.createMeydaAnalyzer({ //eslint-disable-line
+    this.meyda = new Meyda.createMeydaAnalyzer({ // eslint-disable-line new-cap
       audioContext: this.audioContext,
       source: this.audioStream,
       bufferSize: 512,

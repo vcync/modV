@@ -23,7 +23,8 @@ module.exports = {
     alias: {
       vue$: 'vue/dist/vue.esm.js',
       '@': resolve('src'),
-      modv: resolve('src/modv')
+      modv: resolve('src/modv'),
+      meyda: 'meyda/src/main.js',
     }
   },
   module: {
@@ -42,11 +43,12 @@ module.exports = {
         loader: 'vue-loader',
         options: vueLoaderConfig
       },
-      // {
-      //   test: /\.js$/,
-      //   loader: 'babel-loader',
-      //   include: [resolve('src'), resolve('test')]
-      // },
+      {
+        test: /\.js$/,
+        loader: 'babel-loader',
+        // include: [resolve('src'), resolve('test'), resolve('store')],
+        exclude: /node_modules\/(?!(meyda|nwjs-menu-browser)\/).*/,
+      },
       {
         test: /\.(png|jpe?g|gif|svg)(\?.*)?$/,
         loader: 'url-loader',
@@ -68,5 +70,10 @@ module.exports = {
         loader: 'text-loader'
       }
     ]
-  }
+  },
+  node: {
+    fs: 'empty',
+    './ArrayBufferDataStream': 'empty',
+    './BlobBuffer': 'empty',
+  },
 };

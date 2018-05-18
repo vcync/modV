@@ -1,4 +1,4 @@
-import Meyda from 'meyda/src/main';
+import Meyda from 'meyda';
 import { Module2D } from '../Modules';
 
 class Waveform extends Module2D {

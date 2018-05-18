@@ -1,14 +1,15 @@
 <template>
-  <div class="color-control" :data-moduleName='moduleName'>
-    <label :for='inputId'>
+  <div class="color-control" :data-moduleName="moduleName">
+    <label :for="inputId">
       {{ label }}
     </label>
-    <sketch-picker :id='inputId' v-model='pickerColors' />
+    <sketch-picker :id="inputId" v-model="pickerColors" />
   </div>
 </template>
 
 <script>
   import { Sketch } from 'vue-color';
+  import { mapMutations } from 'vuex';
 
   const defaultProps = {
     hex: '#000000',
@@ -83,7 +84,7 @@
         const red = Math.map(rgba.r, 0, 255, 0.0, 1.0);
         const green = Math.map(rgba.g, 0, 255, 0.0, 1.0);
         const blue = Math.map(rgba.b, 0, 255, 0.0, 1.0);
-        const alpha = Math.map(rgba.a, 0, 255, 0.0, 1.0);
+        const alpha = Math.map(rgba.a, 0, 1, 0.0, 1.0);
 
         return [red, green, blue, alpha];
       },
@@ -122,6 +123,11 @@
 
       },
     },
+    methods: {
+      ...mapMutations('modVModules', [
+        'setActiveModuleControlValue',
+      ]),
+    },
     beforeMount() {
       this.value = this.module[this.variable];
       this.pickerColors = this.module[this.pickerCacheVariable] || defaultProps;
@@ -133,12 +139,17 @@
         this.value = this.module[this.variable];
         this.pickerColors = this.module[this.pickerCacheVariable] || defaultProps;
       },
-      value() {
-        this.module[this.variable] = this.value;
+      value(value) {
+        // this.module[this.variable] = value;
+        this.setActiveModuleControlValue({
+          moduleName: this.moduleName,
+          variable: this.variable,
+          value,
+        });
       },
-      pickerColors() {
+      pickerColors(value) {
         this.value = this[this.returnFormat || 'rgbaArray'];
-        this.module[this.pickerCacheVariable] = this.pickerColors;
+        this.module[this.pickerCacheVariable] = value;
       },
     },
     components: {

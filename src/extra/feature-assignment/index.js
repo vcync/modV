@@ -1,6 +1,6 @@
 import { modV } from 'modv';
 import { Menu, MenuItem } from 'nwjs-menu-browser';
-import meyda from 'meyda';
+import Meyda from 'meyda';
 
 class FeatureAssignment {
   constructor() {
@@ -68,7 +68,7 @@ class FeatureAssignment {
       }));
     }
 
-    Object.keys(meyda.featureExtractors).forEach((feature) => {
+    Object.keys(Meyda.featureExtractors).forEach((feature) => {
       let shouldBeChecked = false;
 
       if (assignments) {

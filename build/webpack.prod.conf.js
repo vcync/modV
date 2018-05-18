@@ -35,7 +35,7 @@ var webpackConfig = merge(baseWebpackConfig, {
       compress: {
         warnings: false
       },
-      sourceMap: true
+      sourceMap: false,
     }),
     // extract css into its own file
     new ExtractTextPlugin({
@@ -72,6 +72,7 @@ var webpackConfig = merge(baseWebpackConfig, {
       name: 'vendor',
       minChunks: function (module, count) {
         // any required modules inside node_modules are extracted to vendor
+
         return (
           module.resource &&
           /\.js$/.test(module.resource) &&
