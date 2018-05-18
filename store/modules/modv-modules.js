@@ -245,8 +245,6 @@ const mutations = {
     externalState.active[moduleName] = module;
   },
   setActiveModuleControlValue(state, { moduleName, variable, value }) {
-    console.log(value, value.valueOf());
-
     const module = externalState.active[moduleName];
     const controlValues = state.active[moduleName];
     let processedValue = value.valueOf();
@@ -269,8 +267,6 @@ const mutations = {
     if ('append' in module.info.controls[variable]) {
       processedValue = `${processedValue}${module.info.controls[variable].append}`;
     }
-
-    console.log(processedValue);
 
     Vue.set(state.active[moduleName], variable, value);
     externalState.active[moduleName][variable] = processedValue;

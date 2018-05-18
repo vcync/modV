@@ -3,36 +3,13 @@
     <label :for="inputId">
       {{ label }}
     </label>
-    <sketch-picker :id="inputId" v-model="pickerColors" />
+    <sketch-picker :id="inputId" :value="pickerColors" @input="updateValue" />
   </div>
 </template>
 
 <script>
   import { Sketch } from 'vue-color';
   import { mapMutations } from 'vuex';
-
-  const defaultProps = {
-    hex: '#000000',
-    hsl: {
-      h: 150,
-      s: 0.5,
-      l: 0.2,
-      a: 1,
-    },
-    hsv: {
-      h: 150,
-      s: 0.66,
-      v: 0.30,
-      a: 1,
-    },
-    rgba: {
-      r: 25,
-      g: 77,
-      b: 51,
-      a: 1,
-    },
-    a: 1,
-  };
 
   export default {
     name: 'colorControl',
@@ -43,7 +20,7 @@
     data() {
       return {
         value: undefined,
-        pickerColors: defaultProps,
+        pickerColors: {},
       };
     },
     computed: {
@@ -69,6 +46,8 @@
         return this.control.returnFormat;
       },
       rgbArray() {
+        if (!('rgba' in this.pickerColors)) return [0, 0, 0];
+
         const rgba = this.pickerColors.rgba;
         return [rgba.r, rgba.g, rgba.b];
       },
@@ -76,10 +55,14 @@
 
       },
       rgbaArray() {
+        if (!('rgba' in this.pickerColors)) return [0, 0, 0, 0];
+
         const rgba = this.pickerColors.rgba;
         return [rgba.r, rgba.g, rgba.b, rgba.a];
       },
       mappedRgbaArray() {
+        if (!('rgba' in this.pickerColors)) return [0, 0, 0, 0];
+
         const rgba = this.pickerColors.rgba;
         const red = Math.map(rgba.r, 0, 255, 0.0, 1.0);
         const green = Math.map(rgba.g, 0, 255, 0.0, 1.0);
@@ -95,6 +78,8 @@
         return this.pickerColors.hex;
       },
       hsvArray() {
+        if (!('hsv' in this.pickerColors)) return [0, 0, 0];
+
         const hsv = this.pickerColors.hsv;
         return [hsv.r, hsv.g, hsv.b];
       },
@@ -102,6 +87,8 @@
 
       },
       hsvaArray() {
+        if (!('hsv' in this.pickerColors)) return [0, 0, 0, 0];
+
         const hsva = this.pickerColors.hsv;
         return [hsva.r, hsva.g, hsva.b, hsva.a];
       },
@@ -109,6 +96,8 @@
 
       },
       hslArray() {
+        if (!('hsl' in this.pickerColors)) return [0, 0, 0];
+
         const hsl = this.pickerColors.hsl;
         return [hsl.r, hsl.g, hsl.b];
       },
@@ -116,6 +105,8 @@
 
       },
       hslaArray() {
+        if (!('hsl' in this.pickerColors)) return [0, 0, 0, 0];
+
         const hsla = this.pickerColors.hsl;
         return [hsla.r, hsla.g, hsla.b, hsla.a];
       },
@@ -127,17 +118,30 @@
       ...mapMutations('modVModules', [
         'setActiveModuleControlValue',
       ]),
+      updateValue(value) {
+        this.pickerColors = value;
+      },
     },
     beforeMount() {
       this.value = this.module[this.variable];
-      this.pickerColors = this.module[this.pickerCacheVariable] || defaultProps;
 
-      if (typeof this.value === 'undefined') this.value = this.defaultValue;
+      if (typeof this.value === 'undefined') {
+        this.value = this.defaultValue;
+      }
+
+      console.log(this.value);
+
+      this.pickerColors = {
+        r: Math.map(this.value[0], 0.0, 1.0, 0, 255),
+        g: Math.map(this.value[1], 0.0, 1.0, 0, 255),
+        b: Math.map(this.value[2], 0.0, 1.0, 0, 255),
+        a: Math.map(this.value[3], 0, 1, 0, 1),
+      };
     },
     watch: {
       module() {
         this.value = this.module[this.variable];
-        this.pickerColors = this.module[this.pickerCacheVariable] || defaultProps;
+        this.pickerColors = this.module[this.pickerCacheVariable] || {};
       },
       value(value) {
         // this.module[this.variable] = value;
