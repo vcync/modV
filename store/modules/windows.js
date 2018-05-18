@@ -4,6 +4,7 @@ import store from '@/../store';
 
 const state = {
   windows: [],
+  size: { width: 0, height: 0 },
 };
 
 // We can't store Window Objects in Vuex because the Observer traversal exceeds the stack size
@@ -13,6 +14,7 @@ const externalState = [];
 const getters = {
   allWindows: state => state.windows,
   windowReference: () => index => externalState[index],
+  largestWindowSize: state => state.size,
   largestWindowReference() {
     return () => getLargestWindow(state.windows).window || externalState[0];
   },
@@ -37,10 +39,12 @@ const actions = {
   destroyWindow({ commit }, { windowRef }) {
     commit('removeWindow', { windowRef });
   },
-  resize({ state }, { width, height, dpr }) {
+  resize({ state, commit }, { width, height, dpr }) {
     state.windows.forEach((windowController) => {
       windowController.resize(width, height, dpr, false);
     });
+
+    commit('setSize', { width, height, dpr });
   },
 };
 
@@ -57,6 +61,14 @@ const mutations = {
     state.windows.splice(windowRef, 1);
     externalState.splice(windowRef, 1);
     getters.largestWindowReference();
+  },
+  setSize(state, { width, height, dpr }) {
+    state.size = {
+      width,
+      height,
+      dpr,
+      area: (width * height),
+    };
   },
 };
 
