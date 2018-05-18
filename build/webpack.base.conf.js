@@ -47,7 +47,7 @@ module.exports = {
         test: /\.js$/,
         loader: 'babel-loader',
         // include: [resolve('src'), resolve('test'), resolve('store')],
-        exclude: /node_modules\/(?!(meyda|nwjs-menu-browser)\/).*/,
+        exclude: /node_modules(\/|\\)(?!(meyda|nwjs-menu-browser)(\/|\\)).*/,
       },
       {
         test: /\.(png|jpe?g|gif|svg)(\?.*)?$/,
