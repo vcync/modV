@@ -250,11 +250,13 @@ const mutations = {
     let processedValue = value.valueOf();
 
     modV.plugins.filter(plugin => ('processValue' in plugin)).forEach((plugin) => {
-      processedValue = plugin.processValue({
+      const newValue = plugin.processValue({
         currentValue: processedValue,
         controlVariable: variable,
         moduleName,
       });
+
+      if (newValue) processedValue = newValue;
     });
 
     if (
