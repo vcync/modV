@@ -18,6 +18,7 @@ import expression from './extra/expression';
 import midiAssignment from './extra/midi-assignment';
 import featureAssignment from './extra/feature-assignment';
 import lfo from './extra/lfo';
+import frameGrab from './extra/frame-grab';
 import './assets/styles/index.scss';
 
 import attachResizeHandles from './extra/ui-resize/attach';
@@ -65,6 +66,7 @@ modV.use(featureAssignment);
 modV.use(expression);
 modV.use(midiAssignment);
 modV.use(lfo);
+modV.use(frameGrab);
 // modV.use(grabCanvas);
 
 /* eslint-disable no-new */
