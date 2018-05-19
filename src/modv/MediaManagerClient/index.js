@@ -83,7 +83,11 @@ class MediaManagerClient {
                 colors: data.contents,
               });
             } else if (type === 'preset') {
-              // modV.profiles[profile].presets[name] = data.contents;
+              store.commit('profiles/addPresetToProfile', {
+                profileName,
+                presetName: name,
+                presetData: data.contents,
+              });
             } else if (type === 'image') {
               // modV.profiles[profile].images[name] = data.path;
             } else if (type === 'video') {
