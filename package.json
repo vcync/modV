@@ -120,7 +120,7 @@
     "webpack-dev-middleware": "^1.10.0",
     "webpack-hot-middleware": "^2.20.0",
     "webpack-merge": "^4.1.1",
-    "worker-loader": "^0.8.0"
+    "worker-loader": "^1.1.1"
   },
   "engines": {
     "node": ">= 4.0.0",
