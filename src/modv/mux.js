@@ -31,6 +31,14 @@ function mux() {
     });
 
     resolve();
+
+    modV.plugins.filter(plugin => ('processFrame' in plugin))
+      .forEach(plugin => plugin.processFrame({
+        canvas: outputCanvas,
+        context: outputContext,
+      }),
+    );
+
     capturer.capture(outputCanvas);
 
     windows.forEach((windowController) => {

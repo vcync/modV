@@ -280,7 +280,7 @@
     &.current {
       background-color: aliceblue;
       color: black;
-      z-index: 1;
+      // z-index: 1;
     }
 
     &.chosen {

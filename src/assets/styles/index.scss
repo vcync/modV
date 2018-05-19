@@ -311,7 +311,7 @@ input[disabled][type="range"]::-webkit-slider-runnable-track {
 
   border-top: 1px solid #BBBBBB;
   transition: 50ms;
-  z-index: 102;
+  // z-index: 102;
 }
 
 .resize-handle-top:hover {
@@ -331,7 +331,7 @@ input[disabled][type="range"]::-webkit-slider-runnable-track {
 
   border-left: 1px solid #BBBBBB;
   transition: 50ms;
-  z-index: 102;
+  // z-index: 102;
 }
 
 .resize-handle-left:hover {

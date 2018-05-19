@@ -38,12 +38,12 @@
     </section>
     <canvas-preview></canvas-preview>
     <side-menu :menuState='menuOpen'></side-menu>
+    <status-bar></status-bar>
     <component
       v-for="pluginComponent in pluginComponents"
       :is="pluginComponent"
       :key="pluginComponent"
     ></component>
-    <status-bar></status-bar>
   </div>
 </template>
 
@@ -176,7 +176,7 @@
   }
 
   .vb > .vb-dragger {
-    z-index: 5;
+    // z-index: 5;
     width: 12px;
     right: 0;
     text-align: center;
