@@ -138,6 +138,10 @@ const mutations = {
     const profile = state.profiles[profileName];
     Vue.set(profile.palettes, paletteName, colors);
   },
+  addPresetToProfile(state, { profileName, presetName, presetData }) {
+    const profile = state.profiles[profileName];
+    Vue.set(profile.presets, presetName, presetData);
+  },
 };
 
 export default {
