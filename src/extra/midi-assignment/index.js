@@ -52,6 +52,10 @@ class Expression {
 
   modvInstall() {
     modV.addContextMenuHook({ hook: 'rangeControl', buildMenuItem: this.createMenuItem.bind(this) });
+    modV.addContextMenuHook({
+      hook: 'active-module__enable-checkbox',
+      buildMenuItem: this.createMenuItem.bind(this),
+    });
   }
 
   createMenuItem(moduleName, controlVariable) {

@@ -20,6 +20,7 @@
                         <b-checkbox
                           v-model="enabled"
                           :id="enabledCheckboxId"
+                          v-context-menu="checkboxMenuOptions"
                         ></b-checkbox>
                       </div>
                       <div class="control-group opacity-group">
@@ -80,6 +81,10 @@
         compositeOperation: 'normal',
         enabled: null,
         opacity: null,
+        checkboxMenuOptions: {
+          match: ['active-module__enable-checkbox'],
+          menuItems: [],
+        },
         operations: [{
           label: 'Blend Modes',
           children: [{
