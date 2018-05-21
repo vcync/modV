@@ -29,6 +29,6 @@
     padding: 5px;
     box-sizing: border-box;
     border-top: 1px solid rgba(255, 255, 255, 0.5);
-    z-index: 101;
+    // z-index: 101;
   }
 </style>
