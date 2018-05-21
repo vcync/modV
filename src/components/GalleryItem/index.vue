@@ -4,7 +4,6 @@
     @mouseout="mouseout"
     @mouseover="mouseover"
     @dblclick="doubleclick"
-    draggable
     @dragstart="dragstart"
     :data-module-name="name"
   >
@@ -41,7 +40,7 @@
       };
     },
     props: [
-      'ModuleIn',
+      'moduleIn',
       'moduleName',
     ],
     mounted() {

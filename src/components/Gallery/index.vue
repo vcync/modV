@@ -1,87 +1,46 @@
 <template>
-  <div class="right-top gallery pure-g" @drop='drop' @dragover='dragover'>
-    <search-bar
-      :phrase.sync='phrase'
-      class='search-bar-wrapper'
-      @menuIconClicked='menuIconClicked'
-    ></search-bar>
-      <div class='gallery-items-wrapper' v-bar="{ useScrollbarPseudo: true }">
-        <div>
-          <div class='pure-u-1-1 title' :class="{ hidden: phrase.length < 1 }">
-            <h2>All Modules</h2>
-          </div>
-          <draggable
-            class='gallery-items'
-            :class="{ hidden: phrase.length < 1 }"
-            :options="{ group: { name: 'modules',  pull: 'clone', put: false }, sort: false }"
-          >
-            <gallery-item
-              v-for="(module, key) in modules"
-              :ModuleIn='module'
-              :moduleName='key'
-              :key='key'
-              :class="{ hidden: !search(key, phrase) }"
-            ></gallery-item>
-          </draggable>
+  <div class="gallery columns is-gapless" @drop="drop" @dragover="dragover">
+    <div class="column is-12">
+      <search-bar
+        :phrase.sync="phrase"
+        class="search-bar-wrapper"
+        @menuIconClicked="menuIconClicked"
+      ></search-bar>
+    </div>
 
-          <div class='pure-u-1-1 title' :class="{ hidden: phrase.length > 0 }">
-            <h2>Module 2D</h2>
-          </div>
-          <draggable
-            class='gallery-items'
-            :class="{ hidden: phrase.length > 0 }"
-            :options="{ group: { name: 'modules',  pull: 'clone', put: false }, sort: false }"
-          >
-            <gallery-item
-              v-for="(module, key) in module2d"
-              :ModuleIn='module'
-              :moduleName='key'
-              :key='key'
-            ></gallery-item>
-          </draggable>
+    <div class="column is-12 full-height">
+      <b-tabs class="make-flex-fit">
+        <b-tab-item class="make-flex-fit" label="Modules" v-bar="{ useScrollbarPseudo: true }">
+          <module-gallery :phrase="phrase"></module-gallery>
+        </b-tab-item>
 
-          <div class='pure-u-1-1 title' :class="{ hidden: phrase.length > 0 || moduleShader.length < 1 }">
-            <h2>Module Shader</h2>
-          </div>
-          <draggable
-            class='gallery-items'
-            :class="{ hidden: phrase.length > 0 || moduleShader.length < 1 }"
-            :options="{ group: { name: 'modules',  pull: 'clone', put: false }, sort: false }"
-          >
-            <gallery-item
-              v-for='(module, key) in moduleShader'
-              :ModuleIn='module'
-              :moduleName='key'
-              :key='key'
-            ></gallery-item>
-          </draggable>
+        <b-tab-item label="Presets" v-bar="{ useScrollbarPseudo: true }">
+          <preset-gallery :phrase="phrase"></preset-gallery>
+        </b-tab-item>
 
-          <div class='pure-u-1-1 title' :class="{ hidden: phrase.length > 0 }">
-            <h2>Module ISF</h2>
-          </div>
-          <draggable
-            class='gallery-items'
-            :class="{ hidden: phrase.length > 0 }"
-            :options="{ group: { name: 'modules',  pull: 'clone', put: false }, sort: false }"
-          >
-            <gallery-item
-              v-for='(module, key) in moduleISF'
-              :ModuleIn='module'
-              :moduleName='key'
-              :key='key'
-            ></gallery-item>
-          </draggable>
-        </div>
+        <b-tab-item label="Palettes" v-bar="{ useScrollbarPseudo: true }">
+          <palette-gallery :phrase="phrase"></palette-gallery>
+        </b-tab-item>
+
+        <b-tab-item label="Images" disabled>
+
+        </b-tab-item>
+
+        <b-tab-item label="Videos" disabled>
+
+        </b-tab-item>
+      </b-tabs>
     </div>
   </div>
 </template>
 
 <script>
   import { mapActions, mapGetters, mapMutations } from 'vuex';
-  import { Module2D, ModuleShader, ModuleISF } from '@/modv';
+
+  import ModuleGallery from '@/components/Gallery/ModuleGallery';
+  import PaletteGallery from '@/components/Gallery/PaletteGallery';
+  import PresetGallery from '@/components/Gallery/PresetGallery';
   import SearchBar from '@/components/Gallery/SearchBar';
-  import GalleryItem from '@/components/GalleryItem';
-  import draggable from 'vuedraggable';
 
   export default {
     name: 'gallery',
@@ -96,30 +55,6 @@
         currentDragged: 'currentDragged',
         modules: 'registry',
       }),
-      moduleShader() {
-        return Object.keys(this.modules)
-          .filter(key => this.modules[key].prototype instanceof ModuleShader)
-          .reduce((result, key) => {
-            result[key] = this.modules[key];
-            return result;
-          }, {});
-      },
-      module2d() {
-        return Object.keys(this.modules)
-          .filter(key => this.modules[key].prototype instanceof Module2D)
-          .reduce((result, key) => {
-            result[key] = this.modules[key];
-            return result;
-          }, {});
-      },
-      moduleISF() {
-        return Object.keys(this.modules)
-          .filter(key => this.modules[key].prototype instanceof ModuleISF)
-          .reduce((result, key) => {
-            result[key] = this.modules[key];
-            return result;
-          }, {});
-      },
     },
     methods: {
       ...mapActions('modVModules', [
@@ -131,12 +66,8 @@
       ...mapMutations('layers', [
         'removeModuleFromLayer',
       ]),
-      search(textIn, termIn) {
-        const text = textIn.toLowerCase().trim();
-        const term = termIn.toLowerCase().trim();
-        if (termIn.length < 1) return true;
-
-        return text.indexOf(term) > -1;
+      menuIconClicked() {
+        this.$emit('menuIconClicked');
       },
       drop(e) {
         e.preventDefault();
@@ -160,34 +91,45 @@
         const draggedNode = document.querySelectorAll(`.active-item[data-module-name="${this.currentDragged}"]`)[1];
         draggedNode.classList.remove('deletable');
       },
-      menuIconClicked() {
-        this.$emit('menuIconClicked');
-      },
     },
     components: {
-      draggable,
-      GalleryItem,
+      ModuleGallery,
+      PaletteGallery,
+      PresetGallery,
       SearchBar,
     },
   };
 </script>
 
-<style scoped lang='scss'>
-  .gallery-items-wrapper {
-    flex: 1 1 auto;
+<style lang="scss">
+  .make-flex-fit {
+    // flex: 1 1 auto;
     height: 100%;
   }
 
-  .gallery-items {
-    align-content: stretch;
-    align-items: center;
-    box-sizing: border-box;
-    display: grid;
-    grid-template-columns: 25% 25% 25% 25%;
-    justify-items: start;
-    width: 100%;
-  }
+  .gallery {
+    .b-tabs {
+      &.make-flex-fit {
+        height: calc(100% - 56px);
+      }
 
+      .tab-content {
+        // flex: 1 1 auto;
+        height: calc(100% - 41px);
+      }
+
+      .tab-item {
+        margin-top: 5pt;
+      }
+    }
+
+    .full-height {
+      height: 100%;
+    }
+  }
+</style>
+
+<style scoped lang="scss">
   .gallery {
     background-color: #303030;
     box-sizing: border-box;
@@ -207,16 +149,5 @@
     order: 0;
     flex: 0 1 auto;
     align-self: auto;
-  }
-
-  .title h2 {
-    color: #fff;
-    cursor: default;
-    font-weight: normal;
-    margin: 0.82em 5pt 0.2em 5pt;
-  }
-
-  .hidden {
-    display: none;
   }
 </style>
