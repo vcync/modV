@@ -1,6 +1,53 @@
 <template>
   <div class="preset-gallery columns is-gapless is-multiline">
     <div class="column is-12">
+      <h2 class="title">Save preset</h2>
+      <div class="columns">
+
+        <div class="column">
+
+          <b-field
+            :type="nameError ? 'is-danger' : ''"
+            :message="nameError ? nameErrorMessage : ''"
+          >
+            <b-input
+              placeholder="Preset name"
+              v-model="newPresetName"
+            ></b-input>
+          </b-field>
+
+        </div>
+        <div class="column is-2">
+
+          <b-field
+            :type="profileError ? 'is-danger' : ''"
+            :message="profileError ? profileErrorMessage : ''"
+          >
+            <b-select placeholder="Profile name" v-model="newPresetProfile">
+              <option
+                v-for="(profile, profileName) in profiles"
+                :value="profileName"
+                :key="profileName"
+              >{{ profileName }}</option>
+            </b-select>
+          </b-field>
+
+        </div>
+        <div class="column is-2">
+
+          <div class="field">
+            <div class="control">
+              <button
+                class="button"
+                @click="savePreset"
+              >Save</button>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+    <div class="column is-12">
       <span v-for="(profile, profileName) in profiles">
         <h2 class="title">{{ profileName }}</h2>
         <div class="columns is-gapless is-multiline">
@@ -54,6 +101,15 @@
     data() {
       return {
         loading: null,
+
+        nameError: false,
+        nameErrorMessage: 'Preset must have a name',
+
+        profileError: false,
+        profileErrorMessage: 'Please select a profile',
+
+        newPresetName: '',
+        newPresetProfile: '',
       };
     },
     props: {
@@ -74,6 +130,7 @@
     methods: {
       ...mapActions('profiles', [
         'loadPresetFromProfile',
+        'savePresetToProfile',
       ]),
       search(textIn, termIn) {
         const text = textIn.toLowerCase().trim();
@@ -97,6 +154,27 @@
 
         await this.loadPresetFromProfile({ presetName, profileName });
         this.loading = null;
+      },
+      async savePreset() {
+        this.nameError = false;
+        this.profileError = false;
+
+        if (!this.newPresetName.trim().length) {
+          this.nameError = true;
+          return;
+        }
+
+        if (!this.newPresetProfile.trim().length) {
+          this.profileError = true;
+          return;
+        }
+
+        await this.savePresetToProfile({
+          presetName: this.newPresetName,
+          profileName: this.newPresetProfile,
+        });
+
+        this.newPresetName = '';
       },
     },
   };
