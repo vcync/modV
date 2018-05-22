@@ -16,7 +16,8 @@ function calculateStep(colors, currentColor, currentTime, timePeriod) {
     g1 = colors[currentColor][1];
     b1 = colors[currentColor][2];
   } catch (e) {
-    // try catch because the user may delete the current colour which throws the array and nextIndex out of sync
+    // try catch because the user may delete the
+    // current colour which throws the array and nextIndex out of sync
     // TODO: fix case where user deletes current colour
     return [0, 0, 0];
   }

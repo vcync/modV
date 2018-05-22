@@ -37,7 +37,7 @@ function mux() {
         canvas: outputCanvas,
         context: outputContext,
       }),
-    );
+      );
 
     capturer.capture(outputCanvas);
 

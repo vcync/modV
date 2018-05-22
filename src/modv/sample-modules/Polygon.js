@@ -1,7 +1,6 @@
 import { Module2D } from 'modv';
 
 class Polygon extends Module2D {
-
   constructor() {
     super({
       info: {
@@ -165,8 +164,6 @@ class Polygon extends Module2D {
     context.stroke();
     if (this.fill) context.fill();
   }
-
-
 }
 
 export default Polygon;

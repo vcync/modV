@@ -106,7 +106,7 @@ export default window.modVVue = new Vue({
     ];
 
     modules.forEach((fileName) => {
-      System.import(`@/modv/sample-modules/${fileName}`).then((Module) => {
+      import(`@/modv/sample-modules/${fileName}`).then((Module) => {
         modV.register(Module.default);
       });
     });
@@ -163,7 +163,7 @@ export default window.modVVue = new Vue({
     ];
 
     isfSamples.forEach((fileName) => {
-      System.import(`@/modv/sample-modules/isf-samples/${fileName}`).then((fragmentShader) => {
+      import(`@/modv/sample-modules/isf-samples/${fileName}`).then((fragmentShader) => {
         class Module extends ModuleISF {
           constructor() {
             super({

@@ -2,7 +2,6 @@ import awesomeText from '@/extra/awesome-text';
 import { Module2D } from '../Modules';
 
 class Text extends Module2D {
-
   constructor() {
     super({
       info: {

@@ -18,7 +18,7 @@ const getters = {
 
 // actions
 const actions = {
-  async savePresetToProfile({ commit }, { profileName, presetName }) {
+  async savePresetToProfile({}, { profileName, presetName }) { //eslint-disable-line
     const MediaManager = modV.MediaManagerClient;
 
     const preset = {};
@@ -48,11 +48,11 @@ const actions = {
 
     return preset;
   },
-  loadPresetFromProfile({ commit }, { profileName, presetName }) {
+  loadPresetFromProfile({}, { profileName, presetName }) { //eslint-disable-line
     const presetData = state.profiles[profileName].presets[presetName];
     store.dispatch('profiles/loadPreset', { presetData });
   },
-  loadPreset({ commit }, { presetData }) {
+  loadPreset({}, { presetData }) { //eslint-disable-line
     store.dispatch('layers/removeAllLayers').then(() => {
       presetData.layers.forEach((Layer) => {
         store.dispatch('layers/addLayer').then(({ index }) => {
@@ -110,7 +110,7 @@ const actions = {
       });
     });
   },
-  savePaletteToProfile({ commit }, { profileName, paletteName, colors }) {
+  savePaletteToProfile({}, { profileName, paletteName, colors }) { //eslint-disable-line
     const MediaManager = modV.MediaManagerClient;
 
     MediaManager.send({

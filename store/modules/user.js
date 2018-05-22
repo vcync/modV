@@ -25,7 +25,7 @@ const getters = {
 
 // actions
 const actions = {
-  setUseRetina({ commit, state }, { useRetina }) {
+  setUseRetina({ commit }, { useRetina }) {
     let dpr = window.devicePixelRatio || 1;
     if (!useRetina) dpr = 1;
 
@@ -55,7 +55,7 @@ const actions = {
       commit('setCurrentVideoSource', { sourceId });
     });
   },
-  setShowStats({ commit, state }, shouldShowStats) {
+  setShowStats({ commit }, shouldShowStats) {
     if (shouldShowStats) {
       stats.dom.classList.remove('hidden');
     } else {
@@ -64,7 +64,7 @@ const actions = {
 
     commit('setShowStats', shouldShowStats);
   },
-  setConstrainToOneOne({ commit, state }, shouldConstrain) {
+  setConstrainToOneOne({ commit }, shouldConstrain) {
     commit('setConstrainToOneOne', shouldConstrain);
     store.dispatch('size/updateSize');
   },

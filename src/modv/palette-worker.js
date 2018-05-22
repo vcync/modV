@@ -20,7 +20,7 @@ class PaletteWorker extends EventEmitter2 {
    * @param {MessageEvent} evt
    */
   messageHandler(evt) {
-    switch(evt.data.message) {
+    switch (evt.data.message) {
       default:
         return;
       case 'palette-create':
@@ -29,7 +29,12 @@ class PaletteWorker extends EventEmitter2 {
         });
         break;
       case 'palette-update':
-        this.emit(PaletteWorker.EventType.PALETTE_UPDATED, evt.data.paletteId, evt.data.currentColor, evt.data.currentStep);
+        this.emit(
+          PaletteWorker.EventType.PALETTE_UPDATED,
+          evt.data.paletteId,
+          evt.data.currentColor,
+          evt.data.currentStep,
+        );
         break;
     }
   }
@@ -43,7 +48,7 @@ class PaletteWorker extends EventEmitter2 {
       message: 'create-palette',
       paletteId: id,
       colors,
-      duration
+      duration,
     });
   }
 
@@ -56,7 +61,7 @@ class PaletteWorker extends EventEmitter2 {
     this._worker.postMessage({ //eslint-disable-line
       options,
       message: 'set-palette',
-      paletteId: id
+      paletteId: id,
     });
   }
 
@@ -64,7 +69,7 @@ class PaletteWorker extends EventEmitter2 {
   removePalette(id) {
     this._worker.postMessage({ //eslint-disable-line
       message: 'remove-palette',
-      paletteId: id
+      paletteId: id,
     });
   }
 }

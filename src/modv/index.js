@@ -13,7 +13,6 @@ import PaletteWorker from './palette-worker/palette-worker';
 import MediaManagerClient from './MediaManagerClient';
 
 class ModV extends EventEmitter2 {
-
   /**
    * [constructor description]
    * @param  {ModVOptions} options
