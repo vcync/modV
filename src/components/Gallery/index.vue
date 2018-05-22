@@ -9,7 +9,7 @@
     </div>
 
     <div class="column is-12 full-height">
-      <b-tabs class="make-flex-fit">
+      <b-tabs class="make-flex-fit" :animated="false">
         <b-tab-item class="make-flex-fit" label="Modules" v-bar="{ useScrollbarPseudo: true }">
           <module-gallery :phrase="phrase"></module-gallery>
         </b-tab-item>
