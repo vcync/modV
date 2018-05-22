@@ -20,6 +20,10 @@ onmessage = (e) => {
   const message = e.data;
 
   switch (message.type) {
+    default: {
+      break;
+    }
+
     case 'setup': {
       const width = message.payload.width;
       const height = message.payload.height;
@@ -34,7 +38,7 @@ onmessage = (e) => {
           const pointX = (x * Math.floor(width / LEDWidth)) + Math.floor((width / LEDWidth) / 2);
           const pointY = (y * Math.floor(height / LEDHeight));
 
-          nerdVI.addLED(new LED(pointX, pointY)); //jshint ignore:line
+          nerdVI.addLED(new LED(pointX, pointY)); // jshint ignore:line
         }
       }
 

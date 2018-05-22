@@ -127,7 +127,7 @@ class ModuleISF extends Module {
                 value,
                 selected: (value === input.DEFAULT),
               }),
-            ),
+              ),
           });
           break;
 

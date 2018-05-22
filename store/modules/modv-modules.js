@@ -143,7 +143,7 @@ const actions = {
 
     commit('removeActiveModule', { moduleName });
   },
-  register({ commit, state }, { Module }) {
+  register({ commit }, { Module }) {
     const instantiated = new Module();
     const moduleName = instantiated.info.name;
     commit('addModuleToRegistry', { Module, moduleName });
@@ -262,7 +262,7 @@ const mutations = {
     if (
       Object.keys(controlValues)
         .filter(controlVariableName => controlVariableName === variable).length < 1
-      ) {
+    ) {
       return;
     }
 

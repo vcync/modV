@@ -28,7 +28,7 @@ const actions = {
     modV.workers.palette.removePalette(id);
     commit('removePalette', { id });
   },
-  updateBpm({ commit }, { bpm }) {
+  updateBpm({}, { bpm }) { //eslint-disable-line
     Object.keys(state.palettes).forEach((id) => {
       modV.workers.palette.setPalette(id, {
         bpm,

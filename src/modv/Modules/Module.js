@@ -14,7 +14,6 @@ import ModuleError from './module-error';
  * Module
  */
 class Module {
-
   /**
    * @param {ModuleSettings} settings
    */

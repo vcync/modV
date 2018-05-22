@@ -64,7 +64,7 @@ const actions = {
     if (Layer.collapsed) commit('uncollapse', { layerIndex });
     else commit('collapse', { layerIndex });
   },
-  addModuleToLayer({ commit, state }, { module, layerIndex, position }) {
+  addModuleToLayer({ commit }, { module, layerIndex, position }) {
     let positionShadow = position;
     if (typeof positionShadow !== 'number') {
       if (positionShadow < 0) {
@@ -78,10 +78,10 @@ const actions = {
       { root: true },
     );
   },
-  updateModuleOrder({ commit, state }, { layerIndex, order }) {
+  updateModuleOrder({ commit }, { layerIndex, order }) {
     commit('updateModuleOrder', { layerIndex, order });
   },
-  resize({ commit, state }, { width, height, dpr }) {
+  resize({ state }, { width, height, dpr }) {
     state.layers.forEach((Layer) => {
       Layer.resize({ width, height, dpr });
     });

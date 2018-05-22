@@ -10,7 +10,7 @@ export default function uploadTexture(texture) {
     gl.RGBA,
     gl.RGBA,
     gl.UNSIGNED_BYTE,
-    texture
+    texture,
   );
-  if(webgl.useMipmap) gl.generateMipmap(gl.TEXTURE_2D);
+  if (webgl.useMipmap) gl.generateMipmap(gl.TEXTURE_2D);
 }

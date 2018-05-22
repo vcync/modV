@@ -2,7 +2,6 @@ import Meyda from 'meyda';
 import { Module2D } from '../Modules';
 
 class Waveform extends Module2D {
-
   constructor() {
     super({
       info: {

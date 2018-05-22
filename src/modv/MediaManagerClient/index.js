@@ -91,7 +91,7 @@ class MediaManagerClient {
             } else if (type === 'image') {
               // modV.profiles[profile].images[name] = data.path;
             } else if (type === 'video') {
-             //  modV.profiles[profile].videos[name] = data.path;
+              //  modV.profiles[profile].videos[name] = data.path;
             }
           }
 

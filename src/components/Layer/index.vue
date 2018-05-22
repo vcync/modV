@@ -142,7 +142,7 @@
         e.preventDefault();
         const moduleName = e.item.dataset.moduleName;
 
-        if (e.item.classList.contains('gallery-item')) {
+        if (e.item.childNodes[0].classList.contains('gallery-item')) {
           e.clone.parentNode.insertBefore(e.item, e.clone);
           e.clone.parentNode.removeChild(e.clone);
 

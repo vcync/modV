@@ -4,7 +4,6 @@ import Module from './Module';
  * @extends Module
  */
 class Module2D extends Module {
-
   /**
    * @param {ModuleSettings} settings
    */

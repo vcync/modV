@@ -60,6 +60,7 @@ class Expression {
       const scope = {
         value: currentValue,
         delta: this.delta,
+        map: Math.map,
       };
 
       Object.keys(additionalScope).forEach((key) => {
