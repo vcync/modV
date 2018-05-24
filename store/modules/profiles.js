@@ -132,6 +132,16 @@ const mutations = {
     profile.videos = videos || {};
     profile.modules = modules || {};
 
+    Object.keys(profile.modules).forEach((moduleName) => {
+      fetch(profile.modules[moduleName])
+        .then(response => response.text())
+        .then((text) => {
+          store.dispatch('modVModules/register', {
+            Module: eval(text).default, //eslint-disable-line
+          });
+        });
+    });
+
     Vue.set(state.profiles, profileName, profile);
   },
   addPaletteToProfile(state, { profileName, paletteName, colors }) {
@@ -141,6 +151,19 @@ const mutations = {
   addPresetToProfile(state, { profileName, presetName, presetData }) {
     const profile = state.profiles[profileName];
     Vue.set(profile.presets, presetName, presetData);
+  },
+  addModuleToProfile(state, { profileName, presetName, path }) {
+    const profile = state.profiles[profileName];
+
+    fetch(path)
+      .then(response => response.text())
+      .then((text) => {
+        store.dispatch('modVModules/register', {
+          Module: eval(text).default, //eslint-disable-line
+        });
+      });
+
+    Vue.set(profile.modules, presetName, path);
   },
 };
 

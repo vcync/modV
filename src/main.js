@@ -86,7 +86,7 @@ export default window.modVVue = new Vue({
     modV.start(this);
 
     const modules = [
-      'Waveform',
+      // 'Waveform',
       'Ball',
       'Text',
       'Webcam',

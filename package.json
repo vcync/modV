@@ -15,7 +15,7 @@
     "lint": "eslint --ext .js,.vue src test/unit/specs test/e2e/specs"
   },
   "dependencies": {
-    "modv-media-manager": "https://github.com/2xAA/modV-MediaManager.git",
+    "modv-media-manager": "2xAA/modV-MediaManager#module-compilation",
     "nw-builder": "^3.5.1",
     "vue": "^2.5.3",
     "vuex": "^2.3.1",
