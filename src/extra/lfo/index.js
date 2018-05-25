@@ -117,7 +117,7 @@ const lfoplugin = {
 
           if (currentValue === value) return;
 
-          store.commit('modVModules/setActiveModuleControlValue', {
+          store.dispatch('modVModules/setActiveModuleControlValue', {
             moduleName,
             variable: controlVariable,
             value,

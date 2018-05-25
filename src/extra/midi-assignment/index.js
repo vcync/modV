@@ -42,7 +42,7 @@ const midiAssignment = {
 
       if (control.varType === 'int') newValue = Math.round(newValue);
 
-      store.commit('modVModules/setActiveModuleControlValue', {
+      store.dispatch('modVModules/setActiveModuleControlValue', {
         moduleName,
         variable: variableName,
         value: newValue,

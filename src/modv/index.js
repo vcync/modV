@@ -150,7 +150,7 @@ class ModV extends EventEmitter2 {
         const Module = store.getters['modVModules/getActiveModule'](assignment.moduleName);
         const control = Module.info.controls[assignment.controlVariable];
 
-        store.commit('modVModules/setActiveModuleControlValue', {
+        store.dispatch('modVModules/setActiveModuleControlValue', {
           moduleName: assignment.moduleName,
           variable: assignment.controlVariable,
           value: Math.map(featureValue, 0, this.assignmentMax, control.min, control.max),
