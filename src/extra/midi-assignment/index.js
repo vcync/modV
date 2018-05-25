@@ -1,37 +1,37 @@
+import store from '@/../store';
 import { modV } from 'modv';
 import { MenuItem } from 'nwjs-menu-browser';
 import midiAssignmentStore from './store';
 import MIDIAssigner from './assigner';
+import controlPanelComponent from './ControlPanel';
 
-class Expression {
-  constructor() {
-    this.store = null;
-    this.vue = null;
-    this.delta = 0;
-    this.assigner = null;
-  }
+let assigner;
 
-  install(Vue, { store }) {
-    if (!store) throw new Error('No Vuex store detected');
-    this.store = store;
-    this.vue = Vue;
+const midiAssignment = {
+  name: 'MIDI Assignment',
+  controlPanelComponent,
+
+  install(Vue) {
+    Vue.component(controlPanelComponent.name, controlPanelComponent);
     store.registerModule('midiAssignment', midiAssignmentStore);
 
     store.subscribe((mutation) => {
       if (mutation.type === 'modVModules/removeActiveModule') {
-        store.commit('midiAssignment/removeAssignments', { moduleName: mutation.payload.moduleName });
+        store.commit('midiAssignment/removeAssignments', {
+          moduleName: mutation.payload.moduleName,
+        });
       }
     });
 
-    this.assigner = new MIDIAssigner({
+    assigner = new MIDIAssigner({
       get: store.getters['midiAssignment/assignment'],
       set(key, value) {
         store.commit('midiAssignment/setAssignment', { key, value });
       },
     });
 
-    this.assigner.start();
-    this.assigner.on('midiAssignmentInput', (channel, assignment, midiEvent) => {
+    assigner.start();
+    assigner.on('midiAssignmentInput', (channel, assignment, midiEvent) => {
       const data = assignment.variable.split(',');
 
       const moduleName = data[0];
@@ -46,7 +46,7 @@ class Expression {
 
         if (control.varType === 'int') newValue = Math.round(newValue);
 
-        store.commit('modVModules/setActiveModuleControlValue', {
+        store.dispatch('modVModules/setActiveModuleControlValue', {
           moduleName,
           variable: variableName,
           value: newValue,
@@ -57,13 +57,13 @@ class Expression {
 
         if (type === 'enable') {
           const value = !!Math.round(Math.map(midiEvent.data[2], 0, 127, 0, 1));
-          store.commit('modVModules/setActiveModuleEnabled', {
+          store.dispatch('modVModules/setActiveModuleEnabled', {
             moduleName,
             enabled: value,
           });
         } else if(type === 'alpha') { //eslint-disable-line
           const value = Math.map(midiEvent.data[2], 0, 127, 0, 1);
-          store.commit('modVModules/setActiveModuleAlpha', {
+          store.dispatch('modVModules/setActiveModuleAlpha', {
             moduleName,
             alpha: value,
           });
@@ -72,7 +72,7 @@ class Expression {
         }
       }
     });
-  }
+  },
 
   modvInstall() {
     modV.addContextMenuHook({
@@ -84,10 +84,11 @@ class Expression {
       hook: '@modv/module:internal',
       buildMenuItem: this.createMenuItem.bind(this),
     });
-  }
+  },
 
   createMenuItem(moduleName, controlVariable, internal) {
     function click() {
+      assigner.learn(`${moduleName},${controlVariable}`);
       let assignmentString = `${moduleName},${controlVariable}`;
 
       if (internal) {
@@ -103,9 +104,7 @@ class Expression {
     });
 
     return MidiItem;
-  }
-}
+  },
+};
 
-const expression = new Expression();
-
-export default expression;
+export default midiAssignment;

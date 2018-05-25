@@ -223,6 +223,37 @@ const actions = {
 
     return moduleData;
   },
+  setActiveModuleControlValue({ commit }, { moduleName, variable, value }) {
+    const module = externalState.active[moduleName];
+    const controlValues = state.active[moduleName];
+    let processedValue = value.valueOf();
+
+    store.getters['plugins/enabledPlugins']
+    .filter(plugin => ('processValue' in plugin.plugin))
+    .forEach((plugin) => {
+      const newValue = plugin.plugin.processValue({
+        currentValue: processedValue,
+        controlVariable: variable,
+        delta: modV.delta,
+        moduleName,
+      });
+
+      if (newValue) processedValue = newValue;
+    });
+
+    if (
+      Object.keys(controlValues)
+        .filter(controlVariableName => controlVariableName === variable).length < 1
+    ) {
+      return;
+    }
+
+    if ('append' in module.info.controls[variable]) {
+      processedValue = `${processedValue}${module.info.controls[variable].append}`;
+    }
+
+    commit('setActiveModuleControlValue', { moduleName, variable, value, processedValue });
+  },
 };
 
 // mutations
@@ -244,32 +275,7 @@ const mutations = {
     Vue.set(state.active[moduleName], 'info', {});
     externalState.active[moduleName] = module;
   },
-  setActiveModuleControlValue(state, { moduleName, variable, value }) {
-    const module = externalState.active[moduleName];
-    const controlValues = state.active[moduleName];
-    let processedValue = value.valueOf();
-
-    modV.plugins.filter(plugin => ('processValue' in plugin)).forEach((plugin) => {
-      const newValue = plugin.processValue({
-        currentValue: processedValue,
-        controlVariable: variable,
-        moduleName,
-      });
-
-      if (newValue) processedValue = newValue;
-    });
-
-    if (
-      Object.keys(controlValues)
-        .filter(controlVariableName => controlVariableName === variable).length < 1
-    ) {
-      return;
-    }
-
-    if ('append' in module.info.controls[variable]) {
-      processedValue = `${processedValue}${module.info.controls[variable].append}`;
-    }
-
+  setActiveModuleControlValue(state, { moduleName, variable, value, processedValue }) {
     Vue.set(state.active[moduleName], variable, value);
     externalState.active[moduleName][variable] = processedValue;
   },

@@ -1,33 +1,26 @@
+import store from '@/../store';
 import { modV } from 'modv';
 import { Menu, MenuItem } from 'nwjs-menu-browser';
 import Meyda from 'meyda';
 
-class FeatureAssignment {
-  constructor() {
-    this.store = null;
-    this.vue = null;
-  }
+const featureAssignment = {
+  name: 'Feature Assignment',
 
-  install(Vue, { store }) {
-    if (!store) throw new Error('No Vuex store detected');
-    this.store = store;
-    this.vue = Vue;
-
+  install() {
     store.subscribe((mutation) => {
       if (mutation.type === 'modVModules/removeActiveModule') {
         store.commit('meyda/removeAssignments', { moduleName: mutation.payload.moduleName });
       }
     });
-  }
+  },
 
   modvInstall() {
     modV.addContextMenuHook({ hook: 'rangeControl', buildMenuItem: this.createMenuItem.bind(this) });
-  }
+  },
 
   buildMeydaMenu(moduleName, controlVariable) {
     const MeydaFeaturesSubmenu = new Menu();
-    const store = this.store;
-    var activeFeature = ''; //eslint-disable-line
+    let activeFeature = '';
 
     function clickFeature() {
       activeFeature = this.label;
@@ -84,15 +77,14 @@ class FeatureAssignment {
     });
 
     return MeydaFeaturesSubmenu;
-  }
+  },
 
   createMenuItem(moduleName, controlVariable) {
     const MeydaFeaturesMenu = this.buildMeydaMenu(moduleName, controlVariable);
     const MeydaItem = new MenuItem({ label: 'Attach Feature', submenu: MeydaFeaturesMenu });
 
     return MeydaItem;
-  }
-}
+  },
+};
 
-const featureAssignment = new FeatureAssignment();
 export default featureAssignment;

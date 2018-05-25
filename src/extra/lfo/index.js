@@ -1,3 +1,4 @@
+import store from '@/../store';
 import { modV } from 'modv';
 import { Menu, MenuItem } from 'nwjs-menu-browser';
 import { startCase, toLower } from 'lodash-es';
@@ -13,21 +14,11 @@ function hzFromBpm(bpm = 120) {
   return hertz;
 }
 
-class LFOPlugin {
-  constructor() {
-    this.store = null;
-    this.vue = null;
-    this.delta = 0;
-  }
+const lfoplugin = {
+  name: 'LFO',
+  waveforms: lfoTypes,
 
-  get waveforms() { //eslint-disable-line
-    return lfoTypes;
-  }
-
-  install(Vue, { store }) {
-    if (!store) throw new Error('No Vuex store detected');
-    this.store = store;
-    this.vue = Vue;
+  install() { //eslint-disable-line
     store.registerModule('lfo', lfoStore);
 
     // Vue.component('expression', ExpressionComponent);
@@ -41,15 +32,14 @@ class LFOPlugin {
         store.dispatch('lfo/updateBpmFrequency', { frequency: hzFromBpm(mutation.payload.bpm) });
       }
     });
-  }
+  },
 
   modvInstall() {
     modV.addContextMenuHook({ hook: 'rangeControl', buildMenuItem: this.createMenuItem.bind(this) });
-  }
+  },
 
   createMenuItem(moduleName, controlVariable) {
     const LfoSubmenu = new Menu();
-    const store = this.store;
     let label = 'Attach LFO';
 
     function attatchClick() {
@@ -102,10 +92,9 @@ class LFOPlugin {
 
     const LfoMenuItem = new MenuItem({ label, submenu: LfoSubmenu });
     return LfoMenuItem;
-  }
+  },
 
-  process() {
-    const store = this.store;
+  process() { //eslint-disable-line
     const assignments = store.getters['lfo/assignments'];
 
     Object.keys(assignments).forEach((moduleName) => {
@@ -128,7 +117,7 @@ class LFOPlugin {
 
           if (currentValue === value) return;
 
-          store.commit('modVModules/setActiveModuleControlValue', {
+          store.dispatch('modVModules/setActiveModuleControlValue', {
             moduleName,
             variable: controlVariable,
             value,
@@ -136,10 +125,9 @@ class LFOPlugin {
         }
       });
     });
-  }
+  },
 
   makeValue({ currentValue, moduleName, controlVariable }) { //eslint-disable-line
-    const store = this.store;
     const assignment = store.getters['lfo/assignment']({ moduleName, controlVariable });
     const control = store.getters['modVModules/getActiveModule'](moduleName).info.controls[controlVariable];
 
@@ -153,9 +141,7 @@ class LFOPlugin {
     }
 
     return value;
-  }
-}
-
-const lfoplugin = new LFOPlugin();
+  },
+};
 
 export default lfoplugin;

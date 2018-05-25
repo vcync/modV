@@ -29,6 +29,10 @@
         <b-tab-item label="Videos" disabled>
 
         </b-tab-item>
+
+        <b-tab-item label="Plugins" v-bar="{ useScrollbarPseudo: true }">
+          <plugin-gallery :phrase="phrase"></plugin-gallery>
+        </b-tab-item>
       </b-tabs>
     </div>
   </div>
@@ -39,6 +43,7 @@
 
   import ModuleGallery from '@/components/Gallery/ModuleGallery';
   import PaletteGallery from '@/components/Gallery/PaletteGallery';
+  import PluginGallery from '@/components/Gallery/PluginGallery';
   import PresetGallery from '@/components/Gallery/PresetGallery';
   import SearchBar from '@/components/Gallery/SearchBar';
 
@@ -95,6 +100,7 @@
     components: {
       ModuleGallery,
       PaletteGallery,
+      PluginGallery,
       PresetGallery,
       SearchBar,
     },

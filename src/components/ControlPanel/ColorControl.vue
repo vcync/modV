@@ -9,7 +9,7 @@
 
 <script>
   import { Sketch } from 'vue-color';
-  import { mapMutations } from 'vuex';
+  import { mapActions } from 'vuex';
 
   export default {
     name: 'colorControl',
@@ -115,7 +115,7 @@
       },
     },
     methods: {
-      ...mapMutations('modVModules', [
+      ...mapActions('modVModules', [
         'setActiveModuleControlValue',
       ]),
       updateValue(value) {

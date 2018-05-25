@@ -13,6 +13,7 @@ const state = {
     moduleName: '',
     controlVariable: '',
   },
+  delta: 0,
 };
 
 // getters
@@ -23,6 +24,7 @@ const getters = {
     if (!state.assignments[moduleName]) return false;
     return state.assignments[moduleName][controlVariable];
   },
+  delta: state => state.delta,
   // menu: state => id => state.menus[id],
   // activeMenus: state => state.activeMenus.map(id => state.menus[id])
 };
@@ -142,6 +144,9 @@ const mutations = {
   setActiveControlData(state, { moduleName, controlVariable }) {
     Vue.set(state.activeControlData, 'moduleName', moduleName);
     Vue.set(state.activeControlData, 'controlVariable', controlVariable);
+  },
+  setDelta(state, { delta }) {
+    Vue.set(state, 'delta', delta);
   },
 };
 

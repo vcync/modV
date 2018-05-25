@@ -24,7 +24,7 @@
 </template>
 
 <script>
-  import { mapGetters, mapMutations } from 'vuex';
+  import { mapGetters, mapActions } from 'vuex';
 
   export default {
     name: 'twoDPointControl',
@@ -78,7 +78,7 @@
       },
     },
     methods: {
-      ...mapMutations('modVModules', [
+      ...mapActions('modVModules', [
         'setActiveModuleControlValue',
       ]),
       mapValues(x, y) {
