@@ -4,12 +4,20 @@
       <div class="columns is-multiline">
 
         <div class="column is-12" v-for="(plugin, pluginName) in plugins">
-          <b-switch
-            :value="plugin.enabled"
-            @input="switchPlugin($event, { pluginName })"
-          >
-            {{ pluginName }}
-          </b-switch>
+          <div>
+            <b-switch
+              :value="plugin.enabled"
+              @input="switchPlugin($event, { pluginName })"
+              class="has-text-light"
+            >
+              {{ pluginName }}
+            </b-switch>
+            <div v-if="'controlPanelComponent' in plugin.plugin">
+              <component
+                :is="plugin.plugin.controlPanelComponent.name"
+              ></component>
+            </div>
+          </div>
         </div>
 
       </div>

@@ -1,6 +1,6 @@
 import store from '@/../store';
 import { modV } from 'modv';
-// import { MenuItem } from 'nwjs-menu-browser';
+import controlPanelComponent from './ControlPanel';
 
 const Worker = require('worker-loader!./worker.js'); //eslint-disable-line
 
@@ -8,6 +8,7 @@ const theWorker = new Worker();
 
 const grabCanvas = {
   name: 'Grab Canvas',
+  controlPanelComponent,
 
   resize(canvas) {
     if (!canvas) return;
@@ -27,7 +28,9 @@ const grabCanvas = {
    * this must be registered with vue before modV
    * to use vuex or vue
    */
-  install() {
+  install(Vue) {
+    Vue.component(controlPanelComponent.name, controlPanelComponent);
+
     store.subscribe((mutation) => {
       if (mutation.type === 'windows/setSize') {
         this.resize({
