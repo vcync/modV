@@ -57,13 +57,13 @@ const midiAssignment = {
 
         if (type === 'enable') {
           const value = !!Math.round(Math.map(midiEvent.data[2], 0, 127, 0, 1));
-          store.dispatch('modVModules/setActiveModuleEnabled', {
+          store.commit('modVModules/setActiveModuleEnabled', {
             moduleName,
             enabled: value,
           });
         } else if(type === 'alpha') { //eslint-disable-line
           const value = Math.map(midiEvent.data[2], 0, 127, 0, 1);
-          store.dispatch('modVModules/setActiveModuleAlpha', {
+          store.commit('modVModules/setActiveModuleAlpha', {
             moduleName,
             alpha: value,
           });
@@ -88,14 +88,13 @@ const midiAssignment = {
 
   createMenuItem(moduleName, controlVariable, internal) {
     function click() {
-      assigner.learn(`${moduleName},${controlVariable}`);
       let assignmentString = `${moduleName},${controlVariable}`;
 
       if (internal) {
         assignmentString += ',internal';
       }
 
-      this.assigner.learn(assignmentString);
+      assigner.learn(assignmentString);
     }
 
     const MidiItem = new MenuItem({
