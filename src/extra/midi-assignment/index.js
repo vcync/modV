@@ -3,18 +3,16 @@ import { modV } from 'modv';
 import { MenuItem } from 'nwjs-menu-browser';
 import midiAssignmentStore from './store';
 import MIDIAssigner from './assigner';
+import controlPanelComponent from './ControlPanel';
 
-const assigner = new MIDIAssigner({
-  get: store.getters['midiAssignment/assignment'],
-  set(key, value) {
-    store.commit('midiAssignment/setAssignment', { key, value });
-  },
-});
+let assigner;
 
 const midiAssignment = {
   name: 'MIDI Assignment',
+  controlPanelComponent,
 
-  install() {
+  install(Vue) {
+    Vue.component(controlPanelComponent.name, controlPanelComponent);
     store.registerModule('midiAssignment', midiAssignmentStore);
 
     store.subscribe((mutation) => {
@@ -23,6 +21,13 @@ const midiAssignment = {
           moduleName: mutation.payload.moduleName,
         });
       }
+    });
+
+    assigner = new MIDIAssigner({
+      get: store.getters['midiAssignment/assignment'],
+      set(key, value) {
+        store.commit('midiAssignment/setAssignment', { key, value });
+      },
     });
 
     assigner.start();
