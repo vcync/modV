@@ -7,11 +7,10 @@
         collapsed: collapsed
       }"
       @click="focusLayer"
-      v-context-menu="menuOptions"
     >
     <div class="columns is-gapless is-multiline is-mobile">
       <div class="column is-12">
-        <div class="control-bar handle columns is-gapless is-mobile">
+        <div class="control-bar handle columns is-gapless is-mobile" v-context-menu="menuOptions">
           <div class="column is-three-quarters">
             <div class="layer-title" @dblclick="startNameEdit" @keydown.enter="stopNameEdit">{{ name }}</div>
           </div>

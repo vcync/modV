@@ -12,7 +12,7 @@
 
                   <div class="columns is-gapless is-mobile">
                     <div class="column options">
-                      <div class="control-group enable-group">
+                      <div class="control-group enable-group" v-context-menu="checkboxMenuOptions">
                         <label
                           :for="enabledCheckboxId"
                           @click="checkboxClick"
@@ -22,7 +22,7 @@
                           :id="enabledCheckboxId"
                         ></b-checkbox>
                       </div>
-                      <div class="control-group opacity-group">
+                      <div class="control-group opacity-group" v-context-menu="opacityMenuOptions">
                         <label for="">Opacity</label>
                         <input type="range" min="0" max="1" value = "1" step="any" class="opacity" v-model="opacity">
                       </div>
@@ -80,6 +80,16 @@
         compositeOperation: 'normal',
         enabled: null,
         opacity: null,
+        checkboxMenuOptions: {
+          match: ['@modv/module:internal'],
+          menuItems: [],
+          internalVariable: 'enable',
+        },
+        opacityMenuOptions: {
+          match: ['@modv/module:internal'],
+          menuItems: [],
+          internalVariable: 'alpha',
+        },
         operations: [{
           label: 'Blend Modes',
           children: [{
@@ -179,6 +189,7 @@
     ],
     computed: {
       ...mapGetters('modVModules', [
+        'activeModules',
         'focusedModuleName',
       ]),
       module() {
@@ -249,6 +260,13 @@
       },
       opacity() {
         this.setActiveModuleAlpha({ moduleName: this.moduleName, alpha: parseFloat(this.opacity) });
+      },
+      activeModules: {
+        handler(value) {
+          this.enabled = value[this.moduleName].info.enabled;
+          this.opacity = value[this.moduleName].info.alpha;
+        },
+        deep: true,
       },
     },
     filters: {
