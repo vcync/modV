@@ -32,8 +32,8 @@ function mux() {
 
     resolve();
 
-    store.getters['plugins/allPlugins'].filter(plugin => ('processFrame' in plugin))
-      .forEach(plugin => plugin.processFrame({
+    store.getters['plugins/enabledPlugins'].filter(plugin => ('processFrame' in plugin.plugin))
+      .forEach(plugin => plugin.plugin.processFrame({
         canvas: outputCanvas,
         context: outputContext,
       }),

@@ -161,9 +161,9 @@ class ModV extends EventEmitter2 {
       this.updateBPM(this.beatDetektor.win_bpm_int_lo);
     }
 
-    store.getters['plugins/allPlugins']
-      .filter(plugin => ('process' in plugin))
-      .forEach(plugin => plugin.process({
+    store.getters['plugins/enabledPlugins']
+      .filter(plugin => ('process' in plugin.plugin))
+      .forEach(plugin => plugin.plugin.process({
         delta: δ,
       }));
 

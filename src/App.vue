@@ -70,12 +70,12 @@
     },
     computed: {
       ...mapGetters('plugins', [
-        'allPlugins',
+        'enabledPlugins',
       ]),
       pluginComponents() {
-        return this.allPlugins
-          .filter(plugin => 'component' in plugin)
-          .map(plugin => plugin.component.name);
+        return this.enabledPlugins
+          .filter(plugin => 'component' in plugin.plugin)
+          .map(plugin => plugin.plugin.component.name);
       },
     },
     methods: {

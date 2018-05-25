@@ -249,10 +249,10 @@ const mutations = {
     const controlValues = state.active[moduleName];
     let processedValue = value.valueOf();
 
-    store.getters['plugins/allPlugins']
-    .filter(plugin => ('processValue' in plugin))
+    store.getters['plugins/enabledPlugins']
+    .filter(plugin => ('processValue' in plugin.plugin))
     .forEach((plugin) => {
-      const newValue = plugin.processValue({
+      const newValue = plugin.plugin.processValue({
         currentValue: processedValue,
         controlVariable: variable,
         delta: modV.delta,
