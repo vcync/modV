@@ -44,7 +44,20 @@ function buildMenu(e, id, options, vnode, store) {
     if (hook in hooks) hookItems = hookItems.concat(hooks[hook]);
   });
 
-  hookItems.forEach(item => menu.append(item.buildMenuItem(moduleName, controlVariable)));
+  hookItems.forEach((item) => {
+    if (options.internalVariable) {
+      menu.append(item.buildMenuItem(
+        moduleName,
+        options.internalVariable,
+        true,
+      ));
+    } else {
+      menu.append(item.buildMenuItem(
+        moduleName,
+        controlVariable,
+      ));
+    }
+  });
 
   let menus = [];
   menus.push(menu);
