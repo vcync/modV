@@ -1,21 +1,18 @@
+import store from '@/../store';
 import { modV } from 'modv';
 // import { MenuItem } from 'nwjs-menu-browser';
 
 const Worker = require('worker-loader!./worker.js'); //eslint-disable-line
 
-class GrabCanvas {
-  constructor() {
-    this.worker = new Worker();
+const theWorker = new Worker();
 
-    this.store = null;
-    this.vue = null;
-    this.delta = 0;
-  }
+const grabCanvas = {
+  name: 'Grab Canvas',
 
   resize(canvas) {
     if (!canvas) return;
 
-    this.worker.postMessage({
+    theWorker.postMessage({
       type: 'setup',
       payload: {
         width: canvas.width,
@@ -23,18 +20,14 @@ class GrabCanvas {
         devicePixelRatio: window.devicePixelRatio,
       },
     });
-  }
+  },
 
   /* install
    * Only called when added as a Vue plugin,
    * this must be registered with vue before modV
    * to use vuex or vue
    */
-  install(Vue, { store }) {
-    if (!store) throw new Error('No Vuex store detected');
-    this.store = store;
-    this.vue = Vue;
-
+  install() {
     store.subscribe((mutation) => {
       if (mutation.type === 'windows/setSize') {
         this.resize({
@@ -43,22 +36,22 @@ class GrabCanvas {
         });
       }
     });
-  }
+  },
 
   /* modvInstall
    * Only called when added to modV.
    */
   modvInstall() { //eslint-disable-line
     this.resize(modV.outputCanvas);
-  }
+  },
 
   /* process
    * Called once every frame.
    * Useful for plugins which need to process data away from modV
    */
-  process({ delta }) {
-    this.delta = delta;
-  }
+  process({ delta }) { //eslint-disable-line
+    // this.delta = delta;
+  },
 
   /* processValue
    * Called once every frame.
@@ -67,7 +60,7 @@ class GrabCanvas {
    */
   processValue({ currentValue, moduleName, controlVariable }) { //eslint-disable-line
 
-  }
+  },
 
   /* processFrame
    * Called once every frame.
@@ -82,15 +75,13 @@ class GrabCanvas {
     // }
     //
 
-    const pixels = context.getImageData(0, 0, canvas.width, canvas.height).data;
+    // const pixels = context.getImageData(0, 0, canvas.width, canvas.height).data;
 
-    this.worker.postMessage({
-      type: 'data',
-      payload: pixels,
-    });
-  }
-}
-
-const grabCanvas = new GrabCanvas();
+    // theWorker.postMessage({
+    //   type: 'data',
+    //   payload: pixels,
+    // });
+  },
+};
 
 export default grabCanvas;

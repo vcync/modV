@@ -46,24 +46,12 @@ Vue.use(Buefy, {
 Vue.use(VueThrottleEvent);
 Vue.use(Dropdown);
 Vue.use(Shortkey);
-Vue.use(contextMenu, {
-  store,
-});
-Vue.use(featureAssignment, {
-  store,
-});
-Vue.use(expression, {
-  store,
-});
-Vue.use(midiAssignment, {
-  store,
-});
-Vue.use(lfo, {
-  store,
-});
-Vue.use(grabCanvas, {
-  store,
-});
+Vue.use(contextMenu);
+Vue.use(featureAssignment);
+Vue.use(expression);
+Vue.use(midiAssignment);
+Vue.use(lfo);
+Vue.use(grabCanvas);
 
 modV.use(contextMenu);
 modV.use(featureAssignment);

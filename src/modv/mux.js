@@ -32,7 +32,7 @@ function mux() {
 
     resolve();
 
-    modV.plugins.filter(plugin => ('processFrame' in plugin))
+    store.getters['plugins/allPlugins'].filter(plugin => ('processFrame' in plugin))
       .forEach(plugin => plugin.processFrame({
         canvas: outputCanvas,
         context: outputContext,

@@ -1,12 +1,8 @@
 // import { modV } from 'modv';
 // import { MenuItem } from 'nwjs-menu-browser';
 
-class FrameGrab {
-  constructor() {
-    this.store = null;
-    this.vue = null;
-    this.delta = 0;
-  }
+const frameGrab = {
+  name: 'Frame Grab',
 
   /* install
    * Only called when added as a Vue plugin,
@@ -17,7 +13,7 @@ class FrameGrab {
     if (!store) throw new Error('No Vuex store detected');
     this.store = store;
     this.vue = Vue;
-  }
+  },
 
   /* modvInstall
    * Only called when added to modV.
@@ -27,15 +23,15 @@ class FrameGrab {
     //  hook: 'rangeControl',
     //  buildMenuItem: this.createMenuItem.bind(this)
     // });
-  }
+  },
 
   /* process
    * Called once every frame.
    * Useful for plugins which need to process data away from modV
    */
   process({ delta }) { //eslint-disable-line
-    this.delta = delta;
-  }
+    // this.delta = delta;
+  },
 
   /* processValue
    * Called once every frame.
@@ -44,7 +40,7 @@ class FrameGrab {
    */
   processValue({ currentValue, moduleName, controlVariable }) { //eslint-disable-line
 
-  }
+  },
 
   /* processFrame
    * Called once every frame.
@@ -52,9 +48,7 @@ class FrameGrab {
    */
   processFrame({ canvas }) { //eslint-disable-line
     // grab the frame here
-  }
-}
-
-const frameGrab = new FrameGrab();
+  },
+};
 
 export default frameGrab;

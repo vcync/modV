@@ -1,37 +1,32 @@
+import store from '@/../store';
 import { modV } from 'modv';
 import { MenuItem } from 'nwjs-menu-browser';
 import midiAssignmentStore from './store';
 import MIDIAssigner from './assigner';
 
-class Expression {
-  constructor() {
-    this.store = null;
-    this.vue = null;
-    this.delta = 0;
-    this.assigner = null;
-  }
+const assigner = new MIDIAssigner({
+  get: store.getters['midiAssignment/assignment'],
+  set(key, value) {
+    store.commit('midiAssignment/setAssignment', { key, value });
+  },
+});
 
-  install(Vue, { store }) {
-    if (!store) throw new Error('No Vuex store detected');
-    this.store = store;
-    this.vue = Vue;
+const midiAssignment = {
+  name: 'MIDI Assignment',
+
+  install() {
     store.registerModule('midiAssignment', midiAssignmentStore);
 
     store.subscribe((mutation) => {
       if (mutation.type === 'modVModules/removeActiveModule') {
-        store.commit('midiAssignment/removeAssignments', { moduleName: mutation.payload.moduleName });
+        store.commit('midiAssignment/removeAssignments', {
+          moduleName: mutation.payload.moduleName,
+        });
       }
     });
 
-    this.assigner = new MIDIAssigner({
-      get: store.getters['midiAssignment/assignment'],
-      set(key, value) {
-        store.commit('midiAssignment/setAssignment', { key, value });
-      },
-    });
-
-    this.assigner.start();
-    this.assigner.on('midiAssignmentInput', (channel, assignment, midiEvent) => {
+    assigner.start();
+    assigner.on('midiAssignmentInput', (channel, assignment, midiEvent) => {
       const data = assignment.variable.split(',');
       const moduleName = data[0];
       const variableName = data[1];
@@ -48,15 +43,18 @@ class Expression {
         value: newValue,
       });
     });
-  }
+  },
 
   modvInstall() {
-    modV.addContextMenuHook({ hook: 'rangeControl', buildMenuItem: this.createMenuItem.bind(this) });
-  }
+    modV.addContextMenuHook({
+      hook: 'rangeControl',
+      buildMenuItem: this.createMenuItem.bind(this),
+    });
+  },
 
   createMenuItem(moduleName, controlVariable) {
     function click() {
-      this.assigner.learn(`${moduleName},${controlVariable}`);
+      assigner.learn(`${moduleName},${controlVariable}`);
     }
 
     const MidiItem = new MenuItem({
@@ -65,9 +63,7 @@ class Expression {
     });
 
     return MidiItem;
-  }
-}
+  },
+};
 
-const expression = new Expression();
-
-export default expression;
+export default midiAssignment;

@@ -7,6 +7,7 @@ import mediaStream from './modules/media-stream';
 import meyda from './modules/meyda';
 import modVModules from './modules/modv-modules';
 import palettes from './modules/palettes';
+import plugins from './modules/plugins';
 import profiles from './modules/profiles';
 import size from './modules/size';
 import tempo from './modules/tempo';
@@ -37,6 +38,7 @@ export default new Vuex.Store({
     meyda,
     modVModules,
     palettes,
+    plugins,
     profiles,
     size,
     tempo,
