@@ -10,6 +10,22 @@ class GrabCanvas {
     this.store = null;
     this.vue = null;
     this.delta = 0;
+
+    // Small version of the output canvas
+    this.smallCanvas = document.createElement('canvas');
+    this.smallContext = this.smallCanvas.getContext('2d');
+
+    // Set the size
+    this.smallCanvas.width = 240;
+    this.smallCanvas.height = 240;
+
+    // Set the amount of the selected areas per axis
+    this.selectionX = 4;
+    this.selectionY = 4;
+
+    // Add the canvas to modV for testing purposes :D
+    this.smallCanvas.style = 'position: absolute; top: 0px; right: 0px; width: 80px; height: 80px; z-index: 100000;';
+    document.body.appendChild(this.smallCanvas);
   }
 
   resize(canvas) {
@@ -18,9 +34,10 @@ class GrabCanvas {
     this.worker.postMessage({
       type: 'setup',
       payload: {
-        width: canvas.width,
-        height: canvas.height,
-        devicePixelRatio: window.devicePixelRatio,
+        width: this.smallCanvas.width,
+        height: this.smallCanvas.height,
+        selectionX: this.selectionX,
+        selectionY: this.selectionY,
       },
     });
   }
@@ -66,7 +83,6 @@ class GrabCanvas {
    * (see expression plugin for an example)
    */
   processValue({ currentValue, moduleName, controlVariable }) { //eslint-disable-line
-
   }
 
   /* processFrame
@@ -74,19 +90,21 @@ class GrabCanvas {
    * Allows access of each frame drawn to the screen.
    */
   processFrame({ canvas, context }) { //eslint-disable-line
-    //
-    // Consider using the delta value to throttle the frame dumping
-    // for a performance boost
-    // if (this.delta % 2 === 0) {
-    //
-    // }
-    //
 
-    const pixels = context.getImageData(0, 0, canvas.width, canvas.height).data;
+    // Clear the output
+    this.smallContext.clearRect(0, 0, this.smallCanvas.width, this.smallCanvas.height);
 
+    // Create a small version of the canvas
+    this.smallContext.drawImage(canvas, 0, 0, this.smallCanvas.width, this.smallCanvas.height);
+
+    // Get the pixels from the small canvas
+    const data =
+      this.smallContext.getImageData(0, 0, this.smallCanvas.width, this.smallCanvas.height).data;
+
+    // Send the data to the worker
     this.worker.postMessage({
       type: 'data',
-      payload: pixels,
+      payload: data,
     });
   }
 }
