@@ -3,6 +3,7 @@ import { modV } from 'modv';
 import controlPanelComponent from './ControlPanel';
 import grabCanvasStore from './store';
 
+
 const Worker = require('worker-loader!./worker.js'); //eslint-disable-line
 
 /**
@@ -16,7 +17,6 @@ const Worker = require('worker-loader!./worker.js'); //eslint-disable-line
  * @param{number} selectionX - Amount of areas we select on the x-axis
  * @param{number} selectionY - Amount of areas we select on the y-axis
  */
-
 const theWorker = new Worker();
 
 // Small version of the output canvas
@@ -116,6 +116,7 @@ const grabCanvas = {
 
     // Send the data to the worker
     theWorker.postMessage({
+
       type: 'data',
       payload: data,
     });
