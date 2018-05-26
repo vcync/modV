@@ -32,7 +32,7 @@ export default class LuminaveConnector {
      -------
      => [a1, a2, b1, b2]
    */
-  constructor(args) {
+  constructor(args = {}) {
     this.url = args.url || 'ws://localhost:3000/modV';
 
     // Create WebSocket connection

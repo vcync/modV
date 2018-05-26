@@ -14,7 +14,7 @@ const Worker = require('worker-loader!./worker.js'); //eslint-disable-line
  * @param{number} selectionY - Amount of areas we select on the y-axis
  */
 class GrabCanvas {
-  constructor(args) {
+  constructor(args = {}) {
     this.worker = new Worker();
 
     this.store = null;
