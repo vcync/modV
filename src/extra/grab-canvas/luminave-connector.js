@@ -5,8 +5,8 @@ export default class LuminaveConnector {
    * - Calculate the average color for the whole output and for specified areas
    *
    * @param{string} url - WebSocket-URI
-   * @param{number} width - Width of the canvas
-   * @param{number} height - Height of the canvas
+   * @param{number} width - Width of the smallCanvas
+   * @param{number} height - Height of the smallCanvas
    * @param{number} selectionX - Amount of areas we select on the x-axis
    * @param{number} selectionY - Amount of areas we select on the y-axis
    *
