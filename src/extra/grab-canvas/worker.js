@@ -6,10 +6,14 @@ import LuminaveConnector from './luminave-connector';
 // @see https://github.com/NERDDISCO/luminave#integrations
 const luminaveConnector = new LuminaveConnector('ws://localhost:3000/modV');
 
+/**
+ * When the worker receives a message, it triggers different functions
+ */
 onmessage = (e) => {
   const message = e.data;
 
   switch (message.type) {
+    // Update the settings of LuminaveConnector
     case 'setup': {
       const { width, height, selectionX, selectionY } = message.payload;
 
@@ -21,6 +25,7 @@ onmessage = (e) => {
       break;
     }
 
+    // Send the raw pixel data from the modV output canvas to LuminaveConnector
     case 'data': {
       luminaveConnector.drawFrame(message.payload);
       break;
