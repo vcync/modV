@@ -35,6 +35,19 @@ const midiAssignment = {
     },
   },
 
+  pluginData: {
+    // save to be called on Plugin Store action
+    save() {
+      return {
+        data: 'to save',
+      };
+    },
+
+    load(data) {
+      console.log('data loaded', data.data === 'to save');
+    },
+  },
+
   install(Vue) {
     Vue.component(controlPanelComponent.name, controlPanelComponent);
     store.registerModule('midiAssignment', midiAssignmentStore);
