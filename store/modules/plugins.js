@@ -15,9 +15,22 @@ const getters = {
 };
 
 // actions
-// const actions = {
+const actions = {
+  presetData({ state }) {
+    const pluginData = {};
 
-// };
+    Object.keys(state.plugins)
+      .filter(pluginKey => state.plugins[pluginKey].enabled)
+      .filter(pluginKey => 'presetData' in state.plugins[pluginKey].plugin)
+      .forEach((pluginKey) => {
+        const plugin = state.plugins[pluginKey].plugin;
+
+        pluginData[pluginKey] = plugin.presetData.save();
+      });
+
+    return pluginData;
+  },
+};
 
 // mutations
 const mutations = {
@@ -35,6 +48,6 @@ export default {
   namespaced: true,
   state,
   getters,
-  // actions,
+  actions,
   mutations,
 };

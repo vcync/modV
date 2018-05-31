@@ -11,6 +11,30 @@ const midiAssignment = {
   name: 'MIDI Assignment',
   controlPanelComponent,
 
+  presetData: {
+    save() {
+      const { assignments, devices } = store.state.midiAssignment;
+
+      return {
+        assignments,
+        devices,
+      };
+    },
+
+    load(data) {
+      const { assignments } = data;
+
+      Object.keys(assignments).forEach((assignmentKey) => {
+        store.commit('midiAssignment/setAssignment', {
+          key: assignmentKey,
+          value: assignments[assignmentKey],
+        });
+
+        // do something with devices (currently not used)
+      });
+    },
+  },
+
   install(Vue) {
     Vue.component(controlPanelComponent.name, controlPanelComponent);
     store.registerModule('midiAssignment', midiAssignmentStore);
