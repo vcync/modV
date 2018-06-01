@@ -94,10 +94,21 @@ const midiAssignment = {
 
         // The "enable" button for the module
         if (type === 'enable') {
-          // Only listen for On-events (button pressed)
-          // 1. Controlchange
-          // 2. noteon
-          if ((midiEvent.data[2] > 63 && midiEvent.data[0] === 176) || midiEvent.data[0] === 144) {
+          /*
+           * Only listen for On-events (button pressed)
+           *
+           * data[0] defines the specific MIDI "action" that gets triggered based
+           * on which type the MIDI element has (for example a button might have
+           * the type "Note"). Based on this we can handle different actions
+           *
+           * 1. Controlchange
+           * - 176 = This is a Controlchange event
+           * - 63 = Only listen for "button pressed", because this is the velocity
+           *
+           * 2. NoteOn
+           * - 144 = This is a NoteOn event
+           */
+          if ((midiEvent.data[0] === 176 && midiEvent.data[2] > 63) || midiEvent.data[0] === 144) {
             const module = store.getters['modVModules/getActiveModule'](moduleName);
             const enabled = module.info.enabled;
 
