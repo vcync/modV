@@ -92,12 +92,20 @@ const midiAssignment = {
         // the assignment is an internal control
         const type = data[1];
 
+        // The "enable" button for the module
         if (type === 'enable') {
-          const value = !!Math.round(Math.map(midiEvent.data[2], 0, 127, 0, 1));
-          store.commit('modVModules/setActiveModuleEnabled', {
-            moduleName,
-            enabled: value,
-          });
+          // Only listen for On-events (button pressed)
+          // 1. Controlchange
+          // 2. noteon
+          if ((midiEvent.data[2] > 63 && midiEvent.data[0] === 176) || midiEvent.data[0] === 144) {
+            const module = store.getters['modVModules/getActiveModule'](moduleName);
+            const enabled = module.info.enabled;
+
+            store.commit('modVModules/setActiveModuleEnabled', {
+              moduleName,
+              enabled: !enabled,
+            });
+          }
         } else if(type === 'alpha') { //eslint-disable-line
           const value = Math.map(midiEvent.data[2], 0, 127, 0, 1);
           store.commit('modVModules/setActiveModuleAlpha', {
