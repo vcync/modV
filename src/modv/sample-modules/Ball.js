@@ -1,3 +1,4 @@
+import store from '@/../store';
 import { Module2D } from '../Modules';
 
 class Ball extends Module2D {
@@ -179,13 +180,21 @@ class Ball extends Module2D {
     // >
   }
 
-  import(data) {
-    Object.keys(data).forEach((key) => {
-      const value = data[key];
+  import(data, moduleName) {
+    const { values } = data;
+
+    Object.keys(values).forEach((key) => {
+      const value = values[key];
 
       switch (key) {
         default:
-          this[key] = value;
+          // this[key] = value;
+
+          store.commit('modVModules/setActiveModuleControlValue', {
+            moduleName,
+            variable: key,
+            value,
+          });
           break;
 
         case 'balls': {
