@@ -127,6 +127,20 @@
       .tab-item {
         margin-top: 5pt;
       }
+
+      .tabs a {
+        color: #fff;
+      }
+
+      .tabs li.is-active a {
+        border-bottom-color: #ffa600;
+        color: #ffa600;
+      }
+
+      .tabs a:hover {
+        border-bottom-color: #ffa600;
+        color: #ffa600;
+      }
     }
 
     .full-height {
