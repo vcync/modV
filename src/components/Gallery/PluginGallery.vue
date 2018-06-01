@@ -16,6 +16,15 @@
               <component
                 :is="plugin.plugin.controlPanelComponent.name"
               ></component>
+
+              <div class="has-text-right">
+                <button
+                  class="button"
+                  @click="savePluginSettings({ pluginName })"
+                >
+                  Save settings
+                </button>
+              </div>
             </div>
           </div>
         </div>
@@ -26,7 +35,7 @@
 </template>
 
 <script>
-  import { mapMutations, mapGetters } from 'vuex';
+  import { mapActions, mapMutations, mapGetters } from 'vuex';
 
   export default {
     name: 'pluginGallery',
@@ -51,6 +60,9 @@
       ...mapMutations('plugins', [
         'setEnabled',
       ]),
+      ...mapActions('plugins', [
+        'save',
+      ]),
       search(textIn, termIn) {
         const text = textIn.toLowerCase().trim();
         const term = termIn.toLowerCase().trim();
@@ -60,6 +72,9 @@
       },
       switchPlugin(e, { pluginName }) {
         this.setEnabled({ enabled: e, pluginName });
+      },
+      savePluginSettings({ pluginName }) {
+        this.save({ pluginName });
       },
     },
   };

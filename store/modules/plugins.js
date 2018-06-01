@@ -1,5 +1,5 @@
 import Vue from 'vue';
-// import { modV } from '@/modv';
+import { modV } from '@/modv';
 
 const state = {
   plugins: {},
@@ -15,9 +15,72 @@ const getters = {
 };
 
 // actions
-// const actions = {
+const actions = {
+  presetData({ state }) {
+    const pluginData = {};
 
-// };
+    Object.keys(state.plugins)
+      .filter(pluginKey => state.plugins[pluginKey].enabled)
+      .filter(pluginKey => 'presetData' in state.plugins[pluginKey].plugin)
+      .forEach((pluginKey) => {
+        const plugin = state.plugins[pluginKey].plugin;
+
+        pluginData[pluginKey] = plugin.presetData.save();
+      });
+
+    return pluginData;
+  },
+
+  save({ state }, { pluginName }) {
+    const MediaManager = modV.MediaManagerClient;
+    const plugin = state.plugins[pluginName].plugin;
+
+    if (!plugin) {
+      throw new Error(`${pluginName} does not exist as a Plugin`);
+    }
+
+    if (!('pluginData' in plugin)) {
+      throw new Error(`Plugin ${pluginName} does not have a pluginData Object`);
+    }
+
+    const save = plugin.pluginData.save;
+
+    if (!save) {
+      throw new Error(`Plugin ${pluginName} does not have a save method on pluginData`);
+    }
+
+    const payload = save();
+
+    MediaManager.send({
+      request: 'save-plugin-data',
+      name: pluginName,
+      payload,
+    });
+  },
+
+  load({ state }, { pluginName, data }) {
+    const plugin = state.plugins[pluginName].plugin;
+    if (!plugin) {
+      throw new Error(`${pluginName} does not exist as a Plugin`);
+    }
+
+    if (!data) {
+      throw new Error('No data defined');
+    }
+
+    if (!('pluginData' in plugin)) {
+      throw new Error(`Plugin ${pluginName} does not have a pluginData Object`);
+    }
+
+    const load = plugin.pluginData.load;
+
+    if (!load) {
+      throw new Error(`Plugin ${pluginName} does not have a load method on pluginData`);
+    }
+
+    load(data);
+  },
+};
 
 // mutations
 const mutations = {
@@ -35,6 +98,6 @@ export default {
   namespaced: true,
   state,
   getters,
-  // actions,
+  actions,
   mutations,
 };
