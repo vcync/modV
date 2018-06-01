@@ -85,13 +85,10 @@ const actions = {
               module.info.version = data.version;
 
               if ('import' in module) {
-                console.log('import found in', module);
-                module.import(data.values);
+                module.import(data, moduleName);
               } else {
                 Object.keys(data.values).forEach((variable) => {
                   const value = data.values[variable];
-
-                  console.log(variable, value);
 
                   store.commit('modVModules/setActiveModuleControlValue', {
                     moduleName,
