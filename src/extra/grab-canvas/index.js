@@ -24,6 +24,7 @@ const smallCanvas = document.createElement('canvas');
 const smallContext = smallCanvas.getContext('2d');
 
 // Add the canvas to modV for testing purposes :D
+smallCanvas.classList.add('is-hidden');
 smallCanvas.style = 'position: absolute; top: 0px; right: 0px; width: 80px; height: 80px; z-index: 100000;';
 document.body.appendChild(smallCanvas);
 
@@ -86,6 +87,8 @@ const grabCanvas = {
             selectionY: mutation.payload.selectionY || store.getters['grabCanvas/selectionY'],
           },
         });
+      } else if (mutation.type === 'grabCanvas/setShowCanvas') {
+        smallCanvas.classList.toggle('is-hidden');
       }
     });
   },
