@@ -6,23 +6,21 @@
     <b-field label="Selection Y" class="has-text-light">
       <b-input v-model="y" type="number"></b-input>
     </b-field>
+    <button class="button" @click="showCanvas = !showCanvas">
+      {{ showCanvas ? 'Hide ' : 'Show ' }}Canvas
+    </button>
   </div>
 </template>
 
 <script>
-  import { mapGetters, mapMutations } from 'vuex';
+  import { mapMutations } from 'vuex';
 
   export default {
     name: 'grabCanvasControlPanel',
     computed: {
-      ...mapGetters('grabCanvas', [
-        'selectionX',
-        'selectionY',
-      ]),
-
       x: {
         get() {
-          return this.selectionX;
+          return this.$store.state.grabCanvas.selectionX;
         },
 
         set(value) {
@@ -34,7 +32,7 @@
 
       y: {
         get() {
-          return this.selectionY;
+          return this.$store.state.grabCanvas.selectionY;
         },
 
         set(value) {
@@ -43,10 +41,23 @@
           });
         },
       },
+
+      showCanvas: {
+        get() {
+          return this.$store.state.grabCanvas.showCanvas;
+        },
+
+        set(value) {
+          this.setShowCanvas({
+            showCanvas: value,
+          });
+        },
+      },
     },
     methods: {
       ...mapMutations('grabCanvas', [
         'setSelection',
+        'setShowCanvas',
       ]),
     },
   };
