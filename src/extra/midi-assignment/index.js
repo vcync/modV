@@ -104,11 +104,13 @@ const midiAssignment = {
            * 1. Controlchange
            * - 176 = This is a Controlchange event
            * - 63 = Only listen for "button pressed", because this is the velocity
+           * - 0 = If the velocity is zero, it's a "button released"
            *
            * 2. NoteOn
            * - 144 = This is a NoteOn event
            */
-          if ((midiEvent.data[0] === 176 && midiEvent.data[2] > 63) || midiEvent.data[0] === 144) {
+          if ((midiEvent.data[0] === 176 && (midiEvent.data[2] > 63 || midiEvent.data[2] === 0))
+              || midiEvent.data[0] === 144) {
             const module = store.getters['modVModules/getActiveModule'](moduleName);
             const enabled = module.info.enabled;
 
