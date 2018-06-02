@@ -1,3 +1,5 @@
+import ReconnectingWebSocket from 'reconnecting-websocket';
+
 export default class LuminaveConnector {
   /**
    * - Create a WebSocket to luminave to transmit colors
@@ -33,7 +35,7 @@ export default class LuminaveConnector {
      => [a1, a2, b1, b2]
    */
   constructor(args = {}) {
-    this.url = args.url || 'ws://localhost:3000/modV';
+    this.url = args.url || 'ws://169.254.120.135:3000/modV';
 
     // Create WebSocket connection
     this.setupSocket(this.url);
@@ -55,7 +57,7 @@ export default class LuminaveConnector {
    */
   setupSocket() {
     // Open the connection
-    this.connection = new WebSocket(this.url);
+    this.connection = new ReconnectingWebSocket(this.url);
 
     // Handle: Errors
     this.connection.onerror = (error) => {
@@ -76,7 +78,7 @@ export default class LuminaveConnector {
    */
   drawFrame(data) {
     // Data from canvas
-    this.data = data;
+    this.data = new Uint8Array(data);
 
     // Get the average color of the whole output
     const average = this.getAverage(0, 0, this.width, this.height);

@@ -62,12 +62,12 @@ const grabCanvas = {
     store.registerModule('grabCanvas', grabCanvasStore);
 
     // Set the size of the smallCanvas
-    smallCanvas.width = args.width || 240;
-    smallCanvas.height = args.height || 240;
+    smallCanvas.width = args.width || 112;
+    smallCanvas.height = args.height || 112;
 
     // Set the amount of the selected areas per axis
     store.commit('grabCanvas/setSelection', {
-      selectionX: args.selectionX || 4,
+      selectionX: args.selectionX || 28, // magic numbers for tim
       selectionY: args.selectionY || 4,
     });
 
@@ -115,14 +115,15 @@ const grabCanvas = {
 
     // Get the pixels from the small canvas
     const data =
-      smallContext.getImageData(0, 0, smallCanvas.width, smallCanvas.height).data;
+      smallContext.getImageData(0, 0, smallCanvas.width, smallCanvas.height).data.buffer;
 
     // Send the data to the worker
     theWorker.postMessage({
-
       type: 'data',
       payload: data,
-    });
+    }, [
+      data,
+    ]);
   },
 };
 
