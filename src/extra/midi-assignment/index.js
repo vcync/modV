@@ -109,7 +109,6 @@ const midiAssignment = {
            */
           if ((midiEvent.data[0] === 176 && (midiEvent.data[2] > 63 || midiEvent.data[2] === 0))
               || midiEvent.data[0] === 144) {
-
             const module = store.getters['modVModules/getActiveModule'](moduleName);
             const enabled = module.info.enabled;
 
