@@ -98,6 +98,15 @@ class Layer extends EventEmitter2 {
     this.drawToOutput = true;
 
     /**
+     * The ID of the Window to draw the Layer to,
+     * null indicates the Layer should draw to all Windows
+     *
+     * @type {String}
+     * @name Layer#drawToWindowId
+     */
+    this.drawToWindowId = null;
+
+    /**
      * Indicates whether the Layer is Locked
      * @type {Boolean}
      * @name Layer#locked

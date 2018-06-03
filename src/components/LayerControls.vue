@@ -49,6 +49,18 @@
                 <b-checkbox v-model="drawToOutputChecked" />
               </b-field>
             </div>
+
+            <div class="control-group output-group">
+              <b-select placeholder="Select a window" v-model="drawToWindowId">
+                <option value="-1" selected="selected">All windows</option>
+                <option
+                  v-for="(option, index) in windowIds"
+                  :value="option"
+                  :key="option">
+                  {{ index }}
+                </option>
+            </b-select>
+            </div>
           </div>
         </div>
       </div>
@@ -68,6 +80,7 @@
         pipelineChecked: false,
         drawToOutputChecked: false,
         inheritanceIndex: -1,
+        drawToWindowId: null,
       };
     },
     computed: {
@@ -76,6 +89,9 @@
         layers: 'allLayers',
         layerIndex: 'focusedLayerIndex',
       }),
+      ...mapGetters('windows', [
+        'windowIds',
+      ]),
       name() {
         if (!this.Layer) return '';
         if (!('name' in this.Layer)) return '';
@@ -96,6 +112,7 @@
         'setInheritFrom',
         'setPipeline',
         'setDrawToOutput',
+        'setDrawToWindow',
       ]),
       updateChecked() {
         const Layer = this.Layer;
@@ -105,6 +122,7 @@
         this.inheritanceIndex = Layer.inheritFrom;
         this.pipelineChecked = Layer.pipeline;
         this.drawToOutputChecked = Layer.drawToOutput;
+        this.drawToWindowId = Layer.drawToWindowId;
       },
     },
     watch: {
@@ -143,6 +161,16 @@
         this.setDrawToOutput({
           layerIndex: this.layerIndex,
           drawToOutput: this.drawToOutputChecked,
+        });
+      },
+      drawToWindowId(value) {
+        let commitValue = value;
+
+        if (value === '-1') commitValue = null;
+
+        this.setDrawToWindow({
+          layerIndex: this.layerIndex,
+          windowId: commitValue,
         });
       },
     },

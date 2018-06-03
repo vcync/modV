@@ -21,6 +21,8 @@ const getters = {
   largestWindowController() {
     return () => getLargestWindow(state.windows).controller;
   },
+  getWindowById: state => id => state.windows.find(windowController => windowController.id === id),
+  windowIds: state => state.windows.map(windowController => windowController.id),
 };
 
 // actions

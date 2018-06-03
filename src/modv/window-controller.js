@@ -1,10 +1,13 @@
 import store from '@/../store';
 import EventEmitter2 from 'eventemitter2';
 import { modV, draw } from '@/modv';
+import uuidv4 from 'uuid/v4';
 
 class WindowController extends EventEmitter2 {
   constructor(Vue) {
     super();
+
+    this.id = uuidv4();
 
     return new Promise((resolve) => {
       if (window.nw) {
