@@ -64,6 +64,10 @@
     &.tags {
       margin: 0;
 
+      &:not(:last-child) {
+        margin-bottom: 0;
+      }
+
       .tag {
         margin-bottom: 0;
       }
