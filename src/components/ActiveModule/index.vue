@@ -23,8 +23,7 @@
                         ></b-checkbox>
                       </div>
                       <div class="control-group opacity-group" v-context-menu="opacityMenuOptions">
-                        <label for="">Opacity</label>
-                        <input type="range" min="0" max="1" value = "1" step="any" class="opacity" v-model="opacity">
+                        <opacity-control :module-name="moduleName"></opacity-control>
                       </div>
                       <div class="control-group blending-group">
                         <label for="">Blending</label>
@@ -72,9 +71,13 @@
 
 <script>
   import { mapGetters, mapMutations } from 'vuex';
+  import OpacityControl from './OpacityControl';
 
   export default {
     name: 'activeItem',
+    components: {
+      OpacityControl,
+    },
     data() {
       return {
         compositeOperation: 'normal',
@@ -212,22 +215,12 @@
       ...mapMutations('modVModules', [
         'setCurrentDragged',
         'setModuleFocus',
-        'setActiveModuleAlpha',
         'setActiveModuleEnabled',
         'setActiveModuleCompositeOperation',
       ]),
       ...mapGetters('modVModules', [
         'getActiveModule',
       ]),
-      inputOpacity(e) {
-        console.log(e);
-      },
-      checkEnabled(e) {
-        console.log(e);
-      },
-      changeBlendmode(e) {
-        console.log(e);
-      },
       focusActiveModule() {
         this.setModuleFocus({ activeModuleName: this.moduleName });
       },
@@ -257,16 +250,6 @@
       },
       enabled() {
         this.setActiveModuleEnabled({ moduleName: this.moduleName, enabled: this.enabled });
-      },
-      opacity() {
-        this.setActiveModuleAlpha({ moduleName: this.moduleName, alpha: parseFloat(this.opacity) });
-      },
-      activeModules: {
-        handler(value) {
-          this.enabled = value[this.moduleName].info.enabled;
-          this.opacity = value[this.moduleName].info.alpha;
-        },
-        deep: true,
       },
     },
     filters: {
