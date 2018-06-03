@@ -1,7 +1,7 @@
 <template>
   <span>
     <label for="">Opacity</label>
-    <input type="range" min="0" max="1" step="0.0001" class="opacity" v-model="alpha">
+    <input type="range" min="0" max="1" value="1" step="0.0001" class="opacity" v-model="alpha">
   </span>
 </template>
 
