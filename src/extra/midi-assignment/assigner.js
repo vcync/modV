@@ -1,116 +1,122 @@
-import EventEmitter2 from 'eventemitter2';
+// import EventEmitter2 from 'eventemitter2';
 import Vue from '@/main';
 
-class MIDIAssigner extends EventEmitter2 {
-  constructor(settings) {
-    super();
+function generateMidiAssigner(settings) {
+  const MIDIAssigner = {
+    access: null,
+    inputs: null,
+    assignments: new Map(),
+    learning: false,
+    toLearn: '',
+    snack: null,
 
-    this.access = null;
-    this.inputs = null;
-    this.assignments = new Map();
-    this.learning = false;
-    this.toLearn = '';
-    this.snack = null;
-
-    this.get = (key) => {
+    get(key) {
       this.assignments.get(key);
-    };
+    },
 
-    if (settings.get) this.get = settings.get;
-
-    this.set = (key, value) => {
+    set(key, value) {
       this.assignments.set(key, value);
-    };
+    },
 
-    if (settings.set) this.set = settings.set;
+    start() {
+      // request MIDI access
+      if (navigator.requestMIDIAccess) {
+        navigator.requestMIDIAccess({
+          sysex: false,
+        }).then((access) => {
+          this.access = access;
+          this.inputs = access.inputs;
 
-    this.handleInputBound = this.handleInput.bind(this);
-  }
+          this.handleDevices(access.inputs);
 
-  start() {
-    // request MIDI access
-    if (navigator.requestMIDIAccess) {
-      navigator.requestMIDIAccess({
-        sysex: false,
-      }).then((access) => {
-        this.access = access;
-        this.inputs = access.inputs;
-
-        this.handleDevices(access.inputs);
-
-        access.addEventListener('statechange', (e) => {
-          this.handleDevices(e.currentTarget.inputs);
+          access.addEventListener('statechange', (e) => {
+            this.handleDevices(e.currentTarget.inputs);
+          });
+        }).catch(() => {
+          Vue.$dialog.alert({
+            title: 'MIDI Access Refused',
+            message: 'MIDI access was refused. Please check your MIDI permissions for modV and refresh the page',
+            type: 'is-danger',
+            hasIcon: true,
+            icon: 'times-circle',
+            iconPack: 'fa',
+          });
         });
-      }).catch(() => {
+      } else {
         Vue.$dialog.alert({
-          title: 'MIDI Access Refused',
-          message: 'MIDI access was refused. Please check your MIDI permissions for modV and refresh the page',
+          title: 'Outdated Browser',
+          message: 'Unfortunately your browser does not support WebMIDI, please update to the latest Google Chrome release',
           type: 'is-danger',
           hasIcon: true,
           icon: 'times-circle',
           iconPack: 'fa',
         });
-      });
-    } else {
-      Vue.$dialog.alert({
-        title: 'Outdated Browser',
-        message: 'Unfortunately your browser does not support WebMIDI, please update to the latest Google Chrome release',
-        type: 'is-danger',
-        hasIcon: true,
-        icon: 'times-circle',
-        iconPack: 'fa',
-      });
-    }
-  }
+      }
+    },
 
-  handleDevices(inputs) {
-    // loop over all available inputs and listen for any MIDI input
-    for(let input of inputs.values()) { // eslint-disable-line
-      // each time there is a midi message call the onMIDIMessage function
-      input.removeEventListener('midimessage', this.handleInputBound);
-      input.addEventListener('midimessage', this.handleInputBound);
-    }
-  }
+    handleDevices(inputs) {
+      // loop over all available inputs and listen for any MIDI input
+      for(let input of inputs.values()) { // eslint-disable-line
+        // each time there is a midi message call the onMIDIMessage function
+        input.removeEventListener('midimessage', this.handleInput.bind(this));
+        input.addEventListener('midimessage', this.handleInput.bind(this));
+      }
+    },
 
-  handleInput(message) {
-    const data = message.data;
-    const midiChannel = parseInt(data[1], 10);
+    handleInput(message) {
+      const data = message.data;
+      const midiChannel = parseInt(data[1], 10);
 
-    if (this.learning) {
-      this.set(midiChannel, { variable: this.toLearn, value: null });
-      Vue.$toast.open({
-        message: `Learned MIDI control for ${this.toLearn.replace(',', '.')}`,
-        type: 'is-success',
-      });
-      this.learning = false;
-      this.toLearn = '';
-      if (this.snack) this.snack.close();
-      this.snack = null;
-    }
-
-    const assignment = this.get(midiChannel);
-    if (assignment) this.emit('midiAssignmentInput', midiChannel, assignment, message);
-  }
-
-  learn(variableName) {
-    this.learning = true;
-    this.toLearn = variableName;
-
-    this.snack = Vue.$snackbar.open({
-      duration: 1000 * 60 * 60,
-      message: `Waiting for MIDI input to learn ${variableName.replace(',', '.')}`,
-      type: 'is-primary',
-      position: 'is-bottom-right',
-      actionText: 'Cancel',
-      onAction: () => {
-        this.learning = false;
+      if (this.learning) {
+        this.set(midiChannel, { variable: this.toLearn, value: null });
         Vue.$toast.open({
-          message: `MIDI learning cancelled for ${variableName.replace(',', '.')}`,
-          type: 'is-info',
+          message: `Learned MIDI control for ${this.toLearn.replace(',', '.')}`,
+          type: 'is-success',
         });
-      },
-    });
-  }
+        this.learning = false;
+        this.toLearn = '';
+        if (this.snack) this.snack.close();
+        this.snack = null;
+      }
+
+      const assignment = this.get(midiChannel);
+      if (assignment && this.messageCallback) {
+        this.messageCallback({
+          midiChannel,
+          assignment,
+          message,
+        });
+      }
+    },
+
+    learn(variableName) {
+      this.learning = true;
+      this.toLearn = variableName;
+
+      this.snack = Vue.$snackbar.open({
+        duration: 1000 * 60 * 60,
+        message: `Waiting for MIDI input to learn ${variableName.replace(',', '.')}`,
+        type: 'is-primary',
+        position: 'is-bottom-right',
+        actionText: 'Cancel',
+        onAction: () => {
+          this.learning = false;
+          Vue.$toast.open({
+            message: `MIDI learning cancelled for ${variableName.replace(',', '.')}`,
+            type: 'is-info',
+          });
+        },
+      });
+    },
+  };
+
+  if (settings.get) MIDIAssigner.get = settings.get;
+  if (settings.set) MIDIAssigner.set = settings.set;
+  if (settings.callback) MIDIAssigner.messageCallback = settings.callback;
+
+  console.log(settings);
+
+  return MIDIAssigner;
 }
 
-export default MIDIAssigner;
+export default generateMidiAssigner;

@@ -254,6 +254,9 @@ const actions = {
 
     commit('setActiveModuleControlValue', { moduleName, variable, value, processedValue });
   },
+  setActiveModuleInfo({ commit }, { moduleName, key, value }) {
+    commit('setActiveModuleInfo', { moduleName, key, value });
+  },
 };
 
 // mutations
@@ -300,6 +303,10 @@ const mutations = {
   setActiveModuleCompositeOperation(state, { moduleName, compositeOperation }) {
     Vue.set(state.active[moduleName].info, 'compositeOperation', compositeOperation);
     externalState.active[moduleName].info.compositeOperation = compositeOperation;
+  },
+  setActiveModuleInfo(state, { moduleName, key, value }) {
+    Vue.set(state.active[moduleName].info, key, value);
+    externalState.active[moduleName].info[key] = value;
   },
 };
 

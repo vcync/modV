@@ -7,6 +7,8 @@ import controlPanelComponent from './ControlPanel';
 
 let assigner;
 
+const queue = new Map();
+
 const midiAssignment = {
   name: 'MIDI Assignment',
   controlPanelComponent,
@@ -60,35 +62,31 @@ const midiAssignment = {
       }
     });
 
-    assigner = new MIDIAssigner({
+    assigner = MIDIAssigner({
       get: store.getters['midiAssignment/assignment'],
       set(key, value) {
         store.commit('midiAssignment/setAssignment', { key, value });
       },
-    });
+      callback: ({ assignment, message }) => {
+        const midiEvent = message;
+        const data = assignment.variable.split(',');
 
-    assigner.start();
-    assigner.on('midiAssignmentInput', (channel, assignment, midiEvent) => {
-      const data = assignment.variable.split(',');
+        const moduleName = data[0];
+        const variableName = data[1];
 
-      const moduleName = data[0];
-      const variableName = data[1];
+        // the assignment is not for an internal control
+        if (!data[2]) {
+          const Module = store.getters['modVModules/getActiveModule'](moduleName);
+          const control = Module.info.controls[variableName];
 
-      // the assignment is not for an internal control
-      if (!data[2]) {
-        const Module = store.getters['modVModules/getActiveModule'](moduleName);
-        const control = Module.info.controls[variableName];
+          let newValue = Math.map(midiEvent.data[2], 0, 127, control.min || 0, control.max || 1);
 
-        let newValue = Math.map(midiEvent.data[2], 0, 127, control.min || 0, control.max || 1);
+          if (control.varType === 'int') newValue = Math.round(newValue);
 
-        if (control.varType === 'int') newValue = Math.round(newValue);
+          queue.set(moduleName, { internal: false, key: variableName, value: newValue });
 
-        store.dispatch('modVModules/setActiveModuleControlValue', {
-          moduleName,
-          variable: variableName,
-          value: newValue,
-        });
-      } else {
+          return;
+        }
         // the assignment is an internal control
         const type = data[1];
 
@@ -108,26 +106,26 @@ const midiAssignment = {
            * 2. NoteOn
            * - 144 = This is a NoteOn event
            */
-          if ((midiEvent.data[0] === 176 && midiEvent.data[2] > 63) || midiEvent.data[0] === 144) {
+          if (
+            (midiEvent.data[0] === 176 && midiEvent.data[2] > 63) ||
+            midiEvent.data[0] === 144
+          ) {
             const module = store.getters['modVModules/getActiveModule'](moduleName);
             const enabled = module.info.enabled;
 
-            store.commit('modVModules/setActiveModuleEnabled', {
-              moduleName,
-              enabled: !enabled,
-            });
+            queue.set(moduleName, { internal: true, key: 'enabled', value: !enabled });
           }
         } else if(type === 'alpha') { //eslint-disable-line
           const value = Math.map(midiEvent.data[2], 0, 127, 0, 1);
-          store.commit('modVModules/setActiveModuleAlpha', {
-            moduleName,
-            alpha: value,
-          });
+
+          queue.set(moduleName, { internal: true, key: 'alpha', value });
         } else if(type === 'blending') { //eslint-disable-line
 
         }
-      }
+      },
     });
+
+    assigner.start();
   },
 
   modvInstall() {
@@ -159,6 +157,29 @@ const midiAssignment = {
     });
 
     return MidiItem;
+  },
+
+  process() {
+    queue.forEach((mapValue, mapKey) => {
+      const moduleName = mapKey;
+      const { internal, key, value } = mapValue;
+
+      if (internal) {
+        store.dispatch('modVModules/setActiveModuleInfo', {
+          moduleName,
+          key,
+          value,
+        });
+      } else {
+        store.dispatch('modVModules/setActiveModuleControlValue', {
+          moduleName,
+          variable: key,
+          value,
+        });
+      }
+    });
+
+    queue.clear();
   },
 };
 
