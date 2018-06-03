@@ -275,7 +275,7 @@ const mutations = {
     });
 
     Vue.set(state.active, moduleName, values);
-    Vue.set(state.active[moduleName], 'info', {});
+    Vue.set(state.active[moduleName], 'info', module.info);
     externalState.active[moduleName] = module;
   },
   setActiveModuleControlValue(state, { moduleName, variable, value, processedValue }) {
