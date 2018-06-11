@@ -72,6 +72,9 @@
   }
 
   .message {
+    display: flex;
+    flex-direction: column;
+
     background-color: transparent;
     height: 100%;
     overflow: hidden;
