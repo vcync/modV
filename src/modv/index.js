@@ -11,6 +11,7 @@ import draw from './draw';
 import setupWebGl from './webgl';
 import PaletteWorker from './palette-worker/palette-worker';
 import MediaManagerClient from './MediaManagerClient';
+import installPlugin from './install-plugin';
 
 class ModV extends EventEmitter2 {
   /**
@@ -179,11 +180,7 @@ class ModV extends EventEmitter2 {
   }
 
   use(plugin) { //eslint-disable-line
-    store.commit('plugins/addPlugin', {
-      plugin,
-    });
-
-    if ('modvInstall' in plugin) plugin.modvInstall();
+    installPlugin(plugin);
   }
 
   addContextMenuHook(hook) { //eslint-disable-line
