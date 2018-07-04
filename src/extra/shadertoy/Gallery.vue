@@ -44,7 +44,7 @@
     },
     methods: {
       async search(e) {
-        axios.get(`${url}/shaders/query/${e.value}`, {
+        axios.get(`${url}/shaders/query/${e.target.value}`, {
           params: {
             key: appKey,
           },

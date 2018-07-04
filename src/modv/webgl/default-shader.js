@@ -55,6 +55,7 @@ export default {
     'precision mediump float;\n' +
     '#endif\n' +
     'uniform sampler2D u_modVCanvas;' +
+    'uniform sampler2D iChannel0;' +
     'uniform vec3 iResolution;' +
     'uniform float iGlobalTime;' +
     'uniform float iTime;' +
