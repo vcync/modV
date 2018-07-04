@@ -35,7 +35,7 @@
         </b-tab-item>
 
         <b-tab-item
-          v-for="(plugin, pluginName) in plugins"
+          v-for="(plugin, pluginName) in enabledPlugins"
           :label="pluginName"
           :key="pluginName"
         >
@@ -71,6 +71,14 @@
         currentDragged: 'currentDragged',
         modules: 'registry',
       }),
+      enabledPlugins() {
+        return Object.keys(this.plugins)
+          .filter(pluginName => this.plugins[pluginName].enabled)
+          .reduce((obj, pluginName) => {
+            obj[pluginName] = this.plugins[pluginName];
+            return obj;
+          }, {});
+      },
     },
     methods: {
       ...mapActions('modVModules', [

@@ -23,6 +23,7 @@ export default {
     'uniform sampler2D u_modVCanvas;' +
     'uniform vec3 iResolution;' +
     'uniform float iGlobalTime;' +
+    'uniform float iTime;' +
     'varying vec2 vUv;' +
     'void main() {' +
       'gl_FragColor=vec4(vUv.x,0.5+0.5*cos(iGlobalTime/1.1),0.5+0.5*sin(iGlobalTime),1.0);' +
@@ -36,6 +37,7 @@ export default {
     '#endif\n' +
     'in vec2 a_position,a_texCoord;' +
     'uniform vec3 iResolution;' +
+    'uniform float iTime;' +
     'out vec2 fragCoord;' +
     'out vec2 vUv;' +
     'void main() {' +
@@ -55,6 +57,7 @@ export default {
     'uniform sampler2D u_modVCanvas;' +
     'uniform vec3 iResolution;' +
     'uniform float iGlobalTime;' +
+    'uniform float iTime;' +
     'in vec2 vUv;' +
     'in vec2 fragCoord;\n' +
     'out vec4 outColor;' +

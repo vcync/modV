@@ -165,6 +165,7 @@ class ModuleShader extends Module {
       iDelta: delta,
       u_delta: delta,
       u_time: delta,
+      iTime: delta / 1000,
       iResolution: [canvas.width, canvas.height, pixelRatio || 1.0],
     };
 
