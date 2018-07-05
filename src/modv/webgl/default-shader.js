@@ -56,12 +56,16 @@ export default {
     '#endif\n' +
     'uniform sampler2D u_modVCanvas;' +
     'uniform sampler2D iChannel0;' +
+    'uniform sampler2D iChannel1;' +
+    'uniform sampler2D iChannel2;' +
+    'uniform sampler2D iChannel3;' +
+    'uniform vec3 iMouse;' +
     'uniform vec3 iResolution;' +
     'uniform float iGlobalTime;' +
     'uniform float iTime;' +
     'in vec2 vUv;' +
     'in vec2 fragCoord;\n' +
-    'out vec4 outColor;' +
+    'out vec4 outColor;\n' +
     '%MAIN_IMAGE_INJECT%\n\n' +
     'void main() {' +
       'mainImage(outColor, fragCoord);' +
