@@ -1,5 +1,8 @@
 import Module from './Module';
 
+const twoDCanvas = document.createElement('canvas');
+const twoDContext = twoDCanvas.getContext('2d');
+
 /**
  * @extends Module
  */
@@ -11,10 +14,26 @@ class Module2D extends Module {
     super(settings);
 
     function render({ canvas, context, video, features, meyda, delta, bpm, kick }) {
+      twoDCanvas.width = canvas.width;
+      twoDCanvas.height = canvas.height;
+
+      twoDContext.save();
+      this.draw({
+        canvas: twoDCanvas,
+        context: twoDContext,
+        video,
+        features,
+        meyda,
+        delta,
+        bpm,
+        kick,
+      });
+      twoDContext.restore();
+
       context.save();
       context.globalAlpha = this.info.alpha || 1;
       context.globalCompositeOperation = this.info.compositeOperation || 'normal';
-      this.draw({ canvas, context, video, features, meyda, delta, bpm, kick });
+      context.drawImage(twoDCanvas, 0, 0, canvas.width, canvas.height);
       context.restore();
     }
 
