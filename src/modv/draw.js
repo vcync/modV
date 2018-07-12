@@ -1,5 +1,4 @@
 import { Module2D, ModuleShader, ModuleISF, modV } from '@/modv';
-// import webglRender from '@/modv/webgl/render';
 import store from '@/../store';
 import mux from './mux';
 
@@ -9,9 +8,6 @@ function draw(δ) {
     const audioFeatures = store.getters['meyda/features'];
     const getActiveModule = store.getters['modVModules/getActiveModule'];
     const previewValues = store.getters['size/previewValues'];
-
-    // const webgl = modV.webgl;
-    // const gl = webgl.gl;
 
     const bufferCanvas = modV.bufferCanvas;
     const bufferContext = modV.bufferContext;
@@ -112,62 +108,45 @@ function draw(δ) {
         }
 
         if (Module instanceof ModuleShader) {
-          // webgl.texture = gl.texImage2D(
-          //   gl.TEXTURE_2D,
-          //   0,
-          //   gl.RGBA,
-          //   gl.RGBA,
-          //   gl.UNSIGNED_BYTE,
-          //   canvas,
-          // );
+          if (pipeline) {
+            context.clearRect(0, 0, canvas.width, canvas.height);
+            context.drawImage(
+              bufferCanvas,
+              0,
+              0,
+              canvas.width,
+              canvas.height,
+            );
 
-          // webgl.resize(canvas.width, canvas.height);
+            Module.draw({
+              canvas,
+              context,
+              video: modV.videoStream,
+              features,
+              meyda: modV.meyda,
+              delta: δ,
+              pipeline,
+            });
 
-          // webglRender({
-          //   Module,
-          //   canvas,
-          //   delta: δ,
-          // });
-
-          Module.draw({
-            canvas,
-            context,
-            video: modV.videoStream,
-            pixelRatio: window.devicePixelRatio,
-            delta: δ,
-          });
-
-          context.save();
-          context.globalAlpha = Module.info.alpha || 1;
-          context.globalCompositeOperation = Module.info.compositeOperation || 'normal';
-
-          // // Copy Shader Canvas to Main Canvas
-          // if (pipeline) {
-          //   bufferContext.clearRect(
-          //     0,
-          //     0,
-          //     canvas.width,
-          //     canvas.height,
-          //   );
-
-          //   bufferContext.drawImage(
-          //     webgl.canvas,
-          //     0,
-          //     0,
-          //     canvas.width,
-          //     canvas.height,
-          //   );
-          // } else {
-          //   context.drawImage(
-          //     webgl.canvas,
-          //     0,
-          //     0,
-          //     canvas.width,
-          //     canvas.height,
-          //   );
-          // }
-
-          context.restore();
+            bufferContext.clearRect(0, 0, canvas.width, canvas.height);
+            bufferContext.drawImage(
+              Layer.canvas,
+              0,
+              0,
+              canvas.width,
+              canvas.height,
+            );
+          } else {
+            Module.draw({
+              canvas,
+              context,
+              video: modV.videoStream,
+              features,
+              meyda: modV.meyda,
+              delta: δ,
+              pipeline,
+            });
+          }
         }
 
         if (Module instanceof ModuleISF) {
@@ -224,6 +203,8 @@ function draw(δ) {
         }
       });
     });
+
+    modV.webgl.regl.poll();
 
     mux().then(() => {
       modV.previewContext.clearRect(0, 0, modV.previewCanvas.width, modV.previewCanvas.height);
