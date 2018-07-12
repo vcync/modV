@@ -1,9 +1,8 @@
-import { modV, webgl } from '@/modv';
+import { webgl } from '@/modv';
 import { forIn } from '@/modv/utils';
-import setActiveProgramFromIndex from '@/modv/webgl/set-active-program-from-index';
-import makeProgram from '@/modv/webgl/make-program-promise';
 import Module from './Module';
-import twgl from 'twgl.js'; //eslint-disable-line
+
+let modVCanvasTexture;
 
 class ModuleShader extends Module {
   /**
@@ -18,10 +17,9 @@ class ModuleShader extends Module {
 
     this.programIndex = -1;
     this.uniformValues = new Map();
-    this._makeProgram().then(() => { //eslint-disable-line
-      this._setupUniforms(); //eslint-disable-line
-    }).catch((err) => {
-      console.error(err);
+    this._setupUniforms(); // eslint-disable-line
+    this._makeProgram().catch((err) => { // eslint-disable-line
+      throw new Error(err);
     });
   }
 
@@ -33,82 +31,96 @@ class ModuleShader extends Module {
    * @return {Promise}                      Resolves with completion of compiled shaders
    */
   _makeProgram() {
-    const gl = webgl.gl;
+    const regl = webgl.regl;
 
     return new Promise((resolve, reject) => {
       const settings = this.settings;
 
       // Read shader documents
-      const shaderStrings = [];
+      let vert = '';
+      let frag = '';
 
       if ('vertexShader' in settings) {
-        shaderStrings.push(settings.vertexShader);
+        vert = settings.vertexShader;
       } else {
-        shaderStrings.push(webgl.defaultShader.v);
+        vert = webgl.defaultShader.v;
       }
 
       if ('fragmentShader' in settings) {
-        shaderStrings.push(settings.fragmentShader);
+        frag = settings.fragmentShader;
       } else {
-        shaderStrings.push(webgl.defaultShader.f);
+        frag = webgl.defaultShader.f;
       }
 
-      Promise.all(shaderStrings).then((values) => {
-        let vs = values[0];
-        let fs = values[1];
+      if (frag.search('gl_FragColor') < 0) {
+        frag = webgl.defaultShader.fWrap.replace(
+          /(%MAIN_IMAGE_INJECT%)/,
+          frag,
+        );
 
-        const morePromises = [];
+        vert = webgl.defaultShader.v300;
+      }
 
-        if (typeof vs !== 'string') vs = vs.text();
-        if (typeof fs !== 'string') fs = fs();
+      const uniforms = {
+        u_modVCanvas: regl.prop('u_modVCanvas'),
+        iFrame: ({ tick }) => tick,
+        iTime: ({ time }) => time,
+        u_delta: ({ time }) => time,
+        u_time: ({ time }) => time * 1000,
+        iGlobalTime: ({ time }) => time,
+        iResolution: ({ viewportWidth, viewportHeight, pixelRatio }) => [
+          viewportWidth,
+          viewportHeight,
+          pixelRatio,
+        ],
+        iMouse: regl.prop('iMouse'),
+        iChannel0: regl.prop('iChannel0'),
+        iChannel1: regl.prop('iChannel1'),
+        iChannel2: regl.prop('iChannel2'),
+        iChannel3: regl.prop('iChannel3'),
+        'iChannelResolution[0]': regl.prop('iChannelResolution[0]'),
+        'iChannelResolution[1]': regl.prop('iChannelResolution[1]'),
+        'iChannelResolution[2]': regl.prop('iChannelResolution[2]'),
+        'iChannelResolution[3]': regl.prop('iChannelResolution[3]'),
+      };
 
-        morePromises.push(vs);
-        morePromises.push(fs);
-
-        Promise.all(morePromises).then((values) => {
-          let vs = values[0];
-          let fs = values[1];
-
-          if (fs.search('gl_FragColor') < 0) {
-            fs = webgl.defaultShader.fWrap.replace(
-              /(%MAIN_IMAGE_INJECT%)/,
-              fs,
-            );
-
-            vs = webgl.defaultShader.v300;
-          }
-
-          makeProgram(vs, fs).then((program) => {
-            gl.useProgram(program);
-            this.programIndex = webgl.programs.push(program) - 1;
-
-            this.programInfo = twgl.createProgramInfoFromProgram(gl, program);
-
-            // finish up
-            resolve(this, 'shader');
-          }).catch((error) => {
-            console.error(`Registration of ModuleShader ${name} unsuccessful.`);
-            reject(error);
-          });
-        }).catch((reason) => {
-          reject(reason);
-        });
-      }).catch((reason) => {
-        reject(reason);
+      this.uniformValues.forEach((value, key) => {
+        // const value = this.uniformValues[key];
+        uniforms[key] = () => this[key];
       });
-    });
-  }
 
-  /**
-   * Make program information (used by twgl) from a previously compiled and stored program
-   * in modV's Shader Environment, then store it on the Module (Module.programInfo)
-   * @private
-   * @param  {modV}   modV A reference to a modV instance
-   */
-  _makeProgramInfoFromIndex() {
-    const program = webgl.programs[this.programIndex];
-    const gl = webgl.gl;
-    this.programInfo = twgl.createProgramInfoFromProgram(gl, program);
+      try {
+        const draw = regl({
+          vert,
+          frag,
+
+          attributes: {
+            position: [
+              -2, 2,
+              0, -2,
+              2, 2,
+            ],
+            a_position: [
+              -2, 2,
+              0, -2,
+              2, 2,
+            ],
+          },
+
+          uniforms,
+
+          count: 3,
+        });
+
+        this.renderShader = draw;
+      } catch (e) {
+        reject(e);
+      }
+
+      resolve();
+    }).catch((reason) => {
+      throw new Error(reason);
+    });
   }
 
   /**
@@ -117,92 +129,67 @@ class ModuleShader extends Module {
    * @param {WebGL2RenderingContext} gl A reference to modV's internal GL Context
    */
   _setupUniforms() {
-    const gl = webgl.gl;
-
     const settings = this.settings;
-    const programInfo = this.programInfo;
-    const twGLUniforms = programInfo.uniformSetters;
 
     forIn(settings.info.uniforms, (uniformKey, uniform) => {
-      if (uniformKey in twGLUniforms) {
-        const uniformSetter = twGLUniforms[uniformKey];
-        Object.defineProperty(this, uniformKey, {
-          set: (value) => {
-            gl.useProgram(this.programInfo.program);
-            uniformSetter(value);
-            this.uniformValues.set(uniformKey, value);
-          },
-          get: () => this.uniformValues.get(uniformKey),
-        });
+      Object.defineProperty(this, uniformKey, {
+        set: (value) => {
+          this.uniformValues.set(uniformKey, value);
+        },
+        get: () => this.uniformValues.get(uniformKey),
+      });
 
-        gl.useProgram(this.programInfo.program);
-        uniformSetter(uniform.value);
-        this.uniformValues.set(uniformKey, uniform.value);
-      }
+      this.uniformValues.set(uniformKey, uniform.value);
     });
   }
 
-  draw({ delta, canvas, pixelRatio, context }) {
-    const gl = webgl.gl;
+  draw({ canvas, context, pipeline }) {
+    const regl = webgl.regl;
 
-    webgl.texture = gl.texImage2D(
-      gl.TEXTURE_2D,
-      0,
-      gl.RGBA,
-      gl.RGBA,
-      gl.UNSIGNED_BYTE,
-      canvas,
-    );
-
-    // Clear WebGL canvas
-    gl.clearColor(0.0, 0.0, 0.0, 0.0);
-    gl.clear(gl.COLOR_BUFFER_BIT);
-    const programIndex = this.programIndex;
-    const programInfo = this.programInfo;
-
-    const uniforms = {
-      iGlobalTime: delta / 1000,
-      iDelta: delta,
-      u_delta: delta,
-      u_time: delta,
-      iResolution: [canvas.width, canvas.height, pixelRatio || 1.0],
-    };
-
-    Object.keys(this.uniformValues).forEach((key) => {
-      const value = this.uniformValues[key];
-      uniforms[key] = value;
-    });
-
-    setActiveProgramFromIndex(programIndex);
-    twgl.setUniforms(programInfo, uniforms);
-
-    if ('meyda' in this.info) {
-      if (this.info.meyda.length > 0) {
-        const meydaFeatures = modV.meyda.get(modV.audioFeatures);
-        this.info.meyda.forEach((feature) => {
-          const uniLoc = gl.getUniformLocation(webgl.programs[webgl.activeProgram], feature);
-
-          const value = parseFloat(meydaFeatures[feature]);
-          gl.uniform1f(uniLoc, value);
-        });
-      }
+    if (!modVCanvasTexture) {
+      modVCanvasTexture = regl.texture({
+        src: canvas,
+      });
+    } else {
+      modVCanvasTexture(canvas);
     }
 
-    // required as we need to resize our drawing boundaries for gallery and main canvases
-    // TODO: this is a performance hinderance, the most expensive call within this function,
-    // consider seperate GL environment for gallery
-    // setRectangle(0, 0, canvas.width, canvas.height, env.buffer);
+    const uniforms = {
+      u_modVCanvas: modVCanvasTexture,
+      iChannel0: modVCanvasTexture,
+      iChannel1: modVCanvasTexture,
+      iChannel2: modVCanvasTexture,
+      iChannel3: modVCanvasTexture,
+      iMouse: [0, 0, 0, 0],
+    };
 
-    gl.drawArrays(gl.TRIANGLES, 0, 6);
+    // if ('meyda' in this.info) {
+    //   if (this.info.meyda.length > 0) {
+    //     const meydaFeatures = modV.meyda.get(modV.audioFeatures);
+    //     this.info.meyda.forEach((feature) => {
+    //       const uniLoc = gl.getUniformLocation(webgl.programs[webgl.activeProgram], feature);
 
+    //       const value = parseFloat(meydaFeatures[feature]);
+    //       gl.uniform1f(uniLoc, value);
+    //     });
+    //   }
+    // }
+
+    regl.clear({
+      depth: 1,
+      color: [0, 0, 0, 0],
+    });
+
+    this.renderShader(uniforms);
+
+    context.save();
+    context.globalAlpha = this.info.alpha || 1;
+    context.globalCompositeOperation = this.info.compositeOperation || 'normal';
+    if (pipeline) context.clearRect(0, 0, canvas.width, canvas.height);
     // Copy Shader Canvas to Main Canvas
-    context.drawImage(
-      webgl.canvas,
-      0,
-      0,
-      canvas.width,
-      canvas.height,
-    );
+    context.drawImage(webgl.canvas, 0, 0, canvas.width, canvas.height);
+
+    context.restore();
   }
 }
 
