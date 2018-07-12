@@ -125,9 +125,7 @@ const midiAssignment = {
     });
 
     assigner.start();
-  },
 
-  modvInstall() {
     modV.addContextMenuHook({
       hook: 'rangeControl',
       buildMenuItem: this.createMenuItem.bind(this),

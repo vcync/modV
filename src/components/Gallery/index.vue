@@ -33,6 +33,14 @@
         <b-tab-item label="Plugins" v-bar="{ useScrollbarPseudo: true }">
           <plugin-gallery :phrase="phrase"></plugin-gallery>
         </b-tab-item>
+
+        <b-tab-item
+          v-for="(plugin, pluginName) in enabledPlugins"
+          :label="pluginName"
+          :key="pluginName"
+        >
+          <component :is="plugin.plugin.galleryTabComponent.name"></component>
+        </b-tab-item>
       </b-tabs>
     </div>
   </div>
@@ -56,10 +64,21 @@
       };
     },
     computed: {
+      ...mapGetters('plugins', {
+        plugins: 'pluginsWithGalleryTab',
+      }),
       ...mapGetters('modVModules', {
         currentDragged: 'currentDragged',
         modules: 'registry',
       }),
+      enabledPlugins() {
+        return Object.keys(this.plugins)
+          .filter(pluginName => this.plugins[pluginName].enabled)
+          .reduce((obj, pluginName) => {
+            obj[pluginName] = this.plugins[pluginName];
+            return obj;
+          }, {});
+      },
     },
     methods: {
       ...mapActions('modVModules', [

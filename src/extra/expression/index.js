@@ -5,18 +5,16 @@ import expressionStore from './store';
 
 const Expression = {
   name: 'Value Expression',
+  store: expressionStore,
+  storeName: 'expression',
 
   install() {
-    store.registerModule('expression', expressionStore);
-
     store.subscribe((mutation) => {
       if (mutation.type === 'modVModules/removeActiveModule') {
         store.commit('expression/removeExpressions', { moduleName: mutation.payload.moduleName });
       }
     });
-  },
 
-  modvInstall() {
     modV.addContextMenuHook({ hook: 'rangeControl', buildMenuItem: this.createMenuItem.bind(this) });
   },
 
