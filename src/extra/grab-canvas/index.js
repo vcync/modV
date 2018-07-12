@@ -31,6 +31,7 @@ document.body.appendChild(smallCanvas);
 const grabCanvas = {
   name: 'Grab Canvas',
   controlPanelComponent,
+  store: grabCanvasStore,
 
   /**
    * When the canvas is resized: Update the worker.
@@ -52,23 +53,17 @@ const grabCanvas = {
   },
 
   /**
-   * Only called when added as a Vue plugin,
-   * this must be registered with vue before modV
-   * to use vuex or vue
+   * Only called when added to modV.
    */
-  install(Vue, args = {}) {
-    Vue.component(controlPanelComponent.name, controlPanelComponent);
-
-    store.registerModule('grabCanvas', grabCanvasStore);
-
+  install() {
     // Set the size of the smallCanvas
-    smallCanvas.width = args.width || 112;
-    smallCanvas.height = args.height || 112;
+    smallCanvas.width = 112;
+    smallCanvas.height = 112;
 
     // Set the amount of the selected areas per axis
     store.commit('grabCanvas/setSelection', {
-      selectionX: args.selectionX || 28, // magic numbers for tim
-      selectionY: args.selectionY || 4,
+      selectionX: 28, // magic numbers for tim
+      selectionY: 4,
     });
 
     store.subscribe((mutation) => {
@@ -91,12 +86,7 @@ const grabCanvas = {
         smallCanvas.classList.toggle('is-hidden');
       }
     });
-  },
 
-  /**
-   * Only called when added to modV.
-   */
-  modvInstall() {
     this.resize(modV.outputCanvas);
   },
 
