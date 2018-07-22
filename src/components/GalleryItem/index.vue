@@ -25,7 +25,7 @@
 
 <script>
   import { mapActions, mapGetters } from 'vuex';
-  import { modV, ModuleISF } from '@/modv';
+  import { modV } from '@/modv';
 
   export default {
     name: 'galleryItem',
@@ -40,7 +40,6 @@
       };
     },
     props: [
-      'moduleIn',
       'moduleName',
     ],
     mounted() {
@@ -53,15 +52,23 @@
         skipInit: true,
       }).then((Module) => {
         this.Module = Module;
-        if (Module instanceof ModuleISF) {
+        if (Module.meta.type === 'isf') {
           this.isIsf = true;
         }
 
         if ('init' in Module) {
-          Module.init({ width: this.canvas.width, height: this.canvas.height });
+          Module.init({
+            canvas: { width: this.canvas.width, height: this.canvas.height },
+          });
+        }
+
+        if ('resize' in Module) {
+          Module.resize({
+            canvas: { width: this.canvas.width, height: this.canvas.height },
+          });
         }
       }).catch((e) => {
-        console.log(`An error occoured whilst initialising a gallery module - ${this.Module.info.name}`);
+        console.log(`An error occoured whilst initialising a gallery module - ${this.Module.meta.name}`);
         console.error(e);
       });
     },
@@ -77,7 +84,7 @@
         this.context.clearRect(0, 0, this.canvas.width, this.canvas.height);
         const features = this.$modV.meyda.get(this.$modV.audioFeatures);
 
-        if (this.Module.info.previewWithOutput) {
+        if (this.Module.meta.previewWithOutput) {
           this.context.drawImage(
             modV.outputCanvas,
             0,
@@ -88,11 +95,13 @@
         }
 
         this.Module.draw({
+          Module: this.Module,
           canvas: this.canvas,
           context: this.context,
           video: this.$modV.videoStream,
           features,
           delta,
+          meyda: modV.meyda._m, //eslint-disable-line
         });
       },
       mouseover() {
@@ -116,7 +125,7 @@
         });
       },
       dragstart(e) {
-        e.dataTransfer.setData('module-name', this.Module.info.name);
+        e.dataTransfer.setData('module-name', this.Module.meta.name);
       },
     },
     computed: {
@@ -126,28 +135,26 @@
       name() {
         const Module = this.Module;
         if (!Module) return '';
-        if (!('info' in Module)) return '';
-        if (!('name' in Module.info)) return '';
-        return Module.info.name;
+        return Module.meta.originalName;
       },
       credit() {
         if (!this.Module) return '';
-        return this.Module.info.author;
+        return this.Module.meta.author;
       },
       version() {
         if (!this.Module) return '';
-        return this.Module.info.version;
+        return this.Module.meta.version;
       },
       isfVersion() {
         if (!this.Module) return '';
         if (!this.isIsf) return 'N/A';
-        let outputString = `${this.Module.info.isfVersion}`;
-        if (this.Module.info.isfVersion === 1) outputString += ' (auto upgraded to 2)';
+        let outputString = `${this.Module.meta.isfVersion}`;
+        if (this.Module.meta.isfVersion === 1) outputString += ' (auto upgraded to 2)';
         return outputString;
       },
       description() {
         if (!this.Module) return '';
-        return this.Module.info.description;
+        return this.Module.meta.description;
       },
     },
   };

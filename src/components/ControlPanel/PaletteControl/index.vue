@@ -1,27 +1,27 @@
 <template>
-  <div class="palette-control" :data-moduleName='moduleName'>
+  <div class="palette-control" :data-moduleName="moduleName">
     <div class="pure-control-group">
-      <label :for='inputId'>
+      <label :for="inputId">
         {{ label }}
       </label>
       <draggable
-        :options='dragOptions'
-        v-model='colors'
+        :options="dragOptions"
+        v-model="colors"
         class="palette"
       >
         <div
-          class='swatch'
-          v-for='(color, idx) in colors'
+          class="swatch"
+          v-for="(color, idx) in colors"
           :style="`background-color: rgb(${color[0]},${color[1]},${color[2]})`"
           :class="{ current: currentColor === idx }"
-          @click='removeSwatch(idx)'
+          @click="removeSwatch(idx)"
         ></div>
       </draggable>
-      <div class='add-swatch' @click='addSwatch'></div>
+      <div class="add-swatch" @click="addSwatch"></div>
       <div class="pure-form-message-inline">
         <button
           class="pure-button"
-          @click='togglePicker'
+          @click="togglePicker"
         >{{ pickerButtonText }} picker</button>
       </div>
     </div>
@@ -31,22 +31,22 @@
     </div>
 
     <div class="pure-control-group">
-      <label :for='`${inputId}-duration`'>Duration</label>
+      <label :for="`${inputId}-duration`">Duration</label>
       <input
-        :id='`${inputId}-duration`'
-        type='range'
-        v-model='durationInput'
-        max='1000'
-        min='2'
-        :disabled='useBpmInput'
+        :id="`${inputId}-duration`"
+        type="range"
+        v-model="durationInput"
+        max="1000"
+        min="2"
+        :disabled="useBpmInput"
       >
       <input
         class="pure-form-message-inline"
-        type='number'
-        min='2'
-        v-model='durationInput'
-        step='any'
-        :disabled='useBpmInput'
+        type="number"
+        min="2"
+        v-model="durationInput"
+        step="any"
+        :disabled="useBpmInput"
       >
     </div>
     <div class="pure-control-group">
@@ -54,51 +54,51 @@
       <b-checkbox :id="`${inputId}-useBpm`" v-model="useBpmInput"></b-checkbox>
     </div>
     <div class="pure-control-group" v-show="useBpmInput">
-      <label :for='`${inputId}-bpmDivision`'>BPM Division</label>
+      <label :for="`${inputId}-bpmDivision`">BPM Division</label>
       <input
-        :id='`${inputId}-bpmDivision`'
-        type='range'
-        v-model='bpmDivisionInput'
-        max='32'
-        min='1'
-        step='1'
+        :id="`${inputId}-bpmDivision`"
+        type="range"
+        v-model="bpmDivisionInput"
+        max="32"
+        min="1"
+        step="1"
       >
       <input
         class="pure-form-message-inline"
-        type='number'
-        v-model='bpmDivisionInput'
-        min='1'
-        step='1'
+        type="number"
+        v-model="bpmDivisionInput"
+        min="1"
+        step="1"
       >
     </div>
     <div class="pure-control-group">
-      <label :for='`${inputId}-load-palette`'>Profile</label>
+      <label :for="`${inputId}-load-palette`">Profile</label>
       <profile-selector
-        :id='`${inputId}-profile`'
-        v-model='profileSelectorInput'
+        :id="`${inputId}-profile`"
+        v-model="profileSelectorInput"
       ></profile-selector>
     </div>
     <div class="pure-control-group">
-      <label :for='`${inputId}-load-palette`'>Load Palette</label>
+      <label :for="`${inputId}-load-palette`">Load Palette</label>
       <palette-selector
-        :profile='profileSelectorInput'
-        :id='`${inputId}-load-palette`'
-        v-model='paletteSelectorInput'
+        :profile="profileSelectorInput"
+        :id="`${inputId}-load-palette`"
+        v-model="paletteSelectorInput"
       ></palette-selector>
       <div class="pure-form-message-inline">
         <button
           class="pure-button"
-          @click='clickLoadPalette'
+          @click="clickLoadPalette"
         >Load</button>
       </div>
     </div>
     <div class="pure-control-group">
-      <label :for='`${inputId}-save-palette`'>Save Palette</label>
-      <input :id='`${inputId}-save-palette`' v-model='savePaletteNameInput' type='text' />
+      <label :for="`${inputId}-save-palette`">Save Palette</label>
+      <input :id="`${inputId}-save-palette`" v-model="savePaletteNameInput" type="text" />
       <div class="pure-form-message-inline">
         <button
           class="pure-button"
-          @click='clickSavePalette'
+          @click="clickSavePalette"
         >Save</button>
       </div>
     </div>
@@ -143,7 +143,7 @@
     name: 'paletteControl',
     props: [
       'module',
-      'control',
+      'meta',
     ],
     data() {
       return {
@@ -154,7 +154,6 @@
             put: true,
           },
         },
-        value: undefined,
         currentColor: 0,
         durationInput: undefined,
         pickerColors: defaultProps,
@@ -167,31 +166,55 @@
       };
     },
     computed: {
+      options() {
+        return this.meta.control.options;
+      },
       moduleName() {
-        return this.module.info.name;
+        return this.meta.$modv_moduleName;
       },
       inputId() {
         return `${this.moduleName}-${this.variable}`;
       },
-      label() {
-        return this.control.label || 'Color Palette';
+      value: {
+        get() {
+          return this.$store.state.modVModules.active[this.moduleName][this.variable];
+        },
+        set(value) {
+          this.$store.dispatch('modVModules/updateProp', {
+            name: this.moduleName,
+            prop: this.variable,
+            data: value,
+          });
+        },
       },
       variable() {
-        return this.control.variable;
+        return this.meta.$modv_variable;
       },
-      varType() {
-        return this.control.varType;
+      label() {
+        return this.meta.label || this.variable;
       },
       defaultValue() {
-        return this.control.default;
+        return this.options.colors;
       },
       ...mapGetters('palettes', [
         'allPalettes',
       ]),
-      palette() {
-        return this.allPalettes[
+      async palette() {
+        let palette = this.allPalettes[
           Object.keys(this.allPalettes).find(paletteId => paletteId === this.inputId)
         ];
+
+        if (!palette) {
+          palette = await this.$store.dispatch('palettes/createPalette', {
+            id: this.inputId,
+            colors: this.options.colors || [],
+            duration: this.options.timePeriod,
+            moduleName: this.moduleName,
+            variable: this.variable,
+          });
+        }
+
+        return palette;
       },
       colors: {
         get() {
@@ -295,7 +318,7 @@
     },
     beforeMount() {
       this.value = this.module[this.variable];
-      if (typeof this.value === 'undefined') this.value = this.defaultValue;
+      if (typeof this.value === 'undefined') this.value = this.options.colors;
 
       this.durationInput = this.duration;
       this.useBpmInput = this.useBpm;

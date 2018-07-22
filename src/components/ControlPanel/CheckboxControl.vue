@@ -4,7 +4,7 @@
       {{ label }}
     </label>
     <b-checkbox
-      v-model="value"
+      v-model.boolean="value"
       :id="inputId"
     ></b-checkbox>
   </div>
@@ -15,45 +15,40 @@
     name: 'rangeControl',
     props: [
       'module',
-      'control',
+      'meta',
     ],
-    data() {
-      return {
-        value: undefined,
-      };
-    },
     computed: {
+      value: {
+        get() {
+          return this.$store.state.modVModules.active[this.moduleName][this.variable];
+        },
+        set(value) {
+          this.$store.dispatch('modVModules/updateProp', {
+            name: this.moduleName,
+            prop: this.variable,
+            data: value,
+          });
+        },
+      },
+      variable() {
+        return this.meta.$modv_variable;
+      },
       moduleName() {
-        return this.module.info.name;
+        return this.meta.$modv_moduleName;
+      },
+      label() {
+        return this.meta.label || this.variable;
       },
       inputId() {
         return `${this.moduleName}-${this.variable}`;
       },
-      label() {
-        return this.control.label;
-      },
-      variable() {
-        return this.control.variable;
-      },
-      defaultValue() {
-        return this.control.checked;
-      },
     },
     beforeMount() {
-      this.value = this.module[this.variable];
       if (typeof this.value === 'undefined') this.value = this.defaultValue;
     },
     methods: {
       labelClicked() {
         this.value = !this.value;
-      },
-    },
-    watch: {
-      module() {
-        this.value = this.module[this.variable];
-      },
-      value() {
-        this.module[this.variable] = this.value;
       },
     },
   };

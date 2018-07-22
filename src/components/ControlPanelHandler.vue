@@ -22,15 +22,14 @@
       };
     },
     computed: {
-      ...mapGetters('modVModules', [
-        'focusedModule',
-      ]),
       ...mapGetters('controlPanels', [
         'pinnedPanels',
       ]),
+      focusedModule() {
+        return this.$store.getters['modVModules/focusedModule'];
+      },
       focusedModuleName() {
-        if (!this.focusedModule) return '';
-        return this.focusedModule.info.name;
+        return this.$store.state.modVModules.focusedModule;
       },
       panels() {
         const panels = [].concat(this.pinnedPanels);
@@ -43,9 +42,6 @@
       },
     },
     methods: {
-      ...mapGetters('modVModules', [
-        'getActiveModule',
-      ]),
       isPinned(moduleName) {
         return this.pinnedPanels.indexOf(moduleName) > -1;
       },

@@ -48,13 +48,12 @@
       >
         <div
           class="column is-3"
-          v-for="(module, key) in module2d"
-          :key="key"
-          :data-module-name="key"
+          v-for="moduleName in module2d"
+          :key="moduleName"
+          :data-module-name="moduleName"
         >
           <gallery-item
-            :module-in="module"
-            :module-name="key"
+            :module-name="moduleName"
           ></gallery-item>
         </div>
       </draggable>
@@ -78,13 +77,12 @@
       >
         <div
           class="column is-3"
-          v-for="(module, key) in moduleShader"
-          :key="key"
-          :data-module-name="key"
+          v-for="moduleName in moduleShader"
+          :key="moduleName"
+          :data-module-name="moduleName"
         >
           <gallery-item
-            :module-in="module"
-            :module-name="key"
+            :module-name="moduleName"
           ></gallery-item>
         </div>
       </draggable>
@@ -108,13 +106,12 @@
       >
         <div
           class="column is-3"
-          v-for="(module, key) in moduleIsf"
-          :key="key"
-          :data-module-name="key"
+          v-for="moduleName in moduleIsf"
+          :key="moduleName"
+          :data-module-name="moduleName"
         >
           <gallery-item
-            :module-in="module"
-            :module-name="key"
+            :module-name="moduleName"
           ></gallery-item>
         </div>
       </draggable>
@@ -125,8 +122,6 @@
 <script>
   import { mapGetters } from 'vuex';
   import draggable from 'vuedraggable';
-
-  import { Module2D, ModuleShader, ModuleISF } from '@/modv';
 
   import GalleryItem from '@/components/GalleryItem';
 
@@ -150,27 +145,15 @@
       }),
       moduleShader() {
         return Object.keys(this.modules)
-          .filter(key => this.modules[key].prototype instanceof ModuleShader)
-          .reduce((result, key) => {
-            result[key] = this.modules[key];
-            return result;
-          }, {});
+          .filter(key => this.modules[key].meta.type === 'shader');
       },
       module2d() {
         return Object.keys(this.modules)
-          .filter(key => this.modules[key].prototype instanceof Module2D)
-          .reduce((result, key) => {
-            result[key] = this.modules[key];
-            return result;
-          }, {});
+          .filter(key => this.modules[key].meta.type === '2d');
       },
       moduleIsf() {
         return Object.keys(this.modules)
-          .filter(key => this.modules[key].prototype instanceof ModuleISF)
-          .reduce((result, key) => {
-            result[key] = this.modules[key];
-            return result;
-          }, {});
+          .filter(key => this.modules[key].meta.type === 'isf');
       },
     },
     methods: {

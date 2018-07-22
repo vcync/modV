@@ -71,10 +71,15 @@ const actions = {
         positionShadow = 0;
       }
     }
-    commit('addModuleToLayer', { moduleName: module.info.name, layerIndex, position: positionShadow });
+    commit('addModuleToLayer', {
+      moduleName: module.meta.name,
+      position: positionShadow,
+      layerIndex,
+    });
+
     store.commit(
       'modVModules/setModuleFocus',
-      { activeModuleName: module.info.name },
+      { activeModuleName: module.meta.name },
       { root: true },
     );
   },

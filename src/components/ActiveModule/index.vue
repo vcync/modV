@@ -196,7 +196,7 @@
         'focusedModuleName',
       ]),
       module() {
-        return this.getActiveModule()(this.moduleName);
+        return this.$store.state.modVModules.active[this.moduleName];
       },
       enabledCheckboxId() {
         return `${this.moduleName}:modvreserved:enabled`;
@@ -218,9 +218,6 @@
         'setActiveModuleEnabled',
         'setActiveModuleCompositeOperation',
       ]),
-      ...mapGetters('modVModules', [
-        'getActiveModule',
-      ]),
       focusActiveModule() {
         this.setModuleFocus({ activeModuleName: this.moduleName });
       },
@@ -235,11 +232,11 @@
       },
     },
     mounted() {
-      this.enabled = this.module.info.enabled;
-      this.opacity = this.module.info.alpha;
+      this.enabled = this.module.meta.enabled;
+      this.opacity = this.module.meta.alpha;
 
       this.operations[0]
-        .children.find(item => item.value === this.module.info.compositeOperation).selected = true;
+        .children.find(item => item.value === this.module.meta.compositeOperation).selected = true;
     },
     watch: {
       compositeOperation() {

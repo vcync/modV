@@ -12,17 +12,20 @@ const getters = {
 
 // actions
 const actions = {
-  createPalette({ commit }, { id, colors, duration, moduleName, variable }) {
-    if (id in state.palettes === true) return;
+  createPalette({ commit, state }, { id, colors, duration, moduleName, variable }) {
+    return new Promise((resolve) => {
+      if (id in state.palettes === true) resolve(state.palettes[id]);
 
-    let colorsPassed = [];
-    let durationPassed = 300;
+      let colorsPassed = [];
+      let durationPassed = 300;
 
-    if (colors) colorsPassed = colors;
-    if (duration) durationPassed = duration;
+      if (colors) colorsPassed = colors;
+      if (duration) durationPassed = duration;
 
-    modV.workers.palette.createPalette(id, colorsPassed, durationPassed);
-    commit('addPalette', { id, colors, duration, moduleName, variable });
+      modV.workers.palette.createPalette(id, colorsPassed, durationPassed);
+      commit('addPalette', { id, colors, duration, moduleName, variable });
+      resolve(state.palettes[id]);
+    });
   },
   removePalette({ commit }, { id }) {
     modV.workers.palette.removePalette(id);

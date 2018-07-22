@@ -25,9 +25,9 @@ const getters = {
 
 const actions = {
   addAssignment({ commit }, { moduleName, controlVariable, waveform, frequency }) {
-    const Module = store.getters['modVModules/getActiveModule'](moduleName);
+    const Module = store.state.modVModules.active[moduleName];
     if (!Module) return;
-    if (typeof Module.info.controls[controlVariable] === 'undefined') return;
+    if (typeof Module.props[controlVariable] === 'undefined') return;
 
     const controller = new LFO({
       waveform,

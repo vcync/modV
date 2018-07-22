@@ -42,13 +42,13 @@
       ...mapGetters('layers', [
         'allLayers',
       ]),
-      ...mapGetters('modVModules', [
-        'activeModules',
-      ]),
       ...mapGetters('windows', [
         'largestWindowSize',
         'largestWindowReference',
       ]),
+      activeModules() {
+        return this.$store.state.modVModules.active;
+      },
       sizeOut() {
         return `${this.largestWindowSize.width}𝗑${this.largestWindowSize.height}px`;
       },

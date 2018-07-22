@@ -3,7 +3,6 @@ import EventEmitter2 from 'eventemitter2';
 
 import BeatDetektor from '@/extra/beatdetektor';
 import store from '@/../store/';
-import stats from '@/extra/stats';
 import { Module2D, ModuleShader, ModuleISF } from './Modules';
 import Layer from './Layer';
 import { scan, setSource } from './MediaStream';
@@ -134,7 +133,6 @@ class ModV extends EventEmitter2 {
   }
 
   loop(δ) {
-    stats.begin();
     this.delta = δ;
     let features = [];
 
@@ -148,13 +146,11 @@ class ModV extends EventEmitter2 {
       const assignments = store.getters['meyda/controlAssignments'];
       assignments.forEach((assignment) => {
         const featureValue = features[assignment.feature];
-        const Module = store.getters['modVModules/getActiveModule'](assignment.moduleName);
-        const control = Module.info.controls[assignment.controlVariable];
 
-        store.dispatch('modVModules/setActiveModuleControlValue', {
-          moduleName: assignment.moduleName,
-          variable: assignment.controlVariable,
-          value: Math.map(featureValue, 0, this.assignmentMax, control.min, control.max),
+        store.dispatch('modVModules/updateProp', {
+          name: assignment.moduleName,
+          prop: assignment.controlVariable,
+          data: featureValue,
         });
       });
 
@@ -171,9 +167,10 @@ class ModV extends EventEmitter2 {
     this.beatDetektorKick.process(this.beatDetektor);
     this.kick = this.beatDetektorKick.isKick();
 
+    store.dispatch('modVModules/syncQueues');
+
     draw(δ).then(() => {
       this.mainRaf = requestAnimationFrame(this.loop.bind(this));
-      stats.end();
     }).then(() => {
       this.emit('tick', δ);
     });
@@ -191,7 +188,7 @@ class ModV extends EventEmitter2 {
   }
 
   register(Module) { //eslint-disable-line
-    store.dispatch('modVModules/register', { Module });
+    store.dispatch('modVModules/register', Module);
   }
 
   resize(width, height, dpr = 1) {
@@ -202,6 +199,9 @@ class ModV extends EventEmitter2 {
     this.bufferCanvas.height = this.height;
     this.outputCanvas.width = this.width;
     this.outputCanvas.height = this.height;
+
+    this.isf.canvas.width = this.width;
+    this.isf.canvas.height = this.height;
 
     this.webgl.resize(this.width, this.height);
   }
