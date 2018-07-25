@@ -3,7 +3,7 @@ import {
   Renderer as ISFRenderer,
   Parser as ISFParser,
   Upgrader as ISFUpgrader,
-} from 'interactive-shader-format-for-modv';
+} from 'interactive-shader-format';
 
 function render({ Module, canvas, context, pipeline }) {
   if (Module.inputs) {

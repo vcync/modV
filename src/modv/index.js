@@ -1,9 +1,7 @@
 import Vue from 'vue';
 import EventEmitter2 from 'eventemitter2';
-
 import BeatDetektor from '@/extra/beatdetektor';
 import store from '@/../store/';
-import { Module2D, ModuleShader, ModuleISF } from './Modules';
 import Layer from './Layer';
 import { scan, setSource } from './MediaStream';
 import draw from './draw';
@@ -69,10 +67,6 @@ class ModV extends EventEmitter2 {
         windowRef.close();
       });
     });
-
-    this.Module2D = Module2D;
-    this.ModuleISF = ModuleISF;
-    this.ModuleShader = ModuleShader;
 
     this.delta = 0;
   }
@@ -280,10 +274,6 @@ class ModV extends EventEmitter2 {
   static get Layer() {
     return Layer;
   }
-
-  static get Module2D() {
-    return Module2D;
-  }
 }
 
 const modV = new ModV();
@@ -295,9 +285,6 @@ const isf = modV.isf;
 export default modV;
 export {
   modV,
-  Module2D,
-  ModuleShader,
-  ModuleISF,
   Layer,
   webgl,
   isf,

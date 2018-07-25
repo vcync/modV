@@ -2,12 +2,12 @@
 
 import awesomeText from '@/extra/awesome-text';
 
-function getTextHeight(font) {
+function getTextHeight(font, textContent) {
   const result = {};
 
   const text = document.createElement('span');
   text.style.font = font;
-  text.textContent = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
+  text.textContent = textContent;
 
   const block = document.createElement('div');
   block.style.display = 'inline-block';
@@ -46,15 +46,20 @@ export default {
       type: 'string',
       label: 'Text',
       default: 'modV',
+      set(value) {
+        this.h = getTextHeight(this.font, value);
+      },
     },
 
     size: {
       type: 'int',
       label: 'Size',
-      append: 'pt',
-      min: 50,
+      min: 1,
       max: 200,
       default: 50,
+      set(value) {
+        this.h = getTextHeight(`${value}pt "${this.customFont}", sans-serif`, this.text);
+      },
     },
 
     customFont: {
@@ -63,68 +68,52 @@ export default {
       default: 'Rubik',
     },
 
-    color: {
-      control: {
-        type: 'paletteControl',
-        options: {
-          colors: [
-            [199, 64, 163],
-            [97, 214, 199],
-            [222, 60, 75],
-            [101, 151, 220],
-            [213, 158, 151],
-            [100, 132, 129],
-            [154, 94, 218],
-            [194, 211, 205],
-            [201, 107, 152],
-            [119, 98, 169],
-            [214, 175, 208],
-            [218, 57, 123],
-            [196, 96, 98],
-            [218, 74, 219],
-            [138, 100, 121],
-            [96, 118, 225],
-            [132, 195, 223],
-            [82, 127, 162],
-            [209, 121, 211],
-            [181, 152, 220],
-          ], // generated here: http://tools.medialab.sciences-po.fr/iwanthue/
-          timePeriod: 500,
-        },
-      },
-    },
-  },
-
-  get text() {
-    return this._text;
-  },
-
-  set text(value) {
-    this.h = getTextHeight(this.font);
-    this._text = value;
+    // color: {
+    //   control: {
+    //     type: 'paletteControl',
+    //     options: {
+    //       colors: [
+    //         [199, 64, 163],
+    //         [97, 214, 199],
+    //         [222, 60, 75],
+    //         [101, 151, 220],
+    //         [213, 158, 151],
+    //         [100, 132, 129],
+    //         [154, 94, 218],
+    //         [194, 211, 205],
+    //         [201, 107, 152],
+    //         [119, 98, 169],
+    //         [214, 175, 208],
+    //         [218, 57, 123],
+    //         [196, 96, 98],
+    //         [218, 74, 219],
+    //         [138, 100, 121],
+    //         [96, 118, 225],
+    //         [132, 195, 223],
+    //         [82, 127, 162],
+    //         [209, 121, 211],
+    //         [181, 152, 220],
+    //       ], // generated here: http://tools.medialab.sciences-po.fr/iwanthue/
+    //       timePeriod: 500,
+    //     },
+    //   },
+    // },
   },
 
   init() {
     this.color = 'red';
-    this._text = 'modV';
-    this.size = '50pt';
-    this.font = `${this.size} "Helvetica", sans-serif`;
-    this.customFont = '';
-    this.h = {};
+    this.font = `${this.size}pt "Helvetica", sans-serif`;
+    this.h = getTextHeight(this.font, this.text);
   },
 
   draw({ canvas, context }) {
     context.textBaseline = 'middle';
 
-    this.font = `${this.size} "${this.customFont}", sans-serif`;
+    this.font = `${this.size}pt "${this.customFont}", sans-serif`;
     context.font = this.font;
 
     context.textAlign = 'left';
     context.fillStyle = this.color;
-
-    // var w = context.measureText(this.text).width;
-
-    // context.fillText(this.text, canvas.width/2 - w/2, canvas.height/2 + this.h.height/2);
 
     awesomeText(
       context,

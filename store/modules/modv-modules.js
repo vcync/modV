@@ -209,8 +209,6 @@ const actions = {
         max,
         abs,
         type,
-        append,
-        prepend,
       } = propData;
 
       if (
@@ -227,14 +225,6 @@ const actions = {
 
       if (type === 'int') {
         dataOut = Math.round(dataOut);
-      }
-
-      if (append) {
-        dataOut = `${append}${dataOut}`;
-      }
-
-      if (prepend) {
-        dataOut = `${dataOut}${prepend}`;
       }
     }
 
@@ -258,6 +248,11 @@ const actions = {
         ) {
           /* eslint-disable no-continue */
           continue;
+        }
+
+        if ('set' in outerState.active[moduleKey].props[key]) {
+          outerState
+            .active[moduleKey].props[key].set.bind(outerState.active[moduleKey])(moduleProps[key]);
         }
 
         commit('updateProp', { name: moduleKey, prop: key, data: moduleProps[key] });

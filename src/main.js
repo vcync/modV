@@ -152,6 +152,7 @@ export default window.modVVue = new Vue({
             type: 'isf',
           },
           fragmentShader,
+          vertexShader: 'void main() {isf_vertShaderInit();}',
         });
       }).catch((e) => {
         throw new Error(e);

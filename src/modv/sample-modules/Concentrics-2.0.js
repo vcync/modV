@@ -103,10 +103,14 @@ export default {
       this.hue = Math.round(Math.random() * 360);
 
       this.draw = function draw(ctx, zcr, strokeWeight, spacing) {
-        ctx.strokeStyle = `hsl(${this.hue}, 50%, 50%)`;
         ctx.lineWidth = strokeWeight;
+        ctx.strokeStyle = `hsl(${this.hue}, 50%, 50%)`;
 
         for (let i = 0; i < zcr; i += 1) {
+          if (i === zcr - 1) {
+            ctx.strokeStyle = `hsl(${this.hue}, 50%, ${(1 - (zcr - Math.round(zcr))) * 50}%)`;
+          }
+
           ctx.beginPath();
           ctx.arc(this.x, this.y, i * spacing, 0, 2 * Math.PI);
           ctx.closePath();

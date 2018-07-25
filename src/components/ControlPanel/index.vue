@@ -87,6 +87,13 @@
               });
             }
 
+            if (type === 'string') {
+              controls.push({
+                component: 'textControl',
+                meta: propData,
+              });
+            }
+
             if (type === 'vec2') {
               controls.push({
                 component: 'twoDPointControl',
