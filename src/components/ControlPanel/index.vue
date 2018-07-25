@@ -100,6 +100,13 @@
                 meta: propData,
               });
             }
+
+            if (type === 'enum') {
+              controls.push({
+                component: 'selectControl',
+                meta: propData,
+              });
+            }
           });
         }
 

@@ -1,20 +1,19 @@
 <template>
   <div class="select-control" :data-moduleName='moduleName'>
-    <label :for='inputId'>
-      {{ label }}
-    </label>
-    <b-dropdown class="dropdown" v-model="value">
-      <button class="button is-primary is-small" slot="trigger">
-        <span>{{ selectedLabel | capitalize }}</span>
-        <b-icon icon="angle-down"></b-icon>
-      </button>
+    <b-field :label="label" :addons="false">
+      <b-dropdown class="dropdown" v-model="value">
+        <button class="button is-primary is-small" slot="trigger">
+          <span>{{ selectedLabel | capitalize }}</span>
+          <b-icon icon="angle-down"></b-icon>
+        </button>
 
-      <b-dropdown-item
-        v-for="enumValue, idx in enumVals"
-        :key="idx"
-        :value="enumValue.value"
-      >{{ enumValue.label | capitalize }}</b-dropdown-item>
-    </b-dropdown>
+        <b-dropdown-item
+          v-for="enumValue, idx in enumVals"
+          :key="idx"
+          :value="enumValue.value"
+        >{{ enumValue.label | capitalize }}</b-dropdown-item>
+      </b-dropdown>
+    </b-field>
   </div>
 </template>
 
@@ -23,51 +22,39 @@
     name: 'selectControl',
     props: [
       'module',
-      'control',
+      'meta',
     ],
-    data() {
-      return {
-        value: undefined,
-      };
-    },
     computed: {
       moduleName() {
-        return this.module.info.name;
+        return this.meta.$modv_moduleName;
       },
       inputId() {
         return `${this.moduleName}-${this.variable}`;
       },
-      label() {
-        return this.control.label;
+      value: {
+        get() {
+          return this.$store.state.modVModules.active[this.moduleName][this.variable];
+        },
+        set(value) {
+          this.$store.dispatch('modVModules/updateProp', {
+            name: this.moduleName,
+            prop: this.variable,
+            data: value,
+          });
+        },
       },
       variable() {
-        return this.control.variable;
+        return this.meta.$modv_variable;
+      },
+      label() {
+        return this.meta.label || this.variable;
       },
       enumVals() {
-        return this.control.enum;
-      },
-      grouped() {
-        return this.control.grouped;
+        return this.meta.enum;
       },
       selectedLabel() {
-        return this.control.enum.find(enumValue => enumValue.value === this.value).label;
-      },
-    },
-    methods: {
-      dropdownChanged(item) {
-        this.value = item[0].value;
-      },
-    },
-    beforeMount() {
-      this.value = this.module[this.variable];
-      if (typeof this.value === 'undefined') this.value = this.defaultValue;
-    },
-    watch: {
-      module() {
-        this.value = this.module[this.variable];
-      },
-      value() {
-        this.module[this.variable] = this.value;
+        if (typeof this.value === 'undefined') return -1;
+        return this.meta.enum.find(enumValue => enumValue.value === this.value).label;
       },
     },
   };
