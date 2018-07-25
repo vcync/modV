@@ -21,6 +21,7 @@
     computed: {
       alpha: {
         get() {
+          if (!this.moduleName) return 0;
           return this.$store.state.modVModules.active[this.moduleName].meta.alpha;
         },
         set(value) {

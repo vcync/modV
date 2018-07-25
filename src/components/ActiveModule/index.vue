@@ -74,7 +74,7 @@
   import OpacityControl from './OpacityControl';
 
   export default {
-    name: 'activeItem',
+    name: 'activeModule',
     components: {
       OpacityControl,
     },
@@ -232,6 +232,7 @@
       },
     },
     mounted() {
+      if (!this.module) return;
       this.enabled = this.module.meta.enabled;
       this.opacity = this.module.meta.alpha;
 
