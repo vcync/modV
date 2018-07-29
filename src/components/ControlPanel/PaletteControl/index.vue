@@ -12,8 +12,8 @@
         <div
           class="swatch"
           v-for="(color, idx) in colors"
-          :style="`background-color: rgb(${color[0]},${color[1]},${color[2]})`"
-          :class="{ current: currentColor === idx }"
+          :style="`background-color: rgb(${color.r},${color.g},${color.b})`"
+          :class="{ current: currentColor === idx || toColor === idx }"
           @click="removeSwatch(idx)"
         ></div>
       </draggable>
@@ -109,8 +109,6 @@
 <script>
   import { mapActions, mapGetters } from 'vuex';
   import draggable from 'vuedraggable';
-  import PaletteWorker from '@/modv/palette-worker/palette-worker';
-  import { modV } from '@/modv';
   import { Sketch } from 'vue-color';
 
   import PaletteSelector from './PaletteSelector';
@@ -154,7 +152,6 @@
             put: true,
           },
         },
-        currentColor: 0,
         durationInput: undefined,
         pickerColors: defaultProps,
         showPicker: false,
@@ -199,22 +196,8 @@
       ...mapGetters('palettes', [
         'allPalettes',
       ]),
-      async palette() {
-        let palette = this.allPalettes[
-          Object.keys(this.allPalettes).find(paletteId => paletteId === this.inputId)
-        ];
-
-        if (!palette) {
-          palette = await this.$store.dispatch('palettes/createPalette', {
-            id: this.inputId,
-            colors: this.options.colors || [],
-            duration: this.options.timePeriod,
-            moduleName: this.moduleName,
-            variable: this.variable,
-          });
-        }
-
-        return palette;
+      palette() {
+        return this.$store.state.palettes.palettes[`${this.moduleName}-${this.variable}`];
       },
       colors: {
         get() {
@@ -236,19 +219,16 @@
       bpmDivision() {
         return this.palette.bpmDivision;
       },
-      pickerRgbArray() {
-        const rgba = this.pickerColors.rgba;
-        return [rgba.r, rgba.g, rgba.b];
-      },
-      pickerRgbString() {
-        const rgba = this.pickerColors.rgba;
-        return `rgb(${rgba.r},${rgba.g},${rgba.b})`;
-      },
       pickerButtonText() {
         return this.showPicker ? 'Hide' : 'Show';
       },
-      boundUpdate() {
-        return this.update.bind(this);
+      currentColor() {
+        return this.palette.currentColor;
+      },
+      toColor() {
+        const nextColor = this.palette.currentColor + 1;
+        if (nextColor > this.colors.length - 1) return 0;
+        return nextColor;
       },
     },
     methods: {
@@ -265,14 +245,9 @@
       ...mapActions('profiles', [
         'savePaletteToProfile',
       ]),
-      update(id, currentColor) {
-        if (id === this.inputId) {
-          this.currentColor = currentColor;
-        }
-      },
       addSwatch() {
         const updatedColors = this.colors.slice();
-        updatedColors.push(this.pickerRgbArray);
+        updatedColors.push(this.pickerColors.rgba);
 
         this.updateColors({
           id: this.inputId,
@@ -309,12 +284,6 @@
           colors: this.colors,
         });
       },
-    },
-    created() {
-      modV.workers.palette.on(PaletteWorker.EventType.PALETTE_UPDATED, this.boundUpdate);
-    },
-    beforeDestroy() {
-      modV.workers.palette.off(PaletteWorker.EventType.PALETTE_UPDATED, this.boundUpdate);
     },
     beforeMount() {
       this.value = this.module[this.variable];
@@ -359,27 +328,26 @@
   };
 </script>
 
-<style scoped lang='scss'>
+<style scoped lang="scss">
   /* Palette Control */
   .swatch, .add-swatch {
+    border-radius: 50%;
     display: inline-block;
-    width: 10px !important;
-    height: 10px;
-    border: 1px #aaa solid;
-    position: relative;
-    text-align: left !important;
-    vertical-align: middle !important;
-    margin-right: 0 !important;
+    height: 12px;
+    width: 12px;
+    margin: 3px;
     cursor: pointer;
+    border: 2px solid #fff;
+
+    transition: border-color 1200ms;
   }
 
-  .swatch ~ .swatch {
-    margin-left: -1px;
-  }
+  // .swatch ~ .swatch {
+  //   margin-left: -1px;
+  // }
 
   .swatch.current {
     border-color: #000;
-    z-index: 1;
   }
 
   .add-swatch::before {
@@ -399,7 +367,7 @@
 
   .palette {
     display: inline-block;
-    width: 129px;
+    // width: 129px;
   }
 
   .pure-control-group input {

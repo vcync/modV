@@ -86,8 +86,16 @@ const actions = {
           break;
       }
 
-      const data = newModuleData.data;
-      const props = newModuleData.props;
+      newModuleData.meta.originalName = newModuleData.meta.name;
+      newModuleData.meta.name = await getNextName(
+        `${newModuleData.meta.name}${appendToName || ''}`,
+        Object.keys(state.active),
+      );
+      newModuleData.meta.alpha = 1;
+      newModuleData.meta.enabled = enabled || false;
+      newModuleData.meta.compositeOperation = 'normal';
+
+      const { data, props, meta } = newModuleData;
 
       if (data) {
         Object.keys(data).forEach((key) => {
@@ -103,17 +111,23 @@ const actions = {
           if (typeof value.default !== 'undefined') {
             newModuleData[key] = value.default;
           }
+
+          if (value.control) {
+            if (value.control.type === 'paletteControl') {
+              const { options } = value.control;
+
+              store.dispatch('palettes/createPalette', {
+                id: `${meta.name}-${key}`,
+                colors: options.colors || [],
+                duration: options.duration,
+                returnFormat: options.returnFormat,
+                moduleName: meta.name,
+                variable: key,
+              });
+            }
+          }
         });
       }
-
-      newModuleData.meta.originalName = newModuleData.meta.name;
-      newModuleData.meta.name = await getNextName(
-        `${newModuleData.meta.name}${appendToName || ''}`,
-        Object.keys(state.active),
-      );
-      newModuleData.meta.alpha = 1;
-      newModuleData.meta.enabled = enabled || false;
-      newModuleData.meta.compositeOperation = 'normal';
 
       commit('addModuleToActive', { name: newModuleData.meta.name, data: newModuleData });
 

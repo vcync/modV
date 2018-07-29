@@ -68,40 +68,40 @@ export default {
       default: 'Rubik',
     },
 
-    // color: {
-    //   control: {
-    //     type: 'paletteControl',
-    //     options: {
-    //       colors: [
-    //         [199, 64, 163],
-    //         [97, 214, 199],
-    //         [222, 60, 75],
-    //         [101, 151, 220],
-    //         [213, 158, 151],
-    //         [100, 132, 129],
-    //         [154, 94, 218],
-    //         [194, 211, 205],
-    //         [201, 107, 152],
-    //         [119, 98, 169],
-    //         [214, 175, 208],
-    //         [218, 57, 123],
-    //         [196, 96, 98],
-    //         [218, 74, 219],
-    //         [138, 100, 121],
-    //         [96, 118, 225],
-    //         [132, 195, 223],
-    //         [82, 127, 162],
-    //         [209, 121, 211],
-    //         [181, 152, 220],
-    //       ], // generated here: http://tools.medialab.sciences-po.fr/iwanthue/
-    //       timePeriod: 500,
-    //     },
-    //   },
-    // },
+    color: {
+      control: {
+        type: 'paletteControl',
+        default: { r: 199, g: 64, b: 163 },
+        options: {
+          colors: [
+            { r: 199, g: 64, b: 163 },
+            { r: 97, g: 214, b: 199 },
+            { r: 222, g: 60, b: 75 },
+            { r: 101, g: 151, b: 220 },
+            { r: 213, g: 158, b: 151 },
+            { r: 100, g: 132, b: 129 },
+            { r: 154, g: 94, b: 218 },
+            { r: 194, g: 211, b: 205 },
+            { r: 201, g: 107, b: 152 },
+            { r: 119, g: 98, b: 169 },
+            { r: 214, g: 175, b: 208 },
+            { r: 218, g: 57, b: 123 },
+            { r: 196, g: 96, b: 98 },
+            { r: 218, g: 74, b: 219 },
+            { r: 138, g: 100, b: 121 },
+            { r: 96, g: 118, b: 225 },
+            { r: 132, g: 195, b: 223 },
+            { r: 82, g: 127, b: 162 },
+            { r: 209, g: 121, b: 211 },
+            { r: 181, g: 152, b: 220 },
+          ], // generated here: http://tools.medialab.sciences-po.fr/iwanthue/
+          duration: 500,
+        },
+      },
+    },
   },
 
   init() {
-    this.color = 'red';
     this.font = `${this.size}pt "Helvetica", sans-serif`;
     this.h = getTextHeight(this.font, this.text);
   },

@@ -1,5 +1,5 @@
 <template>
-  <div class="range-control" :data-moduleName='moduleName' v-context-menu='menuOptions'>
+  <div class="range-control" :data-moduleName="moduleName" v-context-menu="menuOptions">
     <b-field :label="label" :addons="false">
       <canvas
         class="control"

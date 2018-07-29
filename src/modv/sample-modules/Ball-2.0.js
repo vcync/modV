@@ -64,11 +64,17 @@ export default {
       default: { r: 255, g: 104, b: 163, a: 1 },
       // explicitly define a control
       control: {
-        type: 'colorControl',
+        type: 'paletteControl',
 
         // pass options to the control
         options: {
           returnFormat: 'rgbaString',
+          colors: [
+            { r: 255, g: 255, b: 255, a: 1 },
+            { r: 0, g: 0, b: 0, a: 1 },
+            { r: 255, g: 0, b: 0, a: 0.5 },
+          ],
+          duration: 1000,
         },
       },
     },
