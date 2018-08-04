@@ -24,6 +24,7 @@
   "devDependencies": {
     "ajv": "^5.3.0",
     "autoprefixer": "^6.7.2",
+    "axios": "^0.18.0",
     "babel-cli": "^6.26.0",
     "babel-core": "^6.26.3",
     "babel-eslint": "^8.2.1",
