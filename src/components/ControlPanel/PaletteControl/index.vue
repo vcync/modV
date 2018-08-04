@@ -270,10 +270,14 @@
         this.showPicker = !this.showPicker;
       },
       clickLoadPalette() {
-        const palette = this.getPaletteFromProfile()({
+        let palette = this.getPaletteFromProfile()({
           paletteName: this.paletteSelectorInput,
           profileName: this.profileSelectorInput,
         });
+
+        if (Array.isArray(palette)) {
+          palette = palette.map(c => ({ r: c[0], g: c[1], b: c[2] }));
+        }
 
         this.updateColors({
           id: this.inputId,
