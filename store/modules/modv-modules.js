@@ -153,11 +153,27 @@ const actions = {
     });
   },
 
-  removeActiveModule({ commit }, { moduleName }) {
+  removeActiveModule({ state, commit }, { moduleName }) {
     store.commit('controlPanels/unpinPanel', { moduleName });
 
     if (state.focusedModule === moduleName) {
       commit('setModuleFocus', { activeModuleName: null });
+    }
+
+    const module = state.active[moduleName];
+
+    const { props, meta } = module;
+
+    if (props) {
+      Object.keys(props).forEach((key) => {
+        const value = props[key];
+
+        if (value.control && value.control.type === 'paletteControl') {
+          store.dispatch('palettes/removePalette', {
+            id: `${meta.name}-${key}`,
+          });
+        }
+      });
     }
 
     // if ('controls' in Module.info) {
