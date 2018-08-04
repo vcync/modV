@@ -1,4 +1,3 @@
-// jshint worker:true
 /* eslint-env worker */
 
 import ci from 'correcting-interval';

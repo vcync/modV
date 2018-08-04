@@ -12,7 +12,10 @@
         <div
           class="swatch"
           v-for="(color, idx) in colors"
-          :style="`background-color: rgb(${color.r},${color.g},${color.b})`"
+          :style="{
+            backgroundColor: `rgb(${color.r},${color.g},${color.b})`,
+            transitionDuration: `${duration / colors.length}ms`,
+          }"
           :class="{ current: currentColor === idx || toColor === idx }"
           @click="removeSwatch(idx)"
         ></div>
