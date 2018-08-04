@@ -18,8 +18,8 @@ import expression from './extra/expression';
 import midiAssignment from './extra/midi-assignment';
 import featureAssignment from './extra/feature-assignment';
 import lfo from './extra/lfo';
-import frameGrab from './extra/frame-grab';
 import grabCanvas from './extra/grab-canvas';
+import shadertoy from './extra/shadertoy';
 import './assets/styles/index.scss';
 
 import attachResizeHandles from './extra/ui-resize/attach';
@@ -46,20 +46,14 @@ Vue.use(Buefy, {
 Vue.use(VueThrottleEvent);
 Vue.use(Dropdown);
 Vue.use(Shortkey);
-Vue.use(contextMenu);
-Vue.use(featureAssignment);
-Vue.use(expression);
-Vue.use(midiAssignment);
-Vue.use(lfo);
-Vue.use(grabCanvas);
 
 modV.use(contextMenu);
 modV.use(featureAssignment);
 modV.use(expression);
 modV.use(midiAssignment);
 modV.use(lfo);
-modV.use(frameGrab);
 modV.use(grabCanvas);
+modV.use(shadertoy);
 
 /* eslint-disable no-new */
 export default window.modVVue = new Vue({

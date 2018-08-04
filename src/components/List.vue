@@ -72,6 +72,8 @@
   };
 </script>
 
-<style scoped>
-
+<style>
+  .module-list .column.is-3.sortable-chosen.sortable-ghost {
+    width: 100%;
+  }
 </style>

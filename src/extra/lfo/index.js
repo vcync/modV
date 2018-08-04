@@ -17,12 +17,10 @@ function hzFromBpm(bpm = 120) {
 const lfoplugin = {
   name: 'LFO',
   waveforms: lfoTypes,
+  store: lfoStore,
+  storeName: 'lfo',
 
-  install() { //eslint-disable-line
-    store.registerModule('lfo', lfoStore);
-
-    // Vue.component('expression', ExpressionComponent);
-
+  install() {
     store.subscribe((mutation) => {
       if (mutation.type === 'modVModules/removeActiveModule') {
         store.commit('lfo/removeAssignments', { moduleName: mutation.payload.moduleName });
@@ -32,10 +30,11 @@ const lfoplugin = {
         store.dispatch('lfo/updateBpmFrequency', { frequency: hzFromBpm(mutation.payload.bpm) });
       }
     });
-  },
 
-  modvInstall() {
-    modV.addContextMenuHook({ hook: 'rangeControl', buildMenuItem: this.createMenuItem.bind(this) });
+    modV.addContextMenuHook({
+      hook: 'rangeControl',
+      buildMenuItem: this.createMenuItem.bind(this),
+    });
   },
 
   createMenuItem(moduleName, controlVariable) {

@@ -12,9 +12,7 @@ const featureAssignment = {
         store.commit('meyda/removeAssignments', { moduleName: mutation.payload.moduleName });
       }
     });
-  },
 
-  modvInstall() {
     modV.addContextMenuHook({ hook: 'rangeControl', buildMenuItem: this.createMenuItem.bind(this) });
   },
 

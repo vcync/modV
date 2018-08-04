@@ -71,6 +71,7 @@ function buildMenu(e, id, options, vnode, store) {
 
 const ContextMenu = {
   name: 'Context Menu',
+  store: contextMenuStore,
 
   install(Vue) {
     Vue.component('contextMenuHandler', ContextMenuHandler);
@@ -82,8 +83,6 @@ const ContextMenu = {
         });
       },
     });
-
-    store.registerModule('contextMenu', contextMenuStore);
   },
   component: ContextMenuHandler,
 };

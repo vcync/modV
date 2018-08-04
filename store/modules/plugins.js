@@ -7,11 +7,22 @@ const state = {
 
 // getters
 const getters = {
-  allPlugins: state => Object.keys(state.plugins).map(pluginName => state.plugins[pluginName]),
+  allPlugins: state => Object.keys(state.plugins)
+    .map(pluginName => state.plugins[pluginName]),
+
   enabledPlugins: state => Object.keys(state.plugins)
     .filter(pluginName => state.plugins[pluginName].enabled)
     .map(pluginName => state.plugins[pluginName]),
+
   plugins: state => state.plugins,
+
+  pluginsWithGalleryTab: state => Object.keys(state.plugins).filter(
+      pluginName => ('galleryTabComponent' in state.plugins[pluginName].plugin),
+    )
+    .reduce((obj, pluginName) => {
+      obj[pluginName] = state.plugins[pluginName];
+      return obj;
+    }, {}),
 };
 
 // actions
