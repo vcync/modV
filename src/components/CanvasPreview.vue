@@ -1,7 +1,7 @@
 <template>
-  <div class='canvas-preview' ref='preview'>
+  <div class="canvas-preview" ref="preview">
     <output-window-button></output-window-button>
-    <canvas id='preview-canvas'></canvas>
+    <canvas id="preview-canvas"></canvas>
   </div>
 </template>
 
@@ -99,7 +99,7 @@
   };
 </script>
 
-<style lang='scss'>
+<style lang="scss">
   .canvas-preview {
     position: absolute;
     padding: 0;
@@ -108,5 +108,9 @@
     overflow: auto;
     border-radius: 4px;
     box-shadow: 0px 0px 20px 0px rgba(0, 0, 0, 0.24);
+
+    canvas {
+      background: #000;
+    }
   }
 </style>
