@@ -61,6 +61,8 @@ function draw(δ) {
       Layer.moduleOrder.forEach((moduleName, moduleIndex) => {
         const Module = store.getters['modVModules/outerActive'][moduleName];
 
+        if (!Module) return;
+
         if (!Module.meta.enabled || Module.meta.alpha === 0) return;
 
         if (pipeline && moduleIndex !== 0) {

@@ -280,6 +280,8 @@ const actions = {
           continue;
         }
 
+        if (!outerState.active[moduleKey]) continue;
+
         if ('set' in outerState.active[moduleKey].props[key]) {
           outerState
             .active[moduleKey].props[key].set.bind(outerState.active[moduleKey])(moduleProps[key]);
