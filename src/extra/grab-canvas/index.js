@@ -25,7 +25,7 @@ const smallContext = smallCanvas.getContext('2d');
 
 // Add the canvas to modV for testing purposes :D
 smallCanvas.classList.add('is-hidden');
-smallCanvas.style = 'position: absolute; top: 0px; right: 0px; width: 80px; height: 80px; z-index: 100000;';
+smallCanvas.style = 'position: absolute; top: 0px; right: 0px; width: 80px; height: 80px; z-index: 100000; background: #000;';
 document.body.appendChild(smallCanvas);
 
 const grabCanvas = {
