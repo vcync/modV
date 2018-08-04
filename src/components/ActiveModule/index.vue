@@ -197,14 +197,17 @@
       module() {
         return this.$store.state.modVModules.active[this.moduleName];
       },
+      enabledCheckboxId() {
+        return `${this.moduleName}:modvreserved:enabled`;
+      },
       enabled: {
         get() {
           return this.$store.state.modVModules.active[this.moduleName].meta.enabled;
         },
-        set() {
+        set(value) {
           this.setActiveModuleEnabled({
             moduleName: this.moduleName,
-            enabled: this.enabled,
+            enabled: value,
           });
         },
       },
