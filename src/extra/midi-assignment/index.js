@@ -76,12 +76,10 @@ const midiAssignment = {
 
         // the assignment is not for an internal control
         if (!data[2]) {
-          const Module = store.getters['modVModules/getActiveModule'](moduleName);
-          const control = Module.info.controls[variableName];
+          const Module = store.state.modVModules.active[moduleName];
+          const prop = Module.props[variableName];
 
-          let newValue = Math.map(midiEvent.data[2], 0, 127, control.min || 0, control.max || 1);
-
-          if (control.varType === 'int') newValue = Math.round(newValue);
+          const newValue = Math.map(midiEvent.data[2], 0, 127, prop.min || 0, prop.max || 1);
 
           queue.set(moduleName, { internal: false, key: variableName, value: newValue });
 
@@ -158,20 +156,20 @@ const midiAssignment = {
 
   process() {
     queue.forEach((mapValue, mapKey) => {
-      const moduleName = mapKey;
+      const name = mapKey;
       const { internal, key, value } = mapValue;
 
       if (internal) {
-        store.dispatch('modVModules/setActiveModuleInfo', {
-          moduleName,
-          key,
-          value,
+        store.dispatch('modVModules/updateMeta', {
+          name,
+          metaKey: key,
+          data: value,
         });
       } else {
-        store.dispatch('modVModules/setActiveModuleControlValue', {
-          moduleName,
-          variable: key,
-          value,
+        store.dispatch('modVModules/updateProp', {
+          name,
+          prop: key,
+          data: value,
         });
       }
     });
