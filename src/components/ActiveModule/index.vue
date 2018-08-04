@@ -81,7 +81,6 @@
     data() {
       return {
         compositeOperation: 'normal',
-        enabled: null,
         opacity: null,
         checkboxMenuOptions: {
           match: ['@modv/module:internal'],
@@ -198,8 +197,16 @@
       module() {
         return this.$store.state.modVModules.active[this.moduleName];
       },
-      enabledCheckboxId() {
-        return `${this.moduleName}:modvreserved:enabled`;
+      enabled: {
+        get() {
+          return this.$store.state.modVModules.active[this.moduleName].meta.enabled;
+        },
+        set() {
+          this.setActiveModuleEnabled({
+            moduleName: this.moduleName,
+            enabled: this.enabled,
+          });
+        },
       },
       focused() {
         return this.moduleName === this.focusedModuleName;
@@ -245,9 +252,6 @@
           moduleName: this.moduleName,
           compositeOperation: this.compositeOperation,
         });
-      },
-      enabled() {
-        this.setActiveModuleEnabled({ moduleName: this.moduleName, enabled: this.enabled });
       },
     },
     filters: {
