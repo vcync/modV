@@ -29,6 +29,18 @@
         <b-tab-item label="Videos" disabled>
 
         </b-tab-item>
+
+        <b-tab-item label="Plugins" v-bar="{ useScrollbarPseudo: true }">
+          <plugin-gallery :phrase="phrase"></plugin-gallery>
+        </b-tab-item>
+
+        <b-tab-item
+          v-for="(plugin, pluginName) in enabledPlugins"
+          :label="pluginName"
+          :key="pluginName"
+        >
+          <component :is="plugin.plugin.galleryTabComponent.name"></component>
+        </b-tab-item>
       </b-tabs>
     </div>
   </div>
@@ -39,6 +51,7 @@
 
   import ModuleGallery from '@/components/Gallery/ModuleGallery';
   import PaletteGallery from '@/components/Gallery/PaletteGallery';
+  import PluginGallery from '@/components/Gallery/PluginGallery';
   import PresetGallery from '@/components/Gallery/PresetGallery';
   import SearchBar from '@/components/Gallery/SearchBar';
 
@@ -51,10 +64,21 @@
       };
     },
     computed: {
+      ...mapGetters('plugins', {
+        plugins: 'pluginsWithGalleryTab',
+      }),
       ...mapGetters('modVModules', {
         currentDragged: 'currentDragged',
         modules: 'registry',
       }),
+      enabledPlugins() {
+        return Object.keys(this.plugins)
+          .filter(pluginName => this.plugins[pluginName].enabled)
+          .reduce((obj, pluginName) => {
+            obj[pluginName] = this.plugins[pluginName];
+            return obj;
+          }, {});
+      },
     },
     methods: {
       ...mapActions('modVModules', [
@@ -95,6 +119,7 @@
     components: {
       ModuleGallery,
       PaletteGallery,
+      PluginGallery,
       PresetGallery,
       SearchBar,
     },
@@ -120,6 +145,20 @@
 
       .tab-item {
         margin-top: 5pt;
+      }
+
+      .tabs a {
+        color: #fff;
+      }
+
+      .tabs li.is-active a {
+        border-bottom-color: #ffa600;
+        color: #ffa600;
+      }
+
+      .tabs a:hover {
+        border-bottom-color: #ffa600;
+        color: #ffa600;
       }
     }
 

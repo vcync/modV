@@ -1,9 +1,24 @@
 <template>
   <div class="status-bar tags">
-    <span class="tag">{{ sizeOut }}</span>
+    <span class="tag" @dblclick="sizeModalOpen = true">{{ sizeOut }}</span>
     <span class="tag">layers: {{ allLayers.length }}</span>
     <span class="tag">modules: {{ nonGalleryModules }}</span>
     <span class="tag">bpm: {{ bpm }} {{ detect ? '🤖' : '' }}</span>
+
+    <b-modal :active.sync="sizeModalOpen">
+      <div>
+        <b-input
+          type="number"
+          v-model.number="width"
+        />
+        𝗑
+        <b-input
+          type="number"
+          v-model.number="height"
+        />
+        <button class="button" @click="setWindowSize">Set window size</button>
+      </div>
+    </b-modal>
   </div>
 </template>
 
@@ -14,7 +29,9 @@
     name: 'statusBar',
     data() {
       return {
-
+        sizeModalOpen: false,
+        width: 0,
+        height: 0,
       };
     },
     computed: {
@@ -30,6 +47,7 @@
       ]),
       ...mapGetters('windows', [
         'largestWindowSize',
+        'largestWindowReference',
       ]),
       sizeOut() {
         return `${this.largestWindowSize.width}𝗑${this.largestWindowSize.height}px`;
@@ -42,10 +60,29 @@
       },
     },
     methods: {
-
+      setWindowSize() {
+        this.resizeWindow(this.largestWindowReference(), this.width, this.height);
+      },
+      resizeWindow(window, width, height) {
+        if (window.outerWidth) {
+          window.resizeTo(
+            width + (window.outerWidth - window.innerWidth),
+            height + (window.outerHeight - window.innerHeight),
+          );
+        } else {
+          window.resizeTo(500, 500);
+          window.resizeTo(
+            width + (500 - document.body.offsetWidth),
+            height + (500 - document.body.offsetHeight),
+          );
+        }
+      },
     },
-    components: {
-
+    watch: {
+      largestWindowSize(value) {
+        this.width = value.width;
+        this.height = value.height;
+      },
     },
   };
 </script>
@@ -63,6 +100,10 @@
 
     &.tags {
       margin: 0;
+
+      &:not(:last-child) {
+        margin-bottom: 0;
+      }
 
       .tag {
         margin-bottom: 0;

@@ -59,7 +59,7 @@
   import StatusBar from '@/components/StatusBar';
   import Tabs from '@/components/Tabs';
 
-  import { modV } from 'modv';
+  import { mapGetters } from 'vuex';
 
   export default {
     name: 'app',
@@ -69,10 +69,13 @@
       };
     },
     computed: {
+      ...mapGetters('plugins', [
+        'enabledPlugins',
+      ]),
       pluginComponents() {
-        return modV.plugins
-          .filter(plugin => 'component' in plugin)
-          .map(plugin => plugin.component.name);
+        return this.enabledPlugins
+          .filter(plugin => 'component' in plugin.plugin)
+          .map(plugin => plugin.plugin.component.name);
       },
     },
     methods: {

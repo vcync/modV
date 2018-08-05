@@ -1,34 +1,24 @@
+import store from '@/../store';
 import { modV } from 'modv';
 import { MenuItem } from 'nwjs-menu-browser';
 import expressionStore from './store';
 
-class Expression {
-  constructor() {
-    this.store = null;
-    this.vue = null;
-    this.delta = 0;
-  }
+const Expression = {
+  name: 'Value Expression',
+  store: expressionStore,
+  storeName: 'expression',
 
-  install(Vue, { store }) {
-    if (!store) throw new Error('No Vuex store detected');
-    this.store = store;
-    this.vue = Vue;
-    store.registerModule('expression', expressionStore);
-
+  install() {
     store.subscribe((mutation) => {
       if (mutation.type === 'modVModules/removeActiveModule') {
         store.commit('expression/removeExpressions', { moduleName: mutation.payload.moduleName });
       }
     });
-  }
 
-  modvInstall() {
     modV.addContextMenuHook({ hook: 'rangeControl', buildMenuItem: this.createMenuItem.bind(this) });
-  }
+  },
 
   createMenuItem(moduleName, controlVariable) {
-    const store = this.store;
-
     function click() {
       store.dispatch('expression/setActiveControlData', {
         moduleName,
@@ -42,14 +32,9 @@ class Expression {
     });
 
     return menuItem;
-  }
+  },
 
-  process({ delta }) { //eslint-disable-line
-    this.delta = delta;
-  }
-
-  processValue({ currentValue, moduleName, controlVariable }) {
-    const store = this.store;
+  processValue({ delta, currentValue, moduleName, controlVariable }) {
     let value = currentValue;
 
     const assignment = store.getters['expression/assignment'](moduleName, controlVariable);
@@ -59,7 +44,7 @@ class Expression {
 
       const scope = {
         value: currentValue,
-        delta: this.delta,
+        delta,
         map: Math.map,
       };
 
@@ -71,9 +56,7 @@ class Expression {
     }
 
     return value;
-  }
-}
+  },
+};
 
-const expression = new Expression();
-
-export default expression;
+export default Expression;

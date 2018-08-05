@@ -11,6 +11,7 @@ import draw from './draw';
 import setupWebGl from './webgl';
 import PaletteWorker from './palette-worker/palette-worker';
 import MediaManagerClient from './MediaManagerClient';
+import installPlugin from './install-plugin';
 
 class ModV extends EventEmitter2 {
   /**
@@ -21,7 +22,6 @@ class ModV extends EventEmitter2 {
     super();
 
     this.assignmentMax = 1;
-    this.plugins = []; // @todo Move to Vuex?
 
     this.layers = store.getters['layers/allLayers'];
     this.registeredModules = store.getters['modVModules/registeredModules'];
@@ -74,6 +74,8 @@ class ModV extends EventEmitter2 {
     this.Module2D = Module2D;
     this.ModuleISF = ModuleISF;
     this.ModuleShader = ModuleShader;
+
+    this.delta = 0;
   }
 
   start(Vue) {
@@ -133,6 +135,7 @@ class ModV extends EventEmitter2 {
 
   loop(δ) {
     stats.begin();
+    this.delta = δ;
     let features = [];
 
     if (this.audioFeatures.length > 0) {
@@ -148,7 +151,7 @@ class ModV extends EventEmitter2 {
         const Module = store.getters['modVModules/getActiveModule'](assignment.moduleName);
         const control = Module.info.controls[assignment.controlVariable];
 
-        store.commit('modVModules/setActiveModuleControlValue', {
+        store.dispatch('modVModules/setActiveModuleControlValue', {
           moduleName: assignment.moduleName,
           variable: assignment.controlVariable,
           value: Math.map(featureValue, 0, this.assignmentMax, control.min, control.max),
@@ -159,9 +162,11 @@ class ModV extends EventEmitter2 {
       this.updateBPM(this.beatDetektor.win_bpm_int_lo);
     }
 
-    this.plugins.filter(plugin => ('process' in plugin)).forEach(plugin => plugin.process({
-      delta: δ,
-    }));
+    store.getters['plugins/enabledPlugins']
+      .filter(plugin => ('process' in plugin.plugin))
+      .forEach(plugin => plugin.plugin.process({
+        delta: δ,
+      }));
 
     this.beatDetektorKick.process(this.beatDetektor);
     this.kick = this.beatDetektorKick.isKick();
@@ -174,9 +179,8 @@ class ModV extends EventEmitter2 {
     });
   }
 
-  use(plugin) {
-    this.plugins.push(plugin);
-    if ('modvInstall' in plugin) plugin.modvInstall();
+  use(plugin) { //eslint-disable-line
+    installPlugin(plugin);
   }
 
   addContextMenuHook(hook) { //eslint-disable-line

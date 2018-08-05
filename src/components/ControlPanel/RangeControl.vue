@@ -24,7 +24,7 @@
 </template>
 
 <script>
-  import { mapGetters, mapMutations } from 'vuex';
+  import { mapGetters, mapActions } from 'vuex';
   import { Menu, MenuItem } from 'nwjs-menu-browser';
 
   if (!window.nw) {
@@ -98,7 +98,7 @@
       },
     },
     methods: {
-      ...mapMutations('modVModules', [
+      ...mapActions('modVModules', [
         'setActiveModuleControlValue',
       ]),
       numberInput(value) {

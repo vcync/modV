@@ -12,7 +12,7 @@
 
                   <div class="columns is-gapless is-mobile">
                     <div class="column options">
-                      <div class="control-group enable-group">
+                      <div class="control-group enable-group" v-context-menu="checkboxMenuOptions">
                         <label
                           :for="enabledCheckboxId"
                           @click="checkboxClick"
@@ -22,9 +22,8 @@
                           :id="enabledCheckboxId"
                         ></b-checkbox>
                       </div>
-                      <div class="control-group opacity-group">
-                        <label for="">Opacity</label>
-                        <input type="range" min="0" max="1" value = "1" step="any" class="opacity" v-model="opacity">
+                      <div class="control-group opacity-group" v-context-menu="opacityMenuOptions">
+                        <opacity-control :module-name="moduleName"></opacity-control>
                       </div>
                       <div class="control-group blending-group">
                         <label for="">Blending</label>
@@ -72,14 +71,28 @@
 
 <script>
   import { mapGetters, mapMutations } from 'vuex';
+  import OpacityControl from './OpacityControl';
 
   export default {
     name: 'activeItem',
+    components: {
+      OpacityControl,
+    },
     data() {
       return {
         compositeOperation: 'normal',
         enabled: null,
         opacity: null,
+        checkboxMenuOptions: {
+          match: ['@modv/module:internal'],
+          menuItems: [],
+          internalVariable: 'enable',
+        },
+        opacityMenuOptions: {
+          match: ['@modv/module:internal'],
+          menuItems: [],
+          internalVariable: 'alpha',
+        },
         operations: [{
           label: 'Blend Modes',
           children: [{
@@ -179,6 +192,7 @@
     ],
     computed: {
       ...mapGetters('modVModules', [
+        'activeModules',
         'focusedModuleName',
       ]),
       module() {
@@ -201,22 +215,12 @@
       ...mapMutations('modVModules', [
         'setCurrentDragged',
         'setModuleFocus',
-        'setActiveModuleAlpha',
         'setActiveModuleEnabled',
         'setActiveModuleCompositeOperation',
       ]),
       ...mapGetters('modVModules', [
         'getActiveModule',
       ]),
-      inputOpacity(e) {
-        console.log(e);
-      },
-      checkEnabled(e) {
-        console.log(e);
-      },
-      changeBlendmode(e) {
-        console.log(e);
-      },
       focusActiveModule() {
         this.setModuleFocus({ activeModuleName: this.moduleName });
       },
@@ -246,9 +250,6 @@
       },
       enabled() {
         this.setActiveModuleEnabled({ moduleName: this.moduleName, enabled: this.enabled });
-      },
-      opacity() {
-        this.setActiveModuleAlpha({ moduleName: this.moduleName, alpha: parseFloat(this.opacity) });
       },
     },
     filters: {

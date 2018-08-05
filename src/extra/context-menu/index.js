@@ -1,3 +1,4 @@
+import store from '@/../store';
 import { Menu } from 'nwjs-menu-browser';
 // import '@/../node_modules/nwjs-menu-browser/nwjs-menu-browser.css';
 import contextMenuStore from './store';
@@ -43,7 +44,20 @@ function buildMenu(e, id, options, vnode, store) {
     if (hook in hooks) hookItems = hookItems.concat(hooks[hook]);
   });
 
-  hookItems.forEach(item => menu.append(item.buildMenuItem(moduleName, controlVariable)));
+  hookItems.forEach((item) => {
+    if (options.internalVariable) {
+      menu.append(item.buildMenuItem(
+        moduleName,
+        options.internalVariable,
+        true,
+      ));
+    } else {
+      menu.append(item.buildMenuItem(
+        moduleName,
+        controlVariable,
+      ));
+    }
+  });
 
   let menus = [];
   menus.push(menu);
@@ -56,9 +70,10 @@ function buildMenu(e, id, options, vnode, store) {
 }
 
 const ContextMenu = {
-  install(Vue, { store }) {
-    if (!store) throw new Error('No Vuex store detected');
+  name: 'Context Menu',
+  store: contextMenuStore,
 
+  install(Vue) {
     Vue.component('contextMenuHandler', ContextMenuHandler);
 
     Vue.directive('context-menu', {
@@ -68,8 +83,6 @@ const ContextMenu = {
         });
       },
     });
-
-    store.registerModule('contextMenu', contextMenuStore);
   },
   component: ContextMenuHandler,
 };

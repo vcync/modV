@@ -28,9 +28,11 @@ const actions = {
     const layers = await store.dispatch('layers/presetData');
     const moduleData = await store.dispatch('modVModules/presetData');
     const paletteData = await store.dispatch('palettes/presetData', Object.keys(moduleData));
+    const pluginData = await store.dispatch('plugins/presetData');
     preset.layers = layers;
     preset.moduleData = moduleData;
     preset.paletteData = paletteData;
+    preset.pluginData = pluginData;
 
     preset.presetInfo = {
       name: presetName || `Preset by ${author} at ${datetime}`,
@@ -83,13 +85,10 @@ const actions = {
               module.info.version = data.version;
 
               if ('import' in module) {
-                console.log('import found in', module);
-                module.import(data.values);
+                module.import(data, moduleName);
               } else {
                 Object.keys(data.values).forEach((variable) => {
                   const value = data.values[variable];
-
-                  console.log(variable, value);
 
                   store.commit('modVModules/setActiveModuleControlValue', {
                     moduleName,
@@ -108,6 +107,19 @@ const actions = {
           });
         });
       });
+
+      if ('pluginData' in presetData) {
+        const pluginData = presetData.pluginData;
+        const currentPlugins = store.state.plugins.plugins;
+
+        Object.keys(pluginData)
+          .filter(pluginDataKey => Object.keys(currentPlugins).indexOf(pluginDataKey) > -1)
+          .filter(pluginDataKey => 'presetData' in currentPlugins[pluginDataKey].plugin)
+          .forEach((pluginDataKey) => {
+            const plugin = currentPlugins[pluginDataKey].plugin;
+            plugin.presetData.load(pluginData[pluginDataKey]);
+          });
+      }
     });
   },
   savePaletteToProfile({}, { profileName, paletteName, colors }) { //eslint-disable-line
