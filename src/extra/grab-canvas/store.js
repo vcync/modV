@@ -4,17 +4,7 @@ const state = {
   selectionX: 0,
   selectionY: 0,
   showCanvas: false,
-};
-
-// getters
-const getters = {
-  selectionX: state => state.selectionX,
-  selectionY: state => state.selectionY,
-};
-
-// actions
-const actions = {
-
+  url: 'ws://localhost:3000/modV',
 };
 
 // mutations
@@ -27,12 +17,14 @@ const mutations = {
   setShowCanvas(state, { showCanvas }) {
     Vue.set(state, 'showCanvas', showCanvas);
   },
+
+  setUrl(state, { url }) {
+    Vue.set(state, 'url', url);
+  },
 };
 
 export default {
   namespaced: true,
   state,
-  getters,
-  actions,
   mutations,
 };
