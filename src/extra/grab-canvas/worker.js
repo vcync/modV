@@ -4,7 +4,7 @@ import LuminaveConnector from './luminave-connector';
 
 // Connect to the luminave-modV integration
 // @see https://github.com/NERDDISCO/luminave#integrations
-const luminaveConnector = new LuminaveConnector('ws://localhost:3000/modV');
+const luminaveConnector = new LuminaveConnector();
 
 /**
  * When the worker receives a message, it triggers different functions
@@ -18,14 +18,21 @@ onmessage = (e) => {
       break;
     }
 
-    case 'setup': {
+    case 'setupCanvas': {
       const { width, height, selectionX, selectionY } = message.payload;
 
       luminaveConnector.width = width;
       luminaveConnector.height = height;
       luminaveConnector.selectionX = selectionX;
       luminaveConnector.selectionY = selectionY;
+      break;
+    }
 
+    case 'setupConnection': {
+      const { url } = message.payload;
+
+      luminaveConnector.url = url;
+      luminaveConnector.setupSocket();
       break;
     }
 

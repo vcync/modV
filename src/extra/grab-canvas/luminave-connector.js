@@ -35,10 +35,7 @@ export default class LuminaveConnector {
      => [a1, a2, b1, b2]
    */
   constructor(args = {}) {
-    this.url = args.url || 'ws://169.254.120.135:3000/modV';
-
-    // Create WebSocket connection
-    this.setupSocket(this.url);
+    this.url = args.url || 'ws://localhost:3000/modV';
 
     // Width / Height of canvas
     this.width = args.width || 0;
@@ -50,12 +47,21 @@ export default class LuminaveConnector {
 
     // The raw canvas data
     this.data = '';
+
+    // WebSocket connection
+    this.connection = undefined;
   }
 
   /**
    * Create a WebSocket to luminave
    */
   setupSocket() {
+    // There is already a connection, so close it
+    if (this.connection !== undefined) {
+      this.connection.close();
+      this.connection = undefined;
+    }
+
     // Open the connection
     this.connection = new ReconnectingWebSocket(this.url);
 
