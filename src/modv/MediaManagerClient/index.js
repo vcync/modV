@@ -65,6 +65,7 @@ class MediaManagerClient {
               palettes: profile.palettes,
               presets: profile.presets,
               videos: profile.videos,
+              modules: profile.modules,
             });
           });
           break;
@@ -87,6 +88,12 @@ class MediaManagerClient {
                 profileName,
                 presetName: name,
                 presetData: data.contents,
+              });
+            } else if (type === 'module') {
+              store.commit('profiles/addModuleToProfile', {
+                profileName,
+                presetName: name,
+                path: data.path,
               });
             } else if (type === 'image') {
               // modV.profiles[profile].images[name] = data.path;
