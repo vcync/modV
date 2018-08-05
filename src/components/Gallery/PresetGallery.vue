@@ -53,7 +53,7 @@
         <div class="columns is-gapless is-multiline">
           <div
             class="column is-12 preset-container"
-            v-for="(preset, presetName) in profile.presets"
+            v-for="(preset, presetName) in profile"
           >
             <div class="columns cannot-load" v-if="!validateModuleRequirements(preset.moduleData)">
 
@@ -80,8 +80,8 @@
               <div class="column is-2">
                 <button
                   class="button is-dark is-inverted is-outlined"
-                  :class="{ 'is-loading': loading === `${profileName}.${presetName}` }"
-                  @click="loadPreset({ presetName, profileName })"
+                  :class="{ 'is-loading': loading === `${profileName}.${preset.presetInfo.name}` }"
+                  @click="loadPreset({ presetName: preset.presetInfo.name, profileName })"
                 >Load</button>
               </div>
             </div>
@@ -95,6 +95,7 @@
 
 <script>
   import { mapActions, mapGetters } from 'vuex';
+  import naturalSort from '@/modv/utils/natural-sort';
 
   export default {
     name: 'presetGallery',
@@ -120,12 +121,27 @@
       },
     },
     computed: {
-      ...mapGetters('profiles', {
-        profiles: 'allProfiles',
-      }),
+      ...mapGetters('profiles', [
+        'allProfiles',
+      ]),
       ...mapGetters('modVModules', [
         'registry',
       ]),
+      profiles() {
+        const data = {};
+
+        Object.keys(this.allProfiles).forEach((profileName) => {
+          data[profileName] = [];
+
+          Object.keys(this.allProfiles[profileName].presets)
+            .sort(naturalSort.compare)
+            .forEach((presetName) => {
+              data[profileName].push(this.allProfiles[profileName].presets[presetName]);
+            });
+        });
+
+        return data;
+      },
     },
     methods: {
       ...mapActions('profiles', [
