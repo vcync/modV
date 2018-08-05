@@ -35,7 +35,7 @@
 </template>
 
 <script>
-  import { mapActions, mapMutations, mapGetters } from 'vuex';
+  import { mapActions, mapGetters } from 'vuex';
 
   export default {
     name: 'pluginGallery',
@@ -57,11 +57,9 @@
       ]),
     },
     methods: {
-      ...mapMutations('plugins', [
-        'setEnabled',
-      ]),
       ...mapActions('plugins', [
         'save',
+        'setEnabled',
       ]),
       search(textIn, termIn) {
         const text = textIn.toLowerCase().trim();
