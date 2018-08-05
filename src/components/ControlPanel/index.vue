@@ -12,10 +12,10 @@
           <component
             class="pure-control-group"
             v-for="control in controls"
-            :is="control.type"
+            :is="control.component"
             :module="module"
-            :control="control"
-            :key="control.variable"
+            :meta="control.meta"
+            :key="control.meta.$modv_variable"
           ></component>
         </div>
       </div>
@@ -47,15 +47,70 @@
       ]),
       module() {
         if (!this.moduleName) return false;
-        return this.getActiveModule(this.moduleName);
+        return this.$store.getters['modVModules/outerActive'][this.moduleName];
       },
       name() {
         if (!this.module) return '';
-        return this.module.info.name;
+        return this.module.meta.name;
       },
       controls() {
-        if (!this.module) return [];
-        return this.module.info.controls;
+        const controls = [];
+        const { module } = this;
+
+        if (module) {
+          Object.keys(module.props).forEach((key) => {
+            const propData = module.props[key];
+            propData.$modv_variable = key;
+            propData.$modv_moduleName = module.meta.name;
+
+            const type = propData.type;
+            const control = propData.control;
+
+            if (control) {
+              controls.push({
+                component: control.type,
+                meta: propData,
+              });
+            }
+
+            if (type === 'int' || type === 'float') {
+              controls.push({
+                component: 'rangeControl',
+                meta: propData,
+              });
+            }
+
+            if (type === 'bool') {
+              controls.push({
+                component: 'checkboxControl',
+                meta: propData,
+              });
+            }
+
+            if (type === 'string') {
+              controls.push({
+                component: 'textControl',
+                meta: propData,
+              });
+            }
+
+            if (type === 'vec2') {
+              controls.push({
+                component: 'twoDPointControl',
+                meta: propData,
+              });
+            }
+
+            if (type === 'enum') {
+              controls.push({
+                component: 'selectControl',
+                meta: propData,
+              });
+            }
+          });
+        }
+
+        return controls;
       },
       pinTitle() {
         return this.pinned ? 'Unpin' : 'Pin';

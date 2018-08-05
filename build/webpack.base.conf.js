@@ -43,12 +43,12 @@ module.exports = {
         loader: 'vue-loader',
         options: vueLoaderConfig
       },
-      {
-        test: /\.js$/,
-        loader: 'babel-loader',
-        // include: [resolve('src'), resolve('test'), resolve('store')],
-        exclude: /node_modules(\/|\\)(?!(meyda|nwjs-menu-browser)(\/|\\)).*/,
-      },
+      // {
+      //   test: /\.js$/,
+      //   loader: 'babel-loader',
+      //   // include: [resolve('src'), resolve('test'), resolve('store')],
+      //   exclude: /node_modules(\/|\\)(?!(meyda|nwjs-menu-browser)(\/|\\)).*/,
+      // },
       {
         test: /\.(png|jpe?g|gif|svg)(\?.*)?$/,
         loader: 'url-loader',

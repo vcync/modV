@@ -35,9 +35,9 @@ const mutations = {
     state.features.splice(index, 1);
   },
   assignFeatureToControl(state, { feature, moduleName, controlVariable }) {
-    const Module = store.getters['modVModules/getActiveModule'](moduleName);
+    const Module = store.state.modVModules.active[moduleName];
     if (!Module) return;
-    if (typeof Module.info.controls[controlVariable] === 'undefined') return;
+    if (typeof Module.props[controlVariable] === 'undefined') return;
 
     const assignment = {
       feature,

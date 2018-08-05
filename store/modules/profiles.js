@@ -54,57 +54,91 @@ const actions = {
     const presetData = state.profiles[profileName].presets[presetName];
     store.dispatch('profiles/loadPreset', { presetData });
   },
-  loadPreset({}, { presetData }) { //eslint-disable-line
-    store.dispatch('layers/removeAllLayers').then(() => {
-      presetData.layers.forEach((Layer) => {
-        store.dispatch('layers/addLayer').then(({ index }) => {
-          const layerIndex = index;
+  async loadPreset({}, { presetData }) { //eslint-disable-line
+    await store.dispatch('layers/removeAllLayers');
 
-          store.commit('layers/setAlpha', { layerIndex, alpha: Layer.alpha });
-          store.commit('layers/setBlending', { layerIndex, blending: Layer.blending });
-          store.commit('layers/setClearing', { layerIndex, clearing: Layer.clearing });
-          store.commit('layers/setCollapsed', { layerIndex, collapsed: Layer.collapsed });
-          store.commit('layers/setDrawToOutput', { layerIndex, drawToOutput: Layer.drawToOutput });
-          store.commit('layers/setEnabled', { layerIndex, enabled: Layer.enabled });
-          store.commit('layers/setInherit', { layerIndex, inherit: Layer.inherit });
-          store.commit('layers/setInheritFrom', { layerIndex, inheritFrom: Layer.inheritFrom });
-          store.commit('layers/setLocked', { layerIndex, locked: Layer.locked });
-          // store.commit('layers/setModuleOrder', { layerIndex, moduleOrder: Layer.moduleOrder });
-          store.commit('layers/setName', { layerIndex, name: Layer.name });
-          store.commit('layers/setPipeline', { layerIndex, pipeline: Layer.pipeline });
+    presetData.layers.forEach(async (Layer) => {
+      const { index } = await store.dispatch('layers/addLayer');
+      const layerIndex = index;
 
-          Layer.moduleOrder.forEach((moduleName, idx) => {
-            store.dispatch('modVModules/createActiveModule', { moduleName }).then((module) => {
-              const data = presetData.moduleData[moduleName];
+      store.commit('layers/setAlpha', { layerIndex, alpha: Layer.alpha });
+      store.commit('layers/setBlending', { layerIndex, blending: Layer.blending });
+      store.commit('layers/setClearing', { layerIndex, clearing: Layer.clearing });
+      store.commit('layers/setCollapsed', { layerIndex, collapsed: Layer.collapsed });
+      store.commit('layers/setDrawToOutput', { layerIndex, drawToOutput: Layer.drawToOutput });
+      store.commit('layers/setEnabled', { layerIndex, enabled: Layer.enabled });
+      store.commit('layers/setInherit', { layerIndex, inherit: Layer.inherit });
+      store.commit('layers/setInheritFrom', { layerIndex, inheritFrom: Layer.inheritFrom });
+      store.commit('layers/setLocked', { layerIndex, locked: Layer.locked });
+      // store.commit('layers/setModuleOrder', { layerIndex, moduleOrder: Layer.moduleOrder });
+      await store.dispatch('layers/setLayerName', { layerIndex, name: Layer.name });
+      console.log(Layer.name);
+      store.commit('layers/setPipeline', { layerIndex, pipeline: Layer.pipeline });
 
-              module.info.alpha = data.alpha;
-              module.info.author = data.author;
-              module.info.compositeOperation = data.compositeOperation;
-              module.info.enabled = data.enabled;
-              module.info.originalName = data.originalName;
-              module.info.version = data.version;
+      Layer.moduleOrder.forEach(async (moduleName, idx) => {
+        const module = await store.dispatch('modVModules/createActiveModule', { moduleName });
+        const data = presetData.moduleData[moduleName];
 
-              if ('import' in module) {
-                module.import(data, moduleName);
-              } else {
-                Object.keys(data.values).forEach((variable) => {
-                  const value = data.values[variable];
+        await store.dispatch('modVModules/updateMeta', {
+          name: moduleName,
+          metaKey: 'alpha',
+          data: data.meta.alpha,
+        });
 
-                  store.commit('modVModules/setActiveModuleControlValue', {
-                    moduleName,
-                    variable,
-                    value,
-                  });
-                });
-              }
+        await store.dispatch('modVModules/updateMeta', {
+          name: moduleName,
+          metaKey: 'author',
+          data: data.meta.author,
+        });
 
-              store.dispatch('layers/addModuleToLayer', {
-                module,
-                layerIndex,
-                position: idx,
-              });
+        await store.dispatch('modVModules/updateMeta', {
+          name: moduleName,
+          metaKey: 'compositeOperation',
+          data: data.meta.compositeOperation,
+        });
+
+        await store.dispatch('modVModules/updateMeta', {
+          name: moduleName,
+          metaKey: 'enabled',
+          data: data.meta.enabled,
+        });
+
+        await store.dispatch('modVModules/updateMeta', {
+          name: moduleName,
+          metaKey: 'alpha',
+          data: data.meta.alpha,
+        });
+
+        await store.dispatch('modVModules/updateMeta', {
+          name: moduleName,
+          metaKey: 'originalName',
+          data: data.meta.originalName,
+        });
+
+        await store.dispatch('modVModules/updateMeta', {
+          name: moduleName,
+          metaKey: 'version',
+          data: data.meta.version,
+        });
+
+        if ('import' in module) {
+          module.import(data, moduleName);
+        } else {
+          Object.keys(data.values).forEach(async (variable) => {
+            const value = data.values[variable];
+
+            await store.dispatch('modVModules/updateProp', {
+              name: moduleName,
+              prop: variable,
+              data: value,
             });
           });
+        }
+
+        store.dispatch('layers/addModuleToLayer', {
+          module,
+          layerIndex,
+          position: idx,
         });
       });
 

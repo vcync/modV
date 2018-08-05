@@ -1,5 +1,5 @@
 <template>
-  <div class="range-control" :data-moduleName='moduleName' v-context-menu='menuOptions'>
+  <div class="range-control" :data-moduleName="moduleName" v-context-menu="menuOptions">
     <b-field :label="label" :addons="false">
       <canvas
         class="control"
@@ -16,15 +16,13 @@
         placeholder="Number"
         type="number"
         step="any"
-        v-model="currentValue"
-        @input="numberInput"
+        v-model.number="value"
       ></b-input>
     </b-field>
   </div>
 </template>
 
 <script>
-  import { mapGetters, mapActions } from 'vuex';
   import { Menu, MenuItem } from 'nwjs-menu-browser';
 
   if (!window.nw) {
@@ -39,8 +37,7 @@
   export default {
     name: 'rangeControl',
     props: [
-      'module',
-      'control',
+      'meta',
     ],
     data() {
       return {
@@ -48,62 +45,57 @@
           match: ['rangeControl'],
           menuItems: [],
         },
-        valueIn: 0,
         updateQueue: [],
         currentValue: 0,
         raf: null,
         lastLength: 0,
         context: null,
         mousePressed: false,
-        value: 0,
         canvasX: 0,
       };
     },
     computed: {
-      processedValue() {
-        return this.getValueFromActiveModule(this.moduleName, this.variable).raw;
-      },
-      ...mapGetters('modVModules', [
-        'getValueFromActiveModule',
-      ]),
       moduleName() {
-        return this.module.info.name;
+        return this.meta.$modv_moduleName;
       },
       inputId() {
         return `${this.moduleName}-${this.variable}`;
       },
-      label() {
-        return this.control.label;
+      value: {
+        get() {
+          return this.$store.state.modVModules.active[this.moduleName][this.variable];
+        },
+        set(value) {
+          this.$store.dispatch('modVModules/updateProp', {
+            name: this.moduleName,
+            prop: this.variable,
+            data: value,
+          });
+        },
       },
       variable() {
-        return this.control.variable;
+        return this.meta.$modv_variable;
       },
-      varType() {
-        return this.control.varType;
+      label() {
+        return this.meta.label || this.variable;
       },
       min() {
-        return this.control.min;
+        return this.meta.min || 0;
       },
       max() {
-        return this.control.max;
+        return this.meta.max || 1;
       },
       step() {
-        return this.control.step;
+        return this.meta.step || 1;
       },
       defaultValue() {
-        return this.control.default;
+        return this.meta.default;
       },
       strict() {
-        return this.control.strict || false;
+        return this.meta.strict || false;
       },
     },
     methods: {
-      ...mapActions('modVModules', [
-        'setActiveModuleControlValue',
-      ]),
-      numberInput(value) {
-        this.valueIn = this.formatValue(value);
-      },
       mapValue(x) {
         const mappedX = Math.map(x, 0, 170, this.min, this.max);
         return this.formatValue(+mappedX.toFixed(2));
@@ -137,21 +129,36 @@
       calculateValues(e, clicked = false) {
         const rect = this.$refs.canvas.getBoundingClientRect();
         let clientX;
+        // let clientY;
+        // let divisor = 1;
 
         if ('clientX' in e) {
           clientX = e.clientX;
+          // clientY = e.clientY;
         } else {
           e.preventDefault();
           clientX = e.targetTouches[0].clientX;
+          // clientY = e.targetTouches[0].clientY;
         }
 
-        const x = clientX - Math.round(rect.left);
+        // if (
+        //   clientY > rect.top + rect.height ||
+        //   clientY < rect.top
+        // ) {
+        //   divisor = Math.max(1, Math.abs(clientY - rect.top) / 200);
+        //   console.log(divisor, clientX, clientX / divisor);
+        // }
+
+        let x = /* ( */clientX/* / divisor) */ - Math.round(rect.left);
+
+        if (this.meta.abs && x < 0) {
+          x = 0;
+        }
 
         if (this.mousePressed || clicked) {
-          this.valueIn = this.mapValue(x);
-          this.currentValue = this.valueIn;
-          this.canvasX = x;
-          this.currentX = this.value;
+          this.value = this.mapValue(x);
+          // this.canvasX = x;
+          // this.currentX = this.value;
         }
       },
       formatValue(valueIn) {
@@ -181,8 +188,13 @@
         context.fillStyle = '#393939';
         context.fillRect(0, 0, canvas.width, canvas.height);
 
-        context.fillStyle = '#ffa500';
-        context.fillRect(0, 0, x, canvas.height);
+        if (x > 0) {
+          context.fillStyle = '#ffa500';
+          context.fillRect(0, 0, x, canvas.height);
+        } else {
+          context.fillStyle = '#005aff';
+          context.fillRect(0, 0, Math.abs(x), canvas.height);
+        }
       },
     },
     beforeMount() {
@@ -204,7 +216,7 @@
       this.$refs.canvas.width = 170;
       this.$refs.canvas.height = 32;
       this.context = this.$refs.canvas.getContext('2d');
-      this.canvasX = this.unmapValue(this.currentValue);
+      this.canvasX = this.unmapValue(this.value);
       this.draw();
     },
     destroy() {
@@ -212,22 +224,21 @@
       window.removeEventListener('mousemove', this.mouseMove.bind(this));
     },
     watch: {
-      valueIn() {
-        const value = this.valueIn;
+      // valueIn() {
+      //   const value = this.valueIn;
 
-        let val;
-        if (this.varType === 'int') val = parseInt(value, 10);
-        else if (this.varType === 'float') val = parseFloat(value, 10);
+      //   let val;
+      //   if (this.varType === 'int') val = parseInt(value, 10);
+      //   else if (this.varType === 'float') val = parseFloat(value, 10);
 
-        this.setActiveModuleControlValue({
-          moduleName: this.moduleName,
-          variable: this.variable,
-          value: val,
-        });
-      },
-      processedValue() {
-        this.currentValue = this.processedValue;
-        this.canvasX = this.unmapValue(this.currentValue);
+      //   this.$store.dispatch('modVModules/updateProp', {
+      //     name: this.moduleName,
+      //     prop: this.variable,
+      //     data: val,
+      //   });
+      // },
+      value(value) {
+        this.canvasX = this.unmapValue(value);
       },
       canvasX() {
         this.draw();

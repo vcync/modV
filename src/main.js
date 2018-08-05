@@ -9,8 +9,7 @@ import Vuebar from 'vuebar';
 
 import Capitalize from '@/vuePlugins/capitalize-filter';
 
-import stats from '@/extra/stats';
-import { ModuleISF, modV } from './modv';
+import { modV } from './modv';
 import App from './App';
 import store from '../store';
 import contextMenu from './extra/context-menu';
@@ -31,11 +30,6 @@ Object.defineProperty(Vue.prototype, '$modV', {
     return modV;
   },
 });
-
-document.body.appendChild(stats.dom);
-stats.dom.style.left = null;
-stats.dom.style.right = 0;
-stats.dom.classList.add('hidden');
 
 Vue.use(Capitalize);
 
@@ -68,23 +62,27 @@ export default window.modVVue = new Vue({
     modV.start(this);
 
     const modules = [
-      // 'Waveform',
-      'Ball',
       'Text',
-      'Webcam',
-      'Pixelate',
+    //   'Webcam',
+    //   'Pixelate',
       'Plasma',
-      'MattiasCRT',
       'ChromaticAbberation',
-      'Wobble',
-      'OpticalFlowDistort',
-      'Neon',
-      'Fisheye',
-      'MirrorEdge',
-      'EdgeDistort',
-      'Polygon',
-      'Concentrics',
-      'Phyllotaxis',
+    //   'Wobble',
+    //   'OpticalFlowDistort',
+    //   'Neon',
+    //   'Fisheye',
+    //   'MirrorEdge',
+    //   'EdgeDistort',
+    //   'Polygon',
+    //   'Concentrics',
+    //   'Phyllotaxis',
+      'Pixelate-2.0',
+      'Ball-2.0',
+      'Concentrics-2.0',
+      'Waveform-2.0',
+      'Un-Deux-Trois',
+      'OpticalFlowDistort-2.0',
+      'MattiasCRT-2.0',
     ];
 
     modules.forEach((fileName) => {
@@ -146,21 +144,16 @@ export default window.modVVue = new Vue({
 
     isfSamples.forEach((fileName) => {
       import(`@/modv/sample-modules/isf-samples/${fileName}`).then((fragmentShader) => {
-        class Module extends ModuleISF {
-          constructor() {
-            super({
-              info: {
-                name: fileName,
-                author: '2xAA',
-                version: 0.1,
-                meyda: [],
-              },
-              fragmentShader,
-            });
-          }
-        }
-
-        modV.register(Module);
+        modV.register({
+          meta: {
+            name: fileName,
+            author: '',
+            version: '1.0.0',
+            type: 'isf',
+          },
+          fragmentShader,
+          vertexShader: 'void main() {isf_vertShaderInit();}',
+        });
       }).catch((e) => {
         throw new Error(e);
       });

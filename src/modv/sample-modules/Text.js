@@ -1,100 +1,119 @@
+/* eslint-disable no-underscore-dangle */
+
 import awesomeText from '@/extra/awesome-text';
-import { Module2D } from '../Modules';
 
-class Text extends Module2D {
-  constructor() {
-    super({
-      info: {
-        name: 'Text',
-        author: '2xAA',
-        version: 0.1,
-      },
-    });
+function getTextHeight(font, textContent) {
+  const result = {};
 
-    this.add({
-      type: 'textControl',
-      variable: 'text',
+  const text = document.createElement('span');
+  text.style.font = font;
+  text.textContent = textContent;
+
+  const block = document.createElement('div');
+  block.style.display = 'inline-block';
+  block.style.width = '1px';
+  block.style.height = '0px';
+
+  const div = document.createElement('div');
+  div.appendChild(text);
+  div.appendChild(block);
+
+  document.body.appendChild(div);
+
+  block.style.verticalAlign = 'baseline';
+  result.ascent = block.offsetHeight - text.offsetHeight;
+
+  block.style.verticalAlign = 'bottom';
+  result.height = block.offsetHeight - text.offsetHeight;
+
+  result.descent = result.height - result.ascent;
+
+  div.remove();
+
+  return result;
+}
+
+export default {
+  meta: {
+    name: 'Text',
+    author: '2xAA',
+    version: 0.1,
+    type: '2d',
+  },
+
+  props: {
+    text: {
+      type: 'string',
       label: 'Text',
       default: 'modV',
-    });
+      set(value) {
+        this.h = getTextHeight(this.font, value);
+      },
+    },
 
-    this.add({
-      type: 'rangeControl',
-      variable: 'size',
+    size: {
+      type: 'int',
       label: 'Size',
-      append: 'pt',
-      varType: 'int',
-      min: 50,
+      min: 1,
       max: 200,
       default: 50,
-    });
+      set(value) {
+        this.h = getTextHeight(`${value}pt "${this.customFont}", sans-serif`, this.text);
+      },
+    },
 
-    this.add({
-      type: 'textControl',
-      variable: 'customFont',
+    customFont: {
+      type: 'string',
       label: 'Font',
       default: 'Rubik',
-    });
+    },
 
-    this.add({
-      type: 'paletteControl',
-      variable: 'color',
-      colors: [
-        [199, 64, 163],
-        [97, 214, 199],
-        [222, 60, 75],
-        [101, 151, 220],
-        [213, 158, 151],
-        [100, 132, 129],
-        [154, 94, 218],
-        [194, 211, 205],
-        [201, 107, 152],
-        [119, 98, 169],
-        [214, 175, 208],
-        [218, 57, 123],
-        [196, 96, 98],
-        [218, 74, 219],
-        [138, 100, 121],
-        [96, 118, 225],
-        [132, 195, 223],
-        [82, 127, 162],
-        [209, 121, 211],
-        [181, 152, 220],
-      ], // generated here: http://tools.medialab.sciences-po.fr/iwanthue/
-      timePeriod: 500,
-    });
-  }
-
-  get text() {
-    return this._text; //eslint-disable-line
-  }
-
-  set text(value) {
-    this.h = this.getTextHeight(this.font);
-    this._text = value; //eslint-disable-line
-  }
+    color: {
+      control: {
+        type: 'paletteControl',
+        default: { r: 199, g: 64, b: 163 },
+        options: {
+          colors: [
+            { r: 199, g: 64, b: 163 },
+            { r: 97, g: 214, b: 199 },
+            { r: 222, g: 60, b: 75 },
+            { r: 101, g: 151, b: 220 },
+            { r: 213, g: 158, b: 151 },
+            { r: 100, g: 132, b: 129 },
+            { r: 154, g: 94, b: 218 },
+            { r: 194, g: 211, b: 205 },
+            { r: 201, g: 107, b: 152 },
+            { r: 119, g: 98, b: 169 },
+            { r: 214, g: 175, b: 208 },
+            { r: 218, g: 57, b: 123 },
+            { r: 196, g: 96, b: 98 },
+            { r: 218, g: 74, b: 219 },
+            { r: 138, g: 100, b: 121 },
+            { r: 96, g: 118, b: 225 },
+            { r: 132, g: 195, b: 223 },
+            { r: 82, g: 127, b: 162 },
+            { r: 209, g: 121, b: 211 },
+            { r: 181, g: 152, b: 220 },
+          ], // generated here: http://tools.medialab.sciences-po.fr/iwanthue/
+          duration: 500,
+        },
+      },
+    },
+  },
 
   init() {
-    this.color = 'red';
-    this._text = 'modV'; //eslint-disable-line
-    this.size = '50pt';
-    this.font = `${this.size} "Helvetica", sans-serif`;
-    this.customFont = '';
-    this.h = {};
-  }
+    this.font = `${this.size}pt "Helvetica", sans-serif`;
+    this.h = getTextHeight(this.font, this.text);
+  },
 
   draw({ canvas, context }) {
     context.textBaseline = 'middle';
 
-    this.font = `${this.size} "${this.customFont}", sans-serif`;
+    this.font = `${this.size}pt "${this.customFont}", sans-serif`;
     context.font = this.font;
 
     context.textAlign = 'left';
     context.fillStyle = this.color;
-
-    // var w = context.measureText(this.text).width;
-
-    // context.fillText(this.text, canvas.width/2 - w/2, canvas.height/2 + this.h.height/2);
 
     awesomeText(
       context,
@@ -104,38 +123,5 @@ class Text extends Module2D {
       Math.abs(this.h.height),
       canvas.width - 200,
     );
-  }
-
-  getTextHeight(font) { //eslint-disable-line
-    const result = {};
-
-    const text = document.createElement('span');
-    text.style.font = font;
-    text.textContent = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
-
-    const block = document.createElement('div');
-    block.style.display = 'inline-block';
-    block.style.width = '1px';
-    block.style.height = '0px';
-
-    const div = document.createElement('div');
-    div.appendChild(text);
-    div.appendChild(block);
-
-    document.body.appendChild(div);
-
-    block.style.verticalAlign = 'baseline';
-    result.ascent = block.offsetHeight - text.offsetHeight;
-
-    block.style.verticalAlign = 'bottom';
-    result.height = block.offsetHeight - text.offsetHeight;
-
-    result.descent = result.height - result.ascent;
-
-    div.remove();
-
-    return result;
-  }
-}
-
-export default Text;
+  },
+};

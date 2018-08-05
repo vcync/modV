@@ -91,6 +91,22 @@ const actions = {
 
     load(data);
   },
+  setEnabled({ state, commit }, { pluginName, enabled }) {
+    const plugin = state.plugins[pluginName].plugin;
+    if (!plugin) {
+      throw new Error(`${pluginName} does not exist as a Plugin`);
+    }
+
+    if (enabled && plugin.on) {
+      plugin.on();
+    }
+
+    if (!enabled && plugin.off) {
+      plugin.off();
+    }
+
+    commit('setEnabled', { pluginName, enabled });
+  },
 };
 
 // mutations

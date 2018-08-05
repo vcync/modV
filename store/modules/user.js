@@ -1,4 +1,3 @@
-import stats from '@/extra/stats';
 import store from '@/../store';
 import { modV } from '@/modv';
 
@@ -55,15 +54,6 @@ const actions = {
       commit('setCurrentVideoSource', { sourceId });
     });
   },
-  setShowStats({ commit }, shouldShowStats) {
-    if (shouldShowStats) {
-      stats.dom.classList.remove('hidden');
-    } else {
-      stats.dom.classList.add('hidden');
-    }
-
-    commit('setShowStats', shouldShowStats);
-  },
   setConstrainToOneOne({ commit }, shouldConstrain) {
     commit('setConstrainToOneOne', shouldConstrain);
     store.dispatch('size/updateSize');
@@ -86,9 +76,6 @@ const mutations = {
   },
   setCurrentVideoSource(state, { sourceId }) {
     state.currentVideoId = sourceId;
-  },
-  setShowStats(state, shouldShowStats) {
-    state.showStats = shouldShowStats;
   },
   setConstrainToOneOne(state, shouldConstrain) {
     state.constrainToOneOne = shouldConstrain;

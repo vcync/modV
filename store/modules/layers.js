@@ -1,6 +1,7 @@
 import Vue from 'vue';
 import { Layer } from '@/modv';
 import store from '@/../store';
+import getNextName from '@/utils/get-next-name';
 
 const state = {
   focusedLayer: 0,
@@ -17,8 +18,11 @@ const getters = {
 // actions
 const actions = {
   addLayer({ commit, state }) {
-    return new Promise((resolve) => {
-      const layerName = `Layer ${state.layers.length + 1}`;
+    return new Promise(async (resolve) => {
+      const layerName = await getNextName(
+        'Layer',
+        state.layers.map(layer => layer.name),
+      );
       const layer = new Layer();
       layer.setName(layerName);
 
@@ -71,10 +75,15 @@ const actions = {
         positionShadow = 0;
       }
     }
-    commit('addModuleToLayer', { moduleName: module.info.name, layerIndex, position: positionShadow });
+    commit('addModuleToLayer', {
+      moduleName: module.meta.name,
+      position: positionShadow,
+      layerIndex,
+    });
+
     store.commit(
       'modVModules/setModuleFocus',
-      { activeModuleName: module.info.name },
+      { activeModuleName: module.meta.name },
       { root: true },
     );
   },
@@ -121,6 +130,14 @@ const actions = {
       layerData.pipeline = Layer.pipeline;
       return layerData;
     });
+  },
+  async setLayerName({ state, commit }, { layerIndex, name }) {
+    const layerName = await getNextName(
+      name,
+      state.layers.map(layer => layer.name),
+    );
+
+    commit('setLayerName', { LayerIndex: layerIndex, name: layerName });
   },
 };
 

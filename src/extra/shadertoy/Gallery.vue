@@ -12,7 +12,6 @@
 </template>
 
 <script>
-  import ModuleShader from '@/modv/Modules/ModuleShader';
   import { modV } from '@/modv';
   import axios from 'axios';
 
@@ -59,21 +58,16 @@
       makeModule(result) {
         const code = result.renderpass[0].code;
 
-        class newModule extends ModuleShader {
-          constructor() {
-            super({
-              info: {
-                name: result.info.name,
-                author: result.info.username,
-                version: 0.1,
-                uniforms: {},
-              },
-              fragmentShader: code,
-            });
-          }
-        }
-
-        modV.register(newModule);
+        modV.register({
+          meta: {
+            name: result.info.name,
+            author: result.info.username,
+            version: 0.1,
+            uniforms: {},
+            type: 'shader',
+          },
+          fragmentShader: code,
+        });
       },
     },
   };

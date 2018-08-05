@@ -1,59 +1,61 @@
-import { Module2D } from '../Modules';
+// import Meyda from 'meyda';
 
-class Pixelate extends Module2D {
-  constructor() {
-    super({
-      info: {
-        name: 'Pixelate',
-        author: '2xAA',
-        version: 0.1,
-        previewWithOutput: true,
-        meyda: ['rms', 'zcr'],
-      },
-    });
+export default {
+  meta: {
+    name: 'Pixelate',
+    author: '2xAA',
+    version: '1.0.0',
+    audioFeatures: ['zcr', 'rms'],
+    type: '2d',
+    previewWithOutput: true,
+  },
 
-    const controls = [];
-
-    controls.push({
-      type: 'rangeControl',
-      variable: 'pixelAmount',
+  props: {
+    pixelAmount: {
+      type: 'int',
       label: 'Amount',
-      varType: 'int',
       min: 2,
       max: 30,
       step: 1,
       default: 5,
-    });
+    },
 
-    controls.push({
-      type: 'checkboxControl',
-      variable: 'soundReactive',
+    soundReactive: {
+      type: 'bool',
       label: 'Sound Reactive',
-      checked: false,
-    });
+      default: false,
+    },
 
-    controls.push({
-      type: 'rangeControl',
-      variable: 'intensity',
+    intensity: {
+      type: 'int',
       label: 'RMS/ZCR Intensity',
-      varType: 'int',
       min: 0,
       max: 30,
       step: 1,
       default: 15,
-    });
+    },
 
-    controls.push({
-      type: 'checkboxControl',
-      variable: 'soundType',
+    soundType: {
+      type: 'bool',
       label: 'RMS (unchecked) / ZCR (checked)',
-      checked: false,
-    });
+      default: false,
+    },
+  },
 
-    this.add(controls);
-  }
+  data: {
+    soundType: false, // false RMS, true ZCR
+    intensity: 1, // Half max
+    analysed: 0,
+    amount: 10,
+    baseSize: 1,
+    size: 2,
+    color: [255, 0, 0, 1],
+    speed: 1,
+    balls: [],
+    wrap: false,
+  },
 
-  init(canvas) {
+  init({ canvas }) {
     this.soundReactive = false;
     this.soundType = false; // false RMS, true ZCR
     this.intensity = 15; // Half max
@@ -65,12 +67,12 @@ class Pixelate extends Module2D {
 
     this.newCanvas2.width = canvas.width;
     this.newCanvas2.height = canvas.height;
-  }
+  },
 
-  resize(canvas) {
+  resize({ canvas }) {
     this.newCanvas2.width = canvas.width;
     this.newCanvas2.height = canvas.height;
-  }
+  },
 
   draw({ canvas, context, features }) {
     let w;
@@ -97,7 +99,5 @@ class Pixelate extends Module2D {
     this.newCtx2.drawImage(canvas, 0, 0, canvas.width, canvas.height, 0, 0, w, h);
     context.drawImage(this.newCanvas2, 0, 0, w, h, 0, 0, canvas.width, canvas.height);
     context.restore();
-  }
-}
-
-export default Pixelate;
+  },
+};

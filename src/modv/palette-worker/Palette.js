@@ -1,8 +1,16 @@
-function colorToRGBString(colour) {
+function colorToRgbString(color) {
   try {
-    return `rgb(${colour[0]},${colour[1]},${colour[2]})`;
+    return `rgb(${color.r},${color.g},${color.b})`;
   } catch (e) {
     return 'rgb(0,0,0)';
+  }
+}
+
+function colorToRgbaString(color) {
+  try {
+    return `rgba(${color.r},${color.g},${color.b},1)`;
+  } catch (e) {
+    return 'rgba(0,0,0,1)';
   }
 }
 
@@ -12,13 +20,13 @@ function calculateStep(colors, currentColor, currentTime, timePeriod) {
   let b1;
 
   try {
-    r1 = colors[currentColor][0];
-    g1 = colors[currentColor][1];
-    b1 = colors[currentColor][2];
+    r1 = colors[currentColor].r;
+    g1 = colors[currentColor].g;
+    b1 = colors[currentColor].b;
   } catch (e) {
     // try catch because the user may delete the
-    // current colour which throws the array and nextIndex out of sync
-    // TODO: fix case where user deletes current colour
+    // current color which throws the array and nextIndex out of sync
+    // TODO: fix case where user deletes current color
     return [0, 0, 0];
   }
 
@@ -28,16 +36,16 @@ function calculateStep(colors, currentColor, currentTime, timePeriod) {
     nextColor = 0;
   }
 
-  const r2 = colors[nextColor][0];
-  const g2 = colors[nextColor][1];
-  const b2 = colors[nextColor][2];
+  const r2 = colors[nextColor].r;
+  const g2 = colors[nextColor].g;
+  const b2 = colors[nextColor].b;
 
   const p = currentTime / (timePeriod - 1);
   const r = Math.round((1.0 - p) * r1 + p * r2 + 0.5); // eslint-disable-line
   const g = Math.round((1.0 - p) * g1 + p * g2 + 0.5); // eslint-disable-line
   const b = Math.round((1.0 - p) * b1 + p * b2 + 0.5); // eslint-disable-line
 
-  return [r, g, b];
+  return { r, g, b, a: 1 };
 }
 
 function hexToRgb(hex) {
@@ -49,11 +57,12 @@ function hexToRgb(hex) {
   ] : null;
 }
 
-function Palette(colorsIn, timePeriod, id) {
+function Palette(colorsIn, timePeriod, id, returnFormat) {
   this.bpm = 120;
   this.useBpm = false;
   this.bpmDivision = 16;
   this.creationTime = Date.now();
+  this.returnFormat = returnFormat;
 
   const stringed = JSON.stringify(colorsIn);
 
@@ -99,11 +108,11 @@ Palette.prototype.nextStep = function nextStep(cb) {
   }
 
   if (this.colors.length < 1) {
-    // If there are no colours, return false
+    // If there are no colors, return false
     return false;
   } else if (this.colors.length < 2) {
-    // If there are less than two colours, just return the only colour
-    return colorToRGBString(this.colors[0]);
+    // If there are less than two colors, just return the only color
+    return colorToRgbString(this.colors[0]);
   }
 
   this.currentTime += (1000 / 60);
@@ -117,9 +126,14 @@ Palette.prototype.nextStep = function nextStep(cb) {
     this.currentTime = 0;
   }
 
-  const returned = colorToRGBString(
-    calculateStep(this.colors, this.currentColor, this.currentTime, this.timePeriod),
-  );
+  const step = calculateStep(this.colors, this.currentColor, this.currentTime, this.timePeriod);
+  let returned = '';
+
+  if (this.returnFormat === 'rgbaString') {
+    returned = colorToRgbaString(step);
+  } else {
+    returned = colorToRgbString(step);
+  }
 
   cb(returned);
   return returned;

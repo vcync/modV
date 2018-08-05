@@ -99,27 +99,23 @@ const lfoplugin = {
     Object.keys(assignments).forEach((moduleName) => {
       Object.keys(assignments[moduleName]).forEach((controlVariable) => {
         const assignment = assignments[moduleName][controlVariable];
-        const module = store.getters['modVModules/getActiveModule'](moduleName);
-        const control = module.info.controls[controlVariable];
+        const module = store.state.modVModules.active[moduleName];
+        const control = module.props[controlVariable];
         const currentValue = module[controlVariable];
 
         let value = currentValue;
 
         if (assignment) {
           const lfoController = assignment.controller;
-          const { min, max, varType } = control;
+          const { min, max } = control;
           value = Math.map(lfoController.value, -1, 1, min, max);
-
-          if (varType === 'int') {
-            value = Math.round(value);
-          }
 
           if (currentValue === value) return;
 
-          store.dispatch('modVModules/setActiveModuleControlValue', {
-            moduleName,
-            variable: controlVariable,
-            value,
+          store.dispatch('modVModules/updateProp', {
+            name: moduleName,
+            prop: controlVariable,
+            data: value,
           });
         }
       });
@@ -128,7 +124,7 @@ const lfoplugin = {
 
   makeValue({ currentValue, moduleName, controlVariable }) { //eslint-disable-line
     const assignment = store.getters['lfo/assignment']({ moduleName, controlVariable });
-    const control = store.getters['modVModules/getActiveModule'](moduleName).info.controls[controlVariable];
+    const control = store.state.modVModules.active[moduleName].props[controlVariable];
 
     let value = currentValue;
 
