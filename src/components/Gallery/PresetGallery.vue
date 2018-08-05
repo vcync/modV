@@ -109,7 +109,7 @@
         profileErrorMessage: 'Please select a profile',
 
         newPresetName: '',
-        newPresetProfile: '',
+        newPresetProfile: 'default',
       };
     },
     props: {
