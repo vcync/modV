@@ -10,6 +10,8 @@ const getters = {
   assignments: state => state.assignments,
   assignment: state => key => state.assignments[key],
   devices: state => state.devices,
+  midiChannelFromAssignment: state => assignmentString => Object.keys(state.assignments)
+    .find(channel => state.assignments[channel].variable === assignmentString),
 };
 
 // actions

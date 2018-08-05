@@ -136,20 +136,33 @@ const midiAssignment = {
   },
 
   createMenuItem(moduleName, controlVariable, internal) {
+    let assignmentString = `${moduleName},${controlVariable}`;
+
+    if (internal) {
+      assignmentString += ',internal';
+    }
+
     function click() {
-      let assignmentString = `${moduleName},${controlVariable}`;
-
-      if (internal) {
-        assignmentString += ',internal';
-      }
-
       assigner.learn(assignmentString);
     }
 
-    const MidiItem = new MenuItem({
+    let MidiItem = new MenuItem({
       label: 'Learn MIDI assignment',
       click: click.bind(this),
     });
+
+
+    const existingChannel = store
+      .getters['midiAssignment/midiChannelFromAssignment'](assignmentString);
+
+    if (existingChannel) {
+      MidiItem = new MenuItem({
+        label: 'Remove MIDI assignment',
+        click() {
+          store.commit('midiAssignment/removeAssignment', { key: existingChannel });
+        },
+      });
+    }
 
     return MidiItem;
   },
