@@ -1,5 +1,5 @@
 import Vue from 'vue';
-// import Ajv from 'ajv/lib/ajv';
+import Ajv from 'ajv/lib/ajv';
 import { modV } from '@/modv';
 import cloneDeep from 'lodash.clonedeep';
 import getNextName from '@/utils/get-next-name';
@@ -7,15 +7,15 @@ import { setup as shaderSetup } from '@/modv/renderers/shader';
 import { setup as isfSetup } from '@/modv/renderers/isf';
 import store from '../index';
 
-// const jsd4 = require('ajv/lib/refs/json-schema-draft-04.json');
+const jsd4 = require('ajv/lib/refs/json-schema-draft-04.json');
 
-// const makeSchema = function makeSchema(properties) {
-//   return {
-//     $schema: 'http://json-schema.org/draft-04/schema#',
-//     type: 'object',
-//     properties,
-//   };
-// };
+const makeSchema = function makeSchema(properties) {
+  return {
+    $schema: 'http://json-schema.org/draft-04/schema#',
+    type: 'object',
+    properties,
+  };
+};
 
 const outerState = {
   registry: {},
@@ -329,98 +329,59 @@ const actions = {
     dispatch('syncMetaQueue');
   },
 
-  // presetData({ state }) {
-  //   // @TODO: figure out a better clone than JSONparse(JSONstringify())
-  //   const ajv = new Ajv({
-  //     removeAdditional: 'all',
-  //   });
-  //   ajv.addMetaSchema(jsd4);
+  presetData({ state }) {
+    // @TODO: figure out a better clone than JSONparse(JSONstringify())
+    const ajv = new Ajv({
+      removeAdditional: 'all',
+    });
+    ajv.addMetaSchema(jsd4);
 
+    const moduleNames = Object.keys(state.active)
+      .filter(key => key.substring(key.length - 8, key.length) !== '-gallery');
 
-  //   const moduleNames = Object.keys(state.active)
-  //     .filter(key => key.substring(key.length - 8, key.length) !== '-gallery');
+    const moduleData = moduleNames.reduce((obj, moduleName) => {
+      obj[moduleName] = {};
+      obj[moduleName].values = Object.keys(state.active[moduleName].props)
+        .reduce((valuesObj, prop) => {
+          valuesObj[prop] = state.active[moduleName][prop];
+          return valuesObj;
+        }, {});
+      return obj;
+    }, {});
 
-  //   const moduleData = moduleNames.reduce((obj, moduleName) => {
-  //     obj[moduleName] = {};
-  //     obj[moduleName].values = JSON.parse(JSON.stringify(state.active[moduleName]));
-  //     return obj;
-  //   }, {});
+    moduleNames.forEach((moduleName) => {
+      const Module = outerState.active[moduleName];
 
-  //   moduleNames.forEach((moduleName) => {
-  //     const Module = externalState.active[moduleName];
+      // Merge Module data onto existing data
+      moduleData[moduleName].meta = {};
+      moduleData[moduleName].meta = Object.assign(Module.meta, moduleData[moduleName].meta);
 
-  //     const moduleInfo = {
-  //       alpha: Module.info.alpha,
-  //       author: Module.info.author,
-  //       compositeOperation: Module.info.compositeOperation,
-  //       enabled: Module.info.enabled,
-  //       originalName: Module.info.originalName,
-  //       version: Module.info.version,
-  //     };
+      if (!('saveData' in Module.meta)) {
+        console.warn(
+          `generatePreset: Module ${Module.meta.name} has no saveData schema, falling back to Vuex store data`,
+        );
+        return;
+      }
 
-  //     // Merge Module data onto existing data
-  //     moduleData[moduleName] = Object.assign(moduleData[moduleName], moduleInfo);
-  //     delete moduleData[moduleName].values.info;
+      const schema = makeSchema(JSON.parse(JSON.stringify(Module.meta.saveData)));
+      const validate = ajv.compile(schema);
 
-  //     if (!('saveData' in Module.info)) {
-  //       console.warn(`
-  //         generatePreset: Module ${Module.info.name} has no saveData schema,
-  //         falling back to Vuex store data
-  //       `);
-  //       return;
-  //     }
+      const copiedModule = JSON.parse(JSON.stringify(Module));
+      const validated = validate(copiedModule);
+      if (!validated) {
+        console.error(
+          `generatePreset: Module ${Module.meta.name} failed saveData validation, skipping`,
+          validate.errors,
+        );
+        return;
+      }
 
-  //     const schema = makeSchema(JSON.parse(JSON.stringify(Module.info.saveData)));
-  //     const validate = ajv.compile(schema);
+      // Merge validated data onto existing data
+      moduleData[moduleName].values = Object.assign(moduleData[moduleName].values, copiedModule);
+    });
 
-  //     const copiedModule = JSON.parse(JSON.stringify(Module));
-  //     const validated = validate(copiedModule);
-  //     if (!validated) {
-  //       console.error(
-  //         `generatePreset: Module ${Module.info.name} failed saveData validation, skipping`,
-  //         validate.errors,
-  //       );
-  //       return;
-  //     }
-
-  //     // Merge validated data onto existing data
-  //     moduleData[moduleName].values = Object.assign(moduleData[moduleName].values, copiedModule);
-  //   });
-
-  //   return moduleData;
-  // },
-
-  // setActiveModuleControlValue({ commit }, { moduleName, variable, value }) {
-  //   const module = externalState.active[moduleName];
-  //   const controlValues = state.active[moduleName];
-  //   let processedValue = value.valueOf();
-
-  //   store.getters['plugins/enabledPlugins']
-  //   .filter(plugin => ('processValue' in plugin.plugin))
-  //   .forEach((plugin) => {
-  //     const newValue = plugin.plugin.processValue({
-  //       currentValue: processedValue,
-  //       controlVariable: variable,
-  //       delta: modV.delta,
-  //       moduleName,
-  //     });
-
-  //     if (newValue) processedValue = newValue;
-  //   });
-
-  //   if (
-  //     Object.keys(controlValues)
-  //       .filter(controlVariableName => controlVariableName === variable).length < 1
-  //   ) {
-  //     return;
-  //   }
-
-  //   if ('append' in module.info.controls[variable]) {
-  //     processedValue = `${processedValue}${module.info.controls[variable].append}`;
-  //   }
-
-  //   commit('setActiveModuleControlValue', { moduleName, variable, value, processedValue });
-  // },
+    return moduleData;
+  },
 
   setActiveModuleInfo({ commit }, { moduleName, key, value }) {
     commit('setActiveModuleInfo', { moduleName, key, value });
