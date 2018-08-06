@@ -11,6 +11,7 @@ const state = {
 // getters
 const getters = {
   allProjects: state => state.projects,
+  currentProject: state => state.projects[state.currentProject],
   getPaletteFromProject: state => ({
     paletteName,
     projectName,

@@ -4,7 +4,7 @@
       <h2 class="title">Save preset</h2>
       <div class="columns">
 
-        <div class="column">
+        <div class="column is-10">
 
           <b-field
             :type="nameError ? 'is-danger' : ''"
@@ -14,22 +14,6 @@
               placeholder="Preset name"
               v-model="newPresetName"
             ></b-input>
-          </b-field>
-
-        </div>
-        <div class="column is-2">
-
-          <b-field
-            :type="projectError ? 'is-danger' : ''"
-            :message="projectError ? projectErrorMessage : ''"
-          >
-            <b-select placeholder="Project name" v-model="newPresetProject">
-              <option
-                v-for="(project, projectName) in projects"
-                :value="projectName"
-                :key="projectName"
-              >{{ projectName }}</option>
-            </b-select>
           </b-field>
 
         </div>
@@ -48,47 +32,43 @@
       </div>
     </div>
     <div class="column is-12">
-      <span v-for="(project, projectName) in projects">
-        <h2 class="title">{{ projectName }}</h2>
-        <div class="columns is-gapless is-multiline">
-          <div
-            class="column is-12 preset-container"
-            v-for="(preset, presetName) in project"
-          >
-            <div class="columns cannot-load" v-if="!validateModuleRequirements(preset.moduleData)">
+      <div
+        class="column is-12 preset-container"
+        v-for="(preset, presetName) in project"
+      >
+        <div class="columns cannot-load" v-if="!validateModuleRequirements(preset.moduleData)">
 
-              <div class="column is-10">
-                <span class="has-text-grey">{{ preset.presetInfo.name }}</span>
-              </div>
+          <div class="column is-10">
+            <span class="has-text-grey">{{ preset.presetInfo.name }}</span>
+          </div>
 
-              <div class="column is-2">
-                <b-tooltip
-                  label="Missing modules"
-                  type="is-danger"
-                  position="is-left"
-                >
-                  <button class="button is-dark" disabled>Load</button>
-                </b-tooltip>
-              </div>
-            </div>
-            <div class="columns" v-else>
-
-              <div class="column is-10">
-                <span class="has-text-light">{{ preset.presetInfo.name }}</span>
-              </div>
-
-              <div class="column is-2">
-                <button
-                  class="button is-dark is-inverted is-outlined"
-                  :class="{ 'is-loading': loading === `${projectName}.${preset.presetInfo.name}` }"
-                  @click="loadPreset({ presetName: preset.presetInfo.name, projectName })"
-                >Load</button>
-              </div>
-            </div>
-
+          <div class="column is-2">
+            <b-tooltip
+              label="Missing modules"
+              type="is-danger"
+              position="is-left"
+            >
+              <button class="button is-dark" disabled>Load</button>
+            </b-tooltip>
           </div>
         </div>
-      </span>
+        <div class="columns" v-else>
+
+          <div class="column is-10">
+            <span class="has-text-light">{{ preset.presetInfo.name }}</span>
+          </div>
+
+          <div class="column is-2">
+            <button
+              class="button is-dark is-inverted is-outlined"
+              :class="{
+                'is-loading': loading === `${currentProjectName}.${preset.presetInfo.name}`
+              }"
+              @click="loadPreset({ presetName: preset.presetInfo.name })"
+            >Load</button>
+          </div>
+        </div>
+      </div>
     </div>
   </div>
 </template>
@@ -122,23 +102,23 @@
     },
     computed: {
       ...mapGetters('projects', [
-        'allProjects',
+        'currentProject',
       ]),
       ...mapGetters('modVModules', [
         'registry',
       ]),
-      projects() {
-        const data = {};
+      currentProjectName() {
+        return this.$store.state.projects.currentProject;
+      },
+      project() {
+        const data = [];
+        if (!this.currentProject) return data;
 
-        Object.keys(this.allProjects).forEach((projectName) => {
-          data[projectName] = [];
-
-          Object.keys(this.allProjects[projectName].presets)
-            .sort(naturalSort.compare)
-            .forEach((presetName) => {
-              data[projectName].push(this.allProjects[projectName].presets[presetName]);
-            });
-        });
+        Object.keys(this.currentProject.presets)
+          .sort(naturalSort.compare)
+          .forEach((presetName) => {
+            data.push(this.currentProject.presets[presetName]);
+          });
 
         return data;
       },
@@ -165,7 +145,8 @@
           .map(datumKey => moduleData[datumKey].originalModuleName)
           .every(moduleName => Object.keys(this.registry).indexOf(moduleName) < 0);
       },
-      async loadPreset({ presetName, projectName }) {
+      async loadPreset({ presetName }) {
+        const projectName = this.currentProjectName;
         this.loading = `${projectName}.${presetName}`;
 
         await this.loadPresetFromProject({ presetName, projectName });
@@ -187,7 +168,7 @@
 
         await this.savePresetToProject({
           presetName: this.newPresetName,
-          projectName: this.newPresetProject,
+          projectName: this.currentProjectName,
         });
 
         this.newPresetName = '';
