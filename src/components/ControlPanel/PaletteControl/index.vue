@@ -75,16 +75,16 @@
       >
     </div>
     <div class="pure-control-group">
-      <label :for="`${inputId}-load-palette`">Profile</label>
-      <profile-selector
-        :id="`${inputId}-profile`"
-        v-model="profileSelectorInput"
-      ></profile-selector>
+      <label :for="`${inputId}-load-palette`">Project</label>
+      <project-selector
+        :id="`${inputId}-project`"
+        v-model="projectSelectorInput"
+      ></project-selector>
     </div>
     <div class="pure-control-group">
       <label :for="`${inputId}-load-palette`">Load Palette</label>
       <palette-selector
-        :profile="profileSelectorInput"
+        :project="projectSelectorInput"
         :id="`${inputId}-load-palette`"
         v-model="paletteSelectorInput"
       ></palette-selector>
@@ -115,7 +115,7 @@
   import { Sketch } from 'vue-color';
 
   import PaletteSelector from './PaletteSelector';
-  import ProfileSelector from '../ProfileSelector';
+  import ProjectSelector from '../ProjectSelector';
 
   const defaultProps = {
     hex: '#194d33',
@@ -160,7 +160,7 @@
         showPicker: false,
         useBpmInput: false,
         bpmDivisionInput: 16,
-        profileSelectorInput: 'default',
+        projectSelectorInput: 'default',
         paletteSelectorInput: '',
         savePaletteNameInput: '',
       };
@@ -242,11 +242,11 @@
         'updateUseBpm',
         'updateBpmDivision',
       ]),
-      ...mapGetters('profiles', [
-        'getPaletteFromProfile',
+      ...mapGetters('projects', [
+        'getPaletteFromProject',
       ]),
-      ...mapActions('profiles', [
-        'savePaletteToProfile',
+      ...mapActions('projects', [
+        'savePaletteToProject',
       ]),
       addSwatch() {
         const updatedColors = this.colors.slice();
@@ -270,9 +270,9 @@
         this.showPicker = !this.showPicker;
       },
       clickLoadPalette() {
-        let palette = this.getPaletteFromProfile()({
+        let palette = this.getPaletteFromProject()({
           paletteName: this.paletteSelectorInput,
-          profileName: this.profileSelectorInput,
+          projectName: this.projectSelectorInput,
         });
 
         if (Array.isArray(palette)) {
@@ -285,8 +285,8 @@
         });
       },
       clickSavePalette() {
-        this.savePaletteToProfile({
-          profileName: this.profileSelectorInput,
+        this.savePaletteToProject({
+          projectName: this.projectSelectorInput,
           paletteName: this.savePaletteNameInput,
           colors: this.colors,
         });
@@ -329,7 +329,7 @@
     components: {
       'sketch-picker': Sketch,
       PaletteSelector,
-      ProfileSelector,
+      ProjectSelector,
       draggable,
     },
   };

@@ -69,8 +69,6 @@ function Palette(colorsIn, timePeriod, id, returnFormat) {
   this.colors = JSON.parse(stringed) || [];
   this.timePeriod = timePeriod || 100;
 
-  this.profilesList = [];
-
   this.currentColor = 0; // jshint ignore:line
   this.currentTime = 0; // jshint ignore:line
   // this.timePeriod = Math.round((this.timePeriod/1000) * 60);

@@ -20,15 +20,15 @@
         <div class="column is-2">
 
           <b-field
-            :type="profileError ? 'is-danger' : ''"
-            :message="profileError ? profileErrorMessage : ''"
+            :type="projectError ? 'is-danger' : ''"
+            :message="projectError ? projectErrorMessage : ''"
           >
-            <b-select placeholder="Profile name" v-model="newPresetProfile">
+            <b-select placeholder="Project name" v-model="newPresetProject">
               <option
-                v-for="(profile, profileName) in profiles"
-                :value="profileName"
-                :key="profileName"
-              >{{ profileName }}</option>
+                v-for="(project, projectName) in projects"
+                :value="projectName"
+                :key="projectName"
+              >{{ projectName }}</option>
             </b-select>
           </b-field>
 
@@ -48,12 +48,12 @@
       </div>
     </div>
     <div class="column is-12">
-      <span v-for="(profile, profileName) in profiles">
-        <h2 class="title">{{ profileName }}</h2>
+      <span v-for="(project, projectName) in projects">
+        <h2 class="title">{{ projectName }}</h2>
         <div class="columns is-gapless is-multiline">
           <div
             class="column is-12 preset-container"
-            v-for="(preset, presetName) in profile"
+            v-for="(preset, presetName) in project"
           >
             <div class="columns cannot-load" v-if="!validateModuleRequirements(preset.moduleData)">
 
@@ -80,8 +80,8 @@
               <div class="column is-2">
                 <button
                   class="button is-dark is-inverted is-outlined"
-                  :class="{ 'is-loading': loading === `${profileName}.${preset.presetInfo.name}` }"
-                  @click="loadPreset({ presetName: preset.presetInfo.name, profileName })"
+                  :class="{ 'is-loading': loading === `${projectName}.${preset.presetInfo.name}` }"
+                  @click="loadPreset({ presetName: preset.presetInfo.name, projectName })"
                 >Load</button>
               </div>
             </div>
@@ -106,11 +106,11 @@
         nameError: false,
         nameErrorMessage: 'Preset must have a name',
 
-        profileError: false,
-        profileErrorMessage: 'Please select a profile',
+        projectError: false,
+        projectErrorMessage: 'Please select a project',
 
         newPresetName: '',
-        newPresetProfile: 'default',
+        newPresetProject: 'default',
       };
     },
     props: {
@@ -121,22 +121,22 @@
       },
     },
     computed: {
-      ...mapGetters('profiles', [
-        'allProfiles',
+      ...mapGetters('projects', [
+        'allProjects',
       ]),
       ...mapGetters('modVModules', [
         'registry',
       ]),
-      profiles() {
+      projects() {
         const data = {};
 
-        Object.keys(this.allProfiles).forEach((profileName) => {
-          data[profileName] = [];
+        Object.keys(this.allProjects).forEach((projectName) => {
+          data[projectName] = [];
 
-          Object.keys(this.allProfiles[profileName].presets)
+          Object.keys(this.allProjects[projectName].presets)
             .sort(naturalSort.compare)
             .forEach((presetName) => {
-              data[profileName].push(this.allProfiles[profileName].presets[presetName]);
+              data[projectName].push(this.allProjects[projectName].presets[presetName]);
             });
         });
 
@@ -144,9 +144,9 @@
       },
     },
     methods: {
-      ...mapActions('profiles', [
-        'loadPresetFromProfile',
-        'savePresetToProfile',
+      ...mapActions('projects', [
+        'loadPresetFromProject',
+        'savePresetToProject',
       ]),
       search(textIn, termIn) {
         const text = textIn.toLowerCase().trim();
@@ -165,29 +165,29 @@
           .map(datumKey => moduleData[datumKey].originalModuleName)
           .every(moduleName => Object.keys(this.registry).indexOf(moduleName) < 0);
       },
-      async loadPreset({ presetName, profileName }) {
-        this.loading = `${profileName}.${presetName}`;
+      async loadPreset({ presetName, projectName }) {
+        this.loading = `${projectName}.${presetName}`;
 
-        await this.loadPresetFromProfile({ presetName, profileName });
+        await this.loadPresetFromProject({ presetName, projectName });
         this.loading = null;
       },
       async savePreset() {
         this.nameError = false;
-        this.profileError = false;
+        this.projectError = false;
 
         if (!this.newPresetName.trim().length) {
           this.nameError = true;
           return;
         }
 
-        if (!this.newPresetProfile.trim().length) {
-          this.profileError = true;
+        if (!this.newPresetProject.trim().length) {
+          this.projectError = true;
           return;
         }
 
-        await this.savePresetToProfile({
+        await this.savePresetToProject({
           presetName: this.newPresetName,
-          profileName: this.newPresetProfile,
+          projectName: this.newPresetProject,
         });
 
         this.newPresetName = '';

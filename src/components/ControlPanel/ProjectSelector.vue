@@ -1,12 +1,12 @@
 <template>
-  <b-dropdown class="dropdown" v-model="currentProfile">
+  <b-dropdown class="dropdown" v-model="currentProject">
     <button class="button is-primary is-small" slot="trigger">
-      <span>{{ currentProfile }}</span>
+      <span>{{ currentProject }}</span>
       <b-icon icon="angle-down"></b-icon>
     </button>
 
     <b-dropdown-item
-      v-for="name, idx in profileNames"
+      v-for="name, idx in projectNames"
       :key="idx"
       :value="name.value"
     >{{ name.label }}</b-dropdown-item>
@@ -17,28 +17,28 @@
   import { mapGetters } from 'vuex';
 
   export default {
-    name: 'profileSelector',
+    name: 'projectSelector',
     props: [
       'value',
     ],
     data() {
       return {
-        currentProfile: 'default',
+        currentProject: 'default',
       };
     },
     computed: {
-      ...mapGetters('profiles', [
-        'allProfiles',
+      ...mapGetters('projects', [
+        'allProjects',
       ]),
-      profileNames() {
+      projectNames() {
         const data = [];
-        const allProfiles = this.allProfiles;
+        const allProjects = this.allProjects;
 
-        Object.keys(allProfiles).forEach((profileName) => {
+        Object.keys(allProjects).forEach((projectName) => {
           data.push({
-            label: profileName,
-            value: profileName,
-            selected: this.currentProfile === profileName,
+            label: projectName,
+            value: projectName,
+            selected: this.currentProject === projectName,
           });
         });
 
@@ -46,19 +46,19 @@
       },
     },
     watch: {
-      currentProfile() {
-        this.$emit('input', this.currentProfile);
+      currentProject() {
+        this.$emit('input', this.currentProject);
       },
     },
   };
 </script>
 
 <style lang='scss'>
-  .profile-selector-container {
+  .project-selector-container {
     display: inline-block;
   }
 
-  .profile-selector.hsy-dropdown {
+  .project-selector.hsy-dropdown {
       display: inline-block;
       vertical-align: middle;
 

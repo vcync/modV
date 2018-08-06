@@ -8,7 +8,7 @@ import meyda from './modules/meyda';
 import modVModules from './modules/modv-modules';
 import palettes from './modules/palettes';
 import plugins from './modules/plugins';
-import profiles from './modules/profiles';
+import projects from './modules/projects';
 import size from './modules/size';
 import tempo from './modules/tempo';
 import user from './modules/user';
@@ -39,7 +39,7 @@ export default new Vuex.Store({
     modVModules,
     palettes,
     plugins,
-    profiles,
+    projects,
     size,
     tempo,
     user,

@@ -3,22 +3,20 @@ import store from '@/../store';
 import { modV } from '@/modv';
 import packageData from '@/../package.json';
 
-const state = {
-  profiles: {},
-};
+const state = {};
 
 // getters
 const getters = {
-  allProfiles: state => state.profiles,
-  getPaletteFromProfile: state => ({
+  allProjects: state => state,
+  getPaletteFromProject: state => ({
     paletteName,
-    profileName,
-  }) => state.profiles[profileName].palettes[paletteName],
+    projectName,
+  }) => state[projectName].palettes[paletteName],
 };
 
 // actions
 const actions = {
-  async savePresetToProfile({}, { profileName, presetName }) { //eslint-disable-line
+  async savePresetToProject({}, { projectName, presetName }) { //eslint-disable-line
     const MediaManager = modV.MediaManagerClient;
 
     const preset = {};
@@ -43,16 +41,16 @@ const actions = {
 
     MediaManager.send({
       request: 'save-preset',
-      profile: profileName,
+      profile: projectName,
       name: presetName,
       payload: preset,
     });
 
     return preset;
   },
-  loadPresetFromProfile({}, { profileName, presetName }) { //eslint-disable-line
-    const presetData = state.profiles[profileName].presets[presetName];
-    store.dispatch('profiles/loadPreset', { presetData });
+  loadPresetFromProject({}, { projectName, presetName }) { //eslint-disable-line
+    const presetData = state[projectName].presets[presetName];
+    store.dispatch('projects/loadPreset', { presetData });
   },
   async loadPreset({}, { presetData }) { //eslint-disable-line
     await store.dispatch('layers/removeAllLayers');
@@ -72,7 +70,6 @@ const actions = {
       store.commit('layers/setLocked', { layerIndex, locked: Layer.locked });
       // store.commit('layers/setModuleOrder', { layerIndex, moduleOrder: Layer.moduleOrder });
       await store.dispatch('layers/setLayerName', { layerIndex, name: Layer.name });
-      console.log(Layer.name);
       store.commit('layers/setPipeline', { layerIndex, pipeline: Layer.pipeline });
 
       Layer.moduleOrder.forEach(async (moduleName, idx) => {
@@ -156,12 +153,12 @@ const actions = {
       }
     });
   },
-  savePaletteToProfile({}, { profileName, paletteName, colors }) { //eslint-disable-line
+  savePaletteToProject({}, { projectName, paletteName, colors }) { //eslint-disable-line
     const MediaManager = modV.MediaManagerClient;
 
     MediaManager.send({
       request: 'save-palette',
-      profile: profileName,
+      profile: projectName,
       name: paletteName,
       payload: colors,
     });
@@ -170,16 +167,16 @@ const actions = {
 
 // mutations
 const mutations = {
-  addProfile(state, { profileName, images, palettes, presets, videos, modules }) {
-    const profile = {};
-    profile.images = images || {};
-    profile.palettes = palettes || {};
-    profile.presets = presets || {};
-    profile.videos = videos || {};
-    profile.modules = modules || {};
+  addProject(state, { projectName, images, palettes, presets, videos, modules }) {
+    const project = {};
+    project.images = images || {};
+    project.palettes = palettes || {};
+    project.presets = presets || {};
+    project.videos = videos || {};
+    project.modules = modules || {};
 
-    Object.keys(profile.modules).forEach((moduleName) => {
-      fetch(profile.modules[moduleName])
+    Object.keys(project.modules).forEach((moduleName) => {
+      fetch(project.modules[moduleName])
         .then(response => response.text())
         .then((text) => {
           store.dispatch('modVModules/register', {
@@ -188,18 +185,18 @@ const mutations = {
         });
     });
 
-    Vue.set(state.profiles, profileName, profile);
+    Vue.set(state, projectName, project);
   },
-  addPaletteToProfile(state, { profileName, paletteName, colors }) {
-    const profile = state.profiles[profileName];
-    Vue.set(profile.palettes, paletteName, colors);
+  addPaletteToProject(state, { projectName, paletteName, colors }) {
+    const project = state[projectName];
+    Vue.set(project.palettes, paletteName, colors);
   },
-  addPresetToProfile(state, { profileName, presetName, presetData }) {
-    const profile = state.profiles[profileName];
-    Vue.set(profile.presets, presetName, presetData);
+  addPresetToProject(state, { projectName, presetName, presetData }) {
+    const project = state[projectName];
+    Vue.set(project.presets, presetName, presetData);
   },
-  addModuleToProfile(state, { profileName, presetName, path }) {
-    const profile = state.profiles[profileName];
+  addModuleToProject(state, { projectName, presetName, path }) {
+    const project = state[projectName];
 
     fetch(path)
       .then(response => response.text())
@@ -209,7 +206,7 @@ const mutations = {
         });
       });
 
-    Vue.set(profile.modules, presetName, path);
+    Vue.set(project.modules, presetName, path);
   },
 };
 
