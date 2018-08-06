@@ -35,6 +35,13 @@
             display: inline-flex;
           }
         }
+
+        // Prevent the label to overlap reorder
+        .control-group {
+          > label {
+            min-width: 0;
+          }
+        }
       }
 
       // For every module in a layer:
