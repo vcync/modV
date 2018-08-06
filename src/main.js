@@ -18,6 +18,7 @@ import midiAssignment from './extra/midi-assignment';
 import featureAssignment from './extra/feature-assignment';
 import lfo from './extra/lfo';
 import grabCanvas from './extra/grab-canvas';
+import slimUi from './extra/slim-ui';
 import shadertoy from './extra/shadertoy';
 import './assets/styles/index.scss';
 
@@ -47,6 +48,7 @@ modV.use(expression);
 modV.use(midiAssignment);
 modV.use(lfo);
 modV.use(grabCanvas);
+modV.use(slimUi);
 modV.use(shadertoy);
 
 /* eslint-disable no-new */
