@@ -5,7 +5,7 @@
   /**
    * The styles defined here are there to overwrite styles in the main application.
    * This is not the best idea, but something that can be done without hacking anything
-   * into modV. A better way would be to add the styles directly in index.js. 
+   * into modV. A better way would be to add the styles directly in index.js.
    */
   export default {
     name: 'slimUiControlPanel',
