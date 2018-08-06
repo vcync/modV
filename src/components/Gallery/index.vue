@@ -34,6 +34,10 @@
           <plugin-gallery :phrase="phrase"></plugin-gallery>
         </b-tab-item>
 
+        <b-tab-item label="Projects" v-bar="{ useScrollbarPseudo: true }">
+          <project-gallery :phrase="phrase"></project-gallery>
+        </b-tab-item>
+
         <b-tab-item
           v-for="(plugin, pluginName) in enabledPlugins"
           :label="pluginName"
@@ -53,6 +57,7 @@
   import PaletteGallery from '@/components/Gallery/PaletteGallery';
   import PluginGallery from '@/components/Gallery/PluginGallery';
   import PresetGallery from '@/components/Gallery/PresetGallery';
+  import ProjectGallery from '@/components/Gallery/ProjectGallery';
   import SearchBar from '@/components/Gallery/SearchBar';
 
   export default {
@@ -121,6 +126,7 @@
       PaletteGallery,
       PluginGallery,
       PresetGallery,
+      ProjectGallery,
       SearchBar,
     },
   };

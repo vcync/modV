@@ -1,10 +1,10 @@
 <template>
   <div class="palette-gallery columns is-gapless is-multiline">
     <div class="column is-12">
-      <span v-for="(profile, profileName) in profiles">
-        <h2 class="title">{{ profileName }}</h2>
+      <span v-for="(project, projectName) in projects">
+        <h2 class="title">{{ projectName }}</h2>
         <div class="columns is-gapless is-multiline">
-          <div class="column is-12 palette-container" v-for="(palette, paletteName) in profile.palettes">
+          <div class="column is-12 palette-container" v-for="(palette, paletteName) in project.palettes">
             <p class="has-text-light">{{ paletteName }}</p>
             <div
               class="swatch"
@@ -34,8 +34,8 @@
       },
     },
     computed: {
-      ...mapGetters('profiles', {
-        profiles: 'allProfiles',
+      ...mapGetters('projects', {
+        projects: 'allProjects',
       }),
     },
     methods: {

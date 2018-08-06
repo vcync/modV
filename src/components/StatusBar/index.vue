@@ -5,6 +5,8 @@
     <span class="tag">modules: {{ nonGalleryModules }}</span>
     <span class="tag">bpm: {{ bpm }} {{ detect ? '🤖' : '' }}</span>
 
+    <project-item></project-item>
+
     <b-modal :active.sync="sizeModalOpen">
       <div>
         <b-input
@@ -24,9 +26,13 @@
 
 <script>
   import { mapGetters } from 'vuex';
+  import projectItem from './Project';
 
   export default {
     name: 'statusBar',
+    components: {
+      projectItem,
+    },
     data() {
       return {
         sizeModalOpen: false,

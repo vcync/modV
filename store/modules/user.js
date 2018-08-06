@@ -9,6 +9,7 @@ const state = {
   currentVideoId: '',
   showStats: false,
   constrainToOneOne: false,
+  project: 'default',
 };
 
 // getters
@@ -79,6 +80,9 @@ const mutations = {
   },
   setConstrainToOneOne(state, shouldConstrain) {
     state.constrainToOneOne = shouldConstrain;
+  },
+  setProject(state, { projectName }) {
+    state.project = projectName;
   },
 };
 

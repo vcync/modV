@@ -77,7 +77,7 @@ const actions = {
     });
   },
 
-  load({ state }, { pluginName, data }) {
+  load({ dispatch, state }, { pluginName, data, enabled = true }) {
     const plugin = state.plugins[pluginName].plugin;
     if (!plugin) {
       throw new Error(`${pluginName} does not exist as a Plugin`);
@@ -98,6 +98,8 @@ const actions = {
     }
 
     load(data);
+
+    dispatch('setEnabled', { pluginName, enabled });
   },
   setEnabled({ state, commit }, { pluginName, enabled }) {
     const plugin = state.plugins[pluginName].plugin;
