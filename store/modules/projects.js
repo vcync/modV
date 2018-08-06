@@ -166,6 +166,11 @@ const actions = {
       payload: colors,
     });
   },
+  setCurrent({ commit, state }, { projectName }) {
+    if (!state.projects[projectName]) throw Error('Project does not exist');
+
+    commit('setCurrent', { projectName });
+  },
 };
 
 // mutations
@@ -211,6 +216,13 @@ const mutations = {
       });
 
     Vue.set(project.modules, presetName, path);
+  },
+  addPluginToProject(state, { projectName, pluginName, pluginData }) {
+    const project = state.projects[projectName];
+    Vue.set(project.plugins, pluginName, pluginData);
+  },
+  setCurrent(state, { projectName }) {
+    Vue.set(state, 'currentProject', projectName);
   },
 };
 

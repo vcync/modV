@@ -1,7 +1,7 @@
 <template>
   <div class="preset-gallery columns is-gapless is-multiline">
     <div
-      v-for="(project, projectName) in projects"
+      v-for="projectName in projects"
       class="column is-12 preset-container"
     >
       <div class="columns">
@@ -13,8 +13,8 @@
           <button
             class="button is-dark is-inverted is-outlined"
             :class="{ 'is-loading': loading === projectName }"
-            @click="useProject({ projectName })"
             :disabled="!isCurrent(projectName)"
+            @click="useProject({ projectName })"
           >{{ isCurrent(projectName) ? 'Use' : 'In use' }}</button>
         </div>
       </div>
@@ -23,7 +23,6 @@
 </template>
 
 <script>
-  import { mapActions, mapGetters } from 'vuex';
   import naturalSort from '@/modv/utils/natural-sort';
 
   export default {
@@ -33,13 +32,7 @@
         loading: null,
 
         nameError: false,
-        nameErrorMessage: 'Preset must have a name',
-
-        projectError: false,
-        projectErrorMessage: 'Please select a project',
-
-        newPresetName: '',
-        newPresetProject: 'default',
+        nameErrorMessage: 'Project must have a name',
       };
     },
     props: {
@@ -50,33 +43,14 @@
       },
     },
     computed: {
-      ...mapGetters('projects', [
-        'allProjects',
-      ]),
-      ...mapGetters('modVModules', [
-        'registry',
-      ]),
+      allProjects() {
+        return this.$store.state.projects.projects;
+      },
       projects() {
-        const data = {};
-
-        Object.keys(this.allProjects).forEach((projectName) => {
-          data[projectName] = [];
-
-          Object.keys(this.allProjects[projectName].presets)
-            .sort(naturalSort.compare)
-            .forEach((presetName) => {
-              data[projectName].push(this.allProjects[projectName].presets[presetName]);
-            });
-        });
-
-        return data;
+        return Object.keys(this.allProjects).sort(naturalSort.compare);
       },
     },
     methods: {
-      ...mapActions('projects', [
-        'loadPresetFromProject',
-        'savePresetToProject',
-      ]),
       search(textIn, termIn) {
         const text = textIn.toLowerCase().trim();
         const term = termIn.toLowerCase().trim();
@@ -84,37 +58,8 @@
 
         return text.indexOf(term) > -1;
       },
-      makeStyle(rgb) {
-        return {
-          backgroundColor: `rgb(${rgb[0]},${rgb[1]},${rgb[2]})`,
-        };
-      },
-      async loadPreset({ presetName, projectName }) {
-        this.loading = `${projectName}.${presetName}`;
-
-        await this.loadPresetFromProject({ presetName, projectName });
-        this.loading = null;
-      },
-      async savePreset() {
-        this.nameError = false;
-        this.projectError = false;
-
-        if (!this.newPresetName.trim().length) {
-          this.nameError = true;
-          return;
-        }
-
-        if (!this.newPresetProject.trim().length) {
-          this.projectError = true;
-          return;
-        }
-
-        await this.savePresetToProject({
-          presetName: this.newPresetName,
-          projectName: this.newPresetProject,
-        });
-
-        this.newPresetName = '';
+      useProject({ projectName }) {
+        this.$store.dispatch('projects/setCurrent', { projectName });
       },
       isCurrent(projectName) {
         return this.$store.state.projects.currentProject !== projectName;
