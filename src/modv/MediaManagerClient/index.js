@@ -100,7 +100,7 @@ class MediaManagerClient {
               store.commit('projects/addPluginToProject', {
                 projectName,
                 pluginName: name,
-                path: data.contents,
+                pluginData: data.contents,
               });
             } else if (type === 'image') {
               // modV.profiles[profile].images[name] = data.path;

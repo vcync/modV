@@ -171,6 +171,7 @@ const actions = {
     if (!state.projects[projectName]) throw Error('Project does not exist');
 
     commit('setCurrent', { projectName });
+    store.commit('user/setProject', { projectName });
 
     Object.keys(state.projects[projectName].plugins)
       .forEach(pluginName => store.dispatch('plugins/load', {
@@ -203,6 +204,10 @@ const mutations = {
     });
 
     Vue.set(state.projects, projectName, project);
+
+    if (store.state.user.project === projectName) {
+      store.dispatch('projects/setCurrent', { projectName });
+    }
   },
   addPaletteToProject(state, { projectName, paletteName, colors }) {
     const project = state.projects[projectName];
