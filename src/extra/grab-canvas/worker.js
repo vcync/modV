@@ -36,6 +36,11 @@ onmessage = (e) => {
       break;
     }
 
+    case 'closeConnection': {
+      luminaveConnector.closeConnection();
+      break;
+    }
+
     // Send the raw pixel data from the modV output canvas to LuminaveConnector
     case 'data': {
       luminaveConnector.drawFrame(message.payload);

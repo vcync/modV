@@ -1,4 +1,5 @@
 import ReconnectingWebSocket from 'reconnecting-websocket';
+import { debug } from 'util';
 
 export default class LuminaveConnector {
   /**
@@ -57,13 +58,11 @@ export default class LuminaveConnector {
    */
   setupSocket() {
     // There is already a connection, so close it
-    if (this.connection !== undefined) {
-      this.connection.close();
-      this.connection = undefined;
-    }
+    this.closeConnection();
 
     // Open the connection
     this.connection = new ReconnectingWebSocket(this.url);
+    this.connection.close();
 
     // Handle: Errors
     this.connection.onerror = (error) => {
@@ -74,6 +73,16 @@ export default class LuminaveConnector {
     this.connection.onopen = () => {
       console.info('lumiaveConnector: WebSocket: Opened'); //eslint-disable-line
     };
+  }
+
+  closeConnection() {
+    // There is already a connection, so close it
+    if (this.connection !== undefined) {
+      // This is an internal method, but the only one that is clearing the timeout
+      this.connection._disconnect(); // eslint-disable-line
+      this.connection._shouldReconnect = false; // eslint-disable-line
+      this.connection = undefined;
+    }
   }
 
   /**

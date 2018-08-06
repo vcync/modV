@@ -46,6 +46,23 @@ const grabCanvas = {
     },
   },
 
+  on() {
+    // // Close the WebSocket connection
+    // theWorker.postMessage({
+    //   type: 'setupConnection',
+    //   payload: {
+    //     url: store.state.grabCanvas.url,
+    //   },
+    // });
+  },
+
+  off() {
+    // Close the WebSocket connection
+    theWorker.postMessage({
+      type: 'closeConnection',
+    });
+  },
+
   /**
    * When the canvas is resized: Update the worker.
    *
