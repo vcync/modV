@@ -108,10 +108,6 @@
       moduleName() {
         return this.meta.$modv_moduleName;
       },
-      // value() {
-      //   if (!this.currentLayer) return undefined;
-      //   return this.currentLayer.canvas;
-      // },
       currentLayer() {
         return this.layers[this.currentLayerIndex];
       },
