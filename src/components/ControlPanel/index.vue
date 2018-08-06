@@ -107,6 +107,13 @@
                 meta: propData,
               });
             }
+
+            if (type === 'texture') {
+              controls.push({
+                component: 'imageControl',
+                meta: propData,
+              });
+            }
           });
         }
 

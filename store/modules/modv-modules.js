@@ -5,6 +5,7 @@ import cloneDeep from 'lodash.clonedeep';
 import getNextName from '@/utils/get-next-name';
 import { setup as shaderSetup } from '@/modv/renderers/shader';
 import { setup as isfSetup } from '@/modv/renderers/isf';
+import textureResolve from '@/modv/texture-resolve';
 import store from '../index';
 
 const jsd4 = require('ajv/lib/refs/json-schema-draft-04.json');
@@ -258,7 +259,14 @@ const actions = {
       }
     }
 
-    commit('queuePropUpdate', { name, prop, data: dataOut });
+    commit('queuePropUpdate', {
+      name,
+      prop,
+      data: {
+        value: dataOut,
+        type: propData.type,
+      },
+    });
   },
 
   syncPropQueue({ state, commit }) {
@@ -284,7 +292,8 @@ const actions = {
 
         if ('set' in outerState.active[moduleKey].props[key]) {
           outerState
-            .active[moduleKey].props[key].set.bind(outerState.active[moduleKey])(moduleProps[key]);
+            .active[moduleKey]
+            .props[key].set.bind(outerState.active[moduleKey])(moduleProps[key].value);
         }
 
         commit('updateProp', { name: moduleKey, prop: key, data: moduleProps[key] });
@@ -413,8 +422,13 @@ const mutations = {
   },
 
   updateProp(state, { name, prop, data }) {
-    outerState.active[name][prop] = data;
-    Vue.set(state.active[name], prop, data);
+    if (data.type === 'texture') {
+      outerState.active[name][prop] = textureResolve(data.value);
+    } else {
+      outerState.active[name][prop] = data.value;
+    }
+
+    Vue.set(state.active[name], prop, data.value);
     Vue.delete(state.activePropQueue[name], prop);
   },
 
