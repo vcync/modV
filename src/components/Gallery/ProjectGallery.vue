@@ -1,34 +1,22 @@
 <template>
   <div class="preset-gallery columns is-gapless is-multiline">
-    <div class="column is-12">
-      <div class="columns is-multiline">
-
-        <div class="column is-12" v-for="(plugin, pluginName) in plugins">
-          <div>
-            <b-switch
-              :value="plugin.enabled"
-              @input="switchPlugin($event, { pluginName })"
-              class="has-text-light"
-            >
-              {{ pluginName }}
-            </b-switch>
-            <div v-if="'controlPanelComponent' in plugin.plugin">
-              <component
-                :is="plugin.plugin.controlPanelComponent.name"
-              ></component>
-
-              <div class="has-text-right" v-if="plugin.plugin.pluginData">
-                <button
-                  class="button"
-                  @click="savePluginSettings({ pluginName })"
-                >
-                  Save settings
-                </button>
-              </div>
-            </div>
-          </div>
+    <div
+      v-for="(project, projectName) in projects"
+      class="column is-12 preset-container"
+    >
+      <div class="columns">
+        <div class="column is-10">
+          <span class="has-text-light">{{ projectName }}</span>
         </div>
 
+        <div class="column is-2">
+          <button
+            class="button is-dark is-inverted is-outlined"
+            :class="{ 'is-loading': loading === projectName }"
+            @click="useProject({ projectName })"
+            :disabled="!isCurrent(projectName)"
+          >{{ isCurrent(projectName) ? 'Use' : 'In use' }}</button>
+        </div>
       </div>
     </div>
   </div>
@@ -36,12 +24,22 @@
 
 <script>
   import { mapActions, mapGetters } from 'vuex';
+  import naturalSort from '@/modv/utils/natural-sort';
 
   export default {
     name: 'projectGallery',
     data() {
       return {
         loading: null,
+
+        nameError: false,
+        nameErrorMessage: 'Preset must have a name',
+
+        projectError: false,
+        projectErrorMessage: 'Please select a project',
+
+        newPresetName: '',
+        newPresetProject: 'default',
       };
     },
     props: {
@@ -52,14 +50,32 @@
       },
     },
     computed: {
-      ...mapGetters('plugins', [
-        'plugins',
+      ...mapGetters('projects', [
+        'allProjects',
       ]),
+      ...mapGetters('modVModules', [
+        'registry',
+      ]),
+      projects() {
+        const data = {};
+
+        Object.keys(this.allProjects).forEach((projectName) => {
+          data[projectName] = [];
+
+          Object.keys(this.allProjects[projectName].presets)
+            .sort(naturalSort.compare)
+            .forEach((presetName) => {
+              data[projectName].push(this.allProjects[projectName].presets[presetName]);
+            });
+        });
+
+        return data;
+      },
     },
     methods: {
-      ...mapActions('plugins', [
-        'save',
-        'setEnabled',
+      ...mapActions('projects', [
+        'loadPresetFromProject',
+        'savePresetToProject',
       ]),
       search(textIn, termIn) {
         const text = textIn.toLowerCase().trim();
@@ -68,11 +84,40 @@
 
         return text.indexOf(term) > -1;
       },
-      switchPlugin(e, { pluginName }) {
-        this.setEnabled({ enabled: e, pluginName });
+      makeStyle(rgb) {
+        return {
+          backgroundColor: `rgb(${rgb[0]},${rgb[1]},${rgb[2]})`,
+        };
       },
-      savePluginSettings({ pluginName }) {
-        this.save({ pluginName });
+      async loadPreset({ presetName, projectName }) {
+        this.loading = `${projectName}.${presetName}`;
+
+        await this.loadPresetFromProject({ presetName, projectName });
+        this.loading = null;
+      },
+      async savePreset() {
+        this.nameError = false;
+        this.projectError = false;
+
+        if (!this.newPresetName.trim().length) {
+          this.nameError = true;
+          return;
+        }
+
+        if (!this.newPresetProject.trim().length) {
+          this.projectError = true;
+          return;
+        }
+
+        await this.savePresetToProject({
+          presetName: this.newPresetName,
+          projectName: this.newPresetProject,
+        });
+
+        this.newPresetName = '';
+      },
+      isCurrent(projectName) {
+        return this.$store.state.projects.currentProject !== projectName;
       },
     },
   };

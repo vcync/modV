@@ -3,15 +3,18 @@ import store from '@/../store';
 import { modV } from '@/modv';
 import packageData from '@/../package.json';
 
-const state = {};
+const state = {
+  projects: {},
+  currentProject: 'default',
+};
 
 // getters
 const getters = {
-  allProjects: state => state,
+  allProjects: state => state.projects,
   getPaletteFromProject: state => ({
     paletteName,
     projectName,
-  }) => state[projectName].palettes[paletteName],
+  }) => state.projects[projectName].palettes[paletteName],
 };
 
 // actions
@@ -49,7 +52,7 @@ const actions = {
     return preset;
   },
   loadPresetFromProject({}, { projectName, presetName }) { //eslint-disable-line
-    const presetData = state[projectName].presets[presetName];
+    const presetData = state.projects[projectName].presets[presetName];
     store.dispatch('projects/loadPreset', { presetData });
   },
   async loadPreset({}, { presetData }) { //eslint-disable-line
@@ -186,18 +189,18 @@ const mutations = {
         });
     });
 
-    Vue.set(state, projectName, project);
+    Vue.set(state.projects, projectName, project);
   },
   addPaletteToProject(state, { projectName, paletteName, colors }) {
-    const project = state[projectName];
+    const project = state.projects[projectName];
     Vue.set(project.palettes, paletteName, colors);
   },
   addPresetToProject(state, { projectName, presetName, presetData }) {
-    const project = state[projectName];
+    const project = state.projects[projectName];
     Vue.set(project.presets, presetName, presetData);
   },
   addModuleToProject(state, { projectName, presetName, path }) {
-    const project = state[projectName];
+    const project = state.projects[projectName];
 
     fetch(path)
       .then(response => response.text())
