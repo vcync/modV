@@ -28,15 +28,38 @@ onmessage = (e) => {
       break;
     }
 
+    // Create a WebSocket onnection
     case 'setupConnection': {
-      const { url } = message.payload;
+      const { url, active } = message.payload;
 
       luminaveConnector.url = url;
+
+      // The plugin is active
+      if (active) {
+        // Stop an old reconnect
+        luminaveConnector.stopReconnect();
+        // Allow reconnects
+        luminaveConnector.startReconnect();
+        // Create the connection
+        luminaveConnector.setupSocket();
+      } else {
+        // Stop an old reconnect because the plugin is not active
+        luminaveConnector.stopReconnect();
+      }
+      
+      break;
+    }
+
+    // Start a connection that will also reconnect
+    case 'startConnection': {
+      luminaveConnector.startReconnect();
       luminaveConnector.setupSocket();
       break;
     }
 
+    // Stop a connection and don't allow reconnect
     case 'closeConnection': {
+      luminaveConnector.stopReconnect();
       luminaveConnector.closeConnection();
       break;
     }
