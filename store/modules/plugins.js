@@ -45,6 +45,7 @@ const actions = {
   save({ state }, { pluginName }) {
     const MediaManager = modV.MediaManagerClient;
     const plugin = state.plugins[pluginName].plugin;
+    const enabled = state.plugins[pluginName].enabled;
 
     if (!plugin) {
       throw new Error(`${pluginName} does not exist as a Plugin`);
@@ -60,11 +61,18 @@ const actions = {
       throw new Error(`Plugin ${pluginName} does not have a save method on pluginData`);
     }
 
-    const payload = save();
+    const payload = {
+      meta: {
+        enabled,
+        name: pluginName,
+      },
+      values: save(),
+    };
 
     MediaManager.send({
-      request: 'save-plugin-data',
+      request: 'save-plugin',
       name: pluginName,
+      profile: 'default',
       payload,
     });
   },
