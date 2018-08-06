@@ -366,3 +366,8 @@ input[disabled][type="range"]::-webkit-slider-runnable-track {
   background: rgba(255, 255, 255, .8);
   color: black;
 }
+
+.label {
+  color: inherit;
+  font-weight: normal;
+}
