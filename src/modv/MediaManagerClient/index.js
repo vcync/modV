@@ -66,6 +66,7 @@ class MediaManagerClient {
               presets: project.presets,
               videos: project.videos,
               modules: project.modules,
+              plugins: project.plugins,
             });
           });
           break;
@@ -94,6 +95,12 @@ class MediaManagerClient {
                 projectName,
                 presetName: name,
                 path: data.path,
+              });
+            } else if (type === 'plugin') {
+              store.commit('projects/addPluginToProject', {
+                projectName,
+                pluginName: name,
+                path: data.contents,
               });
             } else if (type === 'image') {
               // modV.profiles[profile].images[name] = data.path;

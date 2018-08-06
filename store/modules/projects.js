@@ -167,13 +167,14 @@ const actions = {
 
 // mutations
 const mutations = {
-  addProject(state, { projectName, images, palettes, presets, videos, modules }) {
+  addProject(state, { projectName, images, palettes, presets, videos, modules, plugins }) {
     const project = {};
     project.images = images || {};
     project.palettes = palettes || {};
     project.presets = presets || {};
     project.videos = videos || {};
     project.modules = modules || {};
+    project.plugins = plugins || {};
 
     Object.keys(project.modules).forEach((moduleName) => {
       fetch(project.modules[moduleName])
