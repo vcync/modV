@@ -1,5 +1,17 @@
 <template>
   <div class="preset-gallery columns is-gapless is-multiline">
+    <div class="column is-12">
+      <div class="columns">
+        <div class="column is-2 flex-center">Create new:</div>
+        <div class="column is-8">
+          <b-input v-model="newProjectName" placeholder="Project name" />
+        </div>
+        <div class="column is-2">
+          <button class="button is-light" @click="newProject">Create</button>
+        </div>
+      </div>
+    </div>
+
     <div
       v-for="projectName in projects"
       class="column is-12 preset-container"
@@ -24,12 +36,13 @@
 
 <script>
   import naturalSort from '@/modv/utils/natural-sort';
+  import { modV } from '@/modv';
 
   export default {
     name: 'projectGallery',
     data() {
       return {
-        loading: null,
+        newProjectName: '',
 
         nameError: false,
         nameErrorMessage: 'Project must have a name',
@@ -63,6 +76,14 @@
       },
       isCurrent(projectName) {
         return this.$store.state.projects.currentProject !== projectName;
+      },
+      newProject() {
+        const MediaManager = modV.MediaManagerClient;
+
+        MediaManager.send({
+          request: 'make-profile',
+          profileName: this.newProjectName,
+        });
       },
     },
   };
@@ -115,5 +136,11 @@
         border-color: #383838 !important;
       }
     }
+  }
+
+  .flex-center {
+    display: flex;
+    justify-content: flex-end;
+    align-items: center;
   }
 </style>
