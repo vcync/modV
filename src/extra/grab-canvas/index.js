@@ -28,6 +28,9 @@ smallCanvas.classList.add('is-hidden');
 smallCanvas.style = 'position: absolute; top: 0px; right: 0px; width: 80px; height: 80px; z-index: 100000; background: #000;';
 document.body.appendChild(smallCanvas);
 
+// Is the plugin active?
+let isActive = true;
+
 const grabCanvas = {
   name: 'Grab Canvas',
   controlPanelComponent,
@@ -44,6 +47,24 @@ const grabCanvas = {
       store.commit('grabCanvas/setSelection', { selectionX, selectionY });
       store.commit('grabCanvas/setUrl', { url });
     },
+  },
+
+  on() {
+    isActive = true;
+
+    // Close the WebSocket connection
+    theWorker.postMessage({
+      type: 'startConnection',
+    });
+  },
+
+  off() {
+    isActive = false;
+
+    // Close the WebSocket connection
+    theWorker.postMessage({
+      type: 'closeConnection',
+    });
   },
 
   /**
@@ -69,6 +90,8 @@ const grabCanvas = {
    * Only called when added to modV.
    */
   install() {
+    isActive = true;
+
     // Set the size of the smallCanvas
     smallCanvas.width = 112;
     smallCanvas.height = 112;
@@ -99,6 +122,7 @@ const grabCanvas = {
             type: 'setupConnection',
             payload: {
               url: mutation.payload.url || store.state.grabCanvas.url,
+              active: isActive,
             },
           });
           break;
@@ -119,6 +143,7 @@ const grabCanvas = {
       type: 'setupConnection',
       payload: {
         url: store.state.grabCanvas.url,
+        active: isActive,
       },
     });
   },
