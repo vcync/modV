@@ -29,14 +29,14 @@
     },
     computed: {
       ...mapGetters('projects', [
-        'allProfiles',
+        'allProjects',
       ]),
       selectData() {
         const data = [];
-        const allProfiles = this.allProfiles;
+        const allProjects = this.allProjects;
 
-        if (!Object.prototype.hasOwnProperty.call(allProfiles, this.project)) return [];
-        const project = allProfiles[this.project];
+        if (!Object.prototype.hasOwnProperty.call(allProjects, this.project)) return [];
+        const project = allProjects[this.project];
 
         Object.keys(project.palettes).forEach((paletteName) => {
           data.push({
