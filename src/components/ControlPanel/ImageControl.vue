@@ -4,18 +4,37 @@
       {{ label }}
     </label>
 
-    <b-dropdown class="dropdown" v-model="currentLayerIndex" :id="inputId">
-    <button class="button is-primary is-small" slot="trigger">
-      <span>{{ selectedLabel | capitalize }}</span>
-      <b-icon icon="angle-down"></b-icon>
-    </button>
+    <div class="columns is-variable is-2">
+      <div class="column is-6">
+        Source:
+        <div
+          v-for="sourceName in sources"
+          class="field"
+        >
+          <b-radio
+            v-model="source"
+            :native-value="sourceName"
+          >
+            {{ sourceName }}
+          </b-radio>
+        </div>
+      </div>
 
-    <b-dropdown-item
-      v-for="data, idx in layerNames"
-      :key="idx"
-      :value="data.value"
-    >{{ data.label | capitalize }}</b-dropdown-item>
-  </b-dropdown>
+      <div class="column is-6" v-if="source === 'layer'">
+        <b-dropdown class="dropdown" v-model="currentLayerIndex" :id="inputId">
+          <button class="button is-primary is-small" slot="trigger">
+            <span>{{ selectedLabel | capitalize }}</span>
+            <b-icon icon="angle-down"></b-icon>
+          </button>
+
+          <b-dropdown-item
+            v-for="data, idx in layerNames"
+            :key="idx"
+            :value="data.value"
+          >{{ data.label | capitalize }}</b-dropdown-item>
+        </b-dropdown>
+      </div>
+    </div>
   </div>
 </template>
 
@@ -25,12 +44,17 @@
   export default {
     name: 'imageControl',
     props: [
-      'module',
-      'control',
+      'meta',
     ],
     data() {
       return {
         currentLayerIndex: -1,
+        source: 'layer',
+        sources: [
+          'layer',
+          'image',
+          'video',
+        ],
       };
     },
     computed: {
@@ -60,36 +84,53 @@
 
         return data;
       },
-      value() {
-        if (!this.currentLayer) return undefined;
-        return this.currentLayer.canvas;
+      value: {
+        get() {
+          return this.$store.state.modVModules.active[this.moduleName][this.variable];
+        },
+        set(value) {
+          this.$store.dispatch('modVModules/updateProp', {
+            name: this.moduleName,
+            prop: this.variable,
+            data: {
+              source: this.source,
+              sourceData: value,
+            },
+          });
+        },
       },
+      variable() {
+        return this.meta.$modv_variable;
+      },
+      label() {
+        return this.meta.label || this.variable;
+      },
+      moduleName() {
+        return this.meta.$modv_moduleName;
+      },
+      // value() {
+      //   if (!this.currentLayer) return undefined;
+      //   return this.currentLayer.canvas;
+      // },
       currentLayer() {
         return this.layers[this.currentLayerIndex];
       },
-      moduleName() {
-        return this.module.info.name;
-      },
-      variable() {
-        return this.control.variable;
-      },
       inputId() {
         return `${this.moduleName}-${this.variable}`;
-      },
-      label() {
-        return this.control.label;
       },
       selectedLabel() {
         return this.currentLayerIndex < 0 ? 'Inherit' : this.layers[this.currentLayerIndex].name;
       },
     },
-    watch: {
-      value() {
-        this.module[this.variable] = this.value;
-      },
-    },
     mounted() {
-      this.module[this.variable] = this.value;
+      if (this.value && this.value.sourceData) {
+        this.currentLayerIndex = this.value.sourceData;
+      }
+    },
+    watch: {
+      currentLayerIndex(value) {
+        this.value = value;
+      },
     },
   };
 </script>

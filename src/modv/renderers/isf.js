@@ -129,7 +129,7 @@ function setup(Module) {
         Module.meta.previewWithOutput = true;
 
         addProp(input.NAME, {
-          type: 'imageControl',
+          type: 'texture',
           label: input.LABEL || input.NAME,
         });
 
