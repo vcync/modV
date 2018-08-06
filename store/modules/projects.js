@@ -170,6 +170,13 @@ const actions = {
     if (!state.projects[projectName]) throw Error('Project does not exist');
 
     commit('setCurrent', { projectName });
+
+    Object.keys(state.projects[projectName].plugins)
+      .forEach(pluginName => store.dispatch('plugins/load', {
+        pluginName,
+        data: state.projects[projectName].plugins[pluginName].values,
+        enabled: state.projects[projectName].plugins[pluginName].meta.enabled,
+      }));
   },
 };
 
