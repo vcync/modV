@@ -17,7 +17,7 @@
                 :is="plugin.plugin.controlPanelComponent.name"
               ></component>
 
-              <div class="has-text-right">
+              <div class="has-text-right" v-if="plugin.plugin.pluginData">
                 <button
                   class="button"
                   @click="savePluginSettings({ pluginName })"
