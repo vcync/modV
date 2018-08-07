@@ -202,6 +202,7 @@
       },
       enabled: {
         get() {
+          if (!this.moduleName) return false;
           return this.$store.state.modVModules.active[this.moduleName].meta.enabled;
         },
         set(value) {
