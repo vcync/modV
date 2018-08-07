@@ -42,10 +42,9 @@ const actions = {
     return pluginData;
   },
 
-  save({ state }, { pluginName }) {
+  save({ state }, { pluginName, enabled }) {
     const MediaManager = modV.MediaManagerClient;
     const plugin = state.plugins[pluginName].plugin;
-    const enabled = state.plugins[pluginName].enabled;
 
     if (!plugin) {
       throw new Error(`${pluginName} does not exist as a Plugin`);
@@ -57,9 +56,17 @@ const actions = {
       save = plugin.pluginData.save;
     }
 
+    let enabledValue;
+
+    if (typeof enabled === 'undefined') {
+      enabledValue = state.plugins[pluginName].enabled;
+    } else {
+      enabledValue = enabled;
+    }
+
     const payload = {
       meta: {
-        enabled,
+        enabled: enabledValue,
         name: pluginName,
       },
       values: save ? save() : {},
@@ -107,8 +114,8 @@ const actions = {
       plugin.off();
     }
 
+    if (state.plugins[pluginName].enabled !== enabled) dispatch('save', { pluginName, enabled });
     commit('setEnabled', { pluginName, enabled });
-    if (state.plugins[pluginName].enabled !== enabled) dispatch('save', { pluginName });
   },
 };
 
