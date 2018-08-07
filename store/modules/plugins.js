@@ -51,14 +51,10 @@ const actions = {
       throw new Error(`${pluginName} does not exist as a Plugin`);
     }
 
-    if (!('pluginData' in plugin)) {
-      throw new Error(`Plugin ${pluginName} does not have a pluginData Object`);
-    }
+    let save;
 
-    const save = plugin.pluginData.save;
-
-    if (!save) {
-      throw new Error(`Plugin ${pluginName} does not have a save method on pluginData`);
+    if (plugin.pluginData) {
+      save = plugin.pluginData.save;
     }
 
     const payload = {
@@ -66,7 +62,7 @@ const actions = {
         enabled,
         name: pluginName,
       },
-      values: save(),
+      values: save ? save() : {},
     };
 
     MediaManager.send({
@@ -87,21 +83,17 @@ const actions = {
       throw new Error('No data defined');
     }
 
-    if (!('pluginData' in plugin)) {
-      throw new Error(`Plugin ${pluginName} does not have a pluginData Object`);
+    let load;
+
+    if (plugin.pluginData) {
+      load = plugin.pluginData.load;
     }
 
-    const load = plugin.pluginData.load;
-
-    if (!load) {
-      throw new Error(`Plugin ${pluginName} does not have a load method on pluginData`);
-    }
-
-    load(data);
+    if (load) load(data);
 
     dispatch('setEnabled', { pluginName, enabled });
   },
-  setEnabled({ state, commit }, { pluginName, enabled }) {
+  setEnabled({ state, commit, dispatch }, { pluginName, enabled }) {
     const plugin = state.plugins[pluginName].plugin;
     if (!plugin) {
       throw new Error(`${pluginName} does not exist as a Plugin`);
@@ -116,6 +108,7 @@ const actions = {
     }
 
     commit('setEnabled', { pluginName, enabled });
+    if (state.plugins[pluginName].enabled !== enabled) dispatch('save', { pluginName });
   },
 };
 
