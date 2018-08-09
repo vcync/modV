@@ -24,7 +24,6 @@
         <div class="column is-2">
           <button
             class="button is-dark is-inverted is-outlined"
-            :class="{ 'is-loading': loading === projectName }"
             :disabled="!isCurrent(projectName)"
             @click="useProject({ projectName })"
           >{{ isCurrent(projectName) ? 'Use' : 'In use' }}</button>
