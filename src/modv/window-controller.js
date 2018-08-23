@@ -53,6 +53,8 @@ class WindowController {
     windowRef.document.title = 'modV Output';
     windowRef.document.body.style.margin = '0px';
     windowRef.document.body.style.backgroundColor = 'black';
+    windowRef.document.body.style.display = 'flex';
+    windowRef.document.body.style.justifyContent = 'center';
 
     this.canvas = document.createElement('canvas');
     this.context = this.canvas.getContext('2d');
@@ -98,13 +100,14 @@ class WindowController {
       const dpr = resizeQueue.dpr;
       const emit = resizeQueue.emit;
 
-      this.canvas.width = width * dpr;
-      this.canvas.height = height * dpr;
-      this.canvas.style.width = `${width}px`;
-      this.canvas.style.height = `${height}px`;
       if (emit) {
         store.dispatch('size/setDimensions', { width, height });
       }
+
+      this.canvas.width = store.state.size.width || width * dpr;
+      this.canvas.height = store.state.size.height || height * dpr;
+      this.canvas.style.width = `${store.state.size.width}px`;
+      this.canvas.style.height = `${store.state.size.height}px`;
 
       lastArea = 0;
     });
