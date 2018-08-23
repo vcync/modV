@@ -1,196 +1,186 @@
-// import { Module2D } from '../Modules';
+function dist(x1, y1, x2, y2) {
+  return Math.hypot(x2 - x1, y2 - y1);
+}
 
-// function dist(x1, y1, x2, y2) {
-//   return Math.hypot(x2 - x1, y2 - y1);
-// }
+export default {
+  meta: {
+    type: '2d',
+    name: 'Phyllotaxis',
+    author: 'Alex J. Mold',
+    version: '1.2.0',
+    audioFeatures: ['rms', 'zcr'],
+  },
 
-// class Phyllotaxis extends Module2D {
-//   constructor() {
-//     super({
-//       info: {
-//         name: 'Phyllotaxis',
-//         author: 'AlexJMold',
-//         version: 1.2,
-//         meyda: ['rms', 'zcr'],
-//       },
-//     });
+  props: {
+    intensity: {
+      type: 'int',
+      label: 'RMS/ZCR Intensity',
+      min: 0,
+      max: 30,
+      step: 1,
+      default: 15,
+    },
 
-//     // <
-//     const controls = [];
+    soundType: {
+      type: 'bool',
+      label: 'RMS (unchecked) / ZCR (checked)',
+      default: false,
+    },
 
-//     controls.push({
-//       type: 'rangeControl',
-//       variable: 'intensity',
-//       label: 'RMS/ZCR Intensity',
-//       varType: 'int',
-//       min: 0,
-//       max: 30,
-//       step: 1,
-//       default: 15,
-//     });
+    color: {
+      control: {
+        type: 'paletteControl',
+        default: { r: 199, g: 64, b: 163 },
+        options: {
+          colors: [
+            { r: 199, g: 64, b: 163 },
+            { r: 97, g: 214, b: 199 },
+            { r: 222, g: 60, b: 75 },
+            { r: 101, g: 151, b: 220 },
+            { r: 213, g: 158, b: 151 },
+            { r: 100, g: 132, b: 129 },
+            { r: 154, g: 94, b: 218 },
+            { r: 194, g: 211, b: 205 },
+            { r: 201, g: 107, b: 152 },
+            { r: 119, g: 98, b: 169 },
+            { r: 214, g: 175, b: 208 },
+            { r: 218, g: 57, b: 123 },
+            { r: 196, g: 96, b: 98 },
+            { r: 218, g: 74, b: 219 },
+            { r: 138, g: 100, b: 121 },
+            { r: 96, g: 118, b: 225 },
+            { r: 132, g: 195, b: 223 },
+            { r: 82, g: 127, b: 162 },
+            { r: 209, g: 121, b: 211 },
+            { r: 181, g: 152, b: 220 },
+          ], // generated here: http://tools.medialab.sciences-po.fr/iwanthue/
+          duration: 500,
+        },
+      },
+    },
+  },
 
-//     controls.push({
-//       type: 'checkboxControl',
-//       variable: 'soundType',
-//       label: 'RMS (unchecked) / ZCR (checked)',
-//       checked: false,
-//     });
+  init(canvas) {
+    this.soundType = false; // false RMS, true ZCR
 
-//     controls.push({
-//       type: 'paletteControl',
-//       variable: 'color',
-//       colors: [
-//         [199, 64, 163],
-//         [97, 214, 199],
-//         [222, 60, 75],
-//         [101, 151, 220],
-//         [213, 158, 151],
-//         [100, 132, 129],
-//         [154, 94, 218],
-//         [194, 211, 205],
-//         [201, 107, 152],
-//         [119, 98, 169],
-//         [214, 175, 208],
-//         [218, 57, 123],
-//         [196, 96, 98],
-//         [218, 74, 219],
-//         [138, 100, 121],
-//         [96, 118, 225],
-//         [132, 195, 223],
-//         [82, 127, 162],
-//         [209, 121, 211],
-//         [181, 152, 220],
-//       ], // generated here: http://tools.medialab.sciences-po.fr/iwanthue/
-//       timePeriod: 500,
-//     });
+    this.particles = [];
+    this.limit = 1500;
+    this.goldenRatio = ((Math.sqrt(5) + 1) / 2) - 1;
+    this.goldenAngle = this.goldenRatio * (2 * Math.PI);
+    this.circleRadius = (canvas.width * 0.5) - 20;
 
-//     this.add(controls);
-//     // >
-//   }
+    this.color = '#fff';
 
-//   init(canvas) {
-//     this.soundType = false; // false RMS, true ZCR
+    this.setupPhyllotaxis(canvas);
+  },
 
-//     this.particles = [];
-//     this.limit = 1500;
-//     this.goldenRatio = ((Math.sqrt(5) + 1) / 2) - 1;
-//     this.goldenAngle = this.goldenRatio * (2 * Math.PI);
-//     this.circleRadius = (canvas.width * 0.5) - 20;
+  resize(canvas) {
+    this.particles = [];
+    this.limit = 1500;
+    this.goldenRatio = ((Math.sqrt(5) + 1) / 2) - 1;
+    this.goldenAngle = this.goldenRatio * (2 * Math.PI);
+    this.circleRadius = (canvas.width * 0.5) - 20;
 
-//     this.color = '#fff';
+    this.setupPhyllotaxis(canvas);
+  },
 
-//     this.setupPhyllotaxis(canvas);
-//   }
+  draw({ context, features }) {
+    if (this.soundType) {
+      this.analysed = (features.zcr / 10) * this.intensity;
+    } else {
+      this.analysed = (features.rms * 10) * this.intensity;
+    }
 
-//   resize(canvas) {
-//     this.particles = [];
-//     this.limit = 1500;
-//     this.goldenRatio = ((Math.sqrt(5) + 1) / 2) - 1;
-//     this.goldenAngle = this.goldenRatio * (2 * Math.PI);
-//     this.circleRadius = (canvas.width * 0.5) - 20;
+    for (let i = 0; i < this.particles.length; i += 1) {
+      this.particles[i].show(
+        context,
+        this.analysed,
+        this.color,
+      );
+      this.particles[i].update();
+    }
+  },
 
-//     this.setupPhyllotaxis(canvas);
-//   }
+  setupPhyllotaxis(canvas) {
+    const { goldenAngle, limit, circleRadius } = this;
+    this.particles = [];
 
-//   draw({ context, features }) {
-//     if (this.soundType) {
-//       this.analysed = (features.zcr / 10) * this.intensity;
-//     } else {
-//       this.analysed = (features.rms * 10) * this.intensity;
-//     }
+    const cx = canvas.width / 2;
+    const cy = canvas.height / 2;
+    const { width, height } = canvas;
 
-//     for (let i = 0; i < this.particles.length; i += 1) {
-//       this.particles[i].show(
-//         context,
-//         this.analysed,
-//         this.color,
-//       );
-//       this.particles[i].update();
-//     }
-//   }
+    for (let i = 1; i <= limit; i += 1) {
+      const particleRadius = 1;
+      const ratio = i / limit;
+      const angle = i * goldenAngle;
+      const spiralRadius = ratio * circleRadius;
+      const x = cx + (Math.cos(angle) * spiralRadius);
+      const y = cy + (Math.sin(angle) * spiralRadius);
 
-//   setupPhyllotaxis(canvas) {
-//     const { goldenAngle, limit, circleRadius } = this;
-//     this.particles = [];
+      this.particles.push(
+        new (this.Particle())(width, height, x, y, particleRadius, '#fff'),
+      );
+    }
+  },
 
-//     const cx = canvas.width / 2;
-//     const cy = canvas.height / 2;
-//     const { width, height } = canvas;
+  Particle() { //eslint-disable-line
+    return function Particle(width, height, x, y, r, c) {
+      this.x = x;
+      this.y = y;
+      this.r = r;
+      this.c = c;
+      this.startX = x;
+      this.startY = y;
+      this.velX = 0;
+      this.velY = 0;
+      this.targetX = width / 2;
+      this.targetY = height / 2;
+      this.easing = 0.02;
 
-//     for (let i = 1; i <= limit; i += 1) {
-//       const particleRadius = 1;
-//       const ratio = i / limit;
-//       const angle = i * goldenAngle;
-//       const spiralRadius = ratio * circleRadius;
-//       const x = cx + (Math.cos(angle) * spiralRadius);
-//       const y = cy + (Math.sin(angle) * spiralRadius);
+      this.show = (context, radiusModifier, color) => {
+        context.fillStyle = this.c;
+        // context.beginPath();
+        // context.arc(
+        //   this.x,
+        //   this.y,
+        //   this.r * radiusModifier,
+        //   0,
+        //   2 * Math.PI,
+        // );
 
-//       this.particles.push(
-//         new (this.Particle())(width, height, x, y, particleRadius, '#fff'),
-//       );
-//     }
-//   }
+        const size = this.r * radiusModifier;
+        context.fillStyle = color;
+        context.fillRect(
+          this.x - (size / 2),
+          this.y - (size / 2),
+          size,
+          size,
+        );
+        // context.fill();
+      };
 
-//   Particle() { //eslint-disable-line
-//     return function Particle(width, height, x, y, r, c) {
-//       this.x = x;
-//       this.y = y;
-//       this.r = r;
-//       this.c = c;
-//       this.startX = x;
-//       this.startY = y;
-//       this.velX = 0;
-//       this.velY = 0;
-//       this.targetX = width / 2;
-//       this.targetY = height / 2;
-//       this.easing = 0.02;
+      this.update = () => {
+        const d = dist(this.x, this.y, this.targetX, this.targetY);
 
-//       this.show = (context, radiusModifier, color) => {
-//         context.fillStyle = this.c;
-//         // context.beginPath();
-//         // context.arc(
-//         //   this.x,
-//         //   this.y,
-//         //   this.r * radiusModifier,
-//         //   0,
-//         //   2 * Math.PI,
-//         // );
+        this.easing = d / 3500;
 
-//         const size = this.r * radiusModifier;
-//         context.fillStyle = color;
-//         context.fillRect(
-//           this.x - (size / 2),
-//           this.y - (size / 2),
-//           size,
-//           size,
-//         );
-//         // context.fill();
-//       };
+        // move to position
+        const dx = this.targetX - this.x;
+        this.x += dx * this.easing;
 
-//       this.update = () => {
-//         const d = dist(this.x, this.y, this.targetX, this.targetY);
+        const dy = this.targetY - this.y;
+        this.y += dy * this.easing;
 
-//         this.easing = d / 3500;
+        if (d < 10) {
+          this.targetX = this.startX;
+          this.targetY = this.startY;
+        }
 
-//         // move to position
-//         const dx = this.targetX - this.x;
-//         this.x += dx * this.easing;
-
-//         const dy = this.targetY - this.y;
-//         this.y += dy * this.easing;
-
-//         if (d < 10) {
-//           this.targetX = this.startX;
-//           this.targetY = this.startY;
-//         }
-
-//         if (dist(this.x, this.y, this.startX, this.startY) < 20) {
-//           this.targetX = width / 2;
-//           this.targetY = height / 2;
-//         }
-//       };
-//     };
-//   }
-// }
-
-// export default Phyllotaxis;
+        if (dist(this.x, this.y, this.startX, this.startY) < 20) {
+          this.targetX = width / 2;
+          this.targetY = height / 2;
+        }
+      };
+    };
+  },
+};
