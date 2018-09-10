@@ -37,14 +37,17 @@ const lfoplugin = {
     });
   },
 
-  createMenuItem(moduleName, controlVariable) {
+  createMenuItem(moduleName, controlVariable, group, groupName) {
     const LfoSubmenu = new Menu();
     let label = 'Attach LFO';
 
     function attatchClick() {
+      console.log(moduleName, controlVariable, group, groupName);
       store.dispatch('lfo/addAssignment', {
         moduleName,
         controlVariable,
+        group,
+        groupName,
         waveform: toLower(this.label),
         frequency: hzFromBpm(store.getters['tempo/bpm']),
       });
@@ -54,6 +57,8 @@ const lfoplugin = {
       store.commit('lfo/removeAssignment', {
         moduleName,
         controlVariable,
+        group,
+        groupName,
       });
     }
 
@@ -64,7 +69,13 @@ const lfoplugin = {
       });
     }
 
-    const assignment = store.getters['lfo/assignment']({ moduleName, controlVariable });
+    const assignment = store.getters['lfo/assignment']({
+      moduleName,
+      controlVariable,
+      group,
+      groupName,
+    });
+
     if (assignment) {
       label = 'LFO';
 
@@ -100,21 +111,32 @@ const lfoplugin = {
       Object.keys(assignments[moduleName]).forEach((controlVariable) => {
         const assignment = assignments[moduleName][controlVariable];
         const module = store.state.modVModules.active[moduleName];
-        const control = module.props[controlVariable];
-        const currentValue = module[controlVariable];
-
-        let value = currentValue;
 
         if (assignment) {
-          const lfoController = assignment.controller;
+          const { controller, group, groupName } = assignment;
+          let control;
+          let currentValue;
+
+          if (typeof group !== 'undefined') {
+            control = module.props[groupName].props[controlVariable];
+            currentValue = module[groupName][controlVariable][group];
+          } else {
+            control = module.props[controlVariable];
+            currentValue = module[controlVariable];
+          }
+
+          let value = currentValue;
+
           const { min, max } = control;
-          value = Math.map(lfoController.value, -1, 1, min, max);
+          value = Math.map(controller.value, -1, 1, min, max);
 
           if (currentValue === value) return;
 
           store.dispatch('modVModules/updateProp', {
             name: moduleName,
             prop: controlVariable,
+            group,
+            groupName,
             data: value,
           });
         }

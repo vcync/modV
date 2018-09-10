@@ -2,124 +2,75 @@
 
 export default {
   meta: {
-    name: 'Concentrics',
+    name: 'Concentrics 2',
     author: '2xAA',
-    version: '1.0.0',
+    version: '2.0.0',
     audioFeatures: ['zcr', 'rms'],
     type: '2d',
   },
 
   props: {
-    rms: {
-      type: 'bool',
-      variable: '',
-      label: 'Use RMS',
-      default: false,
-    },
+    groups: {
+      type: 'group',
+      default: 2,
+      props: {
+        spacing: {
+          type: 'float',
+          abs: true,
+          default: 5,
+        },
 
-    intensity: {
-      type: 'int',
-      label: 'RMS/ZCR Intensity',
-      min: 0,
-      max: 30,
-      step: 1,
-    },
+        groupDistance: {
+          type: 'float',
+          default: 10,
+        },
 
-    spacing: {
-      type: 'int',
-      label: 'Circle Spacing',
-      min: 0,
-      max: 100,
-      step: 1,
-      default: 5,
-    },
-
-    objectDistance: {
-      type: 'int',
-      label: 'Object Distance',
-      min: 0,
-      max: 200,
-      step: 1,
-      default: 40,
-    },
-
-    strokeWeight: {
-      type: 'int',
-      label: 'Stroke Weight',
-      min: 1,
-      max: 20,
-      step: 1,
-      default: 1,
-      strict: true,
+        strokeWeight: {
+          type: 'int',
+          abs: true,
+          default: 1,
+          min: 1,
+          max: 20,
+        },
+      },
     },
   },
 
   data: {
-    soundType: false, // false RMS, true ZCR
-    intensity: 1, // Half max
-    analysed: 0,
-    amount: 10,
-    baseSize: 1,
-    size: 2,
-    color: [255, 0, 0, 1],
-    speed: 1,
-    balls: [],
-    wrap: false,
+    x: [],
+    y: [],
   },
 
-  init(canvas) {
-    this.rms = false;
-    this.intensity = 1;
-    this.spacing = 5;
-    this.strokeWeight = 1;
-    this.objectDistance = 40;
+  drawCircles(ctx, zcr, strokeWeight, spacing, x, y) {
+    ctx.lineWidth = strokeWeight;
+    // ctx.strokeStyle = `hsl(${this.hue}, 50%, 50%)`;
 
-    this.circle1 = new (this.Concentric())(canvas);
-    this.circle2 = new (this.Concentric())(canvas);
+    for (let i = 0; i < zcr; i += 1) {
+      if (i === zcr - 1) {
+        // ctx.strokeStyle = `hsl(${this.hue}, 50%, ${(1 - (zcr - Math.round(zcr))) * 50}%)`;
+      }
+
+      ctx.beginPath();
+      ctx.arc(x, y, i * spacing, 0, 2 * Math.PI);
+      ctx.closePath();
+      ctx.stroke();
+    }
+
+    // if (this.hue > 360) this.hue = 0;
+    // else this.hue += 0.2;
   },
 
   draw({ canvas, context, features, delta }) {
-    let zcr = features.zcr;
-    if (this.rms) zcr = features.rms;
+    for (let i = 0; i < this.groups.length; i += 1) {
+      const groupProps = this.groups.props;
+      const strokeWeight = groupProps.strokeWeight[i];
+      const spacing = groupProps.spacing[i];
+      const groupDistance = groupProps.groupDistance[i];
 
-    zcr *= this.intensity;
-    if (this.rms) {
-      zcr *= 50;
+      this.x[i] = ((canvas.width / 2) + Math.sin(delta / 1000) * groupDistance); //eslint-disable-line
+      this.y[i] = ((canvas.height / 2) + Math.cos(delta / 1000) * (groupDistance / 2)); //eslint-disable-line
+
+      this.drawCircles(context, features.zcr, strokeWeight, spacing, this.x[i], this.y[i]);
     }
-
-    this.circle1.x = ((canvas.width / 2) + Math.sin(delta / 1000) * this.objectDistance); //eslint-disable-line
-    this.circle1.y = ((canvas.height / 2) + Math.cos(delta / 1000) * (this.objectDistance / 2)); //eslint-disable-line
-    this.circle1.draw(context, zcr, this.strokeWeight, this.spacing);
-
-    this.circle2.x = ((canvas.width / 2) + -Math.sin(delta / 1000) * this.objectDistance); //eslint-disable-line
-    this.circle2.y = (canvas.height / 2) + (-Math.cos(delta / 1000) * (this.objectDistance / 2)); //eslint-disable-line
-    this.circle2.draw(context, zcr, this.strokeWeight, this.spacing);
-  },
-
-  Concentric() { //eslint-disable-line
-    return function Concentric(canvas) {
-      this.x = canvas.width / 2;
-      this.y = canvas.height / 2;
-      this.hue = Math.round(Math.random() * 360);
-
-      this.draw = function draw(ctx, zcr, strokeWeight, spacing) {
-        ctx.lineWidth = strokeWeight;
-        ctx.strokeStyle = `hsl(${this.hue}, 50%, 50%)`;
-
-        for (let i = 0; i < zcr; i += 1) {
-          if (i === zcr - 1) {
-            ctx.strokeStyle = `hsl(${this.hue}, 50%, ${(1 - (zcr - Math.round(zcr))) * 50}%)`;
-          }
-
-          ctx.beginPath();
-          ctx.arc(this.x, this.y, i * spacing, 0, 2 * Math.PI);
-          ctx.closePath();
-          ctx.stroke();
-        }
-
-        if (this.hue > 360) this.hue = 0;
-        else this.hue += 0.2;
-      };
-    };
   },
 };
