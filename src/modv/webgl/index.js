@@ -1,13 +1,19 @@
-import createREGL from 'regl';
+import createREGL from 'regl/dist/regl.unchecked';
 import defaultShader from './default-shader';
 
 function setupWebGl(modV) {
   const canvas = document.createElement('canvas');
   const gl = canvas.getContext('webgl2', {
     premultipliedAlpha: false,
+    antialias: true,
   });
 
-  const regl = createREGL(gl);
+  const regl = createREGL({
+    gl,
+    attributes: {
+      antialias: true,
+    },
+  });
 
   const env = { gl, canvas, regl };
 
