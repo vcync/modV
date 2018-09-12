@@ -96,7 +96,7 @@ const actions = {
       newModuleData.meta.enabled = enabled || false;
       newModuleData.meta.compositeOperation = 'normal';
 
-      const { data, props, meta } = newModuleData;
+      const { data, props, meta, presets } = newModuleData;
 
       if (data) {
         Object.keys(data).forEach((key) => {
@@ -127,6 +127,15 @@ const actions = {
               });
             }
           }
+        });
+      }
+
+      if (presets) {
+        newModuleData.presets = {};
+
+        Object.keys(presets).forEach((key) => {
+          const value = presets[key];
+          newModuleData.presets[key] = value;
         });
       }
 
@@ -336,6 +345,18 @@ const actions = {
   syncQueues({ dispatch }) {
     dispatch('syncPropQueue');
     dispatch('syncMetaQueue');
+  },
+
+  resetModule({ dispatch }, { name }) {
+    Object.keys(outerState.registry[name].props).forEach((key) => {
+      const prop = outerState.registry[name].props[key];
+
+      dispatch('updateProp', {
+        name,
+        prop: key,
+        data: prop.default,
+      });
+    });
   },
 
   presetData({ state }) {

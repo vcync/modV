@@ -9,6 +9,11 @@
       </div>
       <div class="message-body" v-bar="{ useScrollbarPseudo: true }">
         <div class="pure-form pure-form-aligned">
+          <module-preset-selector
+            class="pure-control-group"
+            :presets="module.presets || {}"
+            :moduleName="name"
+          />
           <component
             class="pure-control-group"
             v-for="control in controls"
@@ -25,6 +30,9 @@
 
 <script>
   import { mapGetters, mapMutations } from 'vuex';
+
+  import modulePresetSelector from './ModulePresetSelector';
+
   import colorControl from './ColorControl';
   import checkboxControl from './CheckboxControl';
   import imageControl from './ImageControl';
@@ -145,6 +153,7 @@
       selectControl,
       textControl,
       twoDPointControl,
+      modulePresetSelector,
     },
   };
 </script>

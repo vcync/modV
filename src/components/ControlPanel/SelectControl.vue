@@ -60,25 +60,6 @@
   };
 </script>
 
-<style lang='scss'>
-  .select-control-selector.hsy-dropdown {
-      display: inline-block;
-      vertical-align: middle;
+<style lang="scss">
 
-    & > .selected {
-      // height: 28px !important;
-      // line-height: 28px !important;
-
-      font-family: inherit;
-      /* font-size: 100%; */
-      padding: .5em 22px .5em 1em;
-      color: #444;
-      color: rgba(0,0,0,.8);
-      border: 1px solid #999;
-      border: 0 rgba(0,0,0,0);
-      background-color: #E6E6E6;
-      text-decoration: none;
-      border-radius: 2px;
-    }
-  }
 </style>
