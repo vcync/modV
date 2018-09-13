@@ -12,6 +12,7 @@ function render({ Module, canvas, context, pipeline }) {
       wrap: ['mirror', 'mirror'],
       mag: 'linear',
       min: 'linear mipmap linear',
+      flipY: Module.meta.flipY,
     });
   } else {
     modVCanvasTexture({
@@ -20,6 +21,7 @@ function render({ Module, canvas, context, pipeline }) {
       wrap: ['mirror', 'mirror'],
       mag: 'linear',
       min: 'linear mipmap linear',
+      flipY: Module.meta.flipY,
     });
   }
 

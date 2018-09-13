@@ -56,7 +56,14 @@
           });
       },
       makeModule(result) {
-        const code = result.renderpass[0].code;
+        const { code, inputs } = result.renderpass[0];
+        let flipY = false;
+
+        if (inputs.length) {
+          flipY = inputs[0].sampler.vflip === 'true';
+        }
+
+        console.log(result, flipY);
 
         modV.register({
           meta: {
@@ -65,6 +72,8 @@
             version: 0.1,
             uniforms: {},
             type: 'shader',
+            previewWithOutput: true,
+            flipY,
           },
           fragmentShader: code,
         });

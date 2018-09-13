@@ -6,6 +6,8 @@ export default function generateControlData(settings = {}) {
   if (module) {
     const props = settings.props || module.props;
 
+    if (!props) return controls;
+
     Object.keys(props).forEach((key) => {
       const propData = props[key];
       propData.$modv_variable = key;
