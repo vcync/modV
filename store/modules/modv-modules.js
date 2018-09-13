@@ -113,6 +113,24 @@ const actions = {
             newModuleData[key] = value.default;
           }
 
+          if (value.type === 'group') {
+            newModuleData[key] = {};
+
+            newModuleData[key].length = value.default > -1 ? value.default : 1;
+            newModuleData[key].props = {};
+
+            Object.keys(value.props).forEach((groupProp) => {
+              const groupValue = value.props[groupProp];
+              newModuleData[key].props[groupProp] = [];
+
+              if (value.default && typeof groupValue.default !== 'undefined') {
+                for (let i = 0; i < value.default; i += 1) {
+                  newModuleData[key].props[groupProp][i] = groupValue.default;
+                }
+              }
+            });
+          }
+
           if (value.control) {
             if (value.control.type === 'paletteControl') {
               const { options } = value.control;
@@ -221,11 +239,15 @@ const actions = {
     });
   },
 
-  updateProp({ state, commit }, { name, prop, data }) {
-    const propData = state.active[name].props[prop];
+  updateProp({ state, commit }, { name, prop, data, group, groupName }) {
+    let propData = state.active[name].props[prop];
     const currentValue = state.active[name][prop];
 
-    if (!propData || data === currentValue) return;
+    if (group || groupName) {
+      propData = state.active[name].props[groupName].props[prop];
+    }
+
+    if (data === currentValue) return;
 
     let dataOut = data;
 
@@ -274,6 +296,8 @@ const actions = {
       data: {
         value: dataOut,
         type: propData.type,
+        group,
+        groupName,
       },
     });
   },
@@ -289,6 +313,7 @@ const actions = {
 
       for (let j = 0; j < moduleKeys.length; j += 1) {
         const key = propsKeys[j];
+
         if (
           typeof moduleProps[key] === 'undefined' ||
           typeof key === 'undefined'
@@ -299,13 +324,27 @@ const actions = {
 
         if (!outerState.active[moduleKey]) continue;
 
-        if ('set' in outerState.active[moduleKey].props[key]) {
+        const { group, groupName } = moduleProps[key];
+
+        if (group || groupName) {
+          if ('set' in outerState.active[moduleKey].props[groupName].props[key]) {
+            outerState
+              .active[moduleKey].props[groupName].props[key]
+              .set.bind(outerState.active[moduleKey])(moduleProps[key].value);
+          }
+        } else if ('set' in outerState.active[moduleKey].props[key]) {
           outerState
             .active[moduleKey]
             .props[key].set.bind(outerState.active[moduleKey])(moduleProps[key].value);
         }
 
-        commit('updateProp', { name: moduleKey, prop: key, data: moduleProps[key] });
+        commit('updateProp', {
+          name: moduleKey,
+          prop: key,
+          data: moduleProps[key],
+          group,
+          groupName,
+        });
       }
     }
   },
@@ -442,14 +481,23 @@ const mutations = {
     Vue.set(state.activePropQueue[name], prop, data);
   },
 
-  updateProp(state, { name, prop, data }) {
+  updateProp(state, { name, prop, data, group, groupName }) {
+    let value;
+
     if (data.type === 'texture') {
-      outerState.active[name][prop] = textureResolve(data.value);
+      value = textureResolve(data.value);
     } else {
-      outerState.active[name][prop] = data.value;
+      value = data.value;
     }
 
-    Vue.set(state.active[name], prop, data.value);
+    if (typeof group === 'number') {
+      outerState.active[name][groupName].props[prop][group] = value;
+      Vue.set(state.active[name][groupName].props[prop], group, value);
+    } else {
+      outerState.active[name][prop] = value;
+      Vue.set(state.active[name], prop, value);
+    }
+
     Vue.delete(state.activePropQueue[name], prop);
   },
 

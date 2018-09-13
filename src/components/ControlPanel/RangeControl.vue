@@ -55,6 +55,12 @@
       };
     },
     computed: {
+      group() {
+        return this.meta.$modv_group;
+      },
+      groupName() {
+        return this.meta.$modv_groupName;
+      },
       moduleName() {
         return this.meta.$modv_moduleName;
       },
@@ -63,6 +69,11 @@
       },
       value: {
         get() {
+          if (this.meta.$modv_group || this.meta.$modv_groupName) {
+            return this.$store.state.modVModules.active[this.moduleName][this.meta.$modv_groupName]
+              .props[this.variable][this.meta.$modv_group];
+          }
+
           return this.$store.state.modVModules.active[this.moduleName][this.variable];
         },
         set(value) {
@@ -70,6 +81,8 @@
             name: this.moduleName,
             prop: this.variable,
             data: value,
+            group: this.meta.$modv_group,
+            groupName: this.meta.$modv_groupName,
           });
         },
       },
@@ -224,19 +237,6 @@
       window.removeEventListener('mousemove', this.mouseMove.bind(this));
     },
     watch: {
-      // valueIn() {
-      //   const value = this.valueIn;
-
-      //   let val;
-      //   if (this.varType === 'int') val = parseInt(value, 10);
-      //   else if (this.varType === 'float') val = parseFloat(value, 10);
-
-      //   this.$store.dispatch('modVModules/updateProp', {
-      //     name: this.moduleName,
-      //     prop: this.variable,
-      //     data: val,
-      //   });
-      // },
       value(value) {
         this.canvasX = this.unmapValue(value);
       },

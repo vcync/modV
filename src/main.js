@@ -78,11 +78,13 @@ export default window.modVVue = new Vue({
       'Phyllotaxis',
       'Pixelate-2.0',
       'Ball-2.0',
+      'Concentrics',
       'Concentrics-2.0',
       'Waveform-2.0',
       'Un-Deux-Trois',
       'OpticalFlowDistort-2.0',
       'MattiasCRT-2.0',
+      'Doughnut_Generator',
     ];
 
     modules.forEach((fileName) => {

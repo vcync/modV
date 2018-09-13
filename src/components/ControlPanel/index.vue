@@ -31,6 +31,8 @@
 <script>
   import { mapGetters, mapMutations } from 'vuex';
 
+  import generateControlData from './generate-control-data';
+
   import modulePresetSelector from './ModulePresetSelector';
 
   import colorControl from './ColorControl';
@@ -41,6 +43,7 @@
   import selectControl from './SelectControl';
   import textControl from './TextControl';
   import twoDPointControl from './TwoDPointControl';
+  import groupControl from './GroupControl';
 
   export default {
     name: 'controlPanel',
@@ -62,70 +65,9 @@
         return this.module.meta.name;
       },
       controls() {
-        const controls = [];
-        const { module } = this;
-
-        if (module) {
-          Object.keys(module.props).forEach((key) => {
-            const propData = module.props[key];
-            propData.$modv_variable = key;
-            propData.$modv_moduleName = module.meta.name;
-
-            const type = propData.type;
-            const control = propData.control;
-
-            if (control) {
-              controls.push({
-                component: control.type,
-                meta: propData,
-              });
-            }
-
-            if (type === 'int' || type === 'float') {
-              controls.push({
-                component: 'rangeControl',
-                meta: propData,
-              });
-            }
-
-            if (type === 'bool') {
-              controls.push({
-                component: 'checkboxControl',
-                meta: propData,
-              });
-            }
-
-            if (type === 'string') {
-              controls.push({
-                component: 'textControl',
-                meta: propData,
-              });
-            }
-
-            if (type === 'vec2') {
-              controls.push({
-                component: 'twoDPointControl',
-                meta: propData,
-              });
-            }
-
-            if (type === 'enum') {
-              controls.push({
-                component: 'selectControl',
-                meta: propData,
-              });
-            }
-
-            if (type === 'texture') {
-              controls.push({
-                component: 'imageControl',
-                meta: propData,
-              });
-            }
-          });
-        }
-
-        return controls;
+        return generateControlData({
+          module: this.module,
+        });
       },
       pinTitle() {
         return this.pinned ? 'Unpin' : 'Pin';
@@ -154,6 +96,7 @@
       textControl,
       twoDPointControl,
       modulePresetSelector,
+      groupControl,
     },
   };
 </script>
