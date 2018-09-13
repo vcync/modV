@@ -53,13 +53,16 @@ class WindowController {
     windowRef.document.title = 'modV Output';
     windowRef.document.body.style.margin = '0px';
     windowRef.document.body.style.backgroundColor = 'black';
-    windowRef.document.body.style.display = 'flex';
-    windowRef.document.body.style.justifyContent = 'center';
+    windowRef.document.body.style.position = 'relative';
 
     this.canvas = document.createElement('canvas');
     this.context = this.canvas.getContext('2d');
 
     this.canvas.style.backgroundColor = 'transparent';
+    this.canvas.style.left = '50%';
+    this.canvas.style.position = 'absolute';
+    this.canvas.style.top = '50%';
+    this.canvas.style.transform = 'translate(-50%, -50%)';
 
     this.canvas.addEventListener('dblclick', () => {
       if (!this.canvas.ownerDocument.webkitFullscreenElement) {
