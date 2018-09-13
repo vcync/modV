@@ -552,6 +552,32 @@ const mutations = {
     outerState.active[moduleName].meta[key] = value;
     Vue.set(state.active[moduleName].meta, key, value);
   },
+
+  incrementGroup(state, { moduleName, groupName }) {
+    const { props, length } = outerState.active[moduleName][groupName];
+
+    Object.keys(props).forEach((prop) => {
+      const defaultValue = state.active[moduleName].props[groupName].props[prop].default;
+
+      outerState.active[moduleName][groupName].props[prop][length] = defaultValue;
+      Vue.set(state.active[moduleName][groupName].props[prop], length, defaultValue);
+    });
+
+    outerState.active[moduleName][groupName].length = length + 1;
+    Vue.set(state.active[moduleName][groupName], 'length', length + 1);
+  },
+
+  decrementGroup(state, { moduleName, groupName }) {
+    const { props, length } = outerState.active[moduleName][groupName];
+
+    Object.keys(props).forEach((prop) => {
+      delete outerState.active[moduleName][groupName].props[prop][length - 1];
+      Vue.delete(state.active[moduleName][groupName].props[prop], length - 1);
+    });
+
+    outerState.active[moduleName][groupName].length = length - 1;
+    Vue.set(state.active[moduleName][groupName], 'length', length - 1);
+  },
 };
 
 export default {

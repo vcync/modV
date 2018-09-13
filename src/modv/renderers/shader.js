@@ -7,10 +7,20 @@ function render({ Module, canvas, context, pipeline }) {
 
   if (!modVCanvasTexture) {
     modVCanvasTexture = regl.texture({
-      src: canvas,
+      data: canvas,
+      mipmap: true,
+      wrap: ['mirror', 'mirror'],
+      mag: 'linear',
+      min: 'linear mipmap linear',
     });
   } else {
-    modVCanvasTexture(canvas);
+    modVCanvasTexture({
+      data: canvas,
+      mipmap: true,
+      wrap: ['mirror', 'mirror'],
+      mag: 'linear',
+      min: 'linear mipmap linear',
+    });
   }
 
   const uniforms = {

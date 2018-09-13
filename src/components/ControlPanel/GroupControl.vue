@@ -70,13 +70,16 @@
     },
     methods: {
       addGroup() {
-        // this.$store.dispatch('modVModules/upateProp', {
-        //   prop: 'length',
-
-        // });
+        this.$store.commit('modVModules/incrementGroup', {
+          moduleName: this.meta.$modv_moduleName,
+          groupName: this.meta.$modv_variable,
+        });
       },
       removeGroup() {
-
+        this.$store.commit('modVModules/decrementGroup', {
+          moduleName: this.meta.$modv_moduleName,
+          groupName: this.meta.$modv_variable,
+        });
       },
     },
     components: {
