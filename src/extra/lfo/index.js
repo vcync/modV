@@ -2,8 +2,11 @@ import store from '@/../store';
 import { modV } from 'modv';
 import { Menu, MenuItem } from 'nwjs-menu-browser';
 import { startCase, toLower } from 'lodash-es';
+import modvVue from '@/main';
+
 import lfoStore from './store';
 import lfoTypes from './lfo-types';
+import LFOEditor from './LFOEditor';
 
 // info here: http://testtone.com/calculators/lfo-speed-calculator
 function hzFromBpm(bpm = 120) {
@@ -42,7 +45,6 @@ const lfoplugin = {
     let label = 'Attach LFO';
 
     function attatchClick() {
-      console.log(moduleName, controlVariable, group, groupName);
       store.dispatch('lfo/addAssignment', {
         moduleName,
         controlVariable,
@@ -62,10 +64,16 @@ const lfoplugin = {
       });
     }
 
-    function editClick() {
-      store.dispatch('lfo/setActiveControlData', {
+    async function editClick() {
+      await store.dispatch('lfo/setActiveControlData', {
         moduleName,
         controlVariable,
+      });
+
+      modvVue.$modal.open({
+        parent: modvVue,
+        component: LFOEditor,
+        hasModalCard: true,
       });
     }
 
@@ -108,6 +116,8 @@ const lfoplugin = {
     const assignments = store.getters['lfo/assignments'];
 
     Object.keys(assignments).forEach((moduleName) => {
+      if (!store.state.modVModules.active[moduleName].meta.enabled) return;
+
       Object.keys(assignments[moduleName]).forEach((controlVariable) => {
         const assignment = assignments[moduleName][controlVariable];
         const module = store.state.modVModules.active[moduleName];

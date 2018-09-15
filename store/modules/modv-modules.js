@@ -181,7 +181,7 @@ const actions = {
     });
   },
 
-  removeActiveModule({ state, commit }, { moduleName }) {
+  async removeActiveModule({ state, commit }, { moduleName }) {
     store.commit('controlPanels/unpinPanel', { moduleName });
 
     if (state.focusedModule === moduleName) {
@@ -193,11 +193,11 @@ const actions = {
     const { props, meta } = module;
 
     if (props) {
-      Object.keys(props).forEach((key) => {
+      Object.keys(props).forEach(async (key) => {
         const value = props[key];
 
         if (value.control && value.control.type === 'paletteControl') {
-          store.dispatch('palettes/removePalette', {
+          await store.dispatch('palettes/removePalette', {
             id: `${meta.name}-${key}`,
           });
         }
@@ -216,6 +216,18 @@ const actions = {
     //     }
     //   });
     // }
+
+    /* Remove active module from Layers */
+    const layer = store.getters['layers/layerFromModuleName']({ moduleName });
+    if (layer) {
+      const moduleOrder = layer.layer.moduleOrder;
+      moduleOrder.splice(moduleOrder.indexOf(moduleName), 1);
+
+      await store.dispatch('layers/updateModuleOrder', {
+        layerIndex: layer.layerIndex,
+        order: moduleOrder,
+      });
+    }
 
     commit('removeActiveModule', { moduleName });
   },

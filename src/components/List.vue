@@ -1,30 +1,56 @@
 <template>
-  <draggable
-    :options="dragOptions"
-    v-model="layers"
+  <Container
+    @drop="onDrop"
+    drag-handle-selector=".layer-handle"
+    lock-axis="y"
+    group-name="layers"
+    :should-animate-drop="() => false"
+    tag="div"
+    class="left-topactive-list columns is-gapless is-multiline"
   >
-    <transition-group
-      name="list"
-      tag="div"
-      class="left-topactive-list columns is-gapless is-multiline"
+    <Draggable
+      v-for="(layer, index) in layers"
+      :key="index"
+      class="column is-12"
     >
       <layer
-        v-for="(layer, index) in layers"
         :Layer="layer"
         :LayerIndex="index"
-        :key="index"
       ></layer>
-    </transition-group>
-  </draggable>
+    </Draggable>
+  </Container>
 </template>
 
 <script>
   import { mapActions, mapMutations, mapGetters } from 'vuex';
   import LayerComponent from '@/components/Layer';
-  import draggable from 'vuedraggable';
+  import { Container, Draggable } from 'vue-smooth-dnd';
+
+  const applyDrag = (arr, dragResult) => {
+    const { removedIndex, addedIndex, payload } = dragResult;
+    if (removedIndex === null && addedIndex === null) return arr;
+
+    const result = [...arr];
+    let itemToAdd = payload;
+
+    if (removedIndex !== null) {
+      itemToAdd = result.splice(removedIndex, 1)[0];
+    }
+
+    if (addedIndex !== null) {
+      result.splice(addedIndex, 0, itemToAdd);
+    }
+
+    return result;
+  };
 
   export default {
     name: 'list',
+    components: {
+      Draggable,
+      Container,
+      Layer: LayerComponent,
+    },
     data() {
       return {
         dragOptions: {
@@ -52,10 +78,6 @@
         },
       },
     },
-    components: {
-      draggable,
-      Layer: LayerComponent,
-    },
     methods: {
       ...mapActions('layers', [
         'addLayer',
@@ -63,6 +85,9 @@
       ...mapMutations('layers', [
         'updateLayers',
       ]),
+      onDrop(e) {
+        this.layers = applyDrag(this.layers, e);
+      },
     },
     created() {
       this.addLayer().then(({ Layer }) => {

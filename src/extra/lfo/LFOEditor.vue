@@ -41,7 +41,6 @@
     },
     created() {
       this.lfoTypes = this.lfoTypes.concat(lfoTypes);
-      console.log(this.assignment);
       this.expressionFunction = this.assignment.waveform;
     },
     computed: {

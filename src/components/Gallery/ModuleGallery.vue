@@ -1,135 +1,117 @@
 <template>
   <div class="module-gallery columns is-multiline">
-    <div class="column is-12 title" :class="{ hidden: phrase.length < 1 }">
+    <div class="column is-12 title" v-show="phrase.length > 0">
       <h2>All Modules</h2>
     </div>
-    <div class="column is-12" :class="{ hidden: phrase.length < 1 }">
-      <draggable
+    <div class="column is-12" v-show="phrase.length > 0">
+      <Container
+        behaviour="copy"
+        group-name="modules"
+        :get-child-payload="e => getChildPayload('modules', e)"
+        tag="div"
         class="columns is-multiline is-mobile is-variable is-1"
-        :options="{
-          group: {
-            name: 'modules',
-            pull: 'clone',
-            put: false,
-          },
-          sort: false,
-        }"
       >
-        <div
-          class="column is-3"
+        <Draggable
           v-for="(module, key) in modules"
           :key="key"
-          :data-module-name="key"
+          class="column is-3"
           :class="{ hidden: !search(key, phrase) }"
         >
           <gallery-item
             :module-in="module"
             :module-name="key"
+            v-once
           ></gallery-item>
-        </div>
-      </draggable>
+        </Draggable>
+      </Container>
     </div>
 
-    <div class="column is-12 title" :class="{ hidden: phrase.length > 0 }">
+    <div class="column is-12 title" v-show="phrase.length < 1">
       <h2>Module 2D</h2>
     </div>
-    <div class="column is-12">
-      <draggable
+    <div class="column is-12" v-show="phrase.length < 1">
+      <Container
+        behaviour="copy"
+        group-name="modules"
+        :get-child-payload="e => getChildPayload('module2d', e)"
+        tag="div"
         class="columns is-multiline is-mobile is-variable is-1"
-        :class="{ hidden: phrase.length > 0 }"
-        :options="{
-          group: {
-            name: 'modules',
-            pull: 'clone',
-            put: false,
-          },
-          sort: false,
-        }"
       >
-        <div
-          class="column is-3"
+        <Draggable
           v-for="moduleName in module2d"
           :key="moduleName"
-          :data-module-name="moduleName"
+          class="column is-3"
         >
           <gallery-item
             :module-name="moduleName"
+            v-once
           ></gallery-item>
-        </div>
-      </draggable>
+        </Draggable>
+      </Container>
     </div>
 
-    <div class="column is-12 title" :class="{ hidden: phrase.length > 0 }">
+    <div class="column is-12 title" v-show="phrase.length < 1">
       <h2>Module Shader</h2>
     </div>
-    <div class="column is-12">
-      <draggable
+    <div class="column is-12" v-show="phrase.length < 1">
+      <Container
+        behaviour="copy"
+        group-name="modules"
+        :get-child-payload="e => getChildPayload('moduleShader', e)"
+        tag="div"
         class="columns is-multiline is-mobile is-variable is-1"
-        :class="{ hidden: phrase.length > 0 }"
-        :options="{
-          group: {
-            name: 'modules',
-            pull: 'clone',
-            put: false,
-          },
-          sort: false,
-        }"
       >
-        <div
-          class="column is-3"
+        <Draggable
           v-for="moduleName in moduleShader"
           :key="moduleName"
-          :data-module-name="moduleName"
+          class="column is-3"
         >
           <gallery-item
             :module-name="moduleName"
+            v-once
           ></gallery-item>
-        </div>
-      </draggable>
+        </Draggable>
+      </Container>
     </div>
 
-    <div class="column is-12 title" :class="{ hidden: phrase.length > 0 }">
+    <div class="column is-12 title" v-show="phrase.length < 1">
       <h2>Module ISF</h2>
     </div>
-    <div class="column is-12">
-      <draggable
+    <div class="column is-12" v-show="phrase.length < 1">
+      <Container
+        behaviour="copy"
+        group-name="modules"
+        :get-child-payload="e => getChildPayload('moduleIsf', e)"
+        tag="div"
         class="columns is-multiline is-mobile is-variable is-1"
-        :class="{ hidden: phrase.length > 0 }"
-        :options="{
-          group: {
-            name: 'modules',
-            pull: 'clone',
-            put: false,
-          },
-          sort: false,
-        }"
       >
-        <div
-          class="column is-3"
+        <Draggable
           v-for="moduleName in moduleIsf"
           :key="moduleName"
-          :data-module-name="moduleName"
+          class="column is-3"
         >
           <gallery-item
             :module-name="moduleName"
+            v-once
           ></gallery-item>
-        </div>
-      </draggable>
+        </Draggable>
+      </Container>
     </div>
   </div>
 </template>
 
 <script>
   import { mapGetters } from 'vuex';
-  import draggable from 'vuedraggable';
+  import { Container, Draggable } from 'vue-smooth-dnd';
 
   import GalleryItem from '@/components/GalleryItem';
 
   export default {
     name: 'moduleGallery',
     components: {
-      draggable,
       GalleryItem,
+      Container,
+      Draggable,
     },
     props: {
       phrase: {
@@ -163,6 +145,15 @@
         if (termIn.length < 1) return true;
 
         return text.indexOf(term) > -1;
+      },
+      getChildPayload(group, index) {
+        let moduleName = this[group][index];
+
+        if (group === 'modules') {
+          moduleName = Object.keys(this.modules)[index];
+        }
+
+        return { moduleName, collection: 'gallery' };
       },
     },
   };

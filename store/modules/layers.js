@@ -13,6 +13,16 @@ const getters = {
   allLayers: state => state.layers,
   focusedLayerIndex: state => state.focusedLayer,
   focusedLayer: state => state.layers[state.focusedLayer],
+  layerFromModuleName: state => ({ moduleName }) => {
+    const layerIndex = state.layers.findIndex(layer => layer.moduleOrder.indexOf(moduleName) > -1);
+
+    if (layerIndex < 0) return false;
+
+    return {
+      layer: state.layers[layerIndex],
+      layerIndex,
+    };
+  },
 };
 
 // actions
@@ -95,12 +105,6 @@ const actions = {
       Layer.resize({ width, height, dpr });
     });
   },
-  moveModuleInstance({ commit, state }, { fromLayerIndex, toLayerIndex, moduleName }) {
-    const moduleInstance = state.layers[fromLayerIndex].modules[moduleName];
-
-    commit('addModuleInstanceToLayer', { moduleName, moduleInstance, layerIndex: toLayerIndex });
-    commit('removeModuleInstanceFromLayer', { moduleName, layerIndex: fromLayerIndex });
-  },
   removeAllLayers({ commit, state }) {
     state.layers.forEach((Layer, layerIndex) => {
       Object.keys(Layer.modules).forEach((moduleName) => {
@@ -160,13 +164,6 @@ const mutations = {
     if (moduleIndex < 0) return;
 
     Layer.moduleOrder.splice(moduleIndex, 1);
-    Vue.delete(Layer.modules, moduleName);
-  },
-  addModuleInstanceToLayer(state, { moduleName, moduleInstance, layerIndex }) {
-    Vue.set(state.layers[layerIndex].modules, moduleName, moduleInstance);
-  },
-  removeModuleInstanceFromLayer(state, { moduleName, layerIndex }) {
-    const Layer = state.layers[layerIndex];
     Vue.delete(Layer.modules, moduleName);
   },
   addLayer(state, { layer }) {

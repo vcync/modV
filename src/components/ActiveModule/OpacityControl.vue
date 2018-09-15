@@ -1,6 +1,8 @@
 <template>
-  <span>
-    <label for="">Opacity</label>
+  <b-field
+    horizontal
+    label="Opacity"
+  >
     <input
       class="opacity"
       type="range"
@@ -9,7 +11,7 @@
       step="0.0001"
       v-model.number="alpha"
     >
-  </span>
+  </b-field>
 </template>
 
 <script>
