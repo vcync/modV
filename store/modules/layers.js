@@ -33,8 +33,9 @@ const actions = {
         'Layer',
         state.layers.map(layer => layer.name),
       );
-      const layer = new Layer();
-      layer.setName(layerName);
+      const layer = new Layer({
+        name: layerName,
+      });
 
       const width = store.getters['size/width'];
       const height = store.getters['size/height'];
@@ -107,7 +108,7 @@ const actions = {
   },
   removeAllLayers({ commit, state }) {
     state.layers.forEach((Layer, layerIndex) => {
-      Object.keys(Layer.modules).forEach((moduleName) => {
+      Layer.moduleOrder.forEach((moduleName) => {
         store.dispatch(
           'modVModules/removeActiveModule',
           { moduleName },
@@ -154,7 +155,7 @@ const mutations = {
     if (!Layer) {
       throw `Cannot find Layer with index ${layerIndex}`; //eslint-disable-line
     } else {
-      Layer.addModule(moduleName, position);
+      Layer.moduleOrder.splice(position, 0, moduleName);
     }
   },
   removeModuleFromLayer(state, { moduleName, layerIndex }) {
@@ -173,10 +174,7 @@ const mutations = {
     state.layers.splice(layerIndex, 1);
   },
   setLayerName(state, { LayerIndex, name }) {
-    state.layers[LayerIndex].setName(name);
-  },
-  setName(state, { layerIndex, name }) {
-    state.layers[layerIndex].setName(name);
+    state.layers[LayerIndex].name = name;
   },
   setLayerFocus(state, { LayerIndex }) {
     Vue.set(state, 'focusedLayer', LayerIndex);
