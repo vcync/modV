@@ -63,7 +63,7 @@
  *
  * @returns {Layer}
  */
-export default function Layer({ layer }) {
+export default function Layer(layer) {
   const defaults = {
     name: 'Layer',
 

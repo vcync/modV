@@ -33,7 +33,8 @@ const actions = {
         'Layer',
         state.layers.map(layer => layer.name),
       );
-      const layer = new Layer({
+
+      const layer = Layer({
         name: layerName,
       });
 
@@ -58,7 +59,7 @@ const actions = {
   },
   removeFocusedLayer({ commit, state }) {
     const Layer = state.layers[state.focusedLayer];
-    Object.keys(Layer.modules).forEach((moduleName) => {
+    Layer.moduleOrder.forEach((moduleName) => {
       store.dispatch(
         'modVModules/removeActiveModule',
         { moduleName },
