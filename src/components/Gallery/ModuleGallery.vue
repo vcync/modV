@@ -7,7 +7,7 @@
       <Container
         behaviour="copy"
         group-name="modules"
-        :get-child-payload="e => getChildPayload('module2d', e)"
+        :get-child-payload="e => getChildPayload('modules', e)"
         tag="div"
         class="columns is-multiline is-mobile is-variable is-1"
       >
@@ -147,7 +147,13 @@
         return text.indexOf(term) > -1;
       },
       getChildPayload(group, index) {
-        return { moduleName: this[group][index], collection: 'gallery' };
+        let moduleName = this[group][index];
+
+        if (group === 'modules') {
+          moduleName = Object.keys(this.modules)[index];
+        }
+
+        return { moduleName, collection: 'gallery' };
       },
     },
   };

@@ -43,7 +43,6 @@
           <Draggable
             v-for="module in modules"
             :key="module"
-            @keyup.native.delete="deletePress(item.data)"
             tabindex="0"
             class="column"
           >

@@ -1,7 +1,10 @@
 import store from '@/../store';
 import { modV } from 'modv';
 import { MenuItem } from 'nwjs-menu-browser';
+import modvVue from '@/main';
+
 import expressionStore from './store';
+import ExpressionComponent from './ExpressionInput';
 
 const Expression = {
   name: 'Value Expression',
@@ -19,10 +22,16 @@ const Expression = {
   },
 
   createMenuItem(moduleName, controlVariable) {
-    function click() {
-      store.dispatch('expression/setActiveControlData', {
+    async function click() {
+      await store.dispatch('expression/setActiveControlData', {
         moduleName,
         controlVariable,
+      });
+
+      modvVue.$modal.open({
+        parent: modvVue,
+        component: ExpressionComponent,
+        hasModalCard: true,
       });
     }
 

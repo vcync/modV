@@ -1,9 +1,6 @@
 import LFO from 'lfo-for-modv';
 import Vue from 'vue';
 import store from '@/../store';
-import modvVue from '@/main';
-import { ModalProgrammatic } from 'buefy';
-import LFOEditor from './LFOEditor';
 
 const state = {
   assignments: {},
@@ -54,11 +51,6 @@ const actions = {
     commit('addAssignment', { assignment });
   },
   setActiveControlData({ commit }, { moduleName, controlVariable }) {
-    ModalProgrammatic.open({
-      parent: modvVue,
-      component: LFOEditor,
-      hasModalCard: true,
-    });
     commit('setActiveControlData', { moduleName, controlVariable });
   },
   updateBpmFrequency({ commit, state }, { frequency }) {

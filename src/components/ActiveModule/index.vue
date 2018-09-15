@@ -1,64 +1,63 @@
 <template>
-  <div class="active-item" :class="{current: focused}" tabindex="0" @focus="focusActiveModule" @dragstart="dragstart">
-    <div class="columns is-gapless is-mobile">
-      <!-- <canvas class="preview"></canvas> --><!-- TODO: create preview option on mouseover item -->
-      <div class="column is-12">
-        <div class="active-module-wrapper">
-          <div class="columns is-gapless is-mobile">
-            <div class="column is-10">
-              <div class="columns is-gapless is-mobile">
-                <div class="column is-12">
-                  <span class="active-item-title">{{ moduleName }}</span>
+  <div
+    class="active-item"
+    :class="{current: focused}"
+    tabindex="0"
+    @focus="focusActiveModule"
+    @keyup.delete="deletePress"
+  >
+    <div class="active-module-wrapper columns is-gapless is-mobile">
+      <div class="column is-10">
+        <div class="columns is-gapless is-mobile">
+          <div class="column is-12">
+            <span class="active-item-title">{{ moduleName }}</span>
 
-                  <div class="columns is-gapless is-mobile">
-                    <div class="column options">
-                      <div class="control-group enable-group" v-context-menu="checkboxMenuOptions">
-                        <label
-                          :for="enabledCheckboxId"
-                          @click="checkboxClick"
-                        >Enabled</label>
-                        <b-checkbox
-                          v-model="enabled"
-                          :id="enabledCheckboxId"
-                        ></b-checkbox>
-                      </div>
-                      <div class="control-group opacity-group" v-context-menu="opacityMenuOptions">
-                        <opacity-control :module-name="moduleName"></opacity-control>
-                      </div>
-                      <div class="control-group blending-group">
-                        <label for="">Blending</label>
-                        <!-- <dropdown :data="operations" grouped placeholder="Normal" :width="150" :cbChanged="compositeOperationChanged"></dropdown> -->
-                        <b-select class="dropdown" size="is-small" v-model="compositeOperation">
-                          <option
-                            :disabled="true"
-                          >{{ blendModes.label }}</option>
-                          <option
-                            v-for="item in blendModes.children"
-                            :key="item.value"
-                            :value="item.value"
-                          >{{ item.label }}</option>
-                          <hr class="dropdown-divider">
-                          <option
-                            :disabled="true"
-                          >{{ compositeOperations.label }}</option>
-                          <option
-                            v-for="item in compositeOperations.children"
-                            :key="item.value"
-                            :value="item.value"
-                          >{{ item.label }}</option>
-                        </b-select>
-                      </div>
-                    </div>
-                  </div>
-                </div>
+            <div class="columns is-gapless is-mobile">
+              <div class="column options">
+                <b-field
+                v-context-menu="checkboxMenuOptions"
+                  horizontal
+                  :for="enabledCheckboxId"
+                  @click.native="checkboxClick"
+                  label="Enabled"
+                >
+                  <b-checkbox
+                    v-model="enabled"
+                    :id="enabledCheckboxId"
+                  />
+                </b-field>
+                <opacity-control :module-name="moduleName" v-context-menu="opacityMenuOptions" />
+                <b-field
+                  horizontal
+                  label="Blending"
+                >
+                  <b-select class="dropdown" size="is-small" v-model="compositeOperation">
+                    <option
+                      :disabled="true"
+                    >{{ blendModes.label }}</option>
+                    <option
+                      v-for="item in blendModes.children"
+                      :key="item.value"
+                      :value="item.value"
+                    >{{ item.label }}</option>
+                    <hr class="dropdown-divider">
+                    <option
+                      :disabled="true"
+                    >{{ compositeOperations.label }}</option>
+                    <option
+                      v-for="item in compositeOperations.children"
+                      :key="item.value"
+                      :value="item.value"
+                    >{{ item.label }}</option>
+                  </b-select>
+                </b-field>
               </div>
-            </div>
-            <div class="column is-2 handle-container">
-              <span class="ibvf"></span>
-              <i class="active-module-handle handle fa fa-reorder fa-3x"></i>
             </div>
           </div>
         </div>
+      </div>
+      <div class="column is-2 handle-container">
+        <i class="active-module-handle handle fa fa-reorder fa-3x"></i>
       </div>
     </div>
   </div>
@@ -236,6 +235,9 @@
       checkboxClick() {
         this.enabled = !this.enabled;
       },
+      deletePress() {
+        this.$store.dispatch('modVModules/removeActiveModule', { moduleName: this.moduleName });
+      },
     },
     mounted() {
       if (!this.module) return;
@@ -264,7 +266,7 @@
   };
 </script>
 
-<style lang='scss'>
+<style lang="scss">
   .active-item {
     background-color: #222;
     border-bottom: 1px #333 solid;
@@ -317,6 +319,21 @@
       }
     }
 
+    .field {
+      margin-bottom: 0;
+    }
+
+    .field-label {
+      text-align: left;
+      align-items: center;
+      display: flex;
+      justify-content: flex-end;
+    }
+
+    .field-body {
+      flex-grow: 3;
+    }
+
     input[type='range'] {
       vertical-align: middle;
     }
@@ -336,7 +353,9 @@
     }
 
     .handle-container {
-      text-align: right;
+      display: flex;
+      justify-content: center;
+      align-items: center;
     }
 
     .handle-container .handle {
