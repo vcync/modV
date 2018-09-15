@@ -18,6 +18,7 @@
     "modv-media-manager": "2xAA/modV-MediaManager",
     "nw-builder": "^3.5.4",
     "vue": "^2.5.3",
+    "vue-smooth-dnd": "^0.2.5",
     "vuex": "^2.3.1",
     "vuex-localstorage": "^1.0.0"
   },

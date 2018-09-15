@@ -1,5 +1,5 @@
 <template>
-  <div class="column active-item" :class="{current: focused}" tabindex="0" @focus="focusActiveModule" @dragstart="dragstart">
+  <div class="active-item" :class="{current: focused}" tabindex="0" @focus="focusActiveModule" @dragstart="dragstart">
     <div class="columns is-gapless is-mobile">
       <!-- <canvas class="preview"></canvas> --><!-- TODO: create preview option on mouseover item -->
       <div class="column is-12">
@@ -28,30 +28,25 @@
                       <div class="control-group blending-group">
                         <label for="">Blending</label>
                         <!-- <dropdown :data="operations" grouped placeholder="Normal" :width="150" :cbChanged="compositeOperationChanged"></dropdown> -->
-                        <b-dropdown class="dropdown" v-model="compositeOperation">
-                          <button class="button is-primary is-small" slot="trigger">
-                            <span>{{ compositeOperation | capitalize }}</span>
-                            <b-icon icon="angle-down"></b-icon>
-                          </button>
-
-                          <b-dropdown-item
+                        <b-select class="dropdown" size="is-small" v-model="compositeOperation">
+                          <option
                             :disabled="true"
-                          >{{ blendModes.label }}</b-dropdown-item>
-                          <b-dropdown-item
+                          >{{ blendModes.label }}</option>
+                          <option
                             v-for="item in blendModes.children"
                             :key="item.value"
                             :value="item.value"
-                          >{{ item.label }}</b-dropdown-item>
+                          >{{ item.label }}</option>
                           <hr class="dropdown-divider">
-                          <b-dropdown-item
+                          <option
                             :disabled="true"
-                          >{{ compositeOperations.label }}</b-dropdown-item>
-                          <b-dropdown-item
+                          >{{ compositeOperations.label }}</option>
+                          <option
                             v-for="item in compositeOperations.children"
                             :key="item.value"
                             :value="item.value"
-                          >{{ item.label }}</b-dropdown-item>
-                        </b-dropdown>
+                          >{{ item.label }}</option>
+                        </b-select>
                       </div>
                     </div>
                   </div>
@@ -60,7 +55,7 @@
             </div>
             <div class="column is-2 handle-container">
               <span class="ibvf"></span>
-              <i class="handle fa fa-reorder fa-3x"></i>
+              <i class="active-module-handle handle fa fa-reorder fa-3x"></i>
             </div>
           </div>
         </div>
