@@ -8,6 +8,14 @@
       vertical-align: middle;
     }
 
+    .field {
+      .field {
+        label {
+          min-width: auto;
+        }
+      }
+    }
+
     canvas {
       display: inline-block;
       vertical-align: middle;

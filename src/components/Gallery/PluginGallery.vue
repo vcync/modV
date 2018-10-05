@@ -17,7 +17,7 @@
                 :is="plugin.plugin.controlPanelComponent.name"
               ></component>
 
-              <div class="has-text-right">
+              <div class="has-text-right" v-if="plugin.plugin.pluginData">
                 <button
                   class="button"
                   @click="savePluginSettings({ pluginName })"
@@ -35,7 +35,7 @@
 </template>
 
 <script>
-  import { mapActions, mapMutations, mapGetters } from 'vuex';
+  import { mapActions, mapGetters } from 'vuex';
 
   export default {
     name: 'pluginGallery',
@@ -57,11 +57,9 @@
       ]),
     },
     methods: {
-      ...mapMutations('plugins', [
-        'setEnabled',
-      ]),
       ...mapActions('plugins', [
         'save',
+        'setEnabled',
       ]),
       search(textIn, termIn) {
         const text = textIn.toLowerCase().trim();

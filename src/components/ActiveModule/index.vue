@@ -1,69 +1,63 @@
 <template>
-  <div class="column active-item" :class="{current: focused}" tabindex="0" @focus="focusActiveModule" @dragstart="dragstart">
-    <div class="columns is-gapless is-mobile">
-      <!-- <canvas class="preview"></canvas> --><!-- TODO: create preview option on mouseover item -->
-      <div class="column is-12">
-        <div class="active-module-wrapper">
-          <div class="columns is-gapless is-mobile">
-            <div class="column is-10">
-              <div class="columns is-gapless is-mobile">
-                <div class="column is-12">
-                  <span class="active-item-title">{{ moduleName }}</span>
+  <div
+    class="active-item"
+    :class="{current: focused}"
+    tabindex="0"
+    @focus="focusActiveModule"
+    @keyup.delete="deletePress"
+  >
+    <div class="active-module-wrapper columns is-gapless is-mobile">
+      <div class="column is-10">
+        <div class="columns is-gapless is-mobile">
+          <div class="column is-12">
+            <span class="active-item-title">{{ moduleName }}</span>
 
-                  <div class="columns is-gapless is-mobile">
-                    <div class="column options">
-                      <div class="control-group enable-group" v-context-menu="checkboxMenuOptions">
-                        <label
-                          :for="enabledCheckboxId"
-                          @click="checkboxClick"
-                        >Enabled</label>
-                        <b-checkbox
-                          v-model="enabled"
-                          :id="enabledCheckboxId"
-                        ></b-checkbox>
-                      </div>
-                      <div class="control-group opacity-group" v-context-menu="opacityMenuOptions">
-                        <opacity-control :module-name="moduleName"></opacity-control>
-                      </div>
-                      <div class="control-group blending-group">
-                        <label for="">Blending</label>
-                        <!-- <dropdown :data="operations" grouped placeholder="Normal" :width="150" :cbChanged="compositeOperationChanged"></dropdown> -->
-                        <b-dropdown class="dropdown" v-model="compositeOperation">
-                          <button class="button is-primary is-small" slot="trigger">
-                            <span>{{ compositeOperation | capitalize }}</span>
-                            <b-icon icon="angle-down"></b-icon>
-                          </button>
-
-                          <b-dropdown-item
-                            :disabled="true"
-                          >{{ blendModes.label }}</b-dropdown-item>
-                          <b-dropdown-item
-                            v-for="item in blendModes.children"
-                            :key="item.value"
-                            :value="item.value"
-                          >{{ item.label }}</b-dropdown-item>
-                          <hr class="dropdown-divider">
-                          <b-dropdown-item
-                            :disabled="true"
-                          >{{ compositeOperations.label }}</b-dropdown-item>
-                          <b-dropdown-item
-                            v-for="item in compositeOperations.children"
-                            :key="item.value"
-                            :value="item.value"
-                          >{{ item.label }}</b-dropdown-item>
-                        </b-dropdown>
-                      </div>
-                    </div>
-                  </div>
-                </div>
+            <div class="columns is-gapless is-mobile">
+              <div class="column options">
+                <b-field
+                v-context-menu="checkboxMenuOptions"
+                  horizontal
+                  :for="enabledCheckboxId"
+                  @click.native="checkboxClick"
+                  label="Enabled"
+                >
+                  <b-checkbox
+                    v-model="enabled"
+                    :id="enabledCheckboxId"
+                  />
+                </b-field>
+                <opacity-control :module-name="moduleName" v-context-menu="opacityMenuOptions" />
+                <b-field
+                  horizontal
+                  label="Blending"
+                >
+                  <b-select class="dropdown" size="is-small" v-model="compositeOperation">
+                    <option
+                      :disabled="true"
+                    >{{ blendModes.label }}</option>
+                    <option
+                      v-for="item in blendModes.children"
+                      :key="item.value"
+                      :value="item.value"
+                    >{{ item.label }}</option>
+                    <hr class="dropdown-divider">
+                    <option
+                      :disabled="true"
+                    >{{ compositeOperations.label }}</option>
+                    <option
+                      v-for="item in compositeOperations.children"
+                      :key="item.value"
+                      :value="item.value"
+                    >{{ item.label }}</option>
+                  </b-select>
+                </b-field>
               </div>
-            </div>
-            <div class="column is-2 handle-container">
-              <span class="ibvf"></span>
-              <i class="handle fa fa-reorder fa-3x"></i>
             </div>
           </div>
         </div>
+      </div>
+      <div class="column is-2 handle-container">
+        <i class="active-module-handle handle fa fa-reorder fa-3x"></i>
       </div>
     </div>
   </div>
@@ -74,14 +68,13 @@
   import OpacityControl from './OpacityControl';
 
   export default {
-    name: 'activeItem',
+    name: 'activeModule',
     components: {
       OpacityControl,
     },
     data() {
       return {
         compositeOperation: 'normal',
-        enabled: null,
         opacity: null,
         checkboxMenuOptions: {
           match: ['@modv/module:internal'],
@@ -196,10 +189,22 @@
         'focusedModuleName',
       ]),
       module() {
-        return this.getActiveModule()(this.moduleName);
+        return this.$store.state.modVModules.active[this.moduleName];
       },
       enabledCheckboxId() {
         return `${this.moduleName}:modvreserved:enabled`;
+      },
+      enabled: {
+        get() {
+          if (!this.moduleName) return false;
+          return this.$store.state.modVModules.active[this.moduleName].meta.enabled;
+        },
+        set(value) {
+          this.setActiveModuleEnabled({
+            moduleName: this.moduleName,
+            enabled: value,
+          });
+        },
       },
       focused() {
         return this.moduleName === this.focusedModuleName;
@@ -218,9 +223,6 @@
         'setActiveModuleEnabled',
         'setActiveModuleCompositeOperation',
       ]),
-      ...mapGetters('modVModules', [
-        'getActiveModule',
-      ]),
       focusActiveModule() {
         this.setModuleFocus({ activeModuleName: this.moduleName });
       },
@@ -233,13 +235,17 @@
       checkboxClick() {
         this.enabled = !this.enabled;
       },
+      deletePress() {
+        this.$store.dispatch('modVModules/removeActiveModule', { moduleName: this.moduleName });
+      },
     },
     mounted() {
-      this.enabled = this.module.info.enabled;
-      this.opacity = this.module.info.alpha;
+      if (!this.module) return;
+      this.enabled = this.module.meta.enabled;
+      this.opacity = this.module.meta.alpha;
 
       this.operations[0]
-        .children.find(item => item.value === this.module.info.compositeOperation).selected = true;
+        .children.find(item => item.value === this.module.meta.compositeOperation).selected = true;
     },
     watch: {
       compositeOperation() {
@@ -247,9 +253,6 @@
           moduleName: this.moduleName,
           compositeOperation: this.compositeOperation,
         });
-      },
-      enabled() {
-        this.setActiveModuleEnabled({ moduleName: this.moduleName, enabled: this.enabled });
       },
     },
     filters: {
@@ -263,7 +266,7 @@
   };
 </script>
 
-<style lang='scss'>
+<style lang="scss">
   .active-item {
     background-color: #222;
     border-bottom: 1px #333 solid;
@@ -316,6 +319,21 @@
       }
     }
 
+    .field {
+      margin-bottom: 0;
+    }
+
+    .field-label {
+      text-align: left;
+      align-items: center;
+      display: flex;
+      justify-content: flex-end;
+    }
+
+    .field-body {
+      flex-grow: 3;
+    }
+
     input[type='range'] {
       vertical-align: middle;
     }
@@ -335,7 +353,9 @@
     }
 
     .handle-container {
-      text-align: right;
+      display: flex;
+      justify-content: center;
+      align-items: center;
     }
 
     .handle-container .handle {

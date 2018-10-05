@@ -36,6 +36,8 @@ function buildMenu(e, id, options, vnode, store) {
 
   const moduleName = vnode.context.moduleName;
   const controlVariable = vnode.context.variable;
+  const group = vnode.context.group;
+  const groupName = vnode.context.groupName;
 
   const hooks = store.getters['contextMenu/hooks'];
   let hookItems = [];
@@ -55,6 +57,8 @@ function buildMenu(e, id, options, vnode, store) {
       menu.append(item.buildMenuItem(
         moduleName,
         controlVariable,
+        group,
+        groupName,
       ));
     }
   });

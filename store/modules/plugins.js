@@ -42,7 +42,7 @@ const actions = {
     return pluginData;
   },
 
-  save({ state }, { pluginName }) {
+  save({ state }, { pluginName, enabled }) {
     const MediaManager = modV.MediaManagerClient;
     const plugin = state.plugins[pluginName].plugin;
 
@@ -50,26 +50,37 @@ const actions = {
       throw new Error(`${pluginName} does not exist as a Plugin`);
     }
 
-    if (!('pluginData' in plugin)) {
-      throw new Error(`Plugin ${pluginName} does not have a pluginData Object`);
+    let save;
+
+    if (plugin.pluginData) {
+      save = plugin.pluginData.save;
     }
 
-    const save = plugin.pluginData.save;
+    let enabledValue;
 
-    if (!save) {
-      throw new Error(`Plugin ${pluginName} does not have a save method on pluginData`);
+    if (typeof enabled === 'undefined') {
+      enabledValue = state.plugins[pluginName].enabled;
+    } else {
+      enabledValue = enabled;
     }
 
-    const payload = save();
+    const payload = {
+      meta: {
+        enabled: enabledValue,
+        name: pluginName,
+      },
+      values: save ? save() : {},
+    };
 
     MediaManager.send({
-      request: 'save-plugin-data',
+      request: 'save-plugin',
       name: pluginName,
+      profile: 'default',
       payload,
     });
   },
 
-  load({ state }, { pluginName, data }) {
+  load({ dispatch, state }, { pluginName, data, enabled = true }) {
     const plugin = state.plugins[pluginName].plugin;
     if (!plugin) {
       throw new Error(`${pluginName} does not exist as a Plugin`);
@@ -79,17 +90,32 @@ const actions = {
       throw new Error('No data defined');
     }
 
-    if (!('pluginData' in plugin)) {
-      throw new Error(`Plugin ${pluginName} does not have a pluginData Object`);
+    let load;
+
+    if (plugin.pluginData) {
+      load = plugin.pluginData.load;
     }
 
-    const load = plugin.pluginData.load;
+    if (load) load(data);
 
-    if (!load) {
-      throw new Error(`Plugin ${pluginName} does not have a load method on pluginData`);
+    dispatch('setEnabled', { pluginName, enabled });
+  },
+  setEnabled({ state, commit, dispatch }, { pluginName, enabled }) {
+    const plugin = state.plugins[pluginName].plugin;
+    if (!plugin) {
+      throw new Error(`${pluginName} does not exist as a Plugin`);
     }
 
-    load(data);
+    if (enabled && plugin.on) {
+      plugin.on();
+    }
+
+    if (!enabled && plugin.off) {
+      plugin.off();
+    }
+
+    if (state.plugins[pluginName].enabled !== enabled) dispatch('save', { pluginName, enabled });
+    commit('setEnabled', { pluginName, enabled });
   },
 };
 

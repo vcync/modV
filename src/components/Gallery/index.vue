@@ -1,5 +1,5 @@
 <template>
-  <div class="gallery columns is-gapless" @drop="drop" @dragover="dragover">
+  <div class="gallery columns is-gapless">
     <div class="column is-12">
       <search-bar
         :phrase.sync="phrase"
@@ -34,6 +34,10 @@
           <plugin-gallery :phrase="phrase"></plugin-gallery>
         </b-tab-item>
 
+        <b-tab-item label="Projects" v-bar="{ useScrollbarPseudo: true }">
+          <project-gallery :phrase="phrase"></project-gallery>
+        </b-tab-item>
+
         <b-tab-item
           v-for="(plugin, pluginName) in enabledPlugins"
           :label="pluginName"
@@ -47,12 +51,13 @@
 </template>
 
 <script>
-  import { mapActions, mapGetters, mapMutations } from 'vuex';
+  import { mapGetters } from 'vuex';
 
   import ModuleGallery from '@/components/Gallery/ModuleGallery';
   import PaletteGallery from '@/components/Gallery/PaletteGallery';
   import PluginGallery from '@/components/Gallery/PluginGallery';
   import PresetGallery from '@/components/Gallery/PresetGallery';
+  import ProjectGallery from '@/components/Gallery/ProjectGallery';
   import SearchBar from '@/components/Gallery/SearchBar';
 
   export default {
@@ -67,10 +72,6 @@
       ...mapGetters('plugins', {
         plugins: 'pluginsWithGalleryTab',
       }),
-      ...mapGetters('modVModules', {
-        currentDragged: 'currentDragged',
-        modules: 'registry',
-      }),
       enabledPlugins() {
         return Object.keys(this.plugins)
           .filter(pluginName => this.plugins[pluginName].enabled)
@@ -81,39 +82,8 @@
       },
     },
     methods: {
-      ...mapActions('modVModules', [
-        'removeActiveModule',
-      ]),
-      ...mapMutations('modVModules', [
-        'setCurrentDragged',
-      ]),
-      ...mapMutations('layers', [
-        'removeModuleFromLayer',
-      ]),
       menuIconClicked() {
         this.$emit('menuIconClicked');
-      },
-      drop(e) {
-        e.preventDefault();
-        const moduleName = e.dataTransfer.getData('module-name');
-        const layerIndex = e.dataTransfer.getData('layer-index');
-
-        this.removeModuleFromLayer({ moduleName, layerIndex });
-        this.removeActiveModule({ moduleName });
-
-        this.setCurrentDragged({ moduleName: null });
-      },
-      dragover(e) {
-        e.preventDefault();
-        if (!this.currentDragged) return;
-        const draggedNode = document.querySelectorAll(`.active-item[data-module-name="${this.currentDragged}"]`)[1];
-        draggedNode.classList.add('deletable');
-      },
-      dragleave(e) {
-        e.preventDefault();
-        if (!this.currentDragged) return;
-        const draggedNode = document.querySelectorAll(`.active-item[data-module-name="${this.currentDragged}"]`)[1];
-        draggedNode.classList.remove('deletable');
       },
     },
     components: {
@@ -121,6 +91,7 @@
       PaletteGallery,
       PluginGallery,
       PresetGallery,
+      ProjectGallery,
       SearchBar,
     },
   };

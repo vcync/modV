@@ -1,83 +1,98 @@
 <template>
-  <div class="pure-u-1-1 global-controls right-controls">
-    <div class="control-group bpm-group">
-      <label for="detectBPMGlobal">Detect BPM</label>
-      <input id="detectBPMGlobal" type="checkbox" class="enable" checked="true" v-model='detectBpm'><br>
-      <label>BPM Tapper</label>
-      <input id="BPMtapperGlobal" type="button" value="Tap BPM" class="enable pure-button" @click='tempoTap'>
-      <span id="BPMDisplayGlobal">{{ parseInt(bpm, 10) }}</span>
-    </div>
-    <div class="control-group audioSource-group">
-      <label for="audioSourceGlobal">Set audio input</label>
-      <select id="audioSourceGlobal" v-model='audioSource'>
-        <option
-          v-for='source in audioSources'
-          :value='source.deviceId'
-        >{{ source.label }}</option>
-      </select>
-    </div>
-    <!-- <div class="control-group monitor-group">
-      <label for="monitorAudioGlobal">Monitor audio input</label>
-      <input id="monitorAudioGlobal" type="checkbox" class="enable">
-    </div> -->
-    <div class="control-group videoSource-group">
-      <label for="videoSourceGlobal">Set video input</label>
-      <select id="videoSourceGlobal" v-model='videoSource'>
-        <option
-          v-for='source in videoSources'
-          :value='source.deviceId'
-        >{{ source.label }}</option>
-      </select>
-    </div>
-    <div class="control-group factory-group">
-      <label for="factoryResetGlobal">Factory Reset</label>
-      <input id="factoryResetGlobal" type="button" value="Factory Reset" class="enable pure-button">
-    </div>
+  <div class="container">
+    <h1 class="title">Options</h1>
+    <div class="columns is-multiline">
+      <div class="column is-4">
+        <div class="card">
+          <p class="card-header-title">
+            Input
+          </p>
+          <div class="card-content">
+            <div class="content">
+              <div class="field">
+                Audio input:
+                <b-select placeholder="Select an input" v-model="audioSource">
+                   <option
+                    v-for="source in audioSources"
+                    :value="source.deviceId"
+                  >{{ source.label }}</option>
+                </b-select>
+              </div>
+              <div class="field">
+                Video input:
+                <b-select placeholder="Select an input" v-model="videoSource">
+                   <option
+                    v-for="source in videoSources"
+                    :value="source.deviceId"
+                  >{{ source.label }}</option>
+                </b-select>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
 
-    <div class="control-group set-username-group">
-      <label>Set Name</label>
-      <input type="text" id="setUsername" v-model='nameInput' @keypress.enter='saveName'>
-      <input id="setUsernameGlobal" type="button" value="Save Name" class="enable pure-button" @click='saveName'>
-    </div>
+      <div class="column is-4">
+        <div class="card">
+          <p class="card-header-title">
+            Output
+          </p>
+          <div class="card-content">
+            <div class="content">
+              <div class="field">
+                <b-checkbox v-model="retina">Use retina resolutions (*{{ devicePixelRatio }})</b-checkbox>
+              </div>
+              <div class="field">
+                <b-checkbox v-model="constrainToOneOne">Constrain output to 1:1 ratio</b-checkbox>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
 
-    <div class="control-group set-mediapath">
-      <label>Set Media Folder</label>
-      <input
-        style="display:none"
-        type="file"
-        id="selectMediaFolderGlobal"
-        webkitdirectory="true"
-        directory="true"
-        nwdirectory="true"
-        @change='mediaPathChanged'
-      >
-      <label for="selectMediaFolderGlobal" class="pure-button">Select Media Folder</label>
-    </div>
+      <div class="column is-4">
+        <div class="card">
+          <p class="card-header-title">
+            BPM
+          </p>
+          <div class="card-content">
+            <div class="content">
+              <div class="field">
+                <b-checkbox v-model="detect">Detect BPM</b-checkbox>
+              </div>
+              <div class="field">
+                <button class="button" @click="tempoTap" :disabled="detect">
+                  Tap Tempo ({{ parseInt(bpm, 10) }})
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
 
-    <div class="control-group retina-group">
-      <label for="retinaGlobal">Use retina resolutions</label>
-      <input id="retinaGlobal" type="checkbox" class="enable" v-model='useRetinaInput'>
-    </div>
-
-    <div class="control-group constrain-group">
-      <label for="constrainGlobal">Constrain output size to 1:1 ratio</label>
-      <input id="constrainGlobal" type="checkbox" class="enable" v-model='constrainToOneOneInput'>
-    </div>
-
-    <div class="control-group newOutputWindow-group">
-      <label for="newOutputWindowGlobal">New output window</label>
-      <input id="newOutputWindowGlobal" type="button" value="Open" class="enable pure-button" @click='createWindow'>
-    </div>
-
-    <div class="control-group showStats-group">
-      <label for="showStatsGlobal">Show Statistics</label>
-      <input id="showStatsGlobal" type="checkbox" class="enable" v-model='showStatsInput'>
+      <div class="column is-4">
+        <div class="card">
+          <p class="card-header-title">
+            User
+          </p>
+          <div class="card-content">
+            <div class="content">
+              <b-field label="Set Username">
+                <b-input v-model="nameInput" @keypress.enter="saveName" />
+                <p class="control">
+                  <button class="button is-primary" @click="saveName(nameInput)">Save</button>
+                </p>
+              </b-field>
+            </div>
+          </div>
+        </div>
+      </div>
     </div>
   </div>
 </template>
 
 <script>
-  import { mapActions, mapGetters, mapMutations } from 'vuex';
+  import { mapActions, mapGetters } from 'vuex';
   import Tt from 'tap-tempo';
 
   const tapTempo = new Tt();
@@ -86,14 +101,7 @@
     name: 'globalControls',
     data() {
       return {
-        audioSource: 'default',
-        videoSource: 'default',
-        detectBpm: true,
         mediaPathInput: '',
-        nameInput: '',
-        useRetinaInput: true,
-        showStatsInput: false,
-        constrainToOneOneInput: false,
       };
     },
     computed: {
@@ -107,77 +115,77 @@
       ]),
       ...mapGetters('user', [
         'mediaPath',
-        'name',
-        'useRetina',
-        'currentAudioSource',
-        'currentVideoSource',
-        'showStats',
-        'constrainToOneOne',
       ]),
+
+      detect: {
+        get() {
+          return this.$store.state.tempo.detect;
+        },
+        set(value) {
+          this.$store.commit('tempo/setBpmDetect', {
+            detect: value,
+          });
+        },
+      },
+
+      constrainToOneOne: {
+        get() {
+          return this.$store.state.user.constrainToOneOne;
+        },
+        set(value) {
+          this.$store.dispatch('user/setConstrainToOneOne', value);
+        },
+      },
+
+      retina: {
+        get() {
+          return this.$store.state.user.useRetina;
+        },
+        set(value) {
+          this.$store.dispatch('user/setUseRetina', { useRetina: value });
+        },
+      },
+
+      audioSource: {
+        get() {
+          return this.$store.state.user.currentAudioSource || 'default';
+        },
+        set(value) {
+          this.$store.dispatch('user/setCurrentAudioSource', { sourceId: value });
+        },
+      },
+
+      videoSource: {
+        get() {
+          return this.$store.state.user.currentVideoSource || 'default';
+        },
+        set(value) {
+          this.$store.dispatch('user/setCurrentVideoSource', { sourceId: value });
+        },
+      },
+
+      nameInput: {
+        get() {
+          return this.$store.state.user.name;
+        },
+        set(value) {
+          this.saveName(value);
+        },
+      },
+
+      devicePixelRatio() {
+        return window.devicePixelRatio;
+      },
     },
     methods: {
       ...mapActions('tempo', [
         'setBpm',
       ]),
-      ...mapMutations('tempo', [
-        'setBpmDetect',
-      ]),
-      ...mapMutations('user', [
-        'setMediaPath',
-        'setName',
-      ]),
-      ...mapActions('user', [
-        'setUseRetina',
-        'setCurrentAudioSource',
-        'setCurrentVideoSource',
-        'setShowStats',
-        'setConstrainToOneOne',
-      ]),
-      ...mapActions('windows', [
-        'createWindow',
-      ]),
       tempoTap() {
         tapTempo.tap();
       },
-      saveName() {
-        this.setName({ name: this.nameInput });
-      },
-      mediaPathChanged(e) {
-        this.mediaPathInput = e.target.value;
-      },
-    },
-    watch: {
-      currentAudioSource() {
-        this.audioSource = this.currentAudioSource;
-      },
-      currentVideoSource() {
-        this.videoSource = this.currentVideoSource;
-      },
-      audioSource() {
-        if (this.audioSource === this.currentAudioSource) return;
-        this.setCurrentAudioSource({ sourceId: this.audioSource });
-      },
-      videoSource() {
-        if (this.videoSource === this.currentVideoSource) return;
-        this.setCurrentVideoSource({ sourceId: this.videoSource });
-      },
-      detect() {
-        this.detectBpm = this.detect;
-      },
-      detectBpm() {
-        this.setBpmDetect({ detect: this.detectBpm });
-      },
-      mediaFolderInput() {
-        this.setMediaPath({ path: this.mediaFolderInput });
-      },
-      useRetinaInput() {
-        this.setUseRetina({ useRetina: this.useRetinaInput });
-      },
-      showStatsInput() {
-        this.setShowStats(this.showStatsInput);
-      },
-      constrainToOneOneInput() {
-        this.setConstrainToOneOne(this.constrainToOneOneInput);
+      saveName(value) {
+        this.$store.commit('user/setName', { name: value });
       },
     },
     created() {
@@ -185,13 +193,6 @@
         if (this.bpm === Math.round(bpm)) return;
         this.setBpm({ bpm: Math.round(bpm) });
       });
-
-      this.nameInput = this.name;
-      this.useRetinaInput = this.useRetina;
-      this.audioSource = this.currentAudioSource || 'default';
-      this.videoSource = this.currentVideoSource || 'default';
-      this.showStatsInput = this.showStats;
-      this.constrainToOneOneInput = this.constrainToOneOne;
     },
   };
 </script>
@@ -204,5 +205,9 @@
 
   label.pure-button {
     width: initial !important;
+  }
+
+  .title {
+    color: #fff;
   }
 </style>

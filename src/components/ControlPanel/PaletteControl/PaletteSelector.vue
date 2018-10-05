@@ -20,7 +20,7 @@
     name: 'paletteSelector',
     props: [
       'value',
-      'profile',
+      'project',
     ],
     data() {
       return {
@@ -28,17 +28,17 @@
       };
     },
     computed: {
-      ...mapGetters('profiles', [
-        'allProfiles',
+      ...mapGetters('projects', [
+        'allProjects',
       ]),
       selectData() {
         const data = [];
-        const allProfiles = this.allProfiles;
+        const allProjects = this.allProjects;
 
-        if (!Object.prototype.hasOwnProperty.call(allProfiles, this.profile)) return [];
-        const profile = allProfiles[this.profile];
+        if (!Object.prototype.hasOwnProperty.call(allProjects, this.project)) return [];
+        const project = allProjects[this.project];
 
-        Object.keys(profile.palettes).forEach((paletteName) => {
+        Object.keys(project.palettes).forEach((paletteName) => {
           data.push({
             label: paletteName,
             value: paletteName,

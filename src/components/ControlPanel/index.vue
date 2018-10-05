@@ -9,13 +9,18 @@
       </div>
       <div class="message-body" v-bar="{ useScrollbarPseudo: true }">
         <div class="pure-form pure-form-aligned">
+          <module-preset-selector
+            class="pure-control-group"
+            :presets="module.presets || {}"
+            :moduleName="name"
+          />
           <component
             class="pure-control-group"
             v-for="control in controls"
-            :is="control.type"
+            :is="control.component"
             :module="module"
-            :control="control"
-            :key="control.variable"
+            :meta="control.meta"
+            :key="control.meta.$modv_variable"
           ></component>
         </div>
       </div>
@@ -25,6 +30,11 @@
 
 <script>
   import { mapGetters, mapMutations } from 'vuex';
+
+  import generateControlData from './generate-control-data';
+
+  import modulePresetSelector from './ModulePresetSelector';
+
   import colorControl from './ColorControl';
   import checkboxControl from './CheckboxControl';
   import imageControl from './ImageControl';
@@ -33,6 +43,7 @@
   import selectControl from './SelectControl';
   import textControl from './TextControl';
   import twoDPointControl from './TwoDPointControl';
+  import groupControl from './GroupControl';
 
   export default {
     name: 'controlPanel',
@@ -47,15 +58,16 @@
       ]),
       module() {
         if (!this.moduleName) return false;
-        return this.getActiveModule(this.moduleName);
+        return this.$store.getters['modVModules/outerActive'][this.moduleName];
       },
       name() {
         if (!this.module) return '';
-        return this.module.info.name;
+        return this.module.meta.name;
       },
       controls() {
-        if (!this.module) return [];
-        return this.module.info.controls;
+        return generateControlData({
+          module: this.module,
+        });
       },
       pinTitle() {
         return this.pinned ? 'Unpin' : 'Pin';
@@ -83,6 +95,8 @@
       selectControl,
       textControl,
       twoDPointControl,
+      modulePresetSelector,
+      groupControl,
     },
   };
 </script>

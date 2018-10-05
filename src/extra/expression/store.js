@@ -1,9 +1,6 @@
 import Vue from 'vue';
 import store from '@/../store';
 import math from 'mathjs';
-import modvVue from '@/main';
-import { ModalProgrammatic } from 'buefy';
-import ExpressionComponent from './ExpressionInput';
 
 const state = {
   // menus: {},
@@ -53,9 +50,9 @@ function compileExpression(expression, additionalScope = {}) {
 // actions
 const actions = {
   addExpression({ commit }, { expression, moduleName, controlVariable, scopeAdditions }) {
-    const Module = store.getters['modVModules/getActiveModule'](moduleName);
+    const Module = store.state.modVModules.active[moduleName];
     if (!Module) return;
-    if (typeof Module.info.controls[controlVariable] === 'undefined') return;
+    if (typeof Module.props[controlVariable] === 'undefined') return;
 
     let additionalScope = {};
     const existingModuleAssignment = state.assignments[moduleName];
@@ -89,12 +86,6 @@ const actions = {
   },
   setActiveControlData({ commit }, { moduleName, controlVariable }) {
     commit('setActiveControlData', { moduleName, controlVariable });
-
-    ModalProgrammatic.open({
-      parent: modvVue,
-      component: ExpressionComponent,
-      hasModalCard: true,
-    });
   },
   addToScope({ commit, dispatch }, { moduleName, controlVariable, scopeAdditions }) {
     const assignmentModule = state.assignments[moduleName];

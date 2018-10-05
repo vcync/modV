@@ -56,15 +56,17 @@ class MediaManagerClient {
           break;
 
         case 'update':
-          Object.keys(parsed.payload).forEach((profileName) => {
-            const profile = parsed.payload[profileName];
+          Object.keys(parsed.payload).forEach((projectName) => {
+            const project = parsed.payload[projectName];
 
-            store.commit('profiles/addProfile', {
-              profileName,
-              images: profile.images,
-              palettes: profile.palettes,
-              presets: profile.presets,
-              videos: profile.videos,
+            store.commit('projects/addProject', {
+              projectName,
+              images: project.images,
+              palettes: project.palettes,
+              presets: project.presets,
+              videos: project.videos,
+              modules: project.modules,
+              plugins: project.plugins,
             });
           });
           break;
@@ -73,20 +75,32 @@ class MediaManagerClient {
           if ('data' in parsed) {
             const data = parsed.data;
             const type = data.type;
-            const profileName = data.profile;
+            const projectName = data.profile;
             const name = data.name;
 
             if (type === 'palette') {
-              store.commit('profiles/addPaletteToProfile', {
-                profileName,
+              store.commit('projects/addPaletteToProject', {
+                projectName,
                 paletteName: name,
                 colors: data.contents,
               });
             } else if (type === 'preset') {
-              store.commit('profiles/addPresetToProfile', {
-                profileName,
+              store.commit('projects/addPresetToProject', {
+                projectName,
                 presetName: name,
                 presetData: data.contents,
+              });
+            } else if (type === 'module') {
+              store.commit('projects/addModuleToProject', {
+                projectName,
+                presetName: name,
+                path: data.path,
+              });
+            } else if (type === 'plugin') {
+              store.commit('projects/addPluginToProject', {
+                projectName,
+                pluginName: name,
+                pluginData: data.contents,
               });
             } else if (type === 'image') {
               // modV.profiles[profile].images[name] = data.path;

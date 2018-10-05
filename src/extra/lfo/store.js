@@ -1,9 +1,6 @@
 import LFO from 'lfo-for-modv';
 import Vue from 'vue';
 import store from '@/../store';
-import modvVue from '@/main';
-import { ModalProgrammatic } from 'buefy';
-import LFOEditor from './LFOEditor';
 
 const state = {
   assignments: {},
@@ -24,10 +21,17 @@ const getters = {
 };
 
 const actions = {
-  addAssignment({ commit }, { moduleName, controlVariable, waveform, frequency }) {
-    const Module = store.getters['modVModules/getActiveModule'](moduleName);
+  addAssignment({ commit }, {
+    moduleName,
+    controlVariable,
+    group,
+    groupName,
+    waveform,
+    frequency,
+  }) {
+    const Module = store.state.modVModules.active[moduleName];
     if (!Module) return;
-    if (typeof Module.info.controls[controlVariable] === 'undefined') return;
+    if (typeof Module.props[controlVariable] === 'undefined') return;
 
     const controller = new LFO({
       waveform,
@@ -37,6 +41,8 @@ const actions = {
     const assignment = {
       moduleName,
       controlVariable,
+      group,
+      groupName,
       controller,
       waveform,
       useBpm: true,
@@ -45,11 +51,6 @@ const actions = {
     commit('addAssignment', { assignment });
   },
   setActiveControlData({ commit }, { moduleName, controlVariable }) {
-    ModalProgrammatic.open({
-      parent: modvVue,
-      component: LFOEditor,
-      hasModalCard: true,
-    });
     commit('setActiveControlData', { moduleName, controlVariable });
   },
   updateBpmFrequency({ commit, state }, { frequency }) {

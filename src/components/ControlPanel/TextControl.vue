@@ -3,14 +3,13 @@
     <b-field :label="label">
       <b-input
         type="text"
-        v-model="valueIn"
+        v-model.string="value"
       ></b-input>
     </b-field>
   </div>
 </template>
 
 <script>
-  import { mapGetters, mapActions } from 'vuex';
   import { Menu, MenuItem } from 'nwjs-menu-browser';
 
   if (!window.nw) {
@@ -25,8 +24,7 @@
   export default {
     name: 'textControl',
     props: [
-      'module',
-      'control',
+      'meta',
     ],
     data() {
       return {
@@ -34,33 +32,33 @@
           match: ['textControl'],
           menuItems: [],
         },
-        valueIn: undefined,
       };
     },
     computed: {
-      ...mapGetters('modVModules', [
-        'getValueFromActiveModule',
-      ]),
-      currentValue() {
-        return this.getValueFromActiveModule(this.moduleName, this.variable).raw;
-      },
       moduleName() {
-        return this.module.info.name;
+        return this.meta.$modv_moduleName;
       },
-      label() {
-        return this.control.label;
+      inputId() {
+        return `${this.moduleName}-${this.variable}`;
+      },
+      value: {
+        get() {
+          return this.$store.state.modVModules.active[this.moduleName][this.variable];
+        },
+        set(value) {
+          this.$store.dispatch('modVModules/updateProp', {
+            name: this.moduleName,
+            prop: this.variable,
+            data: value,
+          });
+        },
       },
       variable() {
-        return this.control.variable;
+        return this.meta.$modv_variable;
       },
-      defaultValue() {
-        return this.control.default;
+      label() {
+        return this.meta.label || this.variable;
       },
-    },
-    methods: {
-      ...mapActions('modVModules', [
-        'setActiveModuleControlValue',
-      ]),
     },
     beforeMount() {
       this.$data.menuOptions.menuItems.push(
@@ -72,19 +70,6 @@
           type: 'separator',
         }),
       );
-
-      this.valueIn = this.currentValue || this.defaultValue;
-    },
-    watch: {
-      valueIn() {
-        const value = this.valueIn;
-
-        this.setActiveModuleControlValue({
-          moduleName: this.moduleName,
-          variable: this.variable,
-          value,
-        });
-      },
     },
   };
 </script>

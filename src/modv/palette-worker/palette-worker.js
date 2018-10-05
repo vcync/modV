@@ -1,4 +1,5 @@
 import EventEmitter2 from 'eventemitter2';
+import store from '@/../store';
 
 const PaletteWorkerScript = require('worker-loader!./index.js'); //eslint-disable-line
 
@@ -32,12 +33,18 @@ class PaletteWorker extends EventEmitter2 {
         });
         break;
       case 'palette-update':
-        this.emit(
-          PaletteWorker.EventType.PALETTE_UPDATED,
-          evt.data.paletteId,
-          evt.data.currentColor,
-          evt.data.currentStep,
-        );
+        store.dispatch('palettes/stepUpdate', {
+          id: evt.data.paletteId,
+          currentStep: evt.data.currentStep,
+          currentColor: evt.data.currentColor,
+        });
+
+        store.dispatch('modVModules/updateProp', {
+          name: store.state.palettes.palettes[evt.data.paletteId].moduleName,
+          prop: store.state.palettes.palettes[evt.data.paletteId].variable,
+          data: evt.data.currentStep,
+        });
+
         break;
     }
   }
