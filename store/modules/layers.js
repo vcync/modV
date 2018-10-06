@@ -1,6 +1,7 @@
 import Vue from 'vue';
 import { Layer } from '@/modv';
 import store from '@/../store';
+import getNextName from '@/utils/get-next-name';
 
 const state = {
   focusedLayer: 0,
@@ -12,15 +13,30 @@ const getters = {
   allLayers: state => state.layers,
   focusedLayerIndex: state => state.focusedLayer,
   focusedLayer: state => state.layers[state.focusedLayer],
+  layerFromModuleName: state => ({ moduleName }) => {
+    const layerIndex = state.layers.findIndex(layer => layer.moduleOrder.indexOf(moduleName) > -1);
+
+    if (layerIndex < 0) return false;
+
+    return {
+      layer: state.layers[layerIndex],
+      layerIndex,
+    };
+  },
 };
 
 // actions
 const actions = {
   addLayer({ commit, state }) {
-    return new Promise((resolve) => {
-      const layerName = `Layer ${state.layers.length + 1}`;
-      const layer = new Layer();
-      layer.setName(layerName);
+    return new Promise(async (resolve) => {
+      const layerName = await getNextName(
+        'Layer',
+        state.layers.map(layer => layer.name),
+      );
+
+      const layer = Layer({
+        name: layerName,
+      });
 
       const width = store.getters['size/width'];
       const height = store.getters['size/height'];
@@ -43,7 +59,7 @@ const actions = {
   },
   removeFocusedLayer({ commit, state }) {
     const Layer = state.layers[state.focusedLayer];
-    Object.keys(Layer.modules).forEach((moduleName) => {
+    Layer.moduleOrder.forEach((moduleName) => {
       store.dispatch(
         'modVModules/removeActiveModule',
         { moduleName },
@@ -71,10 +87,15 @@ const actions = {
         positionShadow = 0;
       }
     }
-    commit('addModuleToLayer', { moduleName: module.info.name, layerIndex, position: positionShadow });
+    commit('addModuleToLayer', {
+      moduleName: module.meta.name,
+      position: positionShadow,
+      layerIndex,
+    });
+
     store.commit(
       'modVModules/setModuleFocus',
-      { activeModuleName: module.info.name },
+      { activeModuleName: module.meta.name },
       { root: true },
     );
   },
@@ -86,15 +107,9 @@ const actions = {
       Layer.resize({ width, height, dpr });
     });
   },
-  moveModuleInstance({ commit, state }, { fromLayerIndex, toLayerIndex, moduleName }) {
-    const moduleInstance = state.layers[fromLayerIndex].modules[moduleName];
-
-    commit('addModuleInstanceToLayer', { moduleName, moduleInstance, layerIndex: toLayerIndex });
-    commit('removeModuleInstanceFromLayer', { moduleName, layerIndex: fromLayerIndex });
-  },
   removeAllLayers({ commit, state }) {
     state.layers.forEach((Layer, layerIndex) => {
-      Object.keys(Layer.modules).forEach((moduleName) => {
+      Layer.moduleOrder.forEach((moduleName) => {
         store.dispatch(
           'modVModules/removeActiveModule',
           { moduleName },
@@ -122,6 +137,14 @@ const actions = {
       return layerData;
     });
   },
+  async setLayerName({ state, commit }, { layerIndex, name }) {
+    const layerName = await getNextName(
+      name,
+      state.layers.map(layer => layer.name),
+    );
+
+    commit('setLayerName', { LayerIndex: layerIndex, name: layerName });
+  },
 };
 
 // mutations
@@ -133,7 +156,7 @@ const mutations = {
     if (!Layer) {
       throw `Cannot find Layer with index ${layerIndex}`; //eslint-disable-line
     } else {
-      Layer.addModule(moduleName, position);
+      Layer.moduleOrder.splice(position, 0, moduleName);
     }
   },
   removeModuleFromLayer(state, { moduleName, layerIndex }) {
@@ -145,13 +168,6 @@ const mutations = {
     Layer.moduleOrder.splice(moduleIndex, 1);
     Vue.delete(Layer.modules, moduleName);
   },
-  addModuleInstanceToLayer(state, { moduleName, moduleInstance, layerIndex }) {
-    Vue.set(state.layers[layerIndex].modules, moduleName, moduleInstance);
-  },
-  removeModuleInstanceFromLayer(state, { moduleName, layerIndex }) {
-    const Layer = state.layers[layerIndex];
-    Vue.delete(Layer.modules, moduleName);
-  },
   addLayer(state, { layer }) {
     state.layers.push(layer);
   },
@@ -159,10 +175,7 @@ const mutations = {
     state.layers.splice(layerIndex, 1);
   },
   setLayerName(state, { LayerIndex, name }) {
-    state.layers[LayerIndex].setName(name);
-  },
-  setName(state, { layerIndex, name }) {
-    state.layers[layerIndex].setName(name);
+    state.layers[LayerIndex].name = name;
   },
   setLayerFocus(state, { LayerIndex }) {
     Vue.set(state, 'focusedLayer', LayerIndex);

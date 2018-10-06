@@ -1,5 +1,3 @@
-import ReconnectingWebSocket from 'reconnecting-websocket';
-
 export default class LuminaveConnector {
   /**
    * - Create a WebSocket to luminave to transmit colors
@@ -35,10 +33,7 @@ export default class LuminaveConnector {
      => [a1, a2, b1, b2]
    */
   constructor(args = {}) {
-    this.url = args.url || 'ws://169.254.120.135:3000/modV';
-
-    // Create WebSocket connection
-    this.setupSocket(this.url);
+    this.url = args.url || 'ws://localhost:3000/modV';
 
     // Width / Height of canvas
     this.width = args.width || 0;
@@ -50,24 +45,79 @@ export default class LuminaveConnector {
 
     // The raw canvas data
     this.data = '';
+
+    // WebSocket connection
+    this.reconnectAfter = 4000;
+    this.connection = undefined;
+    this.timeout = 0;
+    this.shouldReconnect = true;
   }
 
   /**
    * Create a WebSocket to luminave
    */
   setupSocket() {
-    // Open the connection
-    this.connection = new ReconnectingWebSocket(this.url);
+    // Close an old connection
+    this.closeConnection();
 
-    // Handle: Errors
-    this.connection.onerror = (error) => {
-      console.error('lumiaveConnector: WebSocket: Error:', error); //eslint-disable-line
-    };
+    // Create a new connection
+    this.connection = new WebSocket(this.url);
 
-    // Handle: Connection was opened
-    this.connection.onopen = () => {
+    // Listen for errors (e.g. could not connect)
+    this.connection.addEventListener('error', (event) => {
+      console.error('lumiaveConnector: WebSocket: Error:', event); //eslint-disable-line
+
+      // Reconnect is allowed
+      if (this.shouldReconnect) {
+        // Reconnect after a specific amount of time
+        this.timeout = setTimeout(() => { this.setupSocket(); }, this.reconnectAfter);
+      }
+    });
+
+    // Connection is opened
+    this.connection.addEventListener('open', () => {
       console.info('lumiaveConnector: WebSocket: Opened'); //eslint-disable-line
-    };
+    });
+  }
+
+  /**
+   * Close the WebSocket connection and stop reconnecting
+   */
+  closeConnection() {
+    clearTimeout(this.timeout);
+
+    if (this.connection !== undefined) {
+      this.connection.close();
+    }
+
+    this.connection = undefined;
+  }
+
+  /**
+   * Stop reconnecting to WebSocket
+   */
+  stopReconnect() {
+    this.shouldReconnect = false;
+    clearTimeout(this.timeout);
+  }
+
+  /**
+   * Enable reconnecting to WebSocket
+   */
+  startReconnect() {
+    this.shouldReconnect = true;
+  }
+
+  /**
+   * Send data to WebSocket if connection is established
+   * @param {Array} data 
+   */
+  send(data) {
+    // Connection is established
+    if (this.connection !== undefined && this.connection.readyState === 1) {
+      // Send JSON message to luminave
+      this.connection.send(JSON.stringify(data));
+    }
   }
 
   /**
@@ -97,11 +147,7 @@ export default class LuminaveConnector {
       colors,
     };
 
-    // Connection is established
-    if (this.connection.readyState === 1) {
-      // Send JSON message to luminave
-      this.connection.send(JSON.stringify(dmxData));
-    }
+    this.send(dmxData);
   }
 
   /**

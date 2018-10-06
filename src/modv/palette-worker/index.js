@@ -1,4 +1,3 @@
-// jshint worker:true
 /* eslint-env worker */
 
 import ci from 'correcting-interval';
@@ -49,7 +48,7 @@ onmessage = function onmessage(e) {
   if (!('message' in e.data)) return;
 
   if (e.data.message === 'create-palette') {
-    createPalette(e.data.colors, e.data.duration, e.data.paletteId);
+    createPalette(e.data.colors, e.data.duration, e.data.paletteId, e.data.returnFormat);
   }
 
   if (e.data.message === 'set-palette') {

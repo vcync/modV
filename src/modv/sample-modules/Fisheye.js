@@ -1,36 +1,24 @@
-import { ModuleShader } from '../Modules';
-import fisheyeFrag from './Fisheye/fisheye.frag';
+import fragmentShader from './Fisheye/fisheye.frag';
 
-class Fisheye extends ModuleShader {
-  constructor() {
-    super({
-      info: {
-        name: 'Fisheye',
-        author: '???',
-        version: 0.1,
-        previewWithOutput: true,
-        meyda: [], // returned variables passed to the shader individually as uniforms
-        uniforms: {
-          aperture: {
-            type: 'f',
-            value: 180.0,
-          },
-        }, // Three.JS uniforms
-      },
-      fragmentShader: fisheyeFrag,
-    });
+export default {
+  meta: {
+    name: 'Fisheye',
+    type: 'shader',
+    version: '1.0.0',
+    author: '???',
+    previewWithOutput: true,
+  },
 
-    this.add({
-      type: 'rangeControl',
-      variable: 'aperture',
+  fragmentShader,
+
+  props: {
+    aperture: {
+      type: 'float',
       label: 'Aperture',
-      varType: 'float',
+      default: 180.0,
       min: 1.0,
       max: 360.0,
       step: 0.5,
-      default: 180.0,
-    });
-  }
-}
-
-export default Fisheye;
+    },
+  },
+};

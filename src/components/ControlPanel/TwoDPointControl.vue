@@ -1,41 +1,52 @@
 <template>
-  <div class="2d-point-control" :data-moduleName='moduleName'>
-    <label :for='inputId'>
-      {{ label }}
-    </label>
-    <div style='display: inline-block'>
-      <canvas
-        class='pad'
-        ref='pad'
-        @mousedown='mouseDown'
-        @mouseup='mouseUp'
-        @mousemove='mouseMove'
-        @touchstart='touchstart'
-        @touchmove='touchmove'
-        @touchend='touchend'
-        @click='click'
-      ></canvas>
-      <br>
-      <label>X: <input type='number' v-model='currentX' @input='xInput'></label>
-      <br>
-      <label>Y: <input type='number' v-model='currentY' @input='yInput'></label>
-    </div>
+  <div class="2d-point-control" :data-moduleName="moduleName">
+    <b-field :label="label" :addons="false">
+      <div style="display: inline-block">
+        <div style="display: inline-block">
+          <canvas
+            class="pad"
+            width="170"
+            height="170"
+            ref="pad"
+            @click="click"
+            @mousedown="mouseDown"
+            @touchstart="touchStart"
+          ></canvas>
+        </div>
+        <div style="display: inline-block; vertical-align: bottom">
+          <b-field label="X:" :addons="false">
+            <b-input
+              class="pure-form-message-inline"
+              type="number"
+              v-model.number="currentX"
+              @input="xInput"
+              step="0.01"
+            ></b-input>
+          </b-field>
+          <b-field label="Y:" :addons="false">
+            <b-input
+              class="pure-form-message-inline"
+              type="number"
+              v-model.number="currentY"
+              @input="yInput"
+              step="0.01"
+            ></b-input>
+          </b-field>
+        </div>
+      </div>
+    </b-field>
   </div>
 </template>
 
 <script>
-  import { mapGetters, mapActions } from 'vuex';
-
   export default {
     name: 'twoDPointControl',
     props: [
-      'module',
-      'control',
+      'meta',
     ],
     data() {
       return {
         context: null,
-        value: undefined,
         mousePressed: false,
         canvasCoords: [65.5, 65.5],
         currentX: 0,
@@ -45,68 +56,84 @@
       };
     },
     computed: {
-      ...mapGetters('modVModules', [
-        'getValueFromActiveModule',
-      ]),
+      value: {
+        get() {
+          return this.$store.state.modVModules.active[this.moduleName][this.variable];
+        },
+        set(value) {
+          this.$store.dispatch('modVModules/updateProp', {
+            name: this.moduleName,
+            prop: this.variable,
+            data: value,
+          });
+        },
+      },
       moduleName() {
-        return this.module.info.name;
+        return this.meta.$modv_moduleName;
       },
       inputId() {
         return `${this.moduleName}-${this.variable}`;
       },
       label() {
-        return this.control.label;
+        return this.meta.label;
       },
       variable() {
-        return this.control.variable;
+        return this.meta.$modv_variable;
       },
       min() {
-        let min = isNaN(this.control.min) ? -1.0 : this.control.min;
-        min = Array.isArray(this.control.min) ? this.control.min[0] : min;
+        let min = isNaN(this.meta.min) ? -1.0 : this.meta.min;
+        min = Array.isArray(this.meta.min) ? this.meta.min[0] : min;
         return min;
       },
       max() {
-        let max = isNaN(this.control.max) ? 1.0 : this.control.max;
-        max = Array.isArray(this.control.max) ? this.control.max[0] : max;
+        let max = isNaN(this.meta.max) ? 1.0 : this.meta.max;
+        max = Array.isArray(this.meta.max) ? this.meta.max[0] : max;
         return max;
       },
       step() {
-        return this.control.step || 0.01;
+        return this.meta.step || 0.01;
       },
       defaultValue() {
-        return this.control.default;
+        return this.meta.default;
       },
     },
     methods: {
-      ...mapActions('modVModules', [
-        'setActiveModuleControlValue',
-      ]),
       mapValues(x, y) {
-        const mappedX = Math.map(x, 0, 130, this.min, this.max);
-        const mappedY = Math.map(y, 130, 0, this.min, this.max);
+        const mappedX = Math.map(x, 0, 170, this.min, this.max);
+        const mappedY = Math.map(y, 170, 0, this.min, this.max);
         return [+mappedX.toFixed(2), +mappedY.toFixed(2)];
       },
       unmapValues(x, y) {
-        const unmappedX = Math.map(x, this.min, this.max, 0, 130);
-        const unmappedY = Math.map(y, this.min, this.max, 130, 0);
+        const unmappedX = Math.map(x, this.min, this.max, 0, 170);
+        const unmappedY = Math.map(y, this.min, this.max, 170, 0);
         return [unmappedX, unmappedY];
       },
       mouseDown() {
         this.mousePressed = true;
+        window.addEventListener('mousemove', this.mouseMove.bind(this));
+        window.addEventListener('mouseup', this.mouseUp.bind(this));
+        window.addEventListener('touchmove', this.touchMove.bind(this));
+        window.addEventListener('touchEnd', this.touchEnd.bind(this));
       },
       mouseUp() {
         this.mousePressed = false;
+        window.removeEventListener('mousemove', this.mouseMove.bind(this));
+        window.removeEventListener('mouseup', this.mouseUp.bind(this));
+        window.removeEventListener('touchmove', this.touchMove.bind(this));
+        window.removeEventListener('touchEnd', this.touchEnd.bind(this));
       },
       mouseMove(e) {
+        if (!this.mousePressed) return;
         this.calculateValues(e);
       },
-      touchstart() {
+      touchStart() {
         this.mousePressed = true;
       },
-      touchmove(e) {
+      touchMove(e) {
+        if (!this.mousePressed) return;
         this.calculateValues(e);
       },
-      touchend() {
+      touchEnd() {
         this.mousePressed = false;
       },
       click(e) {
@@ -146,30 +173,28 @@
         const canvas = this.$refs.pad;
         const context = this.context;
 
-        context.fillStyle = '#fff';
+        context.fillStyle = '#393939';
         context.fillRect(0, 0, canvas.width, canvas.height);
 
         this.drawGrid();
-        this.drawPosition(x, y);
+        this.drawPosition(Math.round(x) + 0.5, Math.round(y) + 0.5);
       },
       drawGrid() {
         const canvas = this.$refs.pad;
         const context = this.context;
-        const width = canvas.width;
-        const height = canvas.height;
-        // const ch = canvas.height;
+        const { width, height } = canvas;
 
         context.save();
         context.strokeStyle = '#aaa';
         context.beginPath();
         context.lineWidth = 1;
-        const sections = 20;
+        const sections = 16;
         const step = width / sections;
-        for (let i = 0; i < sections; i += 1) {
-          context.moveTo(i * step, 0);
-          context.lineTo(i * step, height);
-          context.moveTo(0, i * step);
-          context.lineTo(width, i * step);
+        for (let i = 1; i < sections; i += 1) {
+          context.moveTo(Math.round(i * step) + 0.5, 0);
+          context.lineTo(Math.round(i * step) + 0.5, height);
+          context.moveTo(0, Math.round(i * step) + 0.5);
+          context.lineTo(width, Math.round(i * step) + 0.5);
         }
         context.stroke();
         context.restore();
@@ -177,80 +202,61 @@
       drawPosition(x, y) {
         const canvas = this.$refs.pad;
         const context = this.context;
+        const { width, height } = canvas;
+        context.lineWidth = 1;
+        context.strokeStyle = '#ffa600';
 
-        context.beginPath();
-        context.arc(x, y, 5, 0, 2 * Math.PI, true);
-        context.strokeStyle = '#000';
-        context.stroke();
+        if (x < Math.round(width / 2)) context.strokeStyle = '#005aff';
 
         context.beginPath();
         context.moveTo(x, 0);
         context.lineTo(x, canvas.height);
         context.stroke();
 
+        if (y <= Math.round((height + 1) / 2)) context.strokeStyle = '#ffa600';
+        else context.strokeStyle = '#005aff';
+
         context.beginPath();
         context.moveTo(0, y);
         context.lineTo(canvas.width, y);
         context.stroke();
+
+        if (x < Math.round(width / 2) && y > Math.round(height / 2)) {
+          context.strokeStyle = '#005aff';
+        } else {
+          context.strokeStyle = '#ffa600';
+        }
+
+        context.beginPath();
+        context.arc(x, y, 6, 0, 2 * Math.PI, true);
+        context.stroke();
       },
-      xInput(e) {
-        this.inputX = parseFloat(e.target.value);
+      xInput(value) {
+        this.inputX = parseFloat(value);
+        this.value = [value, this.inputY];
+        this.canvasCoords = this.unmapValues(value, this.inputY);
       },
-      yInput(e) {
-        this.inputY = parseFloat(e.target.value);
+      yInput(value) {
+        this.inputY = parseFloat(value);
+        this.value = [this.inputX, value];
+        this.canvasCoords = this.unmapValues(this.inputX, value);
       },
-    },
-    beforeMount() {
-      this.value = this.module[this.variable];
-      if (typeof this.value === 'undefined') this.value = this.defaultValue;
-      this.canvasCoords = this.unmapValues(this.value[0], this.value[1]);
     },
     mounted() {
-      this.$refs.pad.width = 130;
-      this.$refs.pad.height = 130;
+      this.$refs.pad.width = 170;
+      this.$refs.pad.height = 170;
       this.context = this.$refs.pad.getContext('2d');
       this.canvasCoords = this.unmapValues(this.value[0], this.value[1]);
+      this.currentX = this.value[0];
+      this.currentY = this.value[1];
     },
     watch: {
-      /* module() {
-        this.setActiveModuleControlValue({
-          moduleName: this.moduleName,
-          variable: this.variable,
-          value: this.value
-        });
-        this.canvasCoords = this.unmapValues(this.value[0], this.value[1]);
-      }, */
       value() {
         this.currentX = this.value[0];
         this.currentY = this.value[1];
-        this.setActiveModuleControlValue({
-          moduleName: this.moduleName,
-          variable: this.variable,
-          value: this.value,
-        });
       },
       canvasCoords() {
         this.draw(this.canvasCoords[0], this.canvasCoords[1]);
-      },
-      inputX() {
-        const value = this.inputX;
-
-        this.setActiveModuleControlValue({
-          moduleName: this.moduleName,
-          variable: this.variable,
-          value: [value, this.inputY],
-        });
-        this.canvasCoords = this.unmapValues(value, this.inputY);
-      },
-      inputY() {
-        const value = this.inputY;
-
-        this.setActiveModuleControlValue({
-          moduleName: this.moduleName,
-          variable: this.variable,
-          value: [this.inputX, value],
-        });
-        this.canvasCoords = this.unmapValues(this.inputX, value);
       },
     },
   };
@@ -262,9 +268,9 @@
   }
 
   .pad {
-    width: 130px;
-    height: 130px;
-    border: 1px solid #000;
+    width: 170px;
+    height: 170px;
+    // border: 1px solid #000;
     position: relative;
     background-color: #fff;
     cursor: crosshair;

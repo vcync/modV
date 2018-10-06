@@ -41,6 +41,7 @@ function userMediaSuccess(stream, ids) {
       audioContext: this.audioContext,
       source: this.audioStream,
       bufferSize: 512,
+      windowingFunction: 'rect',
     });
 
     // Tell the rest of the script we're all good.

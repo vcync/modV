@@ -1,8 +1,17 @@
 <template>
-  <span>
-    <label for="">Opacity</label>
-    <input type="range" min="0" max="1" value="1" step="0.0001" class="opacity" v-model="alpha">
-  </span>
+  <b-field
+    horizontal
+    label="Opacity"
+  >
+    <input
+      class="opacity"
+      type="range"
+      min="0"
+      max="1"
+      step="0.0001"
+      v-model.number="alpha"
+    >
+  </b-field>
 </template>
 
 <script>
@@ -14,13 +23,14 @@
     computed: {
       alpha: {
         get() {
-          return this.$store.state.modVModules.active[this.moduleName].info.alpha;
+          if (!this.moduleName) return 0;
+          return this.$store.state.modVModules.active[this.moduleName].meta.alpha;
         },
         set(value) {
-          this.$store.dispatch('modVModules/setActiveModuleInfo', {
-            moduleName: this.moduleName,
-            key: 'alpha',
-            value,
+          this.$store.dispatch('modVModules/updateMeta', {
+            name: this.moduleName,
+            metaKey: 'alpha',
+            data: value,
           });
         },
       },

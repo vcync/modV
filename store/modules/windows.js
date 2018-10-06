@@ -1,6 +1,5 @@
 import WindowController from '@/modv/window-controller';
 import getLargestWindow from '@/modv/get-largest-window';
-import store from '@/../store';
 
 const state = {
   windows: [],
@@ -31,9 +30,6 @@ const actions = {
     return new WindowController(Vue).then((windowController) => {
       const windowRef = windowController.window;
       delete windowController.window;
-      windowController.on('resize', (width, height) => {
-        store.dispatch('size/setDimensions', { width, height });
-      });
       commit('addWindow', { windowController, windowRef });
       return windowController;
     });

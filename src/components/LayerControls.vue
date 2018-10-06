@@ -102,7 +102,7 @@
           return 'Last Layer';
         }
 
-        return this.layers[this.inheritanceIndex].name;
+        return this.layers[this.inheritanceIndex || 0].name;
       },
     },
     methods: {

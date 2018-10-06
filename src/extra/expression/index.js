@@ -1,30 +1,37 @@
 import store from '@/../store';
 import { modV } from 'modv';
 import { MenuItem } from 'nwjs-menu-browser';
+import modvVue from '@/main';
+
 import expressionStore from './store';
+import ExpressionComponent from './ExpressionInput';
 
 const Expression = {
   name: 'Value Expression',
+  store: expressionStore,
+  storeName: 'expression',
 
   install() {
-    store.registerModule('expression', expressionStore);
-
     store.subscribe((mutation) => {
       if (mutation.type === 'modVModules/removeActiveModule') {
         store.commit('expression/removeExpressions', { moduleName: mutation.payload.moduleName });
       }
     });
-  },
 
-  modvInstall() {
     modV.addContextMenuHook({ hook: 'rangeControl', buildMenuItem: this.createMenuItem.bind(this) });
   },
 
   createMenuItem(moduleName, controlVariable) {
-    function click() {
-      store.dispatch('expression/setActiveControlData', {
+    async function click() {
+      await store.dispatch('expression/setActiveControlData', {
         moduleName,
         controlVariable,
+      });
+
+      modvVue.$modal.open({
+        parent: modvVue,
+        component: ExpressionComponent,
+        hasModalCard: true,
       });
     }
 

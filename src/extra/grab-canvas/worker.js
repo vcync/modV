@@ -4,7 +4,7 @@ import LuminaveConnector from './luminave-connector';
 
 // Connect to the luminave-modV integration
 // @see https://github.com/NERDDISCO/luminave#integrations
-const luminaveConnector = new LuminaveConnector('ws://localhost:3000/modV');
+const luminaveConnector = new LuminaveConnector();
 
 /**
  * When the worker receives a message, it triggers different functions
@@ -18,14 +18,49 @@ onmessage = (e) => {
       break;
     }
 
-    case 'setup': {
+    case 'setupCanvas': {
       const { width, height, selectionX, selectionY } = message.payload;
 
       luminaveConnector.width = width;
       luminaveConnector.height = height;
       luminaveConnector.selectionX = selectionX;
       luminaveConnector.selectionY = selectionY;
+      break;
+    }
 
+    // Create a WebSocket onnection
+    case 'setupConnection': {
+      const { url, active } = message.payload;
+
+      luminaveConnector.url = url;
+
+      // The plugin is active
+      if (active) {
+        // Stop an old reconnect
+        luminaveConnector.stopReconnect();
+        // Allow reconnects
+        luminaveConnector.startReconnect();
+        // Create the connection
+        luminaveConnector.setupSocket();
+      } else {
+        // Stop an old reconnect because the plugin is not active
+        luminaveConnector.stopReconnect();
+      }
+      
+      break;
+    }
+
+    // Start a connection that will also reconnect
+    case 'startConnection': {
+      luminaveConnector.startReconnect();
+      luminaveConnector.setupSocket();
+      break;
+    }
+
+    // Stop a connection and don't allow reconnect
+    case 'closeConnection': {
+      luminaveConnector.stopReconnect();
+      luminaveConnector.closeConnection();
       break;
     }
 

@@ -8,19 +8,13 @@ import meyda from './modules/meyda';
 import modVModules from './modules/modv-modules';
 import palettes from './modules/palettes';
 import plugins from './modules/plugins';
-import profiles from './modules/profiles';
+import projects from './modules/projects';
 import size from './modules/size';
 import tempo from './modules/tempo';
 import user from './modules/user';
 import windows from './modules/windows';
 
 Vue.use(Vuex);
-
-const debug = process.env.NODE_ENV !== 'production';
-if (debug) {
-  console.warn(`modV: Vuex is in STRICT mode as NODE_ENV is set to "${process.env.NODE_ENV}".\n
-All commits are syncronously watched. Performance lag is due to this.`);
-}
 
 export default new Vuex.Store({
   plugins: [
@@ -39,11 +33,11 @@ export default new Vuex.Store({
     modVModules,
     palettes,
     plugins,
-    profiles,
+    projects,
     size,
     tempo,
     user,
     windows,
   },
-  strict: debug,
+  strict: false,
 });

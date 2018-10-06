@@ -36,6 +36,8 @@ function buildMenu(e, id, options, vnode, store) {
 
   const moduleName = vnode.context.moduleName;
   const controlVariable = vnode.context.variable;
+  const group = vnode.context.group;
+  const groupName = vnode.context.groupName;
 
   const hooks = store.getters['contextMenu/hooks'];
   let hookItems = [];
@@ -55,6 +57,8 @@ function buildMenu(e, id, options, vnode, store) {
       menu.append(item.buildMenuItem(
         moduleName,
         controlVariable,
+        group,
+        groupName,
       ));
     }
   });
@@ -71,6 +75,7 @@ function buildMenu(e, id, options, vnode, store) {
 
 const ContextMenu = {
   name: 'Context Menu',
+  store: contextMenuStore,
 
   install(Vue) {
     Vue.component('contextMenuHandler', ContextMenuHandler);
@@ -82,8 +87,6 @@ const ContextMenu = {
         });
       },
     });
-
-    store.registerModule('contextMenu', contextMenuStore);
   },
   component: ContextMenuHandler,
 };

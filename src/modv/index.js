@@ -1,16 +1,13 @@
-import Vue from 'vue';
 import EventEmitter2 from 'eventemitter2';
-
 import BeatDetektor from '@/extra/beatdetektor';
 import store from '@/../store/';
-import stats from '@/extra/stats';
-import { Module2D, ModuleShader, ModuleISF } from './Modules';
 import Layer from './Layer';
 import { scan, setSource } from './MediaStream';
 import draw from './draw';
 import setupWebGl from './webgl';
 import PaletteWorker from './palette-worker/palette-worker';
 import MediaManagerClient from './MediaManagerClient';
+import installPlugin from './install-plugin';
 
 class ModV extends EventEmitter2 {
   /**
@@ -24,7 +21,7 @@ class ModV extends EventEmitter2 {
 
     this.layers = store.getters['layers/allLayers'];
     this.registeredModules = store.getters['modVModules/registeredModules'];
-    this.activeModules = store.getters['modVModules/activeModules'];
+    this.activeModules = store.getters['modVModules/outerActive'];
     this.getActiveModule = store.getters['modVModules/getActiveModule'];
     this.windows = store.getters['windows/allWindows'];
     this.windowReference = store.getters['windows/windowReference'];
@@ -69,10 +66,6 @@ class ModV extends EventEmitter2 {
         windowRef.close();
       });
     });
-
-    this.Module2D = Module2D;
-    this.ModuleISF = ModuleISF;
-    this.ModuleShader = ModuleShader;
 
     this.delta = 0;
   }
@@ -133,7 +126,6 @@ class ModV extends EventEmitter2 {
   }
 
   loop(δ) {
-    stats.begin();
     this.delta = δ;
     let features = [];
 
@@ -147,13 +139,11 @@ class ModV extends EventEmitter2 {
       const assignments = store.getters['meyda/controlAssignments'];
       assignments.forEach((assignment) => {
         const featureValue = features[assignment.feature];
-        const Module = store.getters['modVModules/getActiveModule'](assignment.moduleName);
-        const control = Module.info.controls[assignment.controlVariable];
 
-        store.dispatch('modVModules/setActiveModuleControlValue', {
-          moduleName: assignment.moduleName,
-          variable: assignment.controlVariable,
-          value: Math.map(featureValue, 0, this.assignmentMax, control.min, control.max),
+        store.dispatch('modVModules/updateProp', {
+          name: assignment.moduleName,
+          prop: assignment.controlVariable,
+          data: featureValue,
         });
       });
 
@@ -170,20 +160,17 @@ class ModV extends EventEmitter2 {
     this.beatDetektorKick.process(this.beatDetektor);
     this.kick = this.beatDetektorKick.isKick();
 
+    store.dispatch('modVModules/syncQueues');
+
     draw(δ).then(() => {
       this.mainRaf = requestAnimationFrame(this.loop.bind(this));
-      stats.end();
     }).then(() => {
       this.emit('tick', δ);
     });
   }
 
   use(plugin) { //eslint-disable-line
-    store.commit('plugins/addPlugin', {
-      plugin,
-    });
-
-    if ('modvInstall' in plugin) plugin.modvInstall();
+    installPlugin(plugin);
   }
 
   addContextMenuHook(hook) { //eslint-disable-line
@@ -194,7 +181,7 @@ class ModV extends EventEmitter2 {
   }
 
   register(Module) { //eslint-disable-line
-    store.dispatch('modVModules/register', { Module });
+    store.dispatch('modVModules/register', Module);
   }
 
   resize(width, height, dpr = 1) {
@@ -205,6 +192,9 @@ class ModV extends EventEmitter2 {
     this.bufferCanvas.height = this.height;
     this.outputCanvas.width = this.width;
     this.outputCanvas.height = this.height;
+
+    this.isf.canvas.width = this.width;
+    this.isf.canvas.height = this.height;
 
     this.webgl.resize(this.width, this.height);
   }
@@ -224,68 +214,15 @@ class ModV extends EventEmitter2 {
   /** @return {WorkersDataType} */
   createWorkers() {//eslint-disable-line
     const palette = new PaletteWorker();
-    // palette.on(PaletteWorker.EventType.PALETTE_ADDED, this.paletteAddHandler.bind(this));
-    palette.on(PaletteWorker.EventType.PALETTE_UPDATED, this.paletteUpdateHandler.bind(this));
 
     return {
       palette,
     };
   }
 
-  // /**
-  //  * @protected
-  //  * @param {string} id
-  //  */
-  // paletteAddHandler(id) {
-  //   this.palettes = store.getters['palettes/allPalettes'];
-
-  //   if(id in this.palettes === false) {
-  //     Vue.set(this, id, {});
-  //   } else {
-  //     console.error('Palette with ID', id, 'already exists');
-  //   }
-  // }
-
-  /**
-   * @protected
-   * @param {string} id
-   * @param {*} currentColor
-   * @param {*} currentStep
-   * @todo Types
-   */
-  paletteUpdateHandler(id, currentColor, currentStep) {
-    this.palettes = store.getters['palettes/allPalettes'];
-
-    const palette = this.palettes[id];
-    if (!palette) return;
-
-    palette.currentColor = currentColor;
-    palette.currentStep = currentStep;
-
-    Vue.set(this.palettes, id, palette);
-
-    Object.keys(this.palettes).forEach((paletteId) => {
-      const palette = this.palettes[paletteId];
-
-      if (id === paletteId) {
-        const Module = this.getActiveModule(palette.moduleName);
-        Module[palette.variable] = currentStep;
-      }
-    });
-  }
-
-  /** @param {string} id */
-  removePalette(id) {
-    this.palettes.delete(id);
-    this.workers.palette.removePalette(id);
-  }
 
   static get Layer() {
     return Layer;
-  }
-
-  static get Module2D() {
-    return Module2D;
   }
 }
 
@@ -298,9 +235,6 @@ const isf = modV.isf;
 export default modV;
 export {
   modV,
-  Module2D,
-  ModuleShader,
-  ModuleISF,
   Layer,
   webgl,
   isf,

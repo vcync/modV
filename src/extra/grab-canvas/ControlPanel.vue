@@ -6,6 +6,9 @@
     <b-field label="Selection Y" class="has-text-light">
       <b-input v-model="y" type="number"></b-input>
     </b-field>
+    <b-field label="Luminave URL" class="has-text-light">
+      <b-input v-model="url" type="string"></b-input>
+    </b-field>
     <button class="button" @click="showCanvas = !showCanvas">
       {{ showCanvas ? 'Hide ' : 'Show ' }}Canvas
     </button>
@@ -42,6 +45,18 @@
         },
       },
 
+      url: {
+        get() {
+          return this.$store.state.grabCanvas.url;
+        },
+
+        set(value) {
+          this.setUrl({
+            url: value,
+          });
+        },
+      },
+
       showCanvas: {
         get() {
           return this.$store.state.grabCanvas.showCanvas;
@@ -57,6 +72,7 @@
     methods: {
       ...mapMutations('grabCanvas', [
         'setSelection',
+        'setUrl',
         'setShowCanvas',
       ]),
     },

@@ -76,12 +76,10 @@ const midiAssignment = {
 
         // the assignment is not for an internal control
         if (!data[2]) {
-          const Module = store.getters['modVModules/getActiveModule'](moduleName);
-          const control = Module.info.controls[variableName];
+          const Module = store.state.modVModules.active[moduleName];
+          const prop = Module.props[variableName];
 
-          let newValue = Math.map(midiEvent.data[2], 0, 127, control.min || 0, control.max || 1);
-
-          if (control.varType === 'int') newValue = Math.round(newValue);
+          const newValue = Math.map(midiEvent.data[2], 0, 127, prop.min || 0, prop.max || 1);
 
           queue.set(moduleName, { internal: false, key: variableName, value: newValue });
 
@@ -109,12 +107,12 @@ const midiAssignment = {
            */
           if ((midiEvent.data[0] === 176 && (midiEvent.data[2] > 63 || midiEvent.data[2] === 0))
               || midiEvent.data[0] === 144) {
-            const module = store.getters['modVModules/getActiveModule'](moduleName);
-            const enabled = module.info.enabled;
+            const module = store.state.modVModules.active[moduleName];
+            const enabled = module.meta.enabled;
 
             queue.set(moduleName, { internal: true, key: 'enabled', value: !enabled });
           }
-        } else if(type === 'alpha') { //eslint-disable-line
+        } else if (type === 'alpha') {
           const value = Math.map(midiEvent.data[2], 0, 127, 0, 1);
 
           queue.set(moduleName, { internal: true, key: 'alpha', value });
@@ -125,9 +123,7 @@ const midiAssignment = {
     });
 
     assigner.start();
-  },
 
-  modvInstall() {
     modV.addContextMenuHook({
       hook: 'rangeControl',
       buildMenuItem: this.createMenuItem.bind(this),
@@ -140,40 +136,53 @@ const midiAssignment = {
   },
 
   createMenuItem(moduleName, controlVariable, internal) {
+    let assignmentString = `${moduleName},${controlVariable}`;
+
+    if (internal) {
+      assignmentString += ',internal';
+    }
+
     function click() {
-      let assignmentString = `${moduleName},${controlVariable}`;
-
-      if (internal) {
-        assignmentString += ',internal';
-      }
-
       assigner.learn(assignmentString);
     }
 
-    const MidiItem = new MenuItem({
+    let MidiItem = new MenuItem({
       label: 'Learn MIDI assignment',
       click: click.bind(this),
     });
+
+
+    const existingChannel = store
+      .getters['midiAssignment/midiChannelFromAssignment'](assignmentString);
+
+    if (existingChannel) {
+      MidiItem = new MenuItem({
+        label: 'Remove MIDI assignment',
+        click() {
+          store.commit('midiAssignment/removeAssignment', { key: existingChannel });
+        },
+      });
+    }
 
     return MidiItem;
   },
 
   process() {
     queue.forEach((mapValue, mapKey) => {
-      const moduleName = mapKey;
+      const name = mapKey;
       const { internal, key, value } = mapValue;
 
       if (internal) {
-        store.dispatch('modVModules/setActiveModuleInfo', {
-          moduleName,
-          key,
-          value,
+        store.dispatch('modVModules/updateMeta', {
+          name,
+          metaKey: key,
+          data: value,
         });
       } else {
-        store.dispatch('modVModules/setActiveModuleControlValue', {
-          moduleName,
-          variable: key,
-          value,
+        store.dispatch('modVModules/updateProp', {
+          name,
+          prop: key,
+          data: value,
         });
       }
     });

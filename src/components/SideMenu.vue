@@ -25,9 +25,7 @@
     position: absolute;
     right: 0;
     top: 50px;
-    width: 25%;
-    max-width: 360px;
-    min-width: 200px;
+    width: 100%;
     bottom: 0;
     box-shadow: 0px 0px 0px 0px #000;
     background-color: #474747;

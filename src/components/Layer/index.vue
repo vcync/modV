@@ -1,6 +1,6 @@
 <template>
   <div
-      class="column layer-item is-12"
+      class="layer-item"
       :class="{
         active: focusedLayerIndex === LayerIndex,
         locked: locked,
@@ -10,7 +10,7 @@
     >
     <div class="columns is-gapless is-multiline is-mobile">
       <div class="column is-12">
-        <div class="control-bar handle columns is-gapless is-mobile" v-context-menu="menuOptions">
+        <div class="control-bar layer-handle columns is-gapless is-mobile" v-context-menu="menuOptions">
           <div class="column is-three-quarters">
             <div class="layer-title" @dblclick="startNameEdit" @keydown.enter="stopNameEdit">{{ name }}</div>
           </div>
@@ -30,28 +30,28 @@
         </div>
       </div>
       <div class="column is-12">
-        <draggable
+        <Container
+          @drop="onDrop"
+          drag-handle-selector=".active-module-handle"
+          lock-axis="y"
+          group-name="modules"
+          :should-animate-drop="() => false"
+          :get-child-payload="getChildPayload"
+          tag="div"
           class="module-list columns is-gapless is-mobile"
-          v-model="modules"
-          :options="{
-            group: 'modules',
-            handle: '.handle',
-            chosenClass: 'chosen',
-            animation: 100,
-            disabled: locked,
-          }"
-          :data-layer-index="LayerIndex"
-          @add="drop"
-          @end="end"
         >
-          <active-module
+          <Draggable
             v-for="module in modules"
-            :moduleName="module"
             :key="module"
-            :data-module-name="module"
-            @dragstart.native="dragstart"
-          ></active-module>
-        </draggable>
+            tabindex="0"
+            class="column"
+          >
+            <active-module
+              :moduleName="module"
+              @dragstart.native="dragstart"
+            ></active-module>
+          </Draggable>
+        </Container>
       </div>
     </div>
   </div>
@@ -60,7 +60,7 @@
 <script>
   import { mapActions, mapGetters, mapMutations } from 'vuex';
   import ActiveModule from '@/components/ActiveModule';
-  import draggable from 'vuedraggable';
+  import { Container, Draggable } from 'vue-smooth-dnd';
   import { Menu, MenuItem } from 'nwjs-menu-browser';
 
   if (!window.nw) {
@@ -72,12 +72,35 @@
 
   const nw = window.nw;
 
+  const applyDrag = (arr, dragResult) => {
+    const { removedIndex, addedIndex, payload } = dragResult;
+    if (removedIndex === null && addedIndex === null) return arr;
+
+    const result = [...arr];
+    let itemToAdd = payload;
+
+    if (removedIndex !== null) {
+      itemToAdd = result.splice(removedIndex, 1)[0];
+    }
+
+    if (addedIndex !== null) {
+      result.splice(addedIndex, 0, itemToAdd);
+    }
+
+    return result;
+  };
+
   export default {
     name: 'layer',
     props: [
       'Layer',
       'LayerIndex',
     ],
+    components: {
+      ActiveModule,
+      Draggable,
+      Container,
+    },
     data() {
       return {
         menuOptions: {
@@ -94,7 +117,7 @@
     computed: {
       modules: {
         get() {
-          return this.Layer.moduleOrder.map(moduleName => this.Layer.modules[moduleName]);
+          return this.Layer.moduleOrder;
         },
         set(value) {
           this.updateModuleOrder({ layerIndex: this.LayerIndex, order: value });
@@ -137,32 +160,28 @@
         'setPipeline',
         'setDrawToOutput',
       ]),
-      drop(e) {
-        e.preventDefault();
-        const moduleName = e.item.dataset.moduleName;
+      onDrop(e) {
+        const { moduleName, collection } = e.payload;
 
-        if (e.item.childNodes[0].classList.contains('gallery-item')) {
-          e.clone.parentNode.insertBefore(e.item, e.clone);
-          e.clone.parentNode.removeChild(e.clone);
+        if (e.addedIndex === null && e.removedIndex === null) return;
 
+        if (collection === 'gallery') {
           this.createActiveModule({ moduleName }).then((module) => {
             this.addModuleToLayer({
               module,
               layerIndex: this.LayerIndex,
-              position: e.newIndex,
+              position: e.addedIndex,
             });
           });
-        } else {
-          const fromLayerIndex = parseInt(e.from.dataset.layerIndex, 10);
-          const toLayerIndex = this.LayerIndex;
-
-          this.moveModuleInstance({ fromLayerIndex, toLayerIndex, moduleName });
+        } else if (collection === 'layer') {
+          e.payload = moduleName;
+          this.modules = applyDrag(this.modules, e);
         }
       },
-      end(e) {
-        if (e.item) {
-          e.item.classList.remove('deletable');
-        }
+      getChildPayload(e) {
+        const moduleName = this.modules[e];
+
+        return { moduleName, collection: 'layer', layerIndex: this.LayerIndex };
       },
       startNameEdit() {
         const node = this.$el.querySelector('.layer-title');
@@ -199,14 +218,6 @@
         this.setLayerFocus({
           LayerIndex: this.LayerIndex,
         });
-      },
-      dragover(e) {
-        if (this.locked) e.dataTransfer.dropEffect = 'none';
-      },
-      dragstart(e) {
-        const moduleName = e.target.dataset.moduleName;
-        e.dataTransfer.setData('module-name', moduleName);
-        e.dataTransfer.setData('layer-index', this.LayerIndex);
       },
       clickToggleLock() {
         this.toggleLocked({ layerIndex: this.LayerIndex });
@@ -349,10 +360,6 @@
         },
         deep: true,
       },
-    },
-    components: {
-      ActiveModule,
-      draggable,
     },
   };
 </script>

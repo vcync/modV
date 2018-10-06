@@ -9,8 +9,7 @@ import Vuebar from 'vuebar';
 
 import Capitalize from '@/vuePlugins/capitalize-filter';
 
-import stats from '@/extra/stats';
-import { ModuleISF, modV } from './modv';
+import { modV } from './modv';
 import App from './App';
 import store from '../store';
 import contextMenu from './extra/context-menu';
@@ -18,8 +17,9 @@ import expression from './extra/expression';
 import midiAssignment from './extra/midi-assignment';
 import featureAssignment from './extra/feature-assignment';
 import lfo from './extra/lfo';
-import frameGrab from './extra/frame-grab';
 import grabCanvas from './extra/grab-canvas';
+import slimUi from './extra/slim-ui';
+import shadertoy from './extra/shadertoy';
 import './assets/styles/index.scss';
 
 import attachResizeHandles from './extra/ui-resize/attach';
@@ -32,11 +32,6 @@ Object.defineProperty(Vue.prototype, '$modV', {
   },
 });
 
-document.body.appendChild(stats.dom);
-stats.dom.style.left = null;
-stats.dom.style.right = 0;
-stats.dom.classList.add('hidden');
-
 Vue.use(Capitalize);
 
 Vue.use(Vuebar);
@@ -46,20 +41,15 @@ Vue.use(Buefy, {
 Vue.use(VueThrottleEvent);
 Vue.use(Dropdown);
 Vue.use(Shortkey);
-Vue.use(contextMenu);
-Vue.use(featureAssignment);
-Vue.use(expression);
-Vue.use(midiAssignment);
-Vue.use(lfo);
-Vue.use(grabCanvas);
 
 modV.use(contextMenu);
 modV.use(featureAssignment);
 modV.use(expression);
 modV.use(midiAssignment);
 modV.use(lfo);
-modV.use(frameGrab);
 modV.use(grabCanvas);
+modV.use(slimUi);
+modV.use(shadertoy);
 
 /* eslint-disable no-new */
 export default window.modVVue = new Vue({
@@ -74,23 +64,27 @@ export default window.modVVue = new Vue({
     modV.start(this);
 
     const modules = [
-      'Waveform',
-      'Ball',
       'Text',
       'Webcam',
-      'Pixelate',
       'Plasma',
-      'MattiasCRT',
       'ChromaticAbberation',
       'Wobble',
-      'OpticalFlowDistort',
       'Neon',
       'Fisheye',
       'MirrorEdge',
       'EdgeDistort',
       'Polygon',
-      'Concentrics',
+      // 'Concentrics',
       'Phyllotaxis',
+      'Pixelate-2.0',
+      'Ball-2.0',
+      'Concentrics',
+      'Concentrics-2.0',
+      'Waveform-2.0',
+      'Un-Deux-Trois',
+      'OpticalFlowDistort-2.0',
+      'MattiasCRT-2.0',
+      'Doughnut_Generator',
     ];
 
     modules.forEach((fileName) => {
@@ -152,21 +146,16 @@ export default window.modVVue = new Vue({
 
     isfSamples.forEach((fileName) => {
       import(`@/modv/sample-modules/isf-samples/${fileName}`).then((fragmentShader) => {
-        class Module extends ModuleISF {
-          constructor() {
-            super({
-              info: {
-                name: fileName,
-                author: '2xAA',
-                version: 0.1,
-                meyda: [],
-              },
-              fragmentShader,
-            });
-          }
-        }
-
-        modV.register(Module);
+        modV.register({
+          meta: {
+            name: fileName,
+            author: '',
+            version: '1.0.0',
+            type: 'isf',
+          },
+          fragmentShader,
+          vertexShader: 'void main() {isf_vertShaderInit();}',
+        });
       }).catch((e) => {
         throw new Error(e);
       });

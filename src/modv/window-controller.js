@@ -3,10 +3,8 @@ import EventEmitter2 from 'eventemitter2';
 import { modV, draw } from '@/modv';
 import uuidv4 from 'uuid/v4';
 
-class WindowController extends EventEmitter2 {
+class WindowController {
   constructor(Vue) {
-    super();
-
     this.id = uuidv4();
 
     return new Promise((resolve) => {
@@ -53,24 +51,21 @@ class WindowController extends EventEmitter2 {
     });
   }
 
-
   configureWindow(callback) {
     const windowRef = this.window;
     windowRef.document.title = 'modV Output';
     windowRef.document.body.style.margin = '0px';
     windowRef.document.body.style.backgroundColor = 'black';
+    windowRef.document.body.style.position = 'relative';
 
     this.canvas = document.createElement('canvas');
     this.context = this.canvas.getContext('2d');
 
-    this.canvas.style.position = 'fixed';
-
-    this.canvas.style.top = '50%';
-    this.canvas.style.bottom = 0;
-    this.canvas.style.left = '50%';
-    this.canvas.style.right = 0;
-    this.canvas.style.transform = 'translate(-50%, -50%)';
     this.canvas.style.backgroundColor = 'transparent';
+    this.canvas.style.left = '50%';
+    this.canvas.style.position = 'absolute';
+    this.canvas.style.top = '50%';
+    this.canvas.style.transform = 'translate(-50%, -50%)';
 
     this.canvas.addEventListener('dblclick', () => {
       if (!this.canvas.ownerDocument.webkitFullscreenElement) {
@@ -95,41 +90,42 @@ class WindowController extends EventEmitter2 {
 
     this.window.document.body.appendChild(this.canvas);
 
-    const resizeQueue = [];
-    let lastLength = 0;
+    let resizeQueue = {};
+    let lastArea = 0;
     // Roughly attach to the main RAF loop for smoother resizing
-    modV.on('tick', (δ) => {
-      if (resizeQueue.length < 1) return;
+    modV.on('tick', () => {
+      if (lastArea < 1) return;
 
-      if (resizeQueue.length !== lastLength) {
-        lastLength = resizeQueue.length;
+      if ((resizeQueue.width * resizeQueue.height) + resizeQueue.dpr !== lastArea) {
+        lastArea = (resizeQueue.width * resizeQueue.height) + resizeQueue.dpr;
         return;
       }
 
-      const index = resizeQueue.length - 1;
+      const width = resizeQueue.width;
+      const height = resizeQueue.height;
+      const dpr = resizeQueue.dpr;
+      const emit = resizeQueue.emit;
 
-      const width = resizeQueue[index].width;
-      const height = resizeQueue[index].height;
-      const dpr = resizeQueue[index].dpr;
-      const emit = resizeQueue[index].emit;
+      if (emit) {
+        store.dispatch('size/setDimensions', { width, height });
+      }
 
-      this.canvas.width = width * dpr;
-      this.canvas.height = height * dpr;
-      this.canvas.style.width = `${width}px`;
-      this.canvas.style.height = `${height}px`;
-      if (emit) this.emit('resize', width, height);
+      this.canvas.width = store.state.size.width || width * dpr;
+      this.canvas.height = store.state.size.height || height * dpr;
+      this.canvas.style.width = `${store.state.size.width}px`;
+      this.canvas.style.height = `${store.state.size.height}px`;
 
-      resizeQueue.splice(0, index + 1);
-      draw(δ);
+      lastArea = 0;
     });
 
     this.resize = (width, height, dpr = 1, emit = true) => {
-      resizeQueue.push({
+      resizeQueue = {
         width,
         height,
         dpr,
         emit,
-      });
+      };
+      lastArea = 1;
     };
 
     windowRef.addEventListener('resize', () => {
