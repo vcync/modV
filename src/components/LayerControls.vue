@@ -22,20 +22,15 @@
             </div>
             <div class="control-group inherit-group">
               <b-field label="Inherit From">
-                <b-dropdown class="dropdown" v-model="inheritanceIndex">
-                  <button class="button is-primary is-small" slot="trigger">
-                    <span>{{ inheritedLayerName | capitalize }}</span>
-                    <b-icon icon="angle-down"></b-icon>
-                  </button>
-
-                  <b-dropdown-item :value="-1">Last Layer</b-dropdown-item>
-                  <b-dropdown-item
+                <b-select class="dropdown" v-model="inheritanceIndex">
+                  <option :value="-1">Last Layer</option>
+                  <option
                     v-for="layer, idx in layers"
                     :key="idx"
                     :value="idx"
-                  >{{ layer.name }}</b-dropdown-item>
+                  >{{ layer.name }}</option>
 
-                </b-dropdown>
+                </b-select>
               </b-field>
             </div>
             <div class="control-group pipeline-group">
@@ -51,15 +46,17 @@
             </div>
 
             <div class="control-group output-group">
-              <b-select placeholder="Select a window" v-model="drawToWindowId">
-                <option value="-1" selected="selected">All windows</option>
-                <option
-                  v-for="(option, index) in windowIds"
-                  :value="option"
-                  :key="option">
-                  {{ index }}
-                </option>
-            </b-select>
+              <b-field label="Draw to window">
+                <b-select placeholder="Select a window" v-model="drawToWindowId">
+                  <option value="-1" selected="selected">All windows</option>
+                  <option
+                    v-for="(option, index) in windowIds"
+                    :value="option"
+                    :key="option">
+                    {{ index }}
+                  </option>
+                </b-select>
+              </b-field>
             </div>
           </div>
         </div>
