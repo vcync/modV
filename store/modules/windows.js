@@ -27,7 +27,8 @@ const getters = {
 // actions
 const actions = {
   createWindow({ commit }, { Vue }) {
-    return new WindowController(Vue).then((windowController) => {
+    const number = state.windows.length;
+    return new WindowController(Vue, number).then((windowController) => {
       const windowRef = windowController.window;
       delete windowController.window;
       commit('addWindow', { windowController, windowRef });

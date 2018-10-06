@@ -1,10 +1,9 @@
 import store from '@/../store';
-import EventEmitter2 from 'eventemitter2';
-import { modV, draw } from '@/modv';
+import { modV } from '@/modv';
 import uuidv4 from 'uuid/v4';
 
 class WindowController {
-  constructor(Vue) {
+  constructor(Vue, number) {
     this.id = uuidv4();
 
     return new Promise((resolve) => {
@@ -40,10 +39,10 @@ class WindowController {
           }
 
           if (this.window.document.readyState === 'complete') {
-            this.configureWindow(resolve);
+            this.configureWindow(resolve, number);
           } else {
             this.window.onload = () => {
-              this.configureWindow(resolve);
+              this.configureWindow(resolve, number);
             };
           }
         }
@@ -51,9 +50,9 @@ class WindowController {
     });
   }
 
-  configureWindow(callback) {
+  configureWindow(callback, number) {
     const windowRef = this.window;
-    windowRef.document.title = 'modV Output';
+    windowRef.document.title = `modV Output (${number})`;
     windowRef.document.body.style.margin = '0px';
     windowRef.document.body.style.backgroundColor = 'black';
     windowRef.document.body.style.position = 'relative';
