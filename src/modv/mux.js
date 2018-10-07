@@ -24,10 +24,29 @@ function mux() {
 
     outputContext.clearRect(0, 0, width, height);
 
-    layers.forEach((Layer) => {
-      if (!Layer.enabled || Layer.alpha === 0 || !Layer.drawToOutput) return;
-      const canvas = Layer.canvas;
-      outputContext.drawImage(canvas, 0, 0, width, height);
+    const layersWithWindowIds = layers.filter(layer => layer.drawToWindowId !== null);
+    const layerWindowIds = layersWithWindowIds.map(layer => layer.drawToWindowId);
+
+    const windowIdLookup = layersWithWindowIds.reduce((o, layer) => ({
+      ...o,
+      [layer.drawToWindowId]: windows
+        .findIndex(windowController => windowController.id === layer.drawToWindowId),
+    }), {});
+
+    layers.forEach((layer) => {
+      if (!layer.enabled || layer.alpha === 0) return;
+      const canvas = layer.canvas;
+
+      if (layer.drawToOutput) {
+        outputContext.drawImage(canvas, 0, 0, width, height);
+      }
+
+      if (layer.drawToWindowId) {
+        const { context } = windows[windowIdLookup[layer.drawToWindowId]];
+
+        context.clearRect(0, 0, canvas.width, canvas.height);
+        context.drawImage(canvas, 0, 0, canvas.width, canvas.height);
+      }
     });
 
     resolve();
@@ -41,13 +60,13 @@ function mux() {
 
     capturer.capture(outputCanvas);
 
-    windows.forEach((windowController) => {
-      const canvas = windowController.canvas;
-      const context = windowController.context;
+    windows.filter(windowController => layerWindowIds.indexOf(windowController.id) < 0)
+      .forEach((windowController) => {
+        const { canvas, context } = windowController;
 
-      context.clearRect(0, 0, canvas.width, canvas.height);
-      context.drawImage(outputCanvas, 0, 0, canvas.width, canvas.height);
-    });
+        context.clearRect(0, 0, canvas.width, canvas.height);
+        context.drawImage(outputCanvas, 0, 0, canvas.width, canvas.height);
+      });
   });
 }
 

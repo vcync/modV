@@ -15,6 +15,7 @@
     "lint": "eslint --ext .js,.vue src test/unit/specs test/e2e/specs"
   },
   "dependencies": {
+    "uuid": "^3.2.1",
     "modv-media-manager": "2xAA/modV-MediaManager",
     "nw-builder": "^3.5.4",
     "vue": "^2.5.3",

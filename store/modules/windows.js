@@ -20,12 +20,15 @@ const getters = {
   largestWindowController() {
     return () => getLargestWindow(state.windows).controller;
   },
+  getWindowById: state => id => state.windows.find(windowController => windowController.id === id),
+  windowIds: state => state.windows.map(windowController => windowController.id),
 };
 
 // actions
 const actions = {
   createWindow({ commit }, { Vue }) {
-    return new WindowController(Vue).then((windowController) => {
+    const number = state.windows.length;
+    return new WindowController(Vue, number).then((windowController) => {
       const windowRef = windowController.window;
       delete windowController.window;
       commit('addWindow', { windowController, windowRef });

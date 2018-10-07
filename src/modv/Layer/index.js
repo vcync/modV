@@ -29,6 +29,9 @@
  * @property {Boolean} drawToOutput        Indicates whether the Layer should draw to the output
  *                                         canvas
  *
+ * @proerty {String} drawToWindowId        The ID of the Window to draw the Layer to,
+ *                                         null indicates the Layer should draw to all Windows
+ *
  * @example
  * const Layer = {
  *   name: 'Layer',
@@ -54,6 +57,8 @@
  *   clearing: false,
  *
  *   compositeOperation: 'normal',
+ *
+ *   drawToWindowId: null,
  * };
  */
 
@@ -88,6 +93,8 @@ export default function Layer(layer) {
     drawToOutput: true,
 
     canvas: document.createElement('canvas'),
+
+    drawToWindowId: null,
 
     resize({ width, height, dpr = window.devicePixelRatio }) {
       this.canvas.width = width * dpr;
