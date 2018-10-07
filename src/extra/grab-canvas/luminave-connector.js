@@ -211,7 +211,7 @@ export default class LuminaveConnector {
     const areaAmount = this.selectionX * this.selectionY;
 
     // Size of each area
-    const areaSize = (this.width / areaAmount) + (this.height / areaAmount);
+    const areaSize = Math.floor((this.width / areaAmount) + (this.height / areaAmount));
 
     // The packet that gets send over WebSocket to luminave
     const colors = [];
