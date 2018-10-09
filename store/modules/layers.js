@@ -247,6 +247,10 @@ const mutations = {
     const Layer = state.layers[layerIndex];
     Vue.set(Layer, 'moduleOrder', moduleOrder);
   },
+  setDrawToWindow(state, { layerIndex, windowId }) {
+    const Layer = state.layers[layerIndex];
+    Vue.set(Layer, 'drawToWindowId', windowId);
+  },
 };
 
 export default {
