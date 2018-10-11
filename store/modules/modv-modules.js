@@ -67,7 +67,13 @@ const actions = {
     commit('addModuleToRegistry', { name: data.meta.name, data });
   },
 
-  async createActiveModule({ commit, state }, { moduleName, appendToName, skipInit, enabled }) {
+  async createActiveModule({ commit, state }, {
+    moduleName,
+    appendToName,
+    skipInit,
+    enabled,
+    moduleTitle,
+  }) {
     return new Promise(async (resolve) => {
       const existingModuleData = outerState.registry[moduleName];
       if (!existingModuleData) return;
@@ -88,7 +94,7 @@ const actions = {
       }
 
       newModuleData.meta.originalName = newModuleData.meta.name;
-      newModuleData.meta.name = await getNextName(
+      newModuleData.meta.name = moduleTitle || await getNextName(
         `${newModuleData.meta.name}${appendToName || ''}`,
         Object.keys(state.active),
       );

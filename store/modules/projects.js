@@ -77,8 +77,11 @@ const actions = {
       store.commit('layers/setPipeline', { layerIndex, pipeline: Layer.pipeline });
 
       Layer.moduleOrder.forEach(async (moduleName, idx) => {
-        const module = await store.dispatch('modVModules/createActiveModule', { moduleName });
         const data = presetData.moduleData[moduleName];
+        const module = await store.dispatch('modVModules/createActiveModule', {
+          moduleName: data.meta.originalName,
+          moduleTitle: data.meta.name,
+        });
 
         await store.dispatch('modVModules/updateMeta', {
           name: moduleName,
