@@ -68,6 +68,50 @@ export default {
       default: 'Rubik',
     },
 
+    fill: {
+      type: 'bool',
+      label: 'Fill',
+      default: true,
+    },
+
+    stroke: {
+      type: 'bool',
+      label: 'Outline',
+      default: false,
+    },
+
+    strokeWidth: {
+      type: 'float',
+      label: 'Outline Width',
+      min: 0,
+      max: 20,
+      default: 1,
+    },
+
+    alignment: {
+      type: 'enum',
+      enum: [
+        { label: 'Left', value: 'left' },
+        { label: 'Center', value: 'center', selected: true },
+        { label: 'Right', value: 'right' },
+      ],
+    },
+
+    position: {
+      type: 'vec2',
+      default: [1.0, 1.0],
+      min: 2,
+      max: 0,
+    },
+
+    maxWidth: {
+      type: 'float',
+      label: 'Max Width',
+      min: 0,
+      max: 1,
+      default: 0.6,
+    },
+
     color: {
       control: {
         type: 'paletteControl',
@@ -114,14 +158,19 @@ export default {
 
     context.textAlign = 'left';
     context.fillStyle = this.color;
+    context.strokeStyle = this.color;
+    context.lineWidth = this.strokeWidth;
 
     awesomeText(
       context,
       this.text,
-      200 / 2,
-      canvas.height / 2,
+      (canvas.width / 2) * (2 - this.position[0]),
+      (canvas.height / 2) * this.position[1],
       Math.abs(this.h.height),
-      canvas.width - 200,
+      canvas.width * this.maxWidth,
+      this.alignment,
+      this.stroke,
+      this.fill,
     );
   },
 };
