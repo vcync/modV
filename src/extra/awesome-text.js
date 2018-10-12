@@ -1,5 +1,15 @@
 // originally from here, made modifications for the line height http://stackoverflow.com/a/37192581/1539303
-function awesomeText(ctx, text, x, y, lineHeight, maxWidth, textAlign = 'center') {
+function awesomeText(
+  ctx,
+  text,
+  x,
+  y,
+  lineHeight,
+  maxWidth,
+  textAlign = 'center',
+  stroke = false,
+  fill = true,
+) {
   ctx.textAlign = textAlign;
   const words = text.split(' ');
   const lines = [];
@@ -19,15 +29,22 @@ function awesomeText(ctx, text, x, y, lineHeight, maxWidth, textAlign = 'center'
     }
   }
 
-  let offsetX = 0;
+  const offsetX = 0;
   let offsetY = 0;
 
-  if (textAlign === 'center') offsetX = maxWidth / 2;
+  // if (textAlign === 'center') offsetX = maxWidth / 2;
 
   offsetY -= (lines.length - 1) * (lineHeight / 2);
 
   for (let i = 0; i < lines.length; i += 1) {
-    ctx.fillText(lines[i], x + offsetX, y + offsetY);
+    if (stroke) {
+      ctx.strokeText(lines[i], x + offsetX, y + offsetY);
+    }
+
+    if (fill) {
+      ctx.fillText(lines[i], x + offsetX, y + offsetY);
+    }
+
     offsetY += lineHeight;
   }
 }
