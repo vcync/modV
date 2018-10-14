@@ -12,7 +12,9 @@
     "unit": "cross-env BABEL_ENV=test karma start test/unit/karma.conf.js --single-run",
     "e2e": "node test/e2e/runner.js",
     "test": "npm run unit && npm run e2e",
-    "lint": "eslint --ext .js,.vue src test/unit/specs test/e2e/specs"
+    "lint": "eslint --ext .js,.vue src test/unit/specs test/e2e/specs",
+    "docs:dev": "vuepress dev docs",
+    "docs:build": "vuepress build docs"
   },
   "dependencies": {
     "uuid": "^3.2.1",
@@ -119,6 +121,7 @@
     "vue-throttle-event": "^1.4.0",
     "vuebar": "0.0.17",
     "vuedraggable": "SortableJS/Vue.Draggable",
+    "vuepress": "^0.14.4",
     "webgl-compile-shader": "^2.3.9",
     "webpack": "^2.6.1",
     "webpack-bundle-analyzer": "^2.9.1",
