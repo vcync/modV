@@ -14,8 +14,6 @@ binaries
 *npm-debug.log
 options.json
 
-/docs/*
-
 *.DS_Store
 /old/dist/
 /oldnode_modules
