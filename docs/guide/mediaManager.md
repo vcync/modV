@@ -44,7 +44,7 @@ Projects are the top-level folders, e.g. the `default` Project is at `media/defa
 │  ├─ palette
 │  │  └─ rainbow.json
 │  ├─ plugin
-│  │  └─ SlimUI.json
+│  │  └─ SlimUI.js
 │  ├─ preset
 │  │  └─ the matrix.json
 │  └─ video
@@ -52,6 +52,12 @@ Projects are the top-level folders, e.g. the `default` Project is at `media/defa
 ├─ customProject
 └─ anotherProject
 ```
+
+### Adding media
+
+To add media to a Project, place an asset into a corresponding folder using your system's file browser.
+
+For example, you can drag and drop an image into the `image` folder, or a Module into the `module` folder.
 
 ### GIF and Video processing
 
