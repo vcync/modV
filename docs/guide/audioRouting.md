@@ -9,16 +9,26 @@ There are a number of ways to do this:
 3. Route audio using software routing. See below for OS specific set-up.
 
 ### Windows
-- You must run either Command Prompt or PowerShell with administrative privileges for the media folder to be symlinked.
-To do this, find either cmd or PowerShell in your start menu, right click and select 'Run as administrator.'.
-- VB Cable is recommended to route audio to the browser, download that [here](http://vb-audio.pagesperso-orange.fr/Cable/)
+VB Cable is recommended to route audio to the browser, download that [here](http://vb-audio.pagesperso-orange.fr/Cable/)
+
+#### Configuring VB Cable
+
+* Set the system audio to route through VB Cable:
+  * 1. Open the Sound Control Panel (`win + r` `control.exe /name Microsoft.Sound`)
+    2. *In the Playback tab:* Set `CABLE Input` as the Default Device
+* Listening to VB CABLE's output:
+  * 1. _In the Recording tab:_ Right click `CABLE Output` and select `Properties`
+    2. *In the Listen tab:* Check `Listen to the device` and select the Playback device to your speakers or headphones in the dropdown menu
 
 ### macOS
 - SoundFlower is recommended to route audio to the browser, download that [here](https://github.com/mattingalls/Soundflower/releases/)
 
 ### Linux
-- One way of routing audio to the browser is using [Pulse Audio's](https://www.freedesktop.org/wiki/Software/PulseAudio/) Volume Control package.
-This [tutorial](https://www.kirsle.net/blog/entry/redirect-audio-out-to-mic-in-linux) shows how to setup the Input Devices to show your monitoring.
-When you start the modV application, your browser should appear as a recording device in the "Recording" tab and you should not have to do any extra
-to make it work.
+
+#### Pulse Audio
+
+1. Download and install [Pulse Audio's](https://www.freedesktop.org/wiki/Software/PulseAudio/) Volume Control package
+2. This [tutorial](https://www.kirsle.net/blog/entry/redirect-audio-out-to-mic-in-linux) shows how to setup the Input Devices to show your monitoring
+3. When you start the modV application, your browser should appear as a recording device in the `Recording` tab
+
 ![Browser input device in pavucontrol](https://github.com/2xAA/modV/raw/master/docs/linux-audio/pavucontrol.png)
