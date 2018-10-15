@@ -7,7 +7,7 @@ import draw from './draw';
 import setupWebGl from './webgl';
 import PaletteWorker from './palette-worker/palette-worker';
 import MediaManagerClient from './MediaManagerClient';
-import installPlugin from './install-plugin';
+import use from './use';
 
 class ModV extends EventEmitter2 {
   /**
@@ -169,8 +169,8 @@ class ModV extends EventEmitter2 {
     });
   }
 
-  use(plugin) { //eslint-disable-line
-    installPlugin(plugin);
+  use(type, extention) { //eslint-disable-line
+    use(type, extention);
   }
 
   addContextMenuHook(hook) { //eslint-disable-line

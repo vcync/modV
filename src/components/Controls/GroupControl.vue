@@ -24,16 +24,7 @@
 </template>
 
 <script>
-  import generateControlData from './generate-control-data';
-
-  import colorControl from './ColorControl';
-  import checkboxControl from './CheckboxControl';
-  import imageControl from './ImageControl';
-  import paletteControl from './PaletteControl';
-  import rangeControl from './RangeControl';
-  import selectControl from './SelectControl';
-  import textControl from './TextControl';
-  import twoDPointControl from './TwoDPointControl';
+  import generateControlData from '@/components/ControlPanel/generate-control-data';
 
   export default {
     name: 'groupConrol',
@@ -81,16 +72,6 @@
           groupName: this.meta.$modv_variable,
         });
       },
-    },
-    components: {
-      colorControl,
-      checkboxControl,
-      imageControl,
-      paletteControl,
-      rangeControl,
-      selectControl,
-      textControl,
-      twoDPointControl,
     },
   };
 </script>

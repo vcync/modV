@@ -8,6 +8,7 @@ import Buefy from 'buefy';
 import Vuebar from 'vuebar';
 
 import Capitalize from '@/vuePlugins/capitalize-filter';
+import * as builtInControls from '@/modv/controls';
 
 import { modV } from './modv';
 import App from './App';
@@ -42,14 +43,16 @@ Vue.use(VueThrottleEvent);
 Vue.use(Dropdown);
 Vue.use(Shortkey);
 
-modV.use(contextMenu);
-modV.use(featureAssignment);
-modV.use(expression);
-modV.use(midiAssignment);
-modV.use(lfo);
-modV.use(grabCanvas);
-modV.use(slimUi);
-modV.use(shadertoy);
+modV.use('plugin', contextMenu);
+modV.use('plugin', featureAssignment);
+modV.use('plugin', expression);
+modV.use('plugin', midiAssignment);
+modV.use('plugin', lfo);
+modV.use('plugin', grabCanvas);
+modV.use('plugin', slimUi);
+modV.use('plugin', shadertoy);
+
+Object.values(builtInControls).forEach(value => modV.use('control', value));
 
 /* eslint-disable no-new */
 export default window.modVVue = new Vue({
