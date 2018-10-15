@@ -14,31 +14,32 @@
           <module-gallery :phrase="phrase"></module-gallery>
         </b-tab-item>
 
-        <b-tab-item label="Presets" v-bar="{ useScrollbarPseudo: true }">
+        <b-tab-item class="make-flex-fit" label="Presets" v-bar="{ useScrollbarPseudo: true }">
           <preset-gallery :phrase="phrase"></preset-gallery>
         </b-tab-item>
 
-        <b-tab-item label="Palettes" v-bar="{ useScrollbarPseudo: true }">
+        <b-tab-item class="make-flex-fit" label="Palettes" v-bar="{ useScrollbarPseudo: true }">
           <palette-gallery :phrase="phrase"></palette-gallery>
         </b-tab-item>
 
-        <b-tab-item label="Images" disabled>
+        <b-tab-item class="make-flex-fit" label="Images" disabled>
 
         </b-tab-item>
 
-        <b-tab-item label="Videos" disabled>
+        <b-tab-item class="make-flex-fit" label="Videos" disabled>
 
         </b-tab-item>
 
-        <b-tab-item label="Plugins" v-bar="{ useScrollbarPseudo: true }">
+        <b-tab-item class="make-flex-fit" label="Plugins" v-bar="{ useScrollbarPseudo: true }">
           <plugin-gallery :phrase="phrase"></plugin-gallery>
         </b-tab-item>
 
-        <b-tab-item label="Projects" v-bar="{ useScrollbarPseudo: true }">
+        <b-tab-item class="make-flex-fit" label="Projects" v-bar="{ useScrollbarPseudo: true }">
           <project-gallery :phrase="phrase"></project-gallery>
         </b-tab-item>
 
         <b-tab-item
+          class="make-flex-fit"
           v-for="(plugin, pluginName) in enabledPlugins"
           :label="pluginName"
           :key="pluginName"
