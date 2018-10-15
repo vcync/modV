@@ -65,8 +65,8 @@ onmessage = function onmessage(e) {
   }
 
   if (e.data.message === 'start-loop') {
-    // if (timer === undefined) ci.setCorrectingInterval(loop, 1000 / 60);
+    if (timer === undefined) ci.setCorrectingInterval(loop, 1000 / 60);
   }
 };
 
-// if (timer === undefined) ci.setCorrectingInterval(loop, 1000 / 60);
+if (timer === undefined) ci.setCorrectingInterval(loop, 1000 / 60);
