@@ -142,10 +142,6 @@
 
   export default {
     name: 'paletteControl',
-    props: [
-      'module',
-      'meta',
-    ],
     data() {
       return {
         dragOptions: {
@@ -168,30 +164,6 @@
     computed: {
       options() {
         return this.meta.control.options;
-      },
-      moduleName() {
-        return this.meta.$modv_moduleName;
-      },
-      inputId() {
-        return `${this.moduleName}-${this.variable}`;
-      },
-      value: {
-        get() {
-          return this.$store.state.modVModules.active[this.moduleName][this.variable];
-        },
-        set(value) {
-          this.$store.dispatch('modVModules/updateProp', {
-            name: this.moduleName,
-            prop: this.variable,
-            data: value,
-          });
-        },
-      },
-      variable() {
-        return this.meta.$modv_variable;
-      },
-      label() {
-        return this.meta.label || this.variable;
       },
       defaultValue() {
         return this.options.colors;
@@ -293,7 +265,6 @@
       },
     },
     beforeMount() {
-      this.value = this.module[this.variable];
       if (typeof this.value === 'undefined') this.value = this.options.colors;
 
       this.durationInput = this.duration;
@@ -301,12 +272,6 @@
       this.bpmDivisionInput = this.bpmDivision;
     },
     watch: {
-      module() {
-        this.value = this.module[this.variable];
-      },
-      value() {
-        this.module[this.variable] = this.value;
-      },
       durationInput() {
         this.updateDuration({
           id: this.inputId,

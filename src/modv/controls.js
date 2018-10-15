@@ -1,6 +1,7 @@
 import checkboxControl from '@/components/Controls/CheckboxControl';
 import colorControl from '@/components/Controls/ColorControl';
 import imageControl from '@/components/Controls/ImageControl';
+import paletteControl from '@/components/Controls/PaletteControl';
 import rangeControl from '@/components/Controls/RangeControl';
 import selectControl from '@/components/Controls/SelectControl';
 import textControl from '@/components/Controls/TextControl';
@@ -22,6 +23,11 @@ const ImageControl = {
   name: 'ImageControl',
   component: imageControl,
   types: ['texture'],
+};
+
+const PaletteControl = {
+  name: 'PaletteControl',
+  component: paletteControl,
 };
 
 const RangeControl = {
@@ -52,6 +58,7 @@ export {
   CheckboxControl,
   ColorControl,
   ImageControl,
+  PaletteControl,
   RangeControl,
   SelectControl,
   TextControl,
