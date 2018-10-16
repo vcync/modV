@@ -30,20 +30,10 @@
 
 <script>
   import { mapGetters, mapMutations } from 'vuex';
+  import groupControl from '@/components/Controls/GroupControl';
 
   import generateControlData from './generate-control-data';
-
   import modulePresetSelector from './ModulePresetSelector';
-
-  import colorControl from './ColorControl';
-  import checkboxControl from './CheckboxControl';
-  import imageControl from './ImageControl';
-  import paletteControl from './PaletteControl';
-  import rangeControl from './RangeControl';
-  import selectControl from './SelectControl';
-  import textControl from './TextControl';
-  import twoDPointControl from './TwoDPointControl';
-  import groupControl from './GroupControl';
 
   export default {
     name: 'controlPanel',
@@ -87,16 +77,8 @@
       },
     },
     components: {
-      colorControl,
-      checkboxControl,
-      imageControl,
-      paletteControl,
-      rangeControl,
-      selectControl,
-      textControl,
-      twoDPointControl,
-      modulePresetSelector,
       groupControl,
+      modulePresetSelector,
     },
   };
 </script>

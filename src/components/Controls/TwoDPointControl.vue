@@ -41,9 +41,6 @@
 <script>
   export default {
     name: 'twoDPointControl',
-    props: [
-      'meta',
-    ],
     data() {
       return {
         context: null,
@@ -56,30 +53,6 @@
       };
     },
     computed: {
-      value: {
-        get() {
-          return this.$store.state.modVModules.active[this.moduleName][this.variable];
-        },
-        set(value) {
-          this.$store.dispatch('modVModules/updateProp', {
-            name: this.moduleName,
-            prop: this.variable,
-            data: value,
-          });
-        },
-      },
-      moduleName() {
-        return this.meta.$modv_moduleName;
-      },
-      inputId() {
-        return `${this.moduleName}-${this.variable}`;
-      },
-      label() {
-        return this.meta.label;
-      },
-      variable() {
-        return this.meta.$modv_variable;
-      },
       min() {
         let min = isNaN(this.meta.min) ? -1.0 : this.meta.min;
         min = Array.isArray(this.meta.min) ? this.meta.min[0] : min;
@@ -92,9 +65,6 @@
       },
       step() {
         return this.meta.step || 0.01;
-      },
-      defaultValue() {
-        return this.meta.default;
       },
     },
     methods: {
