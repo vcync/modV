@@ -114,8 +114,6 @@ function generateMidiAssigner(settings) {
   if (settings.set) MIDIAssigner.set = settings.set;
   if (settings.callback) MIDIAssigner.messageCallback = settings.callback;
 
-  console.log(settings);
-
   return MIDIAssigner;
 }
 
