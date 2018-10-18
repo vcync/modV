@@ -13,6 +13,11 @@ export default function use(type, extension) {
       break;
     }
 
+    case 'statusBar': {
+      store.commit('plugins/statusbar/addItem', extension);
+      break;
+    }
+
     default: {
       installPlugin(type || extension);
       break;
