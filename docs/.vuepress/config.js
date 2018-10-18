@@ -33,6 +33,7 @@ module.exports = {
             'module',
             'palette',
             'plugin',
+            'control',
             'contextMenu',
             'mediaManager',
             'mediaManagerClient',
