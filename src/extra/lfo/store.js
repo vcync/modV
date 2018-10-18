@@ -1,6 +1,6 @@
 import LFO from 'lfo-for-modv';
 import Vue from 'vue';
-import store from '@/../store';
+import store from '@/store';
 
 const state = {
   assignments: {},

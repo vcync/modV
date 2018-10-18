@@ -1,5 +1,5 @@
 import EventEmitter2 from 'eventemitter2';
-import store from '@/../store';
+import store from '@/store';
 
 const PaletteWorkerScript = require('worker-loader!./index.js'); //eslint-disable-line
 

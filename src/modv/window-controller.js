@@ -1,4 +1,4 @@
-import store from '@/../store';
+import store from '@/store';
 import { modV } from '@/modv';
 import uuidv4 from 'uuid/v4';
 
