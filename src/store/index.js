@@ -9,6 +9,7 @@ import modVModules from './modules/modv-modules';
 import palettes from './modules/palettes';
 import plugins from './modules/plugins';
 import projects from './modules/projects';
+import renderers from './modules/renderers';
 import size from './modules/size';
 import tempo from './modules/tempo';
 import user from './modules/user';
@@ -34,6 +35,7 @@ export default new Vuex.Store({
     palettes,
     plugins,
     projects,
+    renderers,
     size,
     tempo,
     user,

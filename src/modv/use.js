@@ -18,6 +18,11 @@ export default function use(type, extension) {
       break;
     }
 
+    case 'renderer': {
+      store.commit('renderers/addRenderer', extension);
+      break;
+    }
+
     default: {
       installPlugin(type || extension);
       break;

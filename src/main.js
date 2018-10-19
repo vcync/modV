@@ -9,7 +9,8 @@ import Vuebar from 'vuebar';
 
 import Capitalize from '@/vuePlugins/capitalize-filter';
 import * as builtInControls from '@/modv/controls';
-import * as builtInStatusBarItems from '@/extra/status-bar-items/';
+import * as builtInStatusBarItems from '@/extra/status-bar-items';
+import * as builtInRenderers from '@/modv/renderers';
 
 import { modV } from './modv';
 import App from './App';
@@ -56,6 +57,8 @@ modV.use('plugin', shadertoy);
 Object.values(builtInControls).forEach(value => modV.use('control', value));
 
 Object.values(builtInStatusBarItems).forEach(value => modV.use('statusBar', value));
+
+Object.values(builtInRenderers).forEach(value => modV.use('renderer', value));
 
 /* eslint-disable no-new */
 export default window.modVVue = new Vue({
