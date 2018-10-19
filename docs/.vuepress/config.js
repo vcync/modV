@@ -21,6 +21,7 @@ module.exports = {
             'audioRouting',
             'coreConcepts',
             'mediaManager',
+            'writingAModule',
           ],
         },
       ],

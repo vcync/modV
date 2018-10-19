@@ -47,9 +47,9 @@
 
     <div
       class="footer"
-      v-if="data.footer"
+      v-if="footer"
     >
-      {{ data.footer }}
+      {{ footer }}
     </div>
   </div>
 </template>
@@ -64,6 +64,7 @@ export default {
     return {
       captures: [],
       currentCapture: 0,
+      footer: `MIT Licensed | Copyright © 2014-${(new Date()).getFullYear()} Sam Wray`,
     };
   },
 
@@ -86,14 +87,14 @@ export default {
 
   created() {
     this.captures = [
-      '2017-01-30 03.35.15 1.jpg',
-      'download (5).png',
-      'download (7).png',
-      'download (98).png',
-      'download (195).png',
-      'Screenshot 2017-03-25 00.12.24.png',
-      'Screenshot 2018-08-25 04.19.19.png',
-      'Screenshot 2018-08-25 05.02.19.png',
+      '8.jpg',
+      '7.jpg',
+      '2.jpg',
+      '4.jpg',
+      '5.jpg',
+      '6.jpg',
+      '1.jpg',
+      '3.jpg',
     ];
 
     this.currentCapture = 0;
