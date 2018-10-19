@@ -1,6 +1,6 @@
 import EventEmitter2 from 'eventemitter2';
 import BeatDetektor from '@/extra/beatdetektor';
-import store from '@/../store/';
+import store from '@/store/';
 import Layer from './Layer';
 import { scan, setSource } from './MediaStream';
 import draw from './draw';

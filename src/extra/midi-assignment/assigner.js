@@ -64,11 +64,11 @@ function generateMidiAssigner(settings) {
     },
 
     handleInput(message) {
-      const data = message.data;
+      const { data, currentTarget: { id } } = message;
       const midiChannel = parseInt(data[1], 10);
 
       if (this.learning) {
-        this.set(midiChannel, { variable: this.toLearn, value: null });
+        this.set(midiChannel, { deviceId: id, variable: this.toLearn, value: null });
         Vue.$toast.open({
           message: `Learned MIDI control for ${this.toLearn.replace(',', '.')}`,
           type: 'is-success',
@@ -80,7 +80,7 @@ function generateMidiAssigner(settings) {
       }
 
       const assignment = this.get(midiChannel);
-      if (assignment && this.messageCallback) {
+      if (assignment && this.messageCallback && assignment.deviceId === id) {
         this.messageCallback({
           midiChannel,
           assignment,
@@ -113,8 +113,6 @@ function generateMidiAssigner(settings) {
   if (settings.get) MIDIAssigner.get = settings.get;
   if (settings.set) MIDIAssigner.set = settings.set;
   if (settings.callback) MIDIAssigner.messageCallback = settings.callback;
-
-  console.log(settings);
 
   return MIDIAssigner;
 }

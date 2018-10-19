@@ -1,4 +1,4 @@
-import store from '@/../store';
+import store from '@/store';
 import { modV } from 'modv';
 import { MenuItem } from 'nwjs-menu-browser';
 import modvVue from '@/main';

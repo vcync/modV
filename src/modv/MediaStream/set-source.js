@@ -4,7 +4,10 @@ import Vue from '@/main';
 function userMediaSuccess(stream, ids) {
   return new Promise((resolve) => {
     // Create video stream
-    this.videoStream.src = window.URL.createObjectURL(stream);
+    this.videoStream.srcObject = stream;
+    this.videoStream.onloadedmetadata = () => {
+      this.videoStream.play();
+    };
 
     // If we have opened a previous AudioContext, destroy it as the number of AudioContexts
     // are limited to 6
@@ -76,7 +79,6 @@ function setMediaSource({ audioSourceId, videoSourceId }) {
 
     if (videoSourceId) {
       constraints.video = {
-        echoCancellation: { exact: false },
         deviceId: videoSourceId,
       };
     }

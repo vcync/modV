@@ -1,5 +1,5 @@
 import Vue from 'vue';
-import store from '@/../store';
+import store from '@/store';
 import { modV } from '@/modv';
 import packageData from '@/../package.json';
 

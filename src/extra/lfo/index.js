@@ -1,4 +1,4 @@
-import store from '@/../store';
+import store from '@/store';
 import { modV } from 'modv';
 import { Menu, MenuItem } from 'nwjs-menu-browser';
 import { startCase, toLower } from 'lodash-es';

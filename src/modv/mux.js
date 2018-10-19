@@ -1,6 +1,6 @@
 import { modV } from '@/modv';
 import CCapture from 'ccapture.js';
-import store from '@/../store';
+import store from '@/store';
 
 const capturer = new CCapture({
   verbose: true,
