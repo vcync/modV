@@ -1,4 +1,4 @@
-import store from '@/../store';
+import store from '@/store';
 import shadertoyStore from './store';
 import galleryTabComponent from './Gallery';
 

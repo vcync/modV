@@ -1,6 +1,6 @@
 import Vue from 'vue';
 import { Layer } from '@/modv';
-import store from '@/../store';
+import store from '@/store';
 import getNextName from '@/utils/get-next-name';
 
 const state = {

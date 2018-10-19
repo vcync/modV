@@ -1,4 +1,4 @@
-import store from '@/../store';
+import store from '@/store';
 import { modV } from 'modv';
 import controlPanelComponent from './ControlPanel';
 import grabCanvasStore from './store';

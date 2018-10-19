@@ -1,4 +1,4 @@
-import store from '@/../store';
+import store from '@/store';
 import installPlugin from './install-plugin';
 
 export default function use(type, extension) {

@@ -1,4 +1,4 @@
-import store from '@/../store';
+import store from '@/store';
 import WebSocket from 'reconnecting-websocket';
 
 class MediaManagerClient {
