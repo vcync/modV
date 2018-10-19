@@ -31,9 +31,10 @@ module.exports = {
           children: [
             '',
             'module',
-            'palette',
+            'renderer',
             'plugin',
             'control',
+            'palette',
             'contextMenu',
             'mediaManager',
             'mediaManagerClient',
