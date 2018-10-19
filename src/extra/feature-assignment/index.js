@@ -6,6 +6,24 @@ import Meyda from 'meyda';
 const featureAssignment = {
   name: 'Feature Assignment',
 
+  presetData: {
+    save() {
+      const { controlAssignments } = store.state.meyda;
+
+      return {
+        controlAssignments,
+      };
+    },
+
+    load(data) {
+      const { controlAssignments } = data;
+
+      controlAssignments.forEach((assignment) => {
+        store.commit('meyda/assignFeatureToControl', assignment);
+      });
+    },
+  },
+
   install() {
     store.subscribe((mutation) => {
       if (mutation.type === 'modVModules/removeActiveModule') {
