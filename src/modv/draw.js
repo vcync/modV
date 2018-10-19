@@ -2,7 +2,7 @@ import { modV } from '@/modv';
 import render2d from '@/modv/renderers/2d';
 import { render as renderShader } from '@/modv/renderers/shader';
 import { render as renderIsf } from '@/modv/renderers/isf';
-import store from '@/../store';
+import store from '@/store';
 import mux from './mux';
 
 function draw(δ) {

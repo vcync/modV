@@ -1,4 +1,4 @@
-import store from '@/../store';
+import store from '@/store';
 import Vue from 'vue';
 
 function camelize(str) {

@@ -13,7 +13,7 @@ import * as builtInStatusBarItems from '@/extra/status-bar-items/';
 
 import { modV } from './modv';
 import App from './App';
-import store from '../store';
+import store from './store';
 import contextMenu from './extra/context-menu';
 import expression from './extra/expression';
 import midiAssignment from './extra/midi-assignment';
