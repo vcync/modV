@@ -119,7 +119,7 @@ function draw(δ) {
           context,
           video: modV.videoStream,
           features,
-          meyda: modV.meyda,
+          meyda: modV.meyda._m, //eslint-disable-line
           delta: δ,
           pipeline,
         };
