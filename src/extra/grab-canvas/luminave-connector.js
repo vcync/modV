@@ -212,6 +212,8 @@ export default class LuminaveConnector {
 
     // Size of each area
     const areaSize = Math.floor((this.width / areaAmount) + (this.height / areaAmount));
+    const areaWidth = Math.floor(areaSize / 2);
+    const areaHeight = Math.floor(areaSize / 2);
 
     // The packet that gets send over WebSocket to luminave
     const colors = [];
@@ -227,7 +229,7 @@ export default class LuminaveConnector {
         const pointY = (y * Math.floor(this.height / this.selectionY));
 
         // Add the average color of the area to the colors
-        colors.push(...this.getAverage(pointX, pointY, areaSize / 2, areaSize / 2));
+        colors.push(...this.getAverage(pointX, pointY, areaWidth, areaHeight));
       }
     }
 
