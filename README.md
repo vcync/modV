@@ -51,7 +51,7 @@ yarn run build
 
 ### Windows 10
 
-In order to use modV on Windows 10 you have to install the `windows-build-tools`:
+In order to build modV on Windows 10 you have to install the `windows-build-tools`:
 
 ```bash
 npm install --global --production windows-build-tools
