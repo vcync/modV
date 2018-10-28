@@ -122,6 +122,8 @@ function draw(δ) {
           meyda: modV.meyda._m, //eslint-disable-line
           delta: δ,
           pipeline,
+          kick: modV.kick,
+          bpm: modV.bpm,
         };
 
         if (availableRenderers.indexOf(moduleType) > -1) {
