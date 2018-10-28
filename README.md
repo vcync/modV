@@ -48,6 +48,15 @@ yarn run dev
 # build for production with minification
 yarn run build
 ```
+
+### Windows 10
+
+In order to build modV on Windows 10 you have to install the `windows-build-tools`:
+
+```bash
+npm install --global --production windows-build-tools
+```
+
 ### Notes on Building
 modV, by default, builds a standalone application using [NWJS](http://nwjs.io/).  
 Your standalone application should appear in `./nwjs/build/modV` and the standard site version will appear in `./dist`.
