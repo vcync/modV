@@ -1,18 +1,58 @@
 import { modV } from '@/modv';
-import render2d from '@/modv/renderers/2d';
-import { render as renderShader } from '@/modv/renderers/shader';
-import { render as renderIsf } from '@/modv/renderers/isf';
 import store from '@/store';
 import mux from './mux';
 
+function getBufferCanvas() {
+  return {
+    canvas: modV.bufferCanvas,
+    context: modV.bufferContext,
+  };
+}
+
+function renderRenderer({
+  canvas,
+  context,
+  renderFunction,
+  renderContext,
+  pipeline = false,
+  layer,
+}) {
+  const { canvas: bufferCanvas, context: bufferContext } = getBufferCanvas();
+  if (pipeline) {
+    context.clearRect(0, 0, canvas.width, canvas.height);
+    context.drawImage(
+      bufferCanvas,
+      0,
+      0,
+      canvas.width,
+      canvas.height,
+    );
+
+    renderFunction(renderContext);
+
+    bufferContext.clearRect(0, 0, canvas.width, canvas.height);
+    bufferContext.drawImage(
+      layer.canvas,
+      0,
+      0,
+      canvas.width,
+      canvas.height,
+    );
+  } else {
+    renderFunction(renderContext);
+  }
+}
+
 function draw(δ) {
   return new Promise((resolve) => {
+    const renderers = store.state.renderers;
+    const availableRenderers = Object.keys(renderers);
+
     const layers = store.getters['layers/allLayers'];
     const audioFeatures = store.getters['meyda/features'];
     const previewValues = store.getters['size/previewValues'];
 
-    const bufferCanvas = modV.bufferCanvas;
-    const bufferContext = modV.bufferContext;
+    const { canvas: bufferCanvas, context: bufferContext } = getBufferCanvas();
 
     if (!modV.meyda) return;
     const features = modV.meyda.get(audioFeatures);
@@ -71,134 +111,30 @@ function draw(δ) {
           canvas = Layer.canvas;
         }
 
-        if (Module.meta.type === '2d') {
-          if (pipeline) {
-            context.clearRect(0, 0, canvas.width, canvas.height);
-            context.drawImage(
-              bufferCanvas,
-              0,
-              0,
-              canvas.width,
-              canvas.height,
-            );
+        const moduleType = Module.meta.type;
 
-            render2d({
-              Module,
-              canvas,
-              context,
-              video: modV.videoStream,
-              features,
-              meyda: modV.meyda._m, //eslint-disable-line
-              delta: δ,
-            });
+        const renderContext = {
+          Module,
+          canvas,
+          context,
+          video: modV.videoStream,
+          features,
+          meyda: modV.meyda._m, //eslint-disable-line
+          delta: δ,
+          pipeline,
+          kick: modV.kick,
+          bpm: modV.bpm,
+        };
 
-            bufferContext.clearRect(0, 0, canvas.width, canvas.height);
-            bufferContext.drawImage(
-              Layer.canvas,
-              0,
-              0,
-              canvas.width,
-              canvas.height,
-            );
-          } else {
-            render2d({
-              Module,
-              canvas,
-              context,
-              video: modV.videoStream,
-              features,
-              meyda: modV.meyda._m, //eslint-disable-line
-              delta: δ,
-            });
-          }
-        }
-
-        if (Module.meta.type === 'shader') {
-          if (pipeline) {
-            context.clearRect(0, 0, canvas.width, canvas.height);
-            context.drawImage(
-              bufferCanvas,
-              0,
-              0,
-              canvas.width,
-              canvas.height,
-            );
-
-            renderShader({
-              Module,
-              canvas,
-              context,
-              video: modV.videoStream,
-              features,
-              meyda: modV.meyda,
-              delta: δ,
-              pipeline,
-            });
-
-            bufferContext.clearRect(0, 0, canvas.width, canvas.height);
-            bufferContext.drawImage(
-              Layer.canvas,
-              0,
-              0,
-              canvas.width,
-              canvas.height,
-            );
-          } else {
-            renderShader({
-              Module,
-              canvas,
-              context,
-              video: modV.videoStream,
-              features,
-              meyda: modV.meyda,
-              delta: δ,
-              pipeline,
-            });
-          }
-        }
-
-        if (Module.meta.type === 'isf') {
-          if (pipeline) {
-            context.clearRect(0, 0, canvas.width, canvas.height);
-            context.drawImage(
-              bufferCanvas,
-              0,
-              0,
-              canvas.width,
-              canvas.height,
-            );
-
-            renderIsf({
-              Module,
-              canvas,
-              context,
-              video: modV.videoStream,
-              features,
-              meyda: modV.meyda,
-              delta: δ,
-              pipeline,
-            });
-
-            bufferContext.clearRect(0, 0, canvas.width, canvas.height);
-            bufferContext.drawImage(
-              Layer.canvas,
-              0,
-              0,
-              canvas.width,
-              canvas.height,
-            );
-          } else {
-            renderIsf({
-              Module,
-              canvas,
-              context,
-              video: modV.videoStream,
-              features,
-              meyda: modV.meyda,
-              delta: δ,
-              pipeline,
-            });
-          }
+        if (availableRenderers.indexOf(moduleType) > -1) {
+          renderRenderer({
+            canvas,
+            context,
+            renderFunction: renderers[moduleType].render,
+            renderContext,
+            pipeline,
+            layer: Layer,
+          });
         }
 
         if (pipeline) {
