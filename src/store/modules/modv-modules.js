@@ -34,6 +34,16 @@ const state = {
   currentDragged: null,
 };
 
+function getPropDefault(prop) {
+  const { default: defaultValue, random } = prop;
+
+  if (typeof defaultValue !== 'undefined' && Array.isArray(defaultValue) && random) {
+    return defaultValue[Math.floor(Math.random() * defaultValue.length)];
+  }
+
+  return defaultValue;
+}
+
 // getters
 const getters = {
   // registry: state => state.registry,
@@ -115,9 +125,7 @@ const actions = {
         Object.keys(props).forEach((key) => {
           const value = props[key];
 
-          if (typeof value.default !== 'undefined') {
-            newModuleData[key] = value.default;
-          }
+          newModuleData[key] = getPropDefault(value);
 
           if (value.type === 'group') {
             newModuleData[key] = {};
@@ -411,7 +419,7 @@ const actions = {
       dispatch('updateProp', {
         name,
         prop: key,
-        data: prop.default,
+        data: getPropDefault(prop),
       });
     });
   },
@@ -575,7 +583,9 @@ const mutations = {
     const { props, length } = outerState.active[moduleName][groupName];
 
     Object.keys(props).forEach((prop) => {
-      const defaultValue = state.active[moduleName].props[groupName].props[prop].default;
+      const defaultValue = getPropDefault(
+        state.active[moduleName].props[groupName].props[prop],
+      );
 
       outerState.active[moduleName][groupName].props[prop][length] = defaultValue;
       Vue.set(state.active[moduleName][groupName].props[prop], length, defaultValue);
