@@ -2,7 +2,7 @@
 sidebarDepth: 2
 ---
 
-# Writing a Module
+# Writing a 2D Module
 
 We're going to write a Module which works with the built-in `2d` Renderer.
 
