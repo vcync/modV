@@ -11,7 +11,7 @@ To follow this guide, we'd recommend having some experience with:
 * Canvas2D
   * if you don't already have experience with Canvas2D then we recommend the MDN Docs as a reference: [https://developer.mozilla.org/docs/Web/API/CanvasRenderingContext2D](https://developer.mozilla.org/docs/Web/API/CanvasRenderingContext2D)
 
-## 1. export an Object
+## 1. Export an Object
 
 Let's get started by exporting an Object. modV Modules are written out as a plain Object.
 
@@ -21,7 +21,7 @@ export default {
 };
 ```
 
-## 2. Getting all meta
+## 2. Set up the Meta
 
 Next up, we'll need to describe our Module with a meta Object block.
 Let's define the Module type as `2d` and give our Module a name.
@@ -38,7 +38,7 @@ export default {
 };
 ```
 
-## 3. Putting brush to Canvas
+## 3. Draw
 
 The draw function is where we put our Canvas2D code in `2d` Modules.
 
@@ -68,7 +68,7 @@ export default {
 };
 ```
 
-## 4. props to props
+## 4. Props
 
 So, a red circle is pretty cool, but how is this audio reactive?
 Well we should define some properties (props for short) so that some Controls are generated, then we can interact with our Module.

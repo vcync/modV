@@ -15,7 +15,7 @@ To follow this guide, we'd recommend having some experience with:
 
 We'll be stealing :grimacing: [a shader](https://github.com/AVGP/shaderpad/blob/gh-pages/interesting_shaders.md#spherical-with-concentric-circles-blend) from [Martin Splitt](https://twitter.com/g33konaut)'s [awesome shaderpad](https://github.com/AVGP/shaderpad) - so you won't need a bunch of GLSL experience to follow along. 
 
-## 1. export an Object
+## 1. Export an Object
 
 Let's get started by exporting an Object. modV Modules are written out as a plain Object.
 
@@ -25,7 +25,7 @@ export default {
 };
 ```
 
-## 2. Set up the meta
+## 2. Set up the Meta
 
 Next up, we'll need to describe our Module with a meta Object block.
 Let's define the Module type as `shader` and give our Module a name.
@@ -89,7 +89,7 @@ export default {
 };
 ```
 
-## 4. props and uniforms
+## 4. Props and Uniforms
 
 ### 4.1 uniforms
 
