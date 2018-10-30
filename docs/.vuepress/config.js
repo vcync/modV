@@ -23,6 +23,7 @@ module.exports = {
             'mediaManager',
             'writingA2DModule',
             'writingAShaderModule',
+            'writingAnIsfModule'
           ],
         },
       ],
