@@ -152,7 +152,7 @@ function draw(δ) {
 
     modV.webgl.regl.poll();
 
-    mux().then(() => {
+    mux(layers).then(() => {
       modV.previewContext.clearRect(0, 0, modV.previewCanvas.width, modV.previewCanvas.height);
       modV.previewContext.drawImage(
         modV.outputCanvas,
