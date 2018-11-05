@@ -15,7 +15,8 @@ export default {
       type: 'int',
       min: 1,
       max: 300,
-      default: 1,
+      default: [1, 10, 20],
+      random: true,
       strict: true,
     },
 

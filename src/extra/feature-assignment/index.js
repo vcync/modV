@@ -1,10 +1,28 @@
-import store from '@/../store';
+import store from '@/store';
 import { modV } from 'modv';
 import { Menu, MenuItem } from 'nwjs-menu-browser';
 import Meyda from 'meyda';
 
 const featureAssignment = {
   name: 'Feature Assignment',
+
+  presetData: {
+    save() {
+      const { controlAssignments } = store.state.meyda;
+
+      return {
+        controlAssignments,
+      };
+    },
+
+    load(data) {
+      const { controlAssignments } = data;
+
+      controlAssignments.forEach((assignment) => {
+        store.commit('meyda/assignFeatureToControl', assignment);
+      });
+    },
+  },
 
   install() {
     store.subscribe((mutation) => {

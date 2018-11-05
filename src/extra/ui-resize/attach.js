@@ -1,4 +1,4 @@
-import store from '@/../store/';
+import store from '@/store/';
 import top from './top';
 import left from './left';
 

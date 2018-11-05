@@ -1,5 +1,12 @@
 import Vue from 'vue';
 import { modV } from '@/modv';
+import controls from './controls';
+import statusbar from './statusbar';
+
+const modules = {
+  controls,
+  statusbar,
+};
 
 const state = {
   plugins: {},
@@ -137,4 +144,5 @@ export default {
   getters,
   actions,
   mutations,
+  modules,
 };

@@ -1,5 +1,5 @@
 import Vue from 'vue';
-import store from '@/../store';
+import store from '@/store';
 import { modV } from '@/modv';
 import packageData from '@/../package.json';
 
@@ -200,9 +200,7 @@ const mutations = {
       fetch(project.modules[moduleName])
         .then(response => response.text())
         .then((text) => {
-          store.dispatch('modVModules/register', {
-            Module: eval(text).default, //eslint-disable-line
-          });
+          store.dispatch('modVModules/register', eval(text).default); //eslint-disable-line
         });
     });
 
@@ -226,9 +224,7 @@ const mutations = {
     fetch(path)
       .then(response => response.text())
       .then((text) => {
-        store.dispatch('modVModules/register', {
-          Module: eval(text).default, //eslint-disable-line
-        });
+        store.dispatch('modVModules/register', eval(text).default); //eslint-disable-line
       });
 
     Vue.set(project.modules, presetName, path);

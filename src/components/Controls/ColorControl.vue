@@ -12,10 +12,6 @@
 
   export default {
     name: 'colorControl',
-    props: [
-      'module',
-      'meta',
-    ],
     data() {
       return {
         pickerColors: {},
@@ -38,18 +34,6 @@
       },
       options() {
         return this.meta.control.options;
-      },
-      variable() {
-        return this.meta.$modv_variable;
-      },
-      moduleName() {
-        return this.meta.$modv_moduleName;
-      },
-      inputId() {
-        return `${this.moduleName}-${this.variable}`;
-      },
-      label() {
-        return this.meta.label || this.variable;
       },
     },
     mounted() {
