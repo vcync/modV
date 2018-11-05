@@ -511,7 +511,7 @@ const mutations = {
     let value;
 
     if (data.type === 'texture') {
-      value = textureResolve(data.value);
+      value = textureResolve.bind({ $store: store })(data.value);
     } else {
       value = data.value;
     }

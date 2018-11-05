@@ -6,7 +6,7 @@
  *
  */
 
-import store from '@/store';
+// import store from '@/store';
 
 /**
  * Resolves a texture from a SourceDef Object
@@ -22,7 +22,7 @@ export default function textureResolve(sourceDef) {
   switch (source) {
     case 'layer': {
       if (sourceData < 0) return null;
-      return store.state.layers.layers[sourceData].canvas;
+      return this.$store.state.layers.layers[sourceData].canvas;
     }
 
     case 'image': {

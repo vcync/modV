@@ -1,37 +1,42 @@
-import Layer from '@/modv/Layer';
-import Vue from 'vue';
+import { Layer } from '@/modv/Layer';
+import textureResolve from '@/modv/texture-resolve';
 import Vuex from 'vuex';
+import { shallowMount, createLocalVue } from '@vue/test-utils';
 
-Vue.use(Vuex);
+const localVue = createLocalVue();
+localVue.use(Vuex);
 
 describe('textureResolve()', () => {
-  let store;
+  it('should resolve a "Layer" type sourceDef to be a Canvas', () => {
+    const tempComponent = {
+      render(h) {
+        return h();
+      },
 
-  beforeEach(() => {
-    store = new Vuex.Store({
-      state: {
-        layers: {
-          layers: [
-            new Layer(),
-          ],
+      created() {
+        this.layerTexure = textureResolve.bind(this)({
+          source: 'layer',
+          sourceData: 0,
+        });
+      },
+    };
+
+    const wrapper = shallowMount(tempComponent, {
+      mocks: {
+        $store: {
+          state: {
+            layers: {
+              layers: [
+                new Layer(),
+              ],
+            },
+          },
         },
       },
-    });
-  });
-
-  it('should output Layer Object with default parameters', () => {
-    const layer = Layer();
-
-    expect(layer)
-      .to.eql(LayerDefaults);
-  });
-
-  it('should overwrite default parameters', () => {
-    const layer = Layer({
-      enabled: false,
+      localVue,
     });
 
-    expect(layer.enabled)
-      .to.equal(false);
+    expect(wrapper.vm.layerTexure.tagName)
+      .to.equal('CANVAS');
   });
 });
