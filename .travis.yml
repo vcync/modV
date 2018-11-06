@@ -3,10 +3,6 @@ node_js:
   - "10"
 sudo: false
 script: yarn run build
-before_install:
-  - sudo dpkg --add-architecture i386
-  - sudo apt-get update
-  - sudo apt-get install wine
 env:
     - CXX=g++-4.8
 addons:
@@ -16,7 +12,7 @@ addons:
     packages:
       - g++-4.8
 install:
-  - yarn install -g vuepress
+  - yarn global add vuepress
 script:
   - yarn run docs:build
 cache:
