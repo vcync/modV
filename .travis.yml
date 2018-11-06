@@ -1,6 +1,6 @@
 language: node_js
 node_js:
-  - "10"
+  - '10'
 sudo: false
 script: yarn run build
 env:
@@ -12,7 +12,7 @@ addons:
     packages:
       - g++-4.8
 install:
-  - yarn global add vuepress
+  - yarn global add vuepress sass-loader node-sass
 script:
   - yarn run docs:build
 cache:
