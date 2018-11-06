@@ -1,9 +1,36 @@
 language: node_js
 node_js:
-  - '9'
+  - "10"
 sudo: false
-script: npm run build
+script: yarn run build
 before_install:
   - sudo dpkg --add-architecture i386
   - sudo apt-get update
   - sudo apt-get install wine
+env:
+    - CXX=g++-4.8
+addons:
+  apt:
+    sources:
+      - ubuntu-toolchain-r-test
+    packages:
+      - g++-4.8
+install:
+  - yarn install -g vuepress
+script:
+  - yarn run docs:build
+cache:
+  directories:
+    - 'node_modules'
+notifications:
+  email: false
+deploy:
+  provider: pages
+  skip-cleanup: true
+  local_dir: docs/.vuepress/dist
+  github-token: $GITHUB_TOKEN  # Set in the settings page of your repository, as a secure variable
+  repo: vcync/modV
+  keep-history: true
+  target-branch: gh-pages
+  on:
+    branch: gh-pages
