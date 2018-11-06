@@ -27,4 +27,4 @@ deploy:
   keep-history: true
   target-branch: gh-pages
   on:
-    branch: gh-pages
+    branch: feat/documentation
