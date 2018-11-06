@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="en-US">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <title>Writing a Shader Module | modV</title>
+    <meta name="description" content="modular audio visualisation powered by JavaScript">
+    
+    
+    <link rel="preload" href="/assets/css/styles.6376aab2.css" as="style"><link rel="preload" href="/assets/js/app.6376aab2.js" as="script"><link rel="preload" href="/assets/css/styles.6376aab2.css" as="style"><link rel="preload" href="/assets/js/20.252bcaa5.js" as="script"><link rel="prefetch" href="/assets/css/1.styles.af4e439d.css"><link rel="prefetch" href="/assets/css/2.styles.e38f743e.css"><link rel="prefetch" href="/assets/css/3.styles.04af8fe2.css"><link rel="prefetch" href="/assets/js/1.af4e439d.js"><link rel="prefetch" href="/assets/js/10.10fef56f.js"><link rel="prefetch" href="/assets/js/11.ec9610da.js"><link rel="prefetch" href="/assets/js/12.bf702f2f.js"><link rel="prefetch" href="/assets/js/13.0a03fd7b.js"><link rel="prefetch" href="/assets/js/14.cbdde035.js"><link rel="prefetch" href="/assets/js/15.742ea5ba.js"><link rel="prefetch" href="/assets/js/16.d1f2c04b.js"><link rel="prefetch" href="/assets/js/17.84c5af58.js"><link rel="prefetch" href="/assets/js/18.53ea5d69.js"><link rel="prefetch" href="/assets/js/19.caad2c02.js"><link rel="prefetch" href="/assets/js/2.e38f743e.js"><link rel="prefetch" href="/assets/js/21.20a6f314.js"><link rel="prefetch" href="/assets/js/3.04af8fe2.js"><link rel="prefetch" href="/assets/js/4.98530543.js"><link rel="prefetch" href="/assets/js/5.7ffa22d6.js"><link rel="prefetch" href="/assets/js/6.d6a389a8.js"><link rel="prefetch" href="/assets/js/7.c7f0cad5.js"><link rel="prefetch" href="/assets/js/8.ccb53f5e.js"><link rel="prefetch" href="/assets/js/9.fade9bad.js">
+    <link rel="stylesheet" href="/assets/css/1.styles.af4e439d.css"><link rel="stylesheet" href="/assets/css/2.styles.e38f743e.css"><link rel="stylesheet" href="/assets/css/3.styles.04af8fe2.css"><link rel="stylesheet" href="/assets/css/styles.6376aab2.css">
+  </head>
+  <body>
+    <div id="app" data-server-rendered="true"><div class="theme-container"><header class="navbar"><div class="sidebar-button"><svg xmlns="http://www.w3.org/2000/svg" aria-hidden="true" role="img" viewBox="0 0 448 512" class="icon"><path fill="currentColor" d="M436 124H12c-6.627 0-12-5.373-12-12V80c0-6.627 5.373-12 12-12h424c6.627 0 12 5.373 12 12v32c0 6.627-5.373 12-12 12zm0 160H12c-6.627 0-12-5.373-12-12v-32c0-6.627 5.373-12 12-12h424c6.627 0 12 5.373 12 12v32c0 6.627-5.373 12-12 12zm0 160H12c-6.627 0-12-5.373-12-12v-32c0-6.627 5.373-12 12-12h424c6.627 0 12 5.373 12 12v32c0 6.627-5.373 12-12 12z"></path></svg></div> <a href="/" class="home-link router-link-active"><!----> <span class="site-name">modV</span></a> <div class="links" style="max-width:nullpx;"><div class="search-box"><input aria-label="Search" autocomplete="off" spellcheck="false" value=""> <!----></div> <nav class="nav-links can-hide"><div class="nav-item"><a href="/guide/" class="nav-link router-link-active">Guide</a></div><div class="nav-item"><a href="/api/" class="nav-link">API Reference</a></div><div class="nav-item"><a href="https://github.com/2xaa/modV/" target="_blank" rel="noopener noreferrer" class="nav-link external">
+  GitHub
+  <svg xmlns="http://www.w3.org/2000/svg" aria-hidden="true" x="0px" y="0px" viewBox="0 0 100 100" width="15" height="15" class="icon outbound"><path fill="currentColor" d="M18.8,85.1h56l0,0c2.2,0,4-1.8,4-4v-32h-8v28h-48v-48h28v-8h-32l0,0c-2.2,0-4,1.8-4,4v56C14.8,83.3,16.6,85.1,18.8,85.1z"></path> <polygon fill="currentColor" points="45.7,48.7 51.3,54.3 77.2,28.5 77.2,37.2 85.2,37.2 85.2,14.9 62.8,14.9 62.8,22.9 71.5,22.9"></polygon></svg></a></div> <!----></nav></div></header> <div class="sidebar-mask"></div> <div class="sidebar"><nav class="nav-links"><div class="nav-item"><a href="/guide/" class="nav-link router-link-active">Guide</a></div><div class="nav-item"><a href="/api/" class="nav-link">API Reference</a></div><div class="nav-item"><a href="https://github.com/2xaa/modV/" target="_blank" rel="noopener noreferrer" class="nav-link external">
+  GitHub
+  <svg xmlns="http://www.w3.org/2000/svg" aria-hidden="true" x="0px" y="0px" viewBox="0 0 100 100" width="15" height="15" class="icon outbound"><path fill="currentColor" d="M18.8,85.1h56l0,0c2.2,0,4-1.8,4-4v-32h-8v28h-48v-48h28v-8h-32l0,0c-2.2,0-4,1.8-4,4v56C14.8,83.3,16.6,85.1,18.8,85.1z"></path> <polygon fill="currentColor" points="45.7,48.7 51.3,54.3 77.2,28.5 77.2,37.2 85.2,37.2 85.2,14.9 62.8,14.9 62.8,22.9 71.5,22.9"></polygon></svg></a></div> <!----></nav>  <ul class="sidebar-links"><li><div class="sidebar-group first"><p class="sidebar-heading open"><span>Guide</span> <!----></p> <ul class="sidebar-group-items"><li><a href="/guide/" class="sidebar-link">Getting Started</a></li><li><a href="/guide/audioRouting.html" class="sidebar-link">Audio Routing</a></li><li><a href="/guide/coreConcepts.html" class="sidebar-link">Core Concepts</a></li><li><a href="/guide/mediaManager.html" class="sidebar-link">Media Manager</a></li><li><a href="/guide/writingA2DModule.html" class="sidebar-link">Writing a 2D Module</a></li><li><a href="/guide/writingAShaderModule.html" class="active sidebar-link">Writing a Shader Module</a><ul class="sidebar-sub-headers"><li class="sidebar-sub-header"><a href="/guide/writingAShaderModule.html#_1-export-an-object" class="sidebar-link">1. Export an Object</a></li><li class="sidebar-sub-header"><a href="/guide/writingAShaderModule.html#_2-set-up-the-meta" class="sidebar-link">2. Set up the Meta</a></li><li class="sidebar-sub-header"><a href="/guide/writingAShaderModule.html#_3-define-our-shaders" class="sidebar-link">3. Define our Shaders</a></li><li class="sidebar-sub-header"><a href="/guide/writingAShaderModule.html#_4-props-and-uniforms" class="sidebar-link">4. Props and Uniforms</a><ul class="sidebar-sub-headers"><li class="sidebar-sub-header"><a href="/guide/writingAShaderModule.html#_4-1-uniforms" class="sidebar-link">4.1 uniforms</a></li><li class="sidebar-sub-header"><a href="/guide/writingAShaderModule.html#_4-2-defining-props" class="sidebar-link">4.2 Defining props</a></li></ul></li><li class="sidebar-sub-header"><a href="/guide/writingAShaderModule.html#_5-putting-everything-together" class="sidebar-link">5. Putting everything together</a></li></ul></li><li><a href="/guide/writingAnIsfModule.html" class="sidebar-link">Writing an ISF Module</a></li></ul></div></li></ul> </div> <div class="page"> <div class="content"><h1 id="writing-a-shader-module"><a href="#writing-a-shader-module" aria-hidden="true" class="header-anchor">#</a> Writing a Shader Module</h1> <p>We're going to write a Module which works with the built-in <code>shader</code> Renderer.</p> <p>To follow this guide, we'd recommend having some experience with:</p> <ul><li>JavaScript (ES6+)</li> <li>GLSL
+<ul><li>if you don't already have experience with GLSL then we recommend ???</li></ul></li></ul> <p>We'll be stealing 😬 <a href="https://github.com/AVGP/shaderpad/blob/gh-pages/interesting_shaders.md#spherical-with-concentric-circles-blend" target="_blank" rel="noopener noreferrer">a shader<svg xmlns="http://www.w3.org/2000/svg" aria-hidden="true" x="0px" y="0px" viewBox="0 0 100 100" width="15" height="15" class="icon outbound"><path fill="currentColor" d="M18.8,85.1h56l0,0c2.2,0,4-1.8,4-4v-32h-8v28h-48v-48h28v-8h-32l0,0c-2.2,0-4,1.8-4,4v56C14.8,83.3,16.6,85.1,18.8,85.1z"></path> <polygon fill="currentColor" points="45.7,48.7 51.3,54.3 77.2,28.5 77.2,37.2 85.2,37.2 85.2,14.9 62.8,14.9 62.8,22.9 71.5,22.9"></polygon></svg></a> from <a href="https://twitter.com/g33konaut" target="_blank" rel="noopener noreferrer">Martin Splitt<svg xmlns="http://www.w3.org/2000/svg" aria-hidden="true" x="0px" y="0px" viewBox="0 0 100 100" width="15" height="15" class="icon outbound"><path fill="currentColor" d="M18.8,85.1h56l0,0c2.2,0,4-1.8,4-4v-32h-8v28h-48v-48h28v-8h-32l0,0c-2.2,0-4,1.8-4,4v56C14.8,83.3,16.6,85.1,18.8,85.1z"></path> <polygon fill="currentColor" points="45.7,48.7 51.3,54.3 77.2,28.5 77.2,37.2 85.2,37.2 85.2,14.9 62.8,14.9 62.8,22.9 71.5,22.9"></polygon></svg></a>'s <a href="https://github.com/AVGP/shaderpad" target="_blank" rel="noopener noreferrer">awesome shaderpad<svg xmlns="http://www.w3.org/2000/svg" aria-hidden="true" x="0px" y="0px" viewBox="0 0 100 100" width="15" height="15" class="icon outbound"><path fill="currentColor" d="M18.8,85.1h56l0,0c2.2,0,4-1.8,4-4v-32h-8v28h-48v-48h28v-8h-32l0,0c-2.2,0-4,1.8-4,4v56C14.8,83.3,16.6,85.1,18.8,85.1z"></path> <polygon fill="currentColor" points="45.7,48.7 51.3,54.3 77.2,28.5 77.2,37.2 85.2,37.2 85.2,14.9 62.8,14.9 62.8,22.9 71.5,22.9"></polygon></svg></a> - so you won't need a bunch of GLSL experience to follow along.</p> <h2 id="_1-export-an-object"><a href="#_1-export-an-object" aria-hidden="true" class="header-anchor">#</a> 1. Export an Object</h2> <p>Let's get started by exporting an Object. modV Modules are written out as a plain Object.</p> <div class="language-JavaScript extra-class"><pre class="language-javascript"><code><span class="token keyword">export</span> <span class="token keyword">default</span> <span class="token punctuation">{</span>
+
+<span class="token punctuation">}</span><span class="token punctuation">;</span>
+</code></pre></div><h2 id="_2-set-up-the-meta"><a href="#_2-set-up-the-meta" aria-hidden="true" class="header-anchor">#</a> 2. Set up the Meta</h2> <p>Next up, we'll need to describe our Module with a meta Object block.
+Let's define the Module type as <code>shader</code> and give our Module a name.</p> <div class="language-JavaScript extra-class"><pre class="language-javascript"><code><span class="token keyword">export</span> <span class="token keyword">default</span> <span class="token punctuation">{</span>
+  meta<span class="token punctuation">:</span> <span class="token punctuation">{</span>
+    <span class="token comment">// this tells modV our Module should be used with the shader renderer</span>
+    type<span class="token punctuation">:</span> <span class="token string">'shader'</span><span class="token punctuation">,</span>
+
+    <span class="token comment">// our Module's name</span>
+    name<span class="token punctuation">:</span> <span class="token string">'Spherical'</span><span class="token punctuation">,</span>
+  <span class="token punctuation">}</span><span class="token punctuation">,</span>
+<span class="token punctuation">}</span><span class="token punctuation">;</span>
+</code></pre></div><h2 id="_3-define-our-shaders"><a href="#_3-define-our-shaders" aria-hidden="true" class="header-anchor">#</a> 3. Define our Shaders</h2> <p>In <code>shader</code> type Modules, there are two properties on the Module body to define the Shaders we want to use:</p> <ul><li><code>fragmentShader</code></li> <li><code>vertexShader</code></li></ul> <p>Both are optional and the <code>shader</code> Renderer automatically detects whether we're using <code>#version 300 es</code> or not.
+Both of these variables accept Strings only.</p> <p>If you have a larger shader or require syntax highlighting, you may import your shaders using:</p> <div class="language-JavaScript extra-class"><pre class="language-javascript"><code><span class="token keyword">import</span> fragmentShader <span class="token keyword">from</span> <span class="token string">'circles.frag'</span><span class="token punctuation">;</span>
+<span class="token keyword">import</span> vertexShader <span class="token keyword">from</span> <span class="token string">'circles.vert'</span><span class="token punctuation">;</span>
+</code></pre></div><p>We'll only be using the <code>fragmentShader</code> property in this guide:</p> <div class="language-JavaScript extra-class"><pre class="language-javascript"><code><span class="token keyword">export</span> <span class="token keyword">default</span> <span class="token punctuation">{</span>
+  <span class="token comment">// meta: { ... },</span>
+  
+  fragmentShader<span class="token punctuation">:</span> <span class="token template-string"><span class="token string">`
+    precision mediump float;
+    varying mediump vec2 uv;
+
+    uniform float uA;
+    uniform sampler2D u_modVCanvas;
+
+    void main(void) {
+      vec2 p = -1.0 + 2.0 * uv.xy;
+      float r = sqrt(dot(p, p));
+
+      float f = sqrt(1.0 - (r * r));
+      bool toggle = mod(r, 0.1) &gt; 0.05 ? true : false;
+      if (f &gt; 0.0 &amp;&amp; toggle) 
+        gl_FragColor = vec4(vec3(f), 1.0) * texture2D(u_modVCanvas, vec2(uv.x, uv.y));
+      else 
+        gl_FragColor = vec4(uv.x, uv.y, 1.0, 1.0);
+    }
+  `</span></span><span class="token punctuation">,</span>
+<span class="token punctuation">}</span><span class="token punctuation">;</span>
+</code></pre></div><h2 id="_4-props-and-uniforms"><a href="#_4-props-and-uniforms" aria-hidden="true" class="header-anchor">#</a> 4. Props and Uniforms</h2> <h3 id="_4-1-uniforms"><a href="#_4-1-uniforms" aria-hidden="true" class="header-anchor">#</a> 4.1 uniforms</h3> <p>The <code>shader</code> Renderer defines the following Uniforms for you to consume within your Shader:</p> <table><thead><tr><th>name</th> <th>type</th> <th>info</th></tr></thead> <tbody><tr><td><code>u_modVCanvas</code>, <code>iChannel0</code>, <code>iChannel1</code>, <code>iChannel2</code>, <code>iChannel3</code></td> <td><code>texture2D</code></td> <td>The incoming frame</td></tr> <tr><td><code>u_delta</code>, <code>iTime</code>, <code>iGlobalTime</code></td> <td><code>float</code></td> <td>Time in milliseconds</td></tr> <tr><td><code>u_time</code></td> <td><code>float</code></td> <td>Time in seconds</td></tr> <tr><td><code>iFrame</code></td> <td><code>float</code></td> <td>Frame count since modV's drawloop started</td></tr> <tr><td><code>iResolution</code></td> <td><code>vec3</code></td> <td>The <strong>width</strong>, <strong>height</strong> and <strong>pixel density</strong> of the largest Output Window</td></tr> <tr><td><code>iMouse</code></td> <td><code>vec4</code></td> <td><code>[0.0, 0.0, 0.0, 0.0]</code> <strong>@todo make this an actual control</strong></td></tr></tbody></table> <div class="warning custom-block"><p class="custom-block-title">Shadertoy compatibility</p> <p>The <code>shader</code> Renderer attempts to provide basic Shadertoy Uniform compatibility.<br> <strong>Currently it does not support passes/buffers or Audio shaders.</strong></p></div> <h3 id="_4-2-defining-props"><a href="#_4-2-defining-props" aria-hidden="true" class="header-anchor">#</a> 4.2 Defining props</h3> <p>With a <code>shader</code> Module, the props should match the uniforms in your shader.</p> <p>Our shader above has a uniform named <code>uA</code> so we'll define the same in our props:</p> <div class="language-JavaScript extra-class"><pre class="language-javascript"><code>props<span class="token punctuation">:</span> <span class="token punctuation">{</span>
+  uA<span class="token punctuation">:</span> <span class="token punctuation">{</span>
+    type<span class="token punctuation">:</span> <span class="token string">'float'</span><span class="token punctuation">,</span>
+    <span class="token keyword">default</span><span class="token punctuation">:</span> <span class="token number">1.0</span><span class="token punctuation">,</span>
+    min<span class="token punctuation">:</span> <span class="token number">0.0</span><span class="token punctuation">,</span>
+    max<span class="token punctuation">:</span> <span class="token number">2.0</span><span class="token punctuation">,</span>
+  <span class="token punctuation">}</span><span class="token punctuation">,</span>
+<span class="token punctuation">}</span><span class="token punctuation">,</span>
+</code></pre></div><h2 id="_5-putting-everything-together"><a href="#_5-putting-everything-together" aria-hidden="true" class="header-anchor">#</a> 5. Putting everything together</h2> <p>The following code puts together everything from above:</p> <div class="language-JavaScript extra-class"><pre class="language-javascript"><code><span class="token keyword">export</span> <span class="token keyword">default</span> <span class="token punctuation">{</span>
+  meta<span class="token punctuation">:</span> <span class="token punctuation">{</span>
+    type<span class="token punctuation">:</span> <span class="token string">'shader'</span><span class="token punctuation">,</span>
+    name<span class="token punctuation">:</span> <span class="token string">'Spherical'</span><span class="token punctuation">,</span>
+  <span class="token punctuation">}</span><span class="token punctuation">,</span>
+  
+  props<span class="token punctuation">:</span> <span class="token punctuation">{</span>
+    uA<span class="token punctuation">:</span> <span class="token punctuation">{</span>
+      type<span class="token punctuation">:</span> <span class="token string">'float'</span><span class="token punctuation">,</span>
+      <span class="token keyword">default</span><span class="token punctuation">:</span> <span class="token number">1.0</span><span class="token punctuation">,</span>
+      min<span class="token punctuation">:</span> <span class="token number">0.0</span><span class="token punctuation">,</span>
+      max<span class="token punctuation">:</span> <span class="token number">2.0</span><span class="token punctuation">,</span>
+    <span class="token punctuation">}</span><span class="token punctuation">,</span>
+  <span class="token punctuation">}</span><span class="token punctuation">,</span>
+
+  fragmentShader<span class="token punctuation">:</span> <span class="token template-string"><span class="token string">`
+    precision mediump float;
+    varying mediump vec2 uv;
+
+    uniform float uA;
+    uniform sampler2D u_modVCanvas;
+
+    void main(void) {
+      vec2 p = -1.0 + 2.0 * uv.xy;
+      float r = sqrt(dot(p, p));
+
+      float f = sqrt(1.0 - (r * r));
+      bool toggle = mod(r, 0.1) &gt; 0.05 ? true : false;
+      if (f &gt; 0.0 &amp;&amp; toggle) 
+        gl_FragColor = vec4(vec3(f), 1.0) * texture2D(u_modVCanvas, vec2(uv.x, uv.y));
+      else 
+        gl_FragColor = vec4(uv.x, uv.y, 1.0, 1.0);
+    }
+  `</span></span><span class="token punctuation">,</span>
+<span class="token punctuation">}</span><span class="token punctuation">;</span>
+</code></pre></div></div> <div class="page-edit"><!----> <!----></div> <div class="page-nav"><p class="inner"><span class="prev">
+        ←
+        <a href="/guide/writingA2DModule.html" class="prev">
+          Writing a 2D Module
+        </a></span> <span class="next"><a href="/guide/writingAnIsfModule.html">
+          Writing an ISF Module
+        </a>
+        →
+      </span></p></div> </div> <!----></div></div>
+    <script src="/assets/js/20.252bcaa5.js" defer></script><script src="/assets/js/app.6376aab2.js" defer></script>
+  </body>
+</html>

@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html lang="en-US">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <title>Writing a 2D Module | modV</title>
+    <meta name="description" content="modular audio visualisation powered by JavaScript">
+    
+    
+    <link rel="preload" href="/assets/css/styles.6376aab2.css" as="style"><link rel="preload" href="/assets/js/app.6376aab2.js" as="script"><link rel="preload" href="/assets/css/styles.6376aab2.css" as="style"><link rel="preload" href="/assets/js/19.caad2c02.js" as="script"><link rel="prefetch" href="/assets/css/1.styles.af4e439d.css"><link rel="prefetch" href="/assets/css/2.styles.e38f743e.css"><link rel="prefetch" href="/assets/css/3.styles.04af8fe2.css"><link rel="prefetch" href="/assets/js/1.af4e439d.js"><link rel="prefetch" href="/assets/js/10.10fef56f.js"><link rel="prefetch" href="/assets/js/11.ec9610da.js"><link rel="prefetch" href="/assets/js/12.bf702f2f.js"><link rel="prefetch" href="/assets/js/13.0a03fd7b.js"><link rel="prefetch" href="/assets/js/14.cbdde035.js"><link rel="prefetch" href="/assets/js/15.742ea5ba.js"><link rel="prefetch" href="/assets/js/16.d1f2c04b.js"><link rel="prefetch" href="/assets/js/17.84c5af58.js"><link rel="prefetch" href="/assets/js/18.53ea5d69.js"><link rel="prefetch" href="/assets/js/2.e38f743e.js"><link rel="prefetch" href="/assets/js/20.252bcaa5.js"><link rel="prefetch" href="/assets/js/21.20a6f314.js"><link rel="prefetch" href="/assets/js/3.04af8fe2.js"><link rel="prefetch" href="/assets/js/4.98530543.js"><link rel="prefetch" href="/assets/js/5.7ffa22d6.js"><link rel="prefetch" href="/assets/js/6.d6a389a8.js"><link rel="prefetch" href="/assets/js/7.c7f0cad5.js"><link rel="prefetch" href="/assets/js/8.ccb53f5e.js"><link rel="prefetch" href="/assets/js/9.fade9bad.js">
+    <link rel="stylesheet" href="/assets/css/1.styles.af4e439d.css"><link rel="stylesheet" href="/assets/css/2.styles.e38f743e.css"><link rel="stylesheet" href="/assets/css/3.styles.04af8fe2.css"><link rel="stylesheet" href="/assets/css/styles.6376aab2.css">
+  </head>
+  <body>
+    <div id="app" data-server-rendered="true"><div class="theme-container"><header class="navbar"><div class="sidebar-button"><svg xmlns="http://www.w3.org/2000/svg" aria-hidden="true" role="img" viewBox="0 0 448 512" class="icon"><path fill="currentColor" d="M436 124H12c-6.627 0-12-5.373-12-12V80c0-6.627 5.373-12 12-12h424c6.627 0 12 5.373 12 12v32c0 6.627-5.373 12-12 12zm0 160H12c-6.627 0-12-5.373-12-12v-32c0-6.627 5.373-12 12-12h424c6.627 0 12 5.373 12 12v32c0 6.627-5.373 12-12 12zm0 160H12c-6.627 0-12-5.373-12-12v-32c0-6.627 5.373-12 12-12h424c6.627 0 12 5.373 12 12v32c0 6.627-5.373 12-12 12z"></path></svg></div> <a href="/" class="home-link router-link-active"><!----> <span class="site-name">modV</span></a> <div class="links" style="max-width:nullpx;"><div class="search-box"><input aria-label="Search" autocomplete="off" spellcheck="false" value=""> <!----></div> <nav class="nav-links can-hide"><div class="nav-item"><a href="/guide/" class="nav-link router-link-active">Guide</a></div><div class="nav-item"><a href="/api/" class="nav-link">API Reference</a></div><div class="nav-item"><a href="https://github.com/2xaa/modV/" target="_blank" rel="noopener noreferrer" class="nav-link external">
+  GitHub
+  <svg xmlns="http://www.w3.org/2000/svg" aria-hidden="true" x="0px" y="0px" viewBox="0 0 100 100" width="15" height="15" class="icon outbound"><path fill="currentColor" d="M18.8,85.1h56l0,0c2.2,0,4-1.8,4-4v-32h-8v28h-48v-48h28v-8h-32l0,0c-2.2,0-4,1.8-4,4v56C14.8,83.3,16.6,85.1,18.8,85.1z"></path> <polygon fill="currentColor" points="45.7,48.7 51.3,54.3 77.2,28.5 77.2,37.2 85.2,37.2 85.2,14.9 62.8,14.9 62.8,22.9 71.5,22.9"></polygon></svg></a></div> <!----></nav></div></header> <div class="sidebar-mask"></div> <div class="sidebar"><nav class="nav-links"><div class="nav-item"><a href="/guide/" class="nav-link router-link-active">Guide</a></div><div class="nav-item"><a href="/api/" class="nav-link">API Reference</a></div><div class="nav-item"><a href="https://github.com/2xaa/modV/" target="_blank" rel="noopener noreferrer" class="nav-link external">
+  GitHub
+  <svg xmlns="http://www.w3.org/2000/svg" aria-hidden="true" x="0px" y="0px" viewBox="0 0 100 100" width="15" height="15" class="icon outbound"><path fill="currentColor" d="M18.8,85.1h56l0,0c2.2,0,4-1.8,4-4v-32h-8v28h-48v-48h28v-8h-32l0,0c-2.2,0-4,1.8-4,4v56C14.8,83.3,16.6,85.1,18.8,85.1z"></path> <polygon fill="currentColor" points="45.7,48.7 51.3,54.3 77.2,28.5 77.2,37.2 85.2,37.2 85.2,14.9 62.8,14.9 62.8,22.9 71.5,22.9"></polygon></svg></a></div> <!----></nav>  <ul class="sidebar-links"><li><div class="sidebar-group first"><p class="sidebar-heading open"><span>Guide</span> <!----></p> <ul class="sidebar-group-items"><li><a href="/guide/" class="sidebar-link">Getting Started</a></li><li><a href="/guide/audioRouting.html" class="sidebar-link">Audio Routing</a></li><li><a href="/guide/coreConcepts.html" class="sidebar-link">Core Concepts</a></li><li><a href="/guide/mediaManager.html" class="sidebar-link">Media Manager</a></li><li><a href="/guide/writingA2DModule.html" class="active sidebar-link">Writing a 2D Module</a><ul class="sidebar-sub-headers"><li class="sidebar-sub-header"><a href="/guide/writingA2DModule.html#_1-export-an-object" class="sidebar-link">1. Export an Object</a></li><li class="sidebar-sub-header"><a href="/guide/writingA2DModule.html#_2-set-up-the-meta" class="sidebar-link">2. Set up the Meta</a></li><li class="sidebar-sub-header"><a href="/guide/writingA2DModule.html#_3-draw" class="sidebar-link">3. Draw</a></li><li class="sidebar-sub-header"><a href="/guide/writingA2DModule.html#_4-props" class="sidebar-link">4. Props</a><ul class="sidebar-sub-headers"><li class="sidebar-sub-header"><a href="/guide/writingA2DModule.html#_4-1-size" class="sidebar-link">4.1 size</a></li><li class="sidebar-sub-header"><a href="/guide/writingA2DModule.html#_4-2-color" class="sidebar-link">4.2 color</a></li><li class="sidebar-sub-header"><a href="/guide/writingA2DModule.html#_4-3-slight-edit-to-draw" class="sidebar-link">4.3 slight edit to draw()</a></li></ul></li><li class="sidebar-sub-header"><a href="/guide/writingA2DModule.html#_5-putting-everything-together" class="sidebar-link">5. Putting everything together</a></li></ul></li><li><a href="/guide/writingAShaderModule.html" class="sidebar-link">Writing a Shader Module</a></li><li><a href="/guide/writingAnIsfModule.html" class="sidebar-link">Writing an ISF Module</a></li></ul></div></li></ul> </div> <div class="page"> <div class="content"><h1 id="writing-a-2d-module"><a href="#writing-a-2d-module" aria-hidden="true" class="header-anchor">#</a> Writing a 2D Module</h1> <p>We're going to write a Module which works with the built-in <code>2d</code> Renderer.</p> <p>To follow this guide, we'd recommend having some experience with:</p> <ul><li>JavaScript (ES6+)</li> <li>Canvas2D
+<ul><li>if you don't already have experience with Canvas2D then we recommend the MDN Docs as a reference: <a href="https://developer.mozilla.org/docs/Web/API/CanvasRenderingContext2D" target="_blank" rel="noopener noreferrer">https://developer.mozilla.org/docs/Web/API/CanvasRenderingContext2D<svg xmlns="http://www.w3.org/2000/svg" aria-hidden="true" x="0px" y="0px" viewBox="0 0 100 100" width="15" height="15" class="icon outbound"><path fill="currentColor" d="M18.8,85.1h56l0,0c2.2,0,4-1.8,4-4v-32h-8v28h-48v-48h28v-8h-32l0,0c-2.2,0-4,1.8-4,4v56C14.8,83.3,16.6,85.1,18.8,85.1z"></path> <polygon fill="currentColor" points="45.7,48.7 51.3,54.3 77.2,28.5 77.2,37.2 85.2,37.2 85.2,14.9 62.8,14.9 62.8,22.9 71.5,22.9"></polygon></svg></a></li></ul></li></ul> <h2 id="_1-export-an-object"><a href="#_1-export-an-object" aria-hidden="true" class="header-anchor">#</a> 1. Export an Object</h2> <p>Let's get started by exporting an Object. modV Modules are written out as a plain Object.</p> <div class="language-JavaScript extra-class"><pre class="language-javascript"><code><span class="token keyword">export</span> <span class="token keyword">default</span> <span class="token punctuation">{</span>
+
+<span class="token punctuation">}</span><span class="token punctuation">;</span>
+</code></pre></div><h2 id="_2-set-up-the-meta"><a href="#_2-set-up-the-meta" aria-hidden="true" class="header-anchor">#</a> 2. Set up the Meta</h2> <p>Next up, we'll need to describe our Module with a meta Object block.
+Let's define the Module type as <code>2d</code> and give our Module a name.</p> <div class="language-JavaScript extra-class"><pre class="language-javascript"><code><span class="token keyword">export</span> <span class="token keyword">default</span> <span class="token punctuation">{</span>
+  meta<span class="token punctuation">:</span> <span class="token punctuation">{</span>
+    <span class="token comment">// this tells modV our Module should be used with the 2d renderer</span>
+    type<span class="token punctuation">:</span> <span class="token string">'2d'</span><span class="token punctuation">,</span>
+
+    <span class="token comment">// our Module's name</span>
+    name<span class="token punctuation">:</span> <span class="token string">'Circle'</span><span class="token punctuation">,</span>
+  <span class="token punctuation">}</span><span class="token punctuation">,</span>
+<span class="token punctuation">}</span><span class="token punctuation">;</span>
+</code></pre></div><h2 id="_3-draw"><a href="#_3-draw" aria-hidden="true" class="header-anchor">#</a> 3. Draw</h2> <p>The draw function is where we put our Canvas2D code in <code>2d</code> Modules.</p> <p>The code below will draw a filled red circle in the middle of the screen.</p> <div class="language-JavaScript extra-class"><pre class="language-javascript"><code><span class="token keyword">export</span> <span class="token keyword">default</span> <span class="token punctuation">{</span>
+  <span class="token comment">// meta: { ... },</span>
+
+  <span class="token comment">// using destructuring we can get the width and height of the canvas</span>
+  <span class="token function">draw</span><span class="token punctuation">(</span><span class="token punctuation">{</span> canvas<span class="token punctuation">:</span> <span class="token punctuation">{</span> width<span class="token punctuation">,</span> height <span class="token punctuation">}</span><span class="token punctuation">,</span> context <span class="token punctuation">}</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+    <span class="token keyword">const</span> size <span class="token operator">=</span> <span class="token number">20</span><span class="token punctuation">;</span>
+    <span class="token keyword">const</span> color <span class="token operator">=</span> <span class="token string">'red'</span><span class="token punctuation">;</span>
+
+    context<span class="token punctuation">.</span>fillStyle <span class="token operator">=</span> color<span class="token punctuation">;</span>
+    context<span class="token punctuation">.</span><span class="token function">beginPath</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+    context<span class="token punctuation">.</span><span class="token function">arc</span><span class="token punctuation">(</span>
+      <span class="token comment">// x, y, radius, startAngle, endAngle</span>
+      <span class="token punctuation">(</span>width <span class="token operator">/</span> <span class="token number">2</span><span class="token punctuation">)</span> <span class="token operator">-</span> <span class="token punctuation">(</span>size <span class="token operator">/</span> <span class="token number">2</span><span class="token punctuation">)</span><span class="token punctuation">,</span>
+      <span class="token punctuation">(</span>height <span class="token operator">/</span> <span class="token number">2</span><span class="token punctuation">)</span> <span class="token operator">-</span> <span class="token punctuation">(</span>size <span class="token operator">/</span> <span class="token number">2</span><span class="token punctuation">)</span><span class="token punctuation">,</span>
+      size<span class="token punctuation">,</span>
+      <span class="token number">0</span><span class="token punctuation">,</span>
+      Math<span class="token punctuation">.</span><span class="token constant">PI</span> <span class="token operator">*</span> <span class="token number">2</span><span class="token punctuation">,</span>
+    <span class="token punctuation">)</span><span class="token punctuation">;</span>
+    context<span class="token punctuation">.</span><span class="token function">fill</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+  <span class="token punctuation">}</span><span class="token punctuation">,</span>
+<span class="token punctuation">}</span><span class="token punctuation">;</span>
+</code></pre></div><h2 id="_4-props"><a href="#_4-props" aria-hidden="true" class="header-anchor">#</a> 4. Props</h2> <p>So, a red circle is pretty cool, but how is this audio reactive?
+Well we should define some properties (props for short) so that some Controls are generated, then we can interact with our Module.</p> <p>We've got two variables defined at the moment, <code>size</code> and <code>color</code>. Let's take these out of the draw function and create some props.</p> <h3 id="_4-1-size"><a href="#_4-1-size" aria-hidden="true" class="header-anchor">#</a> 4.1 size</h3> <p><code>size</code> is an integer and we've set it to <code>20</code>. Let's reflect that in our prop definition and also give it some minimum and maximum boundaries.</p> <p>We'll also use <code>abs: true</code> which will keep the value a positive integer. Canvas2D doesn't allow negative radii for <code>.arc()</code>.</p> <div class="language-JavaScript extra-class"><pre class="language-javascript"><code>props<span class="token punctuation">:</span> <span class="token punctuation">{</span>
+  size<span class="token punctuation">:</span> <span class="token punctuation">{</span>
+    type<span class="token punctuation">:</span> <span class="token string">'int'</span><span class="token punctuation">,</span>
+    <span class="token keyword">default</span><span class="token punctuation">:</span> <span class="token number">20</span><span class="token punctuation">,</span>
+    min<span class="token punctuation">:</span> <span class="token number">0</span><span class="token punctuation">,</span>
+    max<span class="token punctuation">:</span> <span class="token number">100</span><span class="token punctuation">,</span>
+    abs<span class="token punctuation">:</span> <span class="token boolean">true</span><span class="token punctuation">,</span>
+  <span class="token punctuation">}</span><span class="token punctuation">,</span>
+<span class="token punctuation">}</span><span class="token punctuation">,</span>
+</code></pre></div><h3 id="_4-2-color"><a href="#_4-2-color" aria-hidden="true" class="header-anchor">#</a> 4.2 color</h3> <p><code>color</code> is a string at the moment, but we can use a special Control type named <code>color</code> to specify this variable will receive a color string. Let's also set the default to <code>red</code>.</p> <div class="language-JavaScript extra-class"><pre class="language-javascript"><code>props<span class="token punctuation">:</span> <span class="token punctuation">{</span>
+  <span class="token comment">// size: { ... },</span>
+  color<span class="token punctuation">:</span> <span class="token punctuation">{</span>
+    type<span class="token punctuation">:</span> <span class="token string">'color'</span><span class="token punctuation">,</span>
+    <span class="token keyword">default</span><span class="token punctuation">:</span> <span class="token string">'red'</span><span class="token punctuation">,</span>
+  <span class="token punctuation">}</span><span class="token punctuation">,</span>
+<span class="token punctuation">}</span><span class="token punctuation">,</span>
+</code></pre></div><h3 id="_4-3-slight-edit-to-draw"><a href="#_4-3-slight-edit-to-draw" aria-hidden="true" class="header-anchor">#</a> 4.3 slight edit to <code>draw()</code></h3> <p>Now we have our props defined, we'll need to edit our draw function.</p> <p>Props are written to the Module's scope, so you can access any prop with <code>this[prop]</code>.</p> <p>In our case it'll be <code>this.size</code> and <code>this.color</code>.</p> <div class="language-JavaScript extra-class"><pre class="language-javascript"><code><span class="token keyword">export</span> <span class="token keyword">default</span> <span class="token punctuation">{</span>
+  <span class="token comment">// meta: { ... },</span>
+  <span class="token comment">// props: { ... },</span>
+
+  <span class="token function">draw</span><span class="token punctuation">(</span><span class="token punctuation">{</span> canvas<span class="token punctuation">:</span> <span class="token punctuation">{</span> width<span class="token punctuation">,</span> height <span class="token punctuation">}</span><span class="token punctuation">,</span> context <span class="token punctuation">}</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+    <span class="token comment">// we can access our props through destructuring</span>
+    <span class="token keyword">const</span> <span class="token punctuation">{</span> color<span class="token punctuation">,</span> size <span class="token punctuation">}</span> <span class="token operator">=</span> <span class="token keyword">this</span><span class="token punctuation">;</span>
+
+    context<span class="token punctuation">.</span>fillStyle <span class="token operator">=</span> color<span class="token punctuation">;</span>
+    context<span class="token punctuation">.</span><span class="token function">beginPath</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+    context<span class="token punctuation">.</span><span class="token function">arc</span><span class="token punctuation">(</span>
+      <span class="token punctuation">(</span>width <span class="token operator">/</span> <span class="token number">2</span><span class="token punctuation">)</span> <span class="token operator">-</span> <span class="token punctuation">(</span>size <span class="token operator">/</span> <span class="token number">2</span><span class="token punctuation">)</span><span class="token punctuation">,</span>
+      <span class="token punctuation">(</span>height <span class="token operator">/</span> <span class="token number">2</span><span class="token punctuation">)</span> <span class="token operator">-</span> <span class="token punctuation">(</span>size <span class="token operator">/</span> <span class="token number">2</span><span class="token punctuation">)</span><span class="token punctuation">,</span>
+      size<span class="token punctuation">,</span>
+      <span class="token number">0</span><span class="token punctuation">,</span>
+      Math<span class="token punctuation">.</span><span class="token constant">PI</span> <span class="token operator">*</span> <span class="token number">2</span><span class="token punctuation">,</span>
+    <span class="token punctuation">)</span><span class="token punctuation">;</span>
+    context<span class="token punctuation">.</span><span class="token function">fill</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+  <span class="token punctuation">}</span><span class="token punctuation">,</span>
+<span class="token punctuation">}</span><span class="token punctuation">;</span>
+</code></pre></div><h2 id="_5-putting-everything-together"><a href="#_5-putting-everything-together" aria-hidden="true" class="header-anchor">#</a> 5. Putting everything together</h2> <p>The following code puts together everything from above:</p> <div class="language-JavaScript extra-class"><pre class="language-javascript"><code><span class="token keyword">export</span> <span class="token keyword">default</span> <span class="token punctuation">{</span>
+  meta<span class="token punctuation">:</span> <span class="token punctuation">{</span>
+    type<span class="token punctuation">:</span> <span class="token string">'2d'</span><span class="token punctuation">,</span>
+    name<span class="token punctuation">:</span> <span class="token string">'Circle'</span><span class="token punctuation">,</span>
+  <span class="token punctuation">}</span><span class="token punctuation">,</span>
+
+  props<span class="token punctuation">:</span> <span class="token punctuation">{</span>
+    size<span class="token punctuation">:</span> <span class="token punctuation">{</span>
+      type<span class="token punctuation">:</span> <span class="token string">'int'</span><span class="token punctuation">,</span>
+      <span class="token keyword">default</span><span class="token punctuation">:</span> <span class="token number">20</span><span class="token punctuation">,</span>
+      min<span class="token punctuation">:</span> <span class="token number">0</span><span class="token punctuation">,</span>
+      max<span class="token punctuation">:</span> <span class="token number">100</span><span class="token punctuation">,</span>
+      abs<span class="token punctuation">:</span> <span class="token boolean">true</span><span class="token punctuation">,</span>
+    <span class="token punctuation">}</span><span class="token punctuation">,</span>
+
+    color<span class="token punctuation">:</span> <span class="token punctuation">{</span>
+      type<span class="token punctuation">:</span> <span class="token string">'color'</span><span class="token punctuation">,</span>
+      <span class="token keyword">default</span><span class="token punctuation">:</span> <span class="token string">'red'</span><span class="token punctuation">,</span>
+    <span class="token punctuation">}</span><span class="token punctuation">,</span>
+  <span class="token punctuation">}</span><span class="token punctuation">,</span>
+
+  <span class="token function">draw</span><span class="token punctuation">(</span><span class="token punctuation">{</span> canvas<span class="token punctuation">:</span> <span class="token punctuation">{</span> width<span class="token punctuation">,</span> height <span class="token punctuation">}</span><span class="token punctuation">,</span> context <span class="token punctuation">}</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+    <span class="token keyword">const</span> <span class="token punctuation">{</span> color<span class="token punctuation">,</span> size <span class="token punctuation">}</span> <span class="token operator">=</span> <span class="token keyword">this</span><span class="token punctuation">;</span>
+
+    context<span class="token punctuation">.</span>fillStyle <span class="token operator">=</span> color<span class="token punctuation">;</span>
+    context<span class="token punctuation">.</span><span class="token function">beginPath</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+    context<span class="token punctuation">.</span><span class="token function">arc</span><span class="token punctuation">(</span>
+      <span class="token punctuation">(</span>width <span class="token operator">/</span> <span class="token number">2</span><span class="token punctuation">)</span> <span class="token operator">-</span> <span class="token punctuation">(</span>size <span class="token operator">/</span> <span class="token number">2</span><span class="token punctuation">)</span><span class="token punctuation">,</span>
+      <span class="token punctuation">(</span>height <span class="token operator">/</span> <span class="token number">2</span><span class="token punctuation">)</span> <span class="token operator">-</span> <span class="token punctuation">(</span>size <span class="token operator">/</span> <span class="token number">2</span><span class="token punctuation">)</span><span class="token punctuation">,</span>
+      size<span class="token punctuation">,</span>
+      <span class="token number">0</span><span class="token punctuation">,</span>
+      Math<span class="token punctuation">.</span><span class="token constant">PI</span> <span class="token operator">*</span> <span class="token number">2</span><span class="token punctuation">,</span>
+    <span class="token punctuation">)</span><span class="token punctuation">;</span>
+    context<span class="token punctuation">.</span><span class="token function">fill</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+  <span class="token punctuation">}</span><span class="token punctuation">,</span>
+<span class="token punctuation">}</span><span class="token punctuation">;</span>
+</code></pre></div><div class="tip custom-block"><p class="custom-block-title">Adding audio reactivity</p> <p>Right clicking on your Module's <code>size</code> control will allow you to attach audio &quot;features&quot; to the size of the circle, making your Module audio reactive.</p></div> <p>So now we have a pretty bare-bones 2d Module, but hopefully that's enough to get you started.</p></div> <div class="page-edit"><!----> <!----></div> <div class="page-nav"><p class="inner"><span class="prev">
+        ←
+        <a href="/guide/mediaManager.html" class="prev">
+          Media Manager
+        </a></span> <span class="next"><a href="/guide/writingAShaderModule.html">
+          Writing a Shader Module
+        </a>
+        →
+      </span></p></div> </div> <!----></div></div>
+    <script src="/assets/js/19.caad2c02.js" defer></script><script src="/assets/js/app.6376aab2.js" defer></script>
+  </body>
+</html>
