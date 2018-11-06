@@ -10,7 +10,7 @@ addons:
     packages:
       - g++-4.8
 install:
-  - yarn global add vuepress sass-loader node-sass
+  - yarn add vuepress sass-loader node-sass
 script:
   - yarn run docs:build
 cache:
