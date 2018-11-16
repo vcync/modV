@@ -117,6 +117,10 @@ export default {
 </script>
 
 <style lang="scss">
+  .home .hero img {
+    max-height: unset;
+  }
+
   .hero-image-container {
     border-radius: 50%;
     overflow: hidden;
