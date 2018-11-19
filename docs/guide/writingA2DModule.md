@@ -11,7 +11,13 @@ To follow this guide, we'd recommend having some experience with:
 * Canvas2D
   * if you don't already have experience with Canvas2D then we recommend the MDN Docs as a reference: [https://developer.mozilla.org/docs/Web/API/CanvasRenderingContext2D](https://developer.mozilla.org/docs/Web/API/CanvasRenderingContext2D)
 
-## 1. Export an Object
+## 1. Create a new file
+
+Save a blank JavaScript file in the [Media Manager's media directory](/guide/mediaManager.html#media-folder). This will need to be placed in a `module` folder within a Project folder. e.g. `[media path]/[project]/module`.
+
+By saving your Module here the Media Manager will compile your code and send it to modV on every file save. If you've placed your Module within a Layer already, you'll need to remove it from the Layer and drag your Module in again from the Gallery to use the updated Module.
+
+## 2. Export an Object
 
 Let's get started by exporting an Object. modV Modules are written out as a plain Object.
 
@@ -21,7 +27,7 @@ export default {
 };
 ```
 
-## 2. Set up the Meta
+## 3. Set up the Meta
 
 Next up, we'll need to describe our Module with a meta Object block.
 Let's define the Module type as `2d` and give our Module a name.
@@ -38,7 +44,7 @@ export default {
 };
 ```
 
-## 3. Draw
+## 4. Draw
 
 The draw function is where we put our Canvas2D code in `2d` Modules.
 
@@ -68,14 +74,14 @@ export default {
 };
 ```
 
-## 4. Props
+## 5. Props
 
 So, a red circle is pretty cool, but how is this audio reactive?
 Well we should define some properties (props for short) so that some Controls are generated, then we can interact with our Module.
 
 We've got two variables defined at the moment, `size` and `color`. Let's take these out of the draw function and create some props.
 
-### 4.1 size
+### 5.1 size
 
 `size` is an integer and we've set it to `20`. Let's reflect that in our prop definition and also give it some minimum and maximum boundaries.
 
@@ -93,7 +99,7 @@ props: {
 },
 ```
 
-### 4.2 color
+### 5.2 color
 
 `color` is a string at the moment, but we can use a special Control type named `color` to specify this variable will receive a color string. Let's also set the default to `red`.
 
@@ -107,7 +113,7 @@ props: {
 },
 ```
 
-### 4.3 slight edit to `draw()`
+### 5.3 slight edit to `draw()`
 
 Now we have our props defined, we'll need to edit our draw function.
 
@@ -138,7 +144,7 @@ export default {
 };
 ```
 
-## 5. Putting everything together
+## 6. Putting everything together
 
 The following code puts together everything from above:
 

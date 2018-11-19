@@ -117,8 +117,10 @@ export default {
 </script>
 
 <style lang="scss">
-  .home .hero img {
-    max-height: unset;
+  @media (max-width: 419px) {
+    .home .hero img {
+      max-height: unset;
+    }
   }
 
   .hero-image-container {
