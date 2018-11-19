@@ -21,51 +21,51 @@ importScripts("https://storage.googleapis.com/workbox-cdn/releases/3.6.3/workbox
 self.__precacheManifest = [
   {
     "url": "404.html",
-    "revision": "f639128a9933c4b12b34c35e292079f9"
+    "revision": "670626e0b278073929d167e59e9334d9"
   },
   {
     "url": "api/contextMenu.html",
-    "revision": "4052fa60f9c85e883e50c14b1ad13181"
+    "revision": "f4c80e873f822c42908042de3d6b5cf3"
   },
   {
     "url": "api/control.html",
-    "revision": "8de2afa8a0bcbf9b2e51cf4688c4d712"
+    "revision": "3e81240d05d4dc8f4c197d5c683274c9"
   },
   {
     "url": "api/doc.html",
-    "revision": "9a5bd36e3d4ff12ba93d292c441cdb8a"
+    "revision": "5fe2cd2364068de71fd128a2bc0dd53d"
   },
   {
     "url": "api/index.html",
-    "revision": "e418c2b806f0ba779a265c2ef6d3e366"
+    "revision": "2ae79e649a9f2625ce4034255da7e6ca"
   },
   {
     "url": "api/mediaManager.html",
-    "revision": "6421fdaa0240247237a0807c299eb7c4"
+    "revision": "a9f38530f14eec1effd09bb2d69d2895"
   },
   {
     "url": "api/mediaManagerClient.html",
-    "revision": "e4e14e6cbd8bbde8d88e79236c8f5c2f"
+    "revision": "b45edad800ee630bf19d83f613cfa80c"
   },
   {
     "url": "api/module.html",
-    "revision": "75945b4531c16405cf17b79164a7efa0"
+    "revision": "e578f306268a76e9c8de9e5f4c95ad22"
   },
   {
     "url": "api/palette.html",
-    "revision": "200b58b4d730c601307e2809af5dc874"
+    "revision": "f5bbdf264087735533b01477a2261505"
   },
   {
     "url": "api/plugin.html",
-    "revision": "63691f6e4fa9f44ee533305426a63608"
+    "revision": "26698eac93d6a6c865838aabeb6315ff"
   },
   {
     "url": "api/renderer.html",
-    "revision": "a6e70ee2b2c76f6852dc0b8802cb4eea"
+    "revision": "e176db4fecf7743cb0fcfe47aa9fbd43"
   },
   {
-    "url": "assets/css/0.styles.42642826.css",
-    "revision": "37cab78b51aa71a9d75865c0534481b9"
+    "url": "assets/css/0.styles.ee0ee223.css",
+    "revision": "5920163cc01b3b18f004675891acbd69"
   },
   {
     "url": "assets/img/search.83621669.svg",
@@ -108,20 +108,20 @@ self.__precacheManifest = [
     "revision": "99ec25da8817789651838af249dd4ba4"
   },
   {
-    "url": "assets/js/19.5d570315.js",
-    "revision": "2849ce6fc7b5f359c55316f8a2646761"
+    "url": "assets/js/19.8c3a5bad.js",
+    "revision": "41be51c38c94837dd5cf9825ff890fa3"
   },
   {
-    "url": "assets/js/2.8c34ec6d.js",
+    "url": "assets/js/2.ad83e3b9.js",
     "revision": "b13e10004fdda1435df4f12e3e7a0d63"
   },
   {
-    "url": "assets/js/20.7d785cd9.js",
-    "revision": "029fc2d3e05afc215eadce275b3d16a2"
+    "url": "assets/js/20.fff80101.js",
+    "revision": "d47a3cc0776f9336ac569a33fee235b0"
   },
   {
-    "url": "assets/js/21.84fb3f4c.js",
-    "revision": "9d5ea3a1869774e0e843e068530a406b"
+    "url": "assets/js/21.73e75da5.js",
+    "revision": "66292e92971c2bcfe05f3fcf8a61b1ec"
   },
   {
     "url": "assets/js/22.50a7bd55.js",
@@ -156,8 +156,8 @@ self.__precacheManifest = [
     "revision": "3c2894820526e7cff75497d47b9319a4"
   },
   {
-    "url": "assets/js/app.11a7534d.js",
-    "revision": "f4af23df4aa723982d0a8d402df3e025"
+    "url": "assets/js/app.dc11572f.js",
+    "revision": "8b216c9490efe8571c35d003d6bcc2b3"
   },
   {
     "url": "captures/1.jpg",
@@ -193,35 +193,35 @@ self.__precacheManifest = [
   },
   {
     "url": "guide/audioRouting.html",
-    "revision": "40e05ee01a9e850c6ea70ebafc977730"
+    "revision": "77018b98faf8545b4cc53130ca540074"
   },
   {
     "url": "guide/coreConcepts.html",
-    "revision": "f44b308bf24004f493ba157d7742b331"
+    "revision": "f4c24c9b7ae575ed04515ec046828188"
   },
   {
     "url": "guide/index.html",
-    "revision": "5374be5d1bbb2ec9b50ca22ed8d65b64"
+    "revision": "25736f74558f24611532b306081204a1"
   },
   {
     "url": "guide/mediaManager.html",
-    "revision": "bdb6f166e4f13d14fba8314d4199e58b"
+    "revision": "2f0760b51cb81654453c778ed8a2df35"
   },
   {
     "url": "guide/writingA2DModule.html",
-    "revision": "f17fb8f2214a50096ba6c4d1c2217c5e"
+    "revision": "20125a1eb6c13b9509ef60de1220dbed"
   },
   {
     "url": "guide/writingAnIsfModule.html",
-    "revision": "af6a70486ad25058415926cddc115383"
+    "revision": "38eb7c7e82df260011d6a7894f422586"
   },
   {
     "url": "guide/writingAShaderModule.html",
-    "revision": "b27d174627798ee6eb8dfc4f1f452946"
+    "revision": "2b1ce78b4e0b4d2bf406c18d3b1ed2a3"
   },
   {
     "url": "index.html",
-    "revision": "f49142b1a6f30b0a7be5852e4436d3fb"
+    "revision": "39ef30db6316889698869f44ed824d1b"
   },
   {
     "url": "modv-logo.svg",
