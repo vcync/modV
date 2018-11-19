@@ -9,7 +9,7 @@ There are a number of ways to do this:
 3. Route audio using software routing. See below for OS specific set-up.
 
 ### Windows
-VB Cable is recommended to route audio to the browser, download that [here](http://vb-audio.pagesperso-orange.fr/Cable/)
+VB Cable is recommended to route audio to the browser, download that [here](http://vb-audio.pagesperso-orange.fr/Cable/).
 
 #### Configuring VB Cable
 
@@ -21,7 +21,13 @@ VB Cable is recommended to route audio to the browser, download that [here](http
     2. *In the Listen tab:* Check `Listen to the device` and select the Playback device to your speakers or headphones in the dropdown menu
 
 ### macOS
-- SoundFlower is recommended to route audio to the browser, download that [here](https://github.com/mattingalls/Soundflower/releases/)
+Soundflower is recommended to route audio to the browser, download that [here](https://github.com/mattingalls/Soundflower/releases/).
+
+* Set the system audio to route through SoundFlower:
+  * 1. Open "Audio MIDI Setup" in `/Applications/Utilities/` 
+    2. Create a new "Multi-Output Device" with the `+` button in the bottom left
+    3. Add "Soundflower 2ch" and any other device you'd like audio to output to (such as "Built-in Output" to listen to the audio)
+    4. Select your new Multi-Output Device in "System Preferences > Sound" to be the output
 
 ### Linux
 
