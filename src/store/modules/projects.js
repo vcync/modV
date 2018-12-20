@@ -79,50 +79,7 @@ const actions = {
       Layer.moduleOrder.forEach(async (moduleName, idx) => {
         const data = presetData.moduleData[moduleName];
         const module = await store.dispatch('modVModules/createActiveModule', {
-          moduleName: data.meta.originalName,
-          moduleTitle: data.meta.name,
-        });
-
-        await store.dispatch('modVModules/updateMeta', {
-          name: moduleName,
-          metaKey: 'alpha',
-          data: data.meta.alpha,
-        });
-
-        await store.dispatch('modVModules/updateMeta', {
-          name: moduleName,
-          metaKey: 'author',
-          data: data.meta.author,
-        });
-
-        await store.dispatch('modVModules/updateMeta', {
-          name: moduleName,
-          metaKey: 'compositeOperation',
-          data: data.meta.compositeOperation,
-        });
-
-        await store.dispatch('modVModules/updateMeta', {
-          name: moduleName,
-          metaKey: 'enabled',
-          data: data.meta.enabled,
-        });
-
-        await store.dispatch('modVModules/updateMeta', {
-          name: moduleName,
-          metaKey: 'alpha',
-          data: data.meta.alpha,
-        });
-
-        await store.dispatch('modVModules/updateMeta', {
-          name: moduleName,
-          metaKey: 'originalName',
-          data: data.meta.originalName,
-        });
-
-        await store.dispatch('modVModules/updateMeta', {
-          name: moduleName,
-          metaKey: 'version',
-          data: data.meta.version,
+          moduleMeta: data.meta,
         });
 
         if ('import' in module) {
