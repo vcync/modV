@@ -79,13 +79,14 @@ const actions = {
 
   async createActiveModule({ commit, state }, {
     moduleName,
+    moduleMeta,
     appendToName,
     skipInit,
     enabled,
     moduleTitle,
   }) {
     return new Promise(async (resolve) => {
-      const existingModuleData = outerState.registry[moduleName];
+      const existingModuleData = outerState.registry[moduleName || moduleMeta.originalName];
       if (!existingModuleData) return;
 
       let newModuleData = cloneDeep(existingModuleData);
@@ -159,6 +160,14 @@ const actions = {
               });
             }
           }
+        });
+      }
+
+      if (moduleMeta) {
+        Object.keys(moduleMeta).forEach((key) => {
+          const value = moduleMeta[key];
+
+          newModuleData.meta[key] = value;
         });
       }
 
