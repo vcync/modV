@@ -1,7 +1,6 @@
 import store from '@/store';
 import { modV } from 'modv';
 import { Menu, MenuItem } from 'nwjs-menu-browser';
-import Meyda from 'meyda';
 
 const featureAssignment = {
   name: 'Feature Assignment',
@@ -77,7 +76,21 @@ const featureAssignment = {
       }));
     }
 
-    Object.keys(Meyda.featureExtractors).forEach((feature) => {
+    [
+      'rms',
+      'zcr',
+      'energy',
+      'spectralCentroid',
+      'spectralFlatness',
+      'spectralSlope',
+      'spectralRolloff',
+      'spectralSpread',
+      'spectralSkewness',
+      'spectralKurtosis',
+      'loudness',
+      'perceptualSpread',
+      'perceptualSharpness',
+    ].forEach((feature) => {
       let shouldBeChecked = false;
 
       if (assignments) {
