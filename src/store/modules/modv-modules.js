@@ -445,7 +445,7 @@ const actions = {
 
     const moduleData = moduleNames.reduce((obj, moduleName) => {
       obj[moduleName] = {};
-      obj[moduleName].values = Object.keys(state.active[moduleName].props)
+      obj[moduleName].values = Object.keys(state.active[moduleName].props || {})
         .reduce((valuesObj, prop) => {
           valuesObj[prop] = state.active[moduleName][prop];
           return valuesObj;
