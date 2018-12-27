@@ -4,14 +4,29 @@
       <div class="columns is-multiline">
 
         <div class="column is-12" v-for="(plugin, pluginName) in plugins">
-          <div>
-            <b-switch
-              :value="plugin.enabled"
-              @input="switchPlugin($event, { pluginName })"
-              class="has-text-light"
+          <div class="columns">
+            <div class="column is-8">
+              <b-switch
+                :value="plugin.enabled"
+                @input="switchPlugin($event, { pluginName })"
+                class="has-text-light"
+              >
+                {{ pluginName }}
+              </b-switch>
+            </div>
+            <div
+              class="column is-4 has-text-right"
+              v-if="'controlPanelComponent' in plugin.plugin && plugin.enabled"
             >
-              {{ pluginName }}
-            </b-switch>
+              <button
+                class="button"
+                @click="collapsable[pluginName] = !collapsable[pluginName]"
+              >
+                {{ collapsable[pluginName] ? '▲' : '▼' }}
+              </button>
+            </div>
+          </div>
+          <b-collapse class="panel" :open.sync="collapsable[pluginName]">
             <div v-if="'controlPanelComponent' in plugin.plugin">
               <component
                 :is="plugin.plugin.controlPanelComponent.name"
@@ -26,7 +41,7 @@
                 </button>
               </div>
             </div>
-          </div>
+          </b-collapse>
         </div>
 
       </div>
@@ -42,6 +57,7 @@
     data() {
       return {
         loading: null,
+        collapsable: {},
       };
     },
     props: {
@@ -55,6 +71,12 @@
       ...mapGetters('plugins', [
         'plugins',
       ]),
+    },
+    created() {
+      this.collapsable = Object.keys(this.plugins).reduce((acc, key) => {
+        acc[key] = false;
+        return acc;
+      }, {});
     },
     methods: {
       ...mapActions('plugins', [
