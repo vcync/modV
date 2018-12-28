@@ -1,4 +1,3 @@
-// import EventEmitter2 from 'eventemitter2';
 import Vue from '@/main';
 
 function generateMidiAssigner(settings) {

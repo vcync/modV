@@ -1,4 +1,3 @@
-import EventEmitter2 from 'eventemitter2';
 import BeatDetektor from '@/extra/beatdetektor';
 import store from '@/store/';
 import Layer from './Layer';
@@ -9,14 +8,12 @@ import PaletteWorker from './palette-worker/palette-worker';
 import MediaManagerClient from './MediaManagerClient';
 import use from './use';
 
-class ModV extends EventEmitter2 {
+class ModV {
   /**
    * [constructor description]
    * @param  {ModVOptions} options
    */
   constructor() {
-    super();
-
     this.assignmentMax = 1;
 
     this.layers = store.getters['layers/allLayers'];
@@ -126,6 +123,8 @@ class ModV extends EventEmitter2 {
   }
 
   loop(δ) {
+    this.mainRaf = requestAnimationFrame(this.loop.bind(this));
+
     this.delta = δ;
     let features = [];
 
@@ -162,11 +161,7 @@ class ModV extends EventEmitter2 {
 
     store.dispatch('modVModules/syncQueues');
 
-    draw(δ).then(() => {
-      this.mainRaf = requestAnimationFrame(this.loop.bind(this));
-    }).then(() => {
-      this.emit('tick', δ);
-    });
+    draw(δ);
   }
 
   use(type, extention) { //eslint-disable-line

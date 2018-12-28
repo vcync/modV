@@ -111,26 +111,26 @@ const mutations = {
     Vue.delete(state.palettes, id);
   },
   updatePalette(state, { id, props }) {
-    Object.keys(props).forEach(key => Vue.set(state.palettes[id], key, props[key]));
+    state.palettes[id] = Object.assign({}, state.palettes[id], props);
   },
   updateColors(state, { id, colors }) {
     if (id in state.palettes) {
-      Vue.set(state.palettes[id], 'colors', colors);
+      state.palettes[id].colors = colors;
     }
   },
   updateDuration(state, { id, duration }) {
     if (id in state.palettes) {
-      Vue.set(state.palettes[id], 'duration', duration);
+      state.palettes[id].duration = duration;
     }
   },
   updateUseBpm(state, { id, useBpm }) {
     if (id in state.palettes) {
-      Vue.set(state.palettes[id], 'useBpm', useBpm);
+      state.palettes[id].useBpm = useBpm;
     }
   },
   updateBpmDivision(state, { id, bpmDivision }) {
     if (id in state.palettes) {
-      Vue.set(state.palettes[id], 'bpmDivision', bpmDivision);
+      state.palettes[id].bpmDivision = bpmDivision;
     }
   },
 };
