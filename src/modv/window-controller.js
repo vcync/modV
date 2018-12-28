@@ -1,5 +1,4 @@
 import store from '@/store';
-import { modV } from '@/modv';
 import uuidv4 from 'uuid/v4';
 
 class WindowController {
@@ -91,9 +90,15 @@ class WindowController {
 
     let resizeQueue = {};
     let lastArea = 0;
+    let resizeRaf;
+
     // Roughly attach to the main RAF loop for smoother resizing
-    modV.on('tick', () => {
-      if (lastArea < 1) return;
+    function resize() {
+      if (lastArea < 1) {
+        cancelAnimationFrame(resizeRaf);
+        return;
+      }
+      resizeRaf = requestAnimationFrame(resize.bind(this));
 
       if ((resizeQueue.width * resizeQueue.height) + resizeQueue.dpr !== lastArea) {
         lastArea = (resizeQueue.width * resizeQueue.height) + resizeQueue.dpr;
@@ -115,7 +120,9 @@ class WindowController {
       this.canvas.style.height = `${store.state.size.height}px`;
 
       lastArea = 0;
-    });
+    }
+
+    resizeRaf = requestAnimationFrame(resize.bind(this));
 
     this.resize = (width, height, dpr = 1, emit = true) => {
       resizeQueue = {
@@ -125,6 +132,7 @@ class WindowController {
         emit,
       };
       lastArea = 1;
+      resizeRaf = requestAnimationFrame(resize.bind(this));
     };
 
     windowRef.addEventListener('resize', () => {

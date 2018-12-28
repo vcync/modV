@@ -1,4 +1,3 @@
-import EventEmitter2 from 'eventemitter2';
 import store from '@/store';
 
 const PaletteWorkerScript = require('worker-loader!./index.js'); //eslint-disable-line
@@ -6,10 +5,8 @@ const PaletteWorkerScript = require('worker-loader!./index.js'); //eslint-disabl
 /**
  * PaletteWorker
  */
-class PaletteWorker extends EventEmitter2 {
+class PaletteWorker {
   constructor() {
-    super();
-
     /**
      * @private
      * @type {Worker}
@@ -22,15 +19,10 @@ class PaletteWorker extends EventEmitter2 {
    * @protected
    * @param {MessageEvent} evt
    */
-  messageHandler(evt) {
+  messageHandler(evt) { //eslint-disable-line
     switch (evt.data.message) {
       default:
       case undefined:
-        break;
-      case 'palette-create':
-        this.emit(PaletteWorker.EventType.PALETTE_ADDED, {
-          id: evt.data.paletteId,
-        });
         break;
       case 'palette-update':
         store.dispatch('palettes/stepUpdate', {
@@ -86,7 +78,6 @@ class PaletteWorker extends EventEmitter2 {
 
 /** @enum {string} */
 PaletteWorker.EventType = {
-  PALETTE_ADDED: 'palette_added',
   PALETTE_UPDATED: 'palette_updated',
 };
 
