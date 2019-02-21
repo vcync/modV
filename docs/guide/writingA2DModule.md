@@ -13,13 +13,13 @@ To follow this guide, we'd recommend having some experience with:
 
 ## 1. Create a new file
 
-Save a blank JavaScript file in the [Media Manager's media directory](/guide/mediaManager.html#media-folder). This will need to be placed in a `module` folder within a Project folder. e.g. `[media path]/[project]/module`.
+Save a blank JavaScript file in the [Media Manager's media directory](/guide/mediaManager.html#media-folder). Place your file in a `module` folder within a Project folder. e.g. `[media path]/[project]/module`.
 
-By saving your Module here the Media Manager will compile your code and send it to modV on every file save. If you've placed your Module within a Layer already, you'll need to remove it from the Layer and drag your Module in again from the Gallery to use the updated Module.
+By saving your Module here the Media Manager will compile your code and send it to modV on every file save. If your Module is within a Layer already, you'll need to remove it from said Layer and drag your Module in again from the Gallery to use the updated Module.
 
 ## 2. Export an Object
 
-Let's get started by exporting an Object. modV Modules are written out as a plain Object.
+Let's get started by exporting an Object.
 
 ```JavaScript
 export default {
@@ -35,7 +35,7 @@ Let's define the Module type as `2d` and give our Module a name.
 ```JavaScript
 export default {
   meta: {
-    // this tells modV our Module should be used with the 2d renderer
+    // this tells modV our Module should use the 2d renderer
     type: '2d',
 
     // our Module's name
@@ -77,13 +77,13 @@ export default {
 ## 5. Props
 
 So, a red circle is pretty cool, but how is this audio reactive?
-Well we should define some properties (props for short) so that some Controls are generated, then we can interact with our Module.
+Well, we should define some props (properties) to generate some Controls.
 
 We've got two variables defined at the moment, `size` and `color`. Let's take these out of the draw function and create some props.
 
 ### 5.1 size
 
-`size` is an integer and we've set it to `20`. Let's reflect that in our prop definition and also give it some minimum and maximum boundaries.
+`size` is an integer and we've set it to `20`. Let's reflect that in our prop definition. We'll also give it some minimum and maximum boundaries.
 
 We'll also use `abs: true` which will keep the value a positive integer. Canvas2D doesn't allow negative radii for `.arc()`.
 
@@ -101,7 +101,7 @@ props: {
 
 ### 5.2 color
 
-`color` is a string at the moment, but we can use a special Control type named `color` to specify this variable will receive a color string. Let's also set the default to `red`.
+`color` is a string at the moment, but we can use a specific Control type named `color` to specify this variable will receive a color string. Let's also set the default to `red`.
 
 ```JavaScript
 props: {
@@ -117,7 +117,7 @@ props: {
 
 Now we have our props defined, we'll need to edit our draw function.
 
-Props are written to the Module's scope, so you can access any prop with `this[prop]`.
+Props get written to the Module's scope, so you can access any prop with `this[prop]`.
 
 In our case it'll be `this.size` and `this.color`.
 
@@ -188,7 +188,7 @@ export default {
 ```
 
 :::tip Adding audio reactivity
-Right clicking on your Module's `size` control will allow you to attach audio "features" to the size of the circle, making your Module audio reactive.
+Right click on your Module's `size` control - through the menu, you can attach audio "features" to the size of the circle. This makes any Module audio reactive without baking in features.
 :::
 
-So now we have a pretty bare-bones 2d Module, but hopefully that's enough to get you started.
+So now we have a pretty bare-bones 2d Module, but that's enough to get you started.
