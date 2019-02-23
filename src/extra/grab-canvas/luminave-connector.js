@@ -110,7 +110,7 @@ export default class LuminaveConnector {
 
   /**
    * Send data to WebSocket if connection is established
-   * @param {Array} data 
+   * @param {Object} data
    */
   send(data) {
     // Connection is established
@@ -136,6 +136,8 @@ export default class LuminaveConnector {
     // Get the average colors for each area based on selectionX + selectionY
     const colors = this.getAverageColors();
 
+    const { selectionX, selectionY } = this;
+
     // Create the message for luminave
     const dmxData = {
       _type: 'modV',
@@ -145,6 +147,9 @@ export default class LuminaveConnector {
 
       // Specific colors grabbed from canvas
       colors,
+
+      selectionX,
+      selectionY,
     };
 
     this.send(dmxData);
