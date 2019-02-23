@@ -18,7 +18,7 @@
   .slimui {
     // In the list of modules:
     .module-list {
-      
+
       .options {
         // Remove opacity & blending
         .opacity-group,
@@ -28,10 +28,10 @@
 
         // Remove the "enabled" label
         .enable-group {
-          label {
+          .field-label {
             display: none;
           }
-          label.checkbox {
+          .field-body {
             display: inline-flex;
           }
         }

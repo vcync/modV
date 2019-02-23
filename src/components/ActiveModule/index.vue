@@ -15,6 +15,7 @@
             <div class="columns is-gapless is-mobile">
               <div class="column options">
                 <b-field
+                  class="enable-group"
                 v-context-menu="checkboxMenuOptions"
                   horizontal
                   :for="enabledCheckboxId"
@@ -26,31 +27,38 @@
                     :id="enabledCheckboxId"
                   />
                 </b-field>
-                <opacity-control :module-name="moduleName" v-context-menu="opacityMenuOptions" />
-                <b-field
-                  horizontal
-                  label="Blending"
-                >
-                  <b-select class="dropdown" size="is-small" v-model="compositeOperation">
-                    <option
-                      :disabled="true"
-                    >{{ blendModes.label }}</option>
-                    <option
-                      v-for="item in blendModes.children"
-                      :key="item.value"
-                      :value="item.value"
-                    >{{ item.label }}</option>
-                    <hr class="dropdown-divider">
-                    <option
-                      :disabled="true"
-                    >{{ compositeOperations.label }}</option>
-                    <option
-                      v-for="item in compositeOperations.children"
-                      :key="item.value"
-                      :value="item.value"
-                    >{{ item.label }}</option>
-                  </b-select>
-                </b-field>
+
+                <div class="opacity-group">
+                  <opacity-control :module-name="moduleName" v-context-menu="opacityMenuOptions" />
+                </div>
+
+                <div class="blending-group">
+                  <b-field
+                    horizontal
+                    label="Blending"
+                  >
+                    <b-select class="dropdown" size="is-small" v-model="compositeOperation">
+                      <option
+                        :disabled="true"
+                      >{{ blendModes.label }}</option>
+                      <option
+                        v-for="item in blendModes.children"
+                        :key="item.value"
+                        :value="item.value"
+                      >{{ item.label }}</option>
+                      <hr class="dropdown-divider">
+                      <option
+                        :disabled="true"
+                      >{{ compositeOperations.label }}</option>
+                      <option
+                        v-for="item in compositeOperations.children"
+                        :key="item.value"
+                        :value="item.value"
+                      >{{ item.label }}</option>
+                    </b-select>
+                  </b-field>
+                </div>
+
               </div>
             </div>
           </div>
