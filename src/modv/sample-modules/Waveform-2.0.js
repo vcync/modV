@@ -16,7 +16,7 @@ export default {
       min: 1,
       max: 30,
       default: 1,
-      strict: true,
+      abs: true,
     },
 
     maxHeight: {
