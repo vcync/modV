@@ -22,11 +22,16 @@ const theWorker = new Worker();
 // Small version of the output canvas
 const smallCanvas = document.createElement('canvas');
 const smallContext = smallCanvas.getContext('2d');
+const smallCanvasWidth = 200;
+const smallCanvasHeight = 200;
 
 // Add the canvas to modV for testing purposes :D
 smallCanvas.classList.add('is-hidden');
-smallCanvas.style = 'position: absolute; top: 0px; right: 0px; width: 80px; height: 80px; z-index: 100000; background: #000;';
+smallCanvas.style = 'position: absolute; top: 0px; right: 0px; width: 200px; height: 200px; z-index: 100000; background: #000;';
 document.body.appendChild(smallCanvas);
+
+let selectionX = 0;
+let selectionY = 0;
 
 // Is the plugin active?
 let isActive = true;
@@ -93,8 +98,8 @@ const grabCanvas = {
     isActive = true;
 
     // Set the size of the smallCanvas
-    smallCanvas.width = 112;
-    smallCanvas.height = 112;
+    smallCanvas.width = smallCanvasWidth;
+    smallCanvas.height = smallCanvasHeight;
 
     store.subscribe((mutation) => {
       switch (mutation.type) {
@@ -106,6 +111,9 @@ const grabCanvas = {
           break;
 
         case 'grabCanvas/setSelection':
+          selectionX = mutation.payload.selectionX || store.state.grabCanvas.selectionX;
+          selectionY = mutation.payload.selectionY || store.state.grabCanvas.selectionY;
+
           theWorker.postMessage({
             type: 'setupCanvas',
             payload: {
@@ -161,6 +169,9 @@ const grabCanvas = {
     // Create a small version of the canvas
     smallContext.drawImage(canvas, 0, 0, smallCanvas.width, smallCanvas.height);
 
+    // Draw the areas in which the selectionX & selectionY is seperating the smallCanvas
+    this.drawAreas();
+
     // Get the pixels from the small canvas
     const data =
       smallContext.getImageData(0, 0, smallCanvas.width, smallCanvas.height).data.buffer;
@@ -172,6 +183,32 @@ const grabCanvas = {
     }, [
       data,
     ]);
+  },
+
+  /**
+   * Draw the areas that are used to calculate the average color per area into the smallCanvas
+   */
+  drawAreas() {
+    // Size of each area
+    const areaSize = Math.floor((smallCanvas.width / selectionX)
+      + (smallCanvas.height / selectionY));
+    const areaWidth = Math.floor(areaSize / 2);
+    const areaHeight = Math.floor(areaSize / 2);
+
+    // selectionX = how many areas we grab on the x axis
+    for (let x = 0; x < selectionX; x++) { //eslint-disable-line
+
+      // selectionY = how many areas we grab on the y axis
+      for (let y = 0; y < selectionY; y++) { //eslint-disable-line
+
+        // Coordinates of the area
+        const pointX = (x * Math.floor(smallCanvas.width / selectionX));
+        const pointY = (y * Math.floor(smallCanvas.height / selectionY));
+
+        smallContext.strokeStyle = 'rgba(255, 255, 255, 0.5)';
+        smallContext.strokeRect(pointX + 1, pointY + 1, areaWidth, areaHeight);
+      }
+    }
   },
 };
 

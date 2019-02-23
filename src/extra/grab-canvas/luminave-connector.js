@@ -110,7 +110,7 @@ export default class LuminaveConnector {
 
   /**
    * Send data to WebSocket if connection is established
-   * @param {Array} data 
+   * @param {Object} data
    */
   send(data) {
     // Connection is established
@@ -207,11 +207,8 @@ export default class LuminaveConnector {
    * @return{number[]} red, green, blue, red, green, blue...
    */
   getAverageColors() {
-    // Amount of areas
-    const areaAmount = this.selectionX * this.selectionY;
-
     // Size of each area
-    const areaSize = Math.floor((this.width / areaAmount) + (this.height / areaAmount));
+    const areaSize = Math.floor((this.width / this.selectionX) + (this.height / this.selectionY));
     const areaWidth = Math.floor(areaSize / 2);
     const areaHeight = Math.floor(areaSize / 2);
 
