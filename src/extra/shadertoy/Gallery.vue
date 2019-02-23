@@ -56,14 +56,41 @@
           });
       },
       makeModule(result) {
-        const { code, inputs } = result.renderpass[0];
+        const { inputs } = result.renderpass[0];
+        let { code } = result.renderpass[0];
         let flipY = false;
 
         if (inputs.length) {
           flipY = inputs[0].sampler.vflip === 'true';
         }
 
-        console.log(result, flipY);
+        const props = {};
+
+        // Check if iMouse exists in the shader String
+        if (code.indexOf('iMouse') > -1) {
+          // Add uniforms to the shader
+          code = `uniform float mX;\nuniform float mY;\nuniform float mZ;\nuniform float mW;\n${code}`;
+
+          // Find where mainImage is defined in the shader
+          const mainImageMatch = /void(\s*?)mainImage((.|\n|\r)*?){/g.exec(code);
+
+          // Calculate the injection position in the String
+          const mainImagePosition = mainImageMatch.index + mainImageMatch[0].length;
+
+          // Inject the iMouse replacement assignment
+          code = `${code.substr(0, mainImagePosition)}\nvec4 iMouse = vec4(mX * iResolution.x, mY * iResolution.y, mZ * iResolution.x, mW * iResolution.y);\n${code.substr(mainImagePosition)}`;
+
+          // Add props to the module as we know there's iMouse being used for input
+          const mouseInputs = ['mX', 'mY', 'mZ', 'mW'];
+
+          mouseInputs.forEach((input) => {
+            props[input] = {
+              type: 'float',
+              default: 0.5,
+              label: `Mouse ${input.slice(1, 2)}`,
+            };
+          });
+        }
 
         modV.register({
           meta: {
@@ -76,6 +103,7 @@
             flipY,
           },
           fragmentShader: code,
+          props,
         });
       },
     },
