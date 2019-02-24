@@ -204,7 +204,7 @@ const actions = {
     });
   },
 
-  async removeActiveModule({ state, commit }, { moduleName }) {
+  async removeActiveModule({ state, commit }, { moduleName, skipLayerUpdate }) {
     store.commit('controlPanels/unpinPanel', { moduleName });
 
     if (state.focusedModule === moduleName) {
@@ -241,15 +241,17 @@ const actions = {
     // }
 
     /* Remove active module from Layers */
-    const layer = store.getters['layers/layerFromModuleName']({ moduleName });
-    if (layer) {
-      const moduleOrder = layer.layer.moduleOrder;
-      moduleOrder.splice(moduleOrder.indexOf(moduleName), 1);
+    if (!skipLayerUpdate) {
+      const layer = store.getters['layers/layerFromModuleName']({ moduleName });
+      if (layer) {
+        const moduleOrder = layer.layer.moduleOrder;
+        moduleOrder.splice(moduleOrder.indexOf(moduleName), 1);
 
-      await store.dispatch('layers/updateModuleOrder', {
-        layerIndex: layer.layerIndex,
-        order: moduleOrder,
-      });
+        await store.dispatch('layers/updateModuleOrder', {
+          layerIndex: layer.layerIndex,
+          order: moduleOrder,
+        });
+      }
     }
 
     commit('removeActiveModule', { moduleName });

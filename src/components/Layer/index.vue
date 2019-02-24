@@ -216,7 +216,7 @@
       focusLayer() {
         if (this.focusedLayerIndex === this.LayerIndex) return;
         this.setLayerFocus({
-          LayerIndex: this.LayerIndex,
+          layerIndex: this.LayerIndex,
         });
       },
       clickToggleLock() {

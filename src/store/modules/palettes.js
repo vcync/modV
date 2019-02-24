@@ -27,7 +27,7 @@ const actions = {
       resolve(state.palettes[id]);
     });
   },
-  removePalette({ commit }, { id }) {
+  async removePalette({ commit }, { id }) {
     modV.workers.palette.removePalette(id);
     commit('removePalette', { id });
   },

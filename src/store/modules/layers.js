@@ -48,7 +48,7 @@ const actions = {
       layer.resize({ width, height, dpr });
       commit('addLayer', { layer });
       commit('setLayerFocus', {
-        LayerIndex: state.layers.length - 1,
+        layerIndex: state.layers.length - 1,
       });
 
       resolve({
@@ -66,7 +66,7 @@ const actions = {
       );
     });
     commit('removeLayer', { layerIndex: state.focusedLayer });
-    if (state.focusedLayer > 0) commit('setLayerFocus', { LayerIndex: state.focusedLayer - 1 });
+    if (state.focusedLayer > 0) commit('setLayerFocus', { layerIndex: state.focusedLayer - 1 });
   },
   toggleLocked({ commit, state }, { layerIndex }) {
     const Layer = state.layers[layerIndex];
@@ -107,17 +107,19 @@ const actions = {
       Layer.resize({ width, height, dpr });
     });
   },
-  removeAllLayers({ commit, state }) {
-    state.layers.forEach((Layer, layerIndex) => {
-      Layer.moduleOrder.forEach((moduleName) => {
-        store.dispatch(
-          'modVModules/removeActiveModule',
-          { moduleName },
-        );
-      });
+  async removeAllLayers({ commit, state }) {
+    const layerPromises = state.layers.map(async (Layer) => {
+      const modulePromises = Layer.moduleOrder.map(moduleName => store.dispatch('modVModules/removeActiveModule', {
+        moduleName,
+        skipLayerUpdate: true,
+      }));
+      await Promise.all(modulePromises);
 
-      commit('removeLayer', { layerIndex });
+      // Always remove the first in the Array as we're splicing away the 0th on each iteration
+      commit('removeLayer', { layerIndex: 0 });
     });
+
+    await Promise.all(layerPromises);
   },
   presetData({ state }) {
     return state.layers.map((Layer) => {
@@ -143,7 +145,7 @@ const actions = {
       state.layers.map(layer => layer.name),
     );
 
-    commit('setLayerName', { LayerIndex: layerIndex, name: layerName });
+    commit('setLayerName', { layerIndex, name: layerName });
   },
 };
 
@@ -174,11 +176,11 @@ const mutations = {
   removeLayer(state, { layerIndex }) {
     state.layers.splice(layerIndex, 1);
   },
-  setLayerName(state, { LayerIndex, name }) {
-    state.layers[LayerIndex].name = name;
+  setLayerName(state, { layerIndex, name }) {
+    state.layers[layerIndex].name = name;
   },
-  setLayerFocus(state, { LayerIndex }) {
-    Vue.set(state, 'focusedLayer', LayerIndex);
+  setLayerFocus(state, { layerIndex }) {
+    Vue.set(state, 'focusedLayer', layerIndex);
   },
   lock(state, { layerIndex }) {
     const Layer = state.layers[layerIndex];
