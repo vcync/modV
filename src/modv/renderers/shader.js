@@ -31,7 +31,6 @@ function render({ Module, canvas, context, pipeline }) {
     iChannel1: modVCanvasTexture,
     iChannel2: modVCanvasTexture,
     iChannel3: modVCanvasTexture,
-    iMouse: [0, 0, 0, 0],
   };
 
   if (Module.props) {
@@ -107,7 +106,6 @@ function makeProgram(Module) {
         viewportHeight,
         pixelRatio,
       ],
-      iMouse: regl.prop('iMouse'),
       iChannel0: regl.prop('iChannel0'),
       iChannel1: regl.prop('iChannel1'),
       iChannel2: regl.prop('iChannel2'),
