@@ -73,7 +73,7 @@ const actions = {
       store.commit('layers/setInheritFrom', { layerIndex, inheritFrom: Layer.inheritFrom });
       store.commit('layers/setLocked', { layerIndex, locked: Layer.locked });
       // store.commit('layers/setModuleOrder', { layerIndex, moduleOrder: Layer.moduleOrder });
-      await store.dispatch('layers/setLayerName', { layerIndex, name: Layer.name });
+      store.commit('layers/setLayerName', { layerIndex, name: Layer.name });
       store.commit('layers/setPipeline', { layerIndex, pipeline: Layer.pipeline });
 
       Layer.moduleOrder.forEach(async (moduleName, idx) => {
@@ -102,6 +102,10 @@ const actions = {
           position: idx,
         });
       });
+
+      if ('paletteData' in presetData) {
+        await store.dispatch('palettes/loadPreset', presetData);
+      }
 
       if ('pluginData' in presetData) {
         const pluginData = presetData.pluginData;
