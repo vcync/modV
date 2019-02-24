@@ -1,5 +1,6 @@
 import Vue from 'vue';
 import { modV } from '@/modv';
+import store from '../index';
 
 const state = {
   palettes: {},
@@ -12,9 +13,20 @@ const getters = {
 
 // actions
 const actions = {
-  createPalette({ commit, state }, { id, colors, duration, moduleName, returnFormat, variable }) {
+  createPalette({ commit, state }, {
+    override,
+    id,
+    colors,
+    duration,
+    moduleName,
+    returnFormat,
+    variable,
+  }) {
     return new Promise((resolve) => {
-      if (id in state.palettes === true) resolve(state.palettes[id]);
+      if (id in state.palettes === true && !override) {
+        resolve(state.palettes[id]);
+        return;
+      }
 
       let colorsPassed = [];
       let durationPassed = 300;
@@ -88,6 +100,13 @@ const actions = {
     });
 
     return data;
+  },
+  async loadPreset({ actions }, { paletteData }) {
+    Object.keys(paletteData).forEach(async (id) => {
+      const palette = paletteData[id];
+
+      await store.dispatch('palettes/createPalette', { id, override: true, ...palette });
+    });
   },
 };
 
