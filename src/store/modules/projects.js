@@ -103,6 +103,10 @@ const actions = {
         });
       });
 
+      if ('paletteData' in presetData) {
+        await store.dispatch('palettes/loadPreset', presetData);
+      }
+
       if ('pluginData' in presetData) {
         const pluginData = presetData.pluginData;
         const currentPlugins = store.state.plugins.plugins;
