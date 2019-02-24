@@ -108,11 +108,15 @@ const actions = {
     });
   },
   async removeAllLayers({ commit, state }) {
-    const layerPromises = state.layers.map(async (Layer, layerIndex) => {
-      const modulePromises = Layer.moduleOrder.map(moduleName => store.dispatch('modVModules/removeActiveModule', { moduleName }));
+    const layerPromises = state.layers.map(async (Layer) => {
+      const modulePromises = Layer.moduleOrder.map(moduleName => store.dispatch('modVModules/removeActiveModule', {
+        moduleName,
+        skipLayerUpdate: true,
+      }));
       await Promise.all(modulePromises);
 
-      commit('removeLayer', { layerIndex });
+      // Always remove the first in the Array as we're splicing away the 0th on each iteration
+      commit('removeLayer', { layerIndex: 0 });
     });
 
     await Promise.all(layerPromises);
