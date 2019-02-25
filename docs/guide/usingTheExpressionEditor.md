@@ -2,7 +2,7 @@
 sidebarDepth: 2
 ---
 
-# Using the Expression Edtior
+# Using the Expression Editor
 
 This guide explains what the Experience Editor is and how to use it.
 
