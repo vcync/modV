@@ -21,6 +21,7 @@ module.exports = {
             'audioRouting',
             'coreConcepts',
             'mediaManager',
+            'usingTheExpressionEditor',
             'writingA2DModule',
             'writingAShaderModule',
             'writingAnIsfModule'
