@@ -10,7 +10,10 @@ function render({ Module, canvas, context, pipeline }) {
     Module.inputs.forEach((input) => {
       if (input.TYPE === 'image') {
         if (input.NAME in Module.props) {
-          Module.renderer.setValue(input.NAME, Module[input.NAME].texture || canvas);
+          Module.renderer.setValue(
+            input.NAME,
+            (Module[input.NAME] && Module[input.NAME].texture) || canvas,
+          );
         } else {
           Module.renderer.setValue(input.NAME, canvas);
         }
