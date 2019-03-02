@@ -63,7 +63,7 @@ Object.values(builtInStatusBarItems).forEach(value => modV.use('statusBar', valu
 Object.values(builtInRenderers).forEach(value => modV.use('renderer', value));
 
 /* eslint-disable no-new */
-export default window.modVVue = new Vue({
+export default (window.modVVue = new Vue({
   el: '#app',
   template: '<App/>',
   components: { App },
@@ -96,6 +96,7 @@ export default window.modVVue = new Vue({
       'OpticalFlowDistort-2.0',
       'MattiasCRT-2.0',
       'Doughnut_Generator',
+      'Media',
     ];
 
     modules.forEach((fileName) => {
@@ -156,22 +157,24 @@ export default window.modVVue = new Vue({
     ];
 
     isfSamples.forEach((fileName) => {
-      import(`@/modv/sample-modules/isf-samples/${fileName}`).then((fragmentShader) => {
-        modV.register({
-          meta: {
-            name: fileName,
-            author: '',
-            version: '1.0.0',
-            type: 'isf',
-          },
-          fragmentShader,
-          vertexShader: 'void main() {isf_vertShaderInit();}',
+      import(`@/modv/sample-modules/isf-samples/${fileName}`)
+        .then((fragmentShader) => {
+          modV.register({
+            meta: {
+              name: fileName,
+              author: '',
+              version: '1.0.0',
+              type: 'isf',
+            },
+            fragmentShader,
+            vertexShader: 'void main() {isf_vertShaderInit();}',
+          });
+        })
+        .catch((e) => {
+          throw new Error(e);
         });
-      }).catch((e) => {
-        throw new Error(e);
-      });
     });
 
     attachResizeHandles();
   },
-});
+}));
