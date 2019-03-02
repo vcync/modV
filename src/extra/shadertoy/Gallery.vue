@@ -95,7 +95,9 @@
       },
 
       async search() {
-        const { keyword, page, perPage } = this;
+        const { keyword, perPage } = this;
+        let { page } = this;
+        page -= 1;
         this.loading = true;
         this.progress = 0;
         this.results = [];
