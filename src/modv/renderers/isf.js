@@ -10,7 +10,7 @@ function render({ Module, canvas, context, pipeline }) {
     Module.inputs.forEach((input) => {
       if (input.TYPE === 'image') {
         if (input.NAME in Module.props) {
-          Module.renderer.setValue(input.NAME, Module[input.NAME] || canvas);
+          Module.renderer.setValue(input.NAME, Module[input.NAME].texture || canvas);
         } else {
           Module.renderer.setValue(input.NAME, canvas);
         }
@@ -73,7 +73,7 @@ function setup(Module) {
         addProp(input.NAME, {
           type: 'float',
           label: input.LABEL || input.NAME,
-          default: (typeof input.DEFAULT !== 'undefined') ? input.DEFAULT : 0.0,
+          default: typeof input.DEFAULT !== 'undefined' ? input.DEFAULT : 0.0,
           min: input.MIN,
           max: input.MAX,
           step: 0.01,
@@ -92,13 +92,11 @@ function setup(Module) {
         addProp(input.NAME, {
           type: 'enum',
           label: input.NAME,
-          enum: input.VALUES
-            .map((value, idx) => ({
-              label: input.LABELS[idx],
-              value,
-              selected: (value === input.DEFAULT),
-            }),
-            ),
+          enum: input.VALUES.map((value, idx) => ({
+            label: input.LABELS[idx],
+            value,
+            selected: value === input.DEFAULT,
+          })),
         });
         break;
 

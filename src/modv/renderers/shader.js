@@ -35,7 +35,11 @@ function render({ Module, canvas, context, pipeline }) {
 
   if (Module.props) {
     Object.keys(Module.props).forEach((key) => {
-      uniforms[key] = Module[key];
+      if (Module.props[key].type === 'texture') {
+        uniforms[key] = Module[key].texture;
+      } else {
+        uniforms[key] = Module[key];
+      }
     });
   }
 
@@ -86,10 +90,7 @@ function makeProgram(Module) {
     if (!frag) frag = webgl.defaultShader.f;
 
     if (frag.search('gl_FragColor') < 0) {
-      frag = webgl.defaultShader.fWrap.replace(
-        /(%MAIN_IMAGE_INJECT%)/,
-        frag,
-      );
+      frag = webgl.defaultShader.fWrap.replace(/(%MAIN_IMAGE_INJECT%)/, frag);
 
       vert = webgl.defaultShader.v300;
     }
@@ -128,16 +129,8 @@ function makeProgram(Module) {
         frag,
 
         attributes: {
-          position: [
-            -2, 2,
-            0, -2,
-            2, 2,
-          ],
-          a_position: [
-            -2, 2,
-            0, -2,
-            2, 2,
-          ],
+          position: [-2, 2, 0, -2, 2, 2],
+          a_position: [-2, 2, 0, -2, 2, 2],
         },
 
         uniforms,
@@ -165,7 +158,4 @@ async function setup(Module) {
   }
 }
 
-export {
-  setup,
-  render,
-};
+export { setup, render };

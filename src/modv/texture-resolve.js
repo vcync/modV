@@ -1,24 +1,33 @@
 import store from '@/store';
 
 export default function textureResolve(sourceDef) {
-  const { source, sourceData } = sourceDef;
+  return new Promise((resolve) => {
+    const { source, sourceData } = sourceDef;
 
-  switch (source) {
-    case 'layer': {
-      if (sourceData < 0) return false;
-      return store.state.layers.layers[sourceData].canvas;
-    }
+    switch (source) {
+      case 'layer': {
+        if (sourceData < 0) resolve(false);
+        resolve({ ...sourceDef, texture: store.state.layers.layers[sourceData].canvas });
+        break;
+      }
 
-    case 'image': {
-      return false;
-    }
+      case 'image': {
+        const image = new Image();
+        image.onload = () => resolve({ ...sourceDef, texture: image });
+        image.crossOrigin = 'anonymous';
+        image.src = sourceData;
+        break;
+      }
 
-    case 'video': {
-      return false;
-    }
+      case 'video': {
+        resolve(false);
+        break;
+      }
 
-    default: {
-      return false;
+      default: {
+        resolve(false);
+        break;
+      }
     }
-  }
+  });
 }
