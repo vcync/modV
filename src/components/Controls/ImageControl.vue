@@ -43,6 +43,22 @@
           >
         </b-dropdown>
       </div>
+
+      <div v-if="source === 'video'" class="column is-6">
+        <b-dropdown :id="inputId" v-model="currentVideo" class="dropdown">
+          <button slot="trigger" class="button is-primary is-small">
+            <span>{{ selectedLabel | capitalize }}</span>
+            <b-icon icon="angle-down"></b-icon>
+          </button>
+
+          <b-dropdown-item
+            v-for="(data, idx) in projectVideos"
+            :key="idx"
+            :value="data.value"
+            >{{ data.label | capitalize }}</b-dropdown-item
+          >
+        </b-dropdown>
+      </div>
     </div>
   </div>
 </template>
@@ -57,6 +73,7 @@ export default {
     return {
       currentLayerIndex: -1,
       currentImage: '',
+      currentVideo: '',
       source: 'layer',
       sources: ['layer', 'image', 'video']
     }
@@ -99,6 +116,18 @@ export default {
         label: title,
         value: images[title],
         selected: images[title] === this.sourceData
+      }))
+    },
+
+    projectVideos() {
+      const { videos } = this.$store.state.projects.projects[
+        this.$store.state.projects.currentProject
+      ]
+
+      return Object.keys(videos).map(title => ({
+        label: title,
+        value: videos[title],
+        selected: videos[title] === this.sourceData
       }))
     },
 
@@ -158,14 +187,33 @@ export default {
         return (selectedImage && selectedImage.label) || 'Select Image'
       }
 
+      if (this.source === 'video') {
+        const selectedImage = this.projectVideos.find(
+          video => video.value === this.sourceData
+        )
+        return (selectedImage && selectedImage.label) || 'Select Video'
+      }
+
       return ''
     }
   },
   watch: {
-    currentLayerIndex(value) {
+    currentLayerIndex(value, old) {
+      if (value === old) return
+      this.currentImage = ''
+      this.currentVideo = ''
       this.value = value
     },
     currentImage(value) {
+      if (!value.length) return
+      this.currentLayerIndex = -1
+      this.currentVideo = ''
+      this.value = value
+    },
+    currentVideo(value) {
+      if (!value.length) return
+      this.currentLayerIndex = -1
+      this.currentImage = ''
       this.value = value
     },
     value(value) {

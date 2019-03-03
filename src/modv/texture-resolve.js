@@ -23,7 +23,15 @@ export default function textureResolve(sourceDef) {
       }
 
       case 'video': {
-        resolve(false)
+        const video = document.createElement('video')
+        video.oncanplay = () => {
+          video.loop = true
+          video.volume = 0
+          resolve({ ...sourceDef, texture: video })
+        }
+        video.crossOrigin = 'anonymous'
+        video.src = sourceData
+        video.play()
         break
       }
 
