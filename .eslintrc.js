@@ -29,6 +29,6 @@ module.exports = {
     'prettier/prettier': 'error',
     // allow debugger during development
     'no-debugger': process.env.NODE_ENV === 'production' ? 2 : 0,
-    'max-len': [2, {code: 100, tabWidth: 4, ignoreUrls: true}]
+    'max-len': [2, {code: 100, tabWidth: 2, ignoreUrls: true}]
   }
 };
