@@ -1,4 +1,4 @@
-import controlPanelComponent from './ControlPanel';
+import controlPanelComponent from './ControlPanel'
 
 /**
  * Slim version of the UI
@@ -11,24 +11,24 @@ const slimUi = {
    * Only called when added to modV.
    */
   install() {
-    this.activate();
+    this.activate()
   },
 
   on() {
-    this.activate();
+    this.activate()
   },
 
   off() {
-    this.deactivate();
+    this.deactivate()
   },
 
   activate() {
-    document.body.classList.add('slimui');
+    document.body.classList.add('slimui')
   },
 
   deactivate() {
-    document.body.classList.remove('slimui');
-  },
-};
+    document.body.classList.remove('slimui')
+  }
+}
 
-export default slimUi;
+export default slimUi

@@ -2,7 +2,7 @@
   <div class="module-preset-selector-control">
     <b-field label="Presets" :addons="false">
       <b-dropdown v-model="preset">
-        <button class="button is-primary is-small" slot="trigger">
+        <button slot="trigger" class="button is-primary is-small">
           <span>{{ preset }}</span>
           <b-icon icon="angle-down"></b-icon>
         </button>
@@ -11,7 +11,8 @@
           v-for="(presetData, presetName) in presets"
           :key="presetName"
           :value="presetName"
-        >{{ presetName }}</b-dropdown-item>
+          >{{ presetName }}</b-dropdown-item
+        >
       </b-dropdown>
       <button class="button is-small" @click="load">Load</button>
     </b-field>
@@ -19,40 +20,42 @@
 </template>
 
 <script>
-  export default {
-    name: 'modulePresetSelector',
+export default {
+  name: 'ModulePresetSelector',
 
-    props: {
-      presets: {
-        type: Object,
-        required: true,
-      },
-      moduleName: {
-        type: String,
-        required: true,
-      },
+  props: {
+    presets: {
+      type: Object,
+      required: true
     },
+    moduleName: {
+      type: String,
+      required: true
+    }
+  },
 
-    data() {
-      return {
-        preset: 'Select',
-      };
-    },
+  data() {
+    return {
+      preset: 'Select'
+    }
+  },
 
-    methods: {
-      load() {
-        Object.keys(this.presets[this.preset].props).forEach(async (prop) => {
-          const data = this.presets[this.preset].props[prop];
+  methods: {
+    load() {
+      Object.keys(this.presets[this.preset].props).forEach(async prop => {
+        const data = this.presets[this.preset].props[prop]
 
-          await this.$store.dispatch('modVModules/resetModule', { name: this.moduleName });
+        await this.$store.dispatch('modVModules/resetModule', {
+          name: this.moduleName
+        })
 
-          this.$store.dispatch('modVModules/updateProp', {
-            name: this.moduleName,
-            prop,
-            data,
-          });
-        });
-      },
-    },
-  };
+        this.$store.dispatch('modVModules/updateProp', {
+          name: this.moduleName,
+          prop,
+          data
+        })
+      })
+    }
+  }
+}
 </script>

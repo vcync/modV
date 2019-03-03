@@ -4,7 +4,11 @@
       Devices:
     </div>
 
-    <div class="column is-12" v-for="(device, deviceName) in devices">
+    <div
+      v-for="(device, deviceName) in devices"
+      :key="deviceName"
+      class="column is-12"
+    >
       {{ deviceName }}
     </div>
 
@@ -12,25 +16,25 @@
       Assignments:
     </div>
 
-    <div class="column is-12" v-for="assignment in assignments">
+    <div
+      v-for="assignment in assignments"
+      :key="assignment"
+      class="column is-12"
+    >
       {{ assignment }}
     </div>
   </div>
 </template>
 
 <script>
-  import { mapGetters } from 'vuex';
+import { mapGetters } from 'vuex'
 
-  export default {
-    name: 'midiAssignmentPluginControlPanel',
-    computed: {
-      ...mapGetters('midiAssignment', [
-        'assignments',
-        'devices',
-      ]),
-    },
-  };
+export default {
+  name: 'MidiAssignmentPluginControlPanel',
+  computed: {
+    ...mapGetters('midiAssignment', ['assignments', 'devices'])
+  }
+}
 </script>
 
-<style lang="scss">
-</style>
+<style lang="scss"></style>

@@ -33,24 +33,24 @@ export default class LuminaveConnector {
      => [a1, a2, b1, b2]
    */
   constructor(args = {}) {
-    this.url = args.url || 'ws://localhost:3000/modV';
+    this.url = args.url || 'ws://localhost:3000/modV'
 
     // Width / Height of canvas
-    this.width = args.width || 0;
-    this.height = args.height || 0;
+    this.width = args.width || 0
+    this.height = args.height || 0
 
     // Number of selected areas
-    this.selectionX = args.selectionX || 1;
-    this.selectionY = args.selectionY || 1;
+    this.selectionX = args.selectionX || 1
+    this.selectionY = args.selectionY || 1
 
     // The raw canvas data
-    this.data = '';
+    this.data = ''
 
     // WebSocket connection
-    this.reconnectAfter = 4000;
-    this.connection = undefined;
-    this.timeout = 0;
-    this.shouldReconnect = true;
+    this.reconnectAfter = 4000
+    this.connection = undefined
+    this.timeout = 0
+    this.shouldReconnect = true
   }
 
   /**
@@ -58,54 +58,56 @@ export default class LuminaveConnector {
    */
   setupSocket() {
     // Close an old connection
-    this.closeConnection();
+    this.closeConnection()
 
     // Create a new connection
-    this.connection = new WebSocket(this.url);
+    this.connection = new WebSocket(this.url)
 
     // Listen for errors (e.g. could not connect)
-    this.connection.addEventListener('error', (event) => {
+    this.connection.addEventListener('error', event => {
       console.error('lumiaveConnector: WebSocket: Error:', event); //eslint-disable-line
 
       // Reconnect is allowed
       if (this.shouldReconnect) {
         // Reconnect after a specific amount of time
-        this.timeout = setTimeout(() => { this.setupSocket(); }, this.reconnectAfter);
+        this.timeout = setTimeout(() => {
+          this.setupSocket()
+        }, this.reconnectAfter)
       }
-    });
+    })
 
     // Connection is opened
     this.connection.addEventListener('open', () => {
       console.info('lumiaveConnector: WebSocket: Opened'); //eslint-disable-line
-    });
+    })
   }
 
   /**
    * Close the WebSocket connection and stop reconnecting
    */
   closeConnection() {
-    clearTimeout(this.timeout);
+    clearTimeout(this.timeout)
 
     if (this.connection !== undefined) {
-      this.connection.close();
+      this.connection.close()
     }
 
-    this.connection = undefined;
+    this.connection = undefined
   }
 
   /**
    * Stop reconnecting to WebSocket
    */
   stopReconnect() {
-    this.shouldReconnect = false;
-    clearTimeout(this.timeout);
+    this.shouldReconnect = false
+    clearTimeout(this.timeout)
   }
 
   /**
    * Enable reconnecting to WebSocket
    */
   startReconnect() {
-    this.shouldReconnect = true;
+    this.shouldReconnect = true
   }
 
   /**
@@ -116,7 +118,7 @@ export default class LuminaveConnector {
     // Connection is established
     if (this.connection !== undefined && this.connection.readyState === 1) {
       // Send JSON message to luminave
-      this.connection.send(JSON.stringify(data));
+      this.connection.send(JSON.stringify(data))
     }
   }
 
@@ -128,15 +130,15 @@ export default class LuminaveConnector {
    */
   drawFrame(data) {
     // Data from canvas
-    this.data = new Uint8Array(data);
+    this.data = new Uint8Array(data)
 
     // Get the average color of the whole output
-    const average = this.getAverage(0, 0, this.width, this.height);
+    const average = this.getAverage(0, 0, this.width, this.height)
 
     // Get the average colors for each area based on selectionX + selectionY
-    const colors = this.getAverageColors();
+    const colors = this.getAverageColors()
 
-    const { selectionX, selectionY } = this;
+    const { selectionX, selectionY } = this
 
     // Create the message for luminave
     const dmxData = {
@@ -149,10 +151,10 @@ export default class LuminaveConnector {
       colors,
 
       selectionX,
-      selectionY,
-    };
+      selectionY
+    }
 
-    this.send(dmxData);
+    this.send(dmxData)
   }
 
   /**
@@ -168,7 +170,7 @@ export default class LuminaveConnector {
     const start = y * (this.width * 4) + x * 4; //eslint-disable-line
 
     // [red, green, blue]
-    return [this.data[start], this.data[start + 1], this.data[start + 2]];
+    return [this.data[start], this.data[start + 1], this.data[start + 2]]
   }
 
   /**
@@ -182,19 +184,19 @@ export default class LuminaveConnector {
    * @return{number[]} red, green, blue for the area
    */
   getAverage(x, y, width, height) {
-    const average = new Array(3).fill(0);
-    let color = new Array(3).fill(0);
-    const size = width * height;
+    const average = new Array(3).fill(0)
+    let color = new Array(3).fill(0)
+    const size = width * height
 
     for (let row = 0; row < width; row++) { //eslint-disable-line
       // For every column pixels
       for (let column = 0; column < height; column++) { //eslint-disable-line
-        color = this.getColor(x + row, y + column);
+        color = this.getColor(x + row, y + column)
 
         // Summarize the colors
-        average[0] += color[0];
-        average[1] += color[1];
-        average[2] += color[2];
+        average[0] += color[0]
+        average[1] += color[1]
+        average[2] += color[2]
       }
     }
 
@@ -203,7 +205,7 @@ export default class LuminaveConnector {
     average[1] = ~~(average[1] / size); //eslint-disable-line
     average[2] = ~~(average[2] / size); //eslint-disable-line
 
-    return average;
+    return average
   }
 
   /**
@@ -213,12 +215,14 @@ export default class LuminaveConnector {
    */
   getAverageColors() {
     // Size of each area
-    const areaSize = Math.floor((this.width / this.selectionX) + (this.height / this.selectionY));
-    const areaWidth = Math.floor(areaSize / 2);
-    const areaHeight = Math.floor(areaSize / 2);
+    const areaSize = Math.floor(
+      this.width / this.selectionX + this.height / this.selectionY
+    )
+    const areaWidth = Math.floor(areaSize / 2)
+    const areaHeight = Math.floor(areaSize / 2)
 
     // The packet that gets send over WebSocket to luminave
-    const colors = [];
+    const colors = []
 
     // selectionX = how many areas we grab on the x axis
     for (let x = 0; x < this.selectionX; x++) { //eslint-disable-line
@@ -227,15 +231,14 @@ export default class LuminaveConnector {
       for (let y = 0; y < this.selectionY; y++) { //eslint-disable-line
 
         // Coordinates of the area
-        const pointX = (x * Math.floor(this.width / this.selectionX));
-        const pointY = (y * Math.floor(this.height / this.selectionY));
+        const pointX = x * Math.floor(this.width / this.selectionX)
+        const pointY = y * Math.floor(this.height / this.selectionY)
 
         // Add the average color of the area to the colors
-        colors.push(...this.getAverage(pointX, pointY, areaWidth, areaHeight));
+        colors.push(...this.getAverage(pointX, pointY, areaWidth, areaHeight))
       }
     }
 
-    return colors;
+    return colors
   }
-
 }

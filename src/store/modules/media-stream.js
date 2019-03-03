@@ -1,39 +1,37 @@
 const state = {
   audio: [],
-  video: [],
-};
+  video: []
+}
 
 // getters
 const getters = {
   audioSources: state => state.audio,
-  videoSources: state => state.video,
-};
+  videoSources: state => state.video
+}
 
 // actions
-const actions = {
-
-};
+const actions = {}
 
 // mutations
 const mutations = {
   addAudioSource(state, { source }) {
-    state.audio.push(source);
+    state.audio.push(source)
   },
   addVideoSource(state, { source }) {
-    state.video.push(source);
+    state.video.push(source)
   },
   clearAudioSources(state) {
-    state.audio = [];
+    state.audio = []
   },
   clearVideoSources(state) {
-    state.video = [];
-  },
-};
+    state.video = []
+  }
+}
 
 export default {
   namespaced: true,
   state,
   getters,
   actions,
-  mutations,
-};
+  mutations
+}

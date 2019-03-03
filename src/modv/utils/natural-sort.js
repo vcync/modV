@@ -4,5 +4,5 @@
 
 export default new Intl.Collator('en', {
   numeric: false, // eh?
-  sensitivity: 'base',
-});
+  sensitivity: 'base'
+})

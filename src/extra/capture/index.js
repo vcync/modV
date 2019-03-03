@@ -1,5 +1,5 @@
-import CCapture from 'ccapture.js';
-import controlPanelComponent from './ControlPanel';
+import CCapture from 'ccapture.js'
+import controlPanelComponent from './ControlPanel'
 
 const capture = {
   name: 'Capture',
@@ -10,7 +10,7 @@ const capture = {
     framerate: 60,
     motionBlurFrames: 16,
     quality: 90,
-    format: 'webm',
+    format: 'webm'
   }),
 
   on() {
@@ -19,20 +19,20 @@ const capture = {
       framerate: 60,
       motionBlurFrames: 16,
       quality: 90,
-      format: 'webm',
-    });
+      format: 'webm'
+    })
   },
 
   off() {
-    if (!this.capturer) return;
+    if (!this.capturer) return
 
-    this.capturer.stop();
-    this.capturer.save();
+    this.capturer.stop()
+    this.capturer.save()
   },
 
   processFrame({ canvas }) {
-    this.capturer.capture(canvas);
-  },
-};
+    this.capturer.capture(canvas)
+  }
+}
 
-export default capture;
+export default capture

@@ -1,41 +1,41 @@
 export default function generateControlData(settings = {}) {
-  const controls = [];
-  const { module } = settings;
-  const exclude = settings.exclude || [];
+  const controls = []
+  const { module } = settings
+  const exclude = settings.exclude || []
 
   if (module) {
-    const props = settings.props || module.props;
+    const props = settings.props || module.props
 
-    if (!props) return controls;
+    if (!props) return controls
 
-    Object.keys(props).forEach((key) => {
-      const propData = props[key];
-      propData.$modv_variable = key;
-      propData.$modv_moduleName = module.meta.name;
+    Object.keys(props).forEach(key => {
+      const propData = props[key]
+      propData.$modv_variable = key
+      propData.$modv_moduleName = module.meta.name
 
       if (typeof settings.group !== 'undefined') {
-        propData.$modv_group = settings.group;
+        propData.$modv_group = settings.group
       }
 
       if (settings.groupName) {
-        propData.$modv_groupName = settings.groupName;
+        propData.$modv_groupName = settings.groupName
       }
 
-      const type = propData.type;
-      const control = propData.control;
+      const type = propData.type
+      const control = propData.control
 
       if (control) {
         controls.push({
           component: control.type,
-          meta: propData,
-        });
+          meta: propData
+        })
       }
 
       if (type === 'group' && exclude.indexOf(type) < 0) {
         controls.push({
           component: 'groupControl',
-          meta: propData,
-        });
+          meta: propData
+        })
       }
 
       if (
@@ -44,46 +44,46 @@ export default function generateControlData(settings = {}) {
       ) {
         controls.push({
           component: 'rangeControl',
-          meta: propData,
-        });
+          meta: propData
+        })
       }
 
       if (type === 'bool' && exclude.indexOf(type) < 0) {
         controls.push({
           component: 'checkboxControl',
-          meta: propData,
-        });
+          meta: propData
+        })
       }
 
       if (type === 'string' && exclude.indexOf(type) < 0) {
         controls.push({
           component: 'textControl',
-          meta: propData,
-        });
+          meta: propData
+        })
       }
 
       if (type === 'vec2' && exclude.indexOf(type) < 0) {
         controls.push({
           component: 'twoDPointControl',
-          meta: propData,
-        });
+          meta: propData
+        })
       }
 
       if (type === 'enum' && exclude.indexOf(type) < 0) {
         controls.push({
           component: 'selectControl',
-          meta: propData,
-        });
+          meta: propData
+        })
       }
 
       if (type === 'texture' && exclude.indexOf(type) < 0) {
         controls.push({
           component: 'imageControl',
-          meta: propData,
-        });
+          meta: propData
+        })
       }
-    });
+    })
   }
 
-  return controls;
+  return controls
 }
