@@ -73,7 +73,6 @@
     "cross-spawn": "^5.0.1",
     "css-loader": "^0.28.0",
     "eslint": "^5.15.0",
-    "eslint-config-airbnb-base": "^11.1.3",
     "eslint-config-prettier": "^4.1.0",
     "eslint-config-prettier-standard": "^2.0.0",
     "eslint-config-standard": "^12.0.0",
