@@ -1,29 +1,29 @@
-import Vue from 'vue';
-import Ajv from 'ajv/lib/ajv';
-import { modV } from '@/modv';
-import cloneDeep from 'lodash.clonedeep';
-import getNextName from '@/utils/get-next-name';
-import { setup as shaderSetup } from '@/modv/renderers/shader';
-import { setup as isfSetup } from '@/modv/renderers/isf';
-import textureResolve from '@/modv/texture-resolve';
-import store from '../index';
+import Vue from 'vue'
+import Ajv from 'ajv/lib/ajv'
+import { modV } from '@/modv'
+import cloneDeep from 'lodash.clonedeep'
+import getNextName from '@/utils/get-next-name'
+import { setup as shaderSetup } from '@/modv/renderers/shader'
+import { setup as isfSetup } from '@/modv/renderers/isf'
+import textureResolve from '@/modv/texture-resolve'
+import store from '../index'
 
-const jsd4 = require('ajv/lib/refs/json-schema-draft-04.json');
+const jsd4 = require('ajv/lib/refs/json-schema-draft-04.json')
 
 const makeSchema = function makeSchema(properties) {
   return {
     $schema: 'http://json-schema.org/draft-04/schema#',
     type: 'object',
-    properties,
-  };
-};
+    properties
+  }
+}
 
 const outerState = {
   registry: {},
-  active: {},
-};
+  active: {}
+}
 
-window.outerState = outerState;
+window.outerState = outerState
 
 const state = {
   registry: {},
@@ -31,17 +31,21 @@ const state = {
   activePropQueue: {},
   activeMetaQueue: {},
   focusedModule: null,
-  currentDragged: null,
-};
+  currentDragged: null
+}
 
 function getPropDefault(prop) {
-  const { default: defaultValue, random } = prop;
+  const { default: defaultValue, random } = prop
 
-  if (typeof defaultValue !== 'undefined' && Array.isArray(defaultValue) && random) {
-    return defaultValue[Math.floor(Math.random() * defaultValue.length)];
+  if (
+    typeof defaultValue !== 'undefined' &&
+    Array.isArray(defaultValue) &&
+    random
+  ) {
+    return defaultValue[Math.floor(Math.random() * defaultValue.length)]
   }
 
-  return defaultValue;
+  return defaultValue
 }
 
 // getters
@@ -68,87 +72,86 @@ const getters = {
   registry: state => state.registry,
   active: state => state.active,
   outerRegistry: () => outerState.registry,
-  outerActive: () => outerState.active,
-};
+  outerActive: () => outerState.active
+}
 
 // actions
 const actions = {
   register({ commit }, data) {
-    commit('addModuleToRegistry', { name: data.meta.name, data });
+    commit('addModuleToRegistry', { name: data.meta.name, data })
   },
 
-  async createActiveModule({ commit, state }, {
-    moduleName,
-    moduleMeta,
-    appendToName,
-    skipInit,
-    enabled,
-    moduleTitle,
-  }) {
-    return new Promise(async (resolve) => {
-      const existingModuleData = outerState.registry[moduleName || moduleMeta.originalName];
-      if (!existingModuleData) return;
+  async createActiveModule(
+    { commit, state },
+    { moduleName, moduleMeta, appendToName, skipInit, enabled, moduleTitle }
+  ) {
+    return new Promise(async resolve => {
+      const existingModuleData =
+        outerState.registry[moduleName || moduleMeta.originalName]
+      if (!existingModuleData) return
 
-      let newModuleData = cloneDeep(existingModuleData);
+      let newModuleData = cloneDeep(existingModuleData)
 
       switch (newModuleData.meta.type) {
         case 'shader':
-          newModuleData = await shaderSetup(newModuleData);
-          break;
+          newModuleData = await shaderSetup(newModuleData)
+          break
 
         case 'isf':
-          newModuleData = isfSetup(newModuleData);
-          break;
+          newModuleData = isfSetup(newModuleData)
+          break
 
         default:
-          break;
+          break
       }
 
-      newModuleData.meta.originalName = newModuleData.meta.name;
-      newModuleData.meta.name = moduleTitle || await getNextName(
-        `${newModuleData.meta.name}${appendToName || ''}`,
-        Object.keys(state.active),
-      );
-      newModuleData.meta.alpha = 1;
-      newModuleData.meta.enabled = enabled || false;
-      newModuleData.meta.compositeOperation = 'normal';
+      newModuleData.meta.originalName = newModuleData.meta.name
+      newModuleData.meta.name =
+        moduleTitle ||
+        (await getNextName(
+          `${newModuleData.meta.name}${appendToName || ''}`,
+          Object.keys(state.active)
+        ))
+      newModuleData.meta.alpha = 1
+      newModuleData.meta.enabled = enabled || false
+      newModuleData.meta.compositeOperation = 'normal'
 
-      const { data, props, meta, presets } = newModuleData;
+      const { data, props, meta, presets } = newModuleData
 
       if (data) {
-        Object.keys(data).forEach((key) => {
-          const value = data[key];
-          newModuleData[key] = value;
-        });
+        Object.keys(data).forEach(key => {
+          const value = data[key]
+          newModuleData[key] = value
+        })
       }
 
       if (props) {
-        Object.keys(props).forEach((key) => {
-          const value = props[key];
+        Object.keys(props).forEach(key => {
+          const value = props[key]
 
-          newModuleData[key] = getPropDefault(value);
+          newModuleData[key] = getPropDefault(value)
 
           if (value.type === 'group') {
-            newModuleData[key] = {};
+            newModuleData[key] = {}
 
-            newModuleData[key].length = value.default > -1 ? value.default : 1;
-            newModuleData[key].props = {};
+            newModuleData[key].length = value.default > -1 ? value.default : 1
+            newModuleData[key].props = {}
 
-            Object.keys(value.props).forEach((groupProp) => {
-              const groupValue = value.props[groupProp];
-              newModuleData[key].props[groupProp] = [];
+            Object.keys(value.props).forEach(groupProp => {
+              const groupValue = value.props[groupProp]
+              newModuleData[key].props[groupProp] = []
 
               if (value.default && typeof groupValue.default !== 'undefined') {
                 for (let i = 0; i < value.default; i += 1) {
-                  newModuleData[key].props[groupProp][i] = groupValue.default;
+                  newModuleData[key].props[groupProp][i] = groupValue.default
                 }
               }
-            });
+            })
           }
 
           if (value.control) {
             if (value.control.type === 'paletteControl') {
-              const { options } = value.control;
+              const { options } = value.control
 
               store.dispatch('palettes/createPalette', {
                 id: `${meta.name}-${key}`,
@@ -156,75 +159,78 @@ const actions = {
                 duration: options.duration,
                 returnFormat: options.returnFormat,
                 moduleName: meta.name,
-                variable: key,
-              });
+                variable: key
+              })
             }
           }
-        });
+        })
       }
 
       if (moduleMeta) {
-        Object.keys(moduleMeta).forEach((key) => {
-          const value = moduleMeta[key];
+        Object.keys(moduleMeta).forEach(key => {
+          const value = moduleMeta[key]
 
-          newModuleData.meta[key] = value;
-        });
+          newModuleData.meta[key] = value
+        })
       }
 
       if (presets) {
-        newModuleData.presets = {};
+        newModuleData.presets = {}
 
-        Object.keys(presets).forEach((key) => {
-          const value = presets[key];
-          newModuleData.presets[key] = value;
-        });
+        Object.keys(presets).forEach(key => {
+          const value = presets[key]
+          newModuleData.presets[key] = value
+        })
       }
 
-      commit('addModuleToActive', { name: newModuleData.meta.name, data: newModuleData });
+      commit('addModuleToActive', {
+        name: newModuleData.meta.name,
+        data: newModuleData
+      })
 
-      const canvas = modV.bufferCanvas;
+      const canvas = modV.bufferCanvas
 
       if ('audioFeatures' in newModuleData.meta) {
         if (Array.isArray(newModuleData.meta.audioFeatures)) {
           newModuleData.meta.audioFeatures.forEach(feature =>
-            store.commit('meyda/addFeature', { feature }),
-          );
+            store.commit('meyda/addFeature', { feature })
+          )
         }
       }
 
       if ('init' in newModuleData && !skipInit) {
-        newModuleData.init({ canvas });
+        newModuleData.init({ canvas })
       }
 
       if ('resize' in newModuleData && !skipInit) {
-        newModuleData.resize({ canvas });
+        newModuleData.resize({ canvas })
       }
 
-      resolve(outerState.active[newModuleData.meta.name]);
-    });
+      resolve(outerState.active[newModuleData.meta.name])
+    })
   },
 
   async removeActiveModule({ state, commit }, { moduleName, skipLayerUpdate }) {
-    store.commit('controlPanels/unpinPanel', { moduleName });
+    store.commit('controlPanels/unpinPanel', { moduleName })
 
     if (state.focusedModule === moduleName) {
-      commit('setModuleFocus', { activeModuleName: null });
+      commit('setModuleFocus', { activeModuleName: null })
     }
 
-    const module = state.active[moduleName];
+    const module = state.active[moduleName]
 
-    const { props, meta } = module;
+    const { props, meta } = module
 
     if (props) {
-      Object.keys(props).forEach(async (key) => {
-        const value = props[key];
+      Object.keys(props).forEach(async key => {
+        const value = props[key]
 
         if (value.control && value.control.type === 'paletteControl') {
           await store.dispatch('palettes/removePalette', {
-            id: `${meta.name}-${key}`,
-          });
+            id: `${meta.name}-${key}`
+          })
         }
-      });
+      })
     }
 
     // if ('controls' in Module.info) {
@@ -242,88 +248,78 @@ const actions = {
 
     /* Remove active module from Layers */
     if (!skipLayerUpdate) {
-      const layer = store.getters['layers/layerFromModuleName']({ moduleName });
+      const layer = store.getters['layers/layerFromModuleName']({ moduleName })
       if (layer) {
-        const moduleOrder = layer.layer.moduleOrder;
-        moduleOrder.splice(moduleOrder.indexOf(moduleName), 1);
+        const moduleOrder = layer.layer.moduleOrder
+        moduleOrder.splice(moduleOrder.indexOf(moduleName), 1)
 
         await store.dispatch('layers/updateModuleOrder', {
           layerIndex: layer.layerIndex,
-          order: moduleOrder,
-        });
+          order: moduleOrder
+        })
       }
     }
 
-    commit('removeActiveModule', { moduleName });
+    commit('removeActiveModule', { moduleName })
   },
 
   resizeActive({ state }) {
-    const canvas = modV.bufferCanvas;
-    Object.keys(state.active).forEach((moduleName) => {
-      let module;
+    const canvas = modV.bufferCanvas
+    Object.keys(state.active).forEach(moduleName => {
+      let module
 
-      if (moduleName.indexOf('-gallery') > -1) return;
+      if (moduleName.indexOf('-gallery') > -1) return
 
       if (moduleName in outerState.active) {
-        module = outerState.active[moduleName];
+        module = outerState.active[moduleName]
       } else {
-        return;
+        return
       }
 
       if ('resize' in module) {
-        module.resize({ canvas });
+        module.resize({ canvas })
       }
-    });
+    })
   },
 
   updateProp({ state, commit }, { name, prop, data, group, groupName }) {
-    let propData = state.active[name].props[prop];
-    const currentValue = state.active[name][prop];
+    let propData = state.active[name].props[prop]
+    const currentValue = state.active[name][prop]
 
     if (group || groupName) {
-      propData = state.active[name].props[groupName].props[prop];
+      propData = state.active[name].props[groupName].props[prop]
     }
 
-    if (data === currentValue) return;
+    if (data === currentValue) return
 
-    let dataOut = data;
+    let dataOut = data
 
     store.getters['plugins/enabledPlugins']
-      .filter(plugin => ('processValue' in plugin.plugin))
-      .forEach((plugin) => {
+      .filter(plugin => 'processValue' in plugin.plugin)
+      .forEach(plugin => {
         const newValue = plugin.plugin.processValue({
           currentValue: data,
           controlVariable: prop,
           delta: modV.delta,
-          moduleName: name,
-        });
+          moduleName: name
+        })
 
-        if (typeof newValue !== 'undefined') dataOut = newValue;
-      });
+        if (typeof newValue !== 'undefined') dataOut = newValue
+      })
 
     if (!Array.isArray(dataOut)) {
-      const {
-        strict,
-        min,
-        max,
-        abs,
-        type,
-      } = propData;
+      const { strict, min, max, abs, type } = propData
 
-      if (
-        strict &&
-        typeof min !== 'undefined' &&
-        typeof max !== 'undefined'
-      ) {
-        dataOut = Math.min(Math.max(dataOut, min), max);
+      if (strict && typeof min !== 'undefined' && typeof max !== 'undefined') {
+        dataOut = Math.min(Math.max(dataOut, min), max)
       }
 
       if (abs) {
-        dataOut = Math.abs(dataOut);
+        dataOut = Math.abs(dataOut)
       }
 
       if (type === 'int') {
-        dataOut = Math.round(dataOut);
+        dataOut = Math.round(dataOut)
       }
     }
 
@@ -334,45 +330,47 @@ const actions = {
         value: dataOut,
         type: propData.type,
         group,
-        groupName,
-      },
-    });
+        groupName
+      }
+    })
   },
 
   syncPropQueue({ state, commit }) {
-    const moduleKeys = Object.keys(state.activePropQueue);
+    const moduleKeys = Object.keys(state.activePropQueue)
 
     for (let i = 0; i < moduleKeys.length; i += 1) {
-      const moduleKey = moduleKeys[i];
-      const moduleProps = state.activePropQueue[moduleKey];
+      const moduleKey = moduleKeys[i]
+      const moduleProps = state.activePropQueue[moduleKey]
 
-      const propsKeys = Object.keys(moduleProps);
+      const propsKeys = Object.keys(moduleProps)
 
       for (let j = 0; j < moduleKeys.length; j += 1) {
-        const key = propsKeys[j];
+        const key = propsKeys[j]
 
         if (
           typeof moduleProps[key] === 'undefined' ||
           typeof key === 'undefined'
         ) {
           /* eslint-disable no-continue */
-          continue;
+          continue
         }
 
-        if (!outerState.active[moduleKey]) continue;
+        if (!outerState.active[moduleKey]) continue
 
-        const { group, groupName } = moduleProps[key];
+        const { group, groupName } = moduleProps[key]
 
         if (group || groupName) {
-          if ('set' in outerState.active[moduleKey].props[groupName].props[key]) {
-            outerState
-              .active[moduleKey].props[groupName].props[key]
-              .set.bind(outerState.active[moduleKey])(moduleProps[key].value);
+          if (
+            'set' in outerState.active[moduleKey].props[groupName].props[key]
+          ) {
+            outerState.active[moduleKey].props[groupName].props[key].set.bind(
+              outerState.active[moduleKey]
+            )(moduleProps[key].value)
           }
         } else if ('set' in outerState.active[moduleKey].props[key]) {
-          outerState
-            .active[moduleKey]
-            .props[key].set.bind(outerState.active[moduleKey])(moduleProps[key].value);
+          outerState.active[moduleKey].props[key].set.bind(
+            outerState.active[moduleKey]
+          )(moduleProps[key].value)
         }
 
         commit('updateProp', {
@@ -380,176 +378,190 @@ const actions = {
           prop: key,
           data: moduleProps[key],
           group,
-          groupName,
-        });
+          groupName
+        })
       }
     }
   },
 
   updateMeta({ commit }, args) {
-    commit('queueMetaUpdate', args);
+    commit('queueMetaUpdate', args)
   },
 
   syncMetaQueue({ state, commit }) {
-    const moduleKeys = Object.keys(state.activeMetaQueue);
+    const moduleKeys = Object.keys(state.activeMetaQueue)
 
     for (let i = 0; i < moduleKeys.length; i += 1) {
-      const moduleKey = moduleKeys[i];
-      const moduleMetaValues = state.activeMetaQueue[moduleKey];
+      const moduleKey = moduleKeys[i]
+      const moduleMetaValues = state.activeMetaQueue[moduleKey]
 
-      const metaKeys = Object.keys(moduleMetaValues);
+      const metaKeys = Object.keys(moduleMetaValues)
 
       for (let j = 0; j < moduleKeys.length; j += 1) {
-        const key = metaKeys[j];
+        const key = metaKeys[j]
         if (
           typeof moduleMetaValues[key] === 'undefined' ||
           typeof key === 'undefined'
         ) {
           /* eslint-disable no-continue */
-          continue;
+          continue
         }
 
         commit('updateMeta', {
           name: moduleKey,
           metaKey: key,
-          data: moduleMetaValues[key],
-        });
+          data: moduleMetaValues[key]
+        })
       }
     }
   },
 
   syncQueues({ dispatch }) {
-    dispatch('syncPropQueue');
-    dispatch('syncMetaQueue');
+    dispatch('syncPropQueue')
+    dispatch('syncMetaQueue')
   },
 
   resetModule({ dispatch }, { name }) {
-    Object.keys(outerState.registry[name].props).forEach((key) => {
-      const prop = outerState.registry[name].props[key];
+    Object.keys(outerState.registry[name].props).forEach(key => {
+      const prop = outerState.registry[name].props[key]
 
       dispatch('updateProp', {
         name,
         prop: key,
-        data: getPropDefault(prop),
-      });
-    });
+        data: getPropDefault(prop)
+      })
+    })
   },
 
   presetData({ state }) {
     // @TODO: figure out a better clone than JSONparse(JSONstringify())
     const ajv = new Ajv({
-      removeAdditional: 'all',
-    });
-    ajv.addMetaSchema(jsd4);
+      removeAdditional: 'all'
+    })
+    ajv.addMetaSchema(jsd4)
 
-    const moduleNames = Object.keys(state.active)
-      .filter(key => key.substring(key.length - 8, key.length) !== '-gallery');
+    const moduleNames = Object.keys(state.active).filter(
+      key => key.substring(key.length - 8, key.length) !== '-gallery'
+    )
 
     const moduleData = moduleNames.reduce((obj, moduleName) => {
-      obj[moduleName] = {};
-      obj[moduleName].values = Object.keys(state.active[moduleName].props || {})
-        .reduce((valuesObj, prop) => {
-          valuesObj[prop] = state.active[moduleName][prop];
-          return valuesObj;
-        }, {});
-      return obj;
-    }, {});
+      obj[moduleName] = {}
+      obj[moduleName].values = Object.keys(
+        state.active[moduleName].props || {}
+      ).reduce((valuesObj, prop) => {
+        valuesObj[prop] = state.active[moduleName][prop]
+        return valuesObj
+      }, {})
+      return obj
+    }, {})
 
-    moduleNames.forEach((moduleName) => {
-      const Module = outerState.active[moduleName];
+    moduleNames.forEach(moduleName => {
+      const Module = outerState.active[moduleName]
 
       // Merge Module data onto existing data
-      moduleData[moduleName].meta = {};
-      moduleData[moduleName].meta = Object.assign(Module.meta, moduleData[moduleName].meta);
+      moduleData[moduleName].meta = {}
+      moduleData[moduleName].meta = Object.assign(
+        Module.meta,
+        moduleData[moduleName].meta
+      )
 
       if (!('saveData' in Module.meta)) {
         console.warn(
-          `generatePreset: Module ${Module.meta.name} has no saveData schema, falling back to Vuex store data`,
-        );
-        return;
+          `generatePreset: Module ${
+            Module.meta.name
+          } has no saveData schema, falling back to Vuex store data`
+        )
+        return
       }
 
-      const schema = makeSchema(JSON.parse(JSON.stringify(Module.meta.saveData)));
-      const validate = ajv.compile(schema);
+      const schema = makeSchema(
+        JSON.parse(JSON.stringify(Module.meta.saveData))
+      )
+      const validate = ajv.compile(schema)
 
-      const copiedModule = JSON.parse(JSON.stringify(Module));
-      const validated = validate(copiedModule);
+      const copiedModule = JSON.parse(JSON.stringify(Module))
+      const validated = validate(copiedModule)
       if (!validated) {
         console.error(
-          `generatePreset: Module ${Module.meta.name} failed saveData validation, skipping`,
-          validate.errors,
-        );
-        return;
+          `generatePreset: Module ${
+            Module.meta.name
+          } failed saveData validation, skipping`,
+          validate.errors
+        )
+        return
       }
 
       // Merge validated data onto existing data
-      moduleData[moduleName].values = Object.assign(moduleData[moduleName].values, copiedModule);
-    });
+      moduleData[moduleName].values = Object.assign(
+        moduleData[moduleName].values,
+        copiedModule
+      )
+    })
 
-    return moduleData;
+    return moduleData
   },
 
   setActiveModuleInfo({ commit }, { moduleName, key, value }) {
-    commit('setActiveModuleInfo', { moduleName, key, value });
-  },
-};
+    commit('setActiveModuleInfo', { moduleName, key, value })
+  }
+}
 
 // mutations
 const mutations = {
   addModuleToRegistry(state, { name, data }) {
-    outerState.registry[name] = data;
-    Vue.set(state.registry, name, data);
+    outerState.registry[name] = data
+    Vue.set(state.registry, name, data)
   },
 
   addModuleToActive(state, { name, data }) {
-    outerState.active[name] = data;
-    Vue.set(state.active, name, JSON.parse(JSON.stringify(data)));
+    outerState.active[name] = data
+    Vue.set(state.active, name, JSON.parse(JSON.stringify(data)))
   },
 
   removeModuleFromRegistry(state, { moduleName }) {
-    Vue.delete(state.registry, moduleName);
+    Vue.delete(state.registry, moduleName)
   },
 
   queuePropUpdate(state, { name, prop, data }) {
     if (typeof state.activePropQueue[name] === 'undefined') {
-      Vue.set(state.activePropQueue, name, {});
+      Vue.set(state.activePropQueue, name, {})
     }
 
-    Vue.set(state.activePropQueue[name], prop, data);
+    Vue.set(state.activePropQueue[name], prop, data)
   },
 
   async updateProp(state, { name, prop, data, group, groupName }) {
-    let value;
+    let value
 
     if (data.type === 'texture') {
-      value = await textureResolve(data.value);
+      value = await textureResolve(data.value)
     } else {
-      value = data.value;
+      value = data.value
     }
 
     if (typeof group === 'number') {
-      outerState.active[name][groupName].props[prop][group] = value;
-      Vue.set(state.active[name][groupName].props[prop], group, value);
+      outerState.active[name][groupName].props[prop][group] = value
+      Vue.set(state.active[name][groupName].props[prop], group, value)
     } else {
-      outerState.active[name][prop] = value;
-      Vue.set(state.active[name], prop, value);
+      outerState.active[name][prop] = value
+      Vue.set(state.active[name], prop, value)
     }
 
-    Vue.delete(state.activePropQueue[name], prop);
+    Vue.delete(state.activePropQueue[name], prop)
   },
 
   queueMetaUpdate(state, { name, metaKey, data }) {
     if (typeof state.activeMetaQueue[name] === 'undefined') {
-      Vue.set(state.activeMetaQueue, name, {});
+      Vue.set(state.activeMetaQueue, name, {})
     }
 
-    Vue.set(state.activeMetaQueue[name], metaKey, data);
+    Vue.set(state.activeMetaQueue[name], metaKey, data)
   },
 
   updateMeta(state, { name, metaKey, data }) {
-    outerState.active[name].meta[metaKey] = data;
-    Vue.set(state.active[name].meta, metaKey, data);
-    Vue.delete(state.activeMetaQueue[name], metaKey);
+    outerState.active[name].meta[metaKey] = data
+    Vue.set(state.active[name].meta, metaKey, data)
+    Vue.delete(state.activeMetaQueue[name], metaKey)
   },
 
   // setActiveModuleControlValue(state, { moduleName, variable, value, processedValue }) {
@@ -558,71 +570,81 @@ const mutations = {
   // },
 
   removeActiveModule(state, { moduleName }) {
-    delete outerState.active[moduleName];
-    Vue.delete(state.active, moduleName);
+    delete outerState.active[moduleName]
+    Vue.delete(state.active, moduleName)
   },
 
   setModuleFocus(state, { activeModuleName }) {
-    state.focusedModule = activeModuleName;
+    state.focusedModule = activeModuleName
   },
 
   setCurrentDragged(state, { moduleName }) {
-    state.currentDragged = moduleName;
+    state.currentDragged = moduleName
   },
 
   setActiveModuleAlpha(state, { moduleName, alpha }) {
-    outerState.active[moduleName].meta.alpha = alpha;
-    Vue.set(state.active[moduleName].meta, 'alpha', alpha);
+    outerState.active[moduleName].meta.alpha = alpha
+    Vue.set(state.active[moduleName].meta, 'alpha', alpha)
   },
 
   setActiveModuleEnabled(state, { moduleName, enabled }) {
-    outerState.active[moduleName].meta.enabled = enabled;
-    Vue.set(state.active[moduleName].meta, 'enabled', enabled);
+    outerState.active[moduleName].meta.enabled = enabled
+    Vue.set(state.active[moduleName].meta, 'enabled', enabled)
   },
 
   setActiveModuleCompositeOperation(state, { moduleName, compositeOperation }) {
-    outerState.active[moduleName].meta.compositeOperation = compositeOperation;
-    Vue.set(state.active[moduleName].meta, 'compositeOperation', compositeOperation);
+    outerState.active[moduleName].meta.compositeOperation = compositeOperation
+    Vue.set(
+      state.active[moduleName].meta,
+      'compositeOperation',
+      compositeOperation
+    )
   },
 
   setActiveModuleMeta(state, { moduleName, key, value }) {
-    outerState.active[moduleName].meta[key] = value;
-    Vue.set(state.active[moduleName].meta, key, value);
+    outerState.active[moduleName].meta[key] = value
+    Vue.set(state.active[moduleName].meta, key, value)
   },
 
   incrementGroup(state, { moduleName, groupName }) {
-    const { props, length } = outerState.active[moduleName][groupName];
+    const { props, length } = outerState.active[moduleName][groupName]
 
-    Object.keys(props).forEach((prop) => {
+    Object.keys(props).forEach(prop => {
       const defaultValue = getPropDefault(
-        state.active[moduleName].props[groupName].props[prop],
-      );
+        state.active[moduleName].props[groupName].props[prop]
+      )
 
-      outerState.active[moduleName][groupName].props[prop][length] = defaultValue;
-      Vue.set(state.active[moduleName][groupName].props[prop], length, defaultValue);
-    });
+      outerState.active[moduleName][groupName].props[prop][
+        length
+      ] = defaultValue
+      Vue.set(
+        state.active[moduleName][groupName].props[prop],
+        length,
+        defaultValue
+      )
+    })
 
-    outerState.active[moduleName][groupName].length = length + 1;
-    Vue.set(state.active[moduleName][groupName], 'length', length + 1);
+    outerState.active[moduleName][groupName].length = length + 1
+    Vue.set(state.active[moduleName][groupName], 'length', length + 1)
   },
 
   decrementGroup(state, { moduleName, groupName }) {
-    const { props, length } = outerState.active[moduleName][groupName];
+    const { props, length } = outerState.active[moduleName][groupName]
 
-    Object.keys(props).forEach((prop) => {
-      delete outerState.active[moduleName][groupName].props[prop][length - 1];
-      Vue.delete(state.active[moduleName][groupName].props[prop], length - 1);
-    });
+    Object.keys(props).forEach(prop => {
+      delete outerState.active[moduleName][groupName].props[prop][length - 1]
+      Vue.delete(state.active[moduleName][groupName].props[prop], length - 1)
+    })
 
-    outerState.active[moduleName][groupName].length = length - 1;
-    Vue.set(state.active[moduleName][groupName], 'length', length - 1);
-  },
-};
+    outerState.active[moduleName][groupName].length = length - 1
+    Vue.set(state.active[moduleName][groupName], 'length', length - 1)
+  }
+}
 
 export default {
   namespaced: true,
   state,
   getters,
   actions,
-  mutations,
-};
+  mutations
+}

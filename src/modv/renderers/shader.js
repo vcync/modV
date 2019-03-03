@@ -1,9 +1,9 @@
-import { webgl } from '@/modv';
+import { webgl } from '@/modv'
 
-let modVCanvasTexture;
+let modVCanvasTexture
 
 function render({ Module, canvas, context, pipeline }) {
-  const regl = webgl.regl;
+  const regl = webgl.regl
 
   if (!modVCanvasTexture) {
     modVCanvasTexture = regl.texture({
@@ -12,8 +12,8 @@ function render({ Module, canvas, context, pipeline }) {
       wrap: ['mirror', 'mirror'],
       mag: 'linear',
       min: 'linear mipmap linear',
-      flipY: Module.meta.flipY,
-    });
+      flipY: Module.meta.flipY
+    })
   } else {
     modVCanvasTexture({
       data: canvas,
@@ -21,8 +21,8 @@ function render({ Module, canvas, context, pipeline }) {
       wrap: ['mirror', 'mirror'],
       mag: 'linear',
       min: 'linear mipmap linear',
-      flipY: Module.meta.flipY,
-    });
+      flipY: Module.meta.flipY
+    })
   }
 
   const uniforms = {
@@ -30,17 +30,17 @@ function render({ Module, canvas, context, pipeline }) {
     iChannel0: modVCanvasTexture,
     iChannel1: modVCanvasTexture,
     iChannel2: modVCanvasTexture,
-    iChannel3: modVCanvasTexture,
-  };
+    iChannel3: modVCanvasTexture
+  }
 
   if (Module.props) {
-    Object.keys(Module.props).forEach((key) => {
+    Object.keys(Module.props).forEach(key => {
       if (Module.props[key].type === 'texture') {
-        uniforms[key] = Module[key].texture;
+        uniforms[key] = Module[key].texture
       } else {
-        uniforms[key] = Module[key];
+        uniforms[key] = Module[key]
       }
-    });
+    })
   }
 
   // if ('meyda' in Module.meta) {
@@ -57,19 +57,19 @@ function render({ Module, canvas, context, pipeline }) {
 
   regl.clear({
     depth: 1,
-    color: [0, 0, 0, 0],
-  });
+    color: [0, 0, 0, 0]
+  })
 
-  Module.reglDraw(uniforms);
+  Module.reglDraw(uniforms)
 
-  context.save();
-  context.globalAlpha = Module.meta.alpha || 1;
-  context.globalCompositeOperation = Module.meta.compositeOperation || 'normal';
-  if (pipeline) context.clearRect(0, 0, canvas.width, canvas.height);
+  context.save()
+  context.globalAlpha = Module.meta.alpha || 1
+  context.globalCompositeOperation = Module.meta.compositeOperation || 'normal'
+  if (pipeline) context.clearRect(0, 0, canvas.width, canvas.height)
   // Copy Shader Canvas to Main Canvas
-  context.drawImage(webgl.canvas, 0, 0, canvas.width, canvas.height);
+  context.drawImage(webgl.canvas, 0, 0, canvas.width, canvas.height)
 
-  context.restore();
+  context.restore()
 }
 
 /**
@@ -79,20 +79,20 @@ function render({ Module, canvas, context, pipeline }) {
  * @return {Promise} Resolves with completion of compiled shaders
  */
 function makeProgram(Module) {
-  const regl = webgl.regl;
+  const regl = webgl.regl
 
   return new Promise((resolve, reject) => {
     // Read shader documents
-    let vert = Module.vertexShader;
-    let frag = Module.fragmentShader;
+    let vert = Module.vertexShader
+    let frag = Module.fragmentShader
 
-    if (!vert) vert = webgl.defaultShader.v;
-    if (!frag) frag = webgl.defaultShader.f;
+    if (!vert) vert = webgl.defaultShader.v
+    if (!frag) frag = webgl.defaultShader.f
 
     if (frag.search('gl_FragColor') < 0) {
-      frag = webgl.defaultShader.fWrap.replace(/(%MAIN_IMAGE_INJECT%)/, frag);
+      frag = webgl.defaultShader.fWrap.replace(/(%MAIN_IMAGE_INJECT%)/, frag)
 
-      vert = webgl.defaultShader.v300;
+      vert = webgl.defaultShader.v300
     }
 
     const uniforms = {
@@ -105,7 +105,7 @@ function makeProgram(Module) {
       iResolution: ({ viewportWidth, viewportHeight, pixelRatio }) => [
         viewportWidth,
         viewportHeight,
-        pixelRatio,
+        pixelRatio
       ],
       iChannel0: regl.prop('iChannel0'),
       iChannel1: regl.prop('iChannel1'),
@@ -114,13 +114,13 @@ function makeProgram(Module) {
       'iChannelResolution[0]': regl.prop('iChannelResolution[0]'),
       'iChannelResolution[1]': regl.prop('iChannelResolution[1]'),
       'iChannelResolution[2]': regl.prop('iChannelResolution[2]'),
-      'iChannelResolution[3]': regl.prop('iChannelResolution[3]'),
-    };
+      'iChannelResolution[3]': regl.prop('iChannelResolution[3]')
+    }
 
     if (Module.props) {
-      Object.keys(Module.props).forEach((key) => {
-        uniforms[key] = regl.prop(key);
-      });
+      Object.keys(Module.props).forEach(key => {
+        uniforms[key] = regl.prop(key)
+      })
     }
 
     try {
@@ -130,32 +130,32 @@ function makeProgram(Module) {
 
         attributes: {
           position: [-2, 2, 0, -2, 2, 2],
-          a_position: [-2, 2, 0, -2, 2, 2],
+          a_position: [-2, 2, 0, -2, 2, 2]
         },
 
         uniforms,
 
-        count: 3,
-      });
+        count: 3
+      })
 
-      Module.reglDraw = draw;
-      Module.draw = render;
+      Module.reglDraw = draw
+      Module.draw = render
     } catch (e) {
-      reject(e);
+      reject(e)
     }
 
-    resolve(Module);
-  }).catch((reason) => {
-    throw new Error(reason);
-  });
+    resolve(Module)
+  }).catch(reason => {
+    throw new Error(reason)
+  })
 }
 
 async function setup(Module) {
   try {
-    return await makeProgram(Module);
+    return await makeProgram(Module)
   } catch (e) {
-    throw new Error(e);
+    throw new Error(e)
   }
 }
 
-export { setup, render };
+export { setup, render }

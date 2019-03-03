@@ -3,15 +3,18 @@
     <label :for="inputId">{{ label }}</label>
 
     <div class="columns is-variable is-2">
-      <div class="column is-6">Source:
+      <div class="column is-6">
+        Source:
         <div v-for="sourceName in sources" :key="sourceName" class="field">
-          <b-radio v-model="source" :native-value="sourceName">{{ sourceName }}</b-radio>
+          <b-radio v-model="source" :native-value="sourceName">{{
+            sourceName
+          }}</b-radio>
         </div>
       </div>
 
-      <div class="column is-6" v-if="source === 'layer'">
-        <b-dropdown class="dropdown" v-model="currentLayerIndex" :id="inputId">
-          <button class="button is-primary is-small" slot="trigger">
+      <div v-if="source === 'layer'" class="column is-6">
+        <b-dropdown :id="inputId" v-model="currentLayerIndex" class="dropdown">
+          <button slot="trigger" class="button is-primary is-small">
             <span>{{ selectedLabel | capitalize }}</span>
             <b-icon icon="angle-down"></b-icon>
           </button>
@@ -20,13 +23,14 @@
             v-for="(data, idx) in layerNames"
             :key="idx"
             :value="data.value"
-          >{{ data.label | capitalize }}</b-dropdown-item>
+            >{{ data.label | capitalize }}</b-dropdown-item
+          >
         </b-dropdown>
       </div>
 
-      <div class="column is-6" v-if="source === 'image'">
-        <b-dropdown class="dropdown" v-model="currentImage" :id="inputId">
-          <button class="button is-primary is-small" slot="trigger">
+      <div v-if="source === 'image'" class="column is-6">
+        <b-dropdown :id="inputId" v-model="currentImage" class="dropdown">
+          <button slot="trigger" class="button is-primary is-small">
             <span>{{ selectedLabel | capitalize }}</span>
             <b-icon icon="angle-down"></b-icon>
           </button>
@@ -35,7 +39,8 @@
             v-for="(data, idx) in projectImages"
             :key="idx"
             :value="data.value"
-          >{{ data.label | capitalize }}</b-dropdown-item>
+            >{{ data.label | capitalize }}</b-dropdown-item
+          >
         </b-dropdown>
       </div>
     </div>
@@ -43,63 +48,65 @@
 </template>
 
 <script>
-import { mapGetters } from 'vuex';
+import { mapGetters } from 'vuex'
 
 export default {
-  name: 'imageControl',
+  name: 'ImageControl',
   props: ['meta'],
   data() {
     return {
       currentLayerIndex: -1,
       currentImage: '',
       source: 'layer',
-      sources: ['layer', 'image', 'video'],
-    };
+      sources: ['layer', 'image', 'video']
+    }
   },
   computed: {
     ...mapGetters('layers', {
-      layers: 'allLayers',
+      layers: 'allLayers'
     }),
 
     layerNames() {
-      const data = [];
-      const allLayers = this.layers;
+      const data = []
+      const allLayers = this.layers
 
-      if (allLayers.length < 1) return data;
+      if (allLayers.length < 1) return data
 
       data.push({
         label: 'Inherit',
         value: -1,
-        selected: typeof this.currentLayerIndex === 'undefined',
-      });
+        selected: typeof this.currentLayerIndex === 'undefined'
+      })
 
       allLayers.forEach((Layer, idx) => {
-        const name = Layer.name;
+        const name = Layer.name
         data.push({
           label: name,
           value: idx,
-          selected: this.currentLayerIndex === idx,
-        });
-      });
+          selected: this.currentLayerIndex === idx
+        })
+      })
 
-      return data;
+      return data
     },
 
     projectImages() {
       const { images } = this.$store.state.projects.projects[
         this.$store.state.projects.currentProject
-      ];
+      ]
 
       return Object.keys(images).map(title => ({
         label: title,
         value: images[title],
-        selected: images[title] === this.sourceData,
-      }));
+        selected: images[title] === this.sourceData
+      }))
     },
 
     value: {
       get() {
-        return this.$store.state.modVModules.active[this.moduleName][this.variable];
+        return this.$store.state.modVModules.active[this.moduleName][
+          this.variable
+        ]
       },
       set(value) {
         this.$store.dispatch('modVModules/updateProp', {
@@ -107,72 +114,76 @@ export default {
           prop: this.variable,
           data: {
             source: this.source,
-            sourceData: value,
-          },
-        });
-      },
+            sourceData: value
+          }
+        })
+      }
     },
 
     sourceData() {
-      return this.value && this.value.sourceData;
+      return this.value && this.value.sourceData
     },
 
     variable() {
-      return this.meta.$modv_variable;
+      return this.meta.$modv_variable
     },
 
     label() {
-      return this.meta.label || this.variable;
+      return this.meta.label || this.variable
     },
 
     moduleName() {
-      return this.meta.$modv_moduleName;
+      return this.meta.$modv_moduleName
     },
 
     currentLayer() {
-      return this.layers[this.currentLayerIndex];
+      return this.layers[this.currentLayerIndex]
     },
 
     inputId() {
-      return `${this.moduleName}-${this.variable}`;
+      return `${this.moduleName}-${this.variable}`
     },
 
     selectedLabel() {
       if (this.source === 'layer') {
-        return this.currentLayerIndex < 0 ? 'Inherit' : this.layers[this.currentLayerIndex].name;
+        return this.currentLayerIndex < 0
+          ? 'Inherit'
+          : this.layers[this.currentLayerIndex].name
       }
 
       if (this.source === 'image') {
-        const selectedImage = this.projectImages.find(image => image.value === this.sourceData);
-        return (selectedImage && selectedImage.label) || 'Select Image';
+        const selectedImage = this.projectImages.find(
+          image => image.value === this.sourceData
+        )
+        return (selectedImage && selectedImage.label) || 'Select Image'
       }
 
-      return '';
-    },
-  },
-  mounted() {
-    if (this.value && this.value.sourceData) {
-      this.currentLayerIndex = this.sourceData;
-    }
-
-    if (this.value && this.value.source) {
-      this.source = this.value.source;
+      return ''
     }
   },
   watch: {
     currentLayerIndex(value) {
-      this.value = value;
+      this.value = value
     },
     currentImage(value) {
-      this.value = value;
+      this.value = value
     },
     value(value) {
       if (value.source) {
-        this.source = value.source;
+        this.source = value.source
       }
-    },
+    }
   },
-};
+  mounted() {
+    if (this.value && this.value.sourceData) {
+      this.currentLayerIndex = this.sourceData
+    }
+
+    if (this.value && this.value.source) {
+      this.source = this.value.source
+    }
+  }
+}
 </script>
 
 <style lang="scss" scoped>

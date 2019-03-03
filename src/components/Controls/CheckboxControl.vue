@@ -3,27 +3,22 @@
     <label :for="inputId" @click="labelClicked">
       {{ label }}
     </label>
-    <b-checkbox
-      v-model.boolean="value"
-      :id="inputId"
-    ></b-checkbox>
+    <b-checkbox :id="inputId" v-model="value"></b-checkbox>
   </div>
 </template>
 
 <script>
-  export default {
-    name: 'rangeControl',
-    beforeMount() {
-      if (typeof this.value === 'undefined') this.value = this.defaultValue;
-    },
-    methods: {
-      labelClicked() {
-        this.value = !this.value;
-      },
-    },
-  };
+export default {
+  name: 'RangeControl',
+  beforeMount() {
+    if (typeof this.value === 'undefined') this.value = this.defaultValue
+  },
+  methods: {
+    labelClicked() {
+      this.value = !this.value
+    }
+  }
+}
 </script>
 
-<style scoped lang='scss'>
-
-</style>
+<style scoped lang="scss"></style>

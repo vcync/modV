@@ -1,4 +1,4 @@
-import crtFrag from './MattiasCRT/mattiasCrt.frag';
+import crtFrag from './MattiasCRT/mattiasCrt.frag'
 
 export default {
   meta: {
@@ -6,7 +6,7 @@ export default {
     author: 'Mattias',
     version: '1.0.0',
     previewWithOutput: true,
-    type: 'shader',
+    type: 'shader'
   },
-  fragmentShader: crtFrag,
-};
+  fragmentShader: crtFrag
+}

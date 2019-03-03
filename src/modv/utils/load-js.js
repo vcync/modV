@@ -5,19 +5,19 @@
  * @return {Promise}
  */
 function loadJS(url, targetElement = document.body, module) {
-  return new Promise((resolve) => {
-    const scriptTag = document.createElement('script');
+  return new Promise(resolve => {
+    const scriptTag = document.createElement('script')
 
     scriptTag.onload = () => {
-      resolve(module);
-    };
+      resolve(module)
+    }
     scriptTag.onreadystatechange = () => {
-      resolve(module);
-    };
+      resolve(module)
+    }
 
-    scriptTag.src = url;
-    targetElement.appendChild(scriptTag);
-  });
+    scriptTag.src = url
+    targetElement.appendChild(scriptTag)
+  })
 }
 
-export default loadJS;
+export default loadJS

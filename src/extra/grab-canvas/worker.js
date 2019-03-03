@@ -1,73 +1,73 @@
 /* eslint-env worker */
 
-import LuminaveConnector from './luminave-connector';
+import LuminaveConnector from './luminave-connector'
 
 // Connect to the luminave-modV integration
 // @see https://github.com/NERDDISCO/luminave#integrations
-const luminaveConnector = new LuminaveConnector();
+const luminaveConnector = new LuminaveConnector()
 
 /**
  * When the worker receives a message, it triggers different functions
  */
-onmessage = (e) => {
-  const message = e.data;
+onmessage = e => {
+  const message = e.data
 
   switch (message.type) {
     // Update the settings of LuminaveConnector
     default: {
-      break;
+      break
     }
 
     case 'setupCanvas': {
-      const { width, height, selectionX, selectionY } = message.payload;
+      const { width, height, selectionX, selectionY } = message.payload
 
-      luminaveConnector.width = width;
-      luminaveConnector.height = height;
-      luminaveConnector.selectionX = selectionX;
-      luminaveConnector.selectionY = selectionY;
-      break;
+      luminaveConnector.width = width
+      luminaveConnector.height = height
+      luminaveConnector.selectionX = selectionX
+      luminaveConnector.selectionY = selectionY
+      break
     }
 
     // Create a WebSocket onnection
     case 'setupConnection': {
-      const { url, active } = message.payload;
+      const { url, active } = message.payload
 
-      luminaveConnector.url = url;
+      luminaveConnector.url = url
 
       // The plugin is active
       if (active) {
         // Stop an old reconnect
-        luminaveConnector.stopReconnect();
+        luminaveConnector.stopReconnect()
         // Allow reconnects
-        luminaveConnector.startReconnect();
+        luminaveConnector.startReconnect()
         // Create the connection
-        luminaveConnector.setupSocket();
+        luminaveConnector.setupSocket()
       } else {
         // Stop an old reconnect because the plugin is not active
-        luminaveConnector.stopReconnect();
+        luminaveConnector.stopReconnect()
       }
-      
-      break;
+
+      break
     }
 
     // Start a connection that will also reconnect
     case 'startConnection': {
-      luminaveConnector.startReconnect();
-      luminaveConnector.setupSocket();
-      break;
+      luminaveConnector.startReconnect()
+      luminaveConnector.setupSocket()
+      break
     }
 
     // Stop a connection and don't allow reconnect
     case 'closeConnection': {
-      luminaveConnector.stopReconnect();
-      luminaveConnector.closeConnection();
-      break;
+      luminaveConnector.stopReconnect()
+      luminaveConnector.closeConnection()
+      break
     }
 
     // Send the raw pixel data from the modV output canvas to LuminaveConnector
     case 'data': {
-      luminaveConnector.drawFrame(message.payload);
-      break;
+      luminaveConnector.drawFrame(message.payload)
+      break
     }
   }
-};
+}

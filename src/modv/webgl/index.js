@@ -1,39 +1,39 @@
-import createREGL from 'regl/dist/regl.unchecked';
-import defaultShader from './default-shader';
+import createREGL from 'regl/dist/regl.unchecked'
+import defaultShader from './default-shader'
 
 function setupWebGl(modV) {
-  const canvas = document.createElement('canvas');
+  const canvas = document.createElement('canvas')
   const gl = canvas.getContext('webgl2', {
     premultipliedAlpha: false,
-    antialias: true,
-  });
+    antialias: true
+  })
 
   const regl = createREGL({
     gl,
     attributes: {
-      antialias: true,
-    },
-  });
+      antialias: true
+    }
+  })
 
-  const env = { gl, canvas, regl };
+  const env = { gl, canvas, regl }
 
   Object.defineProperty(env, 'defaultShader', {
-    get: () => defaultShader,
-  });
+    get: () => defaultShader
+  })
 
-  modV.webgl = env;
+  modV.webgl = env
 
   env.resize = (widthIn, heightIn, dpr = 1) => {
-    const width = widthIn * dpr;
-    const height = heightIn * dpr;
+    const width = widthIn * dpr
+    const height = heightIn * dpr
 
-    canvas.width = width;
-    canvas.height = height;
-  };
+    canvas.width = width
+    canvas.height = height
+  }
 
-  env.resize(modV.width, modV.height);
+  env.resize(modV.width, modV.height)
 
-  return env;
+  return env
 }
 
-export default setupWebGl;
+export default setupWebGl
