@@ -1,18 +1,23 @@
 <template>
   <div class="shadertoy-gallery columns is-gapless is-multiline">
-    <input type="text" @keypress.enter="search" class="input" placeholder="Type a keyword and press enter">
-    <span v-if="loading">Requesting info for {{ foundLength }} shader{{ foundLength === 1 ? '' : 's' }}: {{ progress.toFixed(2) }}%</span>
-
+    <input type="text" @keypress.enter="newSearch" v-model="keyword" class="input" placeholder="Type a keyword and press enter">
     <div v-bar="{ useScrollbarPseudo: true }" class="results" ref="scroller">
-      <ul v-show="!loading">
-        <li
-          class="is-light"
-          v-for="result in results"
-          @click="makeModule(result)"
-          :key="result.info.id"
-        >{{ result.info.name }}</li>
-      </ul>
+      <b-table
+        pagination-class="is-light"
+        :data="results"
+        :columns="columns"
+        @click="makeModule"
+
+        :loading="loading"
+
+        paginated
+        backend-pagination
+        :total="total"
+        :per-page="perPage"
+        @page-change="onPageChange"
+      />
     </div>
+    <span v-if="loading">Loading shader{{ total === 1 ? '' : 's' }}: {{ progress.toFixed(2) }}%</span>
   </div>
 </template>
 
@@ -56,30 +61,61 @@
     name: 'ShadertoyGallery',
     data() {
       return {
+        keyword: '',
         results: [],
         loading: false,
         progress: 0,
-        foundLength: '?',
+        total: '?',
+
+        page: 1,
+        perPage: 40,
+
+        columns: [
+          {
+            field: 'info.name',
+            label: 'Name',
+          },
+        ],
       };
     },
     methods: {
-      async search(e) {
-        this.loading = true;
-        this.progress = 0;
-        this.foundLength = '?';
-        const response = await axios.get(`${url}/shaders/query/${e.target.value}`, {
+      async newSearch() {
+        await this.getTotal();
+        await this.search();
+      },
+
+      async getTotal() {
+        const response = await axios.get(`${url}/shaders/query/${this.keyword}`, {
           params: {
             key: appKey,
           },
         });
 
-        this.foundLength = response.data.Results.length;
+        this.total = response.data.Results.length;
+      },
+
+      async search() {
+        const { keyword, perPage } = this;
+        let { page } = this;
+        page -= 1;
+        this.loading = true;
+        this.progress = 0;
+        this.results = [];
+
+        const response = await axios.get(`${url}/shaders/query/${keyword}`, {
+          params: {
+            key: appKey,
+            from: page * perPage,
+            num: perPage,
+          },
+        });
 
         const shaders = await getShaders(response.data.Results, (p) => {
           this.progress = p;
         });
 
         this.loading = false;
+
         this.results = shaders
           .map(response => response.data.Shader)
           .filter(shader => shader.renderpass.length < 2);
@@ -88,6 +124,12 @@
           this.$vuebar.refreshScrollbar(this.$refs.scroller);
         });
       },
+
+      onPageChange(page) {
+        this.page = page;
+        this.search();
+      },
+
       async makeModule(result) {
         const { inputs } = result.renderpass[0];
         let { code } = result.renderpass[0];
