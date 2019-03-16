@@ -1,29 +1,30 @@
 <template>
   <div class="shadertoy-gallery columns is-gapless is-multiline">
     <input
+      v-model="keyword"
       type="text"
       class="input"
       placeholder="Type a keyword and press enter"
-      @keypress.enter="search"
+      @keypress.enter="newSearch"
     />
-    <span v-if="loading"
-      >Requesting info for {{ foundLength }} shader{{
-        foundLength === 1 ? '' : 's'
-      }}: {{ progress.toFixed(2) }}%</span
-    >
-
     <div ref="scroller" v-bar="{ useScrollbarPseudo: true }" class="results">
-      <ul v-show="!loading">
-        <li
-          v-for="result in results"
-          :key="result.info.id"
-          class="is-light"
-          @click="makeModule(result)"
-        >
-          {{ result.info.name }}
-        </li>
-      </ul>
+      <b-table
+        pagination-class="is-light"
+        :data="results"
+        :columns="columns"
+        :loading="loading"
+        paginated
+        backend-pagination
+        :total="total"
+        :per-page="perPage"
+        @click="makeModule"
+        @page-change="onPageChange"
+      />
     </div>
+    <span v-if="loading"
+      >Loading shader{{ total === 1 ? '' : 's' }}:
+      {{ progress.toFixed(2) }}%</span
+    >
   </div>
 </template>
 
@@ -67,33 +68,61 @@ export default {
   name: 'ShadertoyGallery',
   data() {
     return {
+      keyword: '',
       results: [],
       loading: false,
       progress: 0,
-      foundLength: '?'
+      total: '?',
+
+      page: 1,
+      perPage: 40,
+
+      columns: [
+        {
+          field: 'info.name',
+          label: 'Name'
+        }
+      ]
     }
   },
   methods: {
-    async search(e) {
+    async newSearch() {
+      await this.getTotal()
+      await this.search()
+    },
+
+    async getTotal() {
+      const response = await axios.get(`${url}/shaders/query/${this.keyword}`, {
+        params: {
+          key: appKey
+        }
+      })
+
+      this.total = response.data.Results.length
+    },
+
+    async search() {
+      const { keyword, perPage } = this
+      let { page } = this
+      page -= 1
       this.loading = true
       this.progress = 0
-      this.foundLength = '?'
-      const response = await axios.get(
-        `${url}/shaders/query/${e.target.value}`,
-        {
-          params: {
-            key: appKey
-          }
-        }
-      )
+      this.results = []
 
-      this.foundLength = response.data.Results.length
+      const response = await axios.get(`${url}/shaders/query/${keyword}`, {
+        params: {
+          key: appKey,
+          from: page * perPage,
+          num: perPage
+        }
+      })
 
       const shaders = await getShaders(response.data.Results, p => {
         this.progress = p
       })
 
       this.loading = false
+
       this.results = shaders
         .map(response => response.data.Shader)
         .filter(shader => shader.renderpass.length < 2)
@@ -102,6 +131,12 @@ export default {
         this.$vuebar.refreshScrollbar(this.$refs.scroller)
       })
     },
+
+    onPageChange(page) {
+      this.page = page
+      this.search()
+    },
+
     async makeModule(result) {
       const { inputs } = result.renderpass[0]
       let { code } = result.renderpass[0]
