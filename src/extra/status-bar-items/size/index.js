@@ -1,6 +1,6 @@
-import component from './Size';
+import component from './Size'
 
 export default {
   name: 'size',
-  component,
-};
+  component
+}

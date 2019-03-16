@@ -1,8 +1,7 @@
-import store from '@/store';
-import { modV } from 'modv';
-import controlPanelComponent from './ControlPanel';
-import grabCanvasStore from './store';
-
+import store from '@/store'
+import { modV } from 'modv'
+import controlPanelComponent from './ControlPanel'
+import grabCanvasStore from './store'
 
 const Worker = require('worker-loader!./worker.js'); //eslint-disable-line
 
@@ -17,24 +16,25 @@ const Worker = require('worker-loader!./worker.js'); //eslint-disable-line
  * @param{number} selectionX - Amount of areas we select on the x-axis
  * @param{number} selectionY - Amount of areas we select on the y-axis
  */
-const theWorker = new Worker();
+const theWorker = new Worker()
 
 // Small version of the output canvas
-const smallCanvas = document.createElement('canvas');
-const smallContext = smallCanvas.getContext('2d');
-const smallCanvasWidth = 200;
-const smallCanvasHeight = 200;
+const smallCanvas = document.createElement('canvas')
+const smallContext = smallCanvas.getContext('2d')
+const smallCanvasWidth = 200
+const smallCanvasHeight = 200
 
 // Add the canvas to modV for testing purposes :D
-smallCanvas.classList.add('is-hidden');
-smallCanvas.style = 'position: absolute; top: 0px; right: 0px; width: 200px; height: 200px; z-index: 100000; background: #000;';
-document.body.appendChild(smallCanvas);
+smallCanvas.classList.add('is-hidden')
+smallCanvas.style = `position: absolute; top: 0px; right: 0px; width: 200px;
+height: 200px; z-index: 100000; background: #000;`
+document.body.appendChild(smallCanvas)
 
-let selectionX = 0;
-let selectionY = 0;
+let selectionX = 0
+let selectionY = 0
 
 // Is the plugin active?
-let isActive = true;
+let isActive = true
 
 const grabCanvas = {
   name: 'Grab Canvas',
@@ -43,33 +43,33 @@ const grabCanvas = {
 
   presetData: {
     save() {
-      return store.state.grabCanvas;
+      return store.state.grabCanvas
     },
 
     load(data) {
-      const { selectionX, selectionY, url } = data;
+      const { selectionX, selectionY, url } = data
 
-      store.commit('grabCanvas/setSelection', { selectionX, selectionY });
-      store.commit('grabCanvas/setUrl', { url });
-    },
+      store.commit('grabCanvas/setSelection', { selectionX, selectionY })
+      store.commit('grabCanvas/setUrl', { url })
+    }
   },
 
   on() {
-    isActive = true;
+    isActive = true
 
     // Close the WebSocket connection
     theWorker.postMessage({
-      type: 'startConnection',
-    });
+      type: 'startConnection'
+    })
   },
 
   off() {
-    isActive = false;
+    isActive = false
 
     // Close the WebSocket connection
     theWorker.postMessage({
-      type: 'closeConnection',
-    });
+      type: 'closeConnection'
+    })
   },
 
   /**
@@ -78,7 +78,7 @@ const grabCanvas = {
    * @param{Object} canvas - The modV output canvas
    */
   resize(canvas) {
-    if (!canvas) return;
+    if (!canvas) return
 
     theWorker.postMessage({
       type: 'setupCanvas',
@@ -86,74 +86,79 @@ const grabCanvas = {
         width: smallCanvas.width,
         height: smallCanvas.height,
         selectionX: store.state.grabCanvas.selectionX,
-        selectionY: store.state.grabCanvas.selectionY,
-      },
-    });
+        selectionY: store.state.grabCanvas.selectionY
+      }
+    })
   },
 
   /**
    * Only called when added to modV.
    */
   install() {
-    isActive = true;
+    isActive = true
 
     // Set the size of the smallCanvas
-    smallCanvas.width = smallCanvasWidth;
-    smallCanvas.height = smallCanvasHeight;
+    smallCanvas.width = smallCanvasWidth
+    smallCanvas.height = smallCanvasHeight
 
-    store.subscribe((mutation) => {
+    store.subscribe(mutation => {
       switch (mutation.type) {
         case 'windows/setSize':
           this.resize({
             width: mutation.payload.width,
-            height: mutation.payload.height,
-          });
-          break;
+            height: mutation.payload.height
+          })
+          break
 
         case 'grabCanvas/setSelection':
-          selectionX = mutation.payload.selectionX || store.state.grabCanvas.selectionX;
-          selectionY = mutation.payload.selectionY || store.state.grabCanvas.selectionY;
+          selectionX =
+            mutation.payload.selectionX || store.state.grabCanvas.selectionX
+          selectionY =
+            mutation.payload.selectionY || store.state.grabCanvas.selectionY
 
           theWorker.postMessage({
             type: 'setupCanvas',
             payload: {
               width: smallCanvas.width,
               height: smallCanvas.height,
-              selectionX: mutation.payload.selectionX || store.state.grabCanvas.selectionX,
-              selectionY: mutation.payload.selectionY || store.state.grabCanvas.selectionY,
-            },
-          });
-          break;
+              selectionX:
+                mutation.payload.selectionX ||
+                store.state.grabCanvas.selectionX,
+              selectionY:
+                mutation.payload.selectionY || store.state.grabCanvas.selectionY
+            }
+          })
+          break
 
         case 'grabCanvas/setUrl':
           theWorker.postMessage({
             type: 'setupConnection',
             payload: {
               url: mutation.payload.url || store.state.grabCanvas.url,
-              active: isActive,
-            },
-          });
-          break;
+              active: isActive
+            }
+          })
+          break
 
         case 'grabCanvas/setShowCanvas':
-          smallCanvas.classList.toggle('is-hidden');
-          break;
+          smallCanvas.classList.toggle('is-hidden')
+          break
 
         default:
-          break;
+          break
       }
-    });
+    })
 
-    this.resize(modV.outputCanvas);
+    this.resize(modV.outputCanvas)
 
     // Create the WebSocket connection
     theWorker.postMessage({
       type: 'setupConnection',
       payload: {
         url: store.state.grabCanvas.url,
-        active: isActive,
-      },
-    });
+        active: isActive
+      }
+    })
   },
 
   /**
@@ -164,25 +169,30 @@ const grabCanvas = {
    */
   processFrame({ canvas }) {
     // Clear the output
-    smallContext.clearRect(0, 0, smallCanvas.width, smallCanvas.height);
+    smallContext.clearRect(0, 0, smallCanvas.width, smallCanvas.height)
 
     // Create a small version of the canvas
-    smallContext.drawImage(canvas, 0, 0, smallCanvas.width, smallCanvas.height);
+    smallContext.drawImage(canvas, 0, 0, smallCanvas.width, smallCanvas.height)
 
     // Draw the areas in which the selectionX & selectionY is seperating the smallCanvas
-    this.drawAreas();
+    this.drawAreas()
 
     // Get the pixels from the small canvas
-    const data =
-      smallContext.getImageData(0, 0, smallCanvas.width, smallCanvas.height).data.buffer;
+    const data = smallContext.getImageData(
+      0,
+      0,
+      smallCanvas.width,
+      smallCanvas.height
+    ).data.buffer
 
     // Send the data to the worker
-    theWorker.postMessage({
-      type: 'data',
-      payload: data,
-    }, [
-      data,
-    ]);
+    theWorker.postMessage(
+      {
+        type: 'data',
+        payload: data
+      },
+      [data]
+    )
   },
 
   /**
@@ -190,10 +200,11 @@ const grabCanvas = {
    */
   drawAreas() {
     // Size of each area
-    const areaSize = Math.floor((smallCanvas.width / selectionX)
-      + (smallCanvas.height / selectionY));
-    const areaWidth = Math.floor(areaSize / 2);
-    const areaHeight = Math.floor(areaSize / 2);
+    const areaSize = Math.floor(
+      smallCanvas.width / selectionX + smallCanvas.height / selectionY
+    )
+    const areaWidth = Math.floor(areaSize / 2)
+    const areaHeight = Math.floor(areaSize / 2)
 
     // selectionX = how many areas we grab on the x axis
     for (let x = 0; x < selectionX; x++) { //eslint-disable-line
@@ -202,14 +213,14 @@ const grabCanvas = {
       for (let y = 0; y < selectionY; y++) { //eslint-disable-line
 
         // Coordinates of the area
-        const pointX = (x * Math.floor(smallCanvas.width / selectionX));
-        const pointY = (y * Math.floor(smallCanvas.height / selectionY));
+        const pointX = x * Math.floor(smallCanvas.width / selectionX)
+        const pointY = y * Math.floor(smallCanvas.height / selectionY)
 
-        smallContext.strokeStyle = 'rgba(255, 255, 255, 0.5)';
-        smallContext.strokeRect(pointX + 1, pointY + 1, areaWidth, areaHeight);
+        smallContext.strokeStyle = 'rgba(255, 255, 255, 0.5)'
+        smallContext.strokeRect(pointX + 1, pointY + 1, areaWidth, areaHeight)
       }
     }
-  },
-};
+  }
+}
 
-export default grabCanvas;
+export default grabCanvas

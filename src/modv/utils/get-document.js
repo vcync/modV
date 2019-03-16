@@ -8,15 +8,15 @@
  * @param {getDocumentCallback} callback
  */
 function getDocument(url, callback) {
-  const xhr = new XMLHttpRequest();
+  const xhr = new XMLHttpRequest()
 
   xhr.onload = () => {
-    callback(xhr.responseXML);
-  };
+    callback(xhr.responseXML)
+  }
 
-  xhr.open('GET', url);
-  xhr.responseType = 'document';
-  xhr.send();
+  xhr.open('GET', url)
+  xhr.responseType = 'document'
+  xhr.send()
 }
 
-export default getDocument;
+export default getDocument

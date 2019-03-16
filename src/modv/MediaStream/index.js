@@ -1,7 +1,4 @@
-import scan from './scan';
-import setSource from './set-source';
+import scan from './scan'
+import setSource from './set-source'
 
-export {
-  scan,
-  setSource,
-};
+export { scan, setSource }

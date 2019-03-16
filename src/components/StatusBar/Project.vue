@@ -1,6 +1,8 @@
 <template>
   <div>
-    <span class="tag" @dblclick="modalOpen = true">{{ $store.state.projects.currentProject }}</span>
+    <span class="tag" @dblclick="modalOpen = true">{{
+      $store.state.projects.currentProject
+    }}</span>
 
     <b-modal :active.sync="modalOpen">
       <div class="card">
@@ -8,10 +10,10 @@
           <h1 class="title">Projects</h1>
           <div class="columns is-mobile is-multiline">
             <div
-              class="column is-12"
               v-for="projectName in Object.keys($store.state.projects.projects)"
+              :key="projectName"
+              class="column is-12"
             >
-
               <div class="columns">
                 <div class="column is-10">
                   {{ projectName }}
@@ -21,7 +23,9 @@
                     class="button is-dark is-outlined"
                     :disabled="!isCurrent(projectName)"
                     @click="useProject({ projectName })"
-                  >{{ isCurrent(projectName) ? 'Use' : 'In use' }}</button>
+                  >
+                    {{ isCurrent(projectName) ? 'Use' : 'In use' }}
+                  </button>
                 </div>
               </div>
             </div>
@@ -34,19 +38,19 @@
 
 <script>
 export default {
-  name: 'statusBarItemProject',
+  name: 'StatusBarItemProject',
   data() {
     return {
-      modalOpen: false,
-    };
+      modalOpen: false
+    }
   },
   methods: {
     useProject({ projectName }) {
-      this.$store.dispatch('projects/setCurrent', { projectName });
+      this.$store.dispatch('projects/setCurrent', { projectName })
     },
     isCurrent(projectName) {
-      return this.$store.state.projects.currentProject !== projectName;
-    },
-  },
-};
+      return this.$store.state.projects.currentProject !== projectName
+    }
+  }
+}
 </script>

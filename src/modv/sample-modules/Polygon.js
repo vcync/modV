@@ -4,7 +4,7 @@ export default {
     name: 'Polygon',
     author: '2xAA',
     audioFeatures: ['rms', 'zcr'],
-    version: '0.2.0',
+    version: '0.2.0'
   },
 
   props: {
@@ -14,7 +14,7 @@ export default {
       min: 0,
       max: 30,
       step: 1,
-      default: 15,
+      default: 15
     },
 
     shapeSize: {
@@ -23,7 +23,7 @@ export default {
       min: 0,
       max: 300,
       step: 1,
-      default: 60,
+      default: 60
     },
 
     strokeWeight: {
@@ -33,19 +33,19 @@ export default {
       max: 20,
       step: 1,
       default: 1,
-      strict: true,
+      strict: true
     },
 
     fill: {
       type: 'bool',
       label: 'Fill',
-      default: false,
+      default: false
     },
 
     rotateToggle: {
       type: 'bool',
       label: 'Rotate',
-      default: false,
+      default: false
     },
 
     rotateSpeed: {
@@ -54,7 +54,7 @@ export default {
       min: 0.1,
       max: 10.0,
       step: 0.1,
-      default: 5.0,
+      default: 5.0
     },
 
     color: {
@@ -82,64 +82,64 @@ export default {
             { r: 132, g: 195, b: 223 },
             { r: 82, g: 127, b: 162 },
             { r: 209, g: 121, b: 211 },
-            { r: 181, g: 152, b: 220 },
+            { r: 181, g: 152, b: 220 }
           ], // generated here: http://tools.medialab.sciences-po.fr/iwanthue/
-          duration: 500,
-        },
-      },
-    },
+          duration: 500
+        }
+      }
+    }
   },
 
   data: {
-    hue: 0,
+    hue: 0
   },
 
   draw({ canvas, context, features, delta }) {
-    let analysed;
-    let rotate = 0;
+    let analysed
+    let rotate = 0
 
-    if (this.rotateToggle) rotate = ((delta / 1000) * this.rotateSpeed);
+    if (this.rotateToggle) rotate = (delta / 1000) * this.rotateSpeed
 
     if (this.soundType) {
-      analysed = (features.zcr / 10) * this.intensity;
+      analysed = (features.zcr / 10) * this.intensity
     } else {
-      analysed = (features.rms * 10) * this.intensity;
+      analysed = features.rms * 10 * this.intensity
     }
 
-    context.strokeStyle = this.color;
-    context.fillStyle = this.color;
-    context.lineWidth = this.strokeWeight;
+    context.strokeStyle = this.color
+    context.fillStyle = this.color
+    context.lineWidth = this.strokeWeight
 
-    context.beginPath();
+    context.beginPath()
     this.polygon(
       context,
-      Math.round((canvas.width / 2)),
-      Math.round((canvas.height / 2)),
+      Math.round(canvas.width / 2),
+      Math.round(canvas.height / 2),
       analysed + this.shapeSize,
       3 + Math.round(analysed / 10),
-      -(Math.PI / 2) + rotate,
-    );
-    context.closePath();
-    context.stroke();
-    if (this.fill) context.fill();
+      -(Math.PI / 2) + rotate
+    )
+    context.closePath()
+    context.stroke()
+    if (this.fill) context.fill()
   },
 
   polygon(ctx, x, y, radius, sides, startAngle, anticlockwise) { //eslint-disable-line
-    if (sides < 3) return;
+    if (sides < 3) return
 
-    let a = (Math.PI * 2) / sides;
-    a = anticlockwise ? -a : a;
+    let a = (Math.PI * 2) / sides
+    a = anticlockwise ? -a : a
 
-    ctx.save();
-    ctx.translate(x, y);
-    ctx.rotate(startAngle);
-    ctx.moveTo(radius, 0);
+    ctx.save()
+    ctx.translate(x, y)
+    ctx.rotate(startAngle)
+    ctx.moveTo(radius, 0)
 
     for (let i = 1; i < sides; i += 1) {
-      ctx.lineTo(radius * Math.cos(a * i), radius * Math.sin(a * i));
+      ctx.lineTo(radius * Math.cos(a * i), radius * Math.sin(a * i))
     }
 
-    ctx.closePath();
-    ctx.restore();
-  },
-};
+    ctx.closePath()
+    ctx.restore()
+  }
+}

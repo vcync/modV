@@ -9,9 +9,9 @@
  * @param {forInCallback} callback
  */
 function forIn(item, callback) {
-  Object.keys(item).forEach((name) => {
-    callback(name, item[name]);
-  });
+  Object.keys(item).forEach(name => {
+    callback(name, item[name])
+  })
 }
 
-export default forIn;
+export default forIn

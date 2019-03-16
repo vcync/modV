@@ -1,36 +1,36 @@
 /* eslint-disable no-underscore-dangle */
 
-import awesomeText from '@/extra/awesome-text';
+import awesomeText from '@/extra/awesome-text'
 
 function getTextHeight(font, textContent) {
-  const result = {};
+  const result = {}
 
-  const text = document.createElement('span');
-  text.style.font = font;
-  text.textContent = textContent;
+  const text = document.createElement('span')
+  text.style.font = font
+  text.textContent = textContent
 
-  const block = document.createElement('div');
-  block.style.display = 'inline-block';
-  block.style.width = '1px';
-  block.style.height = '0px';
+  const block = document.createElement('div')
+  block.style.display = 'inline-block'
+  block.style.width = '1px'
+  block.style.height = '0px'
 
-  const div = document.createElement('div');
-  div.appendChild(text);
-  div.appendChild(block);
+  const div = document.createElement('div')
+  div.appendChild(text)
+  div.appendChild(block)
 
-  document.body.appendChild(div);
+  document.body.appendChild(div)
 
-  block.style.verticalAlign = 'baseline';
-  result.ascent = block.offsetHeight - text.offsetHeight;
+  block.style.verticalAlign = 'baseline'
+  result.ascent = block.offsetHeight - text.offsetHeight
 
-  block.style.verticalAlign = 'bottom';
-  result.height = block.offsetHeight - text.offsetHeight;
+  block.style.verticalAlign = 'bottom'
+  result.height = block.offsetHeight - text.offsetHeight
 
-  result.descent = result.height - result.ascent;
+  result.descent = result.height - result.ascent
 
-  div.remove();
+  div.remove()
 
-  return result;
+  return result
 }
 
 export default {
@@ -38,7 +38,7 @@ export default {
     name: 'Text',
     author: '2xAA',
     version: 0.1,
-    type: '2d',
+    type: '2d'
   },
 
   props: {
@@ -47,8 +47,8 @@ export default {
       label: 'Text',
       default: 'modV',
       set(value) {
-        this.h = getTextHeight(this.font, value);
-      },
+        this.h = getTextHeight(this.font, value)
+      }
     },
 
     size: {
@@ -58,26 +58,29 @@ export default {
       max: 200,
       default: 50,
       set(value) {
-        this.h = getTextHeight(`${value}pt "${this.customFont}", sans-serif`, this.text);
-      },
+        this.h = getTextHeight(
+          `${value}pt "${this.customFont}", sans-serif`,
+          this.text
+        )
+      }
     },
 
     customFont: {
       type: 'string',
       label: 'Font',
-      default: 'Rubik',
+      default: 'Rubik'
     },
 
     fill: {
       type: 'bool',
       label: 'Fill',
-      default: true,
+      default: true
     },
 
     stroke: {
       type: 'bool',
       label: 'Outline',
-      default: false,
+      default: false
     },
 
     strokeWidth: {
@@ -85,7 +88,7 @@ export default {
       label: 'Outline Width',
       min: 0,
       max: 20,
-      default: 1,
+      default: 1
     },
 
     alignment: {
@@ -93,15 +96,15 @@ export default {
       enum: [
         { label: 'Left', value: 'left' },
         { label: 'Center', value: 'center', selected: true },
-        { label: 'Right', value: 'right' },
-      ],
+        { label: 'Right', value: 'right' }
+      ]
     },
 
     position: {
       type: 'vec2',
       default: [1.0, 1.0],
       min: 2,
-      max: 0,
+      max: 0
     },
 
     maxWidth: {
@@ -109,7 +112,7 @@ export default {
       label: 'Max Width',
       min: 0,
       max: 1,
-      default: 0.6,
+      default: 0.6
     },
 
     color: {
@@ -137,29 +140,29 @@ export default {
             { r: 132, g: 195, b: 223 },
             { r: 82, g: 127, b: 162 },
             { r: 209, g: 121, b: 211 },
-            { r: 181, g: 152, b: 220 },
+            { r: 181, g: 152, b: 220 }
           ], // generated here: http://tools.medialab.sciences-po.fr/iwanthue/
-          duration: 500,
-        },
-      },
-    },
+          duration: 500
+        }
+      }
+    }
   },
 
   init() {
-    this.font = `${this.size}pt "Helvetica", sans-serif`;
-    this.h = getTextHeight(this.font, this.text);
+    this.font = `${this.size}pt "Helvetica", sans-serif`
+    this.h = getTextHeight(this.font, this.text)
   },
 
   draw({ canvas, context }) {
-    context.textBaseline = 'middle';
+    context.textBaseline = 'middle'
 
-    this.font = `${this.size}pt "${this.customFont}", sans-serif`;
-    context.font = this.font;
+    this.font = `${this.size}pt "${this.customFont}", sans-serif`
+    context.font = this.font
 
-    context.textAlign = 'left';
-    context.fillStyle = this.color;
-    context.strokeStyle = this.color;
-    context.lineWidth = this.strokeWidth;
+    context.textAlign = 'left'
+    context.fillStyle = this.color
+    context.strokeStyle = this.color
+    context.lineWidth = this.strokeWidth
 
     awesomeText(
       context,
@@ -170,7 +173,7 @@ export default {
       canvas.width * this.maxWidth,
       this.alignment,
       this.stroke,
-      this.fill,
-    );
-  },
-};
+      this.fill
+    )
+  }
+}

@@ -1,4 +1,4 @@
-import filmGrainFrag from './FilmGrain/filmGrain.frag';
+import filmGrainFrag from './FilmGrain/filmGrain.frag'
 
 export default {
   meta: {
@@ -6,7 +6,7 @@ export default {
     author: '2xAA',
     version: 0.1,
     meyda: [], // returned variables passed to the shader individually as uniforms
-    type: 'shader',
+    type: 'shader'
   },
   fragmentShader: filmGrainFrag,
 
@@ -16,12 +16,12 @@ export default {
     min: 0.0,
     max: 50.0,
     step: 0.5,
-    default: 16.0,
+    default: 16.0
   },
 
   secondaryOperation: {
     type: 'bool',
     label: 'Operation Type',
-    default: false,
-  },
-};
+    default: false
+  }
+}
