@@ -530,11 +530,11 @@ const mutations = {
     Vue.set(state.activePropQueue[name], prop, data)
   },
 
-  updateProp(state, { name, prop, data, group, groupName }) {
+  async updateProp(state, { name, prop, data, group, groupName }) {
     let value
 
     if (data.type === 'texture') {
-      value = textureResolve(data.value)
+      value = await textureResolve(data.value)
     } else {
       value = data.value
     }

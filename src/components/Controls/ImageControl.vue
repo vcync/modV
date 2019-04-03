@@ -1,16 +1,14 @@
 <template>
   <div class="image-control" :data-moduleName="moduleName">
-    <label :for="inputId">
-      {{ label }}
-    </label>
+    <label :for="inputId">{{ label }}</label>
 
     <div class="columns is-variable is-2">
       <div class="column is-6">
         Source:
         <div v-for="sourceName in sources" :key="sourceName" class="field">
-          <b-radio v-model="source" :native-value="sourceName">
-            {{ sourceName }}
-          </b-radio>
+          <b-radio v-model="source" :native-value="sourceName">{{
+            sourceName
+          }}</b-radio>
         </div>
       </div>
 
@@ -23,6 +21,38 @@
 
           <b-dropdown-item
             v-for="(data, idx) in layerNames"
+            :key="idx"
+            :value="data.value"
+            >{{ data.label | capitalize }}</b-dropdown-item
+          >
+        </b-dropdown>
+      </div>
+
+      <div v-if="source === 'image'" class="column is-6">
+        <b-dropdown :id="inputId" v-model="currentImage" class="dropdown">
+          <button slot="trigger" class="button is-primary is-small">
+            <span>{{ selectedLabel | capitalize }}</span>
+            <b-icon icon="angle-down"></b-icon>
+          </button>
+
+          <b-dropdown-item
+            v-for="(data, idx) in projectImages"
+            :key="idx"
+            :value="data.value"
+            >{{ data.label | capitalize }}</b-dropdown-item
+          >
+        </b-dropdown>
+      </div>
+
+      <div v-if="source === 'video'" class="column is-6">
+        <b-dropdown :id="inputId" v-model="currentVideo" class="dropdown">
+          <button slot="trigger" class="button is-primary is-small">
+            <span>{{ selectedLabel | capitalize }}</span>
+            <b-icon icon="angle-down"></b-icon>
+          </button>
+
+          <b-dropdown-item
+            v-for="(data, idx) in projectVideos"
             :key="idx"
             :value="data.value"
             >{{ data.label | capitalize }}</b-dropdown-item
@@ -42,6 +72,8 @@ export default {
   data() {
     return {
       currentLayerIndex: -1,
+      currentImage: '',
+      currentVideo: '',
       source: 'layer',
       sources: ['layer', 'image', 'video']
     }
@@ -50,6 +82,7 @@ export default {
     ...mapGetters('layers', {
       layers: 'allLayers'
     }),
+
     layerNames() {
       const data = []
       const allLayers = this.layers
@@ -73,6 +106,31 @@ export default {
 
       return data
     },
+
+    projectImages() {
+      const { images } = this.$store.state.projects.projects[
+        this.$store.state.projects.currentProject
+      ]
+
+      return Object.keys(images).map(title => ({
+        label: title,
+        value: images[title],
+        selected: images[title] === this.sourceData
+      }))
+    },
+
+    projectVideos() {
+      const { videos } = this.$store.state.projects.projects[
+        this.$store.state.projects.currentProject
+      ]
+
+      return Object.keys(videos).map(title => ({
+        label: title,
+        value: videos[title],
+        selected: videos[title] === this.sourceData
+      }))
+    },
+
     value: {
       get() {
         return this.$store.state.modVModules.active[this.moduleName][
@@ -90,41 +148,93 @@ export default {
         })
       }
     },
+
+    sourceData() {
+      return this.value && this.value.sourceData
+    },
+
     variable() {
       return this.meta.$modv_variable
     },
+
     label() {
       return this.meta.label || this.variable
     },
+
     moduleName() {
       return this.meta.$modv_moduleName
     },
+
     currentLayer() {
       return this.layers[this.currentLayerIndex]
     },
+
     inputId() {
       return `${this.moduleName}-${this.variable}`
     },
+
     selectedLabel() {
-      return this.currentLayerIndex < 0
-        ? 'Inherit'
-        : this.layers[this.currentLayerIndex].name
+      if (this.source === 'layer') {
+        return this.currentLayerIndex < 0
+          ? 'Inherit'
+          : this.layers[this.currentLayerIndex].name
+      }
+
+      if (this.source === 'image') {
+        const selectedImage = this.projectImages.find(
+          image => image.value === this.sourceData
+        )
+        return (selectedImage && selectedImage.label) || 'Select Image'
+      }
+
+      if (this.source === 'video') {
+        const selectedImage = this.projectVideos.find(
+          video => video.value === this.sourceData
+        )
+        return (selectedImage && selectedImage.label) || 'Select Video'
+      }
+
+      return ''
     }
   },
   watch: {
-    currentLayerIndex(value) {
+    currentLayerIndex(value, old) {
+      if (value === old) return
+      this.currentImage = ''
+      this.currentVideo = ''
       this.value = value
+    },
+    currentImage(value) {
+      if (!value.length) return
+      this.currentLayerIndex = -1
+      this.currentVideo = ''
+      this.value = value
+    },
+    currentVideo(value) {
+      if (!value.length) return
+      this.currentLayerIndex = -1
+      this.currentImage = ''
+      this.value = value
+    },
+    value(value) {
+      if (value.source) {
+        this.source = value.source
+      }
     }
   },
   mounted() {
     if (this.value && this.value.sourceData) {
-      this.currentLayerIndex = this.value.sourceData
+      this.currentLayerIndex = this.sourceData
+    }
+
+    if (this.value && this.value.source) {
+      this.source = this.value.source
     }
   }
 }
 </script>
 
-<style scoped lang="scss">
+<style lang="scss" scoped>
 .profile-selector-container {
   display: inline-block;
 }

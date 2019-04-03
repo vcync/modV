@@ -35,7 +35,11 @@ function render({ Module, canvas, context, pipeline }) {
 
   if (Module.props) {
     Object.keys(Module.props).forEach(key => {
-      uniforms[key] = Module[key]
+      if (Module.props[key].type === 'texture') {
+        uniforms[key] = Module[key].texture
+      } else {
+        uniforms[key] = Module[key]
+      }
     })
   }
 
