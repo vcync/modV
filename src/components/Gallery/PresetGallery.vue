@@ -23,18 +23,16 @@
         </div>
       </div>
     </div>
-    <div class="column is-12">
-      <div
-        v-for="(preset, presetName) in project"
-        :key="presetName"
-        class="column is-12 preset-container"
-      >
+    <div class="column is-12 preset-container">
+      <div v-for="(preset, presetName) in project" :key="presetName">
         <div
           v-if="validateModuleRequirements(preset.moduleData)"
           class="columns cannot-load"
         >
           <div class="column is-10">
-            <span class="has-text-grey">{{ preset.presetInfo.name }}</span>
+            <span class="has-text-grey preset-name">{{
+              preset.presetInfo.name
+            }}</span>
           </div>
 
           <div class="column is-2">
@@ -49,7 +47,9 @@
         </div>
         <div v-else class="columns">
           <div class="column is-10">
-            <span class="has-text-light">{{ preset.presetInfo.name }}</span>
+            <span class="has-text-light preset-name">{{
+              preset.presetInfo.name
+            }}</span>
           </div>
 
           <div class="column is-2">
@@ -188,21 +188,22 @@ h2.title {
 }
 
 .column.preset-container {
-  margin: 0 5pt;
-  padding: 5pt !important;
-
   .column {
     align-items: center;
     display: flex;
+
+    span.preset-name {
+      margin-left: 1em;
+    }
   }
 
   transition: all 120ms;
 
-  & > .columns:hover {
+  .columns:hover {
     background-color: whitesmoke;
 
     &.cannot-load {
-      background-color: #797979;
+      background-color: transparent;
     }
 
     .has-text-light,
