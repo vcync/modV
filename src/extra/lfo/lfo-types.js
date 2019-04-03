@@ -1,6 +1,1 @@
-export default [
-  'sine',
-  'sawtooth',
-  'square',
-  'noise',
-];
+export default ['sine', 'sawtooth', 'square', 'noise']

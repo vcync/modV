@@ -5,10 +5,10 @@
  */
 function colorToRGBString(color) {
   try {
-    return `rgb(${color[0]},${color[1]},${color[2]})`;
+    return `rgb(${color[0]},${color[1]},${color[2]})`
   } catch (e) {
-    return 'rgb(0,0,0)';
+    return 'rgb(0,0,0)'
   }
 }
 
-export default colorToRGBString;
+export default colorToRGBString

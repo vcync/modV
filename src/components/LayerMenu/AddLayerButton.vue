@@ -3,22 +3,24 @@
     <span class="ibvf"></span>
     <i class="fa fa-plus" aria-hidden="true"></i>
   </div> -->
-  <button class="button is-primary is-small" @click="addLayer" title="Create New Layer">
+  <button
+    class="button is-primary is-small"
+    title="Create New Layer"
+    @click="addLayer"
+  >
     <b-icon icon="plus"></b-icon>
   </button>
 </template>
 
 <script>
-  import { mapActions } from 'vuex';
+import { mapActions } from 'vuex'
 
-  export default {
-    name: 'addLayerButton',
-    methods: {
-      ...mapActions('layers', [
-        'addLayer',
-      ]),
-    },
-  };
+export default {
+  name: 'AddLayerButton',
+  methods: {
+    ...mapActions('layers', ['addLayer'])
+  }
+}
 </script>
 
 <style scoped>

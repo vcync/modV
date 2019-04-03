@@ -12,6 +12,12 @@ $family-primary: $family-sans-serif; // Use the new sans-serif family
 @import "./controlPanel.scss";
 @import "./transitions.scss";
 
+.pagination-link,
+.pagination-next,
+.pagination-previous {
+  color: $light;
+}
+
 html, body {
   height: 100%;
   overflow: hidden;

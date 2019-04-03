@@ -1,14 +1,19 @@
 <template>
   <div class="palette-gallery columns is-gapless is-multiline">
     <div class="column is-12">
-      <span v-for="(project, projectName) in projects">
+      <span v-for="(project, projectName) in projects" :key="projectName">
         <h2 class="title">{{ projectName }}</h2>
         <div class="columns is-gapless is-multiline">
-          <div class="column is-12 palette-container" v-for="(palette, paletteName) in project.palettes">
+          <div
+            v-for="(palette, paletteName) in project.palettes"
+            :key="paletteName"
+            class="column is-12 palette-container"
+          >
             <p class="has-text-light">{{ paletteName }}</p>
             <div
+              v-for="(rgb, idx) in palette"
+              :key="idx"
               class="swatch"
-              v-for="rgb in palette"
               :style="makeStyle(rgb)"
             ></div>
           </div>
@@ -19,63 +24,61 @@
 </template>
 
 <script>
-  import { mapGetters } from 'vuex';
+import { mapGetters } from 'vuex'
 
-  export default {
-    name: 'paletteGallery',
-    components: {
+export default {
+  name: 'PaletteGallery',
+  components: {},
+  props: {
+    phrase: {
+      type: String,
+      required: true,
+      default: ''
+    }
+  },
+  computed: {
+    ...mapGetters('projects', {
+      projects: 'allProjects'
+    })
+  },
+  methods: {
+    search(textIn, termIn) {
+      const text = textIn.toLowerCase().trim()
+      const term = termIn.toLowerCase().trim()
+      if (termIn.length < 1) return true
 
+      return text.indexOf(term) > -1
     },
-    props: {
-      phrase: {
-        type: String,
-        required: true,
-        default: '',
-      },
-    },
-    computed: {
-      ...mapGetters('projects', {
-        projects: 'allProjects',
-      }),
-    },
-    methods: {
-      search(textIn, termIn) {
-        const text = textIn.toLowerCase().trim();
-        const term = termIn.toLowerCase().trim();
-        if (termIn.length < 1) return true;
-
-        return text.indexOf(term) > -1;
-      },
-      makeStyle(rgb) {
-        return {
-          backgroundColor: `rgb(${rgb[0]},${rgb[1]},${rgb[2]})`,
-        };
-      },
-    },
-  };
+    makeStyle(rgb) {
+      return {
+        backgroundColor: `rgb(${rgb[0]},${rgb[1]},${rgb[2]})`
+      }
+    }
+  }
+}
 </script>
 
 <style lang="scss" scoped>
-  .hidden {
-    display: none !important;
-  }
+.hidden {
+  display: none !important;
+}
 
-  h2.title {
-    color: #fff;
-    cursor: default;
-    font-weight: normal;
-    margin: 0.82em 5pt 0.2em 5pt;
-  }
+h2.title {
+  color: #fff;
+  cursor: default;
+  font-weight: normal;
+  margin: 0.82em 5pt 0.2em 5pt;
+}
 
-  .swatch {
-    border-radius: 50%;
-    display: inline-block;
-    height: 10px;
-    width: 10px;
-    margin: 3px;
-  }
+.swatch {
+  border-radius: 50%;
+  display: inline-block;
+  height: 10px;
+  width: 10px;
+  margin: 3px;
+}
 
-  .column.palette-container {
-    margin: 0 5pt;
-  }
+.column.palette-container {
+  margin: 0 5pt;
+}
 </style>

@@ -6,7 +6,7 @@ export default {
     author: '2xAA',
     version: '2.0.0',
     audioFeatures: ['zcr', 'rms'],
-    type: '2d',
+    type: '2d'
   },
 
   props: {
@@ -17,12 +17,12 @@ export default {
         spacing: {
           type: 'float',
           abs: true,
-          default: 5,
+          default: 5
         },
 
         groupDistance: {
           type: 'float',
-          default: 10,
+          default: 10
         },
 
         strokeWeight: {
@@ -30,19 +30,19 @@ export default {
           abs: true,
           default: 1,
           min: 1,
-          max: 20,
-        },
-      },
-    },
+          max: 20
+        }
+      }
+    }
   },
 
   data: {
     x: [],
-    y: [],
+    y: []
   },
 
   drawCircles(ctx, zcr, strokeWeight, spacing, x, y) {
-    ctx.lineWidth = strokeWeight;
+    ctx.lineWidth = strokeWeight
     // ctx.strokeStyle = `hsl(${this.hue}, 50%, 50%)`;
 
     for (let i = 0; i < zcr; i += 1) {
@@ -50,10 +50,10 @@ export default {
         // ctx.strokeStyle = `hsl(${this.hue}, 50%, ${(1 - (zcr - Math.round(zcr))) * 50}%)`;
       }
 
-      ctx.beginPath();
-      ctx.arc(x, y, i * spacing, 0, 2 * Math.PI);
-      ctx.closePath();
-      ctx.stroke();
+      ctx.beginPath()
+      ctx.arc(x, y, i * spacing, 0, 2 * Math.PI)
+      ctx.closePath()
+      ctx.stroke()
     }
 
     // if (this.hue > 360) this.hue = 0;
@@ -62,15 +62,22 @@ export default {
 
   draw({ canvas, context, features, delta }) {
     for (let i = 0; i < this.groups.length; i += 1) {
-      const groupProps = this.groups.props;
-      const strokeWeight = groupProps.strokeWeight[i];
-      const spacing = groupProps.spacing[i];
-      const groupDistance = groupProps.groupDistance[i];
+      const groupProps = this.groups.props
+      const strokeWeight = groupProps.strokeWeight[i]
+      const spacing = groupProps.spacing[i]
+      const groupDistance = groupProps.groupDistance[i]
 
       this.x[i] = ((canvas.width / 2) + Math.sin(delta / 1000) * groupDistance); //eslint-disable-line
       this.y[i] = ((canvas.height / 2) + Math.cos(delta / 1000) * (groupDistance / 2)); //eslint-disable-line
 
-      this.drawCircles(context, features.zcr, strokeWeight, spacing, this.x[i], this.y[i]);
+      this.drawCircles(
+        context,
+        features.zcr,
+        strokeWeight,
+        spacing,
+        this.x[i],
+        this.y[i]
+      )
     }
-  },
-};
+  }
+}

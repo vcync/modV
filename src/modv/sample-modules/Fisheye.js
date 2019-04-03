@@ -1,4 +1,4 @@
-import fragmentShader from './Fisheye/fisheye.frag';
+import fragmentShader from './Fisheye/fisheye.frag'
 
 export default {
   meta: {
@@ -6,7 +6,7 @@ export default {
     type: 'shader',
     version: '1.0.0',
     author: '???',
-    previewWithOutput: true,
+    previewWithOutput: true
   },
 
   fragmentShader,
@@ -18,7 +18,7 @@ export default {
       default: 180.0,
       min: 1.0,
       max: 360.0,
-      step: 0.5,
-    },
-  },
-};
+      step: 0.5
+    }
+  }
+}

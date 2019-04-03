@@ -1,6 +1,6 @@
-import component from './BPM';
+import component from './BPM'
 
 export default {
   name: 'BPM',
-  component,
-};
+  component
+}

@@ -2,19 +2,22 @@
 
 module.exports = {
   root: true,
-  parser: 'babel-eslint',
   parserOptions: {
+    parser: 'babel-eslint',
     sourceType: 'module'
   },
   env: {
     browser: true,
+    node: true
   },
-  extends: 'airbnb-base',
-  // required to lint *.vue files
-  plugins: [
-    'html'
+  extends: [
+    'prettier-standard/lib/base',
+    'plugin:vue/recommended',
+    'prettier',
+    'prettier/standard',
+    'prettier/vue'
   ],
-  // check if imports actually resolve
+  plugins: ['vue', 'prettier'],
   'settings': {
     'import/resolver': {
       'webpack': {
@@ -22,22 +25,10 @@ module.exports = {
       }
     }
   },
-  // add your custom rules here
-  'rules': {
-    // don't require .vue extension when importing
-    'import/extensions': ['error', 'always', {
-      'js': 'never',
-      'vue': 'never'
-    }],
-    // allow optionalDependencies
-    'import/no-extraneous-dependencies': ['error', {
-      'optionalDependencies': ['test/unit/index.js']
-    }],
+  rules: {
+    'prettier/prettier': 'error',
     // allow debugger during development
     'no-debugger': process.env.NODE_ENV === 'production' ? 2 : 0,
-    'no-shadow': 0,
-    'no-param-reassign': [2, {
-        'props': false
-    }],
+    'max-len': [2, {code: 100, tabWidth: 2, ignoreUrls: true}]
   }
 };

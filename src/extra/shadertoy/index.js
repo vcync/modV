@@ -1,6 +1,6 @@
-import store from '@/store';
-import shadertoyStore from './store';
-import galleryTabComponent from './Gallery';
+import store from '@/store'
+import shadertoyStore from './store'
+import galleryTabComponent from './Gallery'
 
 const shaderToy = {
   name: 'Shadertoy',
@@ -12,10 +12,10 @@ const shaderToy = {
    * to use vuex or vue
    */
   install(Vue) {
-    Vue.component(galleryTabComponent.name, galleryTabComponent);
+    Vue.component(galleryTabComponent.name, galleryTabComponent)
 
-    store.registerModule('shaderToy', shadertoyStore);
-  },
-};
+    store.registerModule('shaderToy', shadertoyStore)
+  }
+}
 
-export default shaderToy;
+export default shaderToy

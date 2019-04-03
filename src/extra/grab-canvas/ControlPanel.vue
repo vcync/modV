@@ -16,68 +16,63 @@
 </template>
 
 <script>
-  import { mapMutations } from 'vuex';
+import { mapMutations } from 'vuex'
 
-  export default {
-    name: 'grabCanvasControlPanel',
-    computed: {
-      x: {
-        get() {
-          return this.$store.state.grabCanvas.selectionX;
-        },
-
-        set(value) {
-          this.setSelection({
-            selectionX: value,
-          });
-        },
+export default {
+  name: 'GrabCanvasControlPanel',
+  computed: {
+    x: {
+      get() {
+        return this.$store.state.grabCanvas.selectionX
       },
 
-      y: {
-        get() {
-          return this.$store.state.grabCanvas.selectionY;
-        },
-
-        set(value) {
-          this.setSelection({
-            selectionY: value,
-          });
-        },
-      },
-
-      url: {
-        get() {
-          return this.$store.state.grabCanvas.url;
-        },
-
-        set(value) {
-          this.setUrl({
-            url: value,
-          });
-        },
-      },
-
-      showCanvas: {
-        get() {
-          return this.$store.state.grabCanvas.showCanvas;
-        },
-
-        set(value) {
-          this.setShowCanvas({
-            showCanvas: value,
-          });
-        },
-      },
+      set(value) {
+        this.setSelection({
+          selectionX: value
+        })
+      }
     },
-    methods: {
-      ...mapMutations('grabCanvas', [
-        'setSelection',
-        'setUrl',
-        'setShowCanvas',
-      ]),
+
+    y: {
+      get() {
+        return this.$store.state.grabCanvas.selectionY
+      },
+
+      set(value) {
+        this.setSelection({
+          selectionY: value
+        })
+      }
     },
-  };
+
+    url: {
+      get() {
+        return this.$store.state.grabCanvas.url
+      },
+
+      set(value) {
+        this.setUrl({
+          url: value
+        })
+      }
+    },
+
+    showCanvas: {
+      get() {
+        return this.$store.state.grabCanvas.showCanvas
+      },
+
+      set(value) {
+        this.setShowCanvas({
+          showCanvas: value
+        })
+      }
+    }
+  },
+  methods: {
+    ...mapMutations('grabCanvas', ['setSelection', 'setUrl', 'setShowCanvas'])
+  }
+}
 </script>
 
-<style lang="scss">
-</style>
+<style lang="scss"></style>

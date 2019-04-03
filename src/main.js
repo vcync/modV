@@ -1,78 +1,78 @@
 // The Vue build version to load with the `import` command
 // (runtime-only or standalone) has been set in webpack.base.conf with an alias.
-import Vue from 'vue';
-import Dropdown from 'hsy-vue-dropdown';
-import Shortkey from 'vue-shortkey';
-import VueThrottleEvent from 'vue-throttle-event';
-import Buefy from 'buefy';
-import Vuebar from 'vuebar';
+import Vue from 'vue'
+import Dropdown from 'hsy-vue-dropdown'
+import Shortkey from 'vue-shortkey'
+import VueThrottleEvent from 'vue-throttle-event'
+import Buefy from 'buefy'
+import Vuebar from 'vuebar'
 
-import Capitalize from '@/vuePlugins/capitalize-filter';
-import * as builtInControls from '@/modv/controls';
-import * as builtInStatusBarItems from '@/extra/status-bar-items';
-import * as builtInRenderers from '@/modv/renderers';
+import Capitalize from '@/vuePlugins/capitalize-filter'
+import * as builtInControls from '@/modv/controls'
+import * as builtInStatusBarItems from '@/extra/status-bar-items'
+import * as builtInRenderers from '@/modv/renderers'
 
-import { modV } from './modv';
-import App from './App';
-import store from './store';
-import contextMenu from './extra/context-menu';
-import expression from './extra/expression';
-import midiAssignment from './extra/midi-assignment';
-import featureAssignment from './extra/feature-assignment';
-import lfo from './extra/lfo';
-import grabCanvas from './extra/grab-canvas';
-import slimUi from './extra/slim-ui';
-import shadertoy from './extra/shadertoy';
-import capture from './extra/capture';
-import './assets/styles/index.scss';
+import { modV } from './modv'
+import App from './App'
+import store from './store'
+import contextMenu from './extra/context-menu'
+import expression from './extra/expression'
+import midiAssignment from './extra/midi-assignment'
+import featureAssignment from './extra/feature-assignment'
+import lfo from './extra/lfo'
+import grabCanvas from './extra/grab-canvas'
+import slimUi from './extra/slim-ui'
+import shadertoy from './extra/shadertoy'
+import capture from './extra/capture'
+import './assets/styles/index.scss'
 
-import attachResizeHandles from './extra/ui-resize/attach';
+import attachResizeHandles from './extra/ui-resize/attach'
 
-Vue.config.productionTip = false;
+Vue.config.productionTip = false
 
 Object.defineProperty(Vue.prototype, '$modV', {
   get() {
-    return modV;
-  },
-});
+    return modV
+  }
+})
 
-Vue.use(Capitalize);
+Vue.use(Capitalize)
 
-Vue.use(Vuebar);
+Vue.use(Vuebar)
 Vue.use(Buefy, {
-  defaultIconPack: 'fa',
-});
-Vue.use(VueThrottleEvent);
-Vue.use(Dropdown);
-Vue.use(Shortkey);
+  defaultIconPack: 'fa'
+})
+Vue.use(VueThrottleEvent)
+Vue.use(Dropdown)
+Vue.use(Shortkey)
 
-modV.use('plugin', contextMenu);
-modV.use('plugin', featureAssignment);
-modV.use('plugin', expression);
-modV.use('plugin', midiAssignment);
-modV.use('plugin', lfo);
-modV.use('plugin', grabCanvas);
-modV.use('plugin', slimUi);
-modV.use('plugin', shadertoy);
-modV.use('plugin', capture);
+modV.use('plugin', contextMenu)
+modV.use('plugin', featureAssignment)
+modV.use('plugin', expression)
+modV.use('plugin', midiAssignment)
+modV.use('plugin', lfo)
+modV.use('plugin', grabCanvas)
+modV.use('plugin', slimUi)
+modV.use('plugin', shadertoy)
+modV.use('plugin', capture)
 
-Object.values(builtInControls).forEach(value => modV.use('control', value));
+Object.values(builtInControls).forEach(value => modV.use('control', value))
 
-Object.values(builtInStatusBarItems).forEach(value => modV.use('statusBar', value));
+Object.values(builtInStatusBarItems).forEach(value =>
+  modV.use('statusBar', value)
+)
 
-Object.values(builtInRenderers).forEach(value => modV.use('renderer', value));
+Object.values(builtInRenderers).forEach(value => modV.use('renderer', value))
 
 /* eslint-disable no-new */
-export default window.modVVue = new Vue({
+export default (window.modVVue = new Vue({
   el: '#app',
-  template: '<App/>',
   components: { App },
-  store,
   data: {
-    modV,
+    modV
   },
   mounted() {
-    modV.start(this);
+    modV.start(this)
 
     const modules = [
       'Text',
@@ -95,14 +95,14 @@ export default window.modVVue = new Vue({
       'Un-Deux-Trois',
       'OpticalFlowDistort-2.0',
       'MattiasCRT-2.0',
-      'Doughnut_Generator',
-    ];
+      'Doughnut_Generator'
+    ]
 
-    modules.forEach((fileName) => {
-      import(`@/modv/sample-modules/${fileName}`).then((Module) => {
-        modV.register(Module.default);
-      });
-    });
+    modules.forEach(fileName => {
+      import(`@/modv/sample-modules/${fileName}`).then(Module => {
+        modV.register(Module.default)
+      })
+    })
 
     const isfSamples = [
       'film-grain.fs',
@@ -152,26 +152,30 @@ export default window.modVVue = new Vue({
       'film-grain.fs',
       'spherical-shader-tut.fs',
       'scale.fs',
-      'LogTransWarpSpiral.fs',
-    ];
+      'LogTransWarpSpiral.fs'
+    ]
 
-    isfSamples.forEach((fileName) => {
-      import(`@/modv/sample-modules/isf-samples/${fileName}`).then((fragmentShader) => {
-        modV.register({
-          meta: {
-            name: fileName,
-            author: '',
-            version: '1.0.0',
-            type: 'isf',
-          },
-          fragmentShader,
-          vertexShader: 'void main() {isf_vertShaderInit();}',
-        });
-      }).catch((e) => {
-        throw new Error(e);
-      });
-    });
+    isfSamples.forEach(fileName => {
+      import(`@/modv/sample-modules/isf-samples/${fileName}`)
+        .then(fragmentShader => {
+          modV.register({
+            meta: {
+              name: fileName,
+              author: '',
+              version: '1.0.0',
+              type: 'isf'
+            },
+            fragmentShader,
+            vertexShader: 'void main() {isf_vertShaderInit();}'
+          })
+        })
+        .catch(e => {
+          throw new Error(e)
+        })
+    })
 
-    attachResizeHandles();
+    attachResizeHandles()
   },
-});
+  template: '<App/>',
+  store
+}))

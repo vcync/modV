@@ -1,70 +1,66 @@
 <template>
   <li>
-    <label :class='{ hidden: editable }' @dblclick='startEditable'>{{ nameInput }}</label>
+    <label :class="{ hidden: editable }" @dblclick="startEditable">{{
+      nameInput
+    }}</label>
     <input
-      :class='{ hidden: !editable }'
-      @keypress.enter='endEditable'
-      @blur='endEditable'
-      type='text'
-      v-model='nameInput'
-      ref='editableInput'
-    >:
-    <input class='monospace' type='text' v-model='contentsInput'>
+      ref="editableInput"
+      v-model="nameInput"
+      :class="{ hidden: !editable }"
+      type="text"
+      @keypress.enter="endEditable"
+      @blur="endEditable"
+    />:
+    <input v-model="contentsInput" class="monospace" type="text" />
   </li>
-  </modal>
 </template>
 
 <script>
-  import Vue from 'vue';
+import Vue from 'vue'
 
-  export default {
-    name: 'scope-item',
-    props: [
-      'contents',
-      'name',
-    ],
-    data() {
-      return {
-        editable: false,
-        contentsInput: '',
-        nameInput: '',
-      };
+export default {
+  name: 'ScopeItem',
+  props: ['contents', 'name'],
+  data() {
+    return {
+      editable: false,
+      contentsInput: '',
+      nameInput: ''
+    }
+  },
+  computed: {},
+  watch: {
+    contentsInput() {
+      this.$emit('updateContents', this.name, this.contentsInput)
     },
-    computed: {
-
+    contents() {
+      this.$data.contentsInput = this.contents
     },
-    methods: {
-      startEditable() {
-        this.$data.editable = true;
-        Vue.nextTick(() => {
-          this.$refs.editableInput.focus();
-        });
-      },
-      endEditable() {
-        this.$data.editable = false;
-        this.$emit('updateName', this.name, this.nameInput);
-      },
+    name() {
+      this.$data.nameInput = this.name
+    }
+  },
+  beforeMount() {
+    this.$data.contentsInput = this.contents
+    this.$data.nameInput = this.name
+  },
+  methods: {
+    startEditable() {
+      this.$data.editable = true
+      Vue.nextTick(() => {
+        this.$refs.editableInput.focus()
+      })
     },
-    beforeMount() {
-      this.$data.contentsInput = this.contents;
-      this.$data.nameInput = this.name;
-    },
-    watch: {
-      contentsInput() {
-        this.$emit('updateContents', this.name, this.contentsInput);
-      },
-      contents() {
-        this.$data.contentsInput = this.contents;
-      },
-      name() {
-        this.$data.nameInput = this.name;
-      },
-    },
-  };
+    endEditable() {
+      this.$data.editable = false
+      this.$emit('updateName', this.name, this.nameInput)
+    }
+  }
+}
 </script>
 
-<style lang='scss'>
-  .monospace {
-    font-family: monospace;
-  }
+<style lang="scss">
+.monospace {
+  font-family: monospace;
+}
 </style>

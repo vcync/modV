@@ -97,12 +97,12 @@ export default function Layer(layer) {
     drawToWindowId: null,
 
     resize({ width, height, dpr = window.devicePixelRatio }) {
-      this.canvas.width = width * dpr;
-      this.canvas.height = height * dpr;
-    },
-  };
+      this.canvas.width = width * dpr
+      this.canvas.height = height * dpr
+    }
+  }
 
-  defaults.context = defaults.canvas.getContext('2d');
+  defaults.context = defaults.canvas.getContext('2d')
 
-  return Object.assign(defaults, layer);
+  return Object.assign(defaults, layer)
 }
