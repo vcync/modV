@@ -24,8 +24,8 @@
       </div>
     </div>
     <div class="column is-12 preset-container">
-      <div v-for="(preset, presetName) in project" :key="presetName">
-        <div
+      <div v-for="(preset, index) in project" :key="index">
+        <!-- <div
           v-if="validateModuleRequirements(preset.moduleData)"
           class="columns cannot-load"
         >
@@ -44,8 +44,8 @@
               <button class="button is-dark" disabled>Load</button>
             </b-tooltip>
           </div>
-        </div>
-        <div v-else class="columns">
+        </div> -->
+        <div class="columns">
           <div class="column is-10">
             <span class="has-text-light preset-name">{{
               preset.presetInfo.name
@@ -59,7 +59,7 @@
                 'is-loading':
                   loading === `${currentProjectName}.${preset.presetInfo.name}`
               }"
-              @click="loadPreset({ presetName: preset.presetInfo.name })"
+              @click="loadPreset({ presetName: preset.presetInfo.name, index })"
             >
               Load
             </button>
@@ -67,6 +67,40 @@
         </div>
       </div>
     </div>
+
+    <b-modal :active.sync="isComponentModalActive" has-modal-card>
+      <div class="modal-card">
+        <header class="modal-card-head has-text-dark">
+          Preset "{{
+            project[loadingIndex] && project[loadingIndex].presetInfo.name
+          }}" is missing Modules
+        </header>
+        <section class="modal-card-body has-text-dark">
+          <p>Missing module(s):</p>
+          <ul>
+            <li v-for="moduleName in missingModuleNames" :key="moduleName">
+              {{ moduleName }}
+            </li>
+          </ul>
+          <p>
+            <br />
+            Please install the missing Modules to use the preset correctly.
+          </p>
+        </section>
+        <footer class="modal-card-foot" style="justify-content: flex-end;">
+          <button class="button" type="button" @click="continueLoad(true)">
+            Load anyway
+          </button>
+          <button
+            class="button is-primary"
+            type="button"
+            @click="continueLoad(false)"
+          >
+            Cancel
+          </button>
+        </footer>
+      </div>
+    </b-modal>
   </div>
 </template>
 
@@ -86,6 +120,8 @@ export default {
   data() {
     return {
       loading: null,
+      loadingModuleData: null,
+      loadingIndex: null,
 
       nameError: false,
       nameErrorMessage: 'Preset must have a name',
@@ -94,7 +130,9 @@ export default {
       projectErrorMessage: 'Please select a project',
 
       newPresetName: '',
-      newPresetProject: 'default'
+      newPresetProject: 'default',
+
+      isComponentModalActive: false
     }
   },
   computed: {
@@ -114,6 +152,24 @@ export default {
         })
 
       return data
+    },
+
+    missingModuleNames() {
+      return (
+        this.getMissingModules(
+          this.project[this.loadingIndex] &&
+            this.project[this.loadingIndex].moduleData
+        ) || []
+      )
+    }
+  },
+  watch: {
+    isComponentModalActive(value) {
+      if (!value) {
+        this.loading = null
+        this.loadingIndex = null
+        this.loadingPresetName = null
+      }
     }
   },
   methods: {
@@ -131,16 +187,56 @@ export default {
       }
     },
     validateModuleRequirements(moduleData) {
-      return Object.keys(moduleData)
+      return !Object.keys(moduleData)
         .map(datumKey => moduleData[datumKey].meta.originalName)
         .every(moduleName => Object.keys(this.registry).indexOf(moduleName) < 0)
     },
-    async loadPreset({ presetName }) {
+    getMissingModules(moduleData) {
+      return (
+        moduleData &&
+        Object.keys(moduleData)
+          .map(datumKey => moduleData[datumKey].meta.originalName)
+          .filter(
+            moduleName => Object.keys(this.registry).indexOf(moduleName) < 0
+          )
+      )
+    },
+    continueLoad(cont) {
+      this.isComponentModalActive = false
+
+      if (cont) {
+        this.loadPreset({
+          presetName: this.loadingPresetName,
+          index: this.loadingIndex,
+          override: true
+        })
+        return
+      }
+
+      this.loading = null
+      this.loadingIndex = null
+      this.loadingPresetName = null
+    },
+    async loadPreset({ presetName, index, override }) {
       const projectName = this.currentProjectName
       this.loading = `${projectName}.${presetName}`
+      this.loadingIndex = index
+      this.loadingPresetName = presetName
 
-      await this.loadPresetFromProject({ presetName, projectName })
-      this.loading = null
+      if (
+        !this.validateModuleRequirements(this.project[index].moduleData) &&
+        !override
+      ) {
+        this.isComponentModalActive = true
+      } else {
+        this.isComponentModalActive = false
+        this.loading = `${projectName}.${presetName}`
+
+        await this.loadPresetFromProject({ presetName, projectName })
+        this.loading = null
+        this.loadingIndex = null
+        this.loadingPresetName = null
+      }
     },
     async savePreset() {
       this.nameError = false
