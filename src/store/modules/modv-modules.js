@@ -3,8 +3,6 @@ import Ajv from 'ajv/lib/ajv'
 import { modV } from '@/modv'
 import cloneDeep from 'lodash.clonedeep'
 import getNextName from '@/utils/get-next-name'
-import { setup as shaderSetup } from '@/modv/renderers/shader'
-import { setup as isfSetup } from '@/modv/renderers/isf'
 import textureResolve from '@/modv/texture-resolve'
 import store from '../index'
 
@@ -90,19 +88,14 @@ const actions = {
         outerState.registry[moduleName || moduleMeta.originalName]
       if (!existingModuleData) return
 
+      const { renderers } = store.state
       let newModuleData = cloneDeep(existingModuleData)
+      const moduleType = newModuleData.meta.type
 
-      switch (newModuleData.meta.type) {
-        case 'shader':
-          newModuleData = await shaderSetup(newModuleData)
-          break
+      if (renderers[moduleType] && renderers[moduleType].setup) {
+        const { setup } = renderers[moduleType]
 
-        case 'isf':
-          newModuleData = isfSetup(newModuleData)
-          break
-
-        default:
-          break
+        newModuleData = await setup(newModuleData)
       }
 
       newModuleData.meta.originalName = newModuleData.meta.name
@@ -199,7 +192,11 @@ const actions = {
       }
 
       if ('init' in newModuleData && !skipInit) {
-        newModuleData.init({ canvas })
+        if (renderers[moduleType] && renderers[moduleType].initVars) {
+          newModuleData.init({ canvas, ...renderers[moduleType].initVars })
+        } else {
+          newModuleData.init({ canvas })
+        }
       }
 
       if ('resize' in newModuleData && !skipInit) {

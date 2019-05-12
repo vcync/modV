@@ -1,6 +1,7 @@
 import twoD from './2d'
 import * as isf from './isf'
 import * as shader from './shader'
+import * as threeD from './3d'
 
 const twoDRenderer = {
   name: '2d',
@@ -19,4 +20,11 @@ const shaderRenderer = {
   setup: shader.setup
 }
 
-export { twoDRenderer, isfRenderer, shaderRenderer }
+const threeDRenderer = {
+  name: '3d',
+  render: threeD.render,
+  setup: threeD.setup,
+  initVars: threeD.initVars
+}
+
+export { twoDRenderer, isfRenderer, shaderRenderer, threeDRenderer }

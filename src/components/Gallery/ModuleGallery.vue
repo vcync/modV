@@ -48,6 +48,27 @@
     </div>
 
     <div v-show="phrase.length < 1" class="column is-12 title">
+      <h2>Module 3D</h2>
+    </div>
+    <div v-show="phrase.length < 1" class="column is-12">
+      <Container
+        behaviour="copy"
+        group-name="modules"
+        :get-child-payload="e => getChildPayload('module3d', e)"
+        tag="div"
+        class="columns is-multiline is-mobile is-variable is-1"
+      >
+        <Draggable
+          v-for="moduleName in module3d"
+          :key="moduleName"
+          class="column is-3"
+        >
+          <gallery-item v-once :module-name="moduleName"></gallery-item>
+        </Draggable>
+      </Container>
+    </div>
+
+    <div v-show="phrase.length < 1" class="column is-12 title">
       <h2>Module Shader</h2>
     </div>
     <div v-show="phrase.length < 1" class="column is-12">
@@ -129,6 +150,11 @@ export default {
     moduleIsf() {
       return Object.keys(this.modules).filter(
         key => this.modules[key].meta.type === 'isf'
+      )
+    },
+    module3d() {
+      return Object.keys(this.modules).filter(
+        key => this.modules[key].meta.type === '3d'
       )
     }
   },

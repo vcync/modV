@@ -36,6 +36,7 @@
     "reconnecting-websocket": "^4.0.0-rc5",
     "stats.js": "^0.17.0",
     "tap-tempo": "^0.1.1",
+    "three": "^0.104.0",
     "uuid": "^3.2.1",
     "vue": "^2.5.3",
     "vue-color": "^2.4.6",
