@@ -130,7 +130,7 @@
     "text-loader": "0.0.1",
     "url-loader": "^1.0.1",
     "webpack": "^2.6.1",
-    "webpack-bundle-analyzer": "^2.9.1",
+    "webpack-bundle-analyzer": "^3.3.2",
     "webpack-dev-middleware": "^1.10.0",
     "webpack-hot-middleware": "^2.20.0",
     "webpack-merge": "^4.1.1",
