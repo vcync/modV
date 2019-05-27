@@ -25,26 +25,6 @@
     </div>
     <div class="column is-12 preset-container">
       <div v-for="(preset, index) in project" :key="index">
-        <!-- <div
-          v-if="validateModuleRequirements(preset.moduleData)"
-          class="columns cannot-load"
-        >
-          <div class="column is-10">
-            <span class="has-text-grey preset-name">{{
-              preset.presetInfo.name
-            }}</span>
-          </div>
-
-          <div class="column is-2">
-            <b-tooltip
-              label="Missing modules"
-              type="is-danger"
-              position="is-left"
-            >
-              <button class="button is-dark" disabled>Load</button>
-            </b-tooltip>
-          </div>
-        </div> -->
         <div class="columns">
           <div class="column is-10">
             <span class="has-text-light preset-name">{{
