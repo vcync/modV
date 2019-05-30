@@ -199,12 +199,8 @@ const grabCanvas = {
    * Draw the areas that are used to calculate the average color per area into the smallCanvas
    */
   drawAreas() {
-    // Size of each area
-    const areaSize = Math.floor(
-      smallCanvas.width / selectionX + smallCanvas.height / selectionY
-    )
-    const areaWidth = Math.floor(areaSize / 2)
-    const areaHeight = Math.floor(areaSize / 2)
+    const areaWidth = Math.floor(smallCanvas.width / selectionX)
+    const areaHeight = Math.floor(smallCanvas.height / selectionY)
 
     // selectionX = how many areas we grab on the x axis
     for (let x = 0; x < selectionX; x++) { //eslint-disable-line
