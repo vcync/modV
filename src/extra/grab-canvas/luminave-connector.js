@@ -214,25 +214,23 @@ export default class LuminaveConnector {
    * @return{number[]} red, green, blue, red, green, blue...
    */
   getAverageColors() {
-    // Size of each area
-    const areaSize = Math.floor(
-      this.width / this.selectionX + this.height / this.selectionY
-    )
-    const areaWidth = Math.floor(areaSize / 2)
-    const areaHeight = Math.floor(areaSize / 2)
+    const { width, height, selectionX, selectionY } = this
+
+    const areaWidth = Math.floor(width / selectionX)
+    const areaHeight = Math.floor(height / selectionY)
 
     // The packet that gets send over WebSocket to luminave
     const colors = []
 
     // selectionX = how many areas we grab on the x axis
-    for (let x = 0; x < this.selectionX; x++) { //eslint-disable-line
+    for (let x = 0; x < selectionX; x++) { //eslint-disable-line
 
       // selectionY = how many areas we grab on the y axis
-      for (let y = 0; y < this.selectionY; y++) { //eslint-disable-line
+      for (let y = 0; y < selectionY; y++) { //eslint-disable-line
 
         // Coordinates of the area
-        const pointX = x * Math.floor(this.width / this.selectionX)
-        const pointY = y * Math.floor(this.height / this.selectionY)
+        const pointX = x * Math.floor(width / selectionX)
+        const pointY = y * Math.floor(height / selectionY)
 
         // Add the average color of the area to the colors
         colors.push(...this.getAverage(pointX, pointY, areaWidth, areaHeight))
