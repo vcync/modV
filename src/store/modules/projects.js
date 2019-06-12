@@ -110,7 +110,8 @@ const actions = {
             await store.dispatch('modVModules/updateProp', {
               name: moduleName,
               prop: variable,
-              data: value
+              data: value,
+              forceUpdate: true
             })
           })
         }

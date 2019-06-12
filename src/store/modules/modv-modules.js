@@ -279,9 +279,16 @@ const actions = {
     })
   },
 
-  updateProp({ state, commit }, { name, prop, data, group, groupName }) {
+  updateProp(
+    { state, commit },
+    { name, prop, data, group, groupName, forceUpdate }
+  ) {
     // Don't bother updating inactive module's values
-    if (state.active[name] && !state.active[name].meta.enabled) {
+    if (
+      !forceUpdate &&
+      state.active[name] &&
+      !state.active[name].meta.enabled
+    ) {
       return
     }
 
