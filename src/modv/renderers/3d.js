@@ -91,17 +91,21 @@ const initVars = {
   THREE
 }
 
-store.subscribe((mutation, state) => {
-  if (mutation === 'size/setDimensions') {
-    const { width, height } = mutation.payload
+store.subscribe(({ type, payload }) => {
+  if (type === 'size/setDimensions') {
+    const { width, height } = payload
+
+    let newWidth = width
+    let newHeight = height
 
     if (store.state.user.useRetina) {
-      threeEnv.canvas.width = width * window.devicePixelRatio
-      threeEnv.canvas.height = height * window.devicePixelRatio
-    } else {
-      threeEnv.canvas.width = width
-      threeEnv.canvas.height = height
+      newWidth = width * window.devicePixelRatio
+      newHeight = height * window.devicePixelRatio
     }
+
+    threeEnv.textureCanvas.width = newWidth
+    threeEnv.textureCanvas.height = newHeight
+    threeEnv.renderer.setSize(newWidth, newHeight)
   }
 })
 

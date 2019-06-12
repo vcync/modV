@@ -82,7 +82,8 @@ export default {
     this.createActiveModule({
       moduleName: this.moduleName,
       appendToName: this.appendToName,
-      skipInit: true
+      skipInit: true,
+      enabled: false
     })
       .then(Module => {
         this.Module = Module
@@ -152,11 +153,19 @@ export default {
     mouseover() {
       if (this.raf) return
       this.raf = requestAnimationFrame(this.draw)
+      this.$store.commit('modVModules/setActiveModuleEnabled', {
+        moduleName: this.Module.meta.name,
+        enabled: true
+      })
       // webgl.resize(this.canvas.width, this.canvas.height);
     },
     mouseout() {
       cancelAnimationFrame(this.raf)
       this.raf = false
+      this.$store.commit('modVModules/setActiveModuleEnabled', {
+        moduleName: this.Module.meta.name,
+        enabled: false
+      })
     },
     doubleclick() {
       this.createActiveModule({

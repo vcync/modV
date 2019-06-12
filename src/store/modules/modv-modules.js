@@ -280,6 +280,11 @@ const actions = {
   },
 
   updateProp({ state, commit }, { name, prop, data, group, groupName }) {
+    // Don't bother updating inactive module's values
+    if (!state.active[name].meta.enabled) {
+      return
+    }
+
     let propData = state.active[name].props[prop]
     const currentValue = state.active[name][prop]
 
