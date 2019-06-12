@@ -130,7 +130,7 @@ export default class LuminaveConnector {
    */
   drawFrame(data) {
     // Data from canvas
-    this.data = new Uint8Array(data)
+    this.data = data
 
     // Get the average color of the whole output
     const average = this.getAverage(0, 0, this.width, this.height)

@@ -21,8 +21,8 @@ const theWorker = new Worker()
 // Small version of the output canvas
 const smallCanvas = document.createElement('canvas')
 const smallContext = smallCanvas.getContext('2d')
-const smallCanvasWidth = 200
-const smallCanvasHeight = 200
+const smallCanvasWidth = 50
+const smallCanvasHeight = 50
 
 // Add the canvas to modV for testing purposes :D
 smallCanvas.classList.add('is-hidden')
@@ -35,6 +35,8 @@ let selectionY = 0
 
 // Is the plugin active?
 let isActive = true
+
+let data = new Uint8ClampedArray(smallCanvasWidth * smallCanvasHeight * 4)
 
 const grabCanvas = {
   name: 'Grab Canvas',
@@ -178,12 +180,12 @@ const grabCanvas = {
     this.drawAreas()
 
     // Get the pixels from the small canvas
-    const data = smallContext.getImageData(
+    data = smallContext.getImageData(
       0,
       0,
       smallCanvas.width,
       smallCanvas.height
-    ).data.buffer
+    ).data
 
     // Send the data to the worker
     theWorker.postMessage(
@@ -191,7 +193,7 @@ const grabCanvas = {
         type: 'data',
         payload: data
       },
-      [data]
+      [data.buffer]
     )
   },
 
