@@ -96,7 +96,8 @@ export default (window.modVVue = new Vue({
       'OpticalFlowDistort-2.0',
       'MattiasCRT-2.0',
       'Doughnut_Generator',
-      'Media'
+      'Media',
+      '3D'
     ]
 
     modules.forEach(fileName => {

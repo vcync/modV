@@ -35,115 +35,117 @@ function render({ Module, canvas, context, pipeline }) {
 }
 
 function setup(Module) {
-  let fragmentShader = Module.fragmentShader
-  let vertexShader = Module.vertexShader
+  return new Promise(resolve => {
+    let fragmentShader = Module.fragmentShader
+    let vertexShader = Module.vertexShader
 
-  const parser = new ISFParser()
-  parser.parse(fragmentShader, vertexShader)
-  if (parser.error) {
-    throw new Error(
-      parser.error,
-      `Error evaluating ${Module.meta.name}'s shaders`
-    )
-  }
-
-  if (parser.isfVersion < 2) {
-    fragmentShader = ISFUpgrader.convertFragment(fragmentShader)
-    if (vertexShader) vertexShader = ISFUpgrader.convertVertex(vertexShader)
-  }
-
-  Module.meta.isfVersion = parser.isfVersion
-  Module.meta.author = parser.metadata.CREDIT
-  Module.meta.description = parser.metadata.DESCRIPTION
-  Module.meta.version = parser.metadata.VSN
-
-  Module.renderer = new ISFRenderer(isf.gl)
-  Module.renderer.loadSource(fragmentShader, vertexShader)
-
-  function addProp(name, prop) {
-    if (!Module.props) {
-      Module.props = {}
+    const parser = new ISFParser()
+    parser.parse(fragmentShader, vertexShader)
+    if (parser.error) {
+      throw new Error(
+        parser.error,
+        `Error evaluating ${Module.meta.name}'s shaders`
+      )
     }
 
-    Module.props[name] = prop
-  }
-
-  Module.inputs = parser.inputs
-
-  parser.inputs.forEach(input => {
-    switch (input.TYPE) {
-      default:
-        break
-
-      case 'float':
-        addProp(input.NAME, {
-          type: 'float',
-          label: input.LABEL || input.NAME,
-          default: typeof input.DEFAULT !== 'undefined' ? input.DEFAULT : 0.0,
-          min: input.MIN,
-          max: input.MAX,
-          step: 0.01
-        })
-        break
-
-      case 'bool':
-        addProp(input.NAME, {
-          type: 'bool',
-          label: input.LABEL || input.NAME,
-          default: Boolean(input.DEFAULT)
-        })
-        break
-
-      case 'long':
-        addProp(input.NAME, {
-          type: 'enum',
-          label: input.NAME,
-          enum: input.VALUES.map((value, idx) => ({
-            label: input.LABELS[idx],
-            value,
-            selected: value === input.DEFAULT
-          }))
-        })
-        break
-
-      case 'color':
-        addProp(input.NAME, {
-          control: {
-            type: 'colorControl',
-            options: {
-              returnFormat: 'mappedRgbaArray'
-            }
-          },
-          label: input.LABEL || input.NAME,
-          default: input.DEFAULT
-        })
-        break
-
-      case 'point2D':
-        addProp(input.NAME, {
-          type: 'vec2',
-          label: input.LABEL || input.NAME,
-          default: input.DEFAULT || [0.0, 0.0],
-          min: input.MIN,
-          max: input.MAX
-        })
-        break
-
-      case 'image':
-        Module.meta.previewWithOutput = true
-
-        addProp(input.NAME, {
-          type: 'texture',
-          label: input.LABEL || input.NAME
-        })
-
-        break
+    if (parser.isfVersion < 2) {
+      fragmentShader = ISFUpgrader.convertFragment(fragmentShader)
+      if (vertexShader) vertexShader = ISFUpgrader.convertVertex(vertexShader)
     }
+
+    Module.meta.isfVersion = parser.isfVersion
+    Module.meta.author = parser.metadata.CREDIT
+    Module.meta.description = parser.metadata.DESCRIPTION
+    Module.meta.version = parser.metadata.VSN
+
+    Module.renderer = new ISFRenderer(isf.gl)
+    Module.renderer.loadSource(fragmentShader, vertexShader)
+
+    function addProp(name, prop) {
+      if (!Module.props) {
+        Module.props = {}
+      }
+
+      Module.props[name] = prop
+    }
+
+    Module.inputs = parser.inputs
+
+    parser.inputs.forEach(input => {
+      switch (input.TYPE) {
+        default:
+          break
+
+        case 'float':
+          addProp(input.NAME, {
+            type: 'float',
+            label: input.LABEL || input.NAME,
+            default: typeof input.DEFAULT !== 'undefined' ? input.DEFAULT : 0.0,
+            min: input.MIN,
+            max: input.MAX,
+            step: 0.01
+          })
+          break
+
+        case 'bool':
+          addProp(input.NAME, {
+            type: 'bool',
+            label: input.LABEL || input.NAME,
+            default: Boolean(input.DEFAULT)
+          })
+          break
+
+        case 'long':
+          addProp(input.NAME, {
+            type: 'enum',
+            label: input.NAME,
+            enum: input.VALUES.map((value, idx) => ({
+              label: input.LABELS[idx],
+              value,
+              selected: value === input.DEFAULT
+            }))
+          })
+          break
+
+        case 'color':
+          addProp(input.NAME, {
+            control: {
+              type: 'colorControl',
+              options: {
+                returnFormat: 'mappedRgbaArray'
+              }
+            },
+            label: input.LABEL || input.NAME,
+            default: input.DEFAULT
+          })
+          break
+
+        case 'point2D':
+          addProp(input.NAME, {
+            type: 'vec2',
+            label: input.LABEL || input.NAME,
+            default: input.DEFAULT || [0.0, 0.0],
+            min: input.MIN,
+            max: input.MAX
+          })
+          break
+
+        case 'image':
+          Module.meta.previewWithOutput = true
+
+          addProp(input.NAME, {
+            type: 'texture',
+            label: input.LABEL || input.NAME
+          })
+
+          break
+      }
+    })
+
+    Module.draw = render
+
+    resolve(Module)
   })
-
-  Module.draw = render
-
-  return Module
 }
 
 export {

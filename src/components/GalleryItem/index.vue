@@ -76,23 +76,35 @@ export default {
   },
   mounted() {
     this.canvas = this.$refs.canvas
+    const canvas = this.canvas
     this.context = this.canvas.getContext('2d')
 
     this.createActiveModule({
       moduleName: this.moduleName,
       appendToName: this.appendToName,
-      skipInit: true
+      skipInit: true,
+      enabled: false
     })
       .then(Module => {
         this.Module = Module
-        if (Module.meta.type === 'isf') {
+        const moduleType = Module.meta.type
+
+        if (moduleType === 'isf') {
           this.isIsf = true
         }
 
         if ('init' in Module) {
-          Module.init({
-            canvas: { width: this.canvas.width, height: this.canvas.height }
-          })
+          const { renderers } = this.$store.state
+          if (renderers[moduleType] && renderers[moduleType].initVars) {
+            Module.init({
+              canvas: { width: canvas.width, height: canvas.height },
+              ...renderers[moduleType].initVars
+            })
+          } else {
+            Module.init({
+              canvas: { width: canvas.width, height: canvas.height }
+            })
+          }
         }
 
         if ('resize' in Module) {
@@ -141,11 +153,19 @@ export default {
     mouseover() {
       if (this.raf) return
       this.raf = requestAnimationFrame(this.draw)
+      this.$store.commit('modVModules/setActiveModuleEnabled', {
+        moduleName: this.Module.meta.name,
+        enabled: true
+      })
       // webgl.resize(this.canvas.width, this.canvas.height);
     },
     mouseout() {
       cancelAnimationFrame(this.raf)
       this.raf = false
+      this.$store.commit('modVModules/setActiveModuleEnabled', {
+        moduleName: this.Module.meta.name,
+        enabled: false
+      })
     },
     doubleclick() {
       this.createActiveModule({
