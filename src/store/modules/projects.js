@@ -122,30 +122,29 @@ const actions = {
           position: idx
         })
       })
-
-      if ('paletteData' in presetData) {
-        await store.dispatch('palettes/loadPreset', presetData)
-      }
-
-      if ('pluginData' in presetData) {
-        const pluginData = presetData.pluginData
-        const currentPlugins = store.state.plugins.plugins
-
-        Object.keys(pluginData)
-          .filter(
-            pluginDataKey =>
-              Object.keys(currentPlugins).indexOf(pluginDataKey) > -1
-          )
-          .filter(
-            pluginDataKey =>
-              'presetData' in currentPlugins[pluginDataKey].plugin
-          )
-          .forEach(pluginDataKey => {
-            const plugin = currentPlugins[pluginDataKey].plugin
-            plugin.presetData.load(pluginData[pluginDataKey])
-          })
-      }
     })
+
+    if ('paletteData' in presetData) {
+      await store.dispatch('palettes/loadPreset', presetData)
+    }
+
+    if ('pluginData' in presetData) {
+      const pluginData = presetData.pluginData
+      const currentPlugins = store.state.plugins.plugins
+
+      Object.keys(pluginData)
+        .filter(
+          pluginDataKey =>
+            Object.keys(currentPlugins).indexOf(pluginDataKey) > -1
+        )
+        .filter(
+          pluginDataKey => 'presetData' in currentPlugins[pluginDataKey].plugin
+        )
+        .forEach(pluginDataKey => {
+          const plugin = currentPlugins[pluginDataKey].plugin
+          plugin.presetData.load(pluginData[pluginDataKey])
+        })
+    }
   },
   savePaletteToProject({}, { projectName, paletteName, colors }) { //eslint-disable-line
     const MediaManager = modV.MediaManagerClient
