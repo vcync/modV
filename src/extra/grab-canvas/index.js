@@ -1,3 +1,5 @@
+/* eslint-disable */
+
 import store from '@/store'
 import { modV } from 'modv'
 import controlPanelComponent from './ControlPanel'
@@ -21,14 +23,20 @@ const theWorker = new Worker()
 // Small version of the output canvas
 const smallCanvas = document.createElement('canvas')
 const smallContext = smallCanvas.getContext('2d')
-const smallCanvasWidth = 50
-const smallCanvasHeight = 50
+const smallCanvasWidth = 5
+const smallCanvasHeight = 5
+// Keep it low to improve performance
+const fps = 15
 
 // Add the canvas to modV for testing purposes :D
 smallCanvas.classList.add('is-hidden')
 smallCanvas.style = `position: absolute; top: 0px; right: 0px; width: 200px;
 height: 200px; z-index: 100000; background: #000;`
 document.body.appendChild(smallCanvas)
+
+const smallGrid = document.createElement('div')
+smallGrid.classList.add('is-hidden')
+document.body.appendChild(smallGrid)
 
 let selectionX = 0
 let selectionY = 0
@@ -37,6 +45,8 @@ let selectionY = 0
 let isActive = true
 
 let data = new Uint8ClampedArray(smallCanvasWidth * smallCanvasHeight * 4)
+
+let lastUpdate = Date.now()
 
 const grabCanvas = {
   name: 'Grab Canvas',
@@ -118,6 +128,8 @@ const grabCanvas = {
           selectionY =
             mutation.payload.selectionY || store.state.grabCanvas.selectionY
 
+         this.drawGrid()
+
           theWorker.postMessage({
             type: 'setupCanvas',
             payload: {
@@ -144,6 +156,7 @@ const grabCanvas = {
 
         case 'grabCanvas/setShowCanvas':
           smallCanvas.classList.toggle('is-hidden')
+          smallGrid.classList.toggle('is-hidden')
           break
 
         default:
@@ -169,55 +182,52 @@ const grabCanvas = {
    *
    * @param{Object} canvas - The modV output canvas
    */
-  processFrame({ canvas }) {
-    // Clear the output
-    smallContext.clearRect(0, 0, smallCanvas.width, smallCanvas.height)
+  processFrame({ canvas, context }) {
+    const now = Date.now()
 
-    // Create a small version of the canvas
-    smallContext.drawImage(canvas, 0, 0, smallCanvas.width, smallCanvas.height)
+    // Limit the data per second for luminave
+    if (now - lastUpdate > 1000 / fps) {
+      lastUpdate = now
 
-    // Draw the areas in which the selectionX & selectionY is seperating the smallCanvas
-    this.drawAreas()
+      // Clear the output
+      smallContext.clearRect(0, 0, smallCanvas.width, smallCanvas.height)
 
-    // Get the pixels from the small canvas
-    data = smallContext.getImageData(
-      0,
-      0,
-      smallCanvas.width,
-      smallCanvas.height
-    ).data
+      // Create a small version of the canvas
+      smallContext.drawImage(
+        canvas,
+        0,
+        0,
+        smallCanvas.width,
+        smallCanvas.height
+      )
 
-    // Send the data to the worker
-    theWorker.postMessage(
-      {
-        type: 'data',
-        payload: data
-      },
-      [data.buffer]
-    )
+      // Get the pixels from the small canvas
+      data = smallContext.getImageData(
+        0,
+        0,
+        smallCanvasWidth,
+        smallCanvasHeight
+      ).data
+      
+      // Send the data to the worker
+      theWorker.postMessage(
+        {
+          type: 'data',
+          payload: data
+        },
+        [data.buffer]
+      )
+    }
   },
 
-  /**
+    /**
    * Draw the areas that are used to calculate the average color per area into the smallCanvas
    */
-  drawAreas() {
-    const areaWidth = Math.floor(smallCanvas.width / selectionX)
-    const areaHeight = Math.floor(smallCanvas.height / selectionY)
+  drawGrid() {
+    const sizeX = Math.floor(200 / selectionX)
+    const sizeY = Math.floor(200 / selectionY)
 
-    // selectionX = how many areas we grab on the x axis
-    for (let x = 0; x < selectionX; x++) { //eslint-disable-line
-
-      // selectionY = how many areas we grab on the y axis
-      for (let y = 0; y < selectionY; y++) { //eslint-disable-line
-
-        // Coordinates of the area
-        const pointX = x * Math.floor(smallCanvas.width / selectionX)
-        const pointY = y * Math.floor(smallCanvas.height / selectionY)
-
-        smallContext.strokeStyle = 'rgba(255, 255, 255, 0.5)'
-        smallContext.strokeRect(pointX + 1, pointY + 1, areaWidth, areaHeight)
-      }
-    }
+    smallGrid.style = `position: absolute; background-size: 200px 200px; top: 0px;  right: 0px; width: 200px; height: 200px; z-index: 100001; background-image: repeating-linear-gradient(0deg,transparent,transparent ${sizeX}px, #CCC ${sizeX}px,#CCC ${sizeX + 1}px),repeating-linear-gradient(-90deg,transparent,transparent ${sizeY}px,#CCC ${sizeY}px,#CCC ${sizeY + 1}px);`
   }
 }
 
