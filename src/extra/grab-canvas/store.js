@@ -4,7 +4,7 @@ const state = {
   selectionX: 0,
   selectionY: 0,
   showCanvas: false,
-  url: 'ws://localhost:3000/modV'
+  url: 'ws://localhost:3006/modV'
 }
 
 // mutations

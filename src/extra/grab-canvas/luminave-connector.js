@@ -33,7 +33,7 @@ export default class LuminaveConnector {
      => [a1, a2, b1, b2]
    */
   constructor(args = {}) {
-    this.url = args.url || 'ws://localhost:3000/modV'
+    this.url = args.url || 'ws://localhost:3006/modV'
 
     // Width / Height of canvas
     this.width = args.width || 0
