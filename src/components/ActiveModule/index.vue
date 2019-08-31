@@ -20,7 +20,7 @@
                   horizontal
                   :for="enabledCheckboxId"
                   label="Enabled"
-                  @click.native="checkboxClick"
+                  @click="checkboxClick"
                 >
                   <b-checkbox :id="enabledCheckboxId" v-model="enabled" />
                 </b-field>
