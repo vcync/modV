@@ -476,9 +476,8 @@ const actions = {
 
       if (!('saveData' in Module.meta)) {
         console.warn(
-          `generatePreset: Module ${
-            Module.meta.name
-          } has no saveData schema, falling back to Vuex store data`
+          `generatePreset: Module ${Module.meta.name} has no saveData schema, ` +
+            `falling back to Vuex store data`
         )
         return
       }
@@ -492,9 +491,7 @@ const actions = {
       const validated = validate(copiedModule)
       if (!validated) {
         console.error(
-          `generatePreset: Module ${
-            Module.meta.name
-          } failed saveData validation, skipping`,
+          `generatePreset: Module ${Module.meta.name} failed saveData validation, skipping`,
           validate.errors
         )
         return

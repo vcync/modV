@@ -1,6 +1,6 @@
 const CapitalizeFilter = {}
 
-export default (CapitalizeFilter.install = Vue => {
+export default CapitalizeFilter.install = Vue => {
   Vue.mixin({
     filters: {
       capitalize(valueIn) {
@@ -11,4 +11,4 @@ export default (CapitalizeFilter.install = Vue => {
       }
     }
   })
-})
+}

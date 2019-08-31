@@ -115,9 +115,7 @@ export default {
       })
       .catch(e => {
         console.log(
-          `An error occoured whilst initialising a gallery module - ${
-            this.Module.meta.name
-          }`
+          `An error occoured whilst initialising a gallery module - ${this.Module.meta.name}`
         )
         console.error(e)
       })
