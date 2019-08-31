@@ -65,7 +65,7 @@ Object.values(builtInStatusBarItems).forEach(value =>
 Object.values(builtInRenderers).forEach(value => modV.use('renderer', value))
 
 /* eslint-disable no-new */
-export default (window.modVVue = new Vue({
+export default window.modVVue = new Vue({
   el: '#app',
   components: { App },
   data: {
@@ -180,4 +180,4 @@ export default (window.modVVue = new Vue({
   },
   template: '<App/>',
   store
-}))
+})

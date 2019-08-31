@@ -27,9 +27,7 @@ export default {
   computed: {
     ...mapGetters('windows', ['largestWindowSize', 'largestWindowReference']),
     sizeOut() {
-      return `${this.largestWindowSize.width}𝗑${
-        this.largestWindowSize.height
-      }px`
+      return `${this.largestWindowSize.width}𝗑${this.largestWindowSize.height}px`
     }
   },
   watch: {
