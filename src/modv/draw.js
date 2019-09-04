@@ -45,7 +45,10 @@ function draw(δ) {
     if (!modV.meyda) return
     const features = modV.meyda.get(audioFeatures)
 
-    layers.forEach((Layer, LayerIndex) => {
+    const layersLength = layers.length
+    for (let LayerIndex = 0; LayerIndex < layersLength; ++LayerIndex) {
+      const Layer = layers[LayerIndex]
+
       let canvas = Layer.canvas
       const context = Layer.context
 
@@ -90,14 +93,26 @@ function draw(δ) {
         }
       }
 
-      if (!enabled || alpha === 0) return
+      if (!enabled || alpha === 0) {
+        continue
+      }
 
-      Layer.moduleOrder.forEach((moduleName, moduleIndex) => {
+      const moduleOrderLength = Layer.moduleOrder.length
+      for (
+        let moduleIndex = 0;
+        moduleIndex < moduleOrderLength;
+        ++moduleIndex
+      ) {
+        const moduleName = Layer.moduleOrder[moduleIndex]
         const Module = store.getters['modVModules/outerActive'][moduleName]
 
-        if (!Module) return
+        if (!Module) {
+          continue
+        }
 
-        if (!Module.meta.enabled || Module.meta.alpha === 0) return
+        if (!Module.meta.enabled || Module.meta.alpha === 0) {
+          continue
+        }
 
         if (pipeline && moduleIndex !== 0) {
           canvas = bufferCanvas
@@ -135,8 +150,8 @@ function draw(δ) {
           context.clearRect(0, 0, canvas.width, canvas.height)
           context.drawImage(bufferCanvas, 0, 0, canvas.width, canvas.height)
         }
-      })
-    })
+      }
+    }
 
     modV.webgl.regl.poll()
 
