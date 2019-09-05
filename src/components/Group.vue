@@ -257,11 +257,19 @@ section.group-controls {
   flex-direction: column;
 }
 
+.focused div.group-title {
+  background-color: rgba(255, 138, 101, 0.6);
+}
+
 div.group-title {
   padding: 10px;
   width: 100%;
   background-color: rgba(255, 255, 255, 0.6);
   box-sizing: border-box;
+}
+
+.focused div.group-modules {
+  background-color: rgba(191, 54, 12, 0.6);
 }
 
 div.group-modules {

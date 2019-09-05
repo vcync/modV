@@ -1,4 +1,4 @@
-const state = [];
+const state = ["complexSpectrum"];
 
 const actions = {
   addFeature({ commit }, feature) {
