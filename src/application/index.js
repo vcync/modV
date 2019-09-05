@@ -73,7 +73,11 @@ export default class ModV {
 
   async setup(canvas) {
     this.windowHandler();
-    await this.setupMedia();
+    try {
+      await this.setupMedia();
+    } catch (e) {
+      console.error(e);
+    }
 
     this.canvas = canvas;
     const offscreen = this.canvas.transferControlToOffscreen();
