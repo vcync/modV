@@ -1,4 +1,6 @@
+import Vue from "vue";
 import anime from "animejs";
+import store from "../";
 const uuidv4 = require("uuid/v4");
 
 if (typeof window === "undefined") {
@@ -13,14 +15,25 @@ const frames = {};
 
 const state = {
   tweens: {},
-  easings: Object.keys(anime.easings)
+  easings: Object.keys(anime.easings).map(easing => ({
+    value: easing,
+    label: easing
+      .replace(/([a-z])([A-Z])/g, "$1 $2")
+      .replace(/^\w/, c => c.toUpperCase())
+  }))
 };
 
-const actions = {
-  createTween(
-    { commit },
-    { data, duration = 1000, easing = "linear", loop = true }
-  ) {
+async function buildFrames({
+  loop,
+  data,
+  duration,
+  easing,
+  bpmDivision,
+  useBpm
+}) {
+  const bpm = store.state.beats.bpm || 120;
+
+  return new Promise(resolve => {
     const objOut = {};
     const mapped = {};
 
@@ -50,7 +63,7 @@ const actions = {
     const animation = anime({
       targets: objOut,
       ...mapped,
-      duration: duration || 1000,
+      duration: (useBpm ? ((60 * 60) / bpm) * bpmDivision : duration) || 1000,
       easing: easing || "linear",
       autoplay: false
     });
@@ -65,25 +78,82 @@ const actions = {
       frame++;
     }
 
+    resolve(animationCache);
+  });
+}
+
+const actions = {
+  async createTween(
+    { commit },
+    {
+      id = uuidv4(),
+      data,
+      duration = 1000,
+      easing = "linear",
+      loop = true,
+      useBpm = true,
+      bpmDivision = 16
+    }
+  ) {
+    const animationCache = await buildFrames({
+      loop,
+      data,
+      duration,
+      easing,
+      useBpm,
+      bpmDivision
+    });
+
     const tween = {
-      id: uuidv4(),
+      id,
       frames: animationCache,
       data,
       loop,
       easing,
-      duration
+      duration,
+      useBpm,
+      bpmDivision
     };
 
     commit("ADD_TWEEN", tween);
 
     return tween;
+  },
+
+  async updateBpm({ commit }, { bpm }) {
+    const tweenKeys = Object.keys(state.tweens);
+    const tweenKeysLength = tweenKeys.length;
+
+    for (let i = 0; i < tweenKeysLength; ++i) {
+      const tween = state.tweens[tweenKeys[i]];
+
+      if (tween.useBpm) {
+        commit("UPDATE_TWEEN_VALUE", {
+          id: tween.id,
+          key: "duration",
+          value: ((60 * 60) / bpm) * tween.bpmDivision
+        });
+
+        const frames = await buildFrames(tween);
+
+        commit("UPDATE_TWEEN_VALUE", {
+          id: tween.id,
+          key: "frames",
+          value: frames
+        });
+      }
+    }
   }
 };
 
 const mutations = {
   ADD_TWEEN(state, tween) {
-    state.tweens[tween.id] = tween;
+    Vue.set(state.tweens, tween.id, tween);
     frames[tween.id] = 0;
+  },
+
+  UPDATE_TWEEN_VALUE(state, { id, key, value }) {
+    state.tweens[id][key] = value;
   }
 };
 

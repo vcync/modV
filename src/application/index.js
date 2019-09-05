@@ -1,5 +1,6 @@
 import Worker from "worker-loader!./worker";
 import setupMedia from "./setup-media";
+import setupBeatDetektor from "./setup-beat-detektor";
 import store from "./worker/store";
 import windowHandler from "./window-handler";
 import use from "./use";
@@ -8,6 +9,7 @@ const PromiseWorker = require("promise-worker-transferable");
 
 export default class ModV {
   setupMedia = setupMedia;
+  setupBeatDetektor = setupBeatDetektor;
   windowHandler = windowHandler;
   use = use;
 
@@ -29,7 +31,11 @@ export default class ModV {
       }
       const payload = JSON.parse(e.data.payload);
 
-      if (type !== "metrics/SET_FPS_MEASURE") {
+      if (
+        type !== "metrics/SET_FPS_MEASURE" &&
+        type !== "beats/SET_BPM" &&
+        type !== "beats/SET_KICK"
+      ) {
         console.log(`⚙️%c ${type}`, "color: red", payload);
       }
 
@@ -74,6 +80,7 @@ export default class ModV {
   async setup(canvas) {
     this.windowHandler();
     await this.setupMedia();
+    this.setupBeatDetektor();
 
     this.canvas = canvas;
     const offscreen = this.canvas.transferControlToOffscreen();
@@ -92,11 +99,12 @@ export default class ModV {
     this.raf = requestAnimationFrame(this.loop.bind(this));
   }
 
-  loop() {
+  loop(delta) {
     this.raf = requestAnimationFrame(this.loop.bind(this));
     const { meyda: featuresToGet } = this.store.state;
 
     const features = this.meyda.get(featuresToGet);
+    this.updateBeatDetektor(delta, features);
     this.$worker.postMessage({ type: "meyda", payload: features });
   }
 

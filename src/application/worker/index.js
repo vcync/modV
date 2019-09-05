@@ -14,6 +14,10 @@ self.addEventListener("unhandledrejection", e => {
 store.subscribe(mutation => {
   const { type, payload } = mutation;
 
+  if (type === "beats/SET_BPM") {
+    store.dispatch("tweens/updateBpm", { bpm: payload.bpm });
+  }
+
   self.postMessage({
     type,
     payload: JSON.stringify(payload)

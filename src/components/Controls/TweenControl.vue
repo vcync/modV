@@ -1,8 +1,22 @@
 <template>
   <div>
     <textarea v-model="modelData" @change="updateValue"></textarea>
-    <input type="number" v-model="modelDuration" @change="updateValue" />
+    <input
+      type="number"
+      v-model="modelDuration"
+      @change="updateValue"
+      :disabled="useBpm"
+    />
     <input type="text" v-model.number="modelEasing" @change="updateValue" />
+    <label :for="`${inputId}-bpmDivision`">BPM Division</label>
+    <input
+      :id="`${inputId}-bpmDivision`"
+      v-model="bpmDivisionInput"
+      type="range"
+      max="32"
+      min="1"
+      step="1"
+    />
   </div>
 </template>
 
@@ -13,7 +27,8 @@ export default {
     return {
       modelData: "",
       modelDuration: 1000,
-      modelEasing: "linear"
+      modelEasing: "linear",
+      useBpm: true
     };
   },
 
@@ -39,6 +54,15 @@ export default {
       const easing = this.modelEasing;
 
       this.$emit("input", { ...this.value, data, duration, easing });
+    }
+  },
+
+  watch: {
+    "$store.state.bpm"(value) {
+      if (this.useBpm) {
+        this.modelDuration = value / 60000;
+        this.updateValue();
+      }
     }
   }
 };

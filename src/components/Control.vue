@@ -109,8 +109,15 @@ export default {
 
     value: {
       get() {
-        const { id, prop } = this;
-        return this.$modV.store.state.modules.active[id][prop];
+        const { id, prop, type } = this;
+        const propData = this.$modV.store.state.modules.active[id][prop];
+
+        if (type === "tween") {
+          console.log(this.$modV.store.state.tweens.tweens[propData.id]);
+          return this.$modV.store.state.tweens.tweens[propData.id];
+        }
+
+        return propData;
       },
 
       set(value) {
