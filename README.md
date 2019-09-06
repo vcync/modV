@@ -1,4 +1,7 @@
-# modv-3.0
+# modV 3.0
+
+modV 3.0 is a complete rewrite of modV 2.0 with a focus on performance and a standardised API.
+
 
 ## Project setup
 ```
