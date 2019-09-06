@@ -15,7 +15,7 @@ function loop(delta, features) {
   const {
     modules: { active },
     groups,
-    outputs: { main, debug, debugContext, auxillary },
+    outputs: { main, debug, debugContext, auxillary, webcam: video },
     renderers,
     windows
   } = store.state;
@@ -93,7 +93,8 @@ function loop(delta, features) {
         delta,
         module,
         features,
-        meyda
+        meyda,
+        video
       });
       drawTo.restore();
     }
@@ -154,15 +155,20 @@ function loop(delta, features) {
     const canvasToDebug = store.getters["outputs/canvasToDebug"];
 
     if (canvasToDebug) {
-      if (main.canvas.width !== debugCanvas.width) {
-        debugCanvas.width = main.canvas.width;
-      }
+      debugCanvas.width = canvasToDebug.context.canvas.width;
+      debugCanvas.height = canvasToDebug.context.canvas.height;
 
-      if (main.canvas.height !== debugCanvas.height) {
-        debugCanvas.height = main.canvas.height;
-      }
       debugContext.clearRect(0, 0, debugCanvas.width, debugCanvas.height);
       debugContext.drawImage(canvasToDebug.context.canvas, 0, 0);
+      debugContext.font = "32px monospace";
+      debugContext.textBaseline = "hanging";
+      debugContext.fillText(
+        `${canvasToDebug.context.canvas.width} × ${
+          canvasToDebug.context.canvas.height
+        }`,
+        10,
+        10
+      );
     }
   }
 

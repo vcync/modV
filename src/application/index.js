@@ -8,6 +8,8 @@ import use from "./use";
 const PromiseWorker = require("promise-worker-transferable");
 
 export default class ModV {
+  _mediaStream;
+  _imageCapture;
   setupMedia = setupMedia;
   setupBeatDetektor = setupBeatDetektor;
   windowHandler = windowHandler;
@@ -80,9 +82,14 @@ export default class ModV {
   async setup(canvas) {
     this.windowHandler();
     try {
-      await this.setupMedia();
+      this._mediaStream = await this.setupMedia();
     } catch (e) {
       console.error(e);
+    }
+
+    const [track] = this._mediaStream.getVideoTracks();
+    if (track) {
+      this._imageCapture = new ImageCapture(track);
     }
 
     this.setupBeatDetektor();
@@ -104,13 +111,27 @@ export default class ModV {
     this.raf = requestAnimationFrame(this.loop.bind(this));
   }
 
-  loop(delta) {
-    this.raf = requestAnimationFrame(this.loop.bind(this));
+  async loop(delta) {
     const { meyda: featuresToGet } = this.store.state;
 
     const features = this.meyda.get(featuresToGet);
     this.updateBeatDetektor(delta, features);
     this.$worker.postMessage({ type: "meyda", payload: features });
+
+    if (this._imageCapture) {
+      let imageBitmap;
+      try {
+        imageBitmap = await this._imageCapture.grabFrame();
+      } catch (e) {
+        throw e;
+      }
+
+      this.$worker.postMessage({ type: "videoFrame", payload: imageBitmap }, [
+        imageBitmap
+      ]);
+    }
+
+    this.raf = requestAnimationFrame(this.loop.bind(this));
   }
 
   setSize({ width, height }) {

@@ -1,12 +1,76 @@
 import Meyda from "meyda";
 
+async function scanSources() {
+  const devices = await navigator.mediaDevices.enumerateDevices();
+  const sources = {
+    audio: [],
+    video: []
+  };
+
+  for (let i = 0, len = devices.length; i < len; i++) {
+    const device = devices[i];
+
+    if (device.kind === "audioinput") {
+      sources.audio.push(device);
+    } else if (device.kind === "videoinput") {
+      sources.video.push(device);
+    }
+  }
+
+  return sources;
+}
+
+async function getMediaStream({ audioSourceId, videoSourceId }) {
+  const constraints = {};
+
+  if (audioSourceId) {
+    constraints.audio = {
+      echoCancellation: { exact: false },
+      deviceId: audioSourceId
+    };
+  }
+
+  if (videoSourceId) {
+    constraints.video = {
+      deviceId: videoSourceId
+    };
+  }
+
+  /* Ask for user media access */
+  return navigator.mediaDevices.getUserMedia(constraints);
+}
+
 export default async function setupMedia() {
-  const mediaStream = await navigator.mediaDevices.getUserMedia({
-    audio: {
-      echoCancellation: { exact: false }
-    },
-    video: { width: 1920, height: 1080 }
-  });
+  const { _store: store } = this;
+
+  const mediaStreamDevices = await scanSources();
+
+  const audioDevices = mediaStreamDevices.audio;
+  for (let i = 0, len = audioDevices.length; i < len; i++) {
+    store.commit("media-stream/ADD_AUDIO_SOURCE", { source: audioDevices[i] });
+  }
+
+  const videoDevices = mediaStreamDevices.video;
+  for (let i = 0, len = videoDevices.length; i < len; i++) {
+    store.commit("media-stream/ADD_VIDEO_SOURCE", { source: videoDevices[i] });
+  }
+
+  let audioSourceId;
+  let videoSourceId;
+
+  if (store.getters["user/currentAudioSource"]) {
+    audioSourceId = store.getters["user/currentAudioSource"];
+  } else if (mediaStreamDevices.audio.length > 0) {
+    audioSourceId = mediaStreamDevices.audio[0].deviceId;
+  }
+
+  if (store.getters["user/setCurrentVideoSource"]) {
+    videoSourceId = store.getters["user/setCurrentVideoSource"];
+  } else if (mediaStreamDevices.video.length > 0) {
+    videoSourceId = mediaStreamDevices.video[0].deviceId;
+  }
+
+  const mediaStream = await getMediaStream({ audioSourceId, videoSourceId });
 
   if (this.audioContext) this.audioContext.close();
 
@@ -45,4 +109,6 @@ export default async function setupMedia() {
     windowingFunction: "rect",
     featureExtractors: ["complexSpectrum"]
   });
+
+  return mediaStream;
 }
