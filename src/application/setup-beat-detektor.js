@@ -5,6 +5,10 @@ export default function() {
   const beatDetektorKick = new BeatDetektor.modules.vis.BassKick();
 
   this.updateBeatDetektor = (delta, features) => {
+    if (!features) {
+      return;
+    }
+
     beatDetektor.process(delta / 1000.0, features.complexSpectrum.real);
     beatDetektorKick.process(beatDetektor);
     const kick = beatDetektorKick.isKick();

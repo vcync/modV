@@ -2,6 +2,7 @@ const uuidv4 = require("uuid/v4");
 
 const state = {
   main: null,
+  webcam: null,
   auxillary: {},
 
   debug: false,
@@ -31,6 +32,10 @@ const getters = {
 const actions = {
   setMainOutput({ commit }, context) {
     commit("SET_MAIN_OUTPUT", context);
+  },
+
+  setWebcamOutput({ commit }, context) {
+    commit("SET_WEBCAM_OUTPUT", context);
   },
 
   async getAuxillaryOutput(
@@ -73,6 +78,10 @@ const actions = {
 const mutations = {
   SET_MAIN_OUTPUT(state, outputContext) {
     state.main = outputContext;
+  },
+
+  SET_WEBCAM_OUTPUT(state, outputContext) {
+    state.webcam = outputContext;
   },
 
   ADD_AUXILLARY(state, outputContext) {
