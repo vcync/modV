@@ -42,6 +42,7 @@ export default async function setupMedia() {
     audioContext: this.audioContext,
     source: this.audioStream,
     bufferSize: 512,
-    windowingFunction: "rect"
+    windowingFunction: "rect",
+    featureExtractors: ["complexSpectrum"]
   });
 }
