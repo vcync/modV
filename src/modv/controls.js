@@ -6,6 +6,7 @@ import rangeControl from '@/components/Controls/RangeControl'
 import selectControl from '@/components/Controls/SelectControl'
 import textControl from '@/components/Controls/TextControl'
 import twoDPointControl from '@/components/Controls/TwoDPointControl'
+import buttonControl from '@/components/Controls/ButtonControl'
 
 const CheckboxControl = {
   name: 'CheckboxControl',
@@ -54,6 +55,12 @@ const TwoDPointControl = {
   types: ['vec2']
 }
 
+const ButtonControl = {
+  name: 'ButtonControl',
+  component: buttonControl,
+  types: ['button']
+}
+
 export {
   CheckboxControl,
   ColorControl,
@@ -62,5 +69,6 @@ export {
   RangeControl,
   SelectControl,
   TextControl,
-  TwoDPointControl
+  TwoDPointControl,
+  ButtonControl
 }

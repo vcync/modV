@@ -146,6 +146,16 @@ const midiAssignment = {
     })
 
     modV.addContextMenuHook({
+      hook: 'buttonControl',
+      buildMenuItem: this.createMenuItem.bind(this)
+    })
+
+    modV.addContextMenuHook({
+      hook: 'checkboxControl',
+      buildMenuItem: this.createMenuItem.bind(this)
+    })
+
+    modV.addContextMenuHook({
       hook: '@modv/module:internal',
       buildMenuItem: this.createMenuItem.bind(this)
     })

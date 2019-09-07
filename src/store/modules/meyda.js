@@ -38,7 +38,10 @@ const mutations = {
       controlVariable
     }
 
-    if (state.features.indexOf(feature) < 0) state.features.push(feature)
+    if (state.features.indexOf(feature) < 0) {
+      state.features.push(feature)
+    }
+
     state.controlAssignments.push(assignment)
   },
   removeAssignments(state, { moduleName }) {

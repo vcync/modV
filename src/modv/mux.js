@@ -29,8 +29,10 @@ function mux() {
       }),
       {}
     )
+    const layersLength = layers.length
+    for (let i = 0; i < layersLength; ++i) {
+      const layer = layers[i]
 
-    layers.forEach(layer => {
       if (!layer.enabled || layer.alpha === 0) return
       const canvas = layer.canvas
 
@@ -44,7 +46,7 @@ function mux() {
         context.clearRect(0, 0, canvas.width, canvas.height)
         context.drawImage(canvas, 0, 0, canvas.width, canvas.height)
       }
-    })
+    }
 
     resolve()
 

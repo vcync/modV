@@ -75,6 +75,7 @@ export default window.modVVue = new Vue({
     modV.start(this)
 
     const modules = [
+      'Event',
       'Text',
       'Webcam',
       'Plasma',
@@ -96,6 +97,7 @@ export default window.modVVue = new Vue({
       'OpticalFlowDistort-2.0',
       'MattiasCRT-2.0',
       'Doughnut_Generator',
+      'Bulge',
       'Media',
       '3D'
     ]
@@ -154,7 +156,8 @@ export default window.modVVue = new Vue({
       'film-grain.fs',
       'spherical-shader-tut.fs',
       'scale.fs',
-      'LogTransWarpSpiral.fs'
+      'LogTransWarpSpiral.fs',
+      'Luminosity.fs'
     ]
 
     isfSamples.forEach(fileName => {
