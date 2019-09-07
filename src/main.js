@@ -23,7 +23,7 @@ import lfo from './extra/lfo'
 import grabCanvas from './extra/grab-canvas'
 import slimUi from './extra/slim-ui'
 import shadertoy from './extra/shadertoy'
-import capture from './extra/capture'
+// import capture from './extra/capture'
 import './assets/styles/index.scss'
 
 import attachResizeHandles from './extra/ui-resize/attach'
@@ -54,7 +54,7 @@ modV.use('plugin', lfo)
 modV.use('plugin', grabCanvas)
 modV.use('plugin', slimUi)
 modV.use('plugin', shadertoy)
-modV.use('plugin', capture)
+// modV.use('plugin', capture)
 
 Object.values(builtInControls).forEach(value => modV.use('control', value))
 
