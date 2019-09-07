@@ -76,9 +76,23 @@ export default function generateControlData(settings = {}) {
         })
       }
 
+      if (type === 'color' && exclude.indexOf(type) < 0) {
+        controls.push({
+          component: 'colorControl',
+          meta: propData
+        })
+      }
+
       if (type === 'texture' && exclude.indexOf(type) < 0) {
         controls.push({
           component: 'imageControl',
+          meta: propData
+        })
+      }
+
+      if (type === 'button' && exclude.indexOf(type) < 0) {
+        controls.push({
+          component: 'buttonControl',
           meta: propData
         })
       }
