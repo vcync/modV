@@ -12,7 +12,10 @@
       <Groups />
       <Gallery />
       <SizeDisplay />
-      <FPSDisplay />
+      <div class="top-right">
+        <FPSDisplay />
+        <BPMDisplay />
+      </div>
       <component
         :is="pluginComponent"
         v-for="pluginComponent in pluginComponents"
@@ -25,6 +28,7 @@
 <script>
 import SizeDisplay from "@/components/SizeDisplay";
 import FPSDisplay from "@/components/FPSDisplay";
+import BPMDisplay from "@/components/BPMDisplay";
 import CanvasDebugger from "@/components/CanvasDebugger";
 import Groups from "@/components/Groups";
 import Gallery from "@/components/Gallery";
@@ -35,6 +39,7 @@ export default {
   components: {
     SizeDisplay,
     FPSDisplay,
+    BPMDisplay,
     CanvasDebugger,
     Groups,
     Gallery
@@ -126,6 +131,12 @@ body,
 canvas {
   position: fixed;
   left: 0;
+  right: 0;
+}
+
+.top-right {
+  position: fixed;
+  top: 0;
   right: 0;
 }
 </style>
