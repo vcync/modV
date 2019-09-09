@@ -1,5 +1,5 @@
 <template>
-  <div>{{ Math.round($modV.store.state.metrics.fps) }} FPS</div>
+  <div>{{ Math.round($modV.store.state.beats.bpm) }} BPM</div>
 </template>
 
 <style scoped>

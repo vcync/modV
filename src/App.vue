@@ -7,24 +7,42 @@
       :style="{ cursor }"
     ></canvas>
 
-    <section v-show="showUi">
-      <CanvasDebugger />
-      <Groups />
-      <Gallery />
+    <golden-layout class="hscreen" v-model="state">
+      <gl-col :closable="false" id="lr-col">
+        <gl-component title="Groups">
+          <Groups />
+        </gl-component>
+        <gl-row>
+          <gl-component title="Gallery">
+            <Gallery />
+          </gl-component>
+
+          <gl-component title="Preview">
+            <CanvasDebugger />
+          </gl-component>
+        </gl-row>
+      </gl-col>
+    </golden-layout>
+
+    <!-- <section v-show="showUi">
       <SizeDisplay />
-      <FPSDisplay />
+      <div class="top-right">
+        <FPSDisplay />
+        <BPMDisplay />
+      </div>
       <component
         :is="pluginComponent"
         v-for="pluginComponent in pluginComponents"
         :key="pluginComponent"
       ></component>
-    </section>
+    </section> -->
   </main>
 </template>
 
 <script>
-import SizeDisplay from "@/components/SizeDisplay";
-import FPSDisplay from "@/components/FPSDisplay";
+// import SizeDisplay from "@/components/SizeDisplay";
+// import FPSDisplay from "@/components/FPSDisplay";
+// import BPMDisplay from "@/components/BPMDisplay";
 import CanvasDebugger from "@/components/CanvasDebugger";
 import Groups from "@/components/Groups";
 import Gallery from "@/components/Gallery";
@@ -33,8 +51,9 @@ export default {
   name: "app",
 
   components: {
-    SizeDisplay,
-    FPSDisplay,
+    // SizeDisplay,
+    // FPSDisplay,
+    // BPMDisplay,
     CanvasDebugger,
     Groups,
     Gallery
@@ -42,6 +61,8 @@ export default {
 
   data() {
     return {
+      state: null,
+
       showUi: true,
       mouseTimer: null,
       cursor: "none"
@@ -114,6 +135,11 @@ export default {
 </script>
 
 <style>
+.hscreen {
+  width: 100vw;
+  height: 100vh;
+}
+
 body,
 #app {
   margin: 0;
@@ -126,6 +152,12 @@ body,
 canvas {
   position: fixed;
   left: 0;
+  right: 0;
+}
+
+.top-right {
+  position: fixed;
+  top: 0;
   right: 0;
 }
 </style>

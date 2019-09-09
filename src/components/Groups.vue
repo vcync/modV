@@ -111,17 +111,13 @@ export default {
 <style scoped>
 div.groups {
   font-family: monospace;
-  position: fixed;
-  bottom: 0;
-  left: 0;
 
   padding: 10px;
   color: #fff;
   background-color: rgba(0, 0, 0, 0.6);
 
-  max-width: 72%;
-  max-height: 400px;
   height: 100%;
+  width: 100%;
 }
 
 div.group-container {
