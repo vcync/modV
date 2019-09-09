@@ -24,6 +24,11 @@ const state = {
   }))
 };
 
+const getters = {
+  progress: () => progress,
+  frames: () => frames
+};
+
 async function buildFrames({
   id,
   loop,
@@ -93,7 +98,7 @@ async function buildFrames({
 
     const animationCache = [];
     let frame = 0;
-    const framesRequired = Math.round(animation.duration / 60) || 1;
+    const framesRequired = Math.round(newDuration / 60) || 1;
 
     while (frame < framesRequired) {
       animation.seek((frame / framesRequired) * animation.duration);
@@ -199,6 +204,7 @@ export { frames, advanceFrame };
 export default {
   namespaced: true,
   state,
+  getters,
   actions,
   mutations
 };
