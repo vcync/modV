@@ -244,12 +244,12 @@ export default {
 div.group {
   display: flex;
   max-width: 100%;
-  overflow-x: auto;
   margin-bottom: 10px;
 }
 
 section.group-body {
-  width: 100%;
+  flex: 1;
+  overflow: hidden;
 }
 
 section.group-controls {
