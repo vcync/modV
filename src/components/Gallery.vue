@@ -99,18 +99,13 @@ export default {
 <style lang="css" scoped>
 div.gallery {
   font-family: monospace;
-  position: fixed;
-  top: 0;
-  left: 0;
 
   padding: 10px;
   color: #fff;
   background-color: rgba(0, 0, 0, 0.6);
 
   display: flex;
-  width: 100%;
   flex-direction: column;
-  height: 50%;
 
   overflow-y: auto
 }

@@ -73,7 +73,7 @@ export default {
     this.canvas = this.$refs.canvas;
     this.context = this.$refs.canvas.getContext("2d");
     this.canvas.width = 200;
-    this.canvas.height = 40;
+    this.canvas.height = 20;
 
     this.context.fillStyle = "#333";
     this.context.strokeStyle = "#fff";
@@ -175,7 +175,8 @@ export default {
       window.removeEventListener("mouseup", this.mouseUp);
       window.removeEventListener("keydown", this.keyDown);
       window.removeEventListener("keyup", this.keyUp);
-      document.body.style.cursor = this.lastCursor;
+      document.body.style.cursor =
+        this.lastCursor === "ew-resize" ? "default" : this.lastCursor;
     },
 
     mouseMove(e) {
@@ -262,7 +263,7 @@ export default {
 div {
   position: relative;
   width: 200px;
-  height: 40px;
+  height: 20px;
   display: inline-block;
 }
 

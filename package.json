@@ -11,6 +11,7 @@
     "animejs": "^2.2.0",
     "canvas-text-wrapper": "^0.10.2",
     "core-js": "^2.6.5",
+    "golden-layout": "^1.5.9",
     "interactive-shader-format": "git+https://github.com/msfeldstein/interactive-shader-format-js.git",
     "lfo-for-modv": "0.0.1",
     "lodash.clonedeep": "^4.5.0",
@@ -21,6 +22,8 @@
     "regl": "^1.3.11",
     "uuid": "^3.3.2",
     "vue": "^2.6.10",
+    "vue-golden-layout": "^1.6.0",
+    "vue-property-decorator": "^8.2.2",
     "vue-smooth-dnd": "^0.8.0",
     "vuex": "^3.0.1"
   },
