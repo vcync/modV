@@ -118,17 +118,25 @@ export default class ModV {
     this.updateBeatDetektor(delta, features);
     this.$worker.postMessage({ type: "meyda", payload: features });
 
-    if (this._imageCapture) {
+    if (
+      // Don't try to take a frame while the window is unfocused, Chrome kills the feed irreparably
+      !document.hidden &&
+      this._imageCapture &&
+      this._imageCapture.track.readyState === "live" &&
+      !this._imageCapture.track.muted
+    ) {
       let imageBitmap;
       try {
         imageBitmap = await this._imageCapture.grabFrame();
       } catch (e) {
-        throw e;
+        console.error(e, e.message, this._imageCapture.track.readyState);
       }
 
-      this.$worker.postMessage({ type: "videoFrame", payload: imageBitmap }, [
-        imageBitmap
-      ]);
+      if (imageBitmap) {
+        this.$worker.postMessage({ type: "videoFrame", payload: imageBitmap }, [
+          imageBitmap
+        ]);
+      }
     }
 
     this.raf = requestAnimationFrame(this.loop.bind(this));

@@ -72,6 +72,17 @@ export default async function setupMedia() {
 
   const mediaStream = await getMediaStream({ audioSourceId, videoSourceId });
 
+  // This video element is required to keep the camera alive for the ImageCapture API
+  // (this._imageCapture, ./index.js)
+  this.videoStream = document.createElement("video");
+  this.videoStream.autoplay = true;
+  this.videoStream.muted = true;
+
+  this.videoStream.srcObject = mediaStream;
+  this.videoStream.onloadedmetadata = () => {
+    this.videoStream.play();
+  };
+
   if (this.audioContext) this.audioContext.close();
 
   // Create new Audio Context
