@@ -17,14 +17,6 @@
     ><br />
     <label>Use BPM <input type="checkbox" v-model="modelUseBpm"/></label><br />
     <label :for="`${111}-bpmDivision`">BPM Division</label>
-    <!-- <input
-      :id="`${111}-bpmDivision`"
-      v-model="modelBpmDivision"
-      type="range"
-      max="256"
-      min="1"
-      step="1"
-    /> -->
     <select v-model.number="modelBpmDivision">
       <option value="1">1</option>
       <option value="2">2</option>
