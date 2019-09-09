@@ -12,6 +12,7 @@ if (typeof window === "undefined") {
 }
 
 const frames = {};
+const progress = {};
 
 const state = {
   tweens: {},
@@ -24,14 +25,24 @@ const state = {
 };
 
 async function buildFrames({
+  id,
   loop,
   data,
   duration,
+  direction,
   easing,
   bpmDivision,
   useBpm
 }) {
   const bpm = store.state.beats.bpm || 120;
+  const newDuration =
+    (useBpm ? ((60 * 60) / bpm) * bpmDivision : duration) || 1000;
+
+  let seek = 0;
+
+  if (state.tweens[id]) {
+    seek = ((duration / 100) * progress[id]) / 100;
+  }
 
   return new Promise(resolve => {
     const objOut = {};
@@ -42,6 +53,8 @@ async function buildFrames({
     if (loop) {
       newData = data.concat([data[0]]);
     }
+
+    const frameDuration = duration / newData.length;
 
     for (let i = 0, len = newData.length; i < len; i++) {
       const datum = newData[i];
@@ -55,7 +68,13 @@ async function buildFrames({
           mapped[index] = [];
         }
 
-        mapped[index].push({ value });
+        mapped[index].push({
+          value,
+          duration:
+            i === 0 || i === newData.length - 1
+              ? frameDuration / 2
+              : frameDuration
+        });
         index++;
       }
     }
@@ -63,9 +82,13 @@ async function buildFrames({
     const animation = anime({
       targets: objOut,
       ...mapped,
-      duration: (useBpm ? ((60 * 60) / bpm) * bpmDivision : duration) || 1000,
+      duration: newDuration,
       easing: easing || "linear",
-      autoplay: false
+      direction,
+      autoplay: false,
+      update(anim) {
+        progress[id] = anim.progress;
+      }
     });
 
     const animationCache = [];
@@ -78,6 +101,8 @@ async function buildFrames({
       frame++;
     }
 
+    frames[id] = Math.floor(animationCache.length * seek);
+
     resolve(animationCache);
   });
 }
@@ -89,6 +114,7 @@ const actions = {
       id = uuidv4(),
       data,
       duration = 1000,
+      direction = "normal",
       easing = "linear",
       loop = true,
       useBpm = true,
@@ -96,9 +122,11 @@ const actions = {
     }
   ) {
     const animationCache = await buildFrames({
+      id,
       loop,
       data,
       duration,
+      direction,
       easing,
       useBpm,
       bpmDivision
@@ -111,6 +139,7 @@ const actions = {
       loop,
       easing,
       duration,
+      direction,
       useBpm,
       bpmDivision
     };
