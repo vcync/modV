@@ -1,21 +1,22 @@
 <template>
   <div class="groups">
-    <button @click="createGroup">Create new Group</button>
-    <select v-model="module">
-      <option
-        v-for="module in registeredModules"
-        :key="module.meta.name"
-        :value="module.meta.name"
-        >{{ module.meta.name }}</option
-      >
-    </select>
-    <select v-model="group">
-      <option v-for="group in groups" :key="group.id" :value="group.id">{{
-        group.name
-      }}</option>
-    </select>
-    <button @click="addModuleToGroup">Add Module To Group</button>
-
+    <div>
+      <button @click="createGroup">Create new Group</button>
+      <select v-model="module">
+        <option
+          v-for="module in registeredModules"
+          :key="module.meta.name"
+          :value="module.meta.name"
+          >{{ module.meta.name }}</option
+        >
+      </select>
+      <select v-model="group">
+        <option v-for="group in groups" :key="group.id" :value="group.id">{{
+          group.name
+        }}</option>
+      </select>
+      <button @click="addModuleToGroup">Add Module To Group</button>
+    </div>
     <Container
       drag-handle-selector=".group-title"
       lock-axis="y"
@@ -118,10 +119,14 @@ div.groups {
 
   height: 100%;
   width: 100%;
+  box-sizing: border-box;
+
+  display: flex;
+  flex-direction: column;
 }
 
 div.group-container {
   overflow-y: auto;
-  height: 100%;
+  flex: 1;
 }
 </style>
