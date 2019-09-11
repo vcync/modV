@@ -245,8 +245,10 @@ export default {
     enabled: {
       get() {
         if (!this.moduleName) return false
-        return this.$store.state.modVModules.active[this.moduleName].meta
-          .enabled
+        return (
+          this.$store.state.modVModules.active[this.moduleName] &&
+          this.$store.state.modVModules.active[this.moduleName].meta.enabled
+        )
       },
       set(value) {
         this.setActiveModuleEnabled({

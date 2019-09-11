@@ -99,6 +99,9 @@ const actions = {
       { root: true }
     )
   },
+  setModuleOrder({ commit }, { moduleOrder, layerIndex }) {
+    commit('setModuleOrder', { moduleOrder, layerIndex })
+  },
   updateModuleOrder({ commit }, { layerIndex, order }) {
     commit('updateModuleOrder', { layerIndex, order })
   },

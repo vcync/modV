@@ -115,12 +115,11 @@ const actions = {
             })
           })
         }
+      })
 
-        store.dispatch('layers/addModuleToLayer', {
-          module,
-          layerIndex,
-          position: idx
-        })
+      store.dispatch('layers/setModuleOrder', {
+        moduleOrder: Layer.moduleOrder,
+        layerIndex
       })
     })
 
