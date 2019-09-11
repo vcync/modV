@@ -24,7 +24,10 @@ export default {
     alpha: {
       get() {
         if (!this.moduleName) return 0
-        return this.$store.state.modVModules.active[this.moduleName].meta.alpha
+        return (
+          this.$store.state.modVModules.active[this.moduleName] &&
+          this.$store.state.modVModules.active[this.moduleName].meta.alpha
+        )
       },
       set(value) {
         this.$store.dispatch('modVModules/updateMeta', {
