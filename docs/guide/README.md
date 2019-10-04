@@ -2,7 +2,7 @@
 
 The latest modV version can be found on our GitHub. We're currently working towards 2.0 status, with automatic release builds coming soon.
 
-Until we have automatic release builds, you can clone the project and use `yarn` to install the dependencies, then `yarn run build` to build the application which can then be found in `nwjs/build/`.
+Until we have automatic release builds, you can clone the project and use `npm` to install the dependencies, then `npm run dev` to run modV in your Blink based browser.
 
 ## System Requirements
 ### Minimum
