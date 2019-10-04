@@ -1,6 +1,6 @@
 import { modV } from '@/modv';
 import CCapture from 'ccapture.js';
-import store from '@/../store';
+import store from '@/store';
 
 const capturer = new CCapture({
   verbose: true,
@@ -12,9 +12,15 @@ const capturer = new CCapture({
 
 window.capturer = capturer;
 
-function mux() {
+/**
+ * Combine all given layers onto a "multiplex" (mux) Canvas
+ *
+ * @param {Array#Layer} layers Layers to multiplex
+ *
+ * @returns {Layer}
+ */
+function mux(layers) {
   return new Promise((resolve) => {
-    const layers = store.getters['layers/allLayers'];
     const windows = store.getters['windows/allWindows'];
     const width = modV.width;
     const height = modV.height;

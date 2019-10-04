@@ -8,10 +8,13 @@ import Buefy from 'buefy';
 import Vuebar from 'vuebar';
 
 import Capitalize from '@/vuePlugins/capitalize-filter';
+import * as builtInControls from '@/modv/controls';
+import * as builtInStatusBarItems from '@/extra/status-bar-items';
+import * as builtInRenderers from '@/modv/renderers';
 
 import { modV } from './modv';
 import App from './App';
-import store from '../store';
+import store from './store';
 import contextMenu from './extra/context-menu';
 import expression from './extra/expression';
 import midiAssignment from './extra/midi-assignment';
@@ -42,14 +45,20 @@ Vue.use(VueThrottleEvent);
 Vue.use(Dropdown);
 Vue.use(Shortkey);
 
-modV.use(contextMenu);
-modV.use(featureAssignment);
-modV.use(expression);
-modV.use(midiAssignment);
-modV.use(lfo);
-modV.use(grabCanvas);
-modV.use(slimUi);
-modV.use(shadertoy);
+modV.use('plugin', contextMenu);
+modV.use('plugin', featureAssignment);
+modV.use('plugin', expression);
+modV.use('plugin', midiAssignment);
+modV.use('plugin', lfo);
+modV.use('plugin', grabCanvas);
+modV.use('plugin', slimUi);
+modV.use('plugin', shadertoy);
+
+Object.values(builtInControls).forEach(value => modV.use('control', value));
+
+Object.values(builtInStatusBarItems).forEach(value => modV.use('statusBar', value));
+
+Object.values(builtInRenderers).forEach(value => modV.use('renderer', value));
 
 /* eslint-disable no-new */
 export default window.modVVue = new Vue({

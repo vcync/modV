@@ -1,4 +1,4 @@
-import store from '@/../store';
+import store from '@/store';
 import { modV } from 'modv';
 import { MenuItem } from 'nwjs-menu-browser';
 import modvVue from '@/main';
@@ -10,6 +10,31 @@ const Expression = {
   name: 'Value Expression',
   store: expressionStore,
   storeName: 'expression',
+
+  presetData: {
+    save() {
+      const { assignments } = store.state.expression;
+
+      return {
+        assignments,
+      };
+    },
+
+    load(data) {
+      const { assignments } = data;
+
+      Object.values(assignments).forEach((module) => {
+        Object.values(module).forEach((assignment) => {
+          store.dispatch('expression/addExpression', {
+            expression: assignment.expression,
+            moduleName: assignment.moduleName,
+            controlVariable: assignment.controlVariable,
+            scopeAdditions: assignment.additionalScope,
+          });
+        });
+      });
+    },
+  },
 
   install() {
     store.subscribe((mutation) => {

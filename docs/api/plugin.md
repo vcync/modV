@@ -12,7 +12,7 @@ Example Plugins can be found [here](https://github.com/2xAA/modV/tree/2.0-drawlo
 
 ## Lifecycle
 
-* Plugin added using `modV.use()`
+* Plugin added using `modV.use('plugin', Plugin)`
   * Plugin's `store` is registered with Vuex
   * `galleryTabComponent` is registered with Vue
   * `controlPanelComponent` is registered with Vue

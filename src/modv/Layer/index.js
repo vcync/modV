@@ -62,47 +62,58 @@
  * };
  */
 
+const defaults = {
+  name: 'Layer',
+
+  position: 0,
+
+  moduleOrder: [],
+
+  enabled: true,
+
+  alpha: 1,
+
+  inherit: true,
+
+  inheritFrom: -1,
+
+  pipeline: false,
+
+  clearing: false,
+
+  compositeOperation: 'normal',
+
+  drawToOutput: true,
+
+  canvas: document.createElement('canvas'),
+
+  drawToWindowId: null,
+
+  resize({ width, height, dpr = window.devicePixelRatio }) {
+    this.canvas.width = width * dpr;
+    this.canvas.height = height * dpr;
+  },
+};
+
+defaults.context = defaults.canvas.getContext('2d');
+
 /**
  * Generates a Layer Object
- * @param {Object} options.layer Overrides for the default Layer parameters
+ *
+ * @param {Object} layer Overrides for the default Layer parameters
  *
  * @returns {Layer}
  */
-export default function Layer(layer) {
-  const defaults = {
-    name: 'Layer',
+function Layer(layer) {
+  const newDefault = Object.assign({}, defaults);
+  newDefault.context = defaults.canvas.getContext('2d');
 
-    position: 0,
-
-    moduleOrder: [],
-
-    enabled: true,
-
-    alpha: 1,
-
-    inherit: true,
-
-    inheritFrom: -1,
-
-    pipeline: false,
-
-    clearing: false,
-
-    compositeOperation: 'normal',
-
-    drawToOutput: true,
-
-    canvas: document.createElement('canvas'),
-
-    drawToWindowId: null,
-
-    resize({ width, height, dpr = window.devicePixelRatio }) {
-      this.canvas.width = width * dpr;
-      this.canvas.height = height * dpr;
-    },
-  };
-
-  defaults.context = defaults.canvas.getContext('2d');
-
-  return Object.assign(defaults, layer);
+  return Object.assign(newDefault, layer);
 }
+
+export default Layer;
+
+export {
+  Layer,
+  defaults,
+};

@@ -17,7 +17,6 @@ features:
   details: Route, blend, pipe and control opacity per module and layer. Easily re-arrange modules or layers via drag and drop UI.
 - title: Modular Design
   details: modV modules support OpenGL (via WebGL) shaders, THREE.js scenes, ISF files and Canvas2D JavaScript. Using Vue.js as a base, modV has an extremely versatile plugin system.
-footer: MIT Licensed | Copyright © 2014-present Sam Wray
 ---
 
 ## Acknowledgements

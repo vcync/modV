@@ -16,7 +16,7 @@ The Media Folder is where the Media Manager will scan for your Project files.
 
 #### Mac
 
-`~/Library/Application Support/modV/media/`
+`~/Library/Application\ Support/modV/media/`
 
 #### Linux
 

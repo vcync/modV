@@ -152,9 +152,17 @@ The Control's label. If not set, the prop's `varname` will be used.
 
 Default value for the Control and variable on the Module's scope.
 
-**@todo add the ability to pass an array of initial values which will be randomly picked from on initialisation**
+### props[varname].random
+
+(optional)
+
+* Type: `boolean`
+* Default: `undefined`
+
+If set and `default` is an Array, a random value from the Array will be used on the Module's creation.
 
 ### props[varname].min
+
 (optional)
 
 * Type: `number`

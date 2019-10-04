@@ -1,4 +1,4 @@
-import store from '@/../store';
+import store from '@/store';
 import { modV } from '@/modv';
 import uuidv4 from 'uuid/v4';
 
@@ -7,8 +7,7 @@ class WindowController {
     this.id = uuidv4();
 
     return new Promise((resolve) => {
-      if (window.nw) {
-        if (window.nw.open) {
+      if (window.nw && window.nw.Window && window.nw.Window.open) {
           window.nw.Window.open('output.html', (newWindow) => {
             this.window = newWindow.window;
             if (this.window.document.readyState === 'complete') {

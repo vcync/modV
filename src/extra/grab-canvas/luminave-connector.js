@@ -4,33 +4,33 @@ export default class LuminaveConnector {
    * - Extract the colors from the modV output canvas (as specified in grab-canvas/index.js)
    * - Calculate the average color for the whole output and for specified areas
    *
-   * @param{string} url - WebSocket-URI
-   * @param{number} width - Width of the smallCanvas
-   * @param{number} height - Height of the smallCanvas
-   * @param{number} selectionX - Amount of areas we select on the x-axis
-   * @param{number} selectionY - Amount of areas we select on the y-axis
+   * @param {String} url - WebSocket-URI
+   * @param {Number} width - Width of the smallCanvas
+   * @param {Number} height - Height of the smallCanvas
+   * @param {Number} selectionX - Amount of areas we select on the x-axis
+   * @param {Number} selectionY - Amount of areas we select on the y-axis
    *
    * @example
    * Selecting colors:
    *
    *
-     selectionX = 4
-     selectionY = 4
-     -----------------
-     a1   b1   c1   d1
-     a2   b2   c2   d2
-     a3   b3   c3   d3
-     a4   b4   c4   d4
-     -----------------
-     => [a1, a2, a3, a4, b1, b2, b3, b4, c1, c2, c3, c4, d1, d2, d3, d4]
-
-     selectionX = 2
-     selectionY = 2
-     -------
-     a1   b1
-     a2   b2
-     -------
-     => [a1, a2, b1, b2]
+   * selectionX = 4
+   * selectionY = 4
+   * -----------------
+   * a1   b1   c1   d1
+   * a2   b2   c2   d2
+   * a3   b3   c3   d3
+   * a4   b4   c4   d4
+   * -----------------
+   * => [a1, a2, a3, a4, b1, b2, b3, b4, c1, c2, c3, c4, d1, d2, d3, d4]
+   *
+   * selectionX = 2
+   * selectionY = 2
+   * -------
+   * a1   b1
+   * a2   b2
+   * -------
+   * => [a1, a2, b1, b2]
    */
   constructor(args = {}) {
     this.url = args.url || 'ws://localhost:3000/modV';
@@ -110,7 +110,7 @@ export default class LuminaveConnector {
 
   /**
    * Send data to WebSocket if connection is established
-   * @param {Array} data 
+   * @param {Array} data
    */
   send(data) {
     // Connection is established
@@ -124,7 +124,7 @@ export default class LuminaveConnector {
    * Extract the selected areas from the provided canvas data
    * and send them over WebSocket to luminave.
    *
-   * @param{Uint8ClampedArray} data - Raw pixel data from canvas
+   * @param {Uint8ClampedArray} data - Raw pixel data from canvas
    */
   drawFrame(data) {
     // Data from canvas
@@ -154,10 +154,10 @@ export default class LuminaveConnector {
    * Get the color a the specified coordinates x and y
    * from the data Uint8ClampedArray.
    *
-   * @param{number} x - The x position of the color
-   * @param{number} y - The y position of the color
+   * @param {Number} x - The x position of the color
+   * @param {Number} y - The y position of the color
    *
-   * @return{number[]} red, green, blue at the specified position
+   * @return {Number[]} red, green, blue at the specified position
    */
   getColor(x, y) {
     const start = y * (this.width * 4) + x * 4; //eslint-disable-line
@@ -169,12 +169,12 @@ export default class LuminaveConnector {
   /**
    * Get the average color of the specified "area"
    *
-   * @param{number} x - The x position of the area (top)
-   * @param{number} y - The y position of the area (left)
-   * @param{number} width - The width of the area
-   * @param{number} height - The height of the area
+   * @param {Number} x - The x position of the area (top)
+   * @param {Number} y - The y position of the area (left)
+   * @param {Number} width - The width of the area
+   * @param {Number} height - The height of the area
    *
-   * @return{number[]} red, green, blue for the area
+   * @return {Number[]} red, green, blue for the area
    */
   getAverage(x, y, width, height) {
     const average = new Array(3).fill(0);
@@ -204,7 +204,7 @@ export default class LuminaveConnector {
   /**
    * Get the average colors for all areas.
    *
-   * @return{number[]} red, green, blue, red, green, blue...
+   * @return {Number[]} red, green, blue, red, green, blue...
    */
   getAverageColors() {
     // Amount of areas
@@ -212,6 +212,8 @@ export default class LuminaveConnector {
 
     // Size of each area
     const areaSize = Math.floor((this.width / areaAmount) + (this.height / areaAmount));
+    const areaWidth = Math.floor(areaSize / 2);
+    const areaHeight = Math.floor(areaSize / 2);
 
     // The packet that gets send over WebSocket to luminave
     const colors = [];
@@ -227,11 +229,10 @@ export default class LuminaveConnector {
         const pointY = (y * Math.floor(this.height / this.selectionY));
 
         // Add the average color of the area to the colors
-        colors.push(...this.getAverage(pointX, pointY, areaSize / 2, areaSize / 2));
+        colors.push(...this.getAverage(pointX, pointY, areaWidth, areaHeight));
       }
     }
 
     return colors;
   }
-
 }
