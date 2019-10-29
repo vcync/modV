@@ -14,7 +14,7 @@ store.dispatch("outputs/addAuxillaryOutput", {
 function loop(delta, features) {
   const {
     modules: { active },
-    groups,
+    groups: { groups },
     outputs: { main, debug, debugContext, auxillary, webcam: video },
     renderers,
     windows

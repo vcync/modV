@@ -20,6 +20,10 @@
           <gl-component title="Preview">
             <CanvasDebugger />
           </gl-component>
+
+          <gl-component title="Swap">
+            <ABSwap />
+          </gl-component>
         </gl-row>
       </gl-col>
     </golden-layout>
@@ -44,6 +48,7 @@
 // import FPSDisplay from "@/components/FPSDisplay";
 // import BPMDisplay from "@/components/BPMDisplay";
 import CanvasDebugger from "@/components/CanvasDebugger";
+import ABSwap from "@/components/ABSwap";
 import Groups from "@/components/Groups";
 import Gallery from "@/components/Gallery";
 
@@ -55,6 +60,7 @@ export default {
     // FPSDisplay,
     // BPMDisplay,
     CanvasDebugger,
+    ABSwap,
     Groups,
     Gallery
   },

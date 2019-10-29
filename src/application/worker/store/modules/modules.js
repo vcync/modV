@@ -21,7 +21,8 @@ const swap = {
   metaQueue: {}
 };
 
-const temp = {};
+// eslint-disable-next-line
+let temp = {};
 
 const actions = {
   registerModule({ commit }, module) {
@@ -316,7 +317,7 @@ const mutations = {
     Vue.set(writeTo.active[id].meta, metaKey, data);
   },
 
-  SWAP: SWAP(swap, temp)
+  SWAP: SWAP(swap, temp, () => ({}))
 };
 
 export default {

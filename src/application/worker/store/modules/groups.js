@@ -67,9 +67,9 @@ const uuidv4 = require("uuid/v4");
  * };
  */
 
-const state = [];
-const swap = [];
-const temp = [];
+const state = { groups: [] };
+const swap = { groups: [] };
+const temp = { groups: [] };
 
 const actions = {
   async createGroup({ commit }, args = {}) {
@@ -98,51 +98,51 @@ const actions = {
 const mutations = {
   ADD_GROUP(state, group, writeToSwap) {
     const writeTo = writeToSwap ? swap : state;
-    writeTo.push(group);
+    writeTo.groups.push(group);
   },
 
   REMOVE_GROUP(state, id, writeToSwap) {
     const writeTo = writeToSwap ? swap : state;
-    const index = writeTo.findIndex(group => group.id === id);
+    const index = writeTo.groups.findIndex(group => group.id === id);
 
     if (index > -1) {
-      writeTo.splice(index, 1);
+      writeTo.groups.splice(index, 1);
     }
   },
 
   REPLACE_GROUPS(state, groups, writeToSwap) {
     const writeTo = writeToSwap ? swap : state;
 
-    writeTo.splice(0);
+    writeTo.groups.splice(0);
     const groupsLength = groups.length;
     for (let i = 0; i < groupsLength; i += 1) {
-      writeTo.push(groups[i]);
+      writeTo.groups.push(groups[i]);
     }
   },
 
   REPLACE_GROUP_MODULES(state, { groupId, modules }, writeToSwap) {
     const writeTo = writeToSwap ? swap : state;
-    const index = writeTo.findIndex(group => group.id === groupId);
+    const index = writeTo.groups.findIndex(group => group.id === groupId);
 
     if (index > -1) {
-      writeTo[index].modules = modules;
+      writeTo.groups[index].modules = modules;
     }
   },
 
   ADD_MODULE_TO_GROUP(state, { moduleId, groupId, position }, writeToSwap) {
     const writeTo = writeToSwap ? swap : state;
-    const groupIndex = writeTo.findIndex(group => group.id === groupId);
+    const groupIndex = writeTo.groups.findIndex(group => group.id === groupId);
 
     const positionActual =
       typeof position === "undefined"
-        ? writeTo[groupIndex].modules.length
+        ? writeTo.groups[groupIndex].modules.length
         : position;
-    writeTo[groupIndex].modules.splice(positionActual, 0, moduleId);
+    writeTo.groups[groupIndex].modules.splice(positionActual, 0, moduleId);
   },
 
   UPDATE_GROUP(state, { groupId, data }, writeToSwap) {
     const writeTo = writeToSwap ? swap : state;
-    const index = writeTo.findIndex(group => group.id === groupId);
+    const index = writeTo.groups.findIndex(group => group.id === groupId);
 
     if (index > -1) {
       const dataKeys = Object.keys(data);
@@ -150,12 +150,12 @@ const mutations = {
       for (let i = 0; i < dataKeysLength; i += 1) {
         const key = dataKeys[i];
         const value = data[key];
-        writeTo[index][key] = value;
+        writeTo.groups[index][key] = value;
       }
     }
   },
 
-  SWAP: SWAP(swap, temp)
+  SWAP: SWAP(swap, temp, () => ({ groups: [] }))
 };
 
 export default {

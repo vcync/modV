@@ -99,7 +99,7 @@ export default {
 
   computed: {
     group() {
-      return this.$modV.store.state.groups.filter(
+      return this.$modV.store.state.groups.groups.filter(
         group => group.id === this.groupId
       )[0];
     },
