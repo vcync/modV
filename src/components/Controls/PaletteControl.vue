@@ -2,6 +2,27 @@
   <div>
     <h1>palette</h1>
     <textarea v-model.lazy="modelData"></textarea><br />
+    <div class="swatches">
+      <label
+        class="swatch"
+        v-for="(color, index) in value.data"
+        :key="index"
+        :style="{
+          backgroundColor: `rgb(${color[0]},${color[1]},${color[2]})`,
+          transitionDuration: `${modelDuration / value.data.length}ms`
+        }"
+        @click.right="removeSwatch(index)"
+      >
+        <input
+          type="color"
+          :value="getHexFromRgb(color)"
+          @input="updateModel($event, index)"
+          class="swatch"
+        />
+      </label>
+      <button class="swatch add-swatch" @click="addSwatch"></button>
+    </div>
+
     <input
       type="number"
       v-model="modelDuration"
@@ -32,6 +53,8 @@
 </template>
 
 <script>
+import Color from "color";
+
 export default {
   props: ["value"],
 
@@ -108,7 +131,86 @@ export default {
   methods: {
     updateValue(key, value) {
       this.$emit("input", { ...this.value, [key]: value });
+    },
+
+    getHexFromRgb(rgbArray) {
+      return Color.rgb(rgbArray).hex();
+    },
+
+    updateModel(event, index) {
+      const rgb = Color(event.target.value)
+        .rgb()
+        .array();
+      const newColors = this.value.data.slice();
+      newColors[index] = rgb;
+
+      this.$emit("input", { ...this.value, data: newColors });
+    },
+
+    addSwatch() {
+      const newColors = this.value.data.slice();
+      newColors[newColors.length] = [0, 0, 0];
+
+      this.$emit("input", { ...this.value, data: newColors });
+    },
+
+    removeSwatch(index) {
+      const newColors = this.value.data.slice();
+      newColors.splice(index, 1);
+
+      this.$emit("input", { ...this.value, data: newColors });
     }
   }
 };
 </script>
+
+<style scoped>
+.swatches {
+  display: flex;
+}
+
+.swatch {
+  -webkit-appearance: none;
+  border-radius: 50%;
+  display: inline-block;
+  height: 12px;
+  width: 12px;
+  margin: 3px;
+  cursor: pointer;
+  border: 2px solid #fff;
+
+  transition: border-color 1200ms;
+  padding: 0;
+  box-sizing: content-box;
+}
+
+.swatch input {
+  display: none;
+}
+
+.add-swatch {
+  position: relative;
+}
+
+.add-swatch::before,
+.add-swatch::after {
+  content: "";
+  background-color: #000;
+  position: absolute;
+  border-radius: 2px;
+}
+
+.add-swatch::before {
+  width: 10px;
+  height: 2px;
+  top: 5px;
+  left: 1px;
+}
+
+.add-swatch::after {
+  width: 2px;
+  height: 10px;
+  top: 1px;
+  left: 5px;
+}
+</style>

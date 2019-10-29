@@ -10,6 +10,7 @@
   "dependencies": {
     "animejs": "^2.2.0",
     "canvas-text-wrapper": "^0.10.2",
+    "color": "^3.1.2",
     "core-js": "^2.6.5",
     "golden-layout": "^1.5.9",
     "interactive-shader-format": "git+https://github.com/msfeldstein/interactive-shader-format-js.git",

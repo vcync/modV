@@ -7,7 +7,7 @@
       :style="{ cursor }"
     ></canvas>
 
-    <golden-layout class="hscreen" v-model="state">
+    <golden-layout class="hscreen" :showPopoutIcon="false" v-model="state">
       <gl-col :closable="false" id="lr-col">
         <gl-component title="Groups">
           <Groups />
