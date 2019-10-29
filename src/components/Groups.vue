@@ -72,7 +72,9 @@ export default {
   computed: {
     groups: {
       get() {
-        return this.$modV.store.state.groups.filter(group => !group.hidden);
+        return this.$modV.store.state.groups.groups.filter(
+          group => !group.hidden
+        );
       },
 
       set(value) {
