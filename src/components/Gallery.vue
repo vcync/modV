@@ -46,7 +46,7 @@
             </Container>
           </c>
 
-          <c span="1.." v-show="!renderersToShow.length">
+          <c span="1.." v-show="!renderersToShow.length && searchTerm.length">
             <h2>Couldn't find {{ searchTerm }}.</h2>
           </c>
         </grid>
@@ -206,6 +206,10 @@ div.gallery {
   box-sizing: border-box;
 
   overflow-y: auto;
+  height: 100%;
+}
+
+div.gallery > grid {
   height: 100%;
 }
 
