@@ -2,7 +2,12 @@
   <div class="gallery">
     <grid columns="4">
       <c span="1..">
-        <input type="text" placeholder="search" v-model="searchTerm" />
+        <input
+          type="text"
+          placeholder="search"
+          v-model="searchTerm"
+          ref="searchField"
+        />
       </c>
       <c span="1.." class="results">
         <grid columns="4">
@@ -11,6 +16,7 @@
             :key="renderer"
             class="renderer"
             span="4"
+            v-show="renderersToShow.indexOf(renderer) > -1"
           >
             <h1>{{ renderer }}</h1>
             <Container
@@ -27,6 +33,9 @@
                 :key="name"
                 tag="c"
                 ghost-class="ghost"
+                v-show="modulesToShow.indexOf(name) > -1"
+                tabindex="0"
+                @keydown.native.enter="addModuleToFocusedGroup(module)"
               >
                 <GalleryItem
                   v-if="groupId"
@@ -35,6 +44,10 @@
                 />
               </Draggable>
             </Container>
+          </c>
+
+          <c span="1.." v-show="!renderersToShow.length">
+            <h2>Couldn't find {{ searchTerm }}.</h2>
           </c>
         </grid>
       </c>
@@ -57,7 +70,9 @@ export default {
     return {
       groupId: null,
       searchTerm: "",
-      renderers: {}
+      renderers: {},
+      renderersToShow: [],
+      modulesToShow: []
     };
   },
 
@@ -69,12 +84,7 @@ export default {
     modulesByRenderer() {
       return Object.keys(this.registeredModules).reduce((obj, key) => {
         const module = this.registeredModules[key];
-        const { search, searchTerm } = this;
         const { type, name } = module.meta;
-
-        if (!search(name, searchTerm)) {
-          return obj;
-        }
 
         if (!(type in obj)) {
           obj[type] = {};
@@ -96,10 +106,14 @@ export default {
     });
 
     this.groupId = group.id;
+    this.updateModulesAndRenderersToShow();
+
+    window.addEventListener("keydown", this.keyDownListener.bind(this));
   },
 
   beforeDestroy() {
     // this.$modV.store.commit("groups/REMOVE_GROUP", this.groupId);
+    window.removeEventListener("keydown", this.keyDownListener.bind(this));
   },
 
   methods: {
@@ -117,6 +131,61 @@ export default {
       if (termIn.length < 1) return true;
 
       return text.indexOf(term) > -1;
+    },
+
+    updateModulesAndRenderersToShow() {
+      const { search, searchTerm, registeredModules } = this;
+      this.modulesToShow = [];
+      this.renderersToShow = [];
+
+      const registeredModulesKeys = Object.keys(registeredModules);
+      for (let i = 0, len = registeredModulesKeys.length; i < len; i++) {
+        const moduleKey = registeredModulesKeys[i];
+
+        const module = registeredModules[moduleKey];
+        const { name, type } = module.meta;
+
+        if (search(name, searchTerm)) {
+          this.modulesToShow.push(name);
+          if (this.renderersToShow.indexOf(type) < 0) {
+            this.renderersToShow.push(type);
+          }
+        }
+      }
+    },
+
+    keyDownListener(e) {
+      if (e.keyCode === 114 || ((e.ctrlKey || e.metaKey) && e.keyCode === 70)) {
+        e.preventDefault();
+        this.$refs.searchField.focus();
+        this.$refs.searchField.select();
+      }
+    },
+
+    async addModuleToFocusedGroup(moduleIn) {
+      const groupId = this.$store.state["ui-groups"].focused;
+      if (!groupId) {
+        return;
+      }
+
+      const module = await this.$modV.store.dispatch(
+        "modules/makeActiveModule",
+        { moduleName: moduleIn.meta.name }
+      );
+
+      this.$modV.store.commit("groups/ADD_MODULE_TO_GROUP", {
+        moduleId: module.id,
+        groupId,
+        position: this.$modV.store.state.groups.groups.find(
+          group => group.id === groupId
+        ).modules.length
+      });
+    }
+  },
+
+  watch: {
+    searchTerm() {
+      this.updateModulesAndRenderersToShow();
     }
   }
 };
@@ -137,10 +206,6 @@ div.gallery {
   box-sizing: border-box;
 
   overflow-y: auto;
-  height: 100%;
-}
-
-div.gallery > grid {
   height: 100%;
 }
 
