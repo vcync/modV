@@ -38,7 +38,7 @@ export default {
 
   methods: {
     async makeLink() {
-      const tween = await this.$modV.store.dispatch("data-types/createType", {
+      const tween = await this.$modV.store.dispatch("dataTypes/createType", {
         type: "tween",
         args: this.localCache
       });
