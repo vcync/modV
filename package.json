@@ -16,6 +16,7 @@
     "interactive-shader-format": "git+https://github.com/msfeldstein/interactive-shader-format-js.git",
     "lfo-for-modv": "0.0.1",
     "lodash.clonedeep": "^4.5.0",
+    "lodash.get": "^4.4.2",
     "meyda": "^4.2.0",
     "nwjs-menu-browser": "^1.0.0",
     "promise-worker": "^2.0.1",

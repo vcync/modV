@@ -280,7 +280,6 @@ div.group-modules {
 }
 
 div.group-module {
-  min-width: 385px;
   min-height: 80px;
   position: relative;
 }
@@ -301,7 +300,7 @@ div.group-module:not(:last-child)::after {
 
 div.group-module-container {
   background-color: rgba(90, 90, 90, 0.6);
-  padding: 10px;
+  width: 300px;
 }
 
 input.group-alpha {

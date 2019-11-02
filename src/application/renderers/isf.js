@@ -12,7 +12,8 @@ const isfCanvas = new OffscreenCanvas(300, 300);
 const isfContext = isfCanvas.getContext("webgl2");
 store.dispatch("outputs/addAuxillaryOutput", {
   name: "isf-buffer",
-  context: isfContext
+  context: isfContext,
+  group: "buffer"
 });
 
 function render({ module, canvas, context, pipeline }) {
@@ -36,10 +37,8 @@ function render({ module, canvas, context, pipeline }) {
   }
 
   // isfContext.clear(isfContext.COLOR_BUFFER_BIT);
-  if (isfCanvas.width < canvas.width || isfCanvas.height < canvas.height) {
-    isfCanvas.width = canvas.width;
-    isfCanvas.height = canvas.height;
-  }
+  isfCanvas.width = canvas.width;
+  isfCanvas.height = canvas.height;
 
   module.renderer.draw(isfCanvas);
 

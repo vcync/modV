@@ -172,7 +172,7 @@ export default {
         ctx.arc(
           this.position.x,
           this.position.y,
-          ballRadius + self.size * amp,
+          Math.round(ballRadius + self.size * amp),
           0,
           2 * Math.PI,
           true

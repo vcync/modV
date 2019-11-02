@@ -7,6 +7,7 @@ import ModV from "./application";
 import store from "./ui-store";
 import contextMenuPlugin from "./application/plugins/context-menu";
 
+Vue.config.ignoredElements = ["grid", "c"];
 Vue.config.productionTip = false;
 Vue.use(vgl);
 

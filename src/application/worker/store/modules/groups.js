@@ -85,7 +85,10 @@ const actions = {
       inherit: args.inherit || -1,
       alpha: args.alpha || 1,
       compositeOperation: args.compositeOperation || "normal",
-      context: await store.dispatch("outputs/getAuxillaryOutput", { name })
+      context: await store.dispatch("outputs/getAuxillaryOutput", {
+        name,
+        group: "group"
+      })
     };
 
     group.id = uuidv4();
@@ -133,11 +136,29 @@ const mutations = {
     const writeTo = writeToSwap ? swap : state;
     const groupIndex = writeTo.groups.findIndex(group => group.id === groupId);
 
+    if (groupIndex < 0) {
+      return false;
+    }
+
     const positionActual =
       typeof position === "undefined"
         ? writeTo.groups[groupIndex].modules.length
         : position;
     writeTo.groups[groupIndex].modules.splice(positionActual, 0, moduleId);
+  },
+
+  REMOVE_MODULE_FROM_GROUP(state, { moduleId, groupId }, writeToSwap) {
+    const writeTo = writeToSwap ? swap : state;
+    const groupIndex = writeTo.groups.findIndex(group => group.id === groupId);
+    const moduleIndex = writeTo.groups[groupIndex].modules.findIndex(
+      module => module === moduleId
+    );
+
+    if (groupIndex < 0 || moduleIndex < 0) {
+      return false;
+    }
+
+    writeTo.groups[groupIndex].modules.splice(moduleIndex, 1);
   },
 
   UPDATE_GROUP(state, { groupId, data }, writeToSwap) {

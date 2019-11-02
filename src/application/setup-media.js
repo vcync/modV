@@ -1,6 +1,8 @@
 import Meyda from "meyda";
 
-async function scanSources() {
+async function enumerateDevices() {
+  const { _store: store } = this;
+
   const devices = await navigator.mediaDevices.enumerateDevices();
   const sources = {
     audio: [],
@@ -15,6 +17,19 @@ async function scanSources() {
     } else if (device.kind === "videoinput") {
       sources.video.push(device);
     }
+  }
+
+  store.commit("mediaStream/CLEAR_AUDIO_SOURCES");
+  store.commit("mediaStream/CLEAR_VIDEO_SOURCES");
+
+  const audioDevices = sources.audio;
+  for (let i = 0, len = audioDevices.length; i < len; i++) {
+    store.commit("mediaStream/ADD_AUDIO_SOURCE", { source: audioDevices[i] });
+  }
+
+  const videoDevices = sources.video;
+  for (let i = 0, len = videoDevices.length; i < len; i++) {
+    store.commit("mediaStream/ADD_VIDEO_SOURCE", { source: videoDevices[i] });
   }
 
   return sources;
@@ -40,33 +55,23 @@ async function getMediaStream({ audioSourceId, videoSourceId }) {
   return navigator.mediaDevices.getUserMedia(constraints);
 }
 
-export default async function setupMedia() {
+async function setupMedia({ audioId, videoId }) {
   const { _store: store } = this;
 
-  const mediaStreamDevices = await scanSources();
+  const mediaStreamDevices = await enumerateDevices.bind(this)();
 
-  const audioDevices = mediaStreamDevices.audio;
-  for (let i = 0, len = audioDevices.length; i < len; i++) {
-    store.commit("media-stream/ADD_AUDIO_SOURCE", { source: audioDevices[i] });
-  }
+  let audioSourceId = audioId;
+  let videoSourceId = videoId;
 
-  const videoDevices = mediaStreamDevices.video;
-  for (let i = 0, len = videoDevices.length; i < len; i++) {
-    store.commit("media-stream/ADD_VIDEO_SOURCE", { source: videoDevices[i] });
-  }
-
-  let audioSourceId;
-  let videoSourceId;
-
-  if (store.getters["user/currentAudioSource"]) {
-    audioSourceId = store.getters["user/currentAudioSource"];
-  } else if (mediaStreamDevices.audio.length > 0) {
+  if (!audioSourceId && store.state["mediaStream"].currentAudioSource) {
+    audioSourceId = store.state["mediaStream"].currentAudioSource;
+  } else if (!audioSourceId && mediaStreamDevices.audio.length > 0) {
     audioSourceId = mediaStreamDevices.audio[0].deviceId;
   }
 
-  if (store.getters["user/setCurrentVideoSource"]) {
-    videoSourceId = store.getters["user/setCurrentVideoSource"];
-  } else if (mediaStreamDevices.video.length > 0) {
+  if (!videoSourceId && store.state["mediaStream"].currentVideoSource) {
+    videoSourceId = store.state["mediaStream"].currentVideoSource;
+  } else if (!videoSourceId && mediaStreamDevices.video.length > 0) {
     videoSourceId = mediaStreamDevices.video[0].deviceId;
   }
 
@@ -121,5 +126,14 @@ export default async function setupMedia() {
     featureExtractors: ["complexSpectrum"]
   });
 
+  store.commit("mediaStream/SET_CURRENT_AUDIO_SOURCE", {
+    audioId: audioSourceId
+  });
+  store.commit("mediaStream/SET_CURRENT_VIDEO_SOURCE", {
+    videoId: videoSourceId
+  });
+
   return mediaStream;
 }
+
+export { enumerateDevices, setupMedia };

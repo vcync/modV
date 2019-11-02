@@ -1,55 +1,59 @@
 <template>
-  <div>
-    <h1>palette</h1>
-    <textarea v-model.lazy="modelData"></textarea><br />
-    <div class="swatches">
-      <label
-        class="swatch"
-        v-for="(color, index) in value.data"
-        :key="index"
-        :style="{
-          backgroundColor: `rgb(${color[0]},${color[1]},${color[2]})`,
-          transitionDuration: `${modelDuration / value.data.length}ms`
-        }"
-        @click.right="removeSwatch(index)"
-      >
-        <input
-          type="color"
-          :value="getHexFromRgb(color)"
-          @input="updateModel($event, index)"
+  <grid>
+    <c span="1.."><textarea v-model.lazy="modelData"></textarea></c>
+    <c span="1..">
+      <div class="swatches">
+        <label
           class="swatch"
-        />
-      </label>
-      <button class="swatch add-swatch" @click="addSwatch"></button>
-    </div>
-
-    <input
-      type="number"
-      v-model="modelDuration"
-      :disabled="modelUseBpm"
-    /><br />
-    <select v-model.number="modelEasing">
-      <option
-        v-for="easing in easings"
-        :key="easing.value"
-        :value="easing.value"
-        >{{ easing.label }}</option
-      > </select
-    ><br />
-    <label>Use BPM <input type="checkbox" v-model="modelUseBpm"/></label><br />
-    <label :for="`${111}-bpmDivision`">BPM Division</label>
-    <select v-model.number="modelBpmDivision">
-      <option value="1">1</option>
-      <option value="2">2</option>
-      <option value="4">4</option>
-      <option value="8">8</option>
-      <option value="16">16</option>
-      <option value="32">32</option>
-      <option value="64">64</option>
-      <option value="128">128</option>
-      <option value="256">256</option>
-    </select>
-  </div>
+          v-for="(color, index) in value.data"
+          :key="index"
+          :style="{
+            backgroundColor: `rgb(${color[0]},${color[1]},${color[2]})`,
+            transitionDuration: `${modelDuration / value.data.length}ms`
+          }"
+          @click.right="removeSwatch(index)"
+        >
+          <input
+            type="color"
+            :value="getHexFromRgb(color)"
+            @input="updateModel($event, index)"
+            class="swatch"
+          />
+        </label>
+        <button class="swatch add-swatch" @click="addSwatch"></button>
+      </div>
+    </c>
+    <c span="1..">
+      <input type="number" v-model="modelDuration" :disabled="modelUseBpm" />
+    </c>
+    <c span="1..">
+      <select v-model.number="modelEasing">
+        <option
+          v-for="easing in easings"
+          :key="easing.value"
+          :value="easing.value"
+          >{{ easing.label }}</option
+        >
+      </select>
+    </c>
+    <c span="2">
+      <label>Use BPM <input type="checkbox" v-model="modelUseBpm"/></label
+    ></c>
+    <c span="2">
+      <label :for="`${111}-bpmDivision`">BPM Division</label>
+      <select v-model.number="modelBpmDivision">
+        <option value="1">1</option>
+        <option value="2">2</option>
+        <option value="4">4</option>
+        <option value="8">8</option>
+        <option value="16">16</option>
+        <option value="32">32</option>
+        <option value="64">64</option>
+        <option value="128">128</option>
+        <option value="256">256</option>
+      </select></c
+    >
+  </grid>
 </template>
 
 <script>

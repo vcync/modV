@@ -1,12 +1,19 @@
 <template>
-  <label v-context-menu="menuOptions">
-    <div class="label">{{ title }}</div>
-    <div class="input" v-if="component">
-      <component :is="component" v-model="value" />
-    </div>
-    <div class="input" v-else-if="type === 'int' || type === 'float'">
-      <RangeControl :min="min" :max="max" v-model.number="value" />
-      <!-- <input
+  <grid
+    columns="4"
+    @click="focusInput"
+    :class="{ 'has-link': hasLink, focused: inputIsFocused }"
+  >
+    <c span="1">
+      <label v-context-menu="menuOptions">{{ title }}</label>
+    </c>
+    <c span="3">
+      <div class="input" v-if="component">
+        <component :is="component" v-model="value" />
+      </div>
+      <div class="input" v-else-if="type === 'int' || type === 'float'">
+        <RangeControl :min="min" :max="max" v-model.number="value" />
+        <!-- <input
         type="range"
         :min="min"
         :max="max"
@@ -19,23 +26,24 @@
         @keydown.shift="modeStep = 0.1"
         @keyup.shift="modeStep = 0.01"
       /> -->
-    </div>
-    <div class="input" v-else-if="type === 'tween'">
-      <TweenControl v-model="value" />
-    </div>
-    <div class="input" v-else-if="type === 'vec2'">
-      <Vec2DControl v-model.number="value" />
-    </div>
-    <div class="input" v-else-if="type === 'text'">
-      <input type="text" v-model="value" />
-    </div>
-    <div class="input" v-else-if="type === 'bool'">
-      <input type="checkbox" v-model="value" />
-    </div>
-    <div class="input" v-else-if="type === 'color'">
-      <input type="color" v-model="value" />
-    </div>
-  </label>
+      </div>
+      <div class="input" v-else-if="type === 'tween'">
+        <TweenControl v-model="value" />
+      </div>
+      <div class="input" v-else-if="type === 'vec2'">
+        <Vec2DControl v-model.number="value" />
+      </div>
+      <div class="input" v-else-if="type === 'text'">
+        <input type="text" v-model="value" />
+      </div>
+      <div class="input" v-else-if="type === 'bool'">
+        <input type="checkbox" v-model="value" />
+      </div>
+      <div class="input" v-else-if="type === 'color'">
+        <input type="color" v-model="value" />
+      </div>
+    </c>
+  </grid>
 </template>
 
 <script>
@@ -43,8 +51,12 @@ import RangeControl from "./Controls/RangeControl";
 import Vec2DControl from "./Controls/Vec2DControl";
 import TweenControl from "./Controls/TweenControl";
 import PaletteControl from "./Controls/PaletteControl";
+import hasLink from "./mixins/has-input-link";
+import inputIsFocused from "./mixins/input-is-focused";
 
 export default {
+  mixins: [hasLink, inputIsFocused],
+
   props: ["id", "prop"],
 
   components: {
@@ -78,6 +90,10 @@ export default {
         prop,
         data: queued
       });
+    },
+
+    focusInput() {
+      this.$modV.store.dispatch("inputs/setFocusedInput", { id: this.inputId });
     }
   },
 
@@ -85,6 +101,10 @@ export default {
     activeProp() {
       const { id, prop } = this;
       return this.$modV.store.state.modules.active[id].props[prop];
+    },
+
+    inputId() {
+      return this.activeProp.id;
     },
 
     type() {
@@ -138,17 +158,19 @@ export default {
 </script>
 
 <style scoped>
+grid {
+  padding: 0.75em;
+}
+
+.has-link {
+  border: 1px solid rgba(255, 217, 0, 0.3);
+}
+
+.focused {
+  background-color: rgba(0, 0, 0, 0.3);
+}
+
 label {
-  display: flex;
-  margin-bottom: 5px;
-}
-
-div.label {
-  width: 40%;
-}
-
-div.input {
-  width: 60%;
   display: flex;
 }
 

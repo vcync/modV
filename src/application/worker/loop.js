@@ -1,5 +1,7 @@
 /* eslint-env worker */
+import get from "lodash.get";
 import store from "./store";
+import map from "../utils/map";
 import { applyWindow } from "meyda/src/utilities";
 
 const meyda = { windowing: applyWindow };
@@ -15,6 +17,7 @@ function loop(delta, features) {
   const {
     modules: { active },
     groups: { groups },
+    inputs: { inputs, inputLinks },
     outputs: { main, debug, debugContext, auxillary, webcam: video },
     renderers,
     windows
@@ -22,6 +25,43 @@ function loop(delta, features) {
 
   if (!main) {
     return;
+  }
+
+  // Update Input Links
+  const inputLinkKeys = Object.keys(inputLinks);
+  const inputLinkKeysLength = inputLinkKeys.length;
+  for (let i = 0; i < inputLinkKeysLength; ++i) {
+    const inputId = inputLinkKeys[i];
+    const bind = inputs[inputId];
+    const link = inputLinks[inputId];
+
+    const { type, location, data } = bind;
+
+    const {
+      type: linkType,
+      location: linkLocation,
+      args: linkArguments,
+      min,
+      max
+    } = link;
+    let value;
+
+    if (linkType === "getter" && linkArguments) {
+      value = store.getters[linkLocation](...linkArguments);
+    } else if (linkType === "state") {
+      value = get(store.state, linkLocation);
+    }
+
+    // Coersion with != to also check for undefined
+    if (min != null || max != null) {
+      value = map(value, 0, 1, min, max);
+    }
+
+    if (type === "action") {
+      store.dispatch(location, { ...data, data: value });
+    } else if (type === "commit") {
+      store.commit(location, { ...data, data: value });
+    }
   }
 
   const preProcessFrameFunctions =
@@ -37,6 +77,8 @@ function loop(delta, features) {
   for (let i = 0; i < renderersWithTickLength; ++i) {
     renderersWithTick[i].tick();
   }
+
+  let lastCanvas = main.canvas;
 
   const groupsLength = groups.length;
   for (let i = 0; i < groupsLength; ++i) {
@@ -58,14 +100,6 @@ function loop(delta, features) {
     }
 
     if (group.inherit) {
-      let lastCanvas;
-
-      if (i - 1 > -1) {
-        lastCanvas = groups[i - 1].context.context.canvas;
-      } else {
-        lastCanvas = main.canvas;
-      }
-
       drawTo.drawImage(
         lastCanvas,
         0,
@@ -98,6 +132,8 @@ function loop(delta, features) {
       });
       drawTo.restore();
     }
+
+    lastCanvas = drawTo.canvas;
   }
 
   const windowKeys = Object.keys(windows);

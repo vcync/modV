@@ -36,7 +36,6 @@ export default {
 
 <style scoped>
 div {
-  font-family: monospace;
   position: fixed;
   top: 0;
   left: 0;

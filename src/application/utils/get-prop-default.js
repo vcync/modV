@@ -11,11 +11,8 @@ export default async function getPropDefault(module, propName, prop) {
     return defaultValue[Math.floor(Math.random() * defaultValue.length)];
   }
 
-  if (
-    store.state["data-types"][type] &&
-    store.state["data-types"][type].create
-  ) {
-    return await store.state["data-types"][type].create(prop.default);
+  if (store.state.dataTypes[type] && store.state.dataTypes[type].create) {
+    return await store.state.dataTypes[type].create(prop.default);
   }
 
   if (

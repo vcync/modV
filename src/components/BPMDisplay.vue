@@ -4,8 +4,6 @@
 
 <style scoped>
 div {
-  font-family: monospace;
-
   padding: 10px;
   color: #fff;
   background-color: rgba(0, 0, 0, 0.6);

@@ -17,13 +17,25 @@
             <Gallery />
           </gl-component>
 
-          <gl-component title="Preview">
-            <CanvasDebugger />
-          </gl-component>
+          <gl-stack>
+            <gl-component title="Preview">
+              <CanvasDebugger />
+            </gl-component>
 
-          <gl-component title="Swap">
-            <ABSwap />
-          </gl-component>
+            <gl-component title="Swap">
+              <ABSwap />
+            </gl-component>
+          </gl-stack>
+
+          <gl-stack>
+            <gl-component title="Input config">
+              <InputConfig />
+            </gl-component>
+
+            <gl-component title="Input Device Config">
+              <InputDeviceConfig />
+            </gl-component>
+          </gl-stack>
         </gl-row>
       </gl-col>
     </golden-layout>
@@ -51,6 +63,8 @@ import CanvasDebugger from "@/components/CanvasDebugger";
 import ABSwap from "@/components/ABSwap";
 import Groups from "@/components/Groups";
 import Gallery from "@/components/Gallery";
+import InputConfig from "@/components/InputConfig";
+import InputDeviceConfig from "@/components/InputDeviceConfig";
 
 export default {
   name: "app",
@@ -62,7 +76,9 @@ export default {
     CanvasDebugger,
     ABSwap,
     Groups,
-    Gallery
+    Gallery,
+    InputConfig,
+    InputDeviceConfig
   },
 
   data() {
@@ -85,33 +101,27 @@ export default {
 
   async mounted() {
     await this.$modV.setup(this.$refs.canvas);
-    window.addEventListener("resize", this.resize);
 
-    this.$modV.$worker.addEventListener("message", e => {
-      if (e.data.type === "outputs/SET_MAIN_OUTPUT") {
-        this.resize();
-      }
-    });
+    // this.$modV.$worker.addEventListener("message", e => {
+    //   if (e.data.type === "outputs/SET_MAIN_OUTPUT") {
+    //     this.resize();
+    //   }
+    // });
 
-    window.addEventListener("keypress", e => {
-      // f
-      if (e.keyCode === 102) {
-        this.makeFullScreen();
-      }
+    // window.addEventListener("keypress", e => {
+    //   // f
+    //   if (e.keyCode === 102) {
+    //     this.makeFullScreen();
+    //   }
 
-      // q
-      if (e.keyCode === 113) {
-        this.showUi = !this.showUi;
-      }
-    });
+    //   // q
+    //   if (e.keyCode === 113) {
+    //     this.showUi = !this.showUi;
+    //   }
+    // });
   },
 
   methods: {
-    resize() {
-      const { innerWidth: width, innerHeight: height } = window;
-      this.$modV.setSize({ width, height });
-    },
-
     makeFullScreen() {
       if (!document.body.ownerDocument.webkitFullscreenElement) {
         document.body.webkitRequestFullscreen();
@@ -141,6 +151,28 @@ export default {
 </script>
 
 <style>
+@import url("https://fonts.googleapis.com/css?family=IBM+Plex+Mono:100,100i,200,200i,300,300i,400,400i,500,500i,600,600i,700,700i|IBM+Plex+Sans:100,100i,200,200i,300,300i,400,400i,500,500i,600,600i,700,700i&display=swap");
+@import url("https://rsms.me/raster/raster.css?v=6");
+
+html,
+body,
+#app {
+  -webkit-touch-callout: none;
+  -webkit-user-select: none;
+  user-select: none;
+}
+
+body {
+  color: #fff;
+
+  margin: 0;
+  padding: 0;
+
+  /* font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
+    "Helvetica Neue", "微軟雅黑", "Microsoft YaHei", "微軟正黑體",
+    "Microsoft JhengHei", Verdana, Arial, sans-serif !important; */
+}
+
 .hscreen {
   width: 100vw;
   height: 100vh;
@@ -151,6 +183,10 @@ body,
   margin: 0;
   height: 100%;
   position: relative;
+}
+
+.lm_header .lm_tab {
+  margin-bottom: unset;
 }
 </style>
 

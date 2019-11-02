@@ -9,7 +9,8 @@ const gl = glCanvas.getContext("webgl2", {
 });
 store.dispatch("outputs/addAuxillaryOutput", {
   name: "shader-buffer",
-  context: gl
+  context: gl,
+  group: "buffer"
 });
 
 const regl = createREGL(gl);

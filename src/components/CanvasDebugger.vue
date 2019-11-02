@@ -3,9 +3,11 @@
     <label><input type="checkbox" v-model="debug" /> Debug Canvas</label><br />
     <select v-model="debugId">
       <option value="main">Main Output</option>
-      <option v-for="output in outputs" :key="output.id" :value="output.id">{{
-        output.name
-      }}</option>
+      <optgroup v-for="(outputs, group) in groups" :label="group" :key="group">
+        <option v-for="output in outputs" :key="output.id" :value="output.id">{{
+          output.name
+        }}</option>
+      </optgroup>
     </select>
     <canvas ref="canvas"></canvas>
   </div>
@@ -14,8 +16,24 @@
 <script>
 export default {
   computed: {
-    outputs() {
+    auxillaries() {
       return this.$modV.store.state.outputs.auxillary;
+    },
+
+    groups() {
+      const groups = {};
+      const auxValues = Object.values(this.auxillaries);
+      for (let i = 0, len = auxValues.length; i < len; i++) {
+        const aux = auxValues[i];
+
+        if (!groups[aux.group]) {
+          groups[aux.group] = {};
+        }
+
+        groups[aux.group][aux.id] = aux;
+      }
+
+      return groups;
     },
 
     debugId: {
@@ -57,8 +75,6 @@ export default {
 
 <style scoped>
 div {
-  font-family: monospace;
-
   padding: 10px;
   color: #fff;
   background-color: rgba(0, 0, 0, 0.6);

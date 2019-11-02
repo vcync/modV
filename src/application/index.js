@@ -1,19 +1,26 @@
 import Worker from "worker-loader!./worker";
-import setupMedia from "./setup-media";
+import { setupMedia, enumerateDevices } from "./setup-media";
 import setupBeatDetektor from "./setup-beat-detektor";
+import setupMidi from "./setup-midi";
+
 import store from "./worker/store";
 import windowHandler from "./window-handler";
 import use from "./use";
 
 const PromiseWorker = require("promise-worker-transferable");
 
+let imageBitmap;
+
 export default class ModV {
   _mediaStream;
   _imageCapture;
   setupMedia = setupMedia;
+  enumerateDevices = enumerateDevices;
   setupBeatDetektor = setupBeatDetektor;
+  setupMidi = setupMidi;
   windowHandler = windowHandler;
   use = use;
+  debug = false;
 
   _store = store;
   store = {
@@ -33,13 +40,16 @@ export default class ModV {
       }
       const payload = JSON.parse(e.data.payload);
 
-      if (
-        type !== "metrics/SET_FPS_MEASURE" &&
-        type !== "beats/SET_BPM" &&
-        type !== "beats/SET_KICK"
-      ) {
+      // if (
+      //   type !== "metrics/SET_FPS_MEASURE" &&
+      //   type !== "modules/UPDATE_ACTIVE_MODULE_PROP" &&
+      //   type !== "beats/SET_BPM" &&
+      //   type !== "beats/SET_KICK"
+      // ) {
+      if (this.debug) {
         console.log(`⚙️%c ${type}`, "color: red", payload);
       }
+      // }
 
       store.commit(type, payload);
     });
@@ -82,14 +92,25 @@ export default class ModV {
   async setup(canvas) {
     this.windowHandler();
     try {
-      this._mediaStream = await this.setupMedia();
+      this._mediaStream = await this.setupMedia({});
     } catch (e) {
       console.error(e);
     }
 
+    // listen to mediastream device changes
+    navigator.mediaDevices.ondevicechange = () => {
+      this.enumerateDevices();
+    };
+
     const [track] = this._mediaStream.getVideoTracks();
     if (track) {
       this._imageCapture = new ImageCapture(track);
+    }
+
+    try {
+      await this.setupMidi();
+    } catch (e) {
+      console.error(e);
     }
 
     this.setupBeatDetektor();
@@ -109,15 +130,10 @@ export default class ModV {
     this.store.dispatch("windows/createWindow");
 
     this.raf = requestAnimationFrame(this.loop.bind(this));
+    this.inputLoopRaf = requestAnimationFrame(this.inputLoop.bind(this));
   }
 
-  async loop(delta) {
-    const { meyda: featuresToGet } = this.store.state;
-
-    const features = this.meyda.get(featuresToGet);
-    this.updateBeatDetektor(delta, features);
-    this.$worker.postMessage({ type: "meyda", payload: features });
-
+  async inputLoop() {
     if (
       // Don't try to take a frame while the window is unfocused, Chrome kills the feed irreparably
       !document.hidden &&
@@ -125,7 +141,6 @@ export default class ModV {
       this._imageCapture.track.readyState === "live" &&
       !this._imageCapture.track.muted
     ) {
-      let imageBitmap;
       try {
         imageBitmap = await this._imageCapture.grabFrame();
       } catch (e) {
@@ -139,7 +154,16 @@ export default class ModV {
       }
     }
 
+    this.inputLoopRaf = requestAnimationFrame(this.inputLoop.bind(this));
+  }
+
+  loop(delta) {
     this.raf = requestAnimationFrame(this.loop.bind(this));
+    const { meyda: featuresToGet } = this.store.state;
+
+    const features = this.meyda.get(featuresToGet);
+    this.updateBeatDetektor(delta, features);
+    this.$worker.postMessage({ type: "meyda", payload: features });
   }
 
   setSize({ width, height }) {

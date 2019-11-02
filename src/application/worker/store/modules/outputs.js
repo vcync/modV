@@ -1,3 +1,4 @@
+import Vue from "vue";
 const uuidv4 = require("uuid/v4");
 
 const state = {
@@ -17,7 +18,10 @@ const getters = {
     }
 
     return state.auxillary[state.debugId];
-  }
+  },
+
+  resizable: state =>
+    Object.values(state.auxillary).filter(aux => aux.reactToResize)
 };
 
 /**
@@ -26,6 +30,7 @@ const getters = {
  * @property {CanvasRenderingContext2D|WebGLRenderingContext|WebGL2RenderingContext|ImageBitmapRenderingContext} context
  * @property {String}  name
  * @property {String}  id
+ * @property {String}  group
  * @property {Boolean} reactToResize
  */
 
@@ -45,9 +50,10 @@ const actions = {
       name,
       type = "2d",
       options = {},
+      group = "",
       reactToResize = true,
-      width = 300,
-      height = 300
+      width = state.main ? state.main.canvas.width : 300,
+      height = state.main ? state.main.canvas.height : 300
     }
   ) {
     const context = canvas.getContext(type, options);
@@ -57,7 +63,8 @@ const actions = {
     const outputContext = await dispatch("addAuxillaryOutput", {
       name,
       context,
-      reactToResize
+      reactToResize,
+      group
     });
 
     return outputContext;
@@ -72,6 +79,18 @@ const actions = {
   setDebugContext({ commit }, debugCanvas) {
     const context = debugCanvas.getContext("2d");
     commit("SET_DEBUG_CONTEXT", context);
+  },
+
+  resize({ commit, getters }, { width, height }) {
+    const resizable = getters.resizable;
+
+    commit("RESIZE_MAIN_OUTPUT", { width, height });
+
+    for (let i = 0, len = resizable.length; i < len; i++) {
+      const outputContext = resizable[i];
+
+      commit("RESIZE_AUXILLARY", { id: outputContext.id, width, height });
+    }
   }
 };
 
@@ -85,11 +104,20 @@ const mutations = {
   },
 
   ADD_AUXILLARY(state, outputContext) {
-    state.auxillary[outputContext.id] = outputContext;
+    Vue.set(state.auxillary, outputContext.id, outputContext);
   },
 
   REMOVE_AUXILLARY(state, id) {
-    delete state.auxillary[id];
+    Vue.delete(state.auxillary, id);
+  },
+
+  RESIZE_MAIN_OUTPUT(state, { width, height }) {
+    if (!state.main.canvas) {
+      return;
+    }
+
+    state.main.canvas.width = width;
+    state.main.canvas.height = height;
   },
 
   RESIZE_AUXILLARY(state, { id, width, height }) {

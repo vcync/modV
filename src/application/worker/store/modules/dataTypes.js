@@ -36,7 +36,7 @@ const state = {
       return Object.defineProperty(tween, "value", {
         enumerable: true,
         get() {
-          return store.state["data-types"].tween.get(tween);
+          return store.state.dataTypes.tween.get(tween);
         }
       });
     },
@@ -50,7 +50,14 @@ const state = {
   }
 };
 
+const actions = {
+  createType({ state }, { type, args }) {
+    return state[type].create(args);
+  }
+};
+
 export default {
   namespaced: true,
-  state
+  state,
+  actions
 };

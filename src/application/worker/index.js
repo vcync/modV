@@ -1,13 +1,12 @@
 /* eslint-env worker */
 import store from "./store";
 import loop from "./loop";
+import { getFeatures, setFeatures } from "./audio-features";
 import featureAssignmentPlugin from "../plugins/feature-assignment";
 
 const registerPromiseWorker = require("promise-worker/register");
 
 (async function() {
-  let features;
-
   self.addEventListener("unhandledrejection", e => {
     console.log(e);
   });
@@ -104,7 +103,8 @@ const registerPromiseWorker = require("promise-worker/register");
     name: "webcam",
     reactToResize: false,
     width: 1920,
-    height: 1080
+    height: 1080,
+    group: "input"
   });
   store.dispatch("outputs/setWebcamOutput", webcamOutput.context);
 
@@ -116,7 +116,7 @@ const registerPromiseWorker = require("promise-worker/register");
   function looper(delta) {
     raf = requestAnimationFrame(looper);
 
-    loop(delta, features);
+    loop(delta, getFeatures());
 
     frames += 1;
 
@@ -151,7 +151,7 @@ const registerPromiseWorker = require("promise-worker/register");
     }
 
     if (type === "meyda") {
-      features = payload;
+      setFeatures(payload);
 
       return;
     }

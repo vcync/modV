@@ -1,32 +1,40 @@
 <template>
   <div class="gallery">
-    <div
-      v-for="(modules, renderer) in modulesByRenderer"
-      :key="renderer"
-      class="renderer"
-    >
-      <h1>{{ renderer }}</h1>
-      <Container
-        behaviour="copy"
-        group-name="modules"
-        :get-child-payload="
-          e => getChildPayload('modulesByRenderer', e, renderer)
-        "
-        tag="div"
-        class="modules"
-      >
-        <Draggable v-for="(module, name) in modules" class="module" :key="name">
-          {{ name }}
-          <GalleryItem :moduleName="name" :groupId="groupId" />
-        </Draggable>
-      </Container>
-
-      <!-- <div class="modules">
-        <div v-for="(module, name) in modules" :key="name" class="module">
-          {{ name }}
-        </div>
-      </div> -->
-    </div>
+    <grid columns="4">
+      <c span="1..">
+        <input type="text" placeholder="search" v-model="searchTerm" />
+      </c>
+      <c span="1.." class="results">
+        <grid columns="4">
+          <c
+            v-for="(modules, renderer) in modulesByRenderer"
+            :key="renderer"
+            class="renderer"
+            span="4"
+          >
+            <h1>{{ renderer }}</h1>
+            <Container
+              behaviour="copy"
+              group-name="modules"
+              :get-child-payload="
+                e => getChildPayload('modulesByRenderer', e, renderer)
+              "
+              tag="grid"
+              columns="4"
+            >
+              <Draggable v-for="(module, name) in modules" :key="name" tag="c">
+                {{ name }}
+                <GalleryItem
+                  v-if="groupId"
+                  :moduleName="name"
+                  :groupId="groupId"
+                />
+              </Draggable>
+            </Container>
+          </c>
+        </grid>
+      </c>
+    </grid>
   </div>
 </template>
 
@@ -43,7 +51,9 @@ export default {
 
   data() {
     return {
-      groupId: ""
+      groupId: null,
+      searchTerm: "",
+      renderers: {}
     };
   },
 
@@ -55,7 +65,12 @@ export default {
     modulesByRenderer() {
       return Object.keys(this.registeredModules).reduce((obj, key) => {
         const module = this.registeredModules[key];
+        const { search, searchTerm } = this;
         const { type, name } = module.meta;
+
+        if (!search(name, searchTerm)) {
+          return obj;
+        }
 
         if (!(type in obj)) {
           obj[type] = {};
@@ -68,7 +83,7 @@ export default {
     }
   },
 
-  async created() {
+  async mounted() {
     const group = await this.$modV.store.dispatch("groups/createGroup", {
       name: "modV internal Gallery Group",
       hidden: true,
@@ -80,7 +95,7 @@ export default {
   },
 
   beforeDestroy() {
-    this.$modV.store.commit("groups/REMOVE_GROUP", this.groupId);
+    // this.$modV.store.commit("groups/REMOVE_GROUP", this.groupId);
   },
 
   methods: {
@@ -88,36 +103,45 @@ export default {
       const moduleName = this[group][renderer][
         Object.keys(this[group][renderer])[index]
       ].meta.name;
-      console.log(group, index, renderer, moduleName);
 
       return { moduleName, collection: "gallery" };
+    },
+
+    search(textIn, termIn) {
+      const text = textIn.toLowerCase().trim();
+      const term = termIn.toLowerCase().trim();
+      if (termIn.length < 1) return true;
+
+      return text.indexOf(term) > -1;
     }
   }
 };
 </script>
 
 <style lang="css" scoped>
-div.gallery {
-  font-family: monospace;
+.hidden {
+  display: none !important;
+}
 
-  padding: 10px;
+div.gallery {
+  padding: 1em;
   color: #fff;
   background-color: rgba(0, 0, 0, 0.6);
 
   display: flex;
   flex-direction: column;
+  box-sizing: border-box;
 
-  overflow-y: auto
+  overflow-y: auto;
+  height: 100%;
 }
 
-div.modules {
-  display: flex;
-  justify-content: space-around;
-  align-content: space-around;
-  flex-wrap: wrap;
+div.gallery > grid {
+  height: 100%;
 }
 
-div.module {
-  width: 15%;
+.results {
+  height: 100%;
+  overflow-y: scroll;
 }
 </style>

@@ -45,6 +45,7 @@ const actions = {
   ) {
     const { renderers } = rootState;
     let module = cloneDeep(state.registered[moduleName]);
+    module.id = uuidv4();
 
     if (renderers[module.meta.type].setupModule) {
       try {
@@ -53,8 +54,10 @@ const actions = {
         console.error(
           `Error in ${
             module.meta.type
-          } renderer setup whilst activating ${moduleName}. This module was ommited from activation.`
+          } renderer setup whilst activating ${moduleName}. This module was ommited from activation and removed from the registered modules list.`
         );
+
+        commit("REMOVE_REGISTERED_MODULE", moduleName);
         return false;
       }
     }
@@ -66,6 +69,30 @@ const actions = {
     module.meta.alpha = 1;
     module.meta.enabled = false;
     module.meta.compositeOperation = "normal";
+
+    const alphaInputBind = await store.dispatch("inputs/addInput", {
+      type: "commit",
+      location: "modules/UPDATE_ACTIVE_MODULE_META",
+      data: { id: module.id, metaKey: "alpha" }
+    });
+
+    module.meta.alphaInputId = alphaInputBind.id;
+
+    const enabledInputBind = await store.dispatch("inputs/addInput", {
+      type: "commit",
+      location: "modules/UPDATE_ACTIVE_MODULE_META",
+      data: { id: module.id, metaKey: "enabled" }
+    });
+
+    module.meta.enabledInputId = enabledInputBind.id;
+
+    const coInputBind = await store.dispatch("inputs/addInput", {
+      type: "commit",
+      location: "modules/UPDATE_ACTIVE_MODULE_META",
+      data: { id: module.id, metaKey: "compositeOperation" }
+    });
+
+    module.meta.compositeOperationInputId = coInputBind.id;
 
     const { data, props, presets } = module;
 
@@ -87,6 +114,14 @@ const actions = {
         const value = props[key];
 
         module[key] = await getPropDefault(module, key, value);
+
+        const inputBind = await store.dispatch("inputs/addInput", {
+          type: "action",
+          location: "modules/updateProp",
+          data: { moduleId: module.id, prop: key }
+        });
+
+        props[key].id = inputBind.id;
 
         if (value.type === "group") {
           module[key] = {};
@@ -149,14 +184,14 @@ const actions = {
     }
 
     // We're done setting up the module, we can commit now
-    module.id = uuidv4();
+
     commit("ADD_ACTIVE_MODULE", module, writeToSwap);
 
     if ("audioFeatures" in module.meta) {
       if (Array.isArray(module.meta.audioFeatures)) {
-        const audioFeatueKeys = module.meta.audioFeatures;
-        for (let i = 0, len = audioFeatueKeys.length; i < len; i++)
-          store.dispatch("meyda/addFeature", audioFeatueKeys[i]);
+        const audioFeatureKeys = module.meta.audioFeatures;
+        for (let i = 0, len = audioFeatureKeys.length; i < len; i++)
+          store.dispatch("meyda/addFeature", audioFeatureKeys[i]);
       }
     }
 
@@ -204,11 +239,8 @@ const actions = {
     //     if (typeof newValue !== 'undefined') dataOut = newValue
     //   })
 
-    if (
-      store.state["data-types"][type] &&
-      store.state["data-types"][type].create
-    ) {
-      dataOut = await store.state["data-types"][type].create(dataOut);
+    if (store.state.dataTypes[type] && store.state.dataTypes[type].create) {
+      dataOut = await store.state.dataTypes[type].create(dataOut);
     }
 
     if (!Array.isArray(dataOut)) {
@@ -278,7 +310,7 @@ const mutations = {
 
   REMOVE_REGISTERED_MODULE(state, moduleName, writeToSwap) {
     const writeTo = writeToSwap ? swap : state;
-    delete writeTo.registered[moduleName];
+    Vue.delete(writeTo.registered, moduleName);
   },
 
   ADD_ACTIVE_MODULE(state, module, writeToSwap) {

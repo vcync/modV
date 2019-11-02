@@ -35,7 +35,8 @@ export default function windowHandler() {
         "outputs/getAuxillaryOutput",
         {
           canvas: offscreen,
-          name: `window-${Object.keys(windows).length}`
+          name: `window-${Object.keys(windows).length}`,
+          group: "window"
         },
         [offscreen]
       );
@@ -63,8 +64,7 @@ export default function windowHandler() {
         timer = requestAnimationFrame(() => {
           const { innerWidth: width, innerHeight: height } = win;
 
-          this.store.commit("outputs/RESIZE_AUXILLARY", {
-            id: outputId,
+          this.store.dispatch("outputs/resize", {
             width,
             height
           });

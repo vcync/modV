@@ -1,55 +1,95 @@
 <template>
   <div class="active-module">
-    <div class="head">
-      <div class="checkbox">
+    <grid
+      columns="4"
+      class="head padded-grid"
+      @click="focusInput(module.meta.enabledInputId)"
+      :class="{
+        'has-link': hasLink(module.meta.enabledInputId),
+        focused: isFocused(module.meta.enabledInputId)
+      }"
+    >
+      <c class="checkbox">
         <input type="checkbox" v-model="enabled" :id="id" />
-      </div>
-      <div class="label">
+      </c>
+      <c span="2" class="label">
         <label :for="id">{{ name }}</label>
-      </div>
-      <div class="handle"></div>
-      <div class="show-more">
-        <button @click="showMore = !showMore">
-          {{ showMore ? "▲" : "▼" }}
-        </button>
-      </div>
-    </div>
+      </c>
 
-    <div class="controls">
-      <div>
-        <label
-          >Alpha<input type="range" v-model="alpha" min="0" max="1" step="0.01"
-        /></label>
-      </div>
-      <div>
-        <label
-          >Blend<select v-model="blendMode">
-            <optgroup
-              v-for="group in blendModes"
-              :label="group.label"
-              :key="group.label"
-            >
-              <option
-                v-for="mode in group.children"
-                :value="mode.value"
-                :key="mode.label"
-                >{{ mode.label }}</option
-              >
-            </optgroup>
-          </select></label
+      <c class="show-more">
+        <grid columns="2">
+          <c>
+            <div class="handle"></div>
+          </c>
+          <c>
+            <button @click="showMore = !showMore">
+              {{ showMore ? "▲" : "▼" }}
+            </button>
+          </c>
+        </grid>
+      </c>
+    </grid>
+
+    <grid class="controls" columns="8">
+      <c span="1..">
+        <grid
+          columns="4"
+          class="padded-grid"
+          @click="focusInput(module.meta.alphaInputId)"
+          :class="{
+            'has-link': hasLink(module.meta.alphaInputId),
+            focused: isFocused(module.meta.alphaInputId)
+          }"
         >
-      </div>
-      <span v-if="module.props && showMore">
+          <c span="2">
+            <label>Alpha</label>
+          </c>
+          <c span="2">
+            <input type="range" v-model="alpha" min="0" max="1" step="0.01" />
+          </c>
+        </grid>
+      </c>
+
+      <c span="1..">
+        <grid
+          columns="4"
+          class="padded-grid"
+          @click="focusInput(module.meta.compositeOperationInputId)"
+          :class="{
+            'has-link': hasLink(module.meta.compositeOperationInputId),
+            focused: isFocused(module.meta.compositeOperationInputId)
+          }"
+        >
+          <c span="2"><label>Blend</label></c>
+          <c span="2">
+            <select class="blend-controls" v-model="blendMode">
+              <optgroup
+                v-for="group in blendModes"
+                :label="group.label"
+                :key="group.label"
+              >
+                <option
+                  v-for="mode in group.children"
+                  :value="mode.value"
+                  :key="mode.label"
+                  >{{ mode.label }}</option
+                >
+              </optgroup>
+            </select>
+          </c>
+        </grid>
+      </c>
+
+      <c span="1.." v-if="module.props && showMore">
         <Control v-for="key in getProps(id)" :id="id" :prop="key" :key="key" />
-      </span>
-    </div>
+      </c>
+    </grid>
   </div>
 </template>
 
 <script>
 import Control from "@/components/Control";
 import blendModes from "../util/composite-operations";
-
 export default {
   props: ["id"],
 
@@ -130,18 +170,45 @@ export default {
           module.props[key].type === "vec2" ||
           module.props[key].type === "tween"
       );
+    },
+
+    focusInput(id) {
+      this.$modV.store.dispatch("inputs/setFocusedInput", { id });
+    },
+
+    hasLink(id) {
+      return this.$modV.store.state.inputs.inputLinks[id];
+    },
+
+    isFocused(id) {
+      return this.$modV.store.state.inputs.focusedInput === id;
     }
   }
 };
 </script>
 
 <style scoped>
+.has-link {
+  border: 1px solid rgba(255, 217, 0, 0.3);
+}
+
+.focused {
+  background-color: rgba(0, 0, 0, 0.3);
+}
+
+.padded-grid {
+  padding: 0.75em;
+}
+
+.blend-controls {
+  max-width: 100%;
+}
+
 .active-module .head {
   display: flex;
 }
 
 .active-module .head .label {
-  font-size: 16px;
   flex-grow: 1;
   margin: 0 5px;
 }
@@ -155,9 +222,9 @@ input[type="checkbox"] {
 }
 
 .handle {
-  font-size: 20px;
   vertical-align: middle;
   width: 16px;
+  height: 16px;
   border: 1px solid;
   border-radius: 50%;
   cursor: -webkit-grab;

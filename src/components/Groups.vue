@@ -2,20 +2,6 @@
   <div class="groups">
     <div>
       <button @click="createGroup">Create new Group</button>
-      <select v-model="module">
-        <option
-          v-for="module in registeredModules"
-          :key="module.meta.name"
-          :value="module.meta.name"
-          >{{ module.meta.name }}</option
-        >
-      </select>
-      <select v-model="group">
-        <option v-for="group in groups" :key="group.id" :value="group.id">{{
-          group.name
-        }}</option>
-      </select>
-      <button @click="addModuleToGroup">Add Module To Group</button>
     </div>
     <Container
       drag-handle-selector=".group-title"
@@ -92,18 +78,6 @@ export default {
       this.$modV.store.dispatch("groups/createGroup");
     },
 
-    async addModuleToGroup() {
-      const module = await this.$modV.store.dispatch(
-        "modules/makeActiveModule",
-        { moduleName: this.module }
-      );
-
-      this.$modV.store.commit("groups/ADD_MODULE_TO_GROUP", {
-        moduleId: module.id,
-        groupId: this.group
-      });
-    },
-
     onDrop(e) {
       this.groups = applyDrag(this.groups, e);
     }
@@ -113,8 +87,6 @@ export default {
 
 <style scoped>
 div.groups {
-  font-family: monospace;
-
   padding: 10px;
   color: #fff;
   background-color: rgba(0, 0, 0, 0.6);

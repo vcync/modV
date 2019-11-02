@@ -4,7 +4,8 @@ const twoDCanvas = new OffscreenCanvas(300, 300);
 const twoDContext = twoDCanvas.getContext("2d");
 store.dispatch("outputs/addAuxillaryOutput", {
   name: "2d-buffer",
-  context: twoDContext
+  context: twoDContext,
+  group: "buffer"
 });
 
 /**
@@ -33,10 +34,8 @@ function render({
   bpm,
   kick
 }) {
-  if (twoDCanvas.width < canvas.width || twoDCanvas.height < canvas.height) {
-    twoDCanvas.width = canvas.width;
-    twoDCanvas.height = canvas.height;
-  }
+  twoDCanvas.width = canvas.width;
+  twoDCanvas.height = canvas.height;
   twoDContext.drawImage(canvas, 0, 0, canvas.width, canvas.height);
 
   twoDContext.save();

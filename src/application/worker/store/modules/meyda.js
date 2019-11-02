@@ -1,4 +1,12 @@
+import { getFeature } from "../../audio-features";
+
 const state = ["complexSpectrum"];
+
+const getters = {
+  getFeature: () => key => {
+    return getFeature(key);
+  }
+};
 
 const actions = {
   addFeature({ commit }, feature) {
@@ -26,6 +34,7 @@ const mutations = {
 export default {
   namespaced: true,
   state,
+  getters,
   actions,
   mutations
 };
