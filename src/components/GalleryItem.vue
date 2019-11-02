@@ -138,7 +138,7 @@ export default {
 };
 </script>
 
-<style>
+<style lang="scss" scoped>
 canvas {
   max-width: 100%;
 }
@@ -146,7 +146,7 @@ canvas {
 .gallery-item {
   background-color: #000;
   position: relative;
-  overflow: hidden;
+
   box-sizing: border-box;
   justify-self: center;
   align-self: flex-start;
@@ -156,6 +156,32 @@ canvas {
   display: flex;
   justify-content: center;
   align-items: center;
+
+  canvas {
+    opacity: 0.3;
+    transition: 150ms opacity;
+  }
+
+  .title {
+    transition: 150ms opacity;
+    padding: 0.45em;
+    max-height: 100%;
+    box-sizing: border-box;
+    text-overflow: ellipsis;
+    max-width: 100%;
+    overflow: hidden;
+    white-space: nowrap;
+  }
+
+  &:hover {
+    canvas {
+      opacity: 1;
+    }
+
+    .title {
+      opacity: 0.3;
+    }
+  }
 }
 
 .title {
