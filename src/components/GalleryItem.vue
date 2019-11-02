@@ -4,8 +4,10 @@
     @mouseleave="blur"
     @dblclick="doubleClick"
     v-if="!badModule"
+    class="gallery-item"
   >
     <canvas ref="canvas"></canvas>
+    <div class="title">{{ moduleName }}</div>
   </div>
 </template>
 
@@ -139,5 +141,24 @@ export default {
 <style>
 canvas {
   max-width: 100%;
+}
+
+.gallery-item {
+  background-color: #000;
+  position: relative;
+  overflow: hidden;
+  box-sizing: border-box;
+  justify-self: center;
+  align-self: flex-start;
+  width: 100%;
+  /* padding-bottom: 56.249999993%; */
+  cursor: move;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.title {
+  position: absolute;
 }
 </style>

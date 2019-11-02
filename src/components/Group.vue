@@ -31,7 +31,6 @@
       <div class="group-title" contenteditable="false">{{ name }}</div>
       <Container
         drag-handle-selector=".handle"
-        lock-axis="x"
         orientation="horizontal"
         group-name="modules"
         :should-animate-drop="() => false"
@@ -220,15 +219,15 @@ export default {
           position: e.addedIndex
         });
       } else if (collection === "layer") {
-        e.payload = moduleName;
+        e.payload = e.payload.moduleId;
         this.modules = applyDrag(this.modules, e);
       }
     },
 
     getChildPayload(e) {
-      const moduleName = this.$modV.store.state.modules.active[e];
+      const moduleId = this.modules[e];
 
-      return { moduleName, collection: "layer" };
+      return { moduleId, collection: "layer" };
     },
 
     focus() {

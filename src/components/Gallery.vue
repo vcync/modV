@@ -22,8 +22,12 @@
               tag="grid"
               columns="4"
             >
-              <Draggable v-for="(module, name) in modules" :key="name" tag="c">
-                {{ name }}
+              <Draggable
+                v-for="(module, name) in modules"
+                :key="name"
+                tag="c"
+                ghost-class="ghost"
+              >
                 <GalleryItem
                   v-if="groupId"
                   :moduleName="name"
