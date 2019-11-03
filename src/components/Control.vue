@@ -133,7 +133,6 @@ export default {
         const propData = this.$modV.store.state.modules.active[id][prop];
 
         if (type === "tween") {
-          console.log(this.$modV.store.state.tweens.tweens[propData.id]);
           return this.$modV.store.state.tweens.tweens[propData.id];
         }
 
