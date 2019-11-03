@@ -89,7 +89,7 @@ export default class ModV {
     this.store.dispatch("groups/createGroup", { enabled: true });
   }
 
-  async setup(canvas) {
+  async setup(canvas = document.createElement("canvas")) {
     this.windowHandler();
     try {
       this._mediaStream = await this.setupMedia({});
