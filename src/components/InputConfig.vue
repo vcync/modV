@@ -1,7 +1,7 @@
 <template>
   <div>
     <grid>
-      <c span="1..">{{ inputConfig.id }}</c>
+      <c span="1..">{{ focusedInputTitle }}</c>
 
       <c span="1..">
         <AudioFeatures v-if="inputConfig" :input-id="inputConfig.id" />
@@ -41,13 +41,17 @@ export default {
       const { $modV } = this;
       return (
         $modV.store.state.inputs.inputs[
-          $modV.store.state.inputs.focusedInput
+          $modV.store.state.inputs.focusedInput.id
         ] || false
       );
     },
 
     isProp() {
       return "prop" in this.inputConfig;
+    },
+
+    focusedInputTitle() {
+      return this.$modV.store.state.inputs.focusedInput.title;
     }
   }
 };
