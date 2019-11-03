@@ -46,7 +46,7 @@ async function buildFrames({
   let seek = 0;
 
   if (state.tweens[id]) {
-    seek = ((duration / 100) * progress[id]) / 100;
+    seek = frames[id] / state.tweens[id].frames.length;
   }
 
   return new Promise(resolve => {
