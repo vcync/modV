@@ -1,12 +1,5 @@
 <template>
   <main id="app">
-    <canvas
-      ref="canvas"
-      @dblclick="makeFullScreen"
-      @mousemove="mouseMove"
-      :style="{ cursor }"
-    ></canvas>
-
     <golden-layout class="hscreen" :showPopoutIcon="false" v-model="state">
       <gl-col :closable="false" id="lr-col">
         <gl-component title="Groups">
@@ -100,7 +93,7 @@ export default {
   },
 
   async mounted() {
-    await this.$modV.setup(this.$refs.canvas);
+    await this.$modV.setup();
 
     // this.$modV.$worker.addEventListener("message", e => {
     //   if (e.data.type === "outputs/SET_MAIN_OUTPUT") {
@@ -168,9 +161,11 @@ body {
   margin: 0;
   padding: 0;
 
-  /* font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
     "Helvetica Neue", "微軟雅黑", "Microsoft YaHei", "微軟正黑體",
-    "Microsoft JhengHei", Verdana, Arial, sans-serif !important; */
+    "Microsoft JhengHei", Verdana, Arial, sans-serif !important;
+
+  /* font-family: "IBM Plex Mono"; */
 }
 
 .hscreen {
