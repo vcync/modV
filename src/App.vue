@@ -33,45 +33,32 @@
       </gl-col>
     </golden-layout>
 
-    <!-- <section v-show="showUi">
-      <SizeDisplay />
-      <div class="top-right">
-        <FPSDisplay />
-        <BPMDisplay />
-      </div>
-      <component
-        :is="pluginComponent"
-        v-for="pluginComponent in pluginComponents"
-        :key="pluginComponent"
-      ></component>
-    </section> -->
+    <StatusBar />
   </main>
 </template>
 
 <script>
-// import SizeDisplay from "@/components/SizeDisplay";
-// import FPSDisplay from "@/components/FPSDisplay";
-// import BPMDisplay from "@/components/BPMDisplay";
 import CanvasDebugger from "@/components/CanvasDebugger";
 import ABSwap from "@/components/ABSwap";
 import Groups from "@/components/Groups";
 import Gallery from "@/components/Gallery";
 import InputConfig from "@/components/InputConfig";
 import InputDeviceConfig from "@/components/InputDeviceConfig";
+import StatusBar from "@/components/StatusBar";
 
 export default {
   name: "app",
 
   components: {
     // SizeDisplay,
-    // FPSDisplay,
-    // BPMDisplay,
+
     CanvasDebugger,
     ABSwap,
     Groups,
     Gallery,
     InputConfig,
-    InputDeviceConfig
+    InputDeviceConfig,
+    StatusBar
   },
 
   data() {
@@ -170,14 +157,22 @@ body {
 
 .hscreen {
   width: 100vw;
-  height: 100vh;
+  height: 100%;
 }
 
+html,
 body,
 #app {
   margin: 0;
   height: 100%;
   position: relative;
+}
+
+#app {
+  display: flex;
+  flex-direction: column;
+  justify-content: stretch;
+  align-items: stretch;
 }
 
 .lm_header .lm_tab {

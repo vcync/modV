@@ -64,7 +64,7 @@ export default function windowHandler() {
         timer = requestAnimationFrame(() => {
           const { innerWidth: width, innerHeight: height } = win;
 
-          this.store.dispatch("outputs/resize", {
+          this.store.dispatch("size/setSize", {
             width,
             height
           });

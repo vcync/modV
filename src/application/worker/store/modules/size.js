@@ -10,34 +10,8 @@ const getters = {
 };
 
 const actions = {
-  setSize({ commit }, { width, height }) {
-    store.state.outputs.main.canvas.width = width;
-    store.state.outputs.main.canvas.height = height;
-
-    const auxKeys = Object.keys(store.state.outputs.auxillary);
-    const auxLength = auxKeys.length;
-    for (let i = 0; i < auxLength; ++i) {
-      const { reactToResize, context } = store.state.outputs.auxillary[
-        auxKeys[i]
-      ];
-      if (!reactToResize) {
-        continue;
-      }
-
-      context.canvas.width = width;
-      context.canvas.height = height;
-    }
-
-    const modulesKeys = Object.keys(store.state.modules.active);
-    const modulesLength = Object.keys(modulesKeys).length;
-    for (let i = 0; i < modulesLength; ++i) {
-      const module = store.state.modules.active[modulesKeys[i]];
-      if (module.resize && !module.isGallery) {
-        module.resize({
-          canvas: store.state.outputs.main.canvas
-        });
-      }
-    }
+  async setSize({ commit }, { width, height }) {
+    await store.dispatch("outputs/resize", { width, height });
 
     commit("SET_SIZE", { width, height });
   }
