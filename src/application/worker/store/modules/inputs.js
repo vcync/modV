@@ -3,7 +3,7 @@ import Vue from "vue";
 const uuidv4 = require("uuid/v4");
 
 const state = {
-  focusedInput: null,
+  focusedInput: { id: null, title: null },
   inputs: {},
   inputLinks: {}
 };
@@ -11,8 +11,8 @@ const state = {
 const getters = {};
 
 const actions = {
-  setFocusedInput({ commit }, id) {
-    commit("SET_FOCUSED_INPUT", id);
+  setFocusedInput({ commit }, { id, title }) {
+    commit("SET_FOCUSED_INPUT", { id, title });
   },
 
   addInput({ commit }, { type, location, data }) {
@@ -45,8 +45,9 @@ const actions = {
 };
 
 const mutations = {
-  SET_FOCUSED_INPUT(state, { id }) {
-    state.focusedInput = id;
+  SET_FOCUSED_INPUT(state, { id, title }) {
+    state.focusedInput.id = id;
+    state.focusedInput.title = title;
   },
 
   ADD_INPUT(state, input) {

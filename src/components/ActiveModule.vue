@@ -3,7 +3,7 @@
     <grid
       columns="4"
       class="head padded-grid"
-      @click="focusInput(module.meta.enabledInputId)"
+      @click="focusInput(module.meta.enabledInputId, 'Enabled')"
       :class="{
         'has-link': hasLink(module.meta.enabledInputId),
         focused: isFocused(module.meta.enabledInputId)
@@ -35,7 +35,7 @@
         <grid
           columns="4"
           class="padded-grid"
-          @click="focusInput(module.meta.alphaInputId)"
+          @click="focusInput(module.meta.alphaInputId, 'Alpha')"
           :class="{
             'has-link': hasLink(module.meta.alphaInputId),
             focused: isFocused(module.meta.alphaInputId)
@@ -54,7 +54,12 @@
         <grid
           columns="4"
           class="padded-grid"
-          @click="focusInput(module.meta.compositeOperationInputId)"
+          @click="
+            focusInput(
+              module.meta.compositeOperationInputId,
+              'Composite Operation'
+            )
+          "
           :class="{
             'has-link': hasLink(module.meta.compositeOperationInputId),
             focused: isFocused(module.meta.compositeOperationInputId)
@@ -172,8 +177,11 @@ export default {
       );
     },
 
-    focusInput(id) {
-      this.$modV.store.dispatch("inputs/setFocusedInput", { id });
+    focusInput(id, title) {
+      this.$modV.store.dispatch("inputs/setFocusedInput", {
+        id,
+        title: `${this.module.meta.name}: ${title}`
+      });
     },
 
     hasLink(id) {
@@ -181,7 +189,7 @@ export default {
     },
 
     isFocused(id) {
-      return this.$modV.store.state.inputs.focusedInput === id;
+      return this.$modV.store.state.inputs.focusedInput.id === id;
     }
   }
 };

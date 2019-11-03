@@ -93,7 +93,10 @@ export default {
     },
 
     focusInput() {
-      this.$modV.store.dispatch("inputs/setFocusedInput", { id: this.inputId });
+      this.$modV.store.dispatch("inputs/setFocusedInput", {
+        id: this.inputId,
+        title: `${this.moduleName}: ${this.title}`
+      });
     }
   },
 
@@ -101,6 +104,11 @@ export default {
     activeProp() {
       const { id, prop } = this;
       return this.$modV.store.state.modules.active[id].props[prop];
+    },
+
+    moduleName() {
+      const { id } = this;
+      return this.$modV.store.state.modules.active[id].meta.name;
     },
 
     inputId() {
