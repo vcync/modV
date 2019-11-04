@@ -25,9 +25,17 @@
               <InputConfig />
             </gl-component>
 
-            <gl-component title="Input Device Config">
-              <InputDeviceConfig />
-            </gl-component>
+            <gl-stack title="Input Device Config">
+              <gl-component title="Audio">
+                <AudioDeviceConfig />
+              </gl-component>
+              <gl-component title="MIDI">
+                <MIDIDeviceConfig />
+              </gl-component>
+              <gl-component title="BPM">
+                <BPMConfig />
+              </gl-component>
+            </gl-stack>
           </gl-stack>
         </gl-row>
       </gl-col>
@@ -43,7 +51,9 @@ import ABSwap from "@/components/ABSwap";
 import Groups from "@/components/Groups";
 import Gallery from "@/components/Gallery";
 import InputConfig from "@/components/InputConfig";
-import InputDeviceConfig from "@/components/InputDeviceConfig";
+import AudioDeviceConfig from "@/components/InputDeviceConfig/Audio.vue";
+import MIDIDeviceConfig from "@/components/InputDeviceConfig/MIDI.vue";
+import BPMConfig from "@/components/InputDeviceConfig/BPM.vue";
 import StatusBar from "@/components/StatusBar";
 
 export default {
@@ -57,7 +67,9 @@ export default {
     Groups,
     Gallery,
     InputConfig,
-    InputDeviceConfig,
+    AudioDeviceConfig,
+    MIDIDeviceConfig,
+    BPMConfig,
     StatusBar
   },
 

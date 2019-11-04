@@ -16,7 +16,7 @@ export default function() {
 
     this.store.commit("beats/SET_KICK", { kick });
     if (this.store.state.beats.bpm !== bpm) {
-      this.store.commit("beats/SET_BPM", { bpm });
+      this.store.dispatch("beats/setBpm", { bpm, source: "beatdetektor" });
     }
   };
 }
