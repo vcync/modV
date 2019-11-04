@@ -11,12 +11,34 @@
         >
       </select>
     </c>
+    <c span="1..">
+      <button :disabled="bpmSource !== 'tap'" @mousedown="tap">TAP</button>
+      {{ bpm }}
+    </c>
   </grid>
 </template>
 
 <script>
+import Tt from "tap-tempo";
+
+const tapTempo = new Tt();
+
 export default {
+  created() {
+    tapTempo.on("tempo", bpm => {
+      if (this.bpm === Math.round(bpm)) return;
+      this.$modV.store.dispatch("beats/setBpm", {
+        bpm: Math.round(bpm),
+        source: "tap"
+      });
+    });
+  },
+
   computed: {
+    bpm() {
+      return this.$modV.store.state.beats.bpm;
+    },
+
     bpmSource: {
       get() {
         return this.$modV.store.state.beats.bpmSource;
@@ -47,6 +69,10 @@ export default {
         key: "listenForClock",
         value
       });
+    },
+
+    tap() {
+      tapTempo.tap();
     }
   }
 };
