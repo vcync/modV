@@ -2,37 +2,37 @@
   <main id="app">
     <golden-layout class="hscreen" :showPopoutIcon="false" v-model="state">
       <gl-col :closable="false" id="lr-col">
-        <gl-component title="Groups">
+        <gl-component title="Groups" :closable="false">
           <Groups />
         </gl-component>
         <gl-row>
-          <gl-component title="Gallery">
+          <gl-component title="Gallery" :closable="false">
             <Gallery />
           </gl-component>
 
           <gl-stack>
-            <gl-component title="Preview">
+            <gl-component title="Preview" :closable="false">
               <CanvasDebugger />
             </gl-component>
 
-            <gl-component title="Swap">
+            <gl-component title="Swap" :closable="false">
               <ABSwap />
             </gl-component>
           </gl-stack>
 
           <gl-stack>
-            <gl-component title="Input config">
+            <gl-component title="Input config" :closable="false">
               <InputConfig />
             </gl-component>
 
-            <gl-stack title="Input Device Config">
-              <gl-component title="Audio">
+            <gl-stack title="Input Device Config" :closable="false">
+              <gl-component title="Audio" :closable="false">
                 <AudioDeviceConfig />
               </gl-component>
-              <gl-component title="MIDI">
+              <gl-component title="MIDI" :closable="false">
                 <MIDIDeviceConfig />
               </gl-component>
-              <gl-component title="BPM">
+              <gl-component title="BPM" :closeable="false">
                 <BPMConfig />
               </gl-component>
             </gl-stack>
