@@ -10,6 +10,14 @@ const audioContext = new window.AudioContext({
   latencyHint: "playback"
 });
 
+// hack around chrome's autoplay policy
+function resume() {
+  audioContext.resume();
+  window.removeEventListener("click", resume);
+}
+
+window.addEventListener("click", resume);
+
 function handleInput(message) {
   const {
     data: [type, channel, data],
