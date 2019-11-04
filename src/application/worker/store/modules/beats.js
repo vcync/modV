@@ -4,7 +4,7 @@ const state = {
   bpm: 0,
   bpmSource: "beatdetektor",
   kick: false,
-  bpmSources: ["beatdetektor", "midi"]
+  bpmSources: ["beatdetektor", "midi", "tap"]
 };
 
 const actions = {
