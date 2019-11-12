@@ -87,12 +87,15 @@ export default class ModV {
 
     // Make the default group
     this.store.dispatch("groups/createGroup", { enabled: true });
+
+    window.addEventListener("beforeunload", () => true);
   }
 
   async setup(canvas = document.createElement("canvas")) {
     this.windowHandler();
+
     try {
-      this._mediaStream = await this.setupMedia({});
+      await this.setupMedia({});
     } catch (e) {
       console.error(e);
     }
@@ -101,11 +104,6 @@ export default class ModV {
     navigator.mediaDevices.ondevicechange = () => {
       this.enumerateDevices();
     };
-
-    const [track] = this._mediaStream.getVideoTracks();
-    if (track) {
-      this._imageCapture = new ImageCapture(track);
-    }
 
     try {
       await this.setupMidi();
@@ -134,6 +132,8 @@ export default class ModV {
   }
 
   async inputLoop() {
+    this.inputLoopRaf = requestAnimationFrame(this.inputLoop.bind(this));
+
     if (
       // Don't try to take a frame while the window is unfocused, Chrome kills the feed irreparably
       !document.hidden &&
@@ -144,17 +144,22 @@ export default class ModV {
       try {
         imageBitmap = await this._imageCapture.grabFrame();
       } catch (e) {
-        console.error(e, e.message, this._imageCapture.track.readyState);
+        if (e) {
+          console.error(e, e.message, this._imageCapture.track.readyState);
+        }
       }
 
       if (imageBitmap) {
-        this.$worker.postMessage({ type: "videoFrame", payload: imageBitmap }, [
-          imageBitmap
-        ]);
+        try {
+          this.$worker.postMessage(
+            { type: "videoFrame", payload: imageBitmap },
+            [imageBitmap]
+          );
+        } catch (e) {
+          // do nothing
+        }
       }
     }
-
-    this.inputLoopRaf = requestAnimationFrame(this.inputLoop.bind(this));
   }
 
   loop(delta) {

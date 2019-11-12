@@ -47,7 +47,10 @@ async function getMediaStream({ audioSourceId, videoSourceId }) {
 
   if (videoSourceId) {
     constraints.video = {
-      deviceId: videoSourceId
+      deviceId: videoSourceId,
+      frameRate: {
+        ideal: 60
+      }
     };
   }
 
@@ -75,10 +78,23 @@ async function setupMedia({ audioId, videoId }) {
     videoSourceId = mediaStreamDevices.video[0].deviceId;
   }
 
+  if (this._mediaStream) {
+    const tracks = this._mediaStream.getTracks();
+    for (let i = 0, len = tracks.length; i < len; i++) {
+      const track = tracks[i];
+      track.stop();
+    }
+  }
+
   const mediaStream = await getMediaStream({ audioSourceId, videoSourceId });
 
   // This video element is required to keep the camera alive for the ImageCapture API
   // (this._imageCapture, ./index.js)
+  if (this.videoStream) {
+    this.videoStream.pause();
+    delete this.videoStream;
+  }
+
   this.videoStream = document.createElement("video");
   this.videoStream.autoplay = true;
   this.videoStream.muted = true;
@@ -126,12 +142,19 @@ async function setupMedia({ audioId, videoId }) {
     featureExtractors: ["complexSpectrum"]
   });
 
+  const [track] = mediaStream.getVideoTracks();
+  if (track) {
+    this._imageCapture = new ImageCapture(track);
+  }
+
   store.commit("mediaStream/SET_CURRENT_AUDIO_SOURCE", {
     audioId: audioSourceId
   });
   store.commit("mediaStream/SET_CURRENT_VIDEO_SOURCE", {
     videoId: videoSourceId
   });
+
+  this._mediaStream = mediaStream;
 
   return mediaStream;
 }
