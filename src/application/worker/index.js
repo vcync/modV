@@ -64,37 +64,39 @@ const registerPromiseWorker = require("promise-worker/register");
     //   );
     // }
 
-    store.dispatch("modules/registerModule", sampleModule);
+    if (
+      ["Counter", "Ball", "Bar", "Concentrics"].indexOf(
+        sampleModule.meta.name
+      ) > -1
+    ) {
+      store.dispatch("modules/registerModule", sampleModule);
+    }
   }
 
   const isfModules = require.context("../sample-modules/isf", false, /\.fs$/);
-  const isfModulesVs = require.context("../sample-modules/isf", false, /\.vs$/);
-  const isfModulesVsKeys = isfModulesVs.keys();
+  // const isfModulesVs = require.context("../sample-modules/isf", false, /\.vs$/);
+  // const isfModulesVsKeys = isfModulesVs.keys();
 
   const isfModuleKeys = isfModules.keys();
   for (let i = 0, len = isfModuleKeys.length; i < len; i++) {
-    const fileName = isfModuleKeys[i];
-
-    const fragmentShader = isfModules(fileName);
-    let vertexShader = "void main() {isf_vertShaderInit();}";
-    const vsIndex = isfModulesVsKeys.indexOf(fileName.replace(".fs", ".vs"));
-
-    if (vsIndex > -1) {
-      vertexShader = isfModulesVs(isfModulesVsKeys[vsIndex]);
-    }
-
-    const module = {
-      meta: {
-        name: fileName.replace(/(\.\/|\.fs)/g, ""),
-        author: "",
-        version: "1.0.0",
-        type: "isf"
-      },
-      fragmentShader,
-      vertexShader
-    };
-
-    store.dispatch("modules/registerModule", module);
+    // const fileName = isfModuleKeys[i];
+    // const fragmentShader = isfModules(fileName);
+    // let vertexShader = "void main() {isf_vertShaderInit();}";
+    // const vsIndex = isfModulesVsKeys.indexOf(fileName.replace(".fs", ".vs"));
+    // if (vsIndex > -1) {
+    //   vertexShader = isfModulesVs(isfModulesVsKeys[vsIndex]);
+    // }
+    // const module = {
+    //   meta: {
+    //     name: fileName.replace(/(\.\/|\.fs)/g, ""),
+    //     author: "",
+    //     version: "1.0.0",
+    //     type: "isf"
+    //   },
+    //   fragmentShader,
+    //   vertexShader
+    // };
+    // store.dispatch("modules/registerModule", module);
   }
 
   store.dispatch("plugins/add", featureAssignmentPlugin);

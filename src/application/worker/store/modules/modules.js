@@ -1,5 +1,4 @@
 import Vue from "vue";
-import cloneDeep from "lodash.clonedeep";
 import SWAP from "./common/swap";
 import getNextName from "../../../utils/get-next-name";
 import getPropDefault from "../../../utils/get-prop-default";
@@ -44,16 +43,51 @@ const actions = {
     { moduleName, moduleMeta = {}, writeToSwap }
   ) {
     const { renderers } = rootState;
-    let module = cloneDeep(state.registered[moduleName]);
-    module.id = uuidv4();
+    const moduleDefinition = state.registered[moduleName];
+    const { props = {}, data = {} } = moduleDefinition;
 
-    if (renderers[module.meta.type].setupModule) {
+    let module = { meta: { ...moduleDefinition.meta } };
+    module.$id = uuidv4();
+    module.$moduleName = moduleName;
+    module.$props = { ...props };
+
+    const propKeys = Object.keys(props);
+    module.props = {};
+
+    for (let i = 0, len = propKeys.length; i < len; i++) {
+      const propKey = propKeys[i];
+
+      const prop = props[propKey];
+
+      module.props[propKey] = await getPropDefault(module, propKey, prop);
+
+      const inputBind = await store.dispatch("inputs/addInput", {
+        type: "action",
+        location: "modules/updateProp",
+        data: { moduleId: module.$id, prop: propKey }
+      });
+
+      module.$props[propKey].id = inputBind.id;
+    }
+
+    const dataKeys = Object.keys(data);
+    for (let i = 0, len = dataKeys.length; i < len; i++) {
+      const dataKey = dataKeys[i];
+
+      const datum = data[dataKey];
+      module.data = {};
+      module.data[dataKey] = datum;
+    }
+
+    if (renderers[moduleDefinition.meta.type].setupModule) {
       try {
-        module = await renderers[module.meta.type].setupModule(module);
+        module = await renderers[moduleDefinition.meta.type].setupModule(
+          module
+        );
       } catch (e) {
         console.error(
           `Error in ${
-            module.meta.type
+            moduleDefinition.meta.type
           } renderer setup whilst activating ${moduleName}. This module was ommited from activation and removed from the registered modules list.`
         );
 
@@ -62,10 +96,10 @@ const actions = {
       }
     }
 
-    module.meta.originalName = module.meta.name;
-    module.meta.name =
-      moduleMeta.name ||
-      (await getNextName(`${module.meta.name}`, Object.keys(state.active)));
+    module.meta.name = await getNextName(
+      `${moduleName}`,
+      Object.keys(state.active)
+    );
     module.meta.alpha = 1;
     module.meta.enabled = false;
     module.meta.compositeOperation = "normal";
@@ -73,7 +107,7 @@ const actions = {
     const alphaInputBind = await store.dispatch("inputs/addInput", {
       type: "commit",
       location: "modules/UPDATE_ACTIVE_MODULE_META",
-      data: { id: module.id, metaKey: "alpha" }
+      data: { id: module.$id, metaKey: "alpha" }
     });
 
     module.meta.alphaInputId = alphaInputBind.id;
@@ -81,7 +115,7 @@ const actions = {
     const enabledInputBind = await store.dispatch("inputs/addInput", {
       type: "commit",
       location: "modules/UPDATE_ACTIVE_MODULE_META",
-      data: { id: module.id, metaKey: "enabled" }
+      data: { id: module.$id, metaKey: "enabled" }
     });
 
     module.meta.enabledInputId = enabledInputBind.id;
@@ -89,76 +123,12 @@ const actions = {
     const coInputBind = await store.dispatch("inputs/addInput", {
       type: "commit",
       location: "modules/UPDATE_ACTIVE_MODULE_META",
-      data: { id: module.id, metaKey: "compositeOperation" }
+      data: { id: module.$id, metaKey: "compositeOperation" }
     });
 
     module.meta.compositeOperationInputId = coInputBind.id;
 
-    const { data, props, presets } = module;
-
-    if (data) {
-      const dataKeys = Object.keys(data);
-      for (let i = 0, len = dataKeys.length; i < len; i++) {
-        const key = dataKeys[i];
-
-        const value = data[key];
-        module[key] = value;
-      }
-    }
-
-    if (props) {
-      const propKeys = Object.keys(props);
-      for (let i = 0, len = propKeys.length; i < len; i++) {
-        const key = propKeys[i];
-
-        const value = props[key];
-
-        module[key] = await getPropDefault(module, key, value);
-
-        const inputBind = await store.dispatch("inputs/addInput", {
-          type: "action",
-          location: "modules/updateProp",
-          data: { moduleId: module.id, prop: key }
-        });
-
-        props[key].id = inputBind.id;
-
-        if (value.type === "group") {
-          module[key] = {};
-
-          module[key].length = value.default > -1 ? value.default : 1;
-          module[key].props = {};
-
-          const valuePropKeys = Object.keys(value.props);
-          for (let j = 0, len = valuePropKeys.length; j < len; j++) {
-            const groupProp = valuePropKeys[j];
-
-            const groupValue = value.props[groupProp];
-            module[key].props[groupProp] = [];
-
-            if (value.default && typeof groupValue.default !== "undefined") {
-              for (let i = 0; i < value.default; i += 1) {
-                module[key].props[groupProp][i] = groupValue.default;
-              }
-            }
-          }
-        }
-
-        if (value.control) {
-          // if (value.control.type === "paletteControl") {
-          //   const { options } = value.control;
-          //   store.dispatch("palettes/createPalette", {
-          //     id: `${meta.name}-${key}`,
-          //     colors: options.colors || [],
-          //     duration: options.duration,
-          //     returnFormat: options.returnFormat,
-          //     moduleName: meta.name,
-          //     variable: key
-          //   });
-          // }
-        }
-      }
-    }
+    const { presets } = module;
 
     if (moduleMeta) {
       const moduleMetaKeys = Object.keys(moduleMeta);
@@ -199,12 +169,32 @@ const actions = {
       canvas: { width: 0, height: 0 }
     };
 
-    if ("init" in module) {
-      module.init({ canvas });
+    if ("init" in moduleDefinition) {
+      const { data } = state.active[module.$id];
+      const returnedData = moduleDefinition.init({
+        canvas,
+        data: { ...data },
+        props
+      });
+      commit("UPDATE_ACTIVE_MODULE", {
+        id: module.$id,
+        key: "data",
+        value: returnedData
+      });
     }
 
-    if ("resize" in module) {
-      module.resize({ canvas });
+    if ("resize" in moduleDefinition) {
+      const { data } = state.active[module.$id];
+      const returnedData = moduleDefinition.resize({
+        canvas,
+        data: { ...data },
+        props
+      });
+      commit("UPDATE_ACTIVE_MODULE", {
+        id: module.$id,
+        key: "data",
+        value: returnedData
+      });
     }
 
     return module;
@@ -214,7 +204,8 @@ const actions = {
     { state, commit },
     { moduleId, prop, data, group, groupName, writeToSwap }
   ) {
-    const propData = state.active[moduleId].props[prop];
+    const moduleName = state.active[moduleId].$moduleName;
+    const propData = state.registered[moduleName].props[prop];
     const currentValue = state.active[moduleId][prop];
     const { type } = propData;
 
@@ -275,13 +266,13 @@ const actions = {
     );
 
     if (group || groupName) {
-      if ("set" in state.active[moduleId].props[groupName].props[prop]) {
-        state.active[moduleId].props[groupName].props[prop].set.bind(
+      if ("set" in state.registered[moduleName].props[groupName].props[prop]) {
+        state.registered[moduleName].props[groupName].props[prop].set.bind(
           state.active[moduleId]
         )(dataOut);
       }
-    } else if ("set" in state.active[moduleId].props[prop]) {
-      state.active[moduleId].props[prop].set.bind(state.active[moduleId])(
+    } else if ("set" in state.registered[moduleName].props[prop]) {
+      state.registered[moduleName].props[prop].set.bind(state.active[moduleId])(
         dataOut
       );
     }
@@ -315,12 +306,17 @@ const mutations = {
 
   ADD_ACTIVE_MODULE(state, module, writeToSwap) {
     const writeTo = writeToSwap ? swap : state;
-    Vue.set(writeTo.active, module.id, module);
+    Vue.set(writeTo.active, module.$id, module);
   },
 
   REMOVE_ACTIVE_MODULE(state, moduleId, writeToSwap) {
     const writeTo = writeToSwap ? swap : state;
     delete writeTo.active[moduleId];
+  },
+
+  UPDATE_ACTIVE_MODULE(state, { id, key, value }, writeToSwap) {
+    const writeTo = writeToSwap ? swap : state;
+    Vue.set(writeTo.active[id], key, value);
   },
 
   async UPDATE_ACTIVE_MODULE_PROP(
@@ -340,7 +336,7 @@ const mutations = {
     if (typeof group === "number") {
       Vue.set(writeTo.active[moduleId][groupName].props[prop], group, value);
     } else {
-      Vue.set(writeTo.active[moduleId], prop, value);
+      Vue.set(writeTo.active[moduleId].props, prop, value);
     }
   },
 

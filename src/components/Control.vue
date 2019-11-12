@@ -103,7 +103,7 @@ export default {
   computed: {
     activeProp() {
       const { id, prop } = this;
-      return this.$modV.store.state.modules.active[id].props[prop];
+      return this.$modV.store.state.modules.active[id].$props[prop];
     },
 
     moduleName() {
@@ -138,7 +138,7 @@ export default {
     value: {
       get() {
         const { id, prop, type } = this;
-        const propData = this.$modV.store.state.modules.active[id][prop];
+        const propData = this.$modV.store.state.modules.active[id].props[prop];
 
         if (type === "tween") {
           return this.$modV.store.state.tweens.tweens[propData.id];
