@@ -86,7 +86,12 @@
       </c>
 
       <c span="1.." v-if="module.props && showMore">
-        <Control v-for="key in getProps(id)" :id="id" :prop="key" :key="key" />
+        <Control
+          v-for="key in getProps(module.$moduleName)"
+          :id="id"
+          :prop="key"
+          :key="key"
+        />
       </c>
     </grid>
   </div>
@@ -162,18 +167,20 @@ export default {
   },
 
   methods: {
-    getProps(id) {
-      const module = this.$modV.store.state.modules.active[id];
+    getProps(moduleName) {
+      const moduleDefinition = this.$modV.store.state.modules.registered[
+        moduleName
+      ];
 
-      return Object.keys(this.module.props).filter(
+      return Object.keys(moduleDefinition.props).filter(
         key =>
-          module.props[key].type === "int" ||
-          module.props[key].type === "float" ||
-          module.props[key].type === "text" ||
-          module.props[key].type === "bool" ||
-          module.props[key].type === "color" ||
-          module.props[key].type === "vec2" ||
-          module.props[key].type === "tween"
+          moduleDefinition.props[key].type === "int" ||
+          moduleDefinition.props[key].type === "float" ||
+          moduleDefinition.props[key].type === "text" ||
+          moduleDefinition.props[key].type === "bool" ||
+          moduleDefinition.props[key].type === "color" ||
+          moduleDefinition.props[key].type === "vec2" ||
+          moduleDefinition.props[key].type === "tween"
       );
     },
 

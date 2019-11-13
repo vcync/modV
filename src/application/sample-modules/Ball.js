@@ -96,141 +96,123 @@ export default {
     soundType: false, // false RMS, true ZCR
     intensity: 1, // Half max
     analysed: 0,
-    amount: 10,
     baseSize: 1,
     size: 2,
     color: [255, 0, 0, 1],
     speed: 1,
-    balls: [],
-    wrap: false
+    balls: []
   },
 
-  init({ canvas }) {
-    this.setupBalls(canvas);
+  init({ data, canvas }) {
+    data.balls = this.setupBalls(canvas);
+    return data;
   },
 
-  resize({ canvas }) {
-    this.setupBalls(canvas);
+  resize({ data, canvas }) {
+    data.balls = this.setupBalls(canvas);
+    return data;
   },
 
-  draw({ canvas, context, features }) {
-    if (this.soundType) {
-      this.analysed = (features.zcr / 10) * this.intensity;
-    } else {
-      this.analysed = features.rms * 10 * this.intensity;
+  update({ data, props, canvas }) {
+    const { amount, speed, wrap } = props;
+
+    for (let i = 0; i < amount; i += 1) {
+      this.updateBall({
+        ball: data.balls[i],
+        speed,
+        wrap,
+        canvas,
+        radius: props.size
+      });
     }
-    const color = this.color.value;
-    for (let i = 0; i < this.amount; i += 1) {
-      this.balls[i].speed = this.speed;
-      this.balls[i].wrap = this.wrap;
-      this.balls[i].drawUpdate(canvas, context, this.analysed, color);
+
+    return data;
+  },
+
+  draw({ data, props, context, features }) {
+    let analysed;
+
+    if (props.soundType) {
+      analysed = (features.zcr / 10) * props.intensity;
+    } else {
+      analysed = features.rms * 10 * props.intensity;
+    }
+
+    const color = props.color.value;
+    for (let i = 0; i < props.amount; i += 1) {
+      this.drawBall({ ball: data.balls[i], color, context, analysed });
     }
   },
 
   setupBalls(canvas) {
-    this.balls = [];
+    const balls = [];
     for (let i = 0; i < 300; i += 1) {
-      const newBall = new (this.ballObj())();
-      newBall.speed = this.speed;
-      newBall.bounds.width = canvas.width;
-      newBall.bounds.height = canvas.height;
-      /*eslint-disable */
-      newBall.position.x = Math.floor(Math.random() * (newBall.bounds.width - 1 + 1) + 1);
-      newBall.position.y = Math.floor(Math.random() * (newBall.bounds.height - 1 + 1) + 1);
-      newBall.velocity.x = Math.floor(Math.random() * (10 - 1 + 1) + 1);
-      newBall.velocity.y = Math.floor(Math.random() * (10 - 1 + 1) + 1);
-      /* eslint-enable */
-      newBall.xReverse = Math.round(Math.random());
-      newBall.yReverse = Math.round(Math.random());
-      this.balls.push(newBall);
+      const ball = this.ballFactory({
+        positionX: Math.floor(Math.random() * canvas.width + 1),
+        positionY: Math.floor(Math.random() * canvas.height + 1)
+      });
+
+      balls.push(ball);
     }
+
+    return balls;
   },
 
-  ballObj() {
-    const self = this;
-
-    return function ball() {
-      this.bounds = { width: 0, height: 0 };
-      this.position = { x: 0, y: 0 };
-      this.velocity = { x: 5, y: 5 };
-      this.wrap = false;
-      this.speed = self.speed;
-
-      this.xReverse = false;
-      this.yReverse = false;
-
-      this.drawUpdate = function drawUpdate(canvas, ctx, amp, colour) {
-        this.bounds.width = canvas.width;
-        this.bounds.height = canvas.height;
-
-        const ballRadius = self.size;
-
-        ctx.beginPath();
-        ctx.fillStyle = `rgb(${Math.round(colour[0])},${Math.round(
-          colour[1]
-        )},${Math.round(colour[2])})`;
-        ctx.arc(
-          this.position.x,
-          this.position.y,
-          Math.round(ballRadius + self.size * amp),
-          0,
-          2 * Math.PI,
-          true
-        );
-        ctx.fill();
-        ctx.closePath();
-
-        const x = this.position.x;
-        const y = this.position.y;
-        const dx = this.velocity.x;
-        const dy = this.velocity.y;
-
-        if (this.wrap) {
-          if (this.position.x - ballRadius < 1) {
-            this.position.x = this.bounds.width - 1 - ballRadius;
-          }
-          if (this.position.y - ballRadius < 1) {
-            this.position.y = this.bounds.height - 1 - ballRadius;
-          }
-
-          if (this.position.x + ballRadius > this.bounds.width - 1) {
-            this.position.x = ballRadius + 1;
-          }
-          if (this.position.y + ballRadius > this.bounds.height - 1) {
-            this.position.y = ballRadius + 1;
-          }
-        } else {
-          if (x + dx > canvas.width - ballRadius || x + dx < ballRadius) {
-            this.xReverse = !this.xReverse;
-          }
-          if (y + dy > canvas.height - ballRadius || y + dy < ballRadius) {
-            this.yReverse = !this.yReverse;
-          }
-        }
-
-        if (this.xReverse) this.velocity.x = -this.speed;
-        else this.velocity.x = this.speed;
-
-        if (this.yReverse) this.velocity.y = -this.speed;
-        else this.velocity.y = this.speed;
-
-        this.position.x += this.velocity.x;
-        this.position.y += this.velocity.y;
-
-        if (this.velocity.y === 0) this.velocity.y = -this.velocity.y + 1;
-      };
-
-      this.setBounds = function setBounds(width, height) {
-        this.bounds = {
-          width,
-          height
-        };
-
-        if (this.position.x > this.bounds.width)
-          this.position.x = this.bounds.width - 1;
-        if (this.position.y > this.bounds.height)
-          this.position.y = this.bounds.height - 1;
-      };
+  ballFactory({ positionX, positionY, speed = 0, radius = 0 }) {
+    return {
+      radius,
+      speed,
+      position: { x: positionX, y: positionY },
+      direction: { x: false, y: false }
     };
+  },
+
+  updateBall({ canvas, ball, speed, radius }) {
+    const {
+      position: { x, y },
+      direction: { x: directionX, y: directionY }
+    } = ball;
+
+    ball.radius = radius;
+
+    let dx = speed;
+    let dy = speed;
+
+    if (directionX) {
+      dx = -dx;
+    }
+
+    if (directionY) {
+      dy = -dy;
+    }
+
+    if (x + dx > canvas.width - radius || x + dx < radius) {
+      ball.direction.x = !ball.direction.x;
+    }
+    if (y + dy > canvas.height - radius || y + dy < radius) {
+      ball.direction.y = !ball.direction.y;
+    }
+
+    ball.position.x += dx;
+    ball.position.y += dy;
+
+    return ball;
+  },
+
+  drawBall({ ball, color, context, analysed }) {
+    context.beginPath();
+    context.fillStyle = `rgb(${Math.round(color[0])},${Math.round(
+      color[1]
+    )},${Math.round(color[2])})`;
+    context.arc(
+      ball.position.x,
+      ball.position.y,
+      Math.round(ball.radius * analysed),
+      0,
+      2 * Math.PI,
+      true
+    );
+    context.fill();
+    context.closePath();
   }
 };

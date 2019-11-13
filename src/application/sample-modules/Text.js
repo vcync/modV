@@ -12,8 +12,8 @@ export default {
     text: {
       type: "text",
       default: "",
-      set() {
-        this.drawText();
+      set(args) {
+        this.drawText(args);
       }
     },
 
@@ -22,8 +22,8 @@ export default {
       min: 0,
       max: 1000,
       default: 16,
-      set() {
-        this.drawText();
+      set(args) {
+        this.drawText(args);
       }
     },
 
@@ -49,86 +49,81 @@ export default {
       max: 50,
       min: 0,
       abs: true,
-      set() {
-        this.drawText();
+      set(args) {
+        this.drawText(args);
       }
     },
 
     font: {
       type: "text",
       default: "Proxima Nova",
-      set() {
-        this.drawText();
+      set(args) {
+        this.drawText(args);
       }
     },
 
     weight: {
       type: "text",
       default: "bold",
-      set() {
-        this.drawText();
+      set(args) {
+        this.drawText(args);
       }
     },
 
     fill: {
       type: "bool",
       default: true,
-      set() {
-        this.drawText();
+      set(args) {
+        this.drawText(args);
       }
     },
 
     fillColor: {
       type: "color",
       default: "#000000",
-      set() {
-        this.drawText();
+      set(args) {
+        this.drawText(args);
       }
     },
 
     stroke: {
       type: "bool",
       default: false,
-      set() {
-        this.drawText();
+      set(args) {
+        this.drawText(args);
       }
     },
 
     strokeColor: {
       type: "color",
       default: "#ffffff",
-      set() {
-        this.drawText();
+      set(args) {
+        this.drawText(args);
       }
     }
   },
 
-  data: {
-    _size: 16
+  init({ canvas: { width, height }, data, props }) {
+    data.canvas = new OffscreenCanvas(width, height);
+    data.context = data.canvas.getContext("2d");
+    this.drawText({ props, data });
+    return data;
   },
 
-  init({ canvas: { width, height } }) {
-    this.canvas = new OffscreenCanvas(width, height);
-    this.context = this.canvas.getContext("2d");
-    this.drawText();
+  resize({ canvas: { width, height }, props, data }) {
+    data.canvas.width = width;
+    data.canvas.height = height;
+    this.drawText({ props, data });
+    return data;
   },
 
-  resize({ canvas: { width, height } }) {
-    this.canvas.width = width;
-    this.canvas.height = height;
-    this.drawText();
+  draw({ context, data }) {
+    context.drawImage(data.canvas, 0, 0);
   },
 
-  draw({ context }) {
-    context.drawImage(this.canvas, 0, 0);
-  },
-
-  drawText() {
+  drawText({ props, data }) {
     const {
       size,
-      canvas,
-      canvas: { width, height },
-      context,
       text,
       strokeSize,
       font,
@@ -137,7 +132,13 @@ export default {
       strokeColor,
       fillColor,
       fill
-    } = this;
+    } = props;
+
+    const {
+      canvas,
+      canvas: { width, height },
+      context
+    } = data;
 
     if (fill) {
       context.fillStyle = fillColor;

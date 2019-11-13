@@ -9,7 +9,7 @@ export default {
   props: {
     scale: {
       type: "float",
-      min: 1,
+      min: 0,
       max: 10,
       default: 1
     },
@@ -22,21 +22,17 @@ export default {
     }
   },
 
-  draw({ canvas, context, video: { canvas: video } }) {
-    // const {  position, scale } = this;
-    // const { videoWidth, videoHeight } = video;
+  draw({ canvas, context, video: { canvas: video }, props }) {
+    const { position, scale } = props;
+    const { width: videoWidth, height: videoHeight } = video;
     const { width, height } = canvas;
 
     context.drawImage(
       video,
-      // width * position[0] - (videoWidth * scale) / 2,
-      // height * (1 - position[1]) - (videoHeight * scale) / 2,
-      0,
-      0,
-      width,
-      height
-      // videoWidth * scale,
-      // videoHeight * scale
+      width * position[0] - (videoWidth * scale) / 2,
+      height * (1 - position[1]) - (videoHeight * scale) / 2,
+      videoWidth * scale,
+      videoHeight * scale
     );
   }
 };

@@ -29,67 +29,71 @@ export default {
 
     intensity: {
       label: "RMS/ZCR Intensity",
-      type: "int",
+      type: "float",
       min: 0,
       max: 30,
-      step: 1,
       default: 15
     },
 
     zcr: {
       label: "RMS (unchecked) / ZCR (checked)",
       type: "bool",
-      checked: false
+      default: false
     }
   },
 
-  init({ canvas }) {
-    this.newCanvas2 = new OffscreenCanvas(canvas.width, canvas.height);
-    this.newCtx2 = this.newCanvas2.getContext("2d");
-    this.analysed = 0;
-
-    this.newCanvas2.width = canvas.width;
-    this.newCanvas2.height = canvas.height;
-
-    this.countX = 10;
-    this.countY = 10;
-    this.intensity = 15;
-    this.zcr = false;
+  data: {
+    newCanvas2: null,
+    newCtx2: null
   },
 
-  resize({ canvas }) {
-    this.newCanvas2.width = canvas.width;
-    this.newCanvas2.height = canvas.height;
+  init({ canvas, data }) {
+    data.newCanvas2 = new OffscreenCanvas(canvas.width, canvas.height);
+    data.newCtx2 = data.newCanvas2.getContext("2d");
+
+    data.newCanvas2.width = canvas.width;
+    data.newCanvas2.height = canvas.height;
+
+    return data;
   },
 
-  draw({ canvas, context, features }) {
-    var sliceWidth = canvas.width / this.countX,
-      sliceHeight = canvas.height / this.countY;
+  resize({ canvas, data }) {
+    data.newCanvas2.width = canvas.width;
+    data.newCanvas2.height = canvas.height;
 
-    this.newCtx2.clearRect(0, 0, canvas.width, canvas.height);
+    return data;
+  },
 
-    for (var i = this.countX; i >= 0; i--) {
-      for (var j = this.countY; j >= 0; j--) {
-        if (this.zcr) {
-          this.analysed = (features.zcr / 10) * this.intensity;
-        } else {
-          this.analysed = features.rms * 10 * this.intensity;
-        }
+  draw({ canvas, context, features, props, data }) {
+    const sliceWidth = canvas.width / props.countX;
+    const sliceHeight = canvas.height / props.countY;
 
-        this.newCtx2.drawImage(
+    data.newCtx2.clearRect(0, 0, canvas.width, canvas.height);
+    let analysed;
+
+    if (props.zcr) {
+      analysed = (features.zcr / 10) * props.intensity;
+    } else {
+      analysed = features.rms * 10 * props.intensity;
+    }
+
+    for (var i = props.countX; i >= 0; i--) {
+      for (var j = props.countY; j >= 0; j--) {
+        data.newCtx2.drawImage(
           canvas,
           i * sliceWidth,
           j * sliceHeight,
           sliceWidth,
           sliceHeight,
 
-          i * sliceWidth - this.analysed,
-          j * sliceHeight - this.analysed,
-          sliceWidth + this.analysed * 2,
-          sliceHeight + this.analysed * 2
+          i * sliceWidth - analysed,
+          j * sliceHeight - analysed,
+          sliceWidth + analysed * 2,
+          sliceHeight + analysed * 2
         );
       }
     }
-    context.drawImage(this.newCanvas2, 0, 0, canvas.width, canvas.height);
+
+    context.drawImage(data.newCanvas2, 0, 0, canvas.width, canvas.height);
   }
 };

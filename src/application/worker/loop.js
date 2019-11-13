@@ -15,7 +15,7 @@ store.dispatch("outputs/addAuxillaryOutput", {
 
 function loop(delta, features) {
   const {
-    modules: { active },
+    modules: { active, registered },
     groups: { groups },
     inputs: { inputs, inputLinks },
     outputs: { main, debug, debugContext, auxillary, webcam: video },
@@ -121,14 +121,34 @@ function loop(delta, features) {
       drawTo.globalCompositeOperation =
         module.meta.compositeOperation || "normal";
 
+      const { props, data } = module;
+      const moduleDefinition = registered[module.$moduleName];
+      let moduleData = data;
+
+      if (moduleDefinition.update) {
+        moduleData = moduleDefinition.update({
+          props,
+          data: { ...data },
+          canvas: drawTo.canvas,
+          delta
+        });
+        store.commit("modules/UPDATE_ACTIVE_MODULE", {
+          id: module.$id,
+          key: "data",
+          value: moduleData
+        });
+      }
+
       renderers[module.meta.type].render({
         canvas: drawTo.canvas,
         context: drawTo,
         delta,
-        module,
+        module: moduleDefinition,
         features,
         meyda,
-        video
+        video,
+        props,
+        data: moduleData
       });
       drawTo.restore();
     }

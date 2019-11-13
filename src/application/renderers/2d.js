@@ -32,7 +32,9 @@ function render({
   meyda,
   delta,
   bpm,
-  kick
+  kick,
+  props,
+  data
 }) {
   twoDCanvas.width = canvas.width;
   twoDCanvas.height = canvas.height;
@@ -47,7 +49,9 @@ function render({
     meyda,
     delta,
     bpm,
-    kick
+    kick,
+    props,
+    data
   });
   twoDContext.restore();
 
