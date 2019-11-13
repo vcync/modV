@@ -6,6 +6,8 @@ import featureAssignmentPlugin from "../plugins/feature-assignment";
 
 const registerPromiseWorker = require("promise-worker/register");
 
+let lastKick = false;
+
 (async function() {
   self.addEventListener("unhandledrejection", e => {
     console.log(e);
@@ -16,6 +18,19 @@ const registerPromiseWorker = require("promise-worker/register");
 
     if (type === "beats/SET_BPM") {
       store.dispatch("tweens/updateBpm", { bpm: payload.bpm });
+    }
+
+    if (type === "beats/SET_KICK" && payload.kick === lastKick) {
+      return;
+    } else if (type === "beats/SET_KICK" && payload.kick !== lastKick) {
+      lastKick = payload.kick;
+    }
+
+    if (
+      type === "modules/UPDATE_ACTIVE_MODULE" &&
+      (payload.key !== "props" || payload.key !== "meta")
+    ) {
+      return;
     }
 
     self.postMessage({
@@ -74,15 +89,12 @@ const registerPromiseWorker = require("promise-worker/register");
   const isfModuleKeys = isfModules.keys();
   for (let i = 0, len = isfModuleKeys.length; i < len; i++) {
     const fileName = isfModuleKeys[i];
-
     const fragmentShader = isfModules(fileName);
     let vertexShader = "void main() {isf_vertShaderInit();}";
     const vsIndex = isfModulesVsKeys.indexOf(fileName.replace(".fs", ".vs"));
-
     if (vsIndex > -1) {
       vertexShader = isfModulesVs(isfModulesVsKeys[vsIndex]);
     }
-
     const module = {
       meta: {
         name: fileName.replace(/(\.\/|\.fs)/g, ""),
@@ -93,7 +105,6 @@ const registerPromiseWorker = require("promise-worker/register");
       fragmentShader,
       vertexShader
     };
-
     store.dispatch("modules/registerModule", module);
   }
 
@@ -115,6 +126,10 @@ const registerPromiseWorker = require("promise-worker/register");
 
   function looper(delta) {
     raf = requestAnimationFrame(looper);
+    self.postMessage({
+      type: "tick",
+      payload: delta
+    });
 
     loop(delta, getFeatures());
 

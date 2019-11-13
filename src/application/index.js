@@ -10,6 +10,7 @@ import use from "./use";
 const PromiseWorker = require("promise-worker-transferable");
 
 let imageBitmap;
+const imageBitmapQueue = [];
 
 export default class ModV {
   _mediaStream;
@@ -32,6 +33,11 @@ export default class ModV {
     this.$asyncWorker = new PromiseWorker(this.$worker);
 
     this.$worker.addEventListener("message", e => {
+      if (e.data.type === "tick") {
+        this.tick(e.data.payload);
+        return;
+      }
+
       const message = e.data;
       const { type } = message;
 
@@ -127,16 +133,14 @@ export default class ModV {
 
     this.store.dispatch("windows/createWindow");
 
-    this.raf = requestAnimationFrame(this.loop.bind(this));
-    this.inputLoopRaf = requestAnimationFrame(this.inputLoop.bind(this));
+    // this.raf = requestAnimationFrame(this.loop.bind(this));
+    // this.inputLoopRaf = requestAnimationFrame(this.inputLoop.bind(this));
   }
 
   async inputLoop() {
     this.inputLoopRaf = requestAnimationFrame(this.inputLoop.bind(this));
 
     if (
-      // Don't try to take a frame while the window is unfocused, Chrome kills the feed irreparably
-      !document.hidden &&
       this._imageCapture &&
       this._imageCapture.track.readyState === "live" &&
       !this._imageCapture.track.muted
@@ -149,21 +153,29 @@ export default class ModV {
         }
       }
 
-      if (imageBitmap) {
-        try {
-          this.$worker.postMessage(
-            { type: "videoFrame", payload: imageBitmap },
-            [imageBitmap]
-          );
-        } catch (e) {
-          // do nothing
-        }
+      if (
+        imageBitmap &&
+        imageBitmap.width &&
+        imageBitmap.height &&
+        !imageBitmapQueue.length
+      ) {
+        imageBitmapQueue.push(imageBitmap);
+      }
+
+      while (imageBitmapQueue.length) {
+        const bitmap = imageBitmapQueue.splice(0, 1)[0];
+
+        this.$worker.postMessage({ type: "videoFrame", payload: bitmap }, [
+          bitmap
+        ]);
       }
     }
+
+    // this.inputLoopRaf = requestAnimationFrame(this.inputLoop.bind(this));
   }
 
   loop(delta) {
-    this.raf = requestAnimationFrame(this.loop.bind(this));
+    // this.raf = requestAnimationFrame(this.loop.bind(this));
     const { meyda: featuresToGet } = this.store.state;
 
     const features = this.meyda.get(featuresToGet);
@@ -173,5 +185,10 @@ export default class ModV {
 
   setSize({ width, height }) {
     this.store.dispatch("size/setSize", { width, height });
+  }
+
+  tick(delta) {
+    this.loop(delta);
+    this.inputLoop(delta);
   }
 }
