@@ -56,11 +56,14 @@ export default {
   },
 
   init({ canvas, data }) {
+    const circles = [];
     const x = canvas.width / 2;
     const y = canvas.height / 2;
 
-    data.circles.push(this.circlesObjectFactory({ x, y }));
-    data.circles.push(this.circlesObjectFactory({ x, y }));
+    circles.push(this.circlesObjectFactory({ x, y }));
+    circles.push(this.circlesObjectFactory({ x, y }));
+
+    data.circles = circles;
 
     return data;
   },

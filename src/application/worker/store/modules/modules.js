@@ -24,7 +24,9 @@ const swap = {
 let temp = {};
 
 const actions = {
-  registerModule({ commit }, module) {
+  async registerModule({ commit, rootState }, module) {
+    const { renderers } = rootState;
+
     if (!module) {
       console.error("No module to register");
       return;
@@ -35,6 +37,20 @@ const actions = {
       return;
     }
 
+    const { name, type } = module.meta;
+
+    if (renderers[type].setupModule) {
+      try {
+        module = await renderers[type].setupModule(module);
+      } catch (e) {
+        console.error(
+          `Error in ${type} renderer setup whilst registering ${name}. This module was ommited from registration.`
+        );
+
+        return false;
+      }
+    }
+
     commit("ADD_REGISTERED_MODULE", module);
   },
 
@@ -42,11 +58,10 @@ const actions = {
     { commit, rootState },
     { moduleName, moduleMeta = {}, writeToSwap }
   ) {
-    const { renderers } = rootState;
     const moduleDefinition = state.registered[moduleName];
     const { props = {}, data = {} } = moduleDefinition;
 
-    let module = { meta: { ...moduleDefinition.meta } };
+    const module = { meta: { ...moduleDefinition.meta } };
     module.$id = uuidv4();
     module.$moduleName = moduleName;
     module.$props = { ...props };
@@ -71,29 +86,13 @@ const actions = {
     }
 
     const dataKeys = Object.keys(data);
+    module.data = {};
+
     for (let i = 0, len = dataKeys.length; i < len; i++) {
       const dataKey = dataKeys[i];
 
       const datum = data[dataKey];
-      module.data = {};
       module.data[dataKey] = datum;
-    }
-
-    if (renderers[moduleDefinition.meta.type].setupModule) {
-      try {
-        module = await renderers[moduleDefinition.meta.type].setupModule(
-          module
-        );
-      } catch (e) {
-        console.error(
-          `Error in ${
-            moduleDefinition.meta.type
-          } renderer setup whilst activating ${moduleName}. This module was ommited from activation and removed from the registered modules list.`
-        );
-
-        commit("REMOVE_REGISTERED_MODULE", moduleName);
-        return false;
-      }
     }
 
     module.meta.name = await getNextName(
@@ -174,13 +173,16 @@ const actions = {
       const returnedData = moduleDefinition.init({
         canvas,
         data: { ...data },
-        props
+        props: module.props
       });
-      commit("UPDATE_ACTIVE_MODULE", {
-        id: module.$id,
-        key: "data",
-        value: returnedData
-      });
+
+      if (returnedData) {
+        commit("UPDATE_ACTIVE_MODULE", {
+          id: module.$id,
+          key: "data",
+          value: returnedData
+        });
+      }
     }
 
     if ("resize" in moduleDefinition) {
@@ -188,13 +190,15 @@ const actions = {
       const returnedData = moduleDefinition.resize({
         canvas,
         data: { ...data },
-        props
+        props: module.props
       });
-      commit("UPDATE_ACTIVE_MODULE", {
-        id: module.$id,
-        key: "data",
-        value: returnedData
-      });
+      if (returnedData) {
+        commit("UPDATE_ACTIVE_MODULE", {
+          id: module.$id,
+          key: "data",
+          value: returnedData
+        });
+      }
     }
 
     return module;
@@ -268,27 +272,65 @@ const actions = {
     if (group || groupName) {
       if ("set" in state.registered[moduleName].props[groupName].props[prop]) {
         state.registered[moduleName].props[groupName].props[prop].set.bind(
-          state.active[moduleId]
-        )(dataOut);
+          state.registered[moduleName]
+        )({
+          data: { ...state.active[moduleId].data },
+          props: state.active[moduleId].props
+        });
       }
     } else if ("set" in state.registered[moduleName].props[prop]) {
-      state.registered[moduleName].props[prop].set.bind(state.active[moduleId])(
-        dataOut
-      );
+      state.registered[moduleName].props[prop].set.bind(
+        state.registered[moduleName]
+      )({
+        data: { ...state.active[moduleId].data },
+        props: state.active[moduleId].props
+      });
     }
   },
 
-  resize({ state }, { moduleId, width, height }) {
+  resize({ commit, state }, { moduleId, width, height }) {
     const module = state.active[moduleId];
-    if (module.resize) {
-      module.resize({ canvas: { width, height } });
+    const moduleName = module.$moduleName;
+    const moduleDefinition = state.registered[moduleName];
+
+    if ("resize" in moduleDefinition) {
+      const { data, props } = module;
+      const returnedData = moduleDefinition.resize({
+        canvas: { width, height },
+        data: { ...data },
+        props
+      });
+
+      if (returnedData) {
+        commit("UPDATE_ACTIVE_MODULE", {
+          id: moduleId,
+          key: "data",
+          value: returnedData
+        });
+      }
     }
   },
 
-  init({ state }, { moduleId, width, height }) {
+  init({ commit, state }, { moduleId, width, height }) {
     const module = state.active[moduleId];
-    if (module.init) {
-      module.init({ canvas: { width, height } });
+    const moduleName = module.$moduleName;
+    const moduleDefinition = state.registered[moduleName];
+
+    if ("init" in moduleDefinition) {
+      const { data, props } = module;
+      const returnedData = moduleDefinition.init({
+        canvas: { width, height },
+        data: { ...data },
+        props
+      });
+
+      if (returnedData) {
+        commit("UPDATE_ACTIVE_MODULE", {
+          id: moduleId,
+          key: "data",
+          value: returnedData
+        });
+      }
     }
   }
 };

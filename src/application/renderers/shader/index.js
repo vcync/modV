@@ -17,7 +17,7 @@ const regl = createREGL(gl);
 
 let modVCanvasTexture;
 
-function render({ module, canvas, context, pipeline }) {
+function render({ module, props, canvas, context, pipeline }) {
   if (!modVCanvasTexture) {
     modVCanvasTexture = regl.texture({
       data: canvas,
@@ -28,14 +28,14 @@ function render({ module, canvas, context, pipeline }) {
       flipY: module.meta.flipY || false
     });
   } else {
-    // modVCanvasTexture({
-    //   data: canvas,
-    //   mipmap: true,
-    //   wrap: ["mirror", "mirror"],
-    //   mag: "linear",
-    //   min: "linear mipmap linear",
-    //   flipY: module.meta.flipY || false
-    // });
+    modVCanvasTexture({
+      data: canvas,
+      mipmap: true,
+      wrap: ["mirror", "mirror"],
+      mag: "linear",
+      min: "linear mipmap linear",
+      flipY: module.meta.flipY || false
+    });
   }
 
   const uniforms = {
@@ -46,17 +46,17 @@ function render({ module, canvas, context, pipeline }) {
     iChannel3: modVCanvasTexture
   };
 
-  if (module.props) {
-    const modulePropsKeys = Object.keys(module.props);
+  if (props) {
+    const modulePropsKeys = Object.keys(props);
     const modulePropsKeysLength = modulePropsKeys.length;
 
     for (let i = 0; i < modulePropsKeysLength; i++) {
       const key = modulePropsKeys[i];
 
       if (module.props[key].type === "texture") {
-        uniforms[key] = module[key].texture;
+        uniforms[key] = props[key].texture;
       } else {
-        uniforms[key] = module[key];
+        uniforms[key] = props[key];
       }
     }
   }

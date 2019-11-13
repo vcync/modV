@@ -32,21 +32,10 @@ export default {
     }
   },
 
-  circleSize: 10,
-  count: 20,
-
-  draw({ context, canvas }) {
+  draw({ context, canvas, props }) {
     const { width, height } = canvas;
+    const { speedX, speedY, sizeX, sizeY } = props;
 
-    context.strokeStyle = context.fillStyle = "rgba(0,0,0,0.011)";
-    context.fillRect(0, 0, width, height);
-
-    context.drawImage(
-      canvas,
-      -this.speedX,
-      -this.speedY,
-      width + this.sizeX,
-      height + this.sizeY
-    );
+    context.drawImage(canvas, -speedX, -speedY, width + sizeX, height + sizeY);
   }
 };
