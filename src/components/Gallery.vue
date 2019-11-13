@@ -174,7 +174,7 @@ export default {
       );
 
       this.$modV.store.commit("groups/ADD_MODULE_TO_GROUP", {
-        moduleId: module.id,
+        moduleId: module.$id,
         groupId,
         position: this.$modV.store.state.groups.groups.find(
           group => group.id === groupId

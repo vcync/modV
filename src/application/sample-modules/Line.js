@@ -64,55 +64,63 @@ export default {
     history: []
   },
 
-  init() {
-    this.vector = [
+  init({ data }) {
+    data.vector = [
       [Math.random(), Math.random()],
       [Math.random(), Math.random()]
     ];
 
-    this.velocity = [
+    data.velocity = [
       [Math.random() > 0.5 ? 1 : -1, Math.random() > 0.5 ? 1 : -1],
       [Math.random() > 0.5 ? 1 : -1, Math.random() > 0.5 ? 1 : -1]
     ];
+
+    return data;
   },
 
-  draw({ canvas: { width, height }, context }) {
-    const { color, lineWidth, speed, linesToShow, spacing } = this;
+  update({ data, props, canvas: { width } }) {
+    const { linesToShow, speed, spacing } = props;
     const pixel = (speed / width) * spacing;
 
-    if (this.vector[0][0] >= 1.0 || this.vector[0][0] <= 0.0) {
-      this.velocity[0][0] = -this.velocity[0][0];
+    if (data.vector[0][0] >= 1.0 || data.vector[0][0] <= 0.0) {
+      data.velocity[0][0] = -data.velocity[0][0];
     }
 
-    if (this.vector[0][1] >= 1.0 || this.vector[0][1] <= 0.0) {
-      this.velocity[0][1] = -this.velocity[0][1];
+    if (data.vector[0][1] >= 1.0 || data.vector[0][1] <= 0.0) {
+      data.velocity[0][1] = -data.velocity[0][1];
     }
 
-    if (this.vector[1][0] >= 1.0 || this.vector[1][0] <= 0.0) {
-      this.velocity[1][0] = -this.velocity[1][0];
+    if (data.vector[1][0] >= 1.0 || data.vector[1][0] <= 0.0) {
+      data.velocity[1][0] = -data.velocity[1][0];
     }
 
-    if (this.vector[1][1] >= 1.0 || this.vector[1][1] <= 0.0) {
-      this.velocity[1][1] = -this.velocity[1][1];
+    if (data.vector[1][1] >= 1.0 || data.vector[1][1] <= 0.0) {
+      data.velocity[1][1] = -data.velocity[1][1];
     }
 
-    this.vector[0][0] += this.velocity[0][0] > 0 ? pixel : -pixel;
-    this.vector[0][1] += this.velocity[0][1] > 0 ? pixel : -pixel;
-    this.vector[1][0] += this.velocity[1][0] > 0 ? pixel : -pixel;
-    this.vector[1][1] += this.velocity[1][1] > 0 ? pixel : -pixel;
+    data.vector[0][0] += data.velocity[0][0] > 0 ? pixel : -pixel;
+    data.vector[0][1] += data.velocity[0][1] > 0 ? pixel : -pixel;
+    data.vector[1][0] += data.velocity[1][0] > 0 ? pixel : -pixel;
+    data.vector[1][1] += data.velocity[1][1] > 0 ? pixel : -pixel;
 
-    this.history.push(JSON.parse(JSON.stringify(this.vector)));
+    data.history.push(JSON.parse(JSON.stringify(data.vector)));
 
-    if (this.history.length > linesToShow) {
-      this.history.splice(0, this.history.length - linesToShow);
+    if (data.history.length > linesToShow) {
+      data.history.splice(0, data.history.length - linesToShow);
     }
+
+    return data;
+  },
+
+  draw({ canvas: { width, height }, context, data }) {
+    const { color, lineWidth } = this;
 
     context.strokeStyle = "#fff" || color;
     context.lineWidth = lineWidth;
-    const hl = this.history.length;
+    const hl = data.history.length;
 
     for (let i = 0; i < hl; i += 1) {
-      const [p1, p2] = this.history[i];
+      const [p1, p2] = data.history[i];
 
       context.beginPath();
       context.moveTo(Math.round(p1[0] * width), Math.round(p1[1] * height));

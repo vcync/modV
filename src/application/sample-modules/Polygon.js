@@ -58,74 +58,102 @@ export default {
     },
 
     color: {
-      control: {
-        type: "paletteControl",
-        default: { r: 199, g: 64, b: 163 },
-        options: {
-          colors: [
-            { r: 199, g: 64, b: 163 },
-            { r: 97, g: 214, b: 199 },
-            { r: 222, g: 60, b: 75 },
-            { r: 101, g: 151, b: 220 },
-            { r: 213, g: 158, b: 151 },
-            { r: 100, g: 132, b: 129 },
-            { r: 154, g: 94, b: 218 },
-            { r: 194, g: 211, b: 205 },
-            { r: 201, g: 107, b: 152 },
-            { r: 119, g: 98, b: 169 },
-            { r: 214, g: 175, b: 208 },
-            { r: 218, g: 57, b: 123 },
-            { r: 196, g: 96, b: 98 },
-            { r: 218, g: 74, b: 219 },
-            { r: 138, g: 100, b: 121 },
-            { r: 96, g: 118, b: 225 },
-            { r: 132, g: 195, b: 223 },
-            { r: 82, g: 127, b: 162 },
-            { r: 209, g: 121, b: 211 },
-            { r: 181, g: 152, b: 220 }
-          ], // generated here: http://tools.medialab.sciences-po.fr/iwanthue/
-          duration: 500
-        }
+      type: "tween",
+      component: "PaletteControl",
+      default: {
+        data: [
+          [199, 64, 163],
+          [97, 214, 199],
+          [222, 60, 75],
+          [101, 151, 220],
+          [213, 158, 151],
+          [100, 132, 129],
+          [154, 94, 218],
+          [194, 211, 205],
+          [201, 107, 152],
+          [119, 98, 169],
+          [214, 175, 208],
+          [218, 57, 123],
+          [196, 96, 98],
+          [218, 74, 219],
+          [138, 100, 121],
+          [96, 118, 225],
+          [132, 195, 223],
+          [82, 127, 162],
+          [209, 121, 211],
+          [181, 152, 220]
+        ],
+        duration: 500,
+        easing: "linear"
       }
     }
   },
 
   data: {
-    hue: 0
+    rotation: 0
   },
 
-  draw({ canvas, context, features, delta }) {
+  update({ data, props }) {
+    data.rotation += props.rotateSpeed;
+
+    if (data.rotation > 360) {
+      data.rotation = 0;
+    }
+
+    return data;
+  },
+
+  draw({ canvas, context, features, data, props }) {
+    const {
+      color: { value: color },
+      rotateToggle,
+      soundType,
+      intensity,
+      shapeSize,
+      fill,
+      strokeWeight
+    } = props;
     let analysed;
     let rotate = 0;
 
-    if (this.rotateToggle) rotate = (delta / 1000) * this.rotateSpeed;
-
-    if (this.soundType) {
-      analysed = (features.zcr / 10) * this.intensity;
-    } else {
-      analysed = features.rms * 10 * this.intensity;
+    if (rotateToggle) {
+      rotate = data.rotation;
     }
 
-    context.strokeStyle = this.color;
-    context.fillStyle = this.color;
-    context.lineWidth = this.strokeWeight;
+    if (soundType) {
+      analysed = (features.zcr / 10) * intensity;
+    } else {
+      analysed = features.rms * 10 * intensity;
+    }
+
+    context.strokeStyle = `rgb(${Math.round(color[0])},${Math.round(
+      color[1]
+    )},${Math.round(color[2])})`;
+    context.fillStyle = `rgb(${Math.round(color[0])},${Math.round(
+      color[1]
+    )},${Math.round(color[2])})`;
+    context.lineWidth = strokeWeight;
 
     context.beginPath();
     this.polygon(
       context,
       Math.round(canvas.width / 2),
       Math.round(canvas.height / 2),
-      analysed + this.shapeSize,
+      analysed + shapeSize,
       3 + Math.round(analysed / 10),
-      -(Math.PI / 2) + rotate
+      rotate * 0.0174533
     );
     context.closePath();
     context.stroke();
-    if (this.fill) context.fill();
+    if (fill) {
+      context.fill();
+    }
   },
 
-  polygon(ctx, x, y, radius, sides, startAngle, anticlockwise) { //eslint-disable-line
-    if (sides < 3) return;
+  polygon(ctx, x, y, radius, sides, startAngle, anticlockwise) {
+    if (sides < 3) {
+      return;
+    }
 
     let a = (Math.PI * 2) / sides;
     a = anticlockwise ? -a : a;

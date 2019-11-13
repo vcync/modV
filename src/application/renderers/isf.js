@@ -16,22 +16,22 @@ store.dispatch("outputs/addAuxillaryOutput", {
   group: "buffer"
 });
 
-function render({ module, canvas, context, pipeline }) {
+function render({ module, canvas, context, pipeline, props }) {
   if (module.inputs) {
     const inputs = module.inputs;
     for (let i = 0, len = inputs.length; i < len; i++) {
       const input = inputs[i];
 
       if (input.TYPE === "image") {
-        if (input.NAME in module.props) {
+        if (input.NAME in props) {
           const resolvedTexture =
-            (module[input.NAME] && module[input.NAME].texture) || canvas;
+            (props[input.NAME] && props[input.NAME].texture) || canvas;
           module.renderer.setValue(input.NAME, resolvedTexture);
         } else {
           module.renderer.setValue(input.NAME, canvas);
         }
       } else {
-        module.renderer.setValue(input.NAME, module[input.NAME]);
+        module.renderer.setValue(input.NAME, props[input.NAME]);
       }
     }
   }

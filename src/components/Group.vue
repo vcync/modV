@@ -214,7 +214,7 @@ export default {
         );
 
         this.$modV.store.commit("groups/ADD_MODULE_TO_GROUP", {
-          moduleId: module.id,
+          moduleId: module.$id,
           groupId: this.groupId,
           position: e.addedIndex
         });

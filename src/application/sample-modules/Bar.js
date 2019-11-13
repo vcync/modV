@@ -38,8 +38,8 @@ export default {
     }
   },
 
-  draw({ canvas: { width, height }, context, delta }) {
-    const { thickness, strobe, color1, color2, rotation } = this;
+  draw({ canvas: { width, height }, context, delta, props }) {
+    const { thickness, strobe, color1, color2, rotation } = props;
 
     context.translate(width / 2, height / 2);
     context.rotate((rotation * Math.PI) / 180);

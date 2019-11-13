@@ -14,114 +14,145 @@ export default {
       type: "bool",
       variable: "",
       label: "Use RMS",
-      default: false
+      default: true
     },
 
     intensity: {
-      type: "int",
+      type: "float",
       label: "RMS/ZCR Intensity",
       min: 0,
       max: 30,
-      step: 1
+      default: 1
     },
 
     spacing: {
-      type: "int",
+      type: "float",
       label: "Circle Spacing",
       min: 0,
       max: 100,
-      step: 1,
       default: 5
     },
 
     objectDistance: {
-      type: "int",
+      type: "float",
       label: "Object Distance",
       min: 0,
       max: 200,
-      step: 1,
       default: 40
     },
 
     strokeWeight: {
-      type: "int",
+      type: "float",
       label: "Stroke Weight",
       min: 1,
       max: 20,
-      step: 1,
       default: 1,
       strict: true
     }
   },
 
   data: {
-    soundType: false, // false RMS, true ZCR
-    intensity: 1, // Half max
-    analysed: 0,
-    amount: 10,
-    baseSize: 1,
-    size: 2,
-    color: [255, 0, 0, 1],
-    speed: 1,
-    balls: [],
-    wrap: false
+    circles: []
   },
 
-  init(canvas) {
-    this.rms = false;
-    this.intensity = 1;
-    this.spacing = 5;
-    this.strokeWeight = 1;
-    this.objectDistance = 40;
+  init({ canvas, data }) {
+    const circles = [];
+    const x = canvas.width / 2;
+    const y = canvas.height / 2;
 
-    this.circle1 = new (this.Concentric())(canvas);
-    this.circle2 = new (this.Concentric())(canvas);
+    circles.push(this.circlesObjectFactory({ x, y }));
+    circles.push(this.circlesObjectFactory({ x, y }));
+
+    data.circles = circles;
+
+    return data;
   },
 
-  draw({ canvas, context, features, delta }) {
-    let zcr = features.zcr;
-    if (this.rms) zcr = features.rms;
+  update({ canvas, data, delta, props }) {
+    const { width, height } = canvas;
+    const widthHalf = width / 2;
+    const heightHalf = height / 2;
 
-    zcr *= this.intensity;
-    if (this.rms) {
-      zcr *= 50;
+    this.updateCircles({
+      circles: data.circles[0],
+      x: widthHalf + Math.sin(delta / 1000) * props.objectDistance,
+      y: heightHalf + Math.cos(delta / 1000) * (props.objectDistance / 2)
+    });
+
+    this.updateCircles({
+      circles: data.circles[1],
+      x: widthHalf + -Math.sin(delta / 1000) * props.objectDistance,
+      y: heightHalf + -Math.cos(delta / 1000) * (props.objectDistance / 2)
+    });
+
+    return data;
+  },
+
+  draw({ context, features, data, props }) {
+    const { strokeWeight, spacing, rms, intensity } = props;
+    let amp = features.zcr;
+    if (rms) {
+      amp = features.rms;
     }
 
-    this.circle1.x = ((canvas.width / 2) + Math.sin(delta / 1000) * this.objectDistance); //eslint-disable-line
-    this.circle1.y = ((canvas.height / 2) + Math.cos(delta / 1000) * (this.objectDistance / 2)); //eslint-disable-line
-    this.circle1.draw(context, zcr, this.strokeWeight, this.spacing);
+    amp *= intensity;
+    if (rms) {
+      amp *= 50;
+    }
 
-    this.circle2.x = ((canvas.width / 2) + -Math.sin(delta / 1000) * this.objectDistance); //eslint-disable-line
-    this.circle2.y = (canvas.height / 2) + (-Math.cos(delta / 1000) * (this.objectDistance / 2)); //eslint-disable-line
-    this.circle2.draw(context, zcr, this.strokeWeight, this.spacing);
+    this.drawCircles({
+      circles: data.circles[0],
+      context,
+      amp,
+      strokeWeight,
+      spacing
+    });
+
+    this.drawCircles({
+      circles: data.circles[1],
+      context,
+      amp,
+      strokeWeight,
+      spacing
+    });
   },
 
-  Concentric() { //eslint-disable-line
-    return function Concentric(canvas) {
-      this.x = canvas.width / 2;
-      this.y = canvas.height / 2;
-      this.hue = Math.round(Math.random() * 360);
-
-      this.draw = function draw(ctx, zcr, strokeWeight, spacing) {
-        ctx.lineWidth = strokeWeight;
-        ctx.strokeStyle = `hsl(${this.hue}, 50%, 50%)`;
-
-        for (let i = 0; i < zcr; i += 1) {
-          if (i === zcr - 1) {
-            ctx.strokeStyle = `hsl(${this.hue}, 50%, ${(1 -
-              (zcr - Math.round(zcr))) *
-              50}%)`;
-          }
-
-          ctx.beginPath();
-          ctx.arc(this.x, this.y, i * spacing, 0, 2 * Math.PI);
-          ctx.closePath();
-          ctx.stroke();
-        }
-
-        if (this.hue > 360) this.hue = 0;
-        else this.hue += 0.2;
-      };
+  circlesObjectFactory({ x, y }) {
+    return {
+      hue: Math.round(Math.random() * 360),
+      x,
+      y
     };
+  },
+
+  updateCircles({ circles, x, y }) {
+    if (circles.hue > 360) {
+      circles.hue = 0;
+    } else {
+      circles.hue += 0.2;
+    }
+
+    circles.x = x;
+    circles.y = y;
+
+    return circles;
+  },
+
+  drawCircles({ circles, context, amp, strokeWeight, spacing }) {
+    context.lineWidth = strokeWeight;
+    context.strokeStyle = `hsl(${circles.hue}, 50%, 50%)`;
+
+    for (let i = 0; i < amp; i += 1) {
+      if (i === amp - 1) {
+        context.strokeStyle = `hsl(${circles.hue}, 50%, ${(1 -
+          (amp - Math.round(amp))) *
+          50}%)`;
+      }
+
+      context.beginPath();
+      context.arc(circles.x, circles.y, i * spacing, 0, 2 * Math.PI);
+      context.closePath();
+      context.stroke();
+    }
   }
 };

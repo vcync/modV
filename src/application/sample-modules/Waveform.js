@@ -80,14 +80,8 @@ export default {
     }
   },
 
-  data: {
-    strokeWeight: 1,
-    windowing: "hanning",
-    maxHeight: 75
-  },
-
-  draw({ canvas, context, features, meyda }) {
-    const { maxWidth, maxHeight, strokeWeight, windowing } = this;
+  draw({ canvas, context, features, meyda, props }) {
+    const { maxWidth, maxHeight, strokeWeight, windowing } = props;
     const { width, height } = canvas;
     const bufferLength = features.buffer.length;
     const buffer = meyda.windowing(features.buffer, windowing);

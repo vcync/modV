@@ -37,8 +37,8 @@ export default {
     pattern: []
   },
 
-  generatePattern({ canvas }) {
-    const { widths, heights, spacings } = this;
+  generatePattern({ canvas, data }) {
+    const { widths, heights, spacings } = data;
     const { width } = canvas;
     const pattern = [];
     let overallWidth = 0;
@@ -86,17 +86,20 @@ export default {
     context.restore();
   },
 
-  init({ canvas }) {
-    this.color = this.colors[Math.floor(Math.random() * this.colors.length)];
-    this.pattern = this.generatePattern({ canvas });
+  init({ canvas, data }) {
+    data.color = data.colors[Math.floor(Math.random() * data.colors.length)];
+    data.pattern = this.generatePattern({ canvas, data });
+    return data;
   },
 
-  resize({ canvas }) {
-    this.pattern = this.generatePattern({ canvas });
+  resize({ canvas, data }) {
+    data.pattern = this.generatePattern({ canvas, data });
+    return data;
   },
 
-  draw({ context, delta }) {
-    const { dripBaseHeight, color, pattern, insetHeight, maxDripHeight } = this;
+  draw({ context, delta, data, props }) {
+    const { dripBaseHeight, insetHeight, maxDripHeight } = props;
+    const { color, pattern } = data;
     const { width, height } = context.canvas;
 
     context.clearRect(0, 0, width, height);
