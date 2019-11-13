@@ -153,7 +153,9 @@ function loop(delta, features) {
       drawTo.restore();
     }
 
-    lastCanvas = drawTo.canvas;
+    if (!group.hidden) {
+      lastCanvas = drawTo.canvas;
+    }
   }
 
   const windowKeys = Object.keys(windows);
