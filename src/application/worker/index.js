@@ -79,18 +79,12 @@ let lastKick = false;
     //   );
     // }
 
-    if (
-      ["Counter", "Ball", "Bar", "Concentrics"].indexOf(
-        sampleModule.meta.name
-      ) > -1
-    ) {
-      store.dispatch("modules/registerModule", sampleModule);
-    }
+    store.dispatch("modules/registerModule", sampleModule);
   }
 
   const isfModules = require.context("../sample-modules/isf", false, /\.fs$/);
-  // const isfModulesVs = require.context("../sample-modules/isf", false, /\.vs$/);
-  // const isfModulesVsKeys = isfModulesVs.keys();
+  const isfModulesVs = require.context("../sample-modules/isf", false, /\.vs$/);
+  const isfModulesVsKeys = isfModulesVs.keys();
 
   const isfModuleKeys = isfModules.keys();
   for (let i = 0, len = isfModuleKeys.length; i < len; i++) {
@@ -112,7 +106,6 @@ let lastKick = false;
       vertexShader
     };
     store.dispatch("modules/registerModule", module);
-
   }
 
   store.dispatch("plugins/add", featureAssignmentPlugin);
