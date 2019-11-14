@@ -132,14 +132,9 @@ export default class ModV {
     );
 
     this.store.dispatch("windows/createWindow");
-
-    // this.raf = requestAnimationFrame(this.loop.bind(this));
-    // this.inputLoopRaf = requestAnimationFrame(this.inputLoop.bind(this));
   }
 
   async inputLoop() {
-    this.inputLoopRaf = requestAnimationFrame(this.inputLoop.bind(this));
-
     if (
       this._imageCapture &&
       this._imageCapture.track.readyState === "live" &&
@@ -170,12 +165,9 @@ export default class ModV {
         ]);
       }
     }
-
-    // this.inputLoopRaf = requestAnimationFrame(this.inputLoop.bind(this));
   }
 
   loop(delta) {
-    // this.raf = requestAnimationFrame(this.loop.bind(this));
     const { meyda: featuresToGet } = this.store.state;
 
     const features = this.meyda.get(featuresToGet);
