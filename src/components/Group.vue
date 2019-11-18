@@ -1,9 +1,10 @@
 <template>
   <div @focus="focus" @mousedown="focus" :class="{ focused }" class="group">
     <section class="group-controls">
-      <input type="checkbox" v-model="enabled" />
-      <input type="checkbox" v-model="inherit" />
-      <input type="checkbox" v-model="clearing" />
+      <input type="checkbox" v-model="enabled" title="Enabled" />
+      <input type="checkbox" v-model="inherit" title="Inherit" />
+      <input type="checkbox" v-model="clearing" title="Clearing" />
+      <input type="checkbox" v-model="pipeline" title="Pipeline" />
       <input
         type="range"
         v-model.number="alpha"
@@ -149,6 +150,21 @@ export default {
           groupId: this.groupId,
           data: {
             inherit: value
+          }
+        });
+      }
+    },
+
+    pipeline: {
+      get() {
+        return this.group.pipeline;
+      },
+
+      set(value) {
+        this.$modV.store.commit("groups/UPDATE_GROUP", {
+          groupId: this.groupId,
+          data: {
+            pipeline: value
           }
         });
       }
