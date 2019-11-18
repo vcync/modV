@@ -1,111 +1,78 @@
+import createContext from "pex-context";
+import { frames } from "../../worker/frame-counter";
 import store from "../../worker/store";
-import createREGL from "regl";
 import defaultShader from "./default-shader";
 
-const glCanvas = new OffscreenCanvas(300, 300);
-const gl = glCanvas.getContext("webgl2", {
-  premultipliedAlpha: false,
-  antialias: true
+const shaderCanvas = new OffscreenCanvas(300, 300);
+const shaderContext = shaderCanvas.getContext("webgl2", {
+  antialias: true,
+  desynchronized: true,
+  powerPreference: "high-performance",
+  premultipliedAlpha: false
 });
+
 store.dispatch("outputs/addAuxillaryOutput", {
   name: "shader-buffer",
-  context: gl,
+  context: shaderContext,
   group: "buffer"
 });
 
-const regl = createREGL(gl);
+const pex = createContext({ gl: shaderContext });
 
-let modVCanvasTexture;
+const a_position = pex.vertexBuffer([-1, -1, -1, 1, 1, 1, 1, 1, 1, -1, -1, -1]);
+const indices = pex.indexBuffer([0, 1, 2, 3, 4, 5]);
 
-function render({ module, props, canvas, context, pipeline }) {
-  if (!modVCanvasTexture) {
-    modVCanvasTexture = regl.texture({
-      data: canvas,
-      mipmap: false,
-      wrap: ["mirror", "mirror"],
-      mag: "linear",
-      min: "linear mipmap linear",
-      flipY: module.meta.flipY || false
-    });
-  } else {
-    modVCanvasTexture({
-      data: canvas,
-      mipmap: true,
-      wrap: ["mirror", "mirror"],
-      mag: "linear",
-      min: "linear mipmap linear",
-      flipY: module.meta.flipY || false
-    });
-  }
+const commands = {};
 
-  const uniforms = {
-    u_modVCanvas: modVCanvasTexture,
-    iChannel0: modVCanvasTexture,
-    iChannel1: modVCanvasTexture,
-    iChannel2: modVCanvasTexture,
-    iChannel3: modVCanvasTexture
+let lastRenderTime = 0;
+let canvasTexture;
+
+const clearCmd = {
+  pass: pex.pass({
+    clearColor: [0, 0, 0, 1],
+    clearDepth: 1
+  })
+};
+
+function generateUniforms(canvasTexture, uniforms) {
+  const { width, height, dpr } = store.state.size;
+
+  const date = new Date();
+  const time = performance.now();
+  const resolution = [width, height, dpr];
+
+  const defaults = {
+    iGlobalTime: time / 1000,
+    iFrame: frames(),
+    iDate: [date.getFullYear(), date.getMonth(), date.getDay(), time / 1000],
+    iTime: time / 1000,
+    iTimeDelta: time / 1000,
+    iResolution: resolution,
+    iChannel0: canvasTexture,
+    iChannel1: canvasTexture,
+    iChannel2: canvasTexture,
+    iChannel3: canvasTexture,
+    iChannelResolution: [resolution, resolution, resolution, resolution],
+    u_modVCanvas: canvasTexture,
+    u_delta: time / 1000,
+    u_time: time
   };
 
-  if (props) {
-    const modulePropsKeys = Object.keys(props);
-    const modulePropsKeysLength = modulePropsKeys.length;
-
-    for (let i = 0; i < modulePropsKeysLength; i++) {
-      const key = modulePropsKeys[i];
-
-      if (module.props[key].type === "texture") {
-        uniforms[key] = props[key].texture;
-      } else {
-        uniforms[key] = props[key];
-      }
-    }
-  }
-
-  // if ('meyda' in Module.meta) {
-  //   if (Module.meta.meyda.length > 0) {
-  //     const meydaFeatures = modV.meyda.get(modV.audioFeatures);
-  //     Module.meta.meyda.forEach((feature) => {
-  //       const uniLoc = gl.getUniformLocation(webgl.programs[webgl.activeProgram], feature);
-
-  //       const value = parseFloat(meydaFeatures[feature]);
-  //       gl.uniform1f(uniLoc, value);
-  //     });
-  //   }
-  // }
-
-  // regl.clear({
-  //   depth: 1,
-  //   color: [0, 0, 0, 0]
-  // });
-
-  glCanvas.width = canvas.width;
-  glCanvas.height = canvas.height;
-  module.reglDraw(uniforms);
-
-  context.save();
-  context.globalAlpha = module.meta.alpha || 1;
-  context.globalCompositeOperation = module.meta.compositeOperation || "normal";
-  if (pipeline) context.clearRect(0, 0, canvas.width, canvas.height);
-  // Copy Shader Canvas to Main Canvas
-  context.drawImage(glCanvas, 0, 0, canvas.width, canvas.height);
-
-  context.restore();
+  return { ...uniforms, ...defaults };
 }
 
-/**
- * Makes a regl program from the given shader files
- *
- * @param  {Object}  A Shader Module definition
- * @return {Promise} Resolves with completion of compiled shaders
- */
 function makeProgram(Module) {
-  return new Promise((resolve, reject) => {
-    // Read shader documents
+  return new Promise(resolve => {
     let vert = Module.vertexShader;
     let frag = Module.fragmentShader;
 
-    if (!vert) vert = defaultShader.v;
-    if (!frag) frag = defaultShader.f;
+    if (!vert) {
+      vert = defaultShader.v;
+    }
+
+    if (!frag) {
+      frag = defaultShader.f;
+    }
 
     if (frag.search("gl_FragColor") < 0) {
       frag = defaultShader.fWrap.replace(/(%MAIN_IMAGE_INJECT%)/, frag);
@@ -113,62 +80,44 @@ function makeProgram(Module) {
       vert = defaultShader.v300;
     }
 
-    const uniforms = {
-      u_modVCanvas: regl.prop("u_modVCanvas"),
-      iFrame: ({ tick }) => tick,
-      iTime: ({ time }) => time,
-      u_delta: ({ time }) => time,
-      u_time: ({ time }) => time * 1000,
-      iGlobalTime: ({ time }) => time,
-      iResolution: ({ viewportWidth, viewportHeight, pixelRatio }) => [
-        viewportWidth,
-        viewportHeight,
-        pixelRatio
-      ],
-      iChannel0: regl.prop("iChannel0"),
-      iChannel1: regl.prop("iChannel1"),
-      iChannel2: regl.prop("iChannel2"),
-      iChannel3: regl.prop("iChannel3"),
-      "iChannelResolution[0]": regl.prop("iChannelResolution[0]"),
-      "iChannelResolution[1]": regl.prop("iChannelResolution[1]"),
-      "iChannelResolution[2]": regl.prop("iChannelResolution[2]"),
-      "iChannelResolution[3]": regl.prop("iChannelResolution[3]")
-    };
+    const pipeline = pex.pipeline({
+      depthTest: true,
+      vert,
+      frag
+    });
+
+    const shaderUniforms = {};
 
     if (Module.props) {
       const modulePropsKeys = Object.keys(Module.props);
       const modulePropsKeysLength = modulePropsKeys.length;
+
       for (let i = 0; i < modulePropsKeysLength; i++) {
         const key = modulePropsKeys[i];
 
-        uniforms[key] = regl.prop(key);
+        if (Module.props[key].type === "texture") {
+          shaderUniforms[key] = Module.props[key].texture;
+        } else {
+          shaderUniforms[key] = Module.props[key];
+        }
       }
     }
 
-    try {
-      const draw = regl({
-        vert,
-        frag,
+    const uniforms = generateUniforms(canvasTexture, shaderUniforms);
 
-        attributes: {
-          position: [-2, 2, 0, -2, 2, 2],
-          a_position: [-2, 2, 0, -2, 2, 2]
-        },
+    const command = {
+      pipeline,
+      attributes: {
+        a_position,
+        position: a_position
+      },
+      indices,
+      uniforms
+    };
 
-        uniforms,
-
-        count: 3
-      });
-
-      Module.reglDraw = draw;
-      Module.draw = render;
-    } catch (e) {
-      reject(e);
-    }
+    commands[Module.meta.name] = command;
 
     resolve(Module);
-  }).catch(reason => {
-    throw new Error(reason);
   });
 }
 
@@ -180,8 +129,55 @@ async function setupModule(Module) {
   }
 }
 
-function tick() {
-  regl.poll();
+function render({ module, delta, props, canvas, context }) {
+  if (!canvasTexture) {
+    canvasTexture = pex.texture2D({
+      data: canvas.data || canvas,
+      width: canvas.width,
+      height: canvas.height,
+      pixelFormat: pex.PixelFormat.RGBA8,
+      encoding: pex.Encoding.Linear,
+      min: pex.Filter.Linear,
+      mag: pex.Filter.Linear,
+      wrap: pex.Wrap.Repeat
+    });
+  } else if (delta > lastRenderTime) {
+    pex.update(canvasTexture, {
+      width: canvas.width,
+      height: canvas.height,
+      data: canvas.data || canvas
+    });
+    lastRenderTime = delta;
+  }
+
+  const shaderUniforms = {};
+
+  if (props) {
+    const modulePropsKeys = Object.keys(props);
+    const modulePropsKeysLength = modulePropsKeys.length;
+
+    for (let i = 0; i < modulePropsKeysLength; i++) {
+      const key = modulePropsKeys[i];
+
+      if (module.props[key].type === "texture") {
+        shaderUniforms[key] = props[key].texture;
+      } else {
+        shaderUniforms[key] = props[key];
+      }
+    }
+  }
+
+  const uniforms = generateUniforms(canvasTexture, shaderUniforms);
+
+  const command = commands[module.meta.name];
+
+  pex.submit(clearCmd);
+  pex.submit(command, {
+    uniforms
+  });
+
+  // Copy Shader Canvas to Main Canvas
+  context.drawImage(shaderCanvas, 0, 0, canvas.width, canvas.height);
 }
 
-export { setupModule, render, tick };
+export { setupModule, render };

@@ -1,6 +1,7 @@
 /* eslint-env worker */
 import store from "./store";
 import loop from "./loop";
+import { tick as frameTick } from "./frame-counter";
 import { getFeatures, setFeatures } from "./audio-features";
 import featureAssignmentPlugin from "../plugins/feature-assignment";
 
@@ -133,6 +134,7 @@ let lastKick = false;
 
     loop(delta, getFeatures());
 
+    frameTick();
     frames += 1;
 
     const time = performance.now();

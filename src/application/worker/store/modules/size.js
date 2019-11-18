@@ -2,7 +2,8 @@ import store from "../index";
 
 const state = {
   width: 0,
-  height: 0
+  height: 0,
+  dpr: 1
 };
 
 const getters = {
@@ -10,7 +11,7 @@ const getters = {
 };
 
 const actions = {
-  async setSize({ commit }, { width, height }) {
+  async setSize({ commit }, { width, height, dpr }) {
     await store.dispatch("outputs/resize", { width, height });
 
     const modulesValues = Object.values(store.state.modules.active);
@@ -20,14 +21,15 @@ const actions = {
       store.dispatch("modules/resize", { moduleId: module.$id, width, height });
     }
 
-    commit("SET_SIZE", { width, height });
+    commit("SET_SIZE", { width, height, dpr });
   }
 };
 
 const mutations = {
-  SET_SIZE(state, { width, height }) {
+  SET_SIZE(state, { width, height, dpr = 1 }) {
     state.width = width;
     state.height = height;
+    state.dpr = dpr;
   }
 };
 
