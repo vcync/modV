@@ -24,7 +24,6 @@ const indices = pex.indexBuffer([0, 1, 2, 3, 4, 5]);
 
 const commands = {};
 
-let lastRenderTime = 0;
 let canvasTexture;
 
 const clearCmd = {
@@ -129,7 +128,7 @@ async function setupModule(Module) {
   }
 }
 
-function render({ module, delta, props, canvas, context }) {
+function render({ module, props, canvas, context }) {
   if (!canvasTexture) {
     canvasTexture = pex.texture2D({
       data: canvas.data || canvas,
@@ -141,13 +140,12 @@ function render({ module, delta, props, canvas, context }) {
       mag: pex.Filter.Linear,
       wrap: pex.Wrap.Repeat
     });
-  } else if (delta > lastRenderTime) {
+  } else {
     pex.update(canvasTexture, {
       width: canvas.width,
       height: canvas.height,
       data: canvas.data || canvas
     });
-    lastRenderTime = delta;
   }
 
   const shaderUniforms = {};
