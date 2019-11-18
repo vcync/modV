@@ -9,29 +9,39 @@ const {
 } = interactiveShaderFormat;
 
 const isfCanvas = new OffscreenCanvas(300, 300);
-const isfContext = isfCanvas.getContext("webgl2");
+const isfContext = isfCanvas.getContext("webgl2", {
+  antialias: true,
+  desynchronized: true,
+  powerPreference: "high-performance",
+  premultipliedAlpha: false
+});
 store.dispatch("outputs/addAuxillaryOutput", {
   name: "isf-buffer",
   context: isfContext,
   group: "buffer"
 });
 
+const renderers = {};
+const inputs = {};
+
 function render({ module, canvas, context, pipeline, props }) {
-  if (module.inputs) {
-    const inputs = module.inputs;
-    for (let i = 0, len = inputs.length; i < len; i++) {
-      const input = inputs[i];
+  const renderer = renderers[module.meta.name];
+  const moduleInputs = inputs[module.meta.name];
+
+  if (moduleInputs) {
+    for (let i = 0, len = moduleInputs.length; i < len; i++) {
+      const input = moduleInputs[i];
 
       if (input.TYPE === "image") {
         if (input.NAME in props) {
           const resolvedTexture =
             (props[input.NAME] && props[input.NAME].texture) || canvas;
-          module.renderer.setValue(input.NAME, resolvedTexture);
+          renderer.setValue(input.NAME, resolvedTexture);
         } else {
-          module.renderer.setValue(input.NAME, canvas);
+          renderer.setValue(input.NAME, canvas);
         }
       } else {
-        module.renderer.setValue(input.NAME, props[input.NAME]);
+        renderer.setValue(input.NAME, props[input.NAME]);
       }
     }
   }
@@ -40,14 +50,12 @@ function render({ module, canvas, context, pipeline, props }) {
   isfCanvas.width = canvas.width;
   isfCanvas.height = canvas.height;
 
-  module.renderer.draw(isfCanvas);
+  renderer.draw(isfCanvas);
 
-  context.save();
-  context.globalAlpha = module.meta.alpha || 1;
-  context.globalCompositeOperation = module.meta.compositeOperation || "normal";
-  if (pipeline) context.clearRect(0, 0, canvas.width, canvas.height);
+  if (pipeline) {
+    context.clearRect(0, 0, canvas.width, canvas.height);
+  }
   context.drawImage(isfCanvas, 0, 0, canvas.width, canvas.height);
-  context.restore();
 }
 
 async function setupModule(module) {
@@ -72,8 +80,8 @@ async function setupModule(module) {
   module.meta.description = parser.metadata.DESCRIPTION;
   module.meta.version = parser.metadata.VSN;
 
-  module.renderer = new ISFRenderer(isfContext);
-  module.renderer.loadSource(fragmentShader, vertexShader);
+  const renderer = new ISFRenderer(isfContext);
+  renderer.loadSource(fragmentShader, vertexShader);
 
   function addProp(name, prop) {
     if (!module.props) {
@@ -83,11 +91,9 @@ async function setupModule(module) {
     module.props[name] = prop;
   }
 
-  module.inputs = parser.inputs;
-
-  const inputs = parser.inputs;
-  for (let i = 0, len = inputs.length; i < len; i++) {
-    const input = inputs[i];
+  const moduleInputs = parser.inputs;
+  for (let i = 0, len = moduleInputs.length; i < len; i++) {
+    const input = moduleInputs[i];
 
     switch (input.TYPE) {
       default:
@@ -159,6 +165,8 @@ async function setupModule(module) {
     }
   }
 
+  renderers[module.meta.name] = renderer;
+  inputs[module.meta.name] = moduleInputs;
   module.draw = render;
 
   return module;

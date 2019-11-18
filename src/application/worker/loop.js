@@ -88,6 +88,8 @@ function loop(delta, features) {
       continue;
     }
 
+    const { clearing, inherit, pipeline } = group;
+
     const aux = group.drawToCanvasId && auxillary[group.drawToCanvasId].context;
     let drawTo = group.context.context;
 
@@ -95,11 +97,11 @@ function loop(delta, features) {
       drawTo = aux;
     }
 
-    if (group.clearing) {
+    if (clearing) {
       drawTo.clearRect(0, 0, drawTo.canvas.width, drawTo.canvas.height);
     }
 
-    if (group.inherit) {
+    if (inherit) {
       drawTo.drawImage(
         lastCanvas,
         0,
@@ -148,7 +150,8 @@ function loop(delta, features) {
         meyda,
         video,
         props,
-        data: moduleData
+        data: moduleData,
+        pipeline
       });
       drawTo.restore();
     }
