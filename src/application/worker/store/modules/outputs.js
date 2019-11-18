@@ -56,6 +56,10 @@ const actions = {
       height = state.main ? state.main.canvas.height : 300
     }
   ) {
+    if (type === "2d") {
+      options.storage = "discardable";
+    }
+
     const context = canvas.getContext(type, options);
     canvas.width = width;
     canvas.height = height;
