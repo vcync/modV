@@ -31,7 +31,7 @@
         <TweenControl v-model="value" />
       </div>
       <div class="input" v-else-if="type === 'vec2'">
-        <Vec2DControl v-model.number="value" />
+        <Vec2DControl v-model="value" />
       </div>
       <div class="input" v-else-if="type === 'text'">
         <input type="text" v-model="value" />
