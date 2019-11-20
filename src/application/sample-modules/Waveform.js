@@ -38,9 +38,10 @@ export default {
     windowing: {
       type: "enum",
       label: "Windowing",
+      default: "hanning",
       enum: [
         { label: "Rectangular (no window)", value: "rect" },
-        { label: "Hanning", value: "hanning", selected: true },
+        { label: "Hanning", value: "hanning" },
         { label: "Hamming", value: "hamming" },
         { label: "Blackman", value: "blackman" },
         { label: "Sine", value: "sine" }

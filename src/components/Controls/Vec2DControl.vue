@@ -68,6 +68,7 @@ export default {
     this.canvasCoords = [this.$refs.pad.width / 2, this.$refs.pad.height / 2];
     this.currentX = this.value[0];
     this.currentY = this.value[1];
+    this.internalValue = this.value;
     requestAnimationFrame(this.draw);
   },
   methods: {
