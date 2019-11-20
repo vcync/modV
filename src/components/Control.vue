@@ -42,6 +42,18 @@
       <div class="input" v-else-if="type === 'color'">
         <input type="color" v-model="value" />
       </div>
+      <div class="input" v-else-if="type === 'enum'">
+        <select v-model="value">
+          <option
+            v-for="(option, index) in activeProp.enum"
+            :value="option.value"
+            :key="index"
+            :selected="option.selected"
+          >
+            {{ option.label }}
+          </option>
+        </select>
+      </div>
     </c>
   </grid>
 </template>
