@@ -1,6 +1,49 @@
 export default function windowHandler() {
   const windows = {};
 
+  function createHideMouseTimerhandler(canvas) {
+    let mouseTimer;
+
+    function hideMouse() {
+      canvas.ownerDocument.body.style.cursor = "none";
+    }
+
+    return function() {
+      if (mouseTimer) {
+        clearTimeout(mouseTimer);
+      }
+
+      canvas.ownerDocument.body.style.cursor = "default";
+      mouseTimer = setTimeout(hideMouse, 200);
+    };
+  }
+
+  function configureWindow({ win, canvas, title, backgroundColor }) {
+    win.document.title = title;
+    win.document.body.style.backgroundColor = backgroundColor;
+    win.document.body.appendChild(canvas);
+  }
+
+  function pollToConfigureWindow(args) {
+    let poll;
+
+    function checkIfDone(args) {
+      if (args.win.document.readyState === "complete") {
+        configureWindow(args);
+      } else {
+        pollToConfigureWindow(args)();
+      }
+    }
+
+    return function() {
+      if (poll) {
+        clearTimeout(poll);
+      }
+
+      poll = setTimeout(() => checkIfDone(args), 1);
+    };
+  }
+
   this._store.subscribe(async ({ type, payload }) => {
     if (type === "windows/ADD_WINDOW") {
       const { width, height, backgroundColor, title, id } = payload;
@@ -52,11 +95,9 @@ export default function windowHandler() {
         }
       });
 
-      win.addEventListener("load", () => {
-        win.document.title = title;
-        win.document.body.style.backgroundColor = backgroundColor;
-        win.document.body.appendChild(canvas);
-      });
+      canvas.addEventListener("mousemove", createHideMouseTimerhandler(canvas));
+
+      pollToConfigureWindow({ win, canvas, title, backgroundColor })();
 
       let timer;
 
