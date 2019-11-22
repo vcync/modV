@@ -1,4 +1,4 @@
-import { app, protocol, screen, BrowserWindow } from "electron";
+import { app, dialog, protocol, screen, BrowserWindow } from "electron";
 import {
   createProtocol,
   installVueDevtools
@@ -8,6 +8,9 @@ const isDevelopment = process.env.NODE_ENV !== "production";
 // Keep a global reference of the window object, if you don't, the window will
 // be closed automatically when the JavaScript object is garbage collected.
 let win;
+
+// Should the application promt when attempting to quit?
+app.showExitPrompt = true;
 
 // Scheme must be registered before the app is ready
 protocol.registerSchemesAsPrivileged([
@@ -42,6 +45,25 @@ function createWindow() {
     createProtocol("app");
     // Load the index.html when not in development
     win.loadURL("app://./index.html");
+  }
+
+  if (!isDevelopment || process.env.IS_TEST) {
+    win.on("close", async e => {
+      if (app.showExitPrompt) {
+        e.preventDefault(); // Prevents the window from closing
+        const { response } = await dialog.showMessageBox({
+          type: "question",
+          buttons: ["Yes", "No"],
+          message: "modV",
+          detail: "Are you sure you want to quit?"
+        });
+
+        if (!response) {
+          app.showExitPrompt = false;
+          app.quit();
+        }
+      }
+    });
   }
 
   win.on("closed", () => {
