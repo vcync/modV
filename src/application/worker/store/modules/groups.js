@@ -1,6 +1,6 @@
 import SWAP from "./common/swap";
 import store from "../";
-const uuidv4 = require("uuid/v4");
+import uuidv4 from "uuid/v4";
 
 /**
  * @typedef {Object} Group

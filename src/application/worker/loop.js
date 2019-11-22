@@ -223,6 +223,9 @@ function loop(delta, features) {
       debugContext.drawImage(canvasToDebug.context.canvas, 0, 0);
       debugContext.font = "32px monospace";
       debugContext.textBaseline = "hanging";
+      debugContext.save();
+      debugContext.fillStyle = "#fff";
+      debugContext.globalCompositeOperation = "difference";
       debugContext.fillText(
         `${canvasToDebug.context.canvas.width} × ${
           canvasToDebug.context.canvas.height
@@ -230,6 +233,7 @@ function loop(delta, features) {
         10,
         10
       );
+      debugContext.restore();
     }
   }
 
