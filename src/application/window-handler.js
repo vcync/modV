@@ -3,10 +3,10 @@ export default function windowHandler() {
 
   this._store.subscribe(async ({ type, payload }) => {
     if (type === "windows/ADD_WINDOW") {
-      const { width, height, title, backgroundColor, id } = payload;
+      const { width, height, backgroundColor, title, id } = payload;
 
       const win = window.open(
-        "",
+        "./output-window.html",
         "_blank",
         `width=${width}, height=${height}, location=no, menubar=no, left=0`
       );
@@ -21,13 +21,6 @@ export default function windowHandler() {
       }
 
       windows[id] = win;
-
-      win.document.title = title;
-      win.document.body.style.margin = "0px";
-      win.document.body.style.backgroundColor = backgroundColor;
-      win.document.body.style.display = "flex";
-      win.document.body.style.justifyContent = "center";
-      win.document.body.style.alignItems = "center";
 
       const canvas = document.createElement("canvas");
       const offscreen = canvas.transferControlToOffscreen();
@@ -59,7 +52,11 @@ export default function windowHandler() {
         }
       });
 
-      win.document.body.appendChild(canvas);
+      win.addEventListener("load", () => {
+        win.document.title = title;
+        win.document.body.style.backgroundColor = backgroundColor;
+        win.document.body.appendChild(canvas);
+      });
 
       let timer;
 
