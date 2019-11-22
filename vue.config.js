@@ -14,5 +14,14 @@ module.exports = {
       // hotOnly: true,
       contentBase: "./"
     }
+  },
+
+  pluginOptions: {
+    electronBuilder: {
+      builderOptions: {
+        appId: "gl.vcync.modv",
+        productName: "modV"
+      }
+    }
   }
 };
