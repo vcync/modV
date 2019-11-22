@@ -51,6 +51,14 @@ export default function windowHandler() {
       canvas.style.objectFit = "cover";
       canvas.style.width = "100%";
 
+      canvas.addEventListener("dblclick", () => {
+        if (!canvas.ownerDocument.webkitFullscreenElement) {
+          canvas.webkitRequestFullscreen();
+        } else {
+          canvas.ownerDocument.webkitExitFullscreen();
+        }
+      });
+
       win.document.body.appendChild(canvas);
 
       let timer;
