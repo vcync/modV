@@ -33,6 +33,16 @@ const clearCmd = {
   })
 };
 
+function resize({ width, height }) {
+  shaderCanvas.width = width;
+  shaderCanvas.height = height;
+
+  // pex.set({
+  //   width,
+  //   height
+  // });
+}
+
 function generateUniforms(canvasTexture, uniforms) {
   const { width, height, dpr } = store.state.size;
 
@@ -171,11 +181,12 @@ function render({ module, props, canvas, context }) {
 
   pex.submit(clearCmd);
   pex.submit(command, {
-    uniforms
+    uniforms,
+    viewport: [0, 0, canvas.width, canvas.height]
   });
 
   // Copy Shader Canvas to Main Canvas
   context.drawImage(shaderCanvas, 0, 0, canvas.width, canvas.height);
 }
 
-export { setupModule, render };
+export { setupModule, render, resize };

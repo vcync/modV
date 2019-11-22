@@ -36,8 +36,7 @@ function render({
   props,
   data
 }) {
-  twoDCanvas.width = canvas.width;
-  twoDCanvas.height = canvas.height;
+  twoDContext.clearRect(0, 0, canvas.width, canvas.height);
   twoDContext.drawImage(canvas, 0, 0, canvas.width, canvas.height);
 
   twoDContext.save();
@@ -58,4 +57,9 @@ function render({
   context.drawImage(twoDCanvas, 0, 0, canvas.width, canvas.height);
 }
 
-export default { render };
+function resize({ width, height }) {
+  twoDCanvas.width = width;
+  twoDCanvas.height = height;
+}
+
+export default { render, resize };
