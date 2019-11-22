@@ -7,7 +7,7 @@ import store from "./worker/store";
 import windowHandler from "./window-handler";
 import use from "./use";
 
-const PromiseWorker = require("promise-worker-transferable");
+import PromiseWorker from "promise-worker-transferable";
 
 let imageBitmap;
 const imageBitmapQueue = [];

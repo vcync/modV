@@ -1,6 +1,6 @@
 import Vue from "vue";
 
-const uuidv4 = require("uuid/v4");
+import uuidv4 from "uuid/v4";
 
 const state = {
   focusedInput: { id: null, title: null },

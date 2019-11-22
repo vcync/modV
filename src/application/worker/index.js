@@ -1,11 +1,10 @@
 /* eslint-env worker */
+import registerPromiseWorker from "promise-worker/register";
 import store from "./store";
 import loop from "./loop";
 import { tick as frameTick } from "./frame-counter";
 import { getFeatures, setFeatures } from "./audio-features";
 import featureAssignmentPlugin from "../plugins/feature-assignment";
-
-const registerPromiseWorker = require("promise-worker/register");
 
 let lastKick = false;
 

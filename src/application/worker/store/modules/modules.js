@@ -4,7 +4,7 @@ import getNextName from "../../../utils/get-next-name";
 import getPropDefault from "../../../utils/get-prop-default";
 import store from "..";
 
-const uuidv4 = require("uuid/v4");
+import uuidv4 from "uuid/v4";
 
 const state = {
   registered: {},
