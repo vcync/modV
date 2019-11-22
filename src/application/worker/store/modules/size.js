@@ -21,6 +21,15 @@ const actions = {
       store.dispatch("modules/resize", { moduleId: module.$id, width, height });
     }
 
+    const renderersValues = Object.values(store.state.renderers);
+    const renderersLength = renderersValues.length;
+    for (let i = 0; i < renderersLength; ++i) {
+      const renderer = renderersValues[i];
+      if (renderer.resize) {
+        renderer.resize({ width, height });
+      }
+    }
+
     commit("SET_SIZE", { width, height, dpr });
   }
 };

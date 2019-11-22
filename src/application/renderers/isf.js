@@ -24,6 +24,11 @@ store.dispatch("outputs/addAuxillaryOutput", {
 const renderers = {};
 const inputs = {};
 
+function resize({ width, height }) {
+  isfCanvas.width = width;
+  isfCanvas.height = height;
+}
+
 function render({ module, canvas, context, pipeline, props }) {
   const renderer = renderers[module.meta.name];
   const moduleInputs = inputs[module.meta.name];
@@ -46,10 +51,7 @@ function render({ module, canvas, context, pipeline, props }) {
     }
   }
 
-  // isfContext.clear(isfContext.COLOR_BUFFER_BIT);
-  isfCanvas.width = canvas.width;
-  isfCanvas.height = canvas.height;
-
+  isfContext.clear(isfContext.COLOR_BUFFER_BIT);
   renderer.draw(isfCanvas);
 
   if (pipeline) {
@@ -174,5 +176,6 @@ async function setupModule(module) {
 
 export default {
   setupModule,
-  render
+  render,
+  resize
 };

@@ -46,11 +46,14 @@ let lastKick = false;
   for (let i = 0, len = rendererKeys.length; i < len; i++) {
     const rendererName = rendererKeys[i];
 
-    const { render, setupModule, tick } = renderers(rendererName).default;
+    const { render, setupModule, tick, resize } = renderers(
+      rendererName
+    ).default;
 
     store.commit("renderers/ADD_RENDERER", {
       name: rendererName.replace(/(\.\/|\.js)/g, ""),
       render,
+      resize,
       setupModule,
       tick
     });
