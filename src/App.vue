@@ -32,7 +32,7 @@
               <gl-component title="MIDI" :closable="false">
                 <MIDIDeviceConfig />
               </gl-component>
-              <gl-component title="BPM" :closeable="false">
+              <gl-component title="BPM" :closable="false">
                 <BPMConfig />
               </gl-component>
             </gl-stack>
