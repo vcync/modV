@@ -92,6 +92,11 @@ app.on("activate", () => {
 // initialization and is ready to create browser windows.
 // Some APIs can only be used after this event occurs.
 app.on("ready", async () => {
+  app.commandLine.appendSwitch(
+    "disable-backgrounding-occluded-windows",
+    "true"
+  );
+
   if (isDevelopment && !process.env.IS_TEST) {
     // Install Vue Devtools
     // Devtools extensions are broken in Electron 6.0.0 and greater
