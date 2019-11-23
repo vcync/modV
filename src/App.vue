@@ -146,6 +146,15 @@ export default {
 @import url("https://fonts.googleapis.com/css?family=IBM+Plex+Mono:100,100i,200,200i,300,300i,400,400i,500,500i,600,600i,700,700i|IBM+Plex+Sans:100,100i,200,200i,300,300i,400,400i,500,500i,600,600i,700,700i&display=swap");
 @import url("https://rsms.me/raster/raster.css?v=6");
 
+:root {
+  --fontSize: 14px;
+}
+
+.lm_header .lm_tab {
+  padding: 0 1em 5px;
+  font-size: 1rem;
+}
+
 html,
 body,
 #app {
