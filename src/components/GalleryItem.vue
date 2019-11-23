@@ -72,6 +72,9 @@ export default {
       width: width / 2,
       height: height / 2
     });
+
+    // Synthesise a resize event for smooth-dnd's buggy hit detection to work
+    window.dispatchEvent(new Event("resize"));
   },
 
   beforeDestroy() {
