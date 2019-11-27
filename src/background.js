@@ -30,8 +30,8 @@ function createWindow() {
     width,
     height,
     webPreferences: {
-      nodeIntegration: true,
-      nodeIntegrationInWorker: true,
+      // nodeIntegration: true,
+      // nodeIntegrationInWorker: true,
       nativeWindowOpen: true, // window.open return Window object(like in regular browsers), not BrowserWindowProxy
       affinity: "main-window" // main window, and addition windows should work in one process
     }

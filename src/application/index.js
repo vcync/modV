@@ -1,4 +1,4 @@
-import Worker from "worker-loader!./worker";
+import Worker from "worker-loader!./worker/index.worker.js";
 import { setupMedia, enumerateDevices } from "./setup-media";
 import setupBeatDetektor from "./setup-beat-detektor";
 import setupMidi from "./setup-midi";
