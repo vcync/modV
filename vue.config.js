@@ -1,3 +1,5 @@
+const DefinePlugin = require("webpack").DefinePlugin;
+
 module.exports = {
   configureWebpack: {
     module: {
@@ -18,9 +20,43 @@ module.exports = {
 
   pluginOptions: {
     electronBuilder: {
+      externals: [
+        "!color",
+        "!lodash.clonedeep",
+        "!lodash.get",
+        "!events",
+        "!debug"
+      ],
+
       builderOptions: {
         appId: "gl.vcync.modv",
-        productName: "modV"
+        productName: "modV",
+
+        linux: {
+          category: "Graphics"
+        }
+      },
+
+      chainWebpackRendererProcess: config => {
+        // config.node.set("events", "empty");
+        config.target("web");
+        // config.output.libraryTarget("var");
+
+        config.plugin("define").use(DefinePlugin, [
+          {
+            "process.env": {
+              NODE_ENV: '"production"',
+              BASE_URL: "`app://./`",
+              IS_ELECTRON: true
+            },
+            __dirname: "`app://./`",
+            __filename: "`${app://./}/index.html`",
+            __static: "`app://./`"
+          }
+        ]);
+
+        console.log(JSON.stringify(config.toConfig(), null, 2));
+        return config;
       }
     }
   }
