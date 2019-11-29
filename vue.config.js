@@ -25,7 +25,14 @@ module.exports = {
         "!lodash.clonedeep",
         "!lodash.get",
         "!events",
-        "!debug"
+        "!debug",
+        "!assert",
+
+        "nodejs-websocket",
+        "fluent-ffmpeg",
+        "animated-gif-detector",
+        "ospath",
+        "stream-to-blob"
       ],
 
       builderOptions: {
@@ -38,10 +45,6 @@ module.exports = {
       },
 
       chainWebpackRendererProcess: config => {
-        // config.node.set("events", "empty");
-        config.target("web");
-        // config.output.libraryTarget("var");
-
         config.plugin("define").use(DefinePlugin, [
           {
             "process.env": {
@@ -55,7 +58,7 @@ module.exports = {
           }
         ]);
 
-        console.log(JSON.stringify(config.toConfig(), null, 2));
+        // console.log(JSON.stringify(config.toConfig(), null, 2));
         return config;
       }
     }

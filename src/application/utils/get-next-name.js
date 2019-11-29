@@ -1,5 +1,7 @@
 function nameTemplate(name, count) {
-  if (count < 1) return name;
+  if (count < 1) {
+    return name;
+  }
 
   return `${name} (${count})`;
 }

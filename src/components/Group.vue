@@ -61,7 +61,9 @@ import compositeOperations from "../util/composite-operations";
 
 const applyDrag = (arr, dragResult) => {
   const { removedIndex, addedIndex, payload } = dragResult;
-  if (removedIndex === null && addedIndex === null) return arr;
+  if (removedIndex === null && addedIndex === null) {
+    return arr;
+  }
 
   const result = [...arr];
   let itemToAdd = payload;
@@ -221,7 +223,9 @@ export default {
     async onDrop(e) {
       const { moduleName, collection } = e.payload;
 
-      if (e.addedIndex === null && e.removedIndex === null) return;
+      if (e.addedIndex === null && e.removedIndex === null) {
+        return;
+      }
 
       if (collection === "gallery") {
         const module = await this.$modV.store.dispatch(
