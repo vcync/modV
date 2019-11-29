@@ -74,7 +74,9 @@ async function setupModule(module) {
 
   if (parser.isfVersion < 2) {
     fragmentShader = ISFUpgrader.convertFragment(fragmentShader);
-    if (vertexShader) vertexShader = ISFUpgrader.convertVertex(vertexShader);
+    if (vertexShader) {
+      vertexShader = ISFUpgrader.convertVertex(vertexShader);
+    }
   }
 
   module.meta.isfVersion = parser.isfVersion;

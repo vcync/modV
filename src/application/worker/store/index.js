@@ -1,8 +1,9 @@
 import Vue from "vue";
 import Vuex from "vuex";
+import media from "../../../media-manager/store/modules/media";
 
 const requireModule = require.context("./modules/", false, /\.js$/);
-const modules = {};
+const modules = { media };
 
 const moduleKeys = requireModule.keys();
 for (let i = 0, len = moduleKeys.length; i < len; i++) {

@@ -26,7 +26,9 @@ const tapTempo = new Tt();
 export default {
   created() {
     tapTempo.on("tempo", bpm => {
-      if (this.bpm === Math.round(bpm)) return;
+      if (this.bpm === Math.round(bpm)) {
+        return;
+      }
       this.$modV.store.dispatch("beats/setBpm", {
         bpm: Math.round(bpm),
         source: "tap"
