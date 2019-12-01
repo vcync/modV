@@ -104,7 +104,11 @@ function makeProgram(Module) {
       for (let i = 0; i < modulePropsKeysLength; i++) {
         const key = modulePropsKeys[i];
 
-        shaderUniforms[key] = Module.props[key];
+        if (Module.props[key].type === "texture") {
+          shaderUniforms[key] = Module.props[key].value;
+        } else {
+          shaderUniforms[key] = Module.props[key];
+        }
       }
     }
 
@@ -163,7 +167,11 @@ function render({ module, props, canvas, context }) {
     for (let i = 0; i < modulePropsKeysLength; i++) {
       const key = modulePropsKeys[i];
 
-      shaderUniforms[key] = props[key];
+      if (module.props[key].type === "texture") {
+        shaderUniforms[key] = props[key].value;
+      } else {
+        shaderUniforms[key] = props[key];
+      }
     }
   }
 

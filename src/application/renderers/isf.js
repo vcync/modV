@@ -39,7 +39,8 @@ function render({ module, canvas, context, pipeline, props }) {
 
       if (input.TYPE === "image") {
         if (input.NAME in props) {
-          const resolvedTexture = props[input.NAME] || canvas;
+          const resolvedTexture =
+            (props[input.NAME] && props[input.NAME].value) || canvas;
           renderer.setValue(input.NAME, resolvedTexture);
         } else {
           renderer.setValue(input.NAME, canvas);

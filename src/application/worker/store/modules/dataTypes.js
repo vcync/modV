@@ -1,9 +1,5 @@
 import store from "../";
 import { frames, advanceFrame } from "./tweens";
-import streamToBlob from "stream-to-blob";
-import fs from "fs";
-
-const imageCache = {};
 
 const state = {
   int: {
@@ -28,24 +24,40 @@ const state = {
     get: value => value
   },
   texture: {
-    async create({ type, options } = {}) {
+    async create(textureDefinition = {}) {
+      const { type, options } = textureDefinition;
+      textureDefinition.location = "";
+      textureDefinition.id = "";
+
       if (type === "image") {
         const { path } = options;
-
-        if (imageCache[path]) {
-          return imageCache[path];
-        }
-
-        const stream = fs.createReadStream(path);
-        const blob = await streamToBlob(stream);
-        const imageBitmap = await createImageBitmap(blob);
-
-        imageCache[path] = imageBitmap;
-
-        return imageBitmap;
+        const { id } = await store.dispatch("images/createImageFromPath", {
+          path
+        });
+        textureDefinition.location = "images/image";
+        textureDefinition.id = id;
       }
+
+      if (type === "canvas") {
+        const { id } = options;
+        textureDefinition.location = "outputs/auxillaryCanvas";
+        textureDefinition.id = id;
+      }
+
+      return Object.defineProperty(textureDefinition, "value", {
+        enumerable: true,
+        get() {
+          return store.state.dataTypes.texture.get(textureDefinition);
+        }
+      });
     },
-    get: value => value
+    get: textureDefinition => {
+      if (!textureDefinition.location.length) {
+        return false;
+      }
+
+      return store.getters[textureDefinition.location](textureDefinition.id);
+    }
   },
   enum: {
     get: value => value

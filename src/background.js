@@ -43,8 +43,7 @@ function createWindow() {
       nodeIntegration: true,
       nodeIntegrationInWorker: true,
       nativeWindowOpen: true, // window.open return Window object(like in regular browsers), not BrowserWindowProxy
-      affinity: "main-window", // main window, and addition windows should work in one process,
-      webSecurity: false // required to be turned off to access files through the file protocol, "file://"
+      affinity: "main-window" // main window, and addition windows should work in one process,
     }
   });
 

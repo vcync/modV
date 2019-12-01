@@ -42,6 +42,9 @@
       <div class="input" v-else-if="type === 'color'">
         <input type="color" v-model="value" />
       </div>
+      <div class="input" v-else-if="type === 'texture'">
+        <TextureControl v-model="value" />
+      </div>
       <div class="input" v-else-if="type === 'enum'">
         <select v-model="value">
           <option
@@ -63,6 +66,7 @@ import RangeControl from "./Controls/RangeControl";
 import Vec2DControl from "./Controls/Vec2DControl";
 import TweenControl from "./Controls/TweenControl";
 import PaletteControl from "./Controls/PaletteControl";
+import TextureControl from "./Controls/TextureControl";
 import hasLink from "./mixins/has-input-link";
 import inputIsFocused from "./mixins/input-is-focused";
 
@@ -75,7 +79,8 @@ export default {
     RangeControl,
     Vec2DControl,
     TweenControl,
-    PaletteControl
+    PaletteControl,
+    TextureControl
   },
 
   data() {
