@@ -31,8 +31,6 @@ export default class MediaManager {
 
   constructor(options) {
     const defaults = {
-      wsPort: 3132,
-      httpPort: 3133,
       mediaFolderName: "media"
     };
 
@@ -62,7 +60,6 @@ export default class MediaManager {
       }
     });
 
-    await this.createServers();
     await this.createWatcher();
 
     try {
