@@ -1,11 +1,8 @@
 import ospath from "ospath";
 
 import store from "./store";
-import { log } from "./log";
 
 import addReadHandler from "./add-read-handler";
-import createWsServer from "./create-ws-server";
-import createHttpServer from "./create-http-server";
 import createWatcher from "./create-watcher";
 import readFile from "./read-file";
 import parseMessage from "./parse-message";
@@ -41,8 +38,6 @@ export default class MediaManager {
 
     this.addReadHandler = addReadHandler.bind(this);
     this.createWatcher = createWatcher.bind(this);
-    this.createWsServer = createWsServer.bind(this);
-    this.createHttpServer = createHttpServer.bind(this);
     this.readFile = readFile.bind(this);
     this.parseMessage = parseMessage.bind(this);
     this.fsCreateProfile = fsCreateProfile.bind(this);
@@ -65,7 +60,6 @@ export default class MediaManager {
       if (this.update) {
         this.update(mutation);
       }
-      // this.broadcast(JSON.stringify(mutation));
     });
 
     await this.createServers();
@@ -81,33 +75,6 @@ export default class MediaManager {
       await fs.promises.access(path.join(this.mediaDirectoryPath, "default"));
     } catch (error) {
       this.fsCreateProfile("default");
-    }
-  }
-
-  createServers() {
-    return new Promise(resolve => {
-      this.wsServer = this.createWsServer();
-      this.wsServer.listen(this.wsPort, () => {
-        log(`WebSocket server running on port ${this.wsPort}`);
-
-        const httpServer = this.createHttpServer();
-        this.httpServer = httpServer.listen(this.httpPort, () => {
-          log(`HTTP server running on port ${this.httpPort}`);
-
-          resolve();
-        });
-      });
-    });
-  }
-
-  broadcast(data) {
-    if (!this.wsServer) {
-      return;
-    }
-
-    const connections = this.wsServer.connections;
-    for (let i = 0, len = connections.length; i < len; i++) {
-      connections[i].send(data);
     }
   }
 }

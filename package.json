@@ -28,7 +28,6 @@
     "lodash.get": "^4.4.2",
     "meyda": "github:meyda/meyda#chore/dct",
     "mkdirp": "^0.5.1",
-    "nodejs-websocket": "^1.7.2",
     "nwjs-menu-browser": "^1.0.0",
     "ospath": "^1.2.2",
     "pex-context": "^2.10.2",

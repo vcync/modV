@@ -28,7 +28,6 @@ module.exports = {
         "!debug",
         "!assert",
 
-        "nodejs-websocket",
         "fluent-ffmpeg",
         "animated-gif-detector",
         "ospath",
