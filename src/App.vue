@@ -55,7 +55,6 @@ import AudioDeviceConfig from "@/components/InputDeviceConfig/Audio.vue";
 import MIDIDeviceConfig from "@/components/InputDeviceConfig/MIDI.vue";
 import BPMConfig from "@/components/InputDeviceConfig/BPM.vue";
 import StatusBar from "@/components/StatusBar";
-import { ipcRenderer } from "electron";
 
 export default {
   name: "app",
@@ -94,12 +93,6 @@ export default {
 
   async mounted() {
     await this.$modV.setup();
-    ipcRenderer.on("media-manager-state", (e, message) => {
-      console.log("media-manager-state", message);
-      this.$modV.store.dispatch("media/setState", message);
-    });
-
-    ipcRenderer.send("get-media-manager-state");
 
     // this.$modV.$worker.addEventListener("message", e => {
     //   if (e.data.type === "outputs/SET_MAIN_OUTPUT") {

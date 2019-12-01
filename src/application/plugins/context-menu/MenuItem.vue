@@ -50,22 +50,16 @@ export default {
       return this.options.tooltip;
     },
     submenuActive() {
-      if (!this.submenu) {
-        return false;
-      }
+      if (!this.submenu) return false;
       return this.realActiveMenus.indexOf(this.submenu.$id) > 0;
     },
     checked() {
-      if (this.type !== "checkbox") {
-        return false;
-      }
+      if (this.type !== "checkbox") return false;
       return this.options.checked;
     },
     classes() {
       const classes = {};
-      if (!this.enabled) {
-        classes.disabled = true;
-      }
+      if (!this.enabled) classes.disabled = true;
       classes[this.type] = true;
 
       if (this.type === "checkbox") {
@@ -123,9 +117,7 @@ export default {
           value: !this.checked
         });
       }
-      if (this.options.click) {
-        this.options.click();
-      }
+      if (this.options.click) this.options.click();
       this.popdownAll();
     }
   }

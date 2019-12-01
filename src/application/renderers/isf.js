@@ -39,7 +39,8 @@ function render({ module, canvas, context, pipeline, props }) {
 
       if (input.TYPE === "image") {
         if (input.NAME in props) {
-          const resolvedTexture = props[input.NAME] || canvas;
+          const resolvedTexture =
+            (props[input.NAME] && props[input.NAME].texture) || canvas;
           renderer.setValue(input.NAME, resolvedTexture);
         } else {
           renderer.setValue(input.NAME, canvas);
@@ -73,9 +74,7 @@ async function setupModule(module) {
 
   if (parser.isfVersion < 2) {
     fragmentShader = ISFUpgrader.convertFragment(fragmentShader);
-    if (vertexShader) {
-      vertexShader = ISFUpgrader.convertVertex(vertexShader);
-    }
+    if (vertexShader) vertexShader = ISFUpgrader.convertVertex(vertexShader);
   }
 
   module.meta.isfVersion = parser.isfVersion;

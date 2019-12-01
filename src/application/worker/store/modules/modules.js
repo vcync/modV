@@ -159,9 +159,8 @@ const actions = {
     if ("audioFeatures" in module.meta) {
       if (Array.isArray(module.meta.audioFeatures)) {
         const audioFeatureKeys = module.meta.audioFeatures;
-        for (let i = 0, len = audioFeatureKeys.length; i < len; i++) {
+        for (let i = 0, len = audioFeatureKeys.length; i < len; i++)
           store.dispatch("meyda/addFeature", audioFeatureKeys[i]);
-        }
       }
     }
 
@@ -218,9 +217,7 @@ const actions = {
     //   propData = state.active[name].props[groupName].props[prop];
     // }
 
-    if (data === currentValue) {
-      return;
-    }
+    if (data === currentValue) return;
 
     let dataOut = data;
 

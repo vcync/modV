@@ -39,24 +39,18 @@ const mutations = {
   },
   popdown(state, { id }) {
     const indexToSplice = state.activeMenus.indexOf(id);
-    if (indexToSplice < 0) {
-      return;
-    }
+    if (indexToSplice < 0) return;
     state.activeMenus.splice(indexToSplice, 1);
   },
   popdownAll(state, not) {
     let toKeep = [];
-    if (not) {
-      toKeep = toKeep.concat(not);
-    }
+    if (not) toKeep = toKeep.concat(not);
 
     Vue.set(state, "activeMenus", toKeep);
   },
   popup(state, { id, x, y }) {
     const existingMenuId = state.activeMenus.indexOf(id);
-    if (existingMenuId < 0) {
-      state.activeMenus.push(id);
-    }
+    if (existingMenuId < 0) state.activeMenus.push(id);
     Vue.set(state.menus[id], "x", x);
     Vue.set(state.menus[id], "y", y);
     Vue.set(state.menus[id], "visible", true);

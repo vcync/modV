@@ -128,9 +128,7 @@ export default {
     search(textIn, termIn) {
       const text = textIn.toLowerCase().trim();
       const term = termIn.toLowerCase().trim();
-      if (termIn.length < 1) {
-        return true;
-      }
+      if (termIn.length < 1) return true;
 
       return text.indexOf(term) > -1;
     },
