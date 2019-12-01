@@ -9,6 +9,8 @@ import use from "./use";
 
 import PromiseWorker from "promise-worker-transferable";
 
+import { ipcRenderer } from "electron";
+
 let imageBitmap;
 const imageBitmapQueue = [];
 
@@ -132,6 +134,16 @@ export default class ModV {
     );
 
     this.store.dispatch("windows/createWindow");
+
+    ipcRenderer.on("media-manager-state", (event, message) => {
+      this.store.dispatch("media/setState", message);
+    });
+
+    ipcRenderer.on("media-manager-update", (event, message) => {
+      this.store.dispatch("media/addMedia", message.payload);
+    });
+
+    ipcRenderer.send("get-media-manager-state");
   }
 
   async inputLoop() {
@@ -182,5 +194,9 @@ export default class ModV {
   tick(delta) {
     this.loop(delta);
     this.inputLoop(delta);
+  }
+
+  generatePreset() {
+    this.$worker.postMessage({ type: "generatePreset" });
   }
 }

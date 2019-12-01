@@ -88,13 +88,23 @@ const actions = {
       context: await store.dispatch("outputs/getAuxillaryOutput", {
         name,
         group: "group"
-      })
+      }),
+      id: args.id || uuidv4()
     };
 
-    group.id = uuidv4();
     commit("ADD_GROUP", group, args.writeToSwap);
 
     return group;
+  },
+
+  createPresetData() {
+    return state.groups
+      .filter(group => group.name !== "modV internal Gallery Group")
+      .map(group => {
+        const clonedGroup = { ...group };
+        delete clonedGroup.context;
+        return clonedGroup;
+      });
   }
 };
 

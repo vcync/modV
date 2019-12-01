@@ -123,7 +123,8 @@ const actions = {
       easing = "linear",
       loop = true,
       useBpm = true,
-      bpmDivision = 16
+      bpmDivision = 16,
+      isGallery
     }
   ) {
     const animationCache = await buildFrames({
@@ -146,7 +147,8 @@ const actions = {
       duration,
       direction,
       useBpm,
-      bpmDivision
+      bpmDivision,
+      isGallery
     };
 
     commit("ADD_TWEEN", tween);
@@ -177,6 +179,10 @@ const actions = {
         });
       }
     }
+  },
+
+  createPresetData() {
+    return Object.values(state.tweens).filter(tween => !tween.isGallery);
   }
 };
 

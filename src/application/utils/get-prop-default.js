@@ -12,7 +12,10 @@ export default async function getPropDefault(module, propName, prop) {
   }
 
   if (store.state.dataTypes[type] && store.state.dataTypes[type].create) {
-    return await store.state.dataTypes[type].create(prop.default);
+    return await store.state.dataTypes[type].create(
+      prop.default,
+      module.meta.isGallery
+    );
   }
 
   if (

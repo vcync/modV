@@ -17,6 +17,10 @@ const actions = {
 
     commit("SET_LEARNING", resolve);
     return promise;
+  },
+
+  createPresetData() {
+    return state;
   }
 };
 

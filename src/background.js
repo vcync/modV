@@ -58,6 +58,16 @@ function createWindow() {
     event.reply("media-manager-state", store.state.media);
   });
 
+  ipcMain.on("save-file", async (event, message) => {
+    try {
+      mm.saveFile(message);
+    } catch (e) {
+      event.reply("save-file", e);
+    }
+
+    event.reply("save-file", "saved");
+  });
+
   if (process.env.WEBPACK_DEV_SERVER_URL) {
     // Load the url of the dev server if in development mode
     win.loadURL(process.env.WEBPACK_DEV_SERVER_URL);

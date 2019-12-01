@@ -41,6 +41,10 @@ const actions = {
 
     commit("REMOVE_INPUT_LINK", inputId);
     return true;
+  },
+
+  createPresetData() {
+    return state;
   }
 };
 
