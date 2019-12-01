@@ -24,7 +24,7 @@ const state = {
     get: value => value
   },
   texture: {
-    async create(textureDefinition = {}) {
+    async create(textureDefinition = {}, isGallery) {
       const { type, options } = textureDefinition;
       textureDefinition.location = "";
       textureDefinition.id = "";
@@ -43,6 +43,8 @@ const state = {
         textureDefinition.location = "outputs/auxillaryCanvas";
         textureDefinition.id = id;
       }
+
+      textureDefinition.isGallery = isGallery;
 
       return Object.defineProperty(textureDefinition, "value", {
         enumerable: true,
@@ -64,8 +66,11 @@ const state = {
   },
 
   tween: {
-    async create(args) {
-      const tween = await store.dispatch("tweens/createTween", args);
+    async create(args, isGallery) {
+      const tween = await store.dispatch("tweens/createTween", {
+        ...args,
+        isGallery
+      });
       return Object.defineProperty(tween, "value", {
         enumerable: true,
         get() {

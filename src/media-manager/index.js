@@ -3,14 +3,17 @@ import ospath from "ospath";
 import store from "./store";
 
 import addReadHandler from "./add-read-handler";
+import addSaveHandler from "./add-save-handler";
 import createWatcher from "./create-watcher";
 import readFile from "./read-file";
 import parseMessage from "./parse-message";
 import fsCreateProfile from "./fs-create-profile";
 
-import imageHandler from "./read-handlers/image";
-import paletteHandler from "./read-handlers/palette";
-import presetHandler from "./read-handlers/preset";
+import imageReadHandler from "./read-handlers/image";
+import paletteReadHandler from "./read-handlers/palette";
+import presetReadHandler from "./read-handlers/preset";
+
+import presetSaveHandler from "./save-handlers/preset";
 
 import path from "path";
 import fs from "fs";
@@ -35,6 +38,7 @@ export default class MediaManager {
     };
 
     this.addReadHandler = addReadHandler.bind(this);
+    this.addSaveHandler = addSaveHandler.bind(this);
     this.createWatcher = createWatcher.bind(this);
     this.readFile = readFile.bind(this);
     this.parseMessage = parseMessage.bind(this);
@@ -44,9 +48,10 @@ export default class MediaManager {
 
     Object.assign(this, defaults, options);
 
-    this.addReadHandler({ readHandler: imageHandler });
-    this.addReadHandler({ readHandler: paletteHandler });
-    this.addReadHandler({ readHandler: presetHandler });
+    this.addReadHandler({ readHandler: imageReadHandler });
+    this.addReadHandler({ readHandler: paletteReadHandler });
+    this.addReadHandler({ readHandler: presetReadHandler });
+    this.addSaveHandler({ saveHandler: presetSaveHandler });
   }
 
   async start() {
@@ -73,5 +78,45 @@ export default class MediaManager {
     } catch (error) {
       this.fsCreateProfile("default");
     }
+  }
+
+  async saveFile({ what, name, fileType, project, payload }) {
+    const { saveHandlers } = store.state;
+
+    if (!name) {
+      throw new Error("Cannot save without a name");
+    }
+
+    if (!fileType) {
+      throw new Error("Cannot save without a file type");
+    }
+
+    if (!project) {
+      throw new Error("Cannot save without a project");
+    }
+
+    if (!saveHandlers[what]) {
+      throw new Error(`No save handler for "${what}"`);
+    }
+
+    const handler = saveHandlers[what];
+
+    if (handler.fileTypes.indexOf(fileType) < -1) {
+      throw new Error(
+        `The "${what}" save handler cannot save files with a type of "${fileType}"`
+      );
+    }
+
+    await fs.promises.writeFile(
+      path.join(
+        this.mediaDirectoryPath,
+        project,
+        handler.folder,
+        `${name}.${fileType}`
+      ),
+      payload
+    );
+
+    return true;
   }
 }

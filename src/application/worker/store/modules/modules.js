@@ -56,99 +56,113 @@ const actions = {
 
   async makeActiveModule(
     { commit, rootState },
-    { moduleName, moduleMeta = {}, writeToSwap }
+    { moduleName, moduleMeta = {}, existingModule, writeToSwap }
   ) {
-    const moduleDefinition = state.registered[moduleName];
+    const moduleDefinition =
+      state.registered[
+        existingModule ? existingModule.$moduleName : moduleName
+      ];
     const { props = {}, data = {} } = moduleDefinition;
 
-    const module = { meta: { ...moduleDefinition.meta } };
-    module.$id = uuidv4();
-    module.$moduleName = moduleName;
-    module.$props = { ...props };
+    const module = {
+      meta: { ...moduleDefinition.meta, ...moduleMeta },
+      ...existingModule
+    };
 
-    const propKeys = Object.keys(props);
-    module.props = {};
+    if (!existingModule) {
+      module.$id = uuidv4();
+      module.$moduleName = moduleName;
+      module.$props = { ...props };
 
-    for (let i = 0, len = propKeys.length; i < len; i++) {
-      const propKey = propKeys[i];
+      const propKeys = Object.keys(props);
 
-      const prop = props[propKey];
+      module.props = {};
 
-      module.props[propKey] = await getPropDefault(module, propKey, prop);
+      for (let i = 0, len = propKeys.length; i < len; i++) {
+        const propKey = propKeys[i];
 
-      const inputBind = await store.dispatch("inputs/addInput", {
-        type: "action",
-        location: "modules/updateProp",
-        data: { moduleId: module.$id, prop: propKey }
-      });
+        const prop = props[propKey];
 
-      module.$props[propKey].id = inputBind.id;
-    }
+        module.props[propKey] = await getPropDefault(module, propKey, prop);
 
-    const dataKeys = Object.keys(data);
-    module.data = {};
+        if (!moduleMeta.isGallery) {
+          const inputBind = await store.dispatch("inputs/addInput", {
+            type: "action",
+            location: "modules/updateProp",
+            data: { moduleId: module.$id, prop: propKey }
+          });
 
-    for (let i = 0, len = dataKeys.length; i < len; i++) {
-      const dataKey = dataKeys[i];
-
-      const datum = data[dataKey];
-      module.data[dataKey] = datum;
-    }
-
-    module.meta.name = await getNextName(
-      `${moduleName}`,
-      Object.keys(state.active)
-    );
-    module.meta.alpha = 1;
-    module.meta.enabled = false;
-    module.meta.compositeOperation = "normal";
-
-    const alphaInputBind = await store.dispatch("inputs/addInput", {
-      type: "commit",
-      location: "modules/UPDATE_ACTIVE_MODULE_META",
-      data: { id: module.$id, metaKey: "alpha" }
-    });
-
-    module.meta.alphaInputId = alphaInputBind.id;
-
-    const enabledInputBind = await store.dispatch("inputs/addInput", {
-      type: "commit",
-      location: "modules/UPDATE_ACTIVE_MODULE_META",
-      data: { id: module.$id, metaKey: "enabled" }
-    });
-
-    module.meta.enabledInputId = enabledInputBind.id;
-
-    const coInputBind = await store.dispatch("inputs/addInput", {
-      type: "commit",
-      location: "modules/UPDATE_ACTIVE_MODULE_META",
-      data: { id: module.$id, metaKey: "compositeOperation" }
-    });
-
-    module.meta.compositeOperationInputId = coInputBind.id;
-
-    const { presets } = module;
-
-    if (moduleMeta) {
-      const moduleMetaKeys = Object.keys(moduleMeta);
-      for (let i = 0, len = moduleMetaKeys.length; i < len; i++) {
-        const key = moduleMetaKeys[i];
-
-        const value = moduleMeta[key];
-
-        module.meta[key] = value;
+          module.$props[propKey].id = inputBind.id;
+        }
       }
-    }
 
-    if (presets) {
-      module.presets = {};
+      const dataKeys = Object.keys(data);
+      module.data = {};
 
-      const presetKeys = Object.keys(presets);
-      for (let i = 0, len = presetKeys.length; i < len; i++) {
-        const key = presetKeys[i];
+      for (let i = 0, len = dataKeys.length; i < len; i++) {
+        const dataKey = dataKeys[i];
 
-        const value = presets[key];
-        module.presets[key] = value;
+        const datum = data[dataKey];
+        module.data[dataKey] = datum;
+      }
+
+      module.meta.name = await getNextName(
+        `${moduleName}`,
+        Object.keys(state.active)
+      );
+      module.meta.alpha = 1;
+      module.meta.enabled = false;
+      module.meta.compositeOperation = "normal";
+
+      if (!moduleMeta.isGallery) {
+        const alphaInputBind = await store.dispatch("inputs/addInput", {
+          type: "commit",
+          location: "modules/UPDATE_ACTIVE_MODULE_META",
+          data: { id: module.$id, metaKey: "alpha" }
+        });
+
+        module.meta.alphaInputId = alphaInputBind.id;
+
+        const enabledInputBind = await store.dispatch("inputs/addInput", {
+          type: "commit",
+          location: "modules/UPDATE_ACTIVE_MODULE_META",
+          data: { id: module.$id, metaKey: "enabled" }
+        });
+
+        module.meta.enabledInputId = enabledInputBind.id;
+
+        const coInputBind = await store.dispatch("inputs/addInput", {
+          type: "commit",
+          location: "modules/UPDATE_ACTIVE_MODULE_META",
+          data: { id: module.$id, metaKey: "compositeOperation" }
+        });
+
+        module.meta.compositeOperationInputId = coInputBind.id;
+      }
+
+      const { presets } = module;
+
+      if (moduleMeta) {
+        const moduleMetaKeys = Object.keys(moduleMeta);
+        for (let i = 0, len = moduleMetaKeys.length; i < len; i++) {
+          const key = moduleMetaKeys[i];
+
+          const value = moduleMeta[key];
+
+          module.meta[key] = value;
+        }
+      }
+
+      if (presets) {
+        module.presets = {};
+
+        const presetKeys = Object.keys(presets);
+        for (let i = 0, len = presetKeys.length; i < len; i++) {
+          const key = presetKeys[i];
+
+          const value = presets[key];
+          module.presets[key] = value;
+        }
       }
     }
 
@@ -335,6 +349,15 @@ const actions = {
         });
       }
     }
+  },
+
+  createPresetData() {
+    return Object.values(state.active)
+      .filter(module => !module.meta.isGallery)
+      .reduce((obj, module) => {
+        obj[module.$id] = module;
+        return obj;
+      }, {});
   }
 };
 

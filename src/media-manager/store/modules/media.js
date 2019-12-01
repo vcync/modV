@@ -29,10 +29,10 @@ const mutations = {
     }
 
     if (!state[project][folder]) {
-      Vue.set(state[project], folder, []);
+      Vue.set(state[project], folder, {});
     }
 
-    state[project][folder].push(item);
+    state[project][folder][item.name] = item;
   },
 
   SET_STATE(state, newState) {

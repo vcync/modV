@@ -152,7 +152,7 @@ let lastKick = false;
     }
   }
 
-  self.addEventListener("message", e => {
+  self.addEventListener("message", async e => {
     const message = e.data;
     const { type, identifier, payload } = message;
     if (Array.isArray(message) && message[1].__async) {
@@ -184,6 +184,26 @@ let lastKick = false;
 
       context.drawImage(payload, 0, 0);
 
+      return;
+    }
+
+    if (type === "generatePreset") {
+      const preset = {};
+
+      const storeModuleKeys = Object.keys(store.state);
+      for (let i = 0, len = storeModuleKeys.length; i < len; i++) {
+        const storeModuleKey = storeModuleKeys[i];
+
+        try {
+          preset[storeModuleKey] = await store.dispatch(
+            `${storeModuleKey}/createPresetData`
+          );
+        } catch (e) {
+          // do nothing
+        }
+      }
+
+      console.log(JSON.stringify(preset));
       return;
     }
 
