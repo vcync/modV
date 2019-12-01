@@ -33,7 +33,13 @@ function createWindow() {
       // nodeIntegration: true,
       // nodeIntegrationInWorker: true,
       nativeWindowOpen: true, // window.open return Window object(like in regular browsers), not BrowserWindowProxy
-      affinity: "main-window" // main window, and addition windows should work in one process
+      affinity: "main-window" // main window, and addition windows should work in one process,
+    }
+  });
+
+  const mm = new MediaManager({
+    update(message) {
+      win.webContents.send("media-manager-update", message);
     }
   });
 
