@@ -17,8 +17,7 @@ module.exports = {
         destructuring: "any",
         ignoreReadBeforeAssign: false
       }
-    ],
-    curly: "error"
+    ]
   },
   parserOptions: {
     parser: "babel-eslint"

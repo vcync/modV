@@ -169,6 +169,7 @@ function render({ module, props, canvas, context }) {
 
       if (module.props[key].type === "texture") {
         shaderUniforms[key] = props[key].value;
+
       } else {
         shaderUniforms[key] = props[key];
       }
