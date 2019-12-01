@@ -22,6 +22,18 @@ Object.defineProperty(Vue.prototype, "$modV", {
   }
 });
 
+require("electron").ipcRenderer.on("media-manager-update", (event, message) => {
+  const parsedMessage = JSON.parse(message);
+  if (!parsedMessage) {
+    return;
+  }
+
+  const img = new Image();
+  img.src = `file://${parsedMessage.payload.item.path}`;
+  document.body.appendChild(img);
+  console.log(parsedMessage);
+});
+
 new Vue({
   render: h => h(App),
   store

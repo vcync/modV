@@ -1,5 +1,9 @@
 import store from "../";
 import { frames, advanceFrame } from "./tweens";
+import streamToBlob from "stream-to-blob";
+import fs from "fs";
+
+const imageCache = {};
 
 const state = {
   int: {
@@ -24,6 +28,23 @@ const state = {
     get: value => value
   },
   texture: {
+    async create({ type, options } = {}) {
+      if (type === "image") {
+        const { path } = options;
+
+        if (imageCache[path]) {
+          return imageCache[path];
+        }
+
+        const stream = fs.createReadStream(path);
+        const blob = await streamToBlob(stream);
+        const imageBitmap = await createImageBitmap(blob);
+
+        imageCache[path] = imageBitmap;
+
+        return imageBitmap;
+      }
+    },
     get: value => value
   },
   enum: {
