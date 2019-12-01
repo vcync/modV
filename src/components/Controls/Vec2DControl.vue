@@ -87,18 +87,14 @@ export default {
       window.removeEventListener("touchEnd", this.touchEnd);
     },
     mouseMove(e) {
-      if (!this.mousePressed) {
-        return;
-      }
+      if (!this.mousePressed) return;
       this.calculateValues(e);
     },
     touchStart() {
       this.mousePressed = true;
     },
     touchMove(e) {
-      if (!this.mousePressed) {
-        return;
-      }
+      if (!this.mousePressed) return;
       this.calculateValues(e);
     },
     touchEnd() {
@@ -202,20 +198,15 @@ export default {
       context.lineWidth = 1;
       context.strokeStyle = "#ffa600";
 
-      if (x < Math.round(width / 2)) {
-        context.strokeStyle = "#005aff";
-      }
+      if (x < Math.round(width / 2)) context.strokeStyle = "#005aff";
 
       context.beginPath();
       context.moveTo(x, 0);
       context.lineTo(x, canvas.height);
       context.stroke();
 
-      if (y <= Math.round((height + 1) / 2)) {
-        context.strokeStyle = "#ffa600";
-      } else {
-        context.strokeStyle = "#005aff";
-      }
+      if (y <= Math.round((height + 1) / 2)) context.strokeStyle = "#ffa600";
+      else context.strokeStyle = "#005aff";
 
       context.beginPath();
       context.moveTo(0, y);

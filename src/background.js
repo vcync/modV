@@ -1,18 +1,8 @@
-import {
-  app,
-  dialog,
-  ipcMain,
-  protocol,
-  screen,
-  BrowserWindow
-} from "electron";
+import { app, dialog, protocol, screen, BrowserWindow } from "electron";
 import {
   createProtocol,
   installVueDevtools
 } from "vue-cli-plugin-electron-builder/lib";
-import MediaManager from "./media-manager";
-import store from "./media-manager/store";
-
 const isDevelopment = process.env.NODE_ENV !== "production";
 
 // Keep a global reference of the window object, if you don't, the window will
@@ -40,31 +30,17 @@ function createWindow() {
     width,
     height,
     webPreferences: {
-      nodeIntegration: true,
-      nodeIntegrationInWorker: true,
+      // nodeIntegration: true,
+      // nodeIntegrationInWorker: true,
       nativeWindowOpen: true, // window.open return Window object(like in regular browsers), not BrowserWindowProxy
-      affinity: "main-window", // main window, and addition windows should work in one process,
-      webSecurity: false // required to be turned off to access files through the file protocol, "file://"
+      affinity: "main-window" // main window, and addition windows should work in one process
     }
-  });
-
-  const mm = new MediaManager({
-    update(message) {
-      win.webContents.send("media-manager-update", message);
-    }
-  });
-  mm.start();
-
-  ipcMain.on("get-media-manager-state", event => {
-    event.reply("media-manager-state", store.state.media);
   });
 
   if (process.env.WEBPACK_DEV_SERVER_URL) {
     // Load the url of the dev server if in development mode
     win.loadURL(process.env.WEBPACK_DEV_SERVER_URL);
-    if (!process.env.IS_TEST) {
-      win.webContents.openDevTools();
-    }
+    if (!process.env.IS_TEST) win.webContents.openDevTools();
   } else {
     createProtocol("app");
     // Load the index.html when not in development

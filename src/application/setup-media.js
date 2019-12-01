@@ -104,9 +104,7 @@ async function setupMedia({ audioId, videoId }) {
     this.videoStream.play();
   };
 
-  if (this.audioContext) {
-    this.audioContext.close();
-  }
+  if (this.audioContext) this.audioContext.close();
 
   // Create new Audio Context
   this.audioContext = new window.AudioContext({
