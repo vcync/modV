@@ -21,7 +21,9 @@ const getters = {
   },
 
   resizable: state =>
-    Object.values(state.auxillary).filter(aux => aux.reactToResize)
+    Object.values(state.auxillary).filter(aux => aux.reactToResize),
+
+  auxillaryCanvas: state => id => state.auxillary[id].context.canvas
 };
 
 /**
