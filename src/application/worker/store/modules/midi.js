@@ -21,6 +21,11 @@ const actions = {
 
   createPresetData() {
     return state;
+  },
+
+  async loadPresetData({ commit }, newState) {
+    commit("SET_STATE", newState);
+    return;
   }
 };
 
@@ -50,6 +55,10 @@ const mutations = {
 
   SET_LEARNING(state, value) {
     Vue.set(state, "learning", value);
+  },
+
+  SET_STATE(state, newState) {
+    state = { ...newState };
   }
 };
 

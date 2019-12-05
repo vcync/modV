@@ -9,6 +9,7 @@ export default {
   methods: {
     swap() {
       this.$modV.store.commit("groups/SWAP", {});
+      this.$modV.store.commit("modules/SWAP", {});
     }
   }
 };

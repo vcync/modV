@@ -71,6 +71,17 @@ const state = { groups: [] };
 const swap = { groups: [] };
 const temp = { groups: [] };
 
+// Any keys marked false or arrays with keys given
+// will not be moved from the base state when swapped
+const sharedPropertyRestrictions = {
+  groups: (
+    // keeps gallery group in place
+    value
+  ) => [
+    `${value.findIndex(group => group.name === "modV internal Gallery Group")}`
+  ]
+};
+
 const actions = {
   async createGroup({ commit }, args = {}) {
     const name = args.name || "New Group";
@@ -92,7 +103,7 @@ const actions = {
       id: args.id || uuidv4()
     };
 
-    commit("ADD_GROUP", group, args.writeToSwap);
+    commit("ADD_GROUP", { group, writeToSwap: args.writeToSwap });
 
     return group;
   },
@@ -105,16 +116,25 @@ const actions = {
         delete clonedGroup.context;
         return clonedGroup;
       });
+  },
+
+  async loadPresetData({ dispatch }, groups) {
+    for (let i = 0, len = groups.length; i < len; i++) {
+      const group = groups[i];
+      await dispatch("createGroup", { ...group, writeToSwap: true });
+    }
+
+    return;
   }
 };
 
 const mutations = {
-  ADD_GROUP(state, group, writeToSwap) {
+  ADD_GROUP(state, { group, writeToSwap }) {
     const writeTo = writeToSwap ? swap : state;
     writeTo.groups.push(group);
   },
 
-  REMOVE_GROUP(state, id, writeToSwap) {
+  REMOVE_GROUP(state, { id, writeToSwap }) {
     const writeTo = writeToSwap ? swap : state;
     const index = writeTo.groups.findIndex(group => group.id === id);
 
@@ -123,7 +143,7 @@ const mutations = {
     }
   },
 
-  REPLACE_GROUPS(state, groups, writeToSwap) {
+  REPLACE_GROUPS(state, { groups, writeToSwap }) {
     const writeTo = writeToSwap ? swap : state;
 
     writeTo.groups.splice(0);
@@ -133,7 +153,7 @@ const mutations = {
     }
   },
 
-  REPLACE_GROUP_MODULES(state, { groupId, modules }, writeToSwap) {
+  REPLACE_GROUP_MODULES(state, { groupId, modules, writeToSwap }) {
     const writeTo = writeToSwap ? swap : state;
     const index = writeTo.groups.findIndex(group => group.id === groupId);
 
@@ -142,7 +162,7 @@ const mutations = {
     }
   },
 
-  ADD_MODULE_TO_GROUP(state, { moduleId, groupId, position }, writeToSwap) {
+  ADD_MODULE_TO_GROUP(state, { moduleId, groupId, position, writeToSwap }) {
     const writeTo = writeToSwap ? swap : state;
     const groupIndex = writeTo.groups.findIndex(group => group.id === groupId);
 
@@ -157,7 +177,7 @@ const mutations = {
     writeTo.groups[groupIndex].modules.splice(positionActual, 0, moduleId);
   },
 
-  REMOVE_MODULE_FROM_GROUP(state, { moduleId, groupId }, writeToSwap) {
+  REMOVE_MODULE_FROM_GROUP(state, { moduleId, groupId, writeToSwap }) {
     const writeTo = writeToSwap ? swap : state;
     const groupIndex = writeTo.groups.findIndex(group => group.id === groupId);
     const moduleIndex = writeTo.groups[groupIndex].modules.findIndex(
@@ -171,7 +191,7 @@ const mutations = {
     writeTo.groups[groupIndex].modules.splice(moduleIndex, 1);
   },
 
-  UPDATE_GROUP(state, { groupId, data }, writeToSwap) {
+  UPDATE_GROUP(state, { groupId, data, writeToSwap }) {
     const writeTo = writeToSwap ? swap : state;
     const index = writeTo.groups.findIndex(group => group.id === groupId);
 
@@ -186,7 +206,7 @@ const mutations = {
     }
   },
 
-  SWAP: SWAP(swap, temp, () => ({ groups: [] }))
+  SWAP: SWAP(swap, temp, () => ({ groups: [] }), sharedPropertyRestrictions)
 };
 
 export default {
