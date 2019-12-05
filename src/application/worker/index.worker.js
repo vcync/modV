@@ -1,5 +1,6 @@
-/* eslint-env worker */
+/* eslint-env worker node */
 import registerPromiseWorker from "promise-worker/register";
+import fs from "fs";
 import store from "./store";
 import loop from "./loop";
 import { tick as frameTick } from "./frame-counter";
@@ -204,6 +205,34 @@ let lastKick = false;
       }
 
       console.log(JSON.stringify(preset));
+      return;
+    }
+
+    if (type === "loadPreset") {
+      const fileBuffer = await fs.promises.readFile(payload);
+      const jsonString = fileBuffer.toString();
+      const preset = JSON.parse(jsonString);
+
+      console.log(preset);
+
+      const storeModuleKeys = Object.keys(preset);
+      for (let i = 0, len = storeModuleKeys.length; i < len; i++) {
+        const storeModuleKey = storeModuleKeys[i];
+
+        try {
+          await store.dispatch(
+            `${storeModuleKey}/loadPresetData`,
+            preset[storeModuleKey]
+          );
+        } catch (e) {
+          console.error(e);
+        }
+      }
+
+      store.commit("groups/SWAP", {});
+      store.commit("modules/SWAP", {});
+      store.commit("inputs/SWAP", {});
+
       return;
     }
 

@@ -6,6 +6,21 @@ import store from "..";
 
 import uuidv4 from "uuid/v4";
 
+// Any keys marked false or arrays with keys given
+// will not be moved from the base state when swapped
+const sharedPropertyRestrictions = {
+  registered: false, // will not move
+  active: (
+    // keeps gallery item modules in place
+    value
+  ) =>
+    Object.values(value)
+      .filter(module => module.meta.isGallery)
+      .map(module => module.$id),
+  propQueue: true, // will move
+  metaQueue: true // will move
+};
+
 const state = {
   registered: {},
   active: {},
@@ -20,8 +35,12 @@ const swap = {
   metaQueue: {}
 };
 
-// eslint-disable-next-line
-let temp = {};
+const temp = {
+  registered: {},
+  active: {},
+  propQueue: {},
+  metaQueue: {}
+};
 
 const actions = {
   async registerModule({ commit, rootState }, module) {
@@ -51,13 +70,14 @@ const actions = {
       }
     }
 
-    commit("ADD_REGISTERED_MODULE", module);
+    commit("ADD_REGISTERED_MODULE", { module });
   },
 
   async makeActiveModule(
     { commit, rootState },
     { moduleName, moduleMeta = {}, existingModule, writeToSwap }
   ) {
+    const writeTo = writeToSwap ? swap : state;
     const moduleDefinition =
       state.registered[
         existingModule ? existingModule.$moduleName : moduleName
@@ -168,7 +188,7 @@ const actions = {
 
     // We're done setting up the module, we can commit now
 
-    commit("ADD_ACTIVE_MODULE", module, writeToSwap);
+    commit("ADD_ACTIVE_MODULE", { module, writeToSwap });
 
     if ("audioFeatures" in module.meta) {
       if (Array.isArray(module.meta.audioFeatures)) {
@@ -184,7 +204,7 @@ const actions = {
     };
 
     if ("init" in moduleDefinition) {
-      const { data } = state.active[module.$id];
+      const { data } = writeTo.active[module.$id];
       const returnedData = moduleDefinition.init({
         canvas,
         data: { ...data },
@@ -195,13 +215,14 @@ const actions = {
         commit("UPDATE_ACTIVE_MODULE", {
           id: module.$id,
           key: "data",
-          value: returnedData
+          value: returnedData,
+          writeToSwap
         });
       }
     }
 
     if ("resize" in moduleDefinition) {
-      const { data } = state.active[module.$id];
+      const { data } = writeTo.active[module.$id];
       const returnedData = moduleDefinition.resize({
         canvas,
         data: { ...data },
@@ -211,7 +232,8 @@ const actions = {
         commit("UPDATE_ACTIVE_MODULE", {
           id: module.$id,
           key: "data",
-          value: returnedData
+          value: returnedData,
+          writeToSwap
         });
       }
     }
@@ -271,20 +293,18 @@ const actions = {
       }
     }
 
-    commit(
-      "UPDATE_ACTIVE_MODULE_PROP",
-      {
-        moduleId,
-        prop,
-        data: {
-          value: dataOut,
-          type: propData.type
-        },
-        group,
-        groupName
+    commit("UPDATE_ACTIVE_MODULE_PROP", {
+      moduleId,
+      prop,
+      data: {
+        value: dataOut,
+        type: propData.type
       },
+      group,
+      groupName,
+
       writeToSwap
-    );
+    });
 
     if (group || groupName) {
       if ("set" in state.registered[moduleName].props[groupName].props[prop]) {
@@ -358,39 +378,54 @@ const actions = {
         obj[module.$id] = module;
         return obj;
       }, {});
+  },
+
+  async loadPresetData({ dispatch }, modules) {
+    const moduleValues = Object.values(modules);
+
+    for (let i = 0, len = moduleValues.length; i < len; i++) {
+      const module = moduleValues[i];
+
+      await dispatch("makeActiveModule", {
+        moduleName: module.$moduleName,
+        existingModule: module,
+        writeToSwap: true
+      });
+    }
+
+    return;
   }
 };
 
 const mutations = {
-  ADD_REGISTERED_MODULE(state, module, writeToSwap) {
+  ADD_REGISTERED_MODULE(state, { module, writeToSwap }) {
     const writeTo = writeToSwap ? swap : state;
     Vue.set(writeTo.registered, module.meta.name, module);
   },
 
-  REMOVE_REGISTERED_MODULE(state, moduleName, writeToSwap) {
+  REMOVE_REGISTERED_MODULE(state, { moduleName, writeToSwap }) {
     const writeTo = writeToSwap ? swap : state;
     Vue.delete(writeTo.registered, moduleName);
   },
 
-  ADD_ACTIVE_MODULE(state, module, writeToSwap) {
+  ADD_ACTIVE_MODULE(state, { module, writeToSwap }) {
     const writeTo = writeToSwap ? swap : state;
     Vue.set(writeTo.active, module.$id, module);
   },
 
-  REMOVE_ACTIVE_MODULE(state, moduleId, writeToSwap) {
+  REMOVE_ACTIVE_MODULE(state, { moduleId, writeToSwap }) {
     const writeTo = writeToSwap ? swap : state;
     delete writeTo.active[moduleId];
   },
 
-  UPDATE_ACTIVE_MODULE(state, { id, key, value }, writeToSwap) {
+  UPDATE_ACTIVE_MODULE(state, { id, key, value, writeToSwap }) {
     const writeTo = writeToSwap ? swap : state;
     Vue.set(writeTo.active[id], key, value);
   },
 
   async UPDATE_ACTIVE_MODULE_PROP(
     state,
-    { moduleId, prop, data, group, groupName },
-    writeToSwap
+    { moduleId, prop, data, group, groupName, writeToSwap }
   ) {
     const writeTo = writeToSwap ? swap : state;
     const value = data.value;
@@ -408,12 +443,12 @@ const mutations = {
     }
   },
 
-  UPDATE_ACTIVE_MODULE_META(state, { id, metaKey, data }, writeToSwap) {
+  UPDATE_ACTIVE_MODULE_META(state, { id, metaKey, data, writeToSwap }) {
     const writeTo = writeToSwap ? swap : state;
     Vue.set(writeTo.active[id].meta, metaKey, data);
   },
 
-  SWAP: SWAP(swap, temp, () => ({}))
+  SWAP: SWAP(swap, temp, () => ({}), sharedPropertyRestrictions)
 };
 
 export default {

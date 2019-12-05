@@ -199,4 +199,8 @@ export default class ModV {
   generatePreset() {
     this.$worker.postMessage({ type: "generatePreset" });
   }
+
+  loadPreset(filePathToPreset) {
+    this.$worker.postMessage({ type: "loadPreset", payload: filePathToPreset });
+  }
 }

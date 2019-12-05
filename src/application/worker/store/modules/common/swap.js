@@ -1,16 +1,40 @@
 import Vue from "vue";
-import cloneDeep from "lodash.clonedeep";
+// import cloneDeep from "lodash.clonedeep";
 
-export default function SWAP(swap, temp, getDefault) {
+export default function SWAP(
+  swap,
+  temp,
+  getDefault,
+  sharedPropertyRestrictions
+) {
   return function(state) {
-    temp = cloneDeep(state);
+    // temp = cloneDeep(state);
 
     const stateKeys = Object.keys(state);
 
     if (stateKeys.length) {
       // eslint-disable-next-line
       stateKeys.forEach(key => {
-        Vue.set(temp, key, state[key]);
+        if (sharedPropertyRestrictions) {
+          if (typeof sharedPropertyRestrictions[key] === "function") {
+            const restrictedKeys = sharedPropertyRestrictions[key](state[key]);
+            const keyKeys = Object.keys(state[key]);
+            Vue.set(temp, key, {});
+            // eslint-disable-next-line
+            keyKeys.forEach(keyKey => {
+              if (restrictedKeys.indexOf(keyKey) < 0) {
+                Vue.set(temp[key], keyKey, state[key][keyKey]);
+                delete state[key][keyKey];
+              }
+            });
+          } else if (sharedPropertyRestrictions[key]) {
+            Vue.set(temp, key, state[key]);
+            delete state[key];
+          }
+        } else {
+          Vue.set(temp, key, state[key]);
+          delete state[key];
+        }
       });
     } else {
       Object.assign(temp, getDefault());
@@ -21,23 +45,27 @@ export default function SWAP(swap, temp, getDefault) {
     if (swapKeys.length) {
       // eslint-disable-next-line
       swapKeys.forEach(key => {
-        Vue.set(state, key, swap[key]);
-      });
-    } else {
-      Object.assign(state, getDefault());
-    }
-
-    const tempKeys = Object.keys(temp);
-
-    if (tempKeys.length) {
-      // eslint-disable-next-line
-      tempKeys.forEach(key => {
-        Vue.set(swap, key, temp[key]);
+        if (sharedPropertyRestrictions) {
+          if (typeof sharedPropertyRestrictions[key] === "function") {
+            const restrictedKeys = sharedPropertyRestrictions[key](swap[key]);
+            const keyKeys = Object.keys(swap[key]);
+            // eslint-disable-next-line
+            keyKeys.forEach(keyKey => {
+              if (restrictedKeys.indexOf(keyKey) < 0) {
+                Vue.set(state[key], keyKey, swap[key][keyKey]);
+              }
+            });
+          } else if (sharedPropertyRestrictions[key]) {
+            Vue.set(state, key, { ...state[key], ...swap[key] });
+          }
+        } else {
+          Vue.set(state, key, { ...state[key], ...swap[key] });
+        }
       });
     } else {
       Object.assign(swap, getDefault());
     }
 
-    Object.assign(temp, getDefault());
+    Object.assign(swap, temp || getDefault());
   };
 }

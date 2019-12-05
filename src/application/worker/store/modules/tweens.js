@@ -183,6 +183,18 @@ const actions = {
 
   createPresetData() {
     return Object.values(state.tweens).filter(tween => !tween.isGallery);
+  },
+
+  async loadPresetData(context, tweens) {
+    const tweenValues = Object.values(tweens);
+    for (let i = 0, len = tweenValues.length; i < len; i++) {
+      const tween = tweenValues[i];
+
+      await store.dispatch("dataTypes/createType", {
+        type: "tween",
+        args: tween
+      });
+    }
   }
 };
 
