@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <div ref="container">
     <canvas
       ref="canvas"
       @mousedown="mouseDown"
@@ -18,6 +18,8 @@
 </template>
 
 <script>
+import fontFamily from "../../util/font-family";
+
 export default {
   props: {
     min: {
@@ -36,6 +38,11 @@ export default {
       type: Number,
       default: 2
     },
+    type: {
+      type: String,
+      validator: val => ["int", "float"].includes(val),
+      default: "float"
+    },
     default: Number,
     value: Number
   },
@@ -46,6 +53,7 @@ export default {
       active: false,
       startX: 0,
       position: 0,
+      actualPosition: 0,
       lastComp: 0,
       internalValue: 0,
       editMode: false,
@@ -54,13 +62,15 @@ export default {
       spacingModifier: 1,
       baseLineHeight: 8,
       modifiedLineHeight: 5,
-      inbetweenLineHeight: 12
+      inbetweenLineHeight: 12,
+      resizeObserver: null
     };
   },
 
   computed: {
     spacingCalc() {
-      return this.spacing / this.spacingModifier;
+      const { devicePixelRatio: dpr } = window;
+      return (this.spacing * dpr) / this.spacingModifier;
     }
   },
 
@@ -70,19 +80,30 @@ export default {
   },
 
   mounted() {
+    const { devicePixelRatio: dpr } = window;
     this.canvas = this.$refs.canvas;
     this.context = this.$refs.canvas.getContext("2d");
-    this.canvas.width = 200;
-    this.canvas.height = 20;
+    this.canvas.width = 200 * dpr;
+    this.canvas.height = 20 * dpr;
 
     this.context.fillStyle = "#333";
     this.context.strokeStyle = "#fff";
-    this.context.textAlign = "center";
     requestAnimationFrame(this.draw);
+
+    this.resizeObserver = new ResizeObserver(this.resize).observe(
+      this.$refs.container
+    );
+  },
+
+  beforeDestroy() {
+    if (this.resizeObserver) {
+      this.resizeObserver.disconnect();
+    }
   },
 
   methods: {
     draw() {
+      const { devicePixelRatio: dpr } = window;
       const {
         canvas,
         context,
@@ -99,6 +120,7 @@ export default {
       const canvasWidthHalf = canvas.width / 2;
 
       context.strokeStyle = "#fff";
+      context.lineWidth = 1 * dpr;
 
       let maxIndicators = canvas.width / spacingCalc;
       if (maxIndicators % 2 !== 0) {
@@ -141,11 +163,20 @@ export default {
           );
           context.stroke();
         }
-        context.fillStyle = "#333";
-        context.fillRect(gap - 5, canvas.height / 2 - 5, 10, 10);
 
+        context.fillStyle = "#333";
+        context.fillRect(
+          gap - 5 * dpr,
+          Math.floor(canvas.height / 2) - 5 * dpr,
+          10 * dpr,
+          10 * dpr
+        );
+
+        context.font = `${12 * dpr}px ${fontFamily}`;
+        context.textAlign = "center";
+        context.textBaseline = "middle";
         context.fillStyle = "#fff";
-        context.fillText(i, gap, canvas.height / 1.75 + 0.5);
+        context.fillText(i, gap, Math.floor(canvas.height / 2));
       }
 
       if (isExact) {
@@ -180,30 +211,59 @@ export default {
     },
 
     mouseMove(e) {
-      const comp = e.clientX - this.startX;
-      let newPosition = this.position + (comp - this.lastComp);
-      if (newPosition === this.position) {
+      const { devicePixelRatio: dpr } = window;
+      const {
+        type,
+        actualPosition,
+        lastComp,
+        startX,
+        spacingCalc,
+        min,
+        max
+      } = this;
+
+      const comp = e.clientX * dpr - startX * dpr;
+
+      let newPosition = actualPosition + (comp - lastComp);
+
+      if (newPosition === actualPosition) {
         return;
       }
 
-      let value = -newPosition / this.spacingCalc;
+      let value = -newPosition / spacingCalc;
       this.lastComp = comp;
 
       if (value < this.min) {
-        newPosition = -this.min * this.spacingCalc;
+        newPosition = -min * spacingCalc;
       }
 
       if (value > this.max) {
-        newPosition = -this.max * this.spacingCalc;
+        newPosition = -max * spacingCalc;
       }
 
-      this.position = newPosition;
       value = -newPosition / this.spacingCalc;
 
-      this.internalValue = value;
+      this.actualPosition = newPosition;
+
+      if (type === "int") {
+        const rounded = Math.round(value);
+
+        if (rounded === this.internalValue) {
+          return;
+        } else {
+          this.position = rounded * spacingCalc;
+          this.internalValue = rounded;
+
+          requestAnimationFrame(this.draw);
+        }
+      } else {
+        this.internalValue = value;
+        this.position = this.actualPosition;
+        requestAnimationFrame(this.draw);
+      }
+
       this.$emit("input", this.internalValue);
       this.inputValue = this.internalValue;
-      requestAnimationFrame(this.draw);
     },
 
     input(e) {
@@ -241,6 +301,15 @@ export default {
       if (e.key === "Shift" || e.key === "Alt") {
         this.spacingModifier = 1;
       }
+    },
+
+    resize(e) {
+      const { devicePixelRatio: dpr } = window;
+      const { width, height } = e[0].contentRect;
+      this.canvas.width = width * dpr;
+      this.canvas.height = height * dpr;
+
+      requestAnimationFrame(this.draw);
     }
   },
 
@@ -262,9 +331,14 @@ export default {
 <style scoped>
 div {
   position: relative;
-  width: 200px;
-  height: 20px;
+  width: 100%;
+  min-width: 200px;
   display: inline-block;
+}
+
+canvas {
+  height: 20px;
+  width: 100%;
 }
 
 input {
