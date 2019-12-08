@@ -12,20 +12,12 @@
         <component :is="component" v-model="value" />
       </div>
       <div class="input" v-else-if="type === 'int' || type === 'float'">
-        <RangeControl :min="min" :max="max" v-model.number="value" />
-        <!-- <input
-        type="range"
-        :min="min"
-        :max="max"
-        v-model.number="value"
-        step="0.01"
-      /><input
-        type="number"
-        v-model.number="value"
-        :step="modeStep"
-        @keydown.shift="modeStep = 0.1"
-        @keyup.shift="modeStep = 0.01"
-      /> -->
+        <RangeControl
+          :min="min"
+          :max="max"
+          v-model.number="value"
+          :type="type"
+        />
       </div>
       <div class="input" v-else-if="type === 'tween'">
         <TweenControl v-model="value" />
