@@ -1,6 +1,20 @@
 const state = {
-  focused: "",
+  focused: null,
   pinned: []
+};
+
+const getters = {
+  focusedOrPinned: state => {
+    const arr = [...state.pinned];
+
+    if (state.focused && arr.indexOf(state.focused) < 0) {
+      arr.push(state.focused);
+    }
+
+    console.log(arr);
+
+    return arr;
+  }
 };
 
 const mutations = {
@@ -9,7 +23,7 @@ const mutations = {
   },
 
   CLEAR_FOCUSED(state) {
-    state.focused = "";
+    state.focused = null;
   },
 
   ADD_PINNED(state, id) {
@@ -24,7 +38,7 @@ const mutations = {
     const index = state.pinned.indexOf(id);
 
     if (index > -1) {
-      state.splice(index, 1);
+      state.pinned.splice(index, 1);
     }
   }
 };
@@ -32,5 +46,6 @@ const mutations = {
 export default {
   namespaced: true,
   state,
+  getters,
   mutations
 };

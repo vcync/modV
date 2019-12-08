@@ -1,44 +1,73 @@
 <template>
   <main id="app">
     <golden-layout class="hscreen" :showPopoutIcon="false" v-model="state">
-      <gl-col :closable="false" id="lr-col">
-        <gl-component title="Groups" :closable="false">
-          <Groups />
-        </gl-component>
-        <gl-row>
-          <gl-component title="Gallery" :closable="false">
-            <Gallery />
+      <gl-row>
+        <gl-col :closable="false" :minItemWidth="100" id="lr-col">
+          <gl-component title="Groups" :closable="false">
+            <Groups />
           </gl-component>
 
-          <gl-stack>
-            <gl-component title="Preview" :closable="false">
-              <CanvasDebugger />
+          <gl-row>
+            <gl-component title="Gallery" :closable="false">
+              <Gallery />
             </gl-component>
 
-            <gl-component title="Swap" :closable="false">
-              <ABSwap />
-            </gl-component>
-          </gl-stack>
-
-          <gl-stack>
-            <gl-component title="Input config" :closable="false">
-              <InputConfig />
-            </gl-component>
-
-            <gl-stack title="Input Device Config" :closable="false">
-              <gl-component title="Audio" :closable="false">
-                <AudioDeviceConfig />
+            <gl-stack>
+              <gl-component title="Preview" :closable="false">
+                <CanvasDebugger />
               </gl-component>
-              <gl-component title="MIDI" :closable="false">
-                <MIDIDeviceConfig />
-              </gl-component>
-              <gl-component title="BPM" :closable="false">
-                <BPMConfig />
+
+              <gl-component title="Swap" :closable="false">
+                <ABSwap />
               </gl-component>
             </gl-stack>
+
+            <gl-stack>
+              <gl-component title="Input config" :closable="false">
+                <InputConfig />
+              </gl-component>
+
+              <gl-stack title="Input Device Config" :closable="false">
+                <gl-component title="Audio" :closable="false">
+                  <AudioDeviceConfig />
+                </gl-component>
+                <gl-component title="MIDI" :closable="false">
+                  <MIDIDeviceConfig />
+                </gl-component>
+                <gl-component title="BPM" :closable="false">
+                  <BPMConfig />
+                </gl-component>
+              </gl-stack>
+            </gl-stack>
+          </gl-row>
+        </gl-col>
+        <gl-row :closable="false" ref="rightColumn" v-if="focusedModules">
+          <gl-stack title="Module properties">
+            <gl-component
+              v-for="module in focusedModules"
+              :key="module.$id"
+              :title="`${module.meta.name} properties`"
+              :closable="false"
+            >
+              <grid v-if="module.props">
+                <c span="1..">
+                  <button @click="toggleModulePin(module.$id)">
+                    {{ isPinned(module.$id) ? "Unpin" : "Pin" }}
+                  </button>
+                </c>
+                <c span="1..">
+                  <Control
+                    v-for="key in getProps(module.$moduleName)"
+                    :id="module.$id"
+                    :prop="key"
+                    :key="key"
+                  />
+                </c>
+              </grid>
+            </gl-component>
           </gl-stack>
         </gl-row>
-      </gl-col>
+      </gl-row>
     </golden-layout>
 
     <StatusBar />
@@ -55,6 +84,7 @@ import AudioDeviceConfig from "@/components/InputDeviceConfig/Audio.vue";
 import MIDIDeviceConfig from "@/components/InputDeviceConfig/MIDI.vue";
 import BPMConfig from "@/components/InputDeviceConfig/BPM.vue";
 import StatusBar from "@/components/StatusBar";
+import Control from "@/components/Control";
 
 export default {
   name: "app",
@@ -70,7 +100,8 @@ export default {
     AudioDeviceConfig,
     MIDIDeviceConfig,
     BPMConfig,
-    StatusBar
+    StatusBar,
+    Control
   },
 
   data() {
@@ -88,6 +119,15 @@ export default {
       return this.$modV.store.state.plugins
         .filter(plugin => "component" in plugin)
         .map(plugin => plugin.component.name);
+    },
+
+    focusedModules() {
+      const focusedOrPinned = this.$store.getters["ui-modules/focusedOrPinned"];
+      const modules = focusedOrPinned.map(
+        id => this.$modV.store.state.modules.active[id]
+      );
+
+      return modules;
     }
   },
 
@@ -110,6 +150,8 @@ export default {
     //     this.showUi = !this.showUi;
     //   }
     // });
+
+    this.rightColumnWidth = window.innerWidth * 0.33;
   },
 
   methods: {
@@ -136,6 +178,37 @@ export default {
       }
 
       this.cursor = "none";
+    },
+
+    getProps(moduleName) {
+      const moduleDefinition = this.$modV.store.state.modules.registered[
+        moduleName
+      ];
+
+      return Object.keys(moduleDefinition.props).filter(
+        key =>
+          moduleDefinition.props[key].type === "int" ||
+          moduleDefinition.props[key].type === "float" ||
+          moduleDefinition.props[key].type === "text" ||
+          moduleDefinition.props[key].type === "bool" ||
+          moduleDefinition.props[key].type === "color" ||
+          moduleDefinition.props[key].type === "vec2" ||
+          moduleDefinition.props[key].type === "tween" ||
+          moduleDefinition.props[key].type === "texture" ||
+          moduleDefinition.props[key].type === "enum"
+      );
+    },
+
+    toggleModulePin(id) {
+      if (this.isPinned(id)) {
+        this.$store.commit("ui-modules/REMOVE_PINNED", id);
+      } else {
+        this.$store.commit("ui-modules/ADD_PINNED", id);
+      }
+    },
+
+    isPinned(id) {
+      return this.$store.state["ui-modules"].pinned.indexOf(id) > -1;
     }
   }
 };

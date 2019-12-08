@@ -3,7 +3,7 @@
     <grid
       columns="4"
       class="head padded-grid"
-      @click="focusInput(module.meta.enabledInputId, 'Enabled')"
+      @click="clickActiveModule(module.meta.enabledInputId, 'Enabled')"
       :class="{
         'has-link': hasLink(module.meta.enabledInputId),
         focused: isFocused(module.meta.enabledInputId)
@@ -191,6 +191,11 @@ export default {
         id,
         title: `${this.module.meta.name}: ${title}`
       });
+    },
+
+    clickActiveModule(inputId, title) {
+      this.focusInput(inputId, title);
+      this.$store.commit("ui-modules/SET_FOCUSED", this.id);
     },
 
     hasLink(id) {
