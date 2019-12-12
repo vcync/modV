@@ -1,3 +1,6 @@
+# Only build tags
+if: tag IS present
+
 matrix:
   include:
   - os: osx
