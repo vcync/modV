@@ -30,3 +30,4 @@ deploy:
   file: "./dist_electron/*.{exe,snap,dmg,AppImage}"
   on:
     repo: vcync/modv-3
+    all_branches: true
