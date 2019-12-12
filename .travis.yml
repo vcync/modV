@@ -30,5 +30,3 @@ deploy:
   file: "./dist_electron/*.{exe,snap,dmg,AppImage}"
   on:
     repo: vcync/modv-3
-    branch: build/travis
-
