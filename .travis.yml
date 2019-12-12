@@ -15,7 +15,7 @@ cache:
   - node_modules
   - "$HOME/.cache/electron"
   - "$HOME/.cache/electron-builder"
-script: yarn run electron:build -mwl
+script: yarn run electron:build -mwl -c.snap.publish=github
 before_cache:
 - rm -rf $HOME/.cache/electron-builder/wine
 branches:
