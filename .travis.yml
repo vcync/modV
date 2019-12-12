@@ -1,0 +1,34 @@
+# Only build tags
+if: tag IS present
+
+matrix:
+  include:
+  - os: osx
+    osx_image: xcode10.2
+    language: node_js
+    node_js: '10'
+    env:
+    - ELECTRON_CACHE=$HOME/.cache/electron
+    - ELECTRON_BUILDER_CACHE=$HOME/.cache/electron-builder
+cache:
+  directories:
+  - node_modules
+  - "$HOME/.cache/electron"
+  - "$HOME/.cache/electron-builder"
+script: yarn run electron:build -mwl
+before_cache:
+- rm -rf $HOME/.cache/electron-builder/wine
+branches:
+  except:
+  - "/^v\\d+\\.\\d+\\.\\d+$/"
+deploy:
+  provider: releases
+  api_key:
+    secure: fwUEgjQnGfS7+7QhPqJQRoorZ4KW0BDOTbFANl7KwB+IdeAkPc+F4n+o80/WzmT8TdJiaiPhwZEOSRR0XXZPccwv0jIwfmqczCEftCRUk229uQWPm08d/3HV/wKG39ggVH01K0zE1iAzhioJvqVBgRWi9sCi/Lu1w9qD0OiE/CT7rX1fWaielVP5o6Rx4Ml+envJr/6Tvo0yRWgmMeNIU8+cDjTeRNtazEq5ad9JVY5frCChE5Ztg0/rj8hZ10eRqfIrAcckY0xgH9DcR0iRJHHB1wXAu2YIgiq1Fvth+ksmFVebRjWQpKpgdTAfdPOWn585Jvv0Y4uzPhNvmSifc3RelufhNod4ub0UxDET6xuZc8X1I5QfeE2KFYU3Wg9KlhDm2oPLj2gah8SNkFLaT/R44ypGGCEecJoeC1xEEmhG/ksSJ0jfksvJaz5Oh26vOIIDxL2ORhMp8YXaoRCuh/9ixC4wCusLGiKtHDukLDZBuol+xadJV9EZtnXnZqB4T0VbfwFvhnWB7HrcS9VKG300xfvuRy0th7gpahin2dlIfKs2o8Tf0ihsp5VvDc/4lCvyPaU4Q4+b35YAW9cv7snyRR4d9bD4pDIBWk5rStTLbse1VOli1d/mZBz8iC5A/Gt0C0O2EfvR7+P/ow5195s+jKum/tfFo1e7XRDt0Yo=
+  file_glob: true
+  skip_cleanup: true
+  file: "./dist_electron/*.{exe,snap,dmg,AppImage}"
+  on:
+    repo: vcync/modv-3
+    branch: build/travis
+
