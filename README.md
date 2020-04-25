@@ -5,28 +5,15 @@ modV 3.0 is a complete rewrite of modV 2.0 with a focus on performance and a sta
 
 ## Project setup
 ```
-npm install
+yarn
 ```
 
 ### Compiles and hot-reloads for development
 ```
-npm run serve
+yarn run electron:serve
 ```
 
-### Compiles and minifies for production
+### Builds for release
 ```
-npm run build
+yarn run electron:build
 ```
-
-### Run your tests
-```
-npm run test
-```
-
-### Lints and fixes files
-```
-npm run lint
-```
-
-### Customize configuration
-See [Configuration Reference](https://cli.vuejs.org/config/).
