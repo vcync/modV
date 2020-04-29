@@ -97,6 +97,7 @@ If you can help with any of these, please submit a PR and/or issue.
 ## Acknowledgements
 Thank you to:
 
+* [Tim Pietrusky](https://nerddis.co/) for his continued support, help, mentorship and kindness
 * Hugh Rawlinson, Nevo Segal and Jakub Fiala for the incredible audio analysis engine, [meyda](https://github.com/hughrawlinson/meyda)
 * [Dario Villanueva](http://alolo.co) for his advice and introduction to live visuals which inspired this whole project
 * Lebedev Konstantin for [Sortable](https://github.com/RubaXa/Sortable)
