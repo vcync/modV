@@ -9,13 +9,13 @@ All documentation so far is available in [this repo's Wiki](https://github.com/2
 
 ## Important version information
 
-modV has three versions.  
-1.0 is found in the `master` branch.  
-1.5 is found in the `1.5` branch.  
+modV has three versions.
+1.0 is found in the `master` branch.
+1.5 is found in the `1.5` branch.
 2.0 - the only version with active development, can be found in the `2.0` branch.
 
-modV is still active, but only on the 2.0 branch.  
-When 2.0 reaches maturity, 1.0 will be archived onto its own branch and 2.0 will become the master branch.  
+modV is still active, but only on the 2.0 branch.
+When 2.0 reaches maturity, 1.0 will be archived onto its own branch and 2.0 will become the master branch.
 Releases will start upon 2.0's move to the master branch.
 
 There is no support for 1.0. 1.5 will be bugfixed upon request.
@@ -40,13 +40,16 @@ git clone git@github.com:2xAA/modV.git ./modV
 cd modV
 
 # install dependencies
-yarn
+npm
+
+# additional step for windows users (using cmd or powershell?)
+npm rebuild node-sass
 
 # serve with hot reload at localhost:8080
-yarn run dev
+npm run dev
 
 # build for production with minification
-yarn run build
+npm run build
 ```
 
 ### Windows 10
@@ -58,10 +61,10 @@ npm install --global --production windows-build-tools
 ```
 
 ### Notes on Building
-modV, by default, builds a standalone application using [NWJS](http://nwjs.io/).  
+modV, by default, builds a standalone application using [NWJS](http://nwjs.io/).
 Your standalone application should appear in `./nwjs/build/modV` and the standard site version will appear in `./dist`.
 
-By default the build script will build standalone apps for OS X 64-bit and Windows 64-bit.  
+By default the build script will build standalone apps for OS X 64-bit and Windows 64-bit.
 For more information, please read [the nw-builder documentation](https://github.com/nwjs/nw-builder).
 
 To build standalone applications for Windows on macOS an Linux platforms, make sure Wine is installed and accessable via the commandline.
@@ -69,7 +72,7 @@ To build standalone applications for Windows on macOS an Linux platforms, make s
 ## OS Audio Specifics
 
 ### Windows
-- You must run either Command Prompt or PowerShell with administrative privileges for the media folder to be symlinked.  
+- You must run either Command Prompt or PowerShell with administrative privileges for the media folder to be symlinked.
 To do this, find either cmd or PowerShell in your start menu, right click and select 'Run as administrator.'.
 - VB Cable is recommended to route audio to the browser, download that [here](http://vb-audio.pagesperso-orange.fr/Cable/)
 
@@ -84,7 +87,7 @@ to make it work.
 ![Browser input device in pavucontrol](https://github.com/2xAA/modV/raw/master/docs/linux-audio/pavucontrol.png)
 
 ## Contribution
-modV is open to contribution. Currently the project needs (in order of priority):  
+modV is open to contribution. Currently the project needs (in order of priority):
 * full re-write for ES6
 * a better UI
 * work on the mediaManager and loading/saving Modules
