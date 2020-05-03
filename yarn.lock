@@ -6547,9 +6547,10 @@ methods@~1.1.2:
   resolved "https://registry.yarnpkg.com/methods/-/methods-1.1.2.tgz#5529a4d67654134edcc5266656835b0f851afcee"
   integrity sha1-VSmk1nZUE07cxSZmVoNbD4Ua/O4=
 
-"meyda@github:meyda/meyda#chore/dct":
-  version "4.2.0"
-  resolved "https://codeload.github.com/meyda/meyda/tar.gz/dbec168994f7aef6b05fa3563faca36901b4b626"
+meyda@^4.3.1:
+  version "4.3.1"
+  resolved "https://registry.yarnpkg.com/meyda/-/meyda-4.3.1.tgz#6b6b5f9834447514315677fec5475dfc5d2c1546"
+  integrity sha512-rAy03ycgRtZWTqm4yLiNq45eC1/k0HqDVq94EZZAkt4glAsp14viQLg+6kua7o2dVDkKGvtcTr8KQMuvcaUmeg==
   dependencies:
     dct "0.1.0"
     fftjs "0.0.4"
