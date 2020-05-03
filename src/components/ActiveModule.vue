@@ -1,5 +1,10 @@
 <template>
-  <div class="active-module">
+  <div
+    class="active-module"
+    ref="activeModule"
+    tabindex="0"
+    @keydown="removeModule"
+  >
     <grid
       columns="4"
       class="head padded-grid"
@@ -195,6 +200,7 @@ export default {
 
     clickActiveModule(inputId, title) {
       this.focusInput(inputId, title);
+      this.$refs.activeModule.focus();
       this.$store.commit("ui-modules/SET_FOCUSED", this.id);
     },
 
@@ -204,6 +210,13 @@ export default {
 
     isFocused(id) {
       return this.$modV.store.state.inputs.focusedInput.id === id;
+    },
+
+    removeModule(e) {
+      if (e.keyCode === 8 || e.keyCode === 46) {
+        this.$store.commit("ui-modules/SET_FOCUSED", null);
+        this.$emit("remove-module", this.id);
+      }
     }
   }
 };

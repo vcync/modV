@@ -77,9 +77,13 @@ const sharedPropertyRestrictions = {
   groups: (
     // keeps gallery group in place
     value
-  ) => [
-    `${value.findIndex(group => group.name === "modV internal Gallery Group")}`
-  ]
+  ) => {
+    const index = value.findIndex(
+      group => group.name === "modV internal Gallery Group"
+    );
+
+    return index > -1 ? [`${index}`] : [];
+  }
 };
 
 const actions = {
