@@ -46,7 +46,7 @@
           class="group-module"
         >
           <div class="group-module-container">
-            <ActiveModule :id="moduleId" />
+            <ActiveModule :id="moduleId" @remove-module="removeModule" />
           </div>
         </Draggable>
       </Container>
@@ -208,7 +208,6 @@ export default {
       },
 
       set(value) {
-        console.log(value);
         this.$modV.store.commit("groups/UPDATE_GROUP", {
           groupId: this.groupId,
           data: {
@@ -254,6 +253,19 @@ export default {
       if (!this.focused) {
         this.$store.commit("ui-groups/SET_FOCUSED", this.groupId);
       }
+    },
+
+    removeModule(moduleId) {
+      const { groupId } = this;
+
+      this.$modV.store.commit("groups/REMOVE_MODULE_FROM_GROUP", {
+        moduleId,
+        groupId
+      });
+
+      this.$modV.store.commit("modules/REMOVE_ACTIVE_MODULE", {
+        moduleId
+      });
     }
   }
 };
