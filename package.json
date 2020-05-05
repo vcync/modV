@@ -118,7 +118,8 @@
     "worker-loader": "^1.1.1"
   },
   "engines": {
-    "node": ">= 8.0.0"
+    "node": ">= 8.0.0",
+    "npm": ">= 6"
   },
   "browserslist": [
     "> 1%",
