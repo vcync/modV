@@ -12,7 +12,7 @@
       class="group-container"
       @drop="onDrop"
     >
-      <Draggable v-for="group in groups" :key="group.id" class="group">
+      <Draggable v-for="group in groups" :key="group.id">
         <Group :groupId="group.id" />
       </Draggable>
     </Container>
@@ -81,6 +81,7 @@ export default {
     },
 
     onDrop(e) {
+      console.log("drop");
       this.groups = applyDrag(this.groups, e);
     }
   }
