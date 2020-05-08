@@ -306,7 +306,7 @@ div.group-title {
 div.group-modules {
   display: flex;
   overflow-x: auto;
-  min-height: 60px;
+  min-height: 174px;
   background-color: rgba(90, 90, 90, 0.6);
 }
 
