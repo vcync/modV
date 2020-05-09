@@ -75,9 +75,8 @@ export default {
 
 <style scoped>
 div {
-  padding: 10px;
-  color: #fff;
-  background-color: rgba(0, 0, 0, 0.6);
+  color: var(--foreground-color);
+  background-color: var(--background-color);
 }
 
 canvas {

@@ -174,10 +174,6 @@ export default {
 </script>
 
 <style scoped>
-grid {
-  padding: 0.75em;
-}
-
 .has-link {
   border: 1px solid rgba(255, 217, 0, 0.3);
 }

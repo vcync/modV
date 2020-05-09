@@ -86,6 +86,8 @@ import BPMConfig from "@/components/InputDeviceConfig/BPM.vue";
 import StatusBar from "@/components/StatusBar";
 import Control from "@/components/Control";
 
+import "@/css/golden-layout_theme.css";
+
 export default {
   name: "app",
 
@@ -216,15 +218,42 @@ export default {
 
 <style>
 @import url("https://fonts.googleapis.com/css?family=IBM+Plex+Mono:100,100i,200,200i,300,300i,400,400i,500,500i,600,600i,700,700i|IBM+Plex+Sans:100,100i,200,200i,300,300i,400,400i,500,500i,600,600i,700,700i&display=swap");
-@import url("https://rsms.me/raster/raster.css?v=6");
+@import url("https://rsms.me/raster/raster.css?v=20");
 
 :root {
   --fontSize: 14px;
+  --foreground-color-rgb: 255, 255, 255;
+  --foreground-color-a: 1;
+  --background-color: #141416;
+  --foreground-color-2: rgba(var(--foreground-color-rgb), 0.2);
+  --foreground-color-3: rgba(var(--foreground-color-rgb), 0.1);
+  --columnGap: calc(var(--lineHeight));
+}
+
+*::-webkit-scrollbar {
+  width: 14px;
+  height: 14px;
+  background-color: var(--foreground-color-3); /* or add it to the track */
+}
+
+*::-webkit-scrollbar-thumb {
+  background: var(--foreground-color-2);
+}
+
+* {
+  box-sizing: border-box;
 }
 
 .lm_header .lm_tab {
   padding: 0 1em 5px;
   font-size: 1rem;
+}
+
+input,
+textarea {
+  background: var(--foreground-color-3);
+  color: var(--foreground-color);
+  border: none;
 }
 
 html,
@@ -236,8 +265,6 @@ body,
 }
 
 body {
-  color: #fff;
-
   margin: 0;
   padding: 0;
 

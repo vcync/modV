@@ -27,6 +27,7 @@
               "
               tag="grid"
               columns="4"
+              class="fluid"
             >
               <Draggable
                 v-for="(module, name) in modules"
@@ -198,10 +199,12 @@ export default {
   display: none !important;
 }
 
+grid.fluid {
+  grid-template-columns: repeat(auto-fit, minmax(90px, 1fr));
+}
+
 div.gallery {
-  padding: 1em;
   color: #fff;
-  background-color: rgba(0, 0, 0, 0.6);
 
   display: flex;
   flex-direction: column;

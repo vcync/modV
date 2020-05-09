@@ -1,14 +1,15 @@
 <template>
-  <div class="groups">
-    <div>
+  <grid class="groups">
+    <c span="1..">
       <button @click="createGroup">Create new Group</button>
-    </div>
+    </c>
     <Container
       drag-handle-selector=".group-title"
       lock-axis="y"
       group-name="groups"
       :should-animate-drop="() => false"
-      tag="div"
+      tag="c"
+      span="1.."
       class="group-container"
       @drop="onDrop"
     >
@@ -16,7 +17,7 @@
         <Group :groupId="group.id" />
       </Draggable>
     </Container>
-  </div>
+  </grid>
 </template>
 
 <script>
@@ -90,9 +91,8 @@ export default {
 
 <style scoped>
 div.groups {
-  padding: 10px;
-  color: #fff;
-  background-color: rgba(0, 0, 0, 0.6);
+  color: var(--foreground-color);
+  background-color: var(--background-color);
 
   height: 100%;
   width: 100%;

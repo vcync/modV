@@ -79,9 +79,3 @@ export default {
   }
 };
 </script>
-
-<style scoped>
-.device-config {
-  padding: 1em;
-}
-</style>

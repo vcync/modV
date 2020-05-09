@@ -35,7 +35,7 @@
       </c>
     </grid>
 
-    <grid class="controls" columns="8">
+    <grid class="controls">
       <c span="1..">
         <grid
           columns="4"
@@ -92,6 +92,7 @@
 
       <c span="1.." v-if="module.props && showMore">
         <Control
+          class="padded-grid"
           v-for="key in getProps(module.$moduleName)"
           :id="id"
           :prop="key"
@@ -232,7 +233,7 @@ export default {
 }
 
 .padded-grid {
-  padding: 0.75em;
+  padding: 0.75em 0.75em;
 }
 
 .blend-controls {

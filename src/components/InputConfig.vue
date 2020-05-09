@@ -56,9 +56,3 @@ export default {
   }
 };
 </script>
-
-<style scoped>
-div {
-  padding: 1em;
-}
-</style>

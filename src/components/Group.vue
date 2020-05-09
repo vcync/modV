@@ -293,7 +293,7 @@ section.group-controls {
 }
 
 div.group-title {
-  padding: 10px;
+  padding: var(--baseline);
   width: 100%;
   background-color: rgba(255, 255, 255, 0.6);
   box-sizing: border-box;
