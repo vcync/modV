@@ -19,9 +19,9 @@ export default function windowHandler() {
   }
 
   function configureWindow({ win, canvas, title, backgroundColor }) {
+    win.document.body.appendChild(canvas);
     win.document.title = title;
     win.document.body.style.backgroundColor = backgroundColor;
-    win.document.body.appendChild(canvas);
   }
 
   function pollToConfigureWindow(args) {
@@ -40,7 +40,7 @@ export default function windowHandler() {
         clearTimeout(poll);
       }
 
-      poll = setTimeout(() => checkIfDone(args), 1);
+      poll = setTimeout(() => checkIfDone(args), 100);
     };
   }
 

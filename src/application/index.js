@@ -24,6 +24,7 @@ export default class ModV {
   windowHandler = windowHandler;
   use = use;
   debug = false;
+  ready = false;
 
   _store = store;
   store = {
@@ -35,7 +36,7 @@ export default class ModV {
     this.$asyncWorker = new PromiseWorker(this.$worker);
 
     this.$worker.addEventListener("message", e => {
-      if (e.data.type === "tick") {
+      if (e.data.type === "tick" && this.ready) {
         this.tick(e.data.payload);
         return;
       }
@@ -144,6 +145,7 @@ export default class ModV {
     });
 
     ipcRenderer.send("get-media-manager-state");
+    this.ready = true;
   }
 
   async inputLoop() {
