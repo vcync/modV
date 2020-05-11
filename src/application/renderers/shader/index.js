@@ -138,7 +138,7 @@ async function setupModule(Module) {
   }
 }
 
-function render({ module, props, canvas, context }) {
+function render({ module, props, canvas, context, pipeline }) {
   if (!canvasTexture) {
     canvasTexture = pex.texture2D({
       data: canvas.data || canvas,
@@ -184,6 +184,11 @@ function render({ module, props, canvas, context }) {
     uniforms,
     viewport: [0, 0, canvas.width, canvas.height]
   });
+
+  // clear context if we're in pipeline mode
+  if (pipeline) {
+    context.clearRect(0, 0, canvas.width, canvas.height);
+  }
 
   // Copy Shader Canvas to Main Canvas
   context.drawImage(shaderCanvas, 0, 0, canvas.width, canvas.height);

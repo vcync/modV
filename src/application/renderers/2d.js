@@ -36,6 +36,14 @@ function render({
   props,
   data
 }) {
+  if (
+    twoDCanvas.width !== canvas.width ||
+    twoDCanvas.height !== canvas.height
+  ) {
+    twoDCanvas.width = canvas.width;
+    twoDCanvas.height = canvas.height;
+  }
+
   twoDContext.clearRect(0, 0, canvas.width, canvas.height);
   twoDContext.drawImage(canvas, 0, 0, canvas.width, canvas.height);
 

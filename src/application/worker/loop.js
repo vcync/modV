@@ -6,14 +6,22 @@ import { applyWindow } from "meyda/src/utilities";
 
 const meyda = { windowing: applyWindow };
 
-const buffer = new OffscreenCanvas(300, 300);
-const bufferContext = buffer.getContext("2d");
-store.dispatch("outputs/addAuxillaryOutput", {
-  name: "loop-buffer",
-  context: bufferContext
-});
+let bufferCanvas;
+let bufferContext;
 
 function loop(delta, features) {
+  if (!bufferCanvas) {
+    bufferCanvas = new OffscreenCanvas(300, 300);
+    bufferContext = bufferCanvas.getContext("2d");
+    store.dispatch("outputs/addAuxillaryOutput", {
+      name: "loop-buffer",
+      context: bufferContext,
+      group: "buffer"
+    });
+
+    return;
+  }
+
   const {
     modules: { active, registered },
     groups: { groups },
@@ -84,38 +92,73 @@ function loop(delta, features) {
   for (let i = 0; i < groupsLength; ++i) {
     const group = groups[i];
     const groupModulesLength = group.modules.length;
-    if (!group.enabled || groupModulesLength < 1 || group.alpha < 0.001) {
+    if (!group.enabled || group.alpha < 0.001) {
       continue;
     }
 
     const { clearing, inherit, pipeline } = group;
 
     const aux = group.drawToCanvasId && auxillary[group.drawToCanvasId].context;
-    let drawTo = group.context.context;
+    const groupContext = group.context.context;
+    let drawTo = groupContext;
 
     if (aux) {
       drawTo = aux;
     }
 
     if (clearing) {
-      drawTo.clearRect(0, 0, drawTo.canvas.width, drawTo.canvas.height);
+      groupContext.clearRect(
+        0,
+        0,
+        groupContext.canvas.width,
+        groupContext.canvas.height
+      );
+    }
+
+    if (pipeline && clearing) {
+      bufferContext.clearRect(
+        0,
+        0,
+        bufferContext.canvas.width,
+        bufferContext.canvas.height
+      );
     }
 
     if (inherit) {
-      drawTo.drawImage(
+      groupContext.drawImage(
         lastCanvas,
         0,
         0,
         drawTo.canvas.width,
         drawTo.canvas.height
       );
+
+      if (pipeline) {
+        bufferContext.drawImage(
+          lastCanvas,
+          0,
+          0,
+          drawTo.canvas.width,
+          drawTo.canvas.height
+        );
+      }
     }
 
+    let firstModuleDrawn = false;
     for (let j = 0; j < groupModulesLength; ++j) {
+      let canvas = groupContext.canvas;
+
       const module = active[group.modules[j]];
 
       if (!module.meta.enabled || module.meta.alpha < 0.001) {
         continue;
+      }
+
+      if (pipeline && firstModuleDrawn) {
+        canvas = bufferContext.canvas;
+      } else if (pipeline) {
+        canvas = groupContext.canvas;
+        firstModuleDrawn = true;
       }
 
       drawTo.save();
@@ -131,9 +174,11 @@ function loop(delta, features) {
         moduleData = moduleDefinition.update({
           props,
           data: { ...data },
-          canvas: drawTo.canvas,
+          // canvas: drawTo.canvas,
+          canvas,
           delta
         });
+
         store.commit("modules/UPDATE_ACTIVE_MODULE", {
           id: module.$id,
           key: "data",
@@ -141,9 +186,14 @@ function loop(delta, features) {
         });
       }
 
+      if (pipeline) {
+        groupContext.clearRect(0, 0, canvas.width, canvas.height);
+        groupContext.drawImage(bufferCanvas, 0, 0, canvas.width, canvas.height);
+      }
+
       renderers[module.meta.type].render({
-        canvas: drawTo.canvas,
-        context: drawTo,
+        canvas,
+        context: groupContext,
         delta,
         module: moduleDefinition,
         features,
@@ -154,10 +204,30 @@ function loop(delta, features) {
         pipeline
       });
       drawTo.restore();
+
+      if (pipeline) {
+        bufferContext.clearRect(0, 0, canvas.width, canvas.height);
+        bufferContext.drawImage(
+          groupContext.canvas,
+          0,
+          0,
+          canvas.width,
+          canvas.height
+        );
+
+        groupContext.clearRect(0, 0, canvas.width, canvas.height);
+        groupContext.drawImage(
+          bufferCanvas,
+          0,
+          0,
+          bufferCanvas.width,
+          bufferCanvas.height
+        );
+      }
     }
 
     if (!group.hidden) {
-      lastCanvas = drawTo.canvas;
+      lastCanvas = groupContext.canvas;
     }
   }
 
@@ -203,12 +273,12 @@ function loop(delta, features) {
     }
   }
 
-  if (main.canvas.width !== buffer.width) {
-    buffer.width = main.canvas.width;
+  if (main.canvas.width !== bufferCanvas.width) {
+    bufferCanvas.width = main.canvas.width;
   }
 
-  if (main.canvas.height !== buffer.height) {
-    buffer.height = main.canvas.height;
+  if (main.canvas.height !== bufferCanvas.height) {
+    bufferCanvas.height = main.canvas.height;
   }
 
   if (debug && debugContext) {
@@ -227,9 +297,7 @@ function loop(delta, features) {
       debugContext.fillStyle = "#fff";
       debugContext.globalCompositeOperation = "difference";
       debugContext.fillText(
-        `${canvasToDebug.context.canvas.width} × ${
-          canvasToDebug.context.canvas.height
-        }`,
+        `${canvasToDebug.context.canvas.width} × ${canvasToDebug.context.canvas.height}`,
         10,
         10
       );
