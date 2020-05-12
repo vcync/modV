@@ -84,10 +84,10 @@ function handleInput(message) {
       channel,
       data: type === 176 ? data / 127 : data
     });
-  }
 
-  if (store.state.midi.learning) {
-    store.state.midi.learning(message);
+    if (store.state.midi.learning) {
+      store.state.midi.learning(message);
+    }
   }
 }
 
