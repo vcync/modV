@@ -188,26 +188,6 @@ let lastKick = false;
       return;
     }
 
-    if (type === "generatePreset") {
-      const preset = {};
-
-      const storeModuleKeys = Object.keys(store.state);
-      for (let i = 0, len = storeModuleKeys.length; i < len; i++) {
-        const storeModuleKey = storeModuleKeys[i];
-
-        try {
-          preset[storeModuleKey] = await store.dispatch(
-            `${storeModuleKey}/createPresetData`
-          );
-        } catch (e) {
-          // do nothing
-        }
-      }
-
-      console.log(JSON.stringify(preset));
-      return;
-    }
-
     if (type === "loadPreset") {
       const fileBuffer = await fs.promises.readFile(payload);
       const jsonString = fileBuffer.toString();
@@ -220,6 +200,7 @@ let lastKick = false;
         const storeModuleKey = storeModuleKeys[i];
 
         try {
+          console.log("Loading from preset…", storeModuleKey);
           await store.dispatch(
             `${storeModuleKey}/loadPresetData`,
             preset[storeModuleKey]
@@ -242,6 +223,25 @@ let lastKick = false;
   registerPromiseWorker(async message => {
     const { type, identifier, payload, __async } = message;
     if (__async) {
+      if (type === "generatePreset") {
+        const preset = {};
+
+        const storeModuleKeys = Object.keys(store.state);
+        for (let i = 0, len = storeModuleKeys.length; i < len; i++) {
+          const storeModuleKey = storeModuleKeys[i];
+
+          try {
+            preset[storeModuleKey] = await store.dispatch(
+              `${storeModuleKey}/createPresetData`
+            );
+          } catch (e) {
+            // do nothing
+          }
+        }
+
+        return JSON.stringify(preset);
+      }
+
       /**
        * @todo Don't JSON parse and stringify
        */

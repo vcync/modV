@@ -7,7 +7,9 @@ import Vue from "vue";
  */
 const state = {};
 
-const getters = {};
+const getters = {
+  projects: state => Object.keys(state).sort((a, b) => a.localeCompare(b))
+};
 
 const actions = {
   addMedia({ commit }, { project, folder, item }) {

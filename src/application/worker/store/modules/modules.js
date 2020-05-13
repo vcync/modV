@@ -42,6 +42,42 @@ const temp = {
   metaQueue: {}
 };
 
+// this function either creates module properties from an existing module
+// (e.g. loading a preset) or initialises the default value
+async function initialiseModuleProperties(
+  props,
+  module,
+  isGallery = false,
+  useExistingData = false
+) {
+  const propKeys = Object.keys(props);
+
+  for (let i = 0, len = propKeys.length; i < len; i++) {
+    const propKey = propKeys[i];
+
+    const prop = props[propKey];
+
+    module.props[propKey] = await getPropDefault(
+      module,
+      propKey,
+      prop,
+      useExistingData
+    );
+
+    if (!isGallery && !useExistingData) {
+      const inputBind = await store.dispatch("inputs/addInput", {
+        type: "action",
+        location: "modules/updateProp",
+        data: { moduleId: module.$id, prop: propKey }
+      });
+
+      module.$props[propKey].id = inputBind.id;
+    }
+  }
+
+  return module;
+}
+
 const actions = {
   async registerModule({ commit, rootState }, module) {
     const { renderers } = rootState;
@@ -94,27 +130,14 @@ const actions = {
       module.$moduleName = moduleName;
       module.$props = { ...props };
 
-      const propKeys = Object.keys(props);
-
       module.props = {};
 
-      for (let i = 0, len = propKeys.length; i < len; i++) {
-        const propKey = propKeys[i];
-
-        const prop = props[propKey];
-
-        module.props[propKey] = await getPropDefault(module, propKey, prop);
-
-        if (!moduleMeta.isGallery) {
-          const inputBind = await store.dispatch("inputs/addInput", {
-            type: "action",
-            location: "modules/updateProp",
-            data: { moduleId: module.$id, prop: propKey }
-          });
-
-          module.$props[propKey].id = inputBind.id;
-        }
-      }
+      await initialiseModuleProperties(
+        props,
+        module,
+        moduleMeta.isGallery,
+        existingModule
+      );
 
       const dataKeys = Object.keys(data);
       module.data = {};
@@ -184,6 +207,13 @@ const actions = {
           module.presets[key] = value;
         }
       }
+    } else {
+      await initialiseModuleProperties(
+        props,
+        module,
+        moduleMeta.isGallery,
+        true
+      );
     }
 
     // We're done setting up the module, we can commit now

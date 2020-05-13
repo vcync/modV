@@ -5863,6 +5863,11 @@ jquery@*:
   resolved "https://registry.yarnpkg.com/jquery/-/jquery-3.4.1.tgz#714f1f8d9dde4bdfa55764ba37ef214630d80ef2"
   integrity sha512-36+AdBzCL+y6qjw5Tx7HgzeGCzC81MDDgaUP8ld2zhx58HdqXGoBd+tHdrBMiyjGQs0Hxs/MLZTu/eHNJJuWPw==
 
+jquery@^3.5.0:
+  version "3.5.1"
+  resolved "https://registry.yarnpkg.com/jquery/-/jquery-3.5.1.tgz#d7b4d08e1bfdb86ad2f1a3d039ea17304717abb5"
+  integrity sha512-XwIBPqcMn57FxfT+Go5pzySnm4KWkT1Tv7gjrpT1srtf8Weynl6R273VJ5GjkRb51IzMp5nbaPjJXMWeju2MKg==
+
 js-base64@^2.1.8:
   version "2.5.1"
   resolved "https://registry.yarnpkg.com/js-base64/-/js-base64-2.5.1.tgz#1efa39ef2c5f7980bb1784ade4a8af2de3291121"
@@ -10368,11 +10373,6 @@ vm-browserify@^1.0.1:
   resolved "https://registry.yarnpkg.com/vm-browserify/-/vm-browserify-1.1.2.tgz#78641c488b8e6ca91a75f511e7a3b32a86e5dda0"
   integrity sha512-2ham8XPWTONajOR0ohOKOHXkm3+gaBmGut3SRuu75xLd/RRaY6vqgh8NBYYk7+RW3u5AtzPQZG8F10LHkl0lAQ==
 
-vue-class-component@^6.3.2:
-  version "6.3.2"
-  resolved "https://registry.yarnpkg.com/vue-class-component/-/vue-class-component-6.3.2.tgz#e6037e84d1df2af3bde4f455e50ca1b9eec02be6"
-  integrity sha512-cH208IoM+jgZyEf/g7mnFyofwPDJTM/QvBNhYMjqGB8fCsRyTf68rH2ISw/G20tJv+5mIThQ3upKwoL4jLTr1A==
-
 vue-class-component@^7.1.0:
   version "7.1.0"
   resolved "https://registry.yarnpkg.com/vue-class-component/-/vue-class-component-7.1.0.tgz#b33efcb10e17236d684f70b1e96f1946ec793e87"
@@ -10427,15 +10427,13 @@ vue-eslint-parser@^5.0.0:
     esquery "^1.0.1"
     lodash "^4.17.11"
 
-vue-golden-layout@^1.6.0:
-  version "1.6.0"
-  resolved "https://registry.yarnpkg.com/vue-golden-layout/-/vue-golden-layout-1.6.0.tgz#6a489cb2ff3e4fa1ac302036283f5af870defe6a"
-  integrity sha512-jBYMpynStb8srqivUepx3VYZUxvTvxeHbnQnprKwLGSkF5hWrfT3IhyQhXoKuFTTVdB/ghdDv8cdw2M6+qf+FA==
+vue-golden-layout@^2.0.6:
+  version "2.0.6"
+  resolved "https://registry.yarnpkg.com/vue-golden-layout/-/vue-golden-layout-2.0.6.tgz#8d87c2247e46d882f3f13e3075d84a7553cd9d8c"
+  integrity sha512-YR1L7SnxdujVpLjUb1vNjK2qhLILJF/hoE/iGHJbqkBRCEYD7lArgdWyWfoxlga/+cZHO/5sZmAV6KcIojTThg==
   dependencies:
-    golden-layout "^1.5.9"
-    vue-class-component "^6.3.2"
-    vue-resize-directive "^1.1.4"
-    vue-storage-decorator "^1.0.6"
+    jquery "^3.5.0"
+    vue-resize-directive "^1.2.0"
 
 vue-hot-reload-api@^2.3.0:
   version "2.3.4"
@@ -10460,7 +10458,7 @@ vue-property-decorator@^8.3.0:
   dependencies:
     vue-class-component "^7.1.0"
 
-vue-resize-directive@^1.1.4:
+vue-resize-directive@^1.2.0:
   version "1.2.0"
   resolved "https://registry.yarnpkg.com/vue-resize-directive/-/vue-resize-directive-1.2.0.tgz#4214ca8a80a425529b036ea868cad54a38f613e4"
   integrity sha512-LmpFexQcl1XYyz3DQrTrq3Efgj50MKEON60nR9MMAq1D2ZtXFg1WDcy1wy1T0SeduNtIu9hos2aLTsJUplvjlQ==
@@ -10475,11 +10473,6 @@ vue-smooth-dnd@^0.8.1:
   integrity sha512-eZVVPTwz4A1cs0+CjXx/ihV+gAl3QBoWQnU6+23Gp59t0WBU99z7ducBQ4FvjBamqOlg8SDOE5eFHQedxwB4Wg==
   dependencies:
     smooth-dnd "0.12.1"
-
-vue-storage-decorator@^1.0.6:
-  version "1.0.7"
-  resolved "https://registry.yarnpkg.com/vue-storage-decorator/-/vue-storage-decorator-1.0.7.tgz#857e909cf7c593d6b9a8ae3fde20cd1f6eb2775d"
-  integrity sha512-ZXW84gGb3lLcW6U7KJhdua966IVZeXswOI/8yJW3/JAJD0v2irxwMDdFR1V5+tZMbsGkvdIZIvQ7wLKpXxAuUw==
 
 vue-style-loader@^4.1.0:
   version "4.1.2"

@@ -4,12 +4,16 @@ import {
   ipcMain,
   protocol,
   screen,
-  BrowserWindow
+  BrowserWindow,
+  Menu
 } from "electron";
+
 import {
   createProtocol,
   installVueDevtools
 } from "vue-cli-plugin-electron-builder/lib";
+
+import fs from "fs";
 import MediaManager from "./media-manager";
 import store from "./media-manager/store";
 
@@ -18,6 +22,9 @@ const isDevelopment = process.env.NODE_ENV !== "production";
 // Keep a global reference of the window object, if you don't, the window will
 // be closed automatically when the JavaScript object is garbage collected.
 let win;
+
+let projectNames = ["default"];
+let currentProject = "default";
 
 // Should the application promt when attempting to quit?
 app.showExitPrompt = true;
@@ -33,7 +40,182 @@ protocol.registerSchemesAsPrivileged([
   }
 ]);
 
+const isMac = process.platform === "darwin";
+
+function setCurrentProject(name) {
+  win.webContents.send("set-current-project", name);
+}
+
+function generateMenuTemplate() {
+  return [
+    // { role: 'appMenu' }
+    ...(isMac
+      ? [
+          {
+            label: app.name,
+            submenu: [
+              { role: "about" },
+              { type: "separator" },
+              { role: "services" },
+              { type: "separator" },
+              { role: "hide" },
+              { role: "hideothers" },
+              { role: "unhide" },
+              { type: "separator" },
+              { role: "quit" }
+            ]
+          }
+        ]
+      : []),
+    // { role: 'fileMenu' }
+    {
+      label: "File",
+      submenu: [
+        {
+          label: "Open Preset",
+          accelerator: "CmdOrCtrl+O",
+          async click() {
+            const result = await dialog.showOpenDialog(win, {
+              filters: [{ name: "Presets", extensions: ["json"] }],
+              properties: ["openFile"],
+              multiSelections: false
+            });
+
+            if (!result.canceled) {
+              win.webContents.send("open-preset", result.filePaths[0]);
+            }
+          }
+        },
+        {
+          label: "Save Preset",
+          accelerator: "CmdOrCtrl+Shift+S",
+          async click() {
+            const result = await dialog.showSaveDialog(win, {
+              filters: [{ name: "Presets", extensions: ["json"] }]
+            });
+
+            if (result.canceled) {
+              return;
+            }
+
+            ipcMain.once("preset-data", async (event, presetData) => {
+              try {
+                await fs.promises.writeFile(result.filePath, presetData);
+              } catch (e) {
+                dialog.showMessageBox(win, {
+                  type: "error",
+                  message: "Could not save preset to file",
+                  detail: e.toString()
+                });
+              }
+            });
+
+            try {
+              win.webContents.send("generate-preset");
+            } catch (e) {
+              dialog.showMessageBox(win, {
+                type: "error",
+                message: "Could not generate preset",
+                detail: e.toString()
+              });
+            }
+          }
+        },
+
+        { type: "separator" },
+        isMac ? { role: "close" } : { role: "quit" }
+      ]
+    },
+    // { role: 'editMenu' }
+    {
+      label: "Edit",
+      submenu: [
+        { role: "undo" },
+        { role: "redo" },
+        { type: "separator" },
+        { role: "cut" },
+        { role: "copy" },
+        { role: "paste" },
+        ...(isMac
+          ? [
+              { role: "pasteAndMatchStyle" },
+              { role: "delete" },
+              { role: "selectAll" },
+              { type: "separator" },
+              {
+                label: "Speech",
+                submenu: [{ role: "startspeaking" }, { role: "stopspeaking" }]
+              }
+            ]
+          : [{ role: "delete" }, { type: "separator" }, { role: "selectAll" }])
+      ]
+    },
+    // { role: 'projectMenu' }
+    {
+      label: "Project",
+      submenu: [
+        ...projectNames.map(name => ({
+          label: name,
+          type: "checkbox",
+          checked: currentProject === name,
+          click: () => setCurrentProject(name)
+        }))
+      ]
+    },
+    // { role: 'viewMenu' }
+    {
+      label: "View",
+      submenu: [
+        { role: "reload" },
+        { role: "forcereload" },
+        { role: "toggledevtools" },
+        { type: "separator" },
+        { role: "resetzoom" },
+        { role: "zoomin" },
+        { role: "zoomout" },
+        { type: "separator" },
+        { role: "togglefullscreen" }
+      ]
+    },
+    // { role: 'windowMenu' }
+    {
+      label: "Window",
+      submenu: [
+        { role: "minimize" },
+        { role: "zoom" },
+        ...(isMac
+          ? [
+              { type: "separator" },
+              { role: "front" },
+              { type: "separator" },
+              { role: "window" }
+            ]
+          : [{ role: "close" }])
+      ]
+    },
+    {
+      role: "help",
+      submenu: [
+        {
+          label: "Learn More",
+          click: async () => {
+            const { shell } = require("electron");
+            await shell.openExternal("https://modv.js.org");
+          }
+        }
+      ]
+    }
+  ];
+}
+
+function updateMenu() {
+  const menu = Menu.buildFromTemplate(generateMenuTemplate());
+  Menu.setApplicationMenu(menu);
+}
+
 function createWindow() {
+  updateMenu();
+
   const { width, height } = screen.getPrimaryDisplay().workAreaSize;
   // Create the browser window.
   win = new BrowserWindow({
@@ -50,6 +232,9 @@ function createWindow() {
   const mm = new MediaManager({
     update(message) {
       win.webContents.send("media-manager-update", message);
+
+      projectNames = mm.$store.getters["media/projects"];
+      updateMenu(); // potentially janky
     }
   });
   mm.start();
@@ -66,6 +251,11 @@ function createWindow() {
     }
 
     event.reply("save-file", "saved");
+  });
+
+  ipcMain.on("current-project", (event, message) => {
+    currentProject = message;
+    updateMenu();
   });
 
   if (process.env.WEBPACK_DEV_SERVER_URL) {

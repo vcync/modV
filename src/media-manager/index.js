@@ -43,6 +43,7 @@ export default class MediaManager {
     this.readFile = readFile.bind(this);
     this.parseMessage = parseMessage.bind(this);
     this.fsCreateProfile = fsCreateProfile.bind(this);
+    this.$store = store;
 
     this.update = options.update;
 

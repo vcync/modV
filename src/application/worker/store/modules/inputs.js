@@ -32,8 +32,15 @@ const actions = {
     { commit },
     { inputId, location, type = "state", args, min = 0, max = 1, writeToSwap }
   ) {
+    const writeTo = writeToSwap ? swap : state;
+
     const inputLink = { id: inputId, location, type, args, min, max };
-    if (!state.inputs[inputId]) {
+    if (!writeTo.inputs[inputId]) {
+      console.warn(
+        "Did not create inputLink. Could not find input with id",
+        inputId
+      );
+
       return false;
     }
 
@@ -42,7 +49,14 @@ const actions = {
   },
 
   removeInputLink({ commit }, { inputId, writeToSwap }) {
-    if (!state.inputs[inputId]) {
+    const writeTo = writeToSwap ? swap : state;
+
+    if (!writeTo.inputs[inputId]) {
+      console.warn(
+        "Did not remove inputLink. Could not find input with id",
+        inputId
+      );
+
       return false;
     }
 
@@ -60,6 +74,7 @@ const actions = {
     const inputs = Object.values(data.inputs);
     for (let i = 0, len = inputs.length; i < len; i++) {
       const input = inputs[i];
+
       await dispatch("addInput", { ...input, writeToSwap: true });
     }
 
@@ -67,6 +82,7 @@ const actions = {
 
     for (let i = 0, len = inputLinks.length; i < len; i++) {
       const link = inputLinks[i];
+
       await dispatch("createInputLink", {
         inputId: link.id,
         ...link,
@@ -86,7 +102,6 @@ const mutations = {
 
   ADD_INPUT(state, { input, writeToSwap }) {
     const writeTo = writeToSwap ? swap : state;
-
     writeTo.inputs[input.id] = input;
   },
 
