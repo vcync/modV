@@ -13,16 +13,6 @@
             </gl-component>
 
             <gl-stack>
-              <gl-component title="Preview" :closable="false">
-                <CanvasDebugger />
-              </gl-component>
-
-              <gl-component title="Swap" :closable="false">
-                <ABSwap />
-              </gl-component>
-            </gl-stack>
-
-            <gl-stack>
               <gl-component title="Input config" :closable="false">
                 <InputConfig />
               </gl-component>
@@ -41,32 +31,46 @@
             </gl-stack>
           </gl-row>
         </gl-col>
-        <gl-row :closable="false" ref="rightColumn" v-if="focusedModules">
-          <gl-stack title="Module properties">
-            <gl-component
-              v-for="module in focusedModules"
-              :key="module.$id"
-              :title="`${module.meta.name} properties`"
-              :closable="false"
-            >
-              <grid v-if="module.props">
-                <c span="1..">
-                  <button @click="toggleModulePin(module.$id)">
-                    {{ isPinned(module.$id) ? "Unpin" : "Pin" }}
-                  </button>
-                </c>
-                <c span="1..">
-                  <Control
-                    v-for="key in getProps(module.$moduleName)"
-                    :id="module.$id"
-                    :prop="key"
-                    :key="key"
-                  />
-                </c>
-              </grid>
-            </gl-component>
-          </gl-stack>
-        </gl-row>
+        <gl-col :width="33" :closable="false" ref="rightColumn">
+          <gl-row>
+            <gl-stack title="Module properties">
+              <gl-component
+                v-for="module in focusedModules"
+                :key="module.$id"
+                :title="`${module.meta.name} properties`"
+                :closable="false"
+              >
+                <grid v-if="module.props">
+                  <c span="1..">
+                    <button @click="toggleModulePin(module.$id)">
+                      {{ isPinned(module.$id) ? "Unpin" : "Pin" }}
+                    </button>
+                  </c>
+                  <c span="1..">
+                    <Control
+                      v-for="key in getProps(module.$moduleName)"
+                      :id="module.$id"
+                      :prop="key"
+                      :key="key"
+                    />
+                  </c>
+                </grid>
+              </gl-component>
+            </gl-stack>
+          </gl-row>
+
+          <gl-row>
+            <gl-stack>
+              <gl-component title="Preview" :closable="false">
+                <CanvasDebugger />
+              </gl-component>
+
+              <gl-component title="Swap" :closable="false">
+                <ABSwap />
+              </gl-component>
+            </gl-stack>
+          </gl-row>
+        </gl-col>
       </gl-row>
     </golden-layout>
 
