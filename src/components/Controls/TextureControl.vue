@@ -49,6 +49,8 @@
 </template>
 
 <script>
+import constants from "../../application/constants";
+
 export default {
   props: ["value"],
 
@@ -77,8 +79,7 @@ export default {
     groupOutputs() {
       return Object.values(this.auxillaries).filter(
         group =>
-          group.group === "group" &&
-          group.name !== "modV internal Gallery Group"
+          group.group === "group" && group.name !== constants.GALLERY_GROUP_NAME
       );
     },
 

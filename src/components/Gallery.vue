@@ -58,6 +58,7 @@
 
 <script>
 import { Container, Draggable } from "vue-smooth-dnd";
+import constants from "../application/constants";
 import GalleryItem from "./GalleryItem";
 
 export default {
@@ -100,7 +101,7 @@ export default {
 
   async mounted() {
     const group = await this.$modV.store.dispatch("groups/createGroup", {
-      name: "modV internal Gallery Group",
+      name: constants.GALLERY_GROUP_NAME,
       hidden: true,
       enabled: true,
       clearing: true

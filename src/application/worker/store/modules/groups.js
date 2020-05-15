@@ -1,5 +1,6 @@
 import SWAP from "./common/swap";
 import store from "../";
+import constants from "../../../constants";
 import uuidv4 from "uuid/v4";
 
 /**
@@ -79,7 +80,7 @@ const sharedPropertyRestrictions = {
     value
   ) => {
     const index = value.findIndex(
-      group => group.name === "modV internal Gallery Group"
+      group => group.name === constants.GALLERY_GROUP_NAME
     );
 
     return index > -1 ? [`${index}`] : [];
@@ -114,7 +115,7 @@ const actions = {
 
   createPresetData() {
     return state.groups
-      .filter(group => group.name !== "modV internal Gallery Group")
+      .filter(group => group.name !== constants.GALLERY_GROUP_NAME)
       .map(group => {
         const clonedGroup = { ...group };
         delete clonedGroup.context;

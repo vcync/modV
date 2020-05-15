@@ -2,6 +2,7 @@
 import get from "lodash.get";
 import store from "./store";
 import map from "../utils/map";
+import constants from "../constants";
 import { applyWindow } from "meyda/src/utilities";
 
 const meyda = { windowing: applyWindow };
@@ -91,6 +92,8 @@ function loop(delta, features) {
   const groupsLength = groups.length;
   for (let i = 0; i < groupsLength; ++i) {
     const group = groups[i];
+    const isGalleryGroup = group.name === constants.GALLERY_GROUP_NAME;
+
     const groupModulesLength = group.modules.length;
     if (!group.enabled || group.alpha < 0.001) {
       continue;
@@ -107,15 +110,10 @@ function loop(delta, features) {
     }
 
     if (clearing) {
-      groupContext.clearRect(
-        0,
-        0,
-        groupContext.canvas.width,
-        groupContext.canvas.height
-      );
+      drawTo.clearRect(0, 0, drawTo.canvas.width, drawTo.canvas.height);
     }
 
-    if (pipeline && clearing) {
+    if (pipeline && clearing && !isGalleryGroup) {
       bufferContext.clearRect(
         0,
         0,
@@ -125,7 +123,7 @@ function loop(delta, features) {
     }
 
     if (inherit) {
-      groupContext.drawImage(
+      drawTo.drawImage(
         lastCanvas,
         0,
         0,
@@ -133,7 +131,7 @@ function loop(delta, features) {
         drawTo.canvas.height
       );
 
-      if (pipeline) {
+      if (pipeline && !isGalleryGroup) {
         bufferContext.drawImage(
           lastCanvas,
           0,
@@ -146,7 +144,7 @@ function loop(delta, features) {
 
     let firstModuleDrawn = false;
     for (let j = 0; j < groupModulesLength; ++j) {
-      let canvas = groupContext.canvas;
+      let canvas = drawTo.canvas;
 
       const module = active[group.modules[j]];
 
@@ -154,11 +152,13 @@ function loop(delta, features) {
         continue;
       }
 
-      if (pipeline && firstModuleDrawn) {
+      if (pipeline && firstModuleDrawn && !isGalleryGroup) {
         canvas = bufferContext.canvas;
-      } else if (pipeline) {
-        canvas = groupContext.canvas;
+      } else if (pipeline && !isGalleryGroup) {
+        canvas = drawTo.canvas;
         firstModuleDrawn = true;
+      } else if (isGalleryGroup) {
+        canvas = aux.canvas;
       }
 
       drawTo.save();
@@ -186,14 +186,14 @@ function loop(delta, features) {
         });
       }
 
-      if (pipeline) {
-        groupContext.clearRect(0, 0, canvas.width, canvas.height);
-        groupContext.drawImage(bufferCanvas, 0, 0, canvas.width, canvas.height);
+      if (pipeline && !isGalleryGroup) {
+        drawTo.clearRect(0, 0, canvas.width, canvas.height);
+        drawTo.drawImage(bufferCanvas, 0, 0, canvas.width, canvas.height);
       }
 
       renderers[module.meta.type].render({
         canvas,
-        context: groupContext,
+        context: drawTo,
         delta,
         module: moduleDefinition,
         features,
@@ -205,18 +205,18 @@ function loop(delta, features) {
       });
       drawTo.restore();
 
-      if (pipeline) {
+      if (pipeline && !isGalleryGroup) {
         bufferContext.clearRect(0, 0, canvas.width, canvas.height);
         bufferContext.drawImage(
-          groupContext.canvas,
+          drawTo.canvas,
           0,
           0,
           canvas.width,
           canvas.height
         );
 
-        groupContext.clearRect(0, 0, canvas.width, canvas.height);
-        groupContext.drawImage(
+        drawTo.clearRect(0, 0, canvas.width, canvas.height);
+        drawTo.drawImage(
           bufferCanvas,
           0,
           0,
@@ -227,7 +227,7 @@ function loop(delta, features) {
     }
 
     if (!group.hidden) {
-      lastCanvas = groupContext.canvas;
+      lastCanvas = drawTo.canvas;
     }
   }
 
@@ -237,6 +237,8 @@ function loop(delta, features) {
   main.clearRect(0, 0, main.canvas.width, main.canvas.height);
   for (let i = 0; i < groupsLength; ++i) {
     const group = groups[i];
+    const isGalleryGroup = group.name === constants.GALLERY_GROUP_NAME;
+
     const {
       compositeOperation,
       context: { context },
@@ -245,7 +247,7 @@ function loop(delta, features) {
       modules
     } = group;
     const groupModulesLength = modules.length;
-    if (!enabled || groupModulesLength < 1 || !(alpha > 0)) {
+    if (!enabled || groupModulesLength < 1 || !(alpha > 0) || isGalleryGroup) {
       continue;
     }
 
