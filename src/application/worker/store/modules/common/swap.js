@@ -8,23 +8,34 @@ export default function SWAP(
   sharedPropertyRestrictions
 ) {
   return function(state) {
-    // temp = cloneDeep(state);
-
     const stateKeys = Object.keys(state);
 
     if (stateKeys.length) {
       // eslint-disable-next-line
       stateKeys.forEach(key => {
+        const isArray = Array.isArray(state[key]);
+
         if (sharedPropertyRestrictions) {
           if (typeof sharedPropertyRestrictions[key] === "function") {
             const restrictedKeys = sharedPropertyRestrictions[key](state[key]);
-            const keyKeys = Object.keys(state[key]);
-            Vue.set(temp, key, {});
+            const stateChildKeys = Object.keys(state[key]);
+
+            if (isArray) {
+              Vue.set(temp, key, []);
+            } else {
+              Vue.set(temp, key, {});
+            }
+
             // eslint-disable-next-line
-            keyKeys.forEach(keyKey => {
-              if (restrictedKeys.indexOf(keyKey) < 0) {
-                Vue.set(temp[key], keyKey, state[key][keyKey]);
-                delete state[key][keyKey];
+            stateChildKeys.forEach(stateChildKey => {
+              if (restrictedKeys.indexOf(stateChildKey) < 0) {
+                if (isArray) {
+                  temp[key].push(state[key][stateChildKey]);
+                  state[key].splice(stateChildKey, 1);
+                } else {
+                  Vue.set(temp[key], stateChildKey, state[key][stateChildKey]);
+                  delete state[key][stateChildKey];
+                }
               }
             });
           } else if (sharedPropertyRestrictions[key]) {
@@ -45,21 +56,36 @@ export default function SWAP(
     if (swapKeys.length) {
       // eslint-disable-next-line
       swapKeys.forEach(key => {
+        const isArray = Array.isArray(swap[key]);
+
         if (sharedPropertyRestrictions) {
           if (typeof sharedPropertyRestrictions[key] === "function") {
             const restrictedKeys = sharedPropertyRestrictions[key](swap[key]);
-            const keyKeys = Object.keys(swap[key]);
+            const swapChildKeys = Object.keys(swap[key]);
+
             // eslint-disable-next-line
-            keyKeys.forEach(keyKey => {
-              if (restrictedKeys.indexOf(keyKey) < 0) {
-                Vue.set(state[key], keyKey, swap[key][keyKey]);
+            swapChildKeys.forEach(swapChildKey => {
+              if (restrictedKeys.indexOf(swapChildKey) < 0) {
+                if (isArray) {
+                  state[key].push(swap[key][swapChildKey]);
+                } else {
+                  Vue.set(state[key], swapChildKey, swap[key][swapChildKey]);
+                }
               }
             });
           } else if (sharedPropertyRestrictions[key]) {
-            Vue.set(state, key, { ...state[key], ...swap[key] });
+            if (isArray) {
+              Vue.set(state, key, [...swap[key]]);
+            } else {
+              Vue.set(state, key, { ...swap[key] });
+            }
           }
         } else {
-          Vue.set(state, key, { ...state[key], ...swap[key] });
+          if (isArray) {
+            Vue.set(state, key, [...state[key], ...swap[key]]);
+          } else {
+            Vue.set(state, key, { ...state[key], ...swap[key] });
+          }
         }
       });
     } else {

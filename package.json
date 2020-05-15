@@ -24,7 +24,6 @@
     "golden-layout": "^1.5.9",
     "interactive-shader-format": "github:vcync/interactive-shader-format-js#feat/ImageBitmap",
     "lfo-for-modv": "0.0.1",
-    "lodash.clonedeep": "^4.5.0",
     "lodash.get": "^4.4.2",
     "meyda": "^4.3.1",
     "mkdirp": "^0.5.1",
