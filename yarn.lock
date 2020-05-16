@@ -6547,14 +6547,14 @@ methods@~1.1.2:
   resolved "https://registry.yarnpkg.com/methods/-/methods-1.1.2.tgz#5529a4d67654134edcc5266656835b0f851afcee"
   integrity sha1-VSmk1nZUE07cxSZmVoNbD4Ua/O4=
 
-meyda@^4.3.1:
-  version "4.3.1"
-  resolved "https://registry.yarnpkg.com/meyda/-/meyda-4.3.1.tgz#6b6b5f9834447514315677fec5475dfc5d2c1546"
-  integrity sha512-rAy03ycgRtZWTqm4yLiNq45eC1/k0HqDVq94EZZAkt4glAsp14viQLg+6kua7o2dVDkKGvtcTr8KQMuvcaUmeg==
+meyda@^5.0.1:
+  version "5.0.1"
+  resolved "https://registry.yarnpkg.com/meyda/-/meyda-5.0.1.tgz#006f5c9b2a1998493f644dfe4e4a7a96acd1673e"
+  integrity sha512-Sk93c4wIX7q6A8Von7fyclXc877bhqNjQzn9Y3mTsrRk7SPZKjk6YLiWcKjFqvx+SzoXRC+RFZ0eGwyUSOGLDA==
   dependencies:
     dct "0.1.0"
     fftjs "0.0.4"
-    node-getopt "^0.2.3"
+    node-getopt "^0.3.2"
     wav "^1.0.0"
 
 micromatch@^3.1.10, micromatch@^3.1.4, micromatch@^3.1.8:
@@ -6842,10 +6842,10 @@ node-forge@0.9.0:
   resolved "https://registry.yarnpkg.com/node-forge/-/node-forge-0.9.0.tgz#d624050edbb44874adca12bb9a52ec63cb782579"
   integrity sha512-7ASaDa3pD+lJ3WvXFsxekJQelBKRpne+GOVbLbtHYdd7pFspyeuJHnWfLplGf3SwKGbfs/aYl5V/JCIaHVUKKQ==
 
-node-getopt@^0.2.3:
-  version "0.2.4"
-  resolved "https://registry.yarnpkg.com/node-getopt/-/node-getopt-0.2.4.tgz#3afb554717e5479f4bb10eb7327504650811c7a2"
-  integrity sha512-06LC4wHO+nyH0J07dUzFsZTVZMsMMKTkXo8BUTmuYbJhbsKX2cVDn2xADoFqjbnBYThVlGSlaM10CDyEi+48Iw==
+node-getopt@^0.3.2:
+  version "0.3.2"
+  resolved "https://registry.yarnpkg.com/node-getopt/-/node-getopt-0.3.2.tgz#57507cd22f6f69650aa99252304a842f1224e44c"
+  integrity sha512-yqkmYrMbK1wPrfz7mgeYvA4tBperLg9FQ4S3Sau3nSAkpOA0x0zC8nQ1siBwozy1f4SE8vq2n1WKv99r+PCa1Q==
 
 node-gyp@^3.8.0:
   version "3.8.0"
