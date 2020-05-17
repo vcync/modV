@@ -143,7 +143,9 @@ export default {
   },
 
   async mounted() {
-    await this.$modV.setup();
+    if (!this.$modV.ready) {
+      await this.$modV.setup();
+    }
     // this.$modV.$worker.addEventListener("message", e => {
     //   if (e.data.type === "outputs/SET_MAIN_OUTPUT") {
     //     this.resize();

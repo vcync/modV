@@ -78,7 +78,9 @@ export default {
   },
 
   beforeDestroy() {
-    this.$modV.store.commit("modules/REMOVE_ACTIVE_MODULE", this.id);
+    this.$modV.store.commit("modules/REMOVE_ACTIVE_MODULE", {
+      moduleId: this.id
+    });
     this.$modV.store.commit("outputs/REMOVE_AUXILLARY", this.outputId);
     this.$modV.store.commit("groups/REMOVE_MODULE_FROM_GROUP", {
       groupId: this.groupId,

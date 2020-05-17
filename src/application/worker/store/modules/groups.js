@@ -90,6 +90,15 @@ const sharedPropertyRestrictions = {
 const actions = {
   async createGroup({ commit }, args = {}) {
     const name = args.name || "New Group";
+    const writeTo = args.writeToSwap ? swap : state;
+
+    const existingGroupIndex = writeTo.groups.findIndex(
+      group => group.name === args.name
+    );
+
+    if (existingGroupIndex > -1) {
+      return writeTo.groups[existingGroupIndex];
+    }
 
     const group = {
       ...args,

@@ -83,7 +83,7 @@ const actions = {
     const { renderers } = rootState;
 
     if (!module) {
-      console.error("No module to register");
+      console.error("No module to register.");
       return;
     }
 
@@ -94,12 +94,21 @@ const actions = {
 
     const { name, type } = module.meta;
 
+    const existingModuleWithDuplicateName = Object.values(
+      state.registered
+    ).findIndex(registeredModule => registeredModule.meta.name === name);
+
+    if (existingModuleWithDuplicateName > -1) {
+      console.error(`Module registered with name "${name}" already exists.`);
+      return;
+    }
+
     if (renderers[type].setupModule) {
       try {
         module = await renderers[type].setupModule(module);
       } catch (e) {
         console.error(
-          `Error in ${type} renderer setup whilst registering ${name}. This module was ommited from registration.`
+          `Error in ${type} renderer setup whilst registering "${name}". This module was ommited from registration.`
         );
 
         return false;
@@ -124,6 +133,22 @@ const actions = {
       meta: { ...moduleDefinition.meta, ...moduleMeta },
       ...existingModule
     };
+
+    if (moduleMeta.isGallery) {
+      const existingModuleWithDuplicateNameInGallery = Object.values(
+        writeTo.active
+      ).find(
+        activeModule =>
+          activeModule.meta.isGallery && activeModule.meta.name === moduleName
+      );
+
+      if (existingModuleWithDuplicateNameInGallery) {
+        console.warn(
+          `Module active in gallery with name "${moduleName}" already exists.`
+        );
+        return existingModuleWithDuplicateNameInGallery;
+      }
+    }
 
     if (!existingModule) {
       module.$id = uuidv4();
