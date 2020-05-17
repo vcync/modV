@@ -1,44 +1,24 @@
 <template>
   <main id="app">
     <golden-layout class="hscreen" :showPopoutIcon="false" v-model="state">
-      <gl-row>
-        <gl-col :closable="false" :minItemWidth="100" id="lr-col">
-          <gl-component title="Groups" :closable="false">
-            <Groups />
-          </gl-component>
-
-          <gl-row>
-            <gl-component title="Gallery" :closable="false">
-              <Gallery />
+      <gl-col>
+        <gl-row>
+          <gl-col :closable="false" :minItemWidth="100" id="lr-col">
+            <gl-component title="Groups" :closable="false">
+              <Groups />
             </gl-component>
-
-            <gl-stack>
-              <gl-component title="Input config" :closable="false">
-                <InputConfig />
+          </gl-col>
+          <gl-col :width="33" :closable="false" ref="rightColumn">
+            <gl-stack title="Module Inspector">
+              <gl-component title="hidden">
+                <!-- hack around dynamic components not working correctly. CSS below hides tabs with the title "hidden" -->
               </gl-component>
-
-              <gl-stack title="Input Device Config" :closable="false">
-                <gl-component title="Audio" :closable="false">
-                  <AudioDeviceConfig />
-                </gl-component>
-                <gl-component title="MIDI" :closable="false">
-                  <MIDIDeviceConfig />
-                </gl-component>
-                <gl-component title="BPM" :closable="false">
-                  <BPMConfig />
-                </gl-component>
-              </gl-stack>
-            </gl-stack>
-          </gl-row>
-        </gl-col>
-        <gl-col :width="33" :closable="false" ref="rightColumn">
-          <gl-row>
-            <gl-stack title="Module properties">
               <gl-component
                 v-for="module in focusedModules"
                 :key="module.$id"
                 :title="`${module.meta.name} properties`"
                 :closable="false"
+                ref="moduleInspector"
               >
                 <grid v-if="module.props">
                   <c span="1..">
@@ -57,21 +37,42 @@
                 </grid>
               </gl-component>
             </gl-stack>
-          </gl-row>
+          </gl-col>
+        </gl-row>
+        <gl-row>
+          <gl-component title="Gallery" :closable="false">
+            <Gallery />
+          </gl-component>
 
-          <gl-row>
-            <gl-stack>
-              <gl-component title="Preview" :closable="false">
-                <CanvasDebugger />
+          <gl-stack>
+            <gl-component title="Input config" :closable="false">
+              <InputConfig />
+            </gl-component>
+
+            <gl-stack title="Input Device Config" :closable="false">
+              <gl-component title="Audio" :closable="false">
+                <AudioDeviceConfig />
               </gl-component>
-
-              <gl-component title="Swap" :closable="false">
-                <ABSwap />
+              <gl-component title="MIDI" :closable="false">
+                <MIDIDeviceConfig />
+              </gl-component>
+              <gl-component title="BPM" :closable="false">
+                <BPMConfig />
               </gl-component>
             </gl-stack>
-          </gl-row>
-        </gl-col>
-      </gl-row>
+          </gl-stack>
+
+          <gl-stack>
+            <gl-component title="Preview" :closable="false">
+              <CanvasDebugger />
+            </gl-component>
+
+            <gl-component title="Swap" :closable="false">
+              <ABSwap />
+            </gl-component>
+          </gl-stack>
+        </gl-row>
+      </gl-col>
     </golden-layout>
 
     <StatusBar />
@@ -134,6 +135,10 @@ export default {
       );
 
       return modules;
+    },
+
+    focusedActiveModule() {
+      return this.$store.state["ui-modules"].focused;
     }
   },
 
@@ -215,6 +220,18 @@ export default {
 
     isPinned(id) {
       return this.$store.state["ui-modules"].pinned.indexOf(id) > -1;
+    }
+  },
+
+  watch: {
+    focusedActiveModule(inspectorId) {
+      const index = this.$store.state["ui-modules"].pinned.findIndex(
+        item => item === inspectorId
+      );
+
+      if (index > -1) {
+        this.$refs.moduleInspector[index].focus();
+      }
     }
   }
 };
@@ -302,9 +319,13 @@ body,
 .lm_header .lm_tab {
   margin-bottom: unset;
 }
+
+.lm_tab[title="hidden"] {
+  display: none !important;
+}
 </style>
 
-<style lang="scss" scoped>
+<style scoped>
 canvas {
   position: fixed;
   left: 0;

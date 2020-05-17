@@ -11,8 +11,6 @@ const getters = {
       arr.push(state.focused);
     }
 
-    console.log(arr);
-
     return arr;
   }
 };
