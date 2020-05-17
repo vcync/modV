@@ -247,16 +247,20 @@ export default {
   --fontSize: 14px;
   --foreground-color-rgb: 255, 255, 255;
   --foreground-color-a: 1;
-  --background-color: #141416;
-  --foreground-color-2: rgba(var(--foreground-color-rgb), 0.2);
-  --foreground-color-3: rgba(var(--foreground-color-rgb), 0.1);
+  --background-color: #000;
+  --foreground-color-2: rgba(var(--foreground-color-rgb), 0.4);
+  --foreground-color-3: rgba(var(--foreground-color-rgb), 0.2);
   --columnGap: calc(var(--lineHeight));
+
+  --focus-color-rgb: 241, 196, 16;
+  --focus-color-a: 1;
+  --focus-color: rgba(var(--focus-color-rgb), var(--focus-color-a));
 }
 
 *::-webkit-scrollbar {
   width: 14px;
   height: 14px;
-  background-color: var(--foreground-color-3); /* or add it to the track */
+  background-color: var(--foreground-color-3);
 }
 
 *::-webkit-scrollbar-thumb {
@@ -294,8 +298,6 @@ body {
   font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
     "Helvetica Neue", "微軟雅黑", "Microsoft YaHei", "微軟正黑體",
     "Microsoft JhengHei", Verdana, Arial, sans-serif !important;
-
-  /* font-family: "IBM Plex Mono"; */
 }
 
 .hscreen {

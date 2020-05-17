@@ -175,11 +175,11 @@ export default {
 
 <style scoped>
 .has-link {
-  border: 1px solid rgba(255, 217, 0, 0.3);
+  border: 1px solid var(--focus-color);
 }
 
 .focused {
-  background-color: rgba(0, 0, 0, 0.3);
+  background-color: var(--foreground-color-2);
 }
 
 label {

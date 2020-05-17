@@ -225,11 +225,12 @@ export default {
 
 <style scoped>
 .has-link {
-  border: 1px solid rgba(255, 217, 0, 0.3);
+  border: 1px solid var(--focus-color);
 }
 
 .focused {
-  background-color: rgba(0, 0, 0, 0.3);
+  background-color: var(--foreground-color-3);
+  color: var(--background-color);
 }
 
 .padded-grid {
@@ -258,12 +259,29 @@ input[type="checkbox"] {
 }
 
 .handle {
-  vertical-align: middle;
-  width: 16px;
-  height: 16px;
-  border: 1px solid;
-  border-radius: 50%;
+  position: relative;
   cursor: -webkit-grab;
+  height: 100%;
+}
+
+.handle::before,
+.handle::after {
+  content: "";
+  right: 15%;
+  height: 11%;
+  left: 15%;
+
+  position: absolute;
+  border-top: 2px solid;
+  border-bottom: 2px solid;
+}
+
+.handle::before {
+  top: 16%;
+}
+
+.handle::after {
+  bottom: 21%;
 }
 </style>
 

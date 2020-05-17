@@ -205,7 +205,7 @@ grid.fluid {
 }
 
 div.gallery {
-  color: #fff;
+  color: var(--foreground-color);
 
   display: flex;
   flex-direction: column;

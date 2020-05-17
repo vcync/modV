@@ -36,7 +36,7 @@
 
 .lm_splitter:hover,
 .lm_splitter.lm_dragging {
-  background: #bbbbbb;
+  background: var(--focus-color);
   opacity: 1;
 }
 

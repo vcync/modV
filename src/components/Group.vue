@@ -289,25 +289,27 @@ section.group-controls {
 }
 
 .focused div.group-title {
-  background-color: rgba(255, 138, 101, 0.6);
+  background-color: var(--foreground-color-3);
+  color: var(--foreground-color);
 }
 
 div.group-title {
   padding: var(--baseline);
   width: 100%;
-  background-color: rgba(255, 255, 255, 0.6);
+  background-color: var(--foreground-color-3);
+  color: var(--foreground-color-2);
   box-sizing: border-box;
 }
 
 .focused div.group-modules {
-  background-color: rgba(191, 54, 12, 0.6);
+  background-color: var(--foreground-color-2);
 }
 
 div.group-modules {
   display: flex;
   overflow-x: auto;
   min-height: 174px;
-  background-color: rgba(90, 90, 90, 0.6);
+  background-color: var(--foreground-color-3);
 }
 
 div.group-module {
@@ -330,7 +332,7 @@ div.group-module:not(:last-child)::after {
 }
 
 div.group-module-container {
-  background-color: rgba(90, 90, 90, 0.6);
+  background-color: var(--foreground-color-3);
   width: 300px;
 }
 
