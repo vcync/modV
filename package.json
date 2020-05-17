@@ -1,7 +1,7 @@
 {
   "name": "modv",
   "author": "vcync",
-  "version": "3.0.5-alpha",
+  "version": "3.0.6-alpha",
   "private": false,
   "scripts": {
     "serve": "vue-cli-service serve",
