@@ -211,7 +211,6 @@ div.gallery {
   flex-direction: column;
   box-sizing: border-box;
 
-  overflow-y: auto;
   height: 100%;
 }
 

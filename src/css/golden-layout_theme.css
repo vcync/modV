@@ -1,10 +1,10 @@
 .lm_goldenlayout {
-  background: var(--background-color);
+  background: var(--foreground-color-4);
 }
 
 .lm_content {
   background: var(--background-color);
-  border: 1px solid var(--foreground-color-2);
+  border: 0;
 }
 
 .lm_content .glComponent {
@@ -42,7 +42,9 @@
 
 .lm_header {
   height: 20px;
+  border-bottom: 1px solid var(--foreground-color-4);
 }
+
 
 .lm_header.lm_selectable {
   cursor: pointer;
@@ -53,12 +55,12 @@
   font-size: 12px;
   background: var(--foreground-color-3);
   color: var(--foreground-color-2);
-  margin-right: 2px;
   padding-bottom: 4px;
-  border: 1px solid var(--foreground-color-2);
-  border-bottom: none;
   box-shadow: none;
   line-height: initial;
+  border: none;
+  height: 15px;
+  margin: 0;
 }
 
 .lm_header .lm_tab .lm_title {
@@ -101,8 +103,8 @@
 }
 
 .lm_tab:hover,.lm_tab.lm_active {
-  background: var(--foreground-color-2);
-  color: var(--foreground-color);
+  background: var(--foreground-color-4);
+  color: var(--foreground-color-1);
 }
 
 .lm_header .lm_controls .lm_tabdropdown:before {

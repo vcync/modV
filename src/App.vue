@@ -247,9 +247,11 @@ export default {
   --fontSize: 14px;
   --foreground-color-rgb: 255, 255, 255;
   --foreground-color-a: 1;
-  --background-color: #000;
+  --background-color: #111;
+  --foreground-color-1: rgba(var(--foreground-color-rgb), 0.5);
   --foreground-color-2: rgba(var(--foreground-color-rgb), 0.4);
   --foreground-color-3: rgba(var(--foreground-color-rgb), 0.2);
+  --foreground-color-4: rgba(var(--foreground-color-rgb), 0.1);
   --columnGap: calc(var(--lineHeight));
 
   --focus-color-rgb: 241, 196, 16;
@@ -269,6 +271,21 @@ export default {
 
 * {
   box-sizing: border-box;
+}
+
+select {
+  box-sizing: border-box;
+  border: none;
+  position: relative;
+  display: inline-block;
+  background-color: var(--foreground-color);
+}
+
+input[type="text"],
+input[type="number"],
+textarea,
+select {
+  padding: 0.3em 0.5em;
 }
 
 .lm_header .lm_tab {
