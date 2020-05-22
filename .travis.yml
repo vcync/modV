@@ -22,10 +22,10 @@ cache:
   - "$HOME/.cache/electron"
   - "$HOME/.cache/electron-builder"
 before_install:
-  - if [ "$TRAVIS_OS_NAME" = "linux"]; then wget https://github.com/Palakis/obs-ndi/releases/download/4.9.0/libndi4_4.5.1-1_amd64.deb && sudo dpkg -i libndi4_4.5.1-1_amd64.deb; fi
+  - if [ "$TRAVIS_OS_NAME" = "linux" ]; then wget https://github.com/Palakis/obs-ndi/releases/download/4.9.0/libndi4_4.5.1-1_amd64.deb && sudo dpkg -i libndi4_4.5.1-1_amd64.deb; fi
 script:
-  - if [ "$TRAVIS_OS_NAME" = "osx"];   then yarn run electron:build -mw --publish=never; fi
-  - if [ "$TRAVIS_OS_NAME" = "linux"]; then yarn run electron:build -l  --publish=never; fi
+  - if [ "$TRAVIS_OS_NAME" = "osx" ];   then yarn run electron:build -mw --publish=never; fi
+  - if [ "$TRAVIS_OS_NAME" = "linux" ]; then yarn run electron:build -l  --publish=never; fi
 before_cache:
 - rm -rf $HOME/.cache/electron-builder/wine
 branches:
