@@ -15,6 +15,11 @@ module.exports = {
       hot: true,
       // hotOnly: true,
       contentBase: "./"
+    },
+
+    node: {
+      __dirname: process.env.NODE_ENV !== "production",
+      __filename: process.env.NODE_ENV !== "production"
     }
   },
 
@@ -31,7 +36,8 @@ module.exports = {
         "fluent-ffmpeg",
         "animated-gif-detector",
         "ospath",
-        "stream-to-blob"
+        "stream-to-blob",
+        "grandiose"
       ],
 
       builderOptions: {
@@ -50,10 +56,10 @@ module.exports = {
               NODE_ENV: '"production"',
               BASE_URL: "`app://./`",
               IS_ELECTRON: true
-            },
-            __dirname: "`app://./`",
-            __filename: "`${app://./}/index.html`",
-            __static: "`app://./`"
+            }
+            // __dirname: "`app://./`",
+            // __filename: "`app://./index.html`",
+            // __static: "`app://./`"
           }
         ]);
 

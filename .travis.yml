@@ -1,12 +1,18 @@
 # Only build tags
 if: tag IS present
-
-matrix:
+language: node_js
+node_js: '10'
+jobs:
   include:
-  - os: osx
+  - name: "Build on macOS for macOS and Windows"
+    os: osx
     osx_image: xcode10.2
-    language: node_js
-    node_js: '10'
+    env:
+    - ELECTRON_CACHE=$HOME/.cache/electron
+    - ELECTRON_BUILDER_CACHE=$HOME/.cache/electron-builder
+  - name: "Build on Linux for Linux"
+    os: linux
+    dist: xenial
     env:
     - ELECTRON_CACHE=$HOME/.cache/electron
     - ELECTRON_BUILDER_CACHE=$HOME/.cache/electron-builder
@@ -15,7 +21,11 @@ cache:
   - node_modules
   - "$HOME/.cache/electron"
   - "$HOME/.cache/electron-builder"
-script: yarn run electron:build -mwl --publish=never
+before_install:
+  - if [ "$TRAVIS_OS_NAME" = "linux"]; then wget https://github.com/Palakis/obs-ndi/releases/download/4.9.0/libndi4_4.5.1-1_amd64.deb && sudo dpkg -i libndi4_4.5.1-1_amd64.deb; fi
+script:
+  - if [ "$TRAVIS_OS_NAME" = "osx"];   then yarn run electron:build -mw --publish=never; fi
+  - if [ "$TRAVIS_OS_NAME" = "linux"]; then yarn run electron:build -l  --publish=never; fi
 before_cache:
 - rm -rf $HOME/.cache/electron-builder/wine
 branches:

@@ -82,6 +82,10 @@ const actions = {
     return outputContext;
   },
 
+  removeAuxillaryOutput({ commit }, outputContextId) {
+    commit("REMOVE_AUXILLARY", outputContextId);
+  },
+
   setDebugContext({ commit }, debugCanvas) {
     const context = debugCanvas.getContext("2d");
     commit("SET_DEBUG_CONTEXT", context);
