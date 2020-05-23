@@ -26,9 +26,6 @@ let win;
 let projectNames = ["default"];
 let currentProject = "default";
 
-// Should the application promt when attempting to quit?
-app.showExitPrompt = true;
-
 // Scheme must be registered before the app is ready
 protocol.registerSchemesAsPrivileged([
   {
@@ -216,6 +213,9 @@ function updateMenu() {
 function createWindow() {
   updateMenu();
 
+  // Should the application promt when attempting to quit?
+  app.showExitPrompt = true;
+
   const { width, height } = screen.getPrimaryDisplay().workAreaSize;
   // Create the browser window.
   win = new BrowserWindow({
@@ -298,7 +298,7 @@ function createWindow() {
 app.on("window-all-closed", () => {
   // On macOS it is common for applications and their menu bar
   // to stay active until the user quits explicitly with Cmd + Q
-  if (process.platform !== "darwin") {
+  if (process.platform !== "darwin" || !app.showExitPrompt) {
     app.quit();
   }
 });
