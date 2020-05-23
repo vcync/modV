@@ -9,7 +9,7 @@ import use from "./use";
 
 import PromiseWorker from "promise-worker-transferable";
 
-import { ipcRenderer } from "electron";
+import { ipcRenderer, remote } from "electron";
 
 let imageBitmap;
 const imageBitmapQueue = [];
@@ -34,6 +34,11 @@ export default class ModV {
   constructor() {
     this.$worker = new Worker();
     this.$asyncWorker = new PromiseWorker(this.$worker);
+
+    this.$worker.postMessage({
+      type: "__dirname",
+      payload: remote.app.getAppPath()
+    });
 
     this.$worker.addEventListener("message", e => {
       if (e.data.type === "tick" && this.ready) {

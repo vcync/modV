@@ -1,18 +1,15 @@
 /* eslint-env worker node */
-import registerPromiseWorker from "promise-worker/register";
-import fs from "fs";
-import store from "./store";
-import loop from "./loop";
-import { tick as frameTick } from "./frame-counter";
-import { getFeatures, setFeatures } from "./audio-features";
-import featureAssignmentPlugin from "../plugins/feature-assignment";
 
 let lastKick = false;
 
-(async function() {
-  self.addEventListener("unhandledrejection", e => {
-    console.log(e);
-  });
+async function start() {
+  const registerPromiseWorker = require("promise-worker/register");
+  const fs = require("fs");
+  const store = require("./store").default;
+  const loop = require("./loop").default;
+  const { tick: frameTick } = require("./frame-counter");
+  const { getFeatures, setFeatures } = require("./audio-features");
+  // const featureAssignmentPlugin = require("../plugins/feature-assignment");
 
   store.subscribe(mutation => {
     const { type, payload } = mutation;
@@ -112,7 +109,7 @@ let lastKick = false;
     store.dispatch("modules/registerModule", module);
   }
 
-  store.dispatch("plugins/add", featureAssignmentPlugin);
+  // store.dispatch("plugins/add", featureAssignmentPlugin);
 
   const webcamOutput = await store.dispatch("outputs/getAuxillaryOutput", {
     name: "webcam",
@@ -256,4 +253,18 @@ let lastKick = false;
   });
 
   self.store = store;
-})();
+}
+
+function handleDirname(e) {
+  const message = e.data;
+  const { type, payload } = message;
+
+  if (type === "__dirname") {
+    self.__dirname = payload;
+
+    self.removeEventListener("message", handleDirname);
+    start();
+  }
+}
+
+self.addEventListener("message", handleDirname);

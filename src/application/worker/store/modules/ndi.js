@@ -1,7 +1,16 @@
-import grandiose from "grandiose";
+/* globals __dirname */
+
 import uuidv4 from "uuid/v4";
 import Vue from "vue";
 import store from "../";
+
+// eslint-disable-next-line
+__dirname = `${__dirname}/node_modules/grandiose`;
+
+const grandiose = require("grandiose");
+
+// eslint-disable-next-line
+__dirname = __dirname.replace("/node_modules/grandiose", "");
 
 const state = {
   discovering: false,
