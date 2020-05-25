@@ -27,7 +27,7 @@
       <input type="number" v-model="modelDuration" :disabled="modelUseBpm" />
     </c>
     <c span="1..">
-      <select v-model.number="modelEasing">
+      <select v-model.number="modelEasing" :disabled="!!modelSteps">
         <option
           v-for="easing in easings"
           :key="easing.value"
@@ -53,6 +53,19 @@
         <option value="256">256</option>
       </select></c
     >
+    <c span="2">
+      <label
+        title="If unchecked the duration will be used per step. duration * numberOfSteps"
+        >Use duration as total time?
+        <input type="checkbox" v-model="modelDurationAsTotalTime"
+      /></label>
+    </c>
+    <c span="2">
+      <label
+        title="If greater than 0 step mode will be enabled, which steps a linear animation over the given amount of steps"
+        >Steps<input type="number" v-model.number="modelSteps"
+      /></label>
+    </c>
   </grid>
 </template>
 
@@ -127,8 +140,28 @@ export default {
       }
     },
 
+    modelDurationAsTotalTime: {
+      get() {
+        return this.value.durationAsTotalTime;
+      },
+
+      set(value) {
+        this.updateValue("durationAsTotalTime", value);
+      }
+    },
+
     easings() {
       return this.$modV.store.state.tweens.easings;
+    },
+
+    modelSteps: {
+      get() {
+        return this.value.steps;
+      },
+
+      set(value) {
+        return this.updateValue("steps", value);
+      }
     }
   },
 

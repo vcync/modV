@@ -16,7 +16,7 @@ const progress = {};
 
 const state = {
   tweens: {},
-  easings: Object.keys(anime.easings).map(easing => ({
+  easings: Object.keys(anime.penner).map(easing => ({
     value: easing,
     label: easing
       .replace(/([a-z])([A-Z])/g, "$1 $2")
@@ -37,11 +37,26 @@ async function buildFrames({
   direction,
   easing,
   bpmDivision,
-  useBpm
+  useBpm,
+  durationAsTotalTime,
+  steps
 }) {
-  const bpm = store.state.beats.bpm || 120;
-  const newDuration =
-    (useBpm ? ((60 * 60) / bpm) * bpmDivision : duration) || 1000;
+  let newDuration = 1000;
+
+  if (useBpm) {
+    const bpm = store.state.beats.bpm || 120;
+    const calculatedBpm = ((60 * 60) / bpm) * bpmDivision;
+
+    newDuration = durationAsTotalTime
+      ? calculatedBpm
+      : calculatedBpm * data.length;
+  } else {
+    newDuration = durationAsTotalTime ? duration : duration * data.length;
+  }
+
+  if (loop) {
+    newDuration *= 2;
+  }
 
   let seek = 0;
 
@@ -53,13 +68,13 @@ async function buildFrames({
     const objOut = {};
     const mapped = {};
 
-    let newData = data;
+    const newData = data;
 
     if (loop) {
-      newData = data.concat([data[0]]);
+      // newData = data.concat([data[0]]);
     }
 
-    const frameDuration = duration / newData.length;
+    const frameDuration = newDuration / newData.length;
 
     for (let i = 0, len = newData.length; i < len; i++) {
       const datum = newData[i];
@@ -88,9 +103,10 @@ async function buildFrames({
       targets: objOut,
       ...mapped,
       duration: newDuration,
-      easing: easing || "linear",
+      easing: steps ? `steps(${steps})` : easing || "linear",
       direction,
       autoplay: false,
+      loop,
       update(anim) {
         progress[id] = anim.progress;
       }
@@ -100,10 +116,30 @@ async function buildFrames({
     let frame = 0;
     const framesRequired = Math.round(newDuration / 60) || 1;
 
-    while (frame < framesRequired) {
-      animation.seek((frame / framesRequired) * animation.duration);
-      animationCache.push(Object.assign({}, objOut));
-      frame++;
+    let frameRecordingCompleted = false;
+    let frameRecordingDirection = 1;
+
+    if (loop) {
+      while (!frameRecordingCompleted) {
+        animation.seek((frame / framesRequired) * newDuration);
+        animationCache.push(Object.assign({}, objOut));
+
+        if (frame === framesRequired) {
+          frameRecordingDirection = -1;
+        }
+
+        frame += frameRecordingDirection;
+
+        if (frame === 0) {
+          frameRecordingCompleted = true;
+        }
+      }
+    } else {
+      while (frame < framesRequired) {
+        animation.seek((frame / framesRequired) * newDuration);
+        animationCache.push(Object.assign({}, objOut));
+        frame++;
+      }
     }
 
     frames[id] = Math.floor(animationCache.length * seek);
@@ -119,12 +155,14 @@ const actions = {
       id = uuidv4(),
       data,
       duration = 1000,
-      direction = "normal",
+      direction = "alternate",
       easing = "linear",
       loop = true,
       useBpm = true,
       bpmDivision = 16,
-      isGallery
+      durationAsTotalTime = false,
+      isGallery,
+      steps = 0
     }
   ) {
     const animationCache = await buildFrames({
@@ -135,7 +173,9 @@ const actions = {
       direction,
       easing,
       useBpm,
-      bpmDivision
+      bpmDivision,
+      durationAsTotalTime,
+      steps
     });
 
     const tween = {
@@ -148,7 +188,9 @@ const actions = {
       direction,
       useBpm,
       bpmDivision,
-      isGallery
+      durationAsTotalTime,
+      isGallery,
+      steps
     };
 
     commit("ADD_TWEEN", tween);
@@ -164,10 +206,14 @@ const actions = {
       const tween = state.tweens[tweenKeys[i]];
 
       if (tween.useBpm) {
+        const calculatedBpm = ((60 * 60) / bpm) * tween.bpmDivision;
+
         commit("UPDATE_TWEEN_VALUE", {
           id: tween.id,
           key: "duration",
-          value: ((60 * 60) / bpm) * tween.bpmDivision
+          value: tween.durationAsTotalTime
+            ? calculatedBpm
+            : calculatedBpm * tween.data.length
         });
 
         const frames = await buildFrames(tween);

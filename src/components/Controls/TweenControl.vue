@@ -7,7 +7,11 @@
       @change="updateValue"
       :disabled="useBpm"
     />
-    <select v-model="modelEasing" @change="updateValue">
+    <select
+      v-model="modelEasing"
+      @change="updateValue"
+      :disabled="!!modelSteps"
+    >
       <option
         v-for="easing in easings"
         :key="easing.value"
@@ -15,7 +19,15 @@
         >{{ easing.label }}</option
       >
     </select>
-
+    <br />
+    <label
+      title="If unchecked the duration will be used per step. duration * numberOfSteps"
+      >Use duration as total time?
+      <input
+        type="checkbox"
+        v-model="modelDurationAsTotalTime"
+        @change="updateValue"/></label
+    ><br />
     <label
       >Use BPM<input
         type="checkbox"
@@ -34,6 +46,14 @@
       <option value="128">128</option>
       <option value="256">256</option>
     </select>
+    <br />
+    <label
+      title="If greater than 0 step mode will be enabled, which steps a linear animation over the given amount of steps"
+      >Steps<input
+        type="number"
+        v-model.number="modelSteps"
+        @change="updateValue"
+    /></label>
   </div>
 </template>
 
@@ -46,7 +66,9 @@ export default {
       modelDuration: 1000,
       modelEasing: "linear",
       useBpm: true,
-      modelBpmDivision: 32
+      modelBpmDivision: 32,
+      modelDurationAsTotalTime: false,
+      modelSteps: 0
     };
   },
 
@@ -80,6 +102,8 @@ export default {
       const easing = this.modelEasing;
       const useBpm = this.useBpm;
       const bpmDivision = this.modelBpmDivision;
+      const durationAsTotalTime = this.modelDurationAsTotalTime;
+      const steps = this.modelSteps;
 
       this.$emit("input", {
         ...this.value,
@@ -87,7 +111,9 @@ export default {
         duration,
         easing,
         useBpm,
-        bpmDivision
+        bpmDivision,
+        durationAsTotalTime,
+        steps
       });
     }
   },
