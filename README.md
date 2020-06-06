@@ -36,6 +36,9 @@ npm install --global --production windows-build-tools
 
 **Note: This will take some time and you don't get much feedback of what is happening, so please wait until you get confirmation the installation process has finished otherwise painful Visual Studio things will need to be fixed!**
 
+#### 'vue-cli-service' is not recognized
+
+Please see issue 122 (https://github.com/vcync/modv-3/issues/122#issuecomment-640100114) on how to resolve this.
 
 
 ### Ubuntu/Debian
