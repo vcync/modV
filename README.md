@@ -26,7 +26,14 @@ Windows Platform tools are required. Install them with:
 npm install --global --production windows-build-tools
 ```
 
+
+
+#### 'vue-cli-service' is not recognized
+
+Please see issue 122 (https://github.com/vcync/modv-3/issues/122) on how to resolve this.
+
 ### Ubuntu/Debian
+
 libndi is required for NDI sources and must be installed for modV to build. You can find that available to download here:
 [https://github.com/Palakis/obs-ndi/releases](https://github.com/Palakis/obs-ndi/releases)
 
