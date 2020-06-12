@@ -90,6 +90,8 @@ export default {
     this.context.strokeStyle = "#fff";
     requestAnimationFrame(this.draw);
 
+    this.actualPosition = -this.value * this.spacingCalc;
+
     this.resizeObserver = new ResizeObserver(this.resize).observe(
       this.$refs.container
     );
