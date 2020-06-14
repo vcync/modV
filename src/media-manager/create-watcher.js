@@ -10,13 +10,15 @@ export default function createWatcher() {
       this.watcher.close();
     }
 
+    const ignored = [
+      os.platform() === "darwin" ? /(^|[/\\])\../ : undefined,
+      /node_modules/,
+      "**/package.json",
+      "**/package-lock.json"
+    ].concat(store.getters["readHandlers/ignored"]);
+
     this.watcher = chokidar.watch(this.mediaDirectoryPath, {
-      ignored: [
-        os.platform() === "darwin" ? /(^|[/\\])\../ : undefined,
-        /node_modules/,
-        "**/package.json",
-        "**/package-lock.json"
-      ].concat(store.getters["readHandlers/ignored"])
+      ignored
     });
 
     this.watcher

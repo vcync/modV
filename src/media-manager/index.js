@@ -12,6 +12,7 @@ import fsCreateProfile from "./fs-create-profile";
 import imageReadHandler from "./read-handlers/image";
 import paletteReadHandler from "./read-handlers/palette";
 import presetReadHandler from "./read-handlers/preset";
+import moduleReadHandler from "./read-handlers/module";
 
 import presetSaveHandler from "./save-handlers/preset";
 
@@ -52,10 +53,10 @@ export default class MediaManager {
     this.addReadHandler({ readHandler: imageReadHandler });
     this.addReadHandler({ readHandler: paletteReadHandler });
     this.addReadHandler({ readHandler: presetReadHandler });
-    this.addSaveHandler({ saveHandler: presetSaveHandler });
-  }
+    this.addReadHandler({ readHandler: moduleReadHandler });
 
-  async start() {
+    this.addSaveHandler({ saveHandler: presetSaveHandler });
+
     store.subscribe(mutation => {
       if (mutation.type.split("/")[0] !== "media") {
         return;
@@ -66,19 +67,27 @@ export default class MediaManager {
       }
     });
 
+    (async () => {
+      try {
+        await fs.promises.access(path.join(this.mediaDirectoryPath));
+      } catch (error) {
+        await mkdirp(this.mediaDirectoryPath);
+      }
+
+      try {
+        await fs.promises.access(path.join(this.mediaDirectoryPath, "default"));
+      } catch (error) {
+        this.fsCreateProfile("default");
+      }
+    })();
+  }
+
+  async start() {
     await this.createWatcher();
+  }
 
-    try {
-      await fs.promises.access(path.join(this.mediaDirectoryPath));
-    } catch (error) {
-      await mkdirp(this.mediaDirectoryPath);
-    }
-
-    try {
-      await fs.promises.access(path.join(this.mediaDirectoryPath, "default"));
-    } catch (error) {
-      this.fsCreateProfile("default");
-    }
+  async reset() {
+    await store.dispatch("resetAll");
   }
 
   async saveFile({ what, name, fileType, project, payload }) {

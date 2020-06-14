@@ -1,26 +1,49 @@
 import Vue from "vue";
 
-/**
- * Holds processed media
- *
- * @type {Object}
- */
-const state = {};
+function initialState() {
+  /**
+   * Holds processed media
+   *
+   * @type {Object}
+   */
+  return {};
+}
 
 const getters = {
   projects: state => Object.keys(state).sort((a, b) => a.localeCompare(b))
 };
 
 const actions = {
-  addMedia({ commit }, { project, folder, item }) {
-    return new Promise(resolve => {
-      commit("ADD", { project, folder, item });
-      resolve();
-    });
+  async addMedia({ commit }, { project, folder, item }) {
+    commit("ADD", { project, folder, item });
   },
 
-  setState({ commit }, newState) {
-    commit("SET_STATE", newState);
+  async setState({ commit }, newState) {
+    const store = require("../index.js").default;
+    commit("CLEAR_STATE");
+
+    const projectKeys = Object.keys(newState);
+    for (let i = 0, len = projectKeys.length; i < len; i++) {
+      const projectKey = projectKeys[i];
+
+      const folderKeys = Object.keys(newState[projectKey]);
+      for (let j = 0, len = folderKeys.length; j < len; j++) {
+        const folderKey = folderKeys[j];
+
+        const items = Object.values(newState[projectKey][folderKey]);
+        for (let k = 0, len = items.length; k < len; k++) {
+          const item = items[k];
+
+          await store.dispatch("media/addMedia", {
+            project: projectKey,
+            folder: folderKey,
+            item
+          });
+        }
+      }
+    }
+
+    // commit("SET_STATE", newState);
   }
 };
 
@@ -37,28 +60,29 @@ const mutations = {
     state[project][folder][item.name] = item;
   },
 
-  SET_STATE(state, newState) {
+  CLEAR_STATE(state) {
     const stateKeys = Object.keys(state);
     for (let i = 0, len = stateKeys.length; i < len; i++) {
       const key = stateKeys[i];
 
-      delete state[key];
+      Vue.delete(state, key);
     }
+  },
 
-    const newStateKeys = Object.keys(newState);
-    for (let i = 0, len = newStateKeys.length; i < len; i++) {
-      const key = newStateKeys[i];
+  RESET_STATE(state) {
+    const s = initialState();
+    const stateKeys = Object.keys(s);
+    for (let i = 0, len = stateKeys.length; i < len; i++) {
+      const key = stateKeys[i];
 
-      state[key] = newState[key];
+      state[key] = s[key];
     }
-
-    Vue.set(state, newState);
   }
 };
 
 export default {
   namespaced: true,
-  state,
+  state: initialState,
   getters,
   actions,
   mutations

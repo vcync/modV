@@ -1,14 +1,16 @@
 import Vue from "vue";
 
-/**
- * Holds Plugins
- *
- * @type {Object}
- */
-const state = {
-  plugins: {},
-  pluginData: {}
-};
+function initialState() {
+  /**
+   * Holds Plugins
+   *
+   * @type {Object}
+   */
+  return {
+    plugins: {},
+    pluginData: {}
+  };
+}
 
 const getters = {};
 
@@ -32,12 +34,22 @@ const mutations = {
     }
 
     state[project][folder].push(item);
+  },
+
+  RESET_STATE(state) {
+    const s = initialState();
+    const stateKeys = Object.keys(s);
+    for (let i = 0, len = stateKeys.length; i < len; i++) {
+      const key = stateKeys[i];
+
+      state[key] = s[key];
+    }
   }
 };
 
 export default {
   namespaced: true,
-  state,
+  state: initialState,
   getters,
   actions,
   mutations

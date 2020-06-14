@@ -52,7 +52,7 @@ export default class ModV {
       if (Array.isArray(message)) {
         return;
       }
-      const payload = JSON.parse(e.data.payload);
+      const payload = e.data.payload ? JSON.parse(e.data.payload) : undefined;
 
       // if (
       //   type !== "metrics/SET_FPS_MEASURE" &&
@@ -165,8 +165,13 @@ export default class ModV {
       );
     });
 
-    ipcRenderer.send("get-media-manager-state");
     this.ready = true;
+    ipcRenderer.send("modv-ready");
+    ipcRenderer.send("get-media-manager-state");
+
+    window.addEventListener("beforeunload", () => {
+      ipcRenderer.send("modv-destroy");
+    });
   }
 
   async inputLoop() {

@@ -1,13 +1,15 @@
 import Vue from "vue";
 
-/**
- * Holds the SaveHandler
- *
- * @type {Object}
- * @param {Array<SaveHandler>} folderName  Name of a folder in a project. Array of SaveHandlers
- *                                         to use for that folder.
- */
-const state = {};
+function initialState() {
+  /**
+   * Holds the SaveHandler
+   *
+   * @type {Object}
+   * @param {Array<SaveHandler>} folderName  Name of a folder in a project. Array of SaveHandlers
+   *                                         to use for that folder.
+   */
+  return {};
+}
 
 const getters = {
   ignored: state =>
@@ -36,12 +38,22 @@ const actions = {
 const mutations = {
   ADD(state, saveHandler) {
     Vue.set(state, saveHandler.folder, saveHandler);
+  },
+
+  RESET_STATE(state) {
+    const s = initialState();
+    const stateKeys = Object.keys(s);
+    for (let i = 0, len = stateKeys.length; i < len; i++) {
+      const key = stateKeys[i];
+
+      state[key] = s[key];
+    }
   }
 };
 
 export default {
   namespaced: true,
-  state,
+  state: initialState,
   getters,
   actions,
   mutations

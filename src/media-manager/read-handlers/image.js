@@ -32,7 +32,7 @@ export default {
     "gif"
   ],
 
-  ignore: ["processed-gifs"],
+  ignored: ["processed-gifs"],
 
   /**
    * Takes in a readable stream, processes file accordingly and outputs file location plus stream
@@ -72,14 +72,11 @@ export default {
           })
           .on("end", () => {
             resolve({
-              file: outputStream,
+              filePath: outputStream,
               folder: "video"
             });
           })
-          .pipe(
-            outputStream,
-            { end: true }
-          );
+          .pipe(outputStream, { end: true });
       } else {
         resolve(true);
       }

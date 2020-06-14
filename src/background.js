@@ -234,7 +234,14 @@ function createWindow() {
       updateMenu(); // potentially janky
     }
   });
-  mm.start();
+
+  ipcMain.on("modv-ready", () => {
+    mm.start();
+  });
+
+  ipcMain.on("modv-destroy", () => {
+    mm.reset();
+  });
 
   ipcMain.on("get-media-manager-state", event => {
     event.reply("media-manager-state", store.state.media);

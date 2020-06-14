@@ -37,7 +37,9 @@ module.exports = {
         "animated-gif-detector",
         "ospath",
         "stream-to-blob",
-        "grandiose"
+        "grandiose",
+        "npm",
+        "webpack-2"
       ],
 
       builderOptions: {
@@ -49,6 +51,18 @@ module.exports = {
         }
       },
 
+      chainWebpackMainProcess: config => {
+        config.module
+          .rule("nodeloader")
+          .test(/\.node$/)
+          .use("nodeloader")
+          .loader("node-loader");
+
+        config
+          .plugin("define")
+          .use(DefinePlugin, [{ "process.env.FLUENTFFMPEG_COV": false }]);
+      },
+
       chainWebpackRendererProcess: config => {
         config.plugin("define").use(DefinePlugin, [
           {
@@ -57,13 +71,9 @@ module.exports = {
               BASE_URL: "`app://./`",
               IS_ELECTRON: true
             }
-            // __dirname: "`app://./`",
-            // __filename: "`app://./index.html`",
-            // __static: "`app://./`"
           }
         ]);
 
-        // console.log(JSON.stringify(config.toConfig(), null, 2));
         return config;
       }
     }

@@ -1,13 +1,15 @@
 import Vue from "vue";
 
-/**
- * Holds the ReadHandlers
- *
- * @type {Object}
- * @param {Array<ReadHandler>} folderName  Name of a folder in a project. Array of ReadHandlers
- *                                         to use for that folder.
- */
-const state = {};
+function initialState() {
+  /**
+   * Holds the ReadHandlers
+   *
+   * @type {Object}
+   * @param {Array<ReadHandler>} folderName  Name of a folder in a project. Array of ReadHandlers
+   *                                         to use for that folder.
+   */
+  return {};
+}
 
 const getters = {
   ignored: state =>
@@ -40,12 +42,22 @@ const mutations = {
     }
 
     state[folder].push(readHandler);
+  },
+
+  RESET_STATE(state) {
+    const s = initialState();
+    const stateKeys = Object.keys(s);
+    for (let i = 0, len = stateKeys.length; i < len; i++) {
+      const key = stateKeys[i];
+
+      state[key] = s[key];
+    }
   }
 };
 
 export default {
   namespaced: true,
-  state,
+  state: initialState,
   getters,
   actions,
   mutations
