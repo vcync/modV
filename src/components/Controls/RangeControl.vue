@@ -2,8 +2,9 @@
   <div ref="container">
     <canvas
       ref="canvas"
-      @mousedown="mouseDown"
-      @dblclick="toggleEditMode()"
+      @mousedown="requestPointerLock"
+      @mouseup="exitPointerLock"
+      @dblclick="toggleEditMode"
     ></canvas>
     <input
       v-model="inputValue"
@@ -51,10 +52,8 @@ export default {
     return {
       context: null,
       active: false,
-      startX: 0,
       position: 0,
       actualPosition: 0,
-      lastComp: 0,
       internalValue: 0,
       editMode: false,
       inputValue: 0,
@@ -63,7 +62,8 @@ export default {
       baseLineHeight: 8,
       modifiedLineHeight: 5,
       inbetweenLineHeight: 12,
-      resizeObserver: null
+      resizeObserver: null,
+      raf: -1
     };
   },
 
@@ -88,7 +88,7 @@ export default {
 
     this.context.fillStyle = "#333";
     this.context.strokeStyle = "#fff";
-    requestAnimationFrame(this.draw);
+    this.raf = requestAnimationFrame(this.draw);
 
     this.actualPosition = -this.value * this.spacingCalc;
 
@@ -104,6 +104,44 @@ export default {
   },
 
   methods: {
+    requestPointerLock() {
+      const {
+        $refs: { canvas }
+      } = this;
+
+      document.addEventListener(
+        "pointerlockchange",
+        this.lockChangeAlert,
+        false
+      );
+      canvas.requestPointerLock();
+    },
+
+    exitPointerLock() {
+      document.exitPointerLock();
+      document.removeEventListener(
+        "pointerlockchange",
+        this.lockChangeAlert,
+        false
+      );
+    },
+
+    lockChangeAlert() {
+      const {
+        $refs: { canvas }
+      } = this;
+
+      if (document.pointerLockElement === canvas) {
+        document.addEventListener("mousemove", this.mouseMove, false);
+        document.addEventListener("mouseup", this.mouseUp);
+        window.addEventListener("keydown", this.keyDown);
+        window.addEventListener("keyup", this.keyUp);
+      } else {
+        document.removeEventListener("mousemove", this.mouseMove, false);
+        this.mouseUp();
+      }
+    },
+
     draw() {
       const { devicePixelRatio: dpr } = window;
       const {
@@ -203,9 +241,8 @@ export default {
     },
 
     mouseUp() {
-      this.lastComp = 0;
-      window.removeEventListener("mousemove", this.mouseMove);
-      window.removeEventListener("mouseup", this.mouseUp);
+      document.removeEventListener("mousemove", this.mouseMove, false);
+      document.removeEventListener("mouseup", this.mouseUp);
       window.removeEventListener("keydown", this.keyDown);
       window.removeEventListener("keyup", this.keyUp);
       document.body.style.cursor =
@@ -214,26 +251,17 @@ export default {
 
     mouseMove(e) {
       const { devicePixelRatio: dpr } = window;
-      const {
-        type,
-        actualPosition,
-        lastComp,
-        startX,
-        spacingCalc,
-        min,
-        max
-      } = this;
+      const { type, actualPosition, spacingCalc, min, max } = this;
 
-      const comp = e.clientX * dpr - startX * dpr;
+      const comp = e.movementX * dpr;
 
-      let newPosition = actualPosition + (comp - lastComp);
+      let newPosition = actualPosition + comp;
 
       if (newPosition === actualPosition) {
         return;
       }
 
       let value = -newPosition / spacingCalc;
-      this.lastComp = comp;
 
       if (value < this.min) {
         newPosition = -min * spacingCalc;
@@ -255,13 +283,10 @@ export default {
         } else {
           this.position = rounded * spacingCalc;
           this.internalValue = rounded;
-
-          requestAnimationFrame(this.draw);
         }
       } else {
         this.internalValue = value;
         this.position = this.actualPosition;
-        requestAnimationFrame(this.draw);
       }
 
       this.$emit("input", this.internalValue);
@@ -278,7 +303,6 @@ export default {
       this.position = -value * this.spacingCalc;
       this.internalValue = -this.position / this.spacingCalc;
       this.$emit("input", this.internalValue);
-      requestAnimationFrame(this.draw);
     },
 
     toggleEditMode() {
@@ -311,7 +335,7 @@ export default {
       this.canvas.width = width * dpr;
       this.canvas.height = height * dpr;
 
-      requestAnimationFrame(this.draw);
+      this.raf = requestAnimationFrame(this.draw);
     }
   },
 
@@ -324,7 +348,9 @@ export default {
       this.position = -value * this.spacingCalc;
       this.internalValue = value;
       this.inputValue = value;
-      requestAnimationFrame(this.draw);
+
+      cancelAnimationFrame(this.raf);
+      this.raf = requestAnimationFrame(this.draw);
     }
   }
 };
@@ -341,6 +367,7 @@ div {
 canvas {
   height: 20px;
   width: 100%;
+  cursor: ew-resize;
 }
 
 input {
