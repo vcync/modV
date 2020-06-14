@@ -122,6 +122,14 @@ const actions = {
     return group;
   },
 
+  orderByIds({ commit }, { ids }) {
+    const newGroups = ids.map(id => {
+      return state.groups.find(group => group.id === id);
+    });
+
+    commit("REPLACE_GROUPS", { groups: newGroups });
+  },
+
   createPresetData() {
     return state.groups
       .filter(group => group.name !== constants.GALLERY_GROUP_NAME)

@@ -66,8 +66,10 @@ export default {
         );
       },
 
-      set(value) {
-        this.$modV.store.commit("groups/REPLACE_GROUPS", value);
+      async set(value) {
+        await this.$modV.store.dispatch("groups/orderByIds", {
+          ids: value.map(group => group.id)
+        });
       }
     },
 
