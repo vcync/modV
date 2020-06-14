@@ -10,12 +10,14 @@ jobs:
     env:
     - ELECTRON_CACHE=$HOME/.cache/electron
     - ELECTRON_BUILDER_CACHE=$HOME/.cache/electron-builder
+    - USE_HARD_LINKS=false
   - name: "Build on Linux for Linux"
     os: linux
     dist: xenial
     env:
     - ELECTRON_CACHE=$HOME/.cache/electron
     - ELECTRON_BUILDER_CACHE=$HOME/.cache/electron-builder
+    - USE_HARD_LINKS=false
 cache:
   directories:
   - node_modules
