@@ -24,6 +24,7 @@ function loop(delta, features) {
   }
 
   const {
+    beats: { kick },
     modules: { active, registered },
     groups: { groups },
     inputs: { inputs, inputLinks },
@@ -201,7 +202,8 @@ function loop(delta, features) {
         video,
         props,
         data: moduleData,
-        pipeline
+        pipeline,
+        kick
       });
       drawTo.restore();
 
