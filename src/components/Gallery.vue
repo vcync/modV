@@ -188,6 +188,10 @@ export default {
   },
 
   watch: {
+    registeredModules() {
+      this.updateModulesAndRenderersToShow();
+    },
+
     searchTerm() {
       this.updateModulesAndRenderersToShow();
     }
