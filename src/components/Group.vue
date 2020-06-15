@@ -29,7 +29,17 @@
       </select>
     </section>
     <section class="group-body">
-      <div class="group-title" contenteditable="false">{{ name }}</div>
+      <div class="group-title" @click.self="endTitleEditable">
+        <span v-if="!titleEditable" @dblclick="toggleTitleEditable">{{
+          name
+        }}</span>
+        <input
+          type="text"
+          v-model="localName"
+          v-else
+          @keypress.enter="endTitleEditable"
+        />
+      </div>
       <Container
         drag-handle-selector=".handle"
         orientation="horizontal"
@@ -95,8 +105,14 @@ export default {
 
   data() {
     return {
-      compositeOperations
+      compositeOperations,
+      titleEditable: false,
+      localName: ""
     };
+  },
+
+  created() {
+    this.localName = this.name;
   },
 
   computed: {
@@ -266,6 +282,34 @@ export default {
       this.$modV.store.commit("modules/REMOVE_ACTIVE_MODULE", {
         moduleId
       });
+    },
+
+    toggleTitleEditable() {
+      this.titleEditable = !this.titleEditable;
+    },
+
+    endTitleEditable() {
+      const { localName } = this;
+      const trimmedName = localName.trim();
+
+      if (trimmedName.length > 0) {
+        this.$modV.store.commit("groups/UPDATE_GROUP", {
+          groupId: this.groupId,
+          data: {
+            name: trimmedName
+          }
+        });
+      } else {
+        this.localName = this.name;
+      }
+
+      this.titleEditable = false;
+    }
+  },
+
+  watch: {
+    name(value) {
+      this.localName = value;
     }
   }
 };
