@@ -48,6 +48,17 @@ module.exports = {
 
         linux: {
           category: "Graphics"
+        },
+
+        mac: {
+          entitlements: "build/entitlements.mac.plist",
+          entitlementsInherit: "build/entitlements.mac.plist",
+          gatekeeperAssess: false,
+          hardenedRuntime: true
+        },
+
+        dmg: {
+          sign: false
         }
       },
 
