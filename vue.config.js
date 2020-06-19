@@ -48,6 +48,14 @@ module.exports = {
 
         linux: {
           category: "Graphics"
+        },
+
+        mac: {
+          // See https://developer.apple.com/documentation/security/hardened_runtime
+          hardenedRuntime: true,
+          gatekeeperAssess: false,
+          entitlements: "build/entitlements.mac.plist",
+          entitlementsInherit: "build/entitlements.mac.plist"
         }
       },
 
