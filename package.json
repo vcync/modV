@@ -55,6 +55,7 @@
     "@vue/eslint-config-prettier": "^4.0.1",
     "babel-eslint": "^10.0.3",
     "electron": "^7.1.2",
+    "electron-notarize": "^1.0.0",
     "eslint": "^5.16.0",
     "eslint-plugin-no-for-each": "^0.1.14",
     "eslint-plugin-vue": "^5.2.3",

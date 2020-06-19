@@ -56,6 +56,10 @@ module.exports = {
           gatekeeperAssess: false,
           entitlements: "build/entitlements.mac.plist",
           entitlementsInherit: "build/entitlements.mac.plist"
+        },
+
+        dmg: {
+          sign: false
         }
       },
 
