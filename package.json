@@ -21,6 +21,7 @@
     "canvas-text-wrapper": "^0.10.2",
     "color": "^3.1.2",
     "core-js": "^2.6.10",
+    "electron-updater": "^4.3.1",
     "fluent-ffmpeg": "^2.1.2",
     "golden-layout": "^1.5.9",
     "grandiose": "github:vcync/grandiose#feat/workerCompatibility",
