@@ -63,6 +63,10 @@ module.exports = {
         }
       },
 
+      build: {
+        afterSign: "notarize.js"
+      },
+
       chainWebpackMainProcess: config => {
         config.module
           .rule("nodeloader")
