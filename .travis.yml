@@ -33,9 +33,6 @@ before_cache:
 branches:
   except:
   - "/^v\\d+\\.\\d+\\.\\d+$/"
-before_deploy:
-  - if [ "$TRAVIS_OS_NAME" = "osx" ]; then chmod +x add-osx-cert.sh; fi
-  - if [ "$TRAVIS_OS_NAME" = "osx" ]; then ./add-osx-cert.sh; fi
 deploy:
   provider: releases
   api_key:
