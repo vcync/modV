@@ -113,6 +113,10 @@ export default {
 
   created() {
     this.localName = this.name;
+
+    if (!this.focusedGroup) {
+      this.focus();
+    }
   },
 
   computed: {
@@ -139,8 +143,12 @@ export default {
       }
     },
 
+    focusedGroup() {
+      return this.$store.state["ui-groups"].focused;
+    },
+
     focused() {
-      return this.groupId === this.$store.state["ui-groups"].focused;
+      return this.groupId === this.focusedGroup;
     },
 
     enabled: {
