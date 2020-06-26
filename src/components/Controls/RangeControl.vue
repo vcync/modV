@@ -63,7 +63,8 @@ export default {
       modifiedLineHeight: 5,
       inbetweenLineHeight: 12,
       resizeObserver: null,
-      raf: -1
+      raf: -1,
+      lastLoopValue: -1
     };
   },
 
@@ -88,7 +89,7 @@ export default {
 
     this.context.fillStyle = "#333";
     this.context.strokeStyle = "#fff";
-    this.raf = requestAnimationFrame(this.draw);
+    this.loop();
 
     this.actualPosition = -this.value * this.spacingCalc;
 
@@ -154,8 +155,6 @@ export default {
         modifiedLineHeight,
         inbetweenLineHeight
       } = this;
-      context.fillStyle = "#333";
-      context.fillRect(0, 0, canvas.width, canvas.height);
       let isExact = false;
       const canvasWidthHalf = canvas.width / 2;
 
@@ -169,6 +168,9 @@ export default {
 
       const min = Math.round(internalValue - maxIndicators / 2);
       const max = Math.round(internalValue + maxIndicators / 2);
+
+      context.fillStyle = "#333";
+      context.fillRect(0, 0, canvas.width, canvas.height);
 
       for (let i = min; i < max + 1; i += 1) {
         context.strokeStyle = "#fff";
@@ -212,10 +214,10 @@ export default {
           10 * dpr
         );
 
+        context.fillStyle = "#fff";
         context.font = `${12 * dpr}px ${fontFamily}`;
         context.textAlign = "center";
         context.textBaseline = "middle";
-        context.fillStyle = "#fff";
         context.fillText(i, gap, Math.floor(canvas.height / 2));
       }
 
@@ -289,8 +291,24 @@ export default {
         this.position = this.actualPosition;
       }
 
+      if (this.raf < 0) {
+        this.loop();
+      }
+
       this.$emit("input", this.internalValue);
       this.inputValue = this.internalValue;
+    },
+
+    loop() {
+      if (this.lastLoopValue === this.value) {
+        cancelAnimationFrame(this.raf);
+        this.raf = -1;
+        return;
+      }
+      this.raf = requestAnimationFrame(this.loop);
+
+      this.draw();
+      this.lastLoopValue = this.value;
     },
 
     input(e) {
@@ -335,7 +353,7 @@ export default {
       this.canvas.width = width * dpr;
       this.canvas.height = height * dpr;
 
-      this.raf = requestAnimationFrame(this.draw);
+      this.draw();
     }
   },
 
@@ -349,8 +367,9 @@ export default {
       this.internalValue = value;
       this.inputValue = value;
 
-      cancelAnimationFrame(this.raf);
-      this.raf = requestAnimationFrame(this.draw);
+      if (this.raf < 0) {
+        this.loop();
+      }
     }
   }
 };
