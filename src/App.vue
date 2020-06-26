@@ -58,8 +58,8 @@
             </gl-component>
 
             <gl-stack title="Input Device Config" :closable="false">
-              <gl-component title="Audio" :closable="false">
-                <AudioDeviceConfig />
+              <gl-component title="Audio/Video" :closable="false">
+                <AudioVideoDeviceConfig />
               </gl-component>
               <gl-component title="MIDI" :closable="false">
                 <MIDIDeviceConfig />
@@ -87,6 +87,7 @@
     </golden-layout>
 
     <StatusBar />
+    <Search />
   </main>
 </template>
 
@@ -96,12 +97,13 @@ import ABSwap from "@/components/ABSwap";
 import Groups from "@/components/Groups";
 import Gallery from "@/components/Gallery";
 import InputConfig from "@/components/InputConfig";
-import AudioDeviceConfig from "@/components/InputDeviceConfig/Audio.vue";
+import AudioVideoDeviceConfig from "@/components/InputDeviceConfig/AudioVideo.vue";
 import MIDIDeviceConfig from "@/components/InputDeviceConfig/MIDI.vue";
 import BPMConfig from "@/components/InputDeviceConfig/BPM.vue";
 import NDIConfig from "@/components/InputDeviceConfig/NDI.vue";
 import StatusBar from "@/components/StatusBar";
 import Control from "@/components/Control";
+import Search from "@/components/Search";
 
 import * as GoldenLayout from "golden-layout";
 
@@ -118,12 +120,13 @@ export default {
     Groups,
     Gallery,
     InputConfig,
-    AudioDeviceConfig,
+    AudioVideoDeviceConfig,
     MIDIDeviceConfig,
     BPMConfig,
     NDIConfig,
     StatusBar,
-    Control
+    Control,
+    Search
   },
 
   data() {
@@ -345,11 +348,22 @@ export default {
   --fontSize: 14px;
   --foreground-color-rgb: 255, 255, 255;
   --foreground-color-a: 1;
-  --background-color: #111;
   --foreground-color-1: rgba(var(--foreground-color-rgb), 0.5);
   --foreground-color-2: rgba(var(--foreground-color-rgb), 0.4);
   --foreground-color-3: rgba(var(--foreground-color-rgb), 0.2);
   --foreground-color-4: rgba(var(--foreground-color-rgb), 0.1);
+
+  --background-color-rgb: 17, 17, 17;
+  --background-color-a: 1;
+  --background-color: rgba(
+    var(--background-color-rgb),
+    var(--background-color-a)
+  );
+  --background-color-1: rgba(var(--background-color-rgb), 0.8);
+  --background-color-2: rgba(var(--background-color-rgb), 0.7);
+  --background-color-3: rgba(var(--background-color-rgb), 0.5);
+  --background-color-4: rgba(var(--background-color-rgb), 0.4);
+
   --columnGap: calc(var(--lineHeight));
 
   --focus-color-rgb: 241, 196, 16;

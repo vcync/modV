@@ -1,5 +1,12 @@
 <template>
-  <grid class="groups">
+  <grid
+    class="groups"
+    v-searchTerms="{
+      terms: ['groups', 'layers'],
+      title: 'Groups',
+      type: 'Panel'
+    }"
+  >
     <c span="1..">
       <button @click="createGroup">Create new Group</button>
     </c>

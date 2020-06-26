@@ -1,5 +1,16 @@
 <template>
-  <div @focus="focus" @mousedown="focus" :class="{ focused }" class="group">
+  <div
+    v-searchTerms="{
+      terms: ['group'],
+      title: name,
+      type: 'Group',
+      focusElement: true
+    }"
+    @focus="focus"
+    @mousedown="focus"
+    :class="{ focused }"
+    class="group"
+  >
     <section class="group-controls">
       <input type="checkbox" v-model="enabled" title="Enabled" />
       <input type="checkbox" v-model="inherit" title="Inherit" />

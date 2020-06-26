@@ -1,5 +1,12 @@
 <template>
-  <div class="gallery">
+  <div
+    class="gallery"
+    v-searchTerms="{
+      terms: ['gallery'],
+      title: 'Gallery',
+      type: 'Panel'
+    }"
+  >
     <grid columns="4">
       <c span="1..">
         <input
@@ -42,6 +49,12 @@
                   v-if="groupId"
                   :moduleName="name"
                   :groupId="groupId"
+                  v-searchTerms="{
+                    terms: [name, 'module'],
+                    title: name,
+                    focusElement: true,
+                    type: 'Module'
+                  }"
                 />
               </Draggable>
             </Container>
@@ -159,7 +172,10 @@ export default {
     },
 
     keyDownListener(e) {
-      if (e.keyCode === 114 || ((e.ctrlKey || e.metaKey) && e.keyCode === 70)) {
+      if (
+        e.keyCode === 114 ||
+        ((e.ctrlKey || e.metaKey) && !e.shiftKey && e.keyCode === 70)
+      ) {
         e.preventDefault();
         this.$refs.searchField.focus();
         this.$refs.searchField.select();

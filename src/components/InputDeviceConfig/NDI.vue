@@ -1,5 +1,11 @@
 <template>
-  <div>
+  <div
+    v-searchTerms="{
+      terms: ['ndi', 'newtek', 'network', 'video'],
+      title: 'NDI Config',
+      type: 'Panel'
+    }"
+  >
     <grid columns="4" class="device-config">
       <c span="3">Available NDI Sources</c>
       <c span="1"

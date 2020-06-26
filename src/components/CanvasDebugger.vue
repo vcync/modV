@@ -1,5 +1,11 @@
 <template>
-  <div>
+  <div
+    v-searchTerms="{
+      terms: ['preview', 'canvas', 'debugger'],
+      title: 'Canvas Debugger',
+      type: 'Panel'
+    }"
+  >
     <label><input type="checkbox" v-model="debug" /> Debug Canvas</label><br />
     <select v-model="debugId">
       <option value="main">Main Output</option>

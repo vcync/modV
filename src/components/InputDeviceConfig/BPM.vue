@@ -1,5 +1,13 @@
 <template>
-  <grid columns="4" class="device-config">
+  <grid
+    v-searchTerms="{
+      terms: ['bpm', 'tempo', 'beats per minute'],
+      title: 'BPM Config',
+      type: 'Panel'
+    }"
+    columns="4"
+    class="device-config"
+  >
     <c span="1..">BPM Source</c>
     <c span="3">
       <select v-model="bpmSource">

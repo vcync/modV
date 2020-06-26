@@ -2,6 +2,8 @@ import Vue from "vue";
 import vgl from "vue-golden-layout";
 import "golden-layout/src/css/goldenlayout-dark-theme.css";
 
+import "./components/directives/Search";
+
 import App from "./App.vue";
 import ModV from "./application";
 import store from "./ui-store";
@@ -22,7 +24,7 @@ Object.defineProperty(Vue.prototype, "$modV", {
   }
 });
 
-new Vue({
+window.Vue = new Vue({
   render: h => h(App),
   store
 }).$mount("#app");

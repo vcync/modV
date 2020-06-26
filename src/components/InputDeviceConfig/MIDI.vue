@@ -1,5 +1,13 @@
 <template>
-  <grid columns="4" class="device-config">
+  <grid
+    columns="4"
+    class="device-config"
+    v-searchTerms="{
+      terms: ['midi', 'clock', 'input'],
+      title: 'MIDI Input Config',
+      type: 'Panel'
+    }"
+  >
     <c span="1">MIDI Inputs</c>
     <c span="1..">
       <grid columns="4">

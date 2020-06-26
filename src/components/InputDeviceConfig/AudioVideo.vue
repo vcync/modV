@@ -1,5 +1,13 @@
 <template>
-  <grid columns="4" class="device-config">
+  <grid
+    columns="4"
+    class="device-config"
+    v-searchTerms="{
+      terms: ['audio', 'video', 'input'],
+      title: 'Audio/Video Input Config',
+      type: 'Panel'
+    }"
+  >
     <c span="1">Audio Input</c>
     <c span="3">
       <select v-model="currentAudioSource">
