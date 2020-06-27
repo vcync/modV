@@ -1,5 +1,6 @@
 <template>
   <div
+    v-infoView="{ title: iVTitle, body: iVBody, id: 'NDI Input Config' }"
     v-searchTerms="{
       terms: ['ndi', 'newtek', 'network', 'video'],
       title: 'NDI Config',
@@ -57,6 +58,14 @@
 
 <script>
 export default {
+  data() {
+    return {
+      iVTitle: "NDI Input Config",
+      iVBody:
+        "Configure your NDI inputs here. Click Discover Sources to search for NDI sources available on your network. Click Enable to create an NDI reciever so modV can consume the NDI source. Once a receiver has been created, click Remove Receiver to stop modV consuming the NDI source."
+    };
+  },
+
   computed: {
     discovering() {
       return this.$modV.store.state.ndi.discovering;

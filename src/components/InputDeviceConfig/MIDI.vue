@@ -1,12 +1,13 @@
 <template>
   <grid
-    columns="4"
-    class="device-config"
+    v-infoView="{ title: iVTitle, body: iVBody, id: 'MIDI Config' }"
     v-searchTerms="{
       terms: ['midi', 'clock', 'input'],
       title: 'MIDI Input Config',
       type: 'Panel'
     }"
+    columns="4"
+    class="device-config"
   >
     <c span="1">MIDI Inputs</c>
     <c span="1..">
@@ -36,6 +37,14 @@
 
 <script>
 export default {
+  data() {
+    return {
+      iVTitle: "MIDI Input Config",
+      iVBody:
+        "Configure your MIDI inputs here. Use the toggles to accept MIDI inputs (CC/notes) and MIDI Clock per device."
+    };
+  },
+
   computed: {
     devices() {
       return this.$modV.store.state.midi.devices;

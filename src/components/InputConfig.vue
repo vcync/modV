@@ -1,5 +1,8 @@
 <template>
-  <div>
+  <div
+    class="input-config"
+    v-infoView="{ title: iVTitle, body: iVBody, id: 'Input Config Panel' }"
+  >
     <grid>
       <c span="1..">{{ focusedInputTitle }}</c>
 
@@ -32,6 +35,9 @@ export default {
 
   data() {
     return {
+      iVTitle: "Input Config",
+      iVBody:
+        "The Input Config panel allows creation of Input Links. Select a Module Control in the Module Inspector, then use the Input Config panel to assign an Audio Feature, MIDI control or Tween to automate the Module Control.",
       value: null
     };
   },
@@ -56,3 +62,10 @@ export default {
   }
 };
 </script>
+
+<style scoped>
+div.input-config {
+  height: 100%;
+  width: 100%;
+}
+</style>

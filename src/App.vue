@@ -34,6 +34,10 @@
           </gl-col>
         </gl-row>
         <gl-row>
+          <gl-component title="Info View" :closable="false">
+            <InfoView />
+          </gl-component>
+
           <gl-component title="Gallery" :closable="false">
             <Gallery />
           </gl-component>
@@ -89,7 +93,7 @@ import BPMConfig from "@/components/InputDeviceConfig/BPM.vue";
 import NDIConfig from "@/components/InputDeviceConfig/NDI.vue";
 import StatusBar from "@/components/StatusBar";
 import ModuleInspector from "@/components/ModuleInspector";
-import Control from "@/components/Control";
+import InfoView from "@/components/InfoView";
 import Search from "@/components/Search";
 
 import * as GoldenLayout from "golden-layout";
@@ -112,13 +116,17 @@ export default {
     BPMConfig,
     NDIConfig,
     StatusBar,
+    InfoView,
     ModuleInspector,
-    Control,
     Search
   },
 
   data() {
     return {
+      moduleInspectorIVTitle: "Module Inspector",
+      moduleInspectorIVBody:
+        "The properties of the selected Module. This panel can be pinned for easy access.",
+      state: null,
       layoutState: null,
 
       showUi: true,

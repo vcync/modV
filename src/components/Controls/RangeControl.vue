@@ -1,5 +1,8 @@
 <template>
-  <div ref="container">
+  <div
+    ref="container"
+    v-infoView="{ title: iVTitle, body: iVBody, id: 'Range Control' }"
+  >
     <canvas
       ref="canvas"
       @mousedown="requestPointerLock"
@@ -50,6 +53,10 @@ export default {
 
   data() {
     return {
+      iVTitle: "Range Control",
+      iVBody:
+        "Drag and hold Shift to move through values quickly. Drag and hold Alt for more precision. Double click to enter a specific value, press enter to set the value.",
+
       context: null,
       active: false,
       position: 0,

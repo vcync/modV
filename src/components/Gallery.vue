@@ -1,6 +1,7 @@
 <template>
   <div
     class="gallery"
+    v-infoView="{ title: iVTitle, body: iVBody, id: 'Module Gallery Panel' }"
     v-searchTerms="{
       terms: ['gallery'],
       title: 'Gallery',
@@ -83,6 +84,9 @@ export default {
 
   data() {
     return {
+      iVTitle: "Module Gallery",
+      iVBody:
+        "The Module Gallery displays all available Modules. A module can be dragged into a Group. Double clicking a Module will add it to the currently focused Group.",
       groupId: null,
       searchTerm: "",
       renderers: {},
