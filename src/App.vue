@@ -28,21 +28,7 @@
                 ref="moduleInspector"
                 :state="{ is: 'dynamic' }"
               >
-                <grid v-if="module.props">
-                  <c span="1..">
-                    <button @click="toggleModulePin(module.$id)">
-                      {{ isPinned(module.$id) ? "Unpin" : "Pin" }}
-                    </button>
-                  </c>
-                  <c span="1..">
-                    <Control
-                      v-for="key in getProps(module.$moduleName)"
-                      :id="module.$id"
-                      :prop="key"
-                      :key="key"
-                    />
-                  </c>
-                </grid>
+                <ModuleInspector :moduleId="module.$id" />
               </gl-component>
             </gl-stack>
           </gl-col>
@@ -102,6 +88,7 @@ import MIDIDeviceConfig from "@/components/InputDeviceConfig/MIDI.vue";
 import BPMConfig from "@/components/InputDeviceConfig/BPM.vue";
 import NDIConfig from "@/components/InputDeviceConfig/NDI.vue";
 import StatusBar from "@/components/StatusBar";
+import ModuleInspector from "@/components/ModuleInspector";
 import Control from "@/components/Control";
 import Search from "@/components/Search";
 
@@ -125,6 +112,7 @@ export default {
     BPMConfig,
     NDIConfig,
     StatusBar,
+    ModuleInspector,
     Control,
     Search
   },
@@ -383,6 +371,10 @@ export default {
 
 * {
   box-sizing: border-box;
+}
+
+.hidden {
+  display: none;
 }
 
 select {
