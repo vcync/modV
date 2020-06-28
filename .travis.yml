@@ -10,6 +10,7 @@ jobs:
     - ELECTRON_CACHE=$HOME/.cache/electron
     - ELECTRON_BUILDER_CACHE=$HOME/.cache/electron-builder
     - USE_HARD_LINKS=false
+    - YARN_GPG=no
   - name: "Build on macOS"
     os: osx
     osx_image: xcode10.2
