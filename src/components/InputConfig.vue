@@ -3,18 +3,21 @@
     class="input-config"
     v-infoView="{ title: iVTitle, body: iVBody, id: 'Input Config Panel' }"
   >
-    <grid>
+    <grid columns="2">
       <c span="1..">{{ focusedInputTitle }}</c>
 
-      <c span="1..">
+      <c span="1">Audio Feature</c>
+      <c span="1">
         <AudioFeatures v-if="inputConfig" :input-id="inputConfig.id" />
       </c>
 
-      <c span="1..">
+      <c span="1">MIDI</c>
+      <c span="1">
         <MIDI v-if="inputConfig" :input-id="inputConfig.id" />
       </c>
 
-      <c span="1..">
+      <c span="1">Tween</c>
+      <c span="1">
         <Tween v-if="inputConfig" :input-id="inputConfig.id" />
       </c>
     </grid>
