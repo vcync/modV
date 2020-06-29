@@ -50,6 +50,7 @@ module.exports = {
           category: "Graphics"
         },
 
+        // See https://www.electron.build/configuration/mac
         mac: {
           // See https://developer.apple.com/documentation/security/hardened_runtime
           hardenedRuntime: true,
