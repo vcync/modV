@@ -1,18 +1,18 @@
-import plasmaFrag from './Plasma/plasma.frag'
+import plasmaFrag from "./Plasma/plasma.frag";
 
 export default {
   meta: {
-    name: 'Plasma',
-    author: '2xAA',
+    name: "Plasma",
+    author: "2xAA",
     version: 0.1,
     meyda: [], // returned variables passed to the shader individually as uniforms
-    type: 'shader'
+    type: "shader"
   },
   fragmentShader: plasmaFrag,
   props: {
     u_scaleX: {
-      type: 'float',
-      label: 'Scale X',
+      type: "float",
+      label: "Scale X",
       min: 1.0,
       max: 150.0,
       step: 1.0,
@@ -20,8 +20,8 @@ export default {
     },
 
     u_scaleY: {
-      type: 'float',
-      label: 'Scale Y',
+      type: "float",
+      label: "Scale Y",
       min: 1.0,
       max: 150.0,
       step: 1.0,
@@ -29,12 +29,12 @@ export default {
     },
 
     u_timeScale: {
-      type: 'float',
-      label: 'Time Scale',
+      type: "float",
+      label: "Time Scale",
       min: 1.0,
       max: 1000.0,
       step: 1.0,
       default: 100.0
     }
   }
-}
+};

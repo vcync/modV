@@ -64,174 +64,174 @@
 </template>
 
 <script>
-import { mapGetters } from 'vuex'
+import { mapGetters } from "vuex";
 
 export default {
-  name: 'ImageControl',
-  props: ['meta'],
+  name: "ImageControl",
+  props: ["meta"],
   data() {
     return {
       currentLayerIndex: -1,
-      currentImage: '',
-      currentVideo: '',
-      source: 'layer',
-      sources: ['layer', 'image', 'video']
-    }
+      currentImage: "",
+      currentVideo: "",
+      source: "layer",
+      sources: ["layer", "image", "video"]
+    };
   },
   computed: {
-    ...mapGetters('layers', {
-      layers: 'allLayers'
+    ...mapGetters("layers", {
+      layers: "allLayers"
     }),
 
     layerNames() {
-      const data = []
-      const allLayers = this.layers
+      const data = [];
+      const allLayers = this.layers;
 
-      if (allLayers.length < 1) return data
+      if (allLayers.length < 1) return data;
 
       data.push({
-        label: 'Inherit',
+        label: "Inherit",
         value: -1,
-        selected: typeof this.currentLayerIndex === 'undefined'
-      })
+        selected: typeof this.currentLayerIndex === "undefined"
+      });
 
       allLayers.forEach((Layer, idx) => {
-        const name = Layer.name
+        const name = Layer.name;
         data.push({
           label: name,
           value: idx,
           selected: this.currentLayerIndex === idx
-        })
-      })
+        });
+      });
 
-      return data
+      return data;
     },
 
     projectImages() {
       const { images } = this.$store.state.projects.projects[
         this.$store.state.projects.currentProject
-      ]
+      ];
 
       return Object.keys(images).map(title => ({
         label: title,
         value: images[title],
         selected: images[title] === this.sourceData
-      }))
+      }));
     },
 
     projectVideos() {
       const { videos } = this.$store.state.projects.projects[
         this.$store.state.projects.currentProject
-      ]
+      ];
 
       return Object.keys(videos).map(title => ({
         label: title,
         value: videos[title],
         selected: videos[title] === this.sourceData
-      }))
+      }));
     },
 
     value: {
       get() {
         return this.$store.state.modVModules.active[this.moduleName][
           this.variable
-        ]
+        ];
       },
       set(value) {
-        this.$store.dispatch('modVModules/updateProp', {
+        this.$store.dispatch("modVModules/updateProp", {
           name: this.moduleName,
           prop: this.variable,
           data: {
             source: this.source,
             sourceData: value
           }
-        })
+        });
       }
     },
 
     sourceData() {
-      return this.value && this.value.sourceData
+      return this.value && this.value.sourceData;
     },
 
     variable() {
-      return this.meta.$modv_variable
+      return this.meta.$modv_variable;
     },
 
     label() {
-      return this.meta.label || this.variable
+      return this.meta.label || this.variable;
     },
 
     moduleName() {
-      return this.meta.$modv_moduleName
+      return this.meta.$modv_moduleName;
     },
 
     currentLayer() {
-      return this.layers[this.currentLayerIndex]
+      return this.layers[this.currentLayerIndex];
     },
 
     inputId() {
-      return `${this.moduleName}-${this.variable}`
+      return `${this.moduleName}-${this.variable}`;
     },
 
     selectedLabel() {
-      if (this.source === 'layer') {
+      if (this.source === "layer") {
         return this.currentLayerIndex < 0
-          ? 'Inherit'
-          : this.layers[this.currentLayerIndex].name
+          ? "Inherit"
+          : this.layers[this.currentLayerIndex].name;
       }
 
-      if (this.source === 'image') {
+      if (this.source === "image") {
         const selectedImage = this.projectImages.find(
           image => image.value === this.sourceData
-        )
-        return (selectedImage && selectedImage.label) || 'Select Image'
+        );
+        return (selectedImage && selectedImage.label) || "Select Image";
       }
 
-      if (this.source === 'video') {
+      if (this.source === "video") {
         const selectedImage = this.projectVideos.find(
           video => video.value === this.sourceData
-        )
-        return (selectedImage && selectedImage.label) || 'Select Video'
+        );
+        return (selectedImage && selectedImage.label) || "Select Video";
       }
 
-      return ''
+      return "";
     }
   },
   watch: {
     currentLayerIndex(value, old) {
-      if (value === old) return
-      this.currentImage = ''
-      this.currentVideo = ''
-      this.value = value
+      if (value === old) return;
+      this.currentImage = "";
+      this.currentVideo = "";
+      this.value = value;
     },
     currentImage(value) {
-      if (!value.length) return
-      this.currentLayerIndex = -1
-      this.currentVideo = ''
-      this.value = value
+      if (!value.length) return;
+      this.currentLayerIndex = -1;
+      this.currentVideo = "";
+      this.value = value;
     },
     currentVideo(value) {
-      if (!value.length) return
-      this.currentLayerIndex = -1
-      this.currentImage = ''
-      this.value = value
+      if (!value.length) return;
+      this.currentLayerIndex = -1;
+      this.currentImage = "";
+      this.value = value;
     },
     value(value) {
       if (value.source) {
-        this.source = value.source
+        this.source = value.source;
       }
     }
   },
   mounted() {
     if (this.value && this.value.sourceData) {
-      this.currentLayerIndex = this.sourceData
+      this.currentLayerIndex = this.sourceData;
     }
 
     if (this.value && this.value.source) {
-      this.source = this.value.source
+      this.source = this.value.source;
     }
   }
-}
+};
 </script>
 
 <style lang="scss" scoped>

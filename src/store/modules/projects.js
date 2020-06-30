@@ -1,12 +1,12 @@
-import Vue from 'vue'
-import store from '@/store'
-import { modV } from '@/modv'
-import packageData from '@/../package.json'
+import Vue from "vue";
+import store from "@/store";
+import { modV } from "@/modv";
+import packageData from "@/../package.json";
 
 const state = {
   projects: {},
-  currentProject: 'default'
-}
+  currentProject: "default"
+};
 
 // getters
 const getters = {
@@ -14,122 +14,122 @@ const getters = {
   currentProject: state => state.projects[state.currentProject],
   getPaletteFromProject: state => ({ paletteName, projectName }) =>
     state.projects[projectName].palettes[paletteName]
-}
+};
 
 // actions
 const actions = {
   async savePresetToProject({}, { projectName, presetName }) { //eslint-disable-line
-    const MediaManager = modV.MediaManagerClient
+    const MediaManager = modV.MediaManagerClient;
 
-    const preset = {}
+    const preset = {};
 
-    const datetime = Date.now()
-    const author = store.getters['user/name']
-    const layers = await store.dispatch('layers/presetData')
-    const moduleData = await store.dispatch('modVModules/presetData')
+    const datetime = Date.now();
+    const author = store.getters["user/name"];
+    const layers = await store.dispatch("layers/presetData");
+    const moduleData = await store.dispatch("modVModules/presetData");
     const paletteData = await store.dispatch(
-      'palettes/presetData',
+      "palettes/presetData",
       Object.keys(moduleData)
-    )
-    const pluginData = await store.dispatch('plugins/presetData')
-    preset.layers = layers
-    preset.moduleData = moduleData
-    preset.paletteData = paletteData
-    preset.pluginData = pluginData
+    );
+    const pluginData = await store.dispatch("plugins/presetData");
+    preset.layers = layers;
+    preset.moduleData = moduleData;
+    preset.paletteData = paletteData;
+    preset.pluginData = pluginData;
 
     preset.presetInfo = {
       name: presetName || `Preset by ${author} at ${datetime}`,
       datetime,
       modvVersion: packageData.version,
-      author: store.getters['user/name']
-    }
+      author: store.getters["user/name"]
+    };
 
     MediaManager.send({
-      request: 'save-preset',
+      request: "save-preset",
       profile: projectName,
       name: presetName,
       payload: preset
-    })
+    });
 
-    return preset
+    return preset;
   },
   loadPresetFromProject({}, { projectName, presetName }) { //eslint-disable-line
-    const presetData = state.projects[projectName].presets[presetName]
-    store.dispatch('projects/loadPreset', { presetData })
+    const presetData = state.projects[projectName].presets[presetName];
+    store.dispatch("projects/loadPreset", { presetData });
   },
   async loadPreset({}, { presetData }) { //eslint-disable-line
-    await store.dispatch('layers/removeAllLayers')
+    await store.dispatch("layers/removeAllLayers");
 
     presetData.layers.forEach(async Layer => {
-      const { index } = await store.dispatch('layers/addLayer')
-      const layerIndex = index
+      const { index } = await store.dispatch("layers/addLayer");
+      const layerIndex = index;
 
-      store.commit('layers/setAlpha', { layerIndex, alpha: Layer.alpha })
-      store.commit('layers/setBlending', {
+      store.commit("layers/setAlpha", { layerIndex, alpha: Layer.alpha });
+      store.commit("layers/setBlending", {
         layerIndex,
         blending: Layer.blending
-      })
-      store.commit('layers/setClearing', {
+      });
+      store.commit("layers/setClearing", {
         layerIndex,
         clearing: Layer.clearing
-      })
-      store.commit('layers/setCollapsed', {
+      });
+      store.commit("layers/setCollapsed", {
         layerIndex,
         collapsed: Layer.collapsed
-      })
-      store.commit('layers/setDrawToOutput', {
+      });
+      store.commit("layers/setDrawToOutput", {
         layerIndex,
         drawToOutput: Layer.drawToOutput
-      })
-      store.commit('layers/setEnabled', { layerIndex, enabled: Layer.enabled })
-      store.commit('layers/setInherit', { layerIndex, inherit: Layer.inherit })
-      store.commit('layers/setInheritFrom', {
+      });
+      store.commit("layers/setEnabled", { layerIndex, enabled: Layer.enabled });
+      store.commit("layers/setInherit", { layerIndex, inherit: Layer.inherit });
+      store.commit("layers/setInheritFrom", {
         layerIndex,
         inheritFrom: Layer.inheritFrom
-      })
-      store.commit('layers/setLocked', { layerIndex, locked: Layer.locked })
+      });
+      store.commit("layers/setLocked", { layerIndex, locked: Layer.locked });
       // store.commit('layers/setModuleOrder', { layerIndex, moduleOrder: Layer.moduleOrder });
-      store.commit('layers/setLayerName', { layerIndex, name: Layer.name })
-      store.commit('layers/setPipeline', {
+      store.commit("layers/setLayerName", { layerIndex, name: Layer.name });
+      store.commit("layers/setPipeline", {
         layerIndex,
         pipeline: Layer.pipeline
-      })
+      });
 
       Layer.moduleOrder.forEach(async (moduleName, idx) => {
-        const data = presetData.moduleData[moduleName]
-        const module = await store.dispatch('modVModules/createActiveModule', {
+        const data = presetData.moduleData[moduleName];
+        const module = await store.dispatch("modVModules/createActiveModule", {
           moduleMeta: data.meta
-        })
+        });
 
-        if ('import' in module) {
-          module.import(data, moduleName)
+        if ("import" in module) {
+          module.import(data, moduleName);
         } else {
           Object.keys(data.values).forEach(async variable => {
-            const value = data.values[variable]
+            const value = data.values[variable];
 
-            await store.dispatch('modVModules/updateProp', {
+            await store.dispatch("modVModules/updateProp", {
               name: moduleName,
               prop: variable,
               data: value,
               forceUpdate: true
-            })
-          })
+            });
+          });
         }
-      })
+      });
 
-      store.dispatch('layers/setModuleOrder', {
+      store.dispatch("layers/setModuleOrder", {
         moduleOrder: Layer.moduleOrder,
         layerIndex
-      })
-    })
+      });
+    });
 
-    if ('paletteData' in presetData) {
-      await store.dispatch('palettes/loadPreset', presetData)
+    if ("paletteData" in presetData) {
+      await store.dispatch("palettes/loadPreset", presetData);
     }
 
-    if ('pluginData' in presetData) {
-      const pluginData = presetData.pluginData
-      const currentPlugins = store.state.plugins.plugins
+    if ("pluginData" in presetData) {
+      const pluginData = presetData.pluginData;
+      const currentPlugins = store.state.plugins.plugins;
 
       Object.keys(pluginData)
         .filter(
@@ -137,39 +137,39 @@ const actions = {
             Object.keys(currentPlugins).indexOf(pluginDataKey) > -1
         )
         .filter(
-          pluginDataKey => 'presetData' in currentPlugins[pluginDataKey].plugin
+          pluginDataKey => "presetData" in currentPlugins[pluginDataKey].plugin
         )
         .forEach(pluginDataKey => {
-          const plugin = currentPlugins[pluginDataKey].plugin
-          plugin.presetData.load(pluginData[pluginDataKey])
-        })
+          const plugin = currentPlugins[pluginDataKey].plugin;
+          plugin.presetData.load(pluginData[pluginDataKey]);
+        });
     }
   },
   savePaletteToProject({}, { projectName, paletteName, colors }) { //eslint-disable-line
-    const MediaManager = modV.MediaManagerClient
+    const MediaManager = modV.MediaManagerClient;
 
     MediaManager.send({
-      request: 'save-palette',
+      request: "save-palette",
       profile: projectName,
       name: paletteName,
       payload: colors
-    })
+    });
   },
   setCurrent({ commit, state }, { projectName }) {
-    if (!state.projects[projectName]) throw Error('Project does not exist')
+    if (!state.projects[projectName]) throw Error("Project does not exist");
 
-    commit('setCurrent', { projectName })
-    store.commit('user/setProject', { projectName })
+    commit("setCurrent", { projectName });
+    store.commit("user/setProject", { projectName });
 
     Object.keys(state.projects[projectName].plugins).forEach(pluginName =>
-      store.dispatch('plugins/load', {
+      store.dispatch("plugins/load", {
         pluginName,
         data: state.projects[projectName].plugins[pluginName].values,
         enabled: state.projects[projectName].plugins[pluginName].meta.enabled
       })
-    )
+    );
   }
-}
+};
 
 // mutations
 const mutations = {
@@ -177,55 +177,55 @@ const mutations = {
     state,
     { projectName, images, palettes, presets, videos, modules, plugins }
   ) {
-    const project = {}
-    project.images = images || {}
-    project.palettes = palettes || {}
-    project.presets = presets || {}
-    project.videos = videos || {}
-    project.modules = modules || {}
-    project.plugins = plugins || {}
+    const project = {};
+    project.images = images || {};
+    project.palettes = palettes || {};
+    project.presets = presets || {};
+    project.videos = videos || {};
+    project.modules = modules || {};
+    project.plugins = plugins || {};
 
     Object.keys(project.modules).forEach(moduleName => {
       fetch(project.modules[moduleName])
         .then(response => response.text())
         .then(text => {
           store.dispatch('modVModules/register', eval(text).default); //eslint-disable-line
-        })
-    })
+        });
+    });
 
-    Vue.set(state.projects, projectName, project)
+    Vue.set(state.projects, projectName, project);
 
     if (store.state.user.project === projectName) {
-      store.dispatch('projects/setCurrent', { projectName })
+      store.dispatch("projects/setCurrent", { projectName });
     }
   },
   addPaletteToProject(state, { projectName, paletteName, colors }) {
-    const project = state.projects[projectName]
-    Vue.set(project.palettes, paletteName, colors)
+    const project = state.projects[projectName];
+    Vue.set(project.palettes, paletteName, colors);
   },
   addPresetToProject(state, { projectName, presetName, presetData }) {
-    const project = state.projects[projectName]
-    Vue.set(project.presets, presetName, presetData)
+    const project = state.projects[projectName];
+    Vue.set(project.presets, presetName, presetData);
   },
   addModuleToProject(state, { projectName, presetName, path }) {
-    const project = state.projects[projectName]
+    const project = state.projects[projectName];
 
     fetch(path)
       .then(response => response.text())
       .then(text => {
         store.dispatch('modVModules/register', eval(text).default); //eslint-disable-line
-      })
+      });
 
-    Vue.set(project.modules, presetName, path)
+    Vue.set(project.modules, presetName, path);
   },
   addPluginToProject(state, { projectName, pluginName, pluginData }) {
-    const project = state.projects[projectName]
-    Vue.set(project.plugins, pluginName, pluginData)
+    const project = state.projects[projectName];
+    Vue.set(project.plugins, pluginName, pluginData);
   },
   setCurrent(state, { projectName }) {
-    Vue.set(state, 'currentProject', projectName)
+    Vue.set(state, "currentProject", projectName);
   }
-}
+};
 
 export default {
   namespaced: true,
@@ -233,4 +233,4 @@ export default {
   getters,
   actions,
   mutations
-}
+};

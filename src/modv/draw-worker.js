@@ -2,44 +2,44 @@
 
 // import { modV } from '@/modv';
 
-const moduleRenderFunctions = new Map()
+const moduleRenderFunctions = new Map();
 
-const canvases = new Map()
-const contexts = new Map()
+const canvases = new Map();
+const contexts = new Map();
 
 onmessage = evt => {
-  if (evt.data.action === 'storeRenderFunction') {
-    const { moduleName, renderFunction } = evt.data
+  if (evt.data.action === "storeRenderFunction") {
+    const { moduleName, renderFunction } = evt.data;
 
     moduleRenderFunctions.set(moduleName, eval(renderFunction)); //eslint-disable-line
-  } else if (evt.data.action === 'drawFrame') {
-    let canvas = evt.data.offscreenLayerCanvas
-    const bufferCanvas = evt.data.offscreenBufferCanvas
+  } else if (evt.data.action === "drawFrame") {
+    let canvas = evt.data.offscreenLayerCanvas;
+    const bufferCanvas = evt.data.offscreenBufferCanvas;
     // const bufferContext = bufferCanvas.getContext('2d');
-    let context
+    let context;
 
     const {
       /* δ, */ moduleType,
       pipeline,
       moduleName /* , features */
-    } = evt.data
+    } = evt.data;
 
     if (!canvas) {
-      canvas = canvases.get(moduleName)
+      canvas = canvases.get(moduleName);
     } else {
-      canvases.set(moduleName, canvas)
+      canvases.set(moduleName, canvas);
     }
 
-    if (moduleType === 'Module2D') {
-      context = contexts.get(moduleName)
+    if (moduleType === "Module2D") {
+      context = contexts.get(moduleName);
       if (!context) {
-        context = canvas.getContext('2d')
-        contexts.set(moduleName, context)
+        context = canvas.getContext("2d");
+        contexts.set(moduleName, context);
       }
 
       if (pipeline) {
-        context.clearRect(0, 0, canvas.width, canvas.height)
-        context.drawImage(bufferCanvas, 0, 0, canvas.width, canvas.height)
+        context.clearRect(0, 0, canvas.width, canvas.height);
+        context.drawImage(bufferCanvas, 0, 0, canvas.width, canvas.height);
 
         // Module.render({
         //   canvas,
@@ -70,8 +70,8 @@ onmessage = evt => {
       }
     }
 
-    if (moduleType === 'ModuleShader') {
-      context = canvas.getContext('webgl')
+    if (moduleType === "ModuleShader") {
+      context = canvas.getContext("webgl");
 
       // // webgl.texture = gl.texImage2D(
       // //   gl.TEXTURE_2D,
@@ -128,10 +128,10 @@ onmessage = evt => {
       // //   );
       // // }
 
-      context.restore()
+      context.restore();
     }
 
-    if (moduleType === 'ModuleISF') {
+    if (moduleType === "ModuleISF") {
       // context = canvas.getContext('webgl');
       // if (pipeline) {
       //   context.clearRect(0, 0, canvas.width, canvas.height);
@@ -173,11 +173,11 @@ onmessage = evt => {
     }
 
     if (pipeline) {
-      context.clearRect(0, 0, canvas.width, canvas.height)
-      context.drawImage(bufferCanvas, 0, 0, canvas.width, canvas.height)
+      context.clearRect(0, 0, canvas.width, canvas.height);
+      context.drawImage(bufferCanvas, 0, 0, canvas.width, canvas.height);
     }
 
     // Push frames back to the original HTMLCanvasElement
-    context.commit()
+    context.commit();
   }
-}
+};

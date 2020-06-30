@@ -11,44 +11,44 @@
 </template>
 
 <script>
-import { mapGetters } from 'vuex'
-import ControlPanel from '@/components/ControlPanel'
+import { mapGetters } from "vuex";
+import ControlPanel from "@/components/ControlPanel";
 
 export default {
-  name: 'ControlPanelHandler',
+  name: "ControlPanelHandler",
   components: {
     ControlPanel
   },
   data() {
-    return {}
+    return {};
   },
   computed: {
-    ...mapGetters('controlPanels', ['pinnedPanels']),
+    ...mapGetters("controlPanels", ["pinnedPanels"]),
     focusedModule() {
-      return this.$store.getters['modVModules/focusedModule']
+      return this.$store.getters["modVModules/focusedModule"];
     },
     focusedModuleName() {
-      return this.$store.state.modVModules.focusedModule
+      return this.$store.state.modVModules.focusedModule;
     },
     panels() {
-      const panels = [].concat(this.pinnedPanels)
+      const panels = [].concat(this.pinnedPanels);
 
       if (this.focusedModule && !this.isPinned(this.focusedModuleName)) {
-        panels.push(this.focusedModuleName)
+        panels.push(this.focusedModuleName);
       }
 
-      return panels
+      return panels;
     }
   },
   methods: {
     isPinned(moduleName) {
-      return this.pinnedPanels.indexOf(moduleName) > -1
+      return this.pinnedPanels.indexOf(moduleName) > -1;
     },
     isFocused(moduleName) {
-      return moduleName === this.focusedModuleName
+      return moduleName === this.focusedModuleName;
     }
   }
-}
+};
 </script>
 
 <style scoped></style>

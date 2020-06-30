@@ -1,15 +1,15 @@
-const state = {}
+const state = {};
 
 const mutations = {
   addItem(state, item) {
-    const { name, component } = item
+    const { name, component } = item;
 
-    state[name] = component
+    state[name] = component;
   }
-}
+};
 
 export default {
   namespaced: true,
   state,
   mutations
-}
+};

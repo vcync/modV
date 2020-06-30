@@ -72,20 +72,20 @@
 </template>
 
 <script>
-import { mapGetters, mapMutations } from 'vuex'
-import OpacityControl from './OpacityControl'
+import { mapGetters, mapMutations } from "vuex";
+import OpacityControl from "./OpacityControl";
 
 export default {
-  name: 'ActiveModule',
+  name: "ActiveModule",
   components: {
     OpacityControl
   },
   filters: {
     capitalize(valueIn) {
-      let value = valueIn
-      if (!value) return ''
-      value = value.toString()
-      return value.charAt(0).toUpperCase() + value.slice(1)
+      let value = valueIn;
+      if (!value) return "";
+      value = value.toString();
+      return value.charAt(0).toUpperCase() + value.slice(1);
     }
   },
   props: {
@@ -96,175 +96,175 @@ export default {
   },
   data() {
     return {
-      compositeOperation: 'normal',
+      compositeOperation: "normal",
       opacity: null,
       checkboxMenuOptions: {
-        match: ['@modv/module:internal'],
+        match: ["@modv/module:internal"],
         menuItems: [],
-        internalVariable: 'enable'
+        internalVariable: "enable"
       },
       opacityMenuOptions: {
-        match: ['@modv/module:internal'],
+        match: ["@modv/module:internal"],
         menuItems: [],
-        internalVariable: 'alpha'
+        internalVariable: "alpha"
       },
       operations: [
         {
-          label: 'Blend Modes',
+          label: "Blend Modes",
           children: [
             {
-              label: 'Normal',
-              value: 'normal'
+              label: "Normal",
+              value: "normal"
             },
             {
-              label: 'Multiply',
-              value: 'multiply'
+              label: "Multiply",
+              value: "multiply"
             },
             {
-              label: 'Overlay',
-              value: 'overlay'
+              label: "Overlay",
+              value: "overlay"
             },
             {
-              label: 'Darken',
-              value: 'darken'
+              label: "Darken",
+              value: "darken"
             },
             {
-              label: 'Lighten',
-              value: 'lighten'
+              label: "Lighten",
+              value: "lighten"
             },
             {
-              label: 'Color Dodge',
-              value: 'color-dodge'
+              label: "Color Dodge",
+              value: "color-dodge"
             },
             {
-              label: 'Color Burn',
-              value: 'color-burn'
+              label: "Color Burn",
+              value: "color-burn"
             },
             {
-              label: 'Hard Light',
-              value: 'hard-light'
+              label: "Hard Light",
+              value: "hard-light"
             },
             {
-              label: 'Soft Light',
-              value: 'soft-light'
+              label: "Soft Light",
+              value: "soft-light"
             },
             {
-              label: 'Difference',
-              value: 'difference'
+              label: "Difference",
+              value: "difference"
             },
             {
-              label: 'Exclusion',
-              value: 'exclusion'
+              label: "Exclusion",
+              value: "exclusion"
             },
             {
-              label: 'Hue',
-              value: 'hue'
+              label: "Hue",
+              value: "hue"
             },
             {
-              label: 'Saturation',
-              value: 'saturation'
+              label: "Saturation",
+              value: "saturation"
             },
             {
-              label: 'Color',
-              value: 'color'
+              label: "Color",
+              value: "color"
             },
             {
-              label: 'Luminosity',
-              value: 'luminosity'
+              label: "Luminosity",
+              value: "luminosity"
             }
           ]
         },
         {
-          label: 'Composite Modes',
+          label: "Composite Modes",
           children: [
             {
-              label: 'Clear',
-              value: 'clear'
+              label: "Clear",
+              value: "clear"
             },
             {
-              label: 'Copy',
-              value: 'copy'
+              label: "Copy",
+              value: "copy"
             },
             {
-              label: 'Destination',
-              value: 'destination'
+              label: "Destination",
+              value: "destination"
             },
             {
-              label: 'Source Over',
-              value: 'source-over'
+              label: "Source Over",
+              value: "source-over"
             },
             {
-              label: 'Destination Over',
-              value: 'destination-over'
+              label: "Destination Over",
+              value: "destination-over"
             },
             {
-              label: 'Source In',
-              value: 'source-in'
+              label: "Source In",
+              value: "source-in"
             },
             {
-              label: 'Destination In',
-              value: 'destination-in'
+              label: "Destination In",
+              value: "destination-in"
             },
             {
-              label: 'Source Out',
-              value: 'source-out'
+              label: "Source Out",
+              value: "source-out"
             },
             {
-              label: 'Destination Out',
-              value: 'destination-out'
+              label: "Destination Out",
+              value: "destination-out"
             },
             {
-              label: 'Source Atop',
-              value: 'source-atop'
+              label: "Source Atop",
+              value: "source-atop"
             },
             {
-              label: 'Destination Atop',
-              value: 'destination-atop'
+              label: "Destination Atop",
+              value: "destination-atop"
             },
             {
-              label: 'Xor',
-              value: 'xor'
+              label: "Xor",
+              value: "xor"
             },
             {
-              label: 'Lighter',
-              value: 'lighter'
+              label: "Lighter",
+              value: "lighter"
             }
           ]
         }
       ]
-    }
+    };
   },
   computed: {
-    ...mapGetters('modVModules', ['activeModules', 'focusedModuleName']),
+    ...mapGetters("modVModules", ["activeModules", "focusedModuleName"]),
     module() {
-      return this.$store.state.modVModules.active[this.moduleName]
+      return this.$store.state.modVModules.active[this.moduleName];
     },
     enabledCheckboxId() {
-      return `${this.moduleName}:modvreserved:enabled`
+      return `${this.moduleName}:modvreserved:enabled`;
     },
     enabled: {
       get() {
-        if (!this.moduleName) return false
+        if (!this.moduleName) return false;
         return (
           this.$store.state.modVModules.active[this.moduleName] &&
           this.$store.state.modVModules.active[this.moduleName].meta.enabled
-        )
+        );
       },
       set(value) {
         this.setActiveModuleEnabled({
           moduleName: this.moduleName,
           enabled: value
-        })
+        });
       }
     },
     focused() {
-      return this.moduleName === this.focusedModuleName
+      return this.moduleName === this.focusedModuleName;
     },
     blendModes() {
-      return this.operations[0]
+      return this.operations[0];
     },
     compositeOperations() {
-      return this.operations[1]
+      return this.operations[1];
     }
   },
   watch: {
@@ -272,41 +272,41 @@ export default {
       this.setActiveModuleCompositeOperation({
         moduleName: this.moduleName,
         compositeOperation: this.compositeOperation
-      })
+      });
     }
   },
   mounted() {
-    if (!this.module) return
-    this.enabled = this.module.meta.enabled
-    this.opacity = this.module.meta.alpha
-    this.compositeOperation = this.module.meta.compositeOperation
+    if (!this.module) return;
+    this.enabled = this.module.meta.enabled;
+    this.opacity = this.module.meta.alpha;
+    this.compositeOperation = this.module.meta.compositeOperation;
   },
   methods: {
-    ...mapMutations('modVModules', [
-      'setCurrentDragged',
-      'setModuleFocus',
-      'setActiveModuleEnabled',
-      'setActiveModuleCompositeOperation'
+    ...mapMutations("modVModules", [
+      "setCurrentDragged",
+      "setModuleFocus",
+      "setActiveModuleEnabled",
+      "setActiveModuleCompositeOperation"
     ]),
     focusActiveModule() {
-      this.setModuleFocus({ activeModuleName: this.moduleName })
+      this.setModuleFocus({ activeModuleName: this.moduleName });
     },
     dragstart() {
-      this.setCurrentDragged({ moduleName: this.moduleName })
+      this.setCurrentDragged({ moduleName: this.moduleName });
     },
     compositeOperationChanged(item) {
-      this.compositeOperation = item[0].value
+      this.compositeOperation = item[0].value;
     },
     checkboxClick() {
-      this.enabled = !this.enabled
+      this.enabled = !this.enabled;
     },
     deletePress() {
-      this.$store.dispatch('modVModules/removeActiveModule', {
+      this.$store.dispatch("modVModules/removeActiveModule", {
         moduleName: this.moduleName
-      })
+      });
     }
   }
-}
+};
 </script>
 
 <style lang="scss">
@@ -377,7 +377,7 @@ export default {
     flex-grow: 3;
   }
 
-  input[type='range'] {
+  input[type="range"] {
     vertical-align: middle;
   }
 

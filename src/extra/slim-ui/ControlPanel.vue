@@ -9,9 +9,9 @@
  * into modV. A better way would be to add the styles directly in index.js.
  */
 export default {
-  name: 'SlimUiControlPanel',
+  name: "SlimUiControlPanel",
   methods: {}
-}
+};
 </script>
 
 <style lang="scss">

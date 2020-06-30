@@ -27,14 +27,14 @@
 </template>
 
 <script>
-import { mapGetters } from 'vuex'
+import { mapGetters } from "vuex";
 
 export default {
-  name: 'MidiAssignmentPluginControlPanel',
+  name: "MidiAssignmentPluginControlPanel",
   computed: {
-    ...mapGetters('midiAssignment', ['assignments', 'devices'])
+    ...mapGetters("midiAssignment", ["assignments", "devices"])
   }
-}
+};
 </script>
 
 <style lang="scss"></style>

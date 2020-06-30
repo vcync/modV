@@ -26,52 +26,52 @@
 </template>
 
 <script>
-import generateControlData from '@/components/ControlPanel/generate-control-data'
+import generateControlData from "@/components/ControlPanel/generate-control-data";
 
 export default {
-  name: 'GroupConrol',
-  props: ['meta', 'module'],
+  name: "GroupConrol",
+  props: ["meta", "module"],
   data() {
     return {
       currentGroup: 0
-    }
+    };
   },
   computed: {
     group() {
       return this.$store.state.modVModules.active[this.meta.$modv_moduleName][
         this.meta.$modv_variable
-      ]
+      ];
     },
     groupProps() {
-      return this.group.props
+      return this.group.props;
     },
     groupLength() {
-      return this.group.length
+      return this.group.length;
     },
     controls() {
       return generateControlData({
         module: this.module,
         props: this.$store.state.modVModules.active[this.meta.$modv_moduleName]
           .props[this.meta.$modv_variable].props,
-        exclude: ['group'],
+        exclude: ["group"],
         group: this.currentGroup,
         groupName: this.meta.$modv_variable
-      })
+      });
     }
   },
   methods: {
     addGroup() {
-      this.$store.commit('modVModules/incrementGroup', {
+      this.$store.commit("modVModules/incrementGroup", {
         moduleName: this.meta.$modv_moduleName,
         groupName: this.meta.$modv_variable
-      })
+      });
     },
     removeGroup() {
-      this.$store.commit('modVModules/decrementGroup', {
+      this.$store.commit("modVModules/decrementGroup", {
         moduleName: this.meta.$modv_moduleName,
         groupName: this.meta.$modv_variable
-      })
+      });
     }
   }
-}
+};
 </script>

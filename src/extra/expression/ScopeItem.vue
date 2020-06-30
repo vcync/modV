@@ -16,47 +16,47 @@
 </template>
 
 <script>
-import Vue from 'vue'
+import Vue from "vue";
 
 export default {
-  name: 'ScopeItem',
-  props: ['contents', 'name'],
+  name: "ScopeItem",
+  props: ["contents", "name"],
   data() {
     return {
       editable: false,
-      contentsInput: '',
-      nameInput: ''
-    }
+      contentsInput: "",
+      nameInput: ""
+    };
   },
   computed: {},
   watch: {
     contentsInput() {
-      this.$emit('updateContents', this.name, this.contentsInput)
+      this.$emit("updateContents", this.name, this.contentsInput);
     },
     contents() {
-      this.$data.contentsInput = this.contents
+      this.$data.contentsInput = this.contents;
     },
     name() {
-      this.$data.nameInput = this.name
+      this.$data.nameInput = this.name;
     }
   },
   beforeMount() {
-    this.$data.contentsInput = this.contents
-    this.$data.nameInput = this.name
+    this.$data.contentsInput = this.contents;
+    this.$data.nameInput = this.name;
   },
   methods: {
     startEditable() {
-      this.$data.editable = true
+      this.$data.editable = true;
       Vue.nextTick(() => {
-        this.$refs.editableInput.focus()
-      })
+        this.$refs.editableInput.focus();
+      });
     },
     endEditable() {
-      this.$data.editable = false
-      this.$emit('updateName', this.name, this.nameInput)
+      this.$data.editable = false;
+      this.$emit("updateName", this.name, this.nameInput);
     }
   }
-}
+};
 </script>
 
 <style lang="scss">

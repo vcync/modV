@@ -1,4 +1,4 @@
-import store from '@/store/'
+import store from "@/store/";
 
 /**
  * Returns window area
@@ -10,7 +10,7 @@ function getWindowSize(win) {
     area: win.innerWidth * win.innerHeight,
     width: win.innerWidth,
     height: win.innerHeight
-  }
+  };
 }
 
 /**
@@ -20,10 +20,10 @@ function getWindowSize(win) {
  * @return {Window}
  */
 function compareWindowsSize(windowOne, windowTwo) {
-  const windowOneArea = getWindowSize(windowOne).area
-  const windowTwoArea = getWindowSize(windowTwo).area
+  const windowOneArea = getWindowSize(windowOne).area;
+  const windowTwoArea = getWindowSize(windowTwo).area;
 
-  return windowOneArea > windowTwoArea ? windowOne : windowTwo
+  return windowOneArea > windowTwoArea ? windowOne : windowTwo;
 }
 
 /**
@@ -32,27 +32,27 @@ function compareWindowsSize(windowOne, windowTwo) {
  * @return {?WindowController}
  */
 function getLargestWindow(windowControllers) {
-  const windowReference = store.getters['windows/windowReference']
-  const windows = []
+  const windowReference = store.getters["windows/windowReference"];
+  const windows = [];
   windowControllers.forEach(windowC => {
-    windows.push(windowReference(windowC.window))
-  })
+    windows.push(windowReference(windowC.window));
+  });
 
   if (windows.length === 0) {
-    return null
+    return null;
   }
 
   const reference = windows.reduce((accumulator, currentValue) =>
     compareWindowsSize(accumulator, currentValue)
-  )
+  );
 
-  const index = windows.indexOf(reference)
+  const index = windows.indexOf(reference);
 
   return {
     window: windows[index],
     controller: windowControllers[index],
     size: getWindowSize(windows[index])
-  }
+  };
 }
 
-export default getLargestWindow
+export default getLargestWindow;

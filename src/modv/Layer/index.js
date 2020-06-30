@@ -70,7 +70,7 @@
  */
 export default function Layer(layer) {
   const defaults = {
-    name: 'Layer',
+    name: "Layer",
 
     position: 0,
 
@@ -88,21 +88,21 @@ export default function Layer(layer) {
 
     clearing: false,
 
-    compositeOperation: 'normal',
+    compositeOperation: "normal",
 
     drawToOutput: true,
 
-    canvas: document.createElement('canvas'),
+    canvas: document.createElement("canvas"),
 
     drawToWindowId: null,
 
     resize({ width, height, dpr = window.devicePixelRatio }) {
-      this.canvas.width = width * dpr
-      this.canvas.height = height * dpr
+      this.canvas.width = width * dpr;
+      this.canvas.height = height * dpr;
     }
-  }
+  };
 
-  defaults.context = defaults.canvas.getContext('2d')
+  defaults.context = defaults.canvas.getContext("2d");
 
-  return Object.assign(defaults, layer)
+  return Object.assign(defaults, layer);
 }

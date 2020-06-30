@@ -15,39 +15,39 @@
 </template>
 
 <script>
-import { mapGetters } from 'vuex'
+import { mapGetters } from "vuex";
 
 export default {
-  name: 'ProjectSelector',
-  props: ['value'],
+  name: "ProjectSelector",
+  props: ["value"],
   data() {
     return {
-      currentProject: 'default'
-    }
+      currentProject: "default"
+    };
   },
   computed: {
-    ...mapGetters('projects', ['allProjects']),
+    ...mapGetters("projects", ["allProjects"]),
     projectNames() {
-      const data = []
-      const allProjects = this.allProjects
+      const data = [];
+      const allProjects = this.allProjects;
 
       Object.keys(allProjects).forEach(projectName => {
         data.push({
           label: projectName,
           value: projectName,
           selected: this.currentProject === projectName
-        })
-      })
+        });
+      });
 
-      return data
+      return data;
     }
   },
   watch: {
     currentProject() {
-      this.$emit('input', this.currentProject)
+      this.$emit("input", this.currentProject);
     }
   }
-}
+};
 </script>
 
 <style lang="scss">

@@ -26,9 +26,12 @@ module.exports = {
     }
   },
   rules: {
-    'prettier/prettier': 'error',
+    'prettier/prettier': ['error', {
+      'endOfLine': 'auto'
+    }],
     // allow debugger during development
     'no-debugger': process.env.NODE_ENV === 'production' ? 2 : 0,
-    'max-len': [2, {code: 100, tabWidth: 2, ignoreUrls: true}]
+    'max-len': [2, {code: 100, tabWidth: 2, ignoreUrls: true}],
+    'vue/require-prop-types': 0
   }
 };

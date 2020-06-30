@@ -25,7 +25,7 @@
                 class="button"
                 @click="collapsable[pluginName] = !collapsable[pluginName]"
               >
-                {{ collapsable[pluginName] ? '▲' : '▼' }}
+                {{ collapsable[pluginName] ? "▲" : "▼" }}
               </button>
             </div>
           </div>
@@ -52,49 +52,49 @@
 </template>
 
 <script>
-import { mapActions, mapGetters } from 'vuex'
+import { mapActions, mapGetters } from "vuex";
 
 export default {
-  name: 'PluginGallery',
+  name: "PluginGallery",
   props: {
     phrase: {
       type: String,
       required: true,
-      default: ''
+      default: ""
     }
   },
   data() {
     return {
       loading: null,
       collapsable: {}
-    }
+    };
   },
   computed: {
-    ...mapGetters('plugins', ['plugins'])
+    ...mapGetters("plugins", ["plugins"])
   },
   created() {
     this.collapsable = Object.keys(this.plugins).reduce((acc, key) => {
-      acc[key] = false
-      return acc
-    }, {})
+      acc[key] = false;
+      return acc;
+    }, {});
   },
   methods: {
-    ...mapActions('plugins', ['save', 'setEnabled']),
+    ...mapActions("plugins", ["save", "setEnabled"]),
     search(textIn, termIn) {
-      const text = textIn.toLowerCase().trim()
-      const term = termIn.toLowerCase().trim()
-      if (termIn.length < 1) return true
+      const text = textIn.toLowerCase().trim();
+      const term = termIn.toLowerCase().trim();
+      if (termIn.length < 1) return true;
 
-      return text.indexOf(term) > -1
+      return text.indexOf(term) > -1;
     },
     switchPlugin(e, { pluginName }) {
-      this.setEnabled({ enabled: e, pluginName })
+      this.setEnabled({ enabled: e, pluginName });
     },
     savePluginSettings({ pluginName }) {
-      this.save({ pluginName })
+      this.save({ pluginName });
     }
   }
-}
+};
 </script>
 
 <style lang="scss" scoped>

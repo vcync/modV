@@ -2,18 +2,18 @@
 
 export default {
   meta: {
-    name: 'Pixelate',
-    author: '2xAA',
-    version: '1.0.0',
-    audioFeatures: ['zcr', 'rms'],
-    type: '2d',
+    name: "Pixelate",
+    author: "2xAA",
+    version: "1.0.0",
+    audioFeatures: ["zcr", "rms"],
+    type: "2d",
     previewWithOutput: true
   },
 
   props: {
     pixelAmount: {
-      type: 'int',
-      label: 'Amount',
+      type: "int",
+      label: "Amount",
       min: 2,
       max: 30,
       step: 1,
@@ -21,14 +21,14 @@ export default {
     },
 
     soundReactive: {
-      type: 'bool',
-      label: 'Sound Reactive',
+      type: "bool",
+      label: "Sound Reactive",
       default: false
     },
 
     intensity: {
-      type: 'int',
-      label: 'RMS/ZCR Intensity',
+      type: "int",
+      label: "RMS/ZCR Intensity",
       min: 0,
       max: 30,
       step: 1,
@@ -36,8 +36,8 @@ export default {
     },
 
     soundType: {
-      type: 'bool',
-      label: 'RMS (unchecked) / ZCR (checked)',
+      type: "bool",
+      label: "RMS (unchecked) / ZCR (checked)",
       default: false
     }
   },
@@ -56,46 +56,46 @@ export default {
   },
 
   init({ canvas }) {
-    this.soundReactive = false
-    this.soundType = false // false RMS, true ZCR
-    this.intensity = 15 // Half max
-    this.pixelAmount = 5
+    this.soundReactive = false;
+    this.soundType = false; // false RMS, true ZCR
+    this.intensity = 15; // Half max
+    this.pixelAmount = 5;
 
-    this.newCanvas2 = document.createElement('canvas')
-    this.newCtx2 = this.newCanvas2.getContext('2d')
-    this.newCtx2.imageSmoothingEnabled = false
+    this.newCanvas2 = document.createElement("canvas");
+    this.newCtx2 = this.newCanvas2.getContext("2d");
+    this.newCtx2.imageSmoothingEnabled = false;
 
-    this.newCanvas2.width = canvas.width
-    this.newCanvas2.height = canvas.height
+    this.newCanvas2.width = canvas.width;
+    this.newCanvas2.height = canvas.height;
   },
 
   resize({ canvas }) {
-    this.newCanvas2.width = canvas.width
-    this.newCanvas2.height = canvas.height
+    this.newCanvas2.width = canvas.width;
+    this.newCanvas2.height = canvas.height;
   },
 
   draw({ canvas, context, features }) {
-    let w
-    let h
-    let analysed
+    let w;
+    let h;
+    let analysed;
 
     if (this.soundReactive) {
       if (this.soundType) {
-        analysed = features.zcr / (10 * this.intensity)
+        analysed = features.zcr / (10 * this.intensity);
       } else {
-        analysed = features.rms * 10 * this.intensity
+        analysed = features.rms * 10 * this.intensity;
       }
 
-      w = canvas.width / analysed
-      h = canvas.height / analysed
+      w = canvas.width / analysed;
+      h = canvas.height / analysed;
     } else {
-      w = canvas.width / this.pixelAmount
-      h = canvas.height / this.pixelAmount
+      w = canvas.width / this.pixelAmount;
+      h = canvas.height / this.pixelAmount;
     }
 
-    context.save()
-    this.newCtx2.clearRect(0, 0, this.newCanvas2.width, this.newCanvas2.height)
-    context.imageSmoothingEnabled = false
+    context.save();
+    this.newCtx2.clearRect(0, 0, this.newCanvas2.width, this.newCanvas2.height);
+    context.imageSmoothingEnabled = false;
     this.newCtx2.drawImage(
       canvas,
       0,
@@ -106,7 +106,7 @@ export default {
       0,
       w,
       h
-    )
+    );
     context.drawImage(
       this.newCanvas2,
       0,
@@ -117,7 +117,7 @@ export default {
       0,
       canvas.width,
       canvas.height
-    )
-    context.restore()
+    );
+    context.restore();
   }
-}
+};

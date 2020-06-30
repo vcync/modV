@@ -1,16 +1,16 @@
-import Vue from 'vue'
-import { modV } from '@/modv'
-import controls from './controls'
-import statusbar from './statusbar'
+import Vue from "vue";
+import { modV } from "@/modv";
+import controls from "./controls";
+import statusbar from "./statusbar";
 
 const modules = {
   controls,
   statusbar
-}
+};
 
 const state = {
   plugins: {}
-}
+};
 
 // getters
 const getters = {
@@ -27,51 +27,51 @@ const getters = {
   pluginsWithGalleryTab: state =>
     Object.keys(state.plugins)
       .filter(
-        pluginName => 'galleryTabComponent' in state.plugins[pluginName].plugin
+        pluginName => "galleryTabComponent" in state.plugins[pluginName].plugin
       )
       .reduce((obj, pluginName) => {
-        obj[pluginName] = state.plugins[pluginName]
-        return obj
+        obj[pluginName] = state.plugins[pluginName];
+        return obj;
       }, {})
-}
+};
 
 // actions
 const actions = {
   presetData({ state }) {
-    const pluginData = {}
+    const pluginData = {};
 
     Object.keys(state.plugins)
       .filter(pluginKey => state.plugins[pluginKey].enabled)
-      .filter(pluginKey => 'presetData' in state.plugins[pluginKey].plugin)
+      .filter(pluginKey => "presetData" in state.plugins[pluginKey].plugin)
       .forEach(pluginKey => {
-        const plugin = state.plugins[pluginKey].plugin
+        const plugin = state.plugins[pluginKey].plugin;
 
-        pluginData[pluginKey] = plugin.presetData.save()
-      })
+        pluginData[pluginKey] = plugin.presetData.save();
+      });
 
-    return pluginData
+    return pluginData;
   },
 
   save({ state }, { pluginName, enabled }) {
-    const MediaManager = modV.MediaManagerClient
-    const plugin = state.plugins[pluginName].plugin
+    const MediaManager = modV.MediaManagerClient;
+    const plugin = state.plugins[pluginName].plugin;
 
     if (!plugin) {
-      throw new Error(`${pluginName} does not exist as a Plugin`)
+      throw new Error(`${pluginName} does not exist as a Plugin`);
     }
 
-    let save
+    let save;
 
     if (plugin.pluginData) {
-      save = plugin.pluginData.save
+      save = plugin.pluginData.save;
     }
 
-    let enabledValue
+    let enabledValue;
 
-    if (typeof enabled === 'undefined') {
-      enabledValue = state.plugins[pluginName].enabled
+    if (typeof enabled === "undefined") {
+      enabledValue = state.plugins[pluginName].enabled;
     } else {
-      enabledValue = enabled
+      enabledValue = enabled;
     }
 
     const payload = {
@@ -80,67 +80,67 @@ const actions = {
         name: pluginName
       },
       values: save ? save() : {}
-    }
+    };
 
     MediaManager.send({
-      request: 'save-plugin',
+      request: "save-plugin",
       name: pluginName,
-      profile: 'default',
+      profile: "default",
       payload
-    })
+    });
   },
 
   load({ dispatch, state }, { pluginName, data, enabled = true }) {
-    const plugin = state.plugins[pluginName].plugin
+    const plugin = state.plugins[pluginName].plugin;
     if (!plugin) {
-      throw new Error(`${pluginName} does not exist as a Plugin`)
+      throw new Error(`${pluginName} does not exist as a Plugin`);
     }
 
     if (!data) {
-      throw new Error('No data defined')
+      throw new Error("No data defined");
     }
 
-    let load
+    let load;
 
     if (plugin.pluginData) {
-      load = plugin.pluginData.load
+      load = plugin.pluginData.load;
     }
 
-    if (load) load(data)
+    if (load) load(data);
 
-    dispatch('setEnabled', { pluginName, enabled })
+    dispatch("setEnabled", { pluginName, enabled });
   },
   setEnabled({ state, commit, dispatch }, { pluginName, enabled }) {
-    const plugin = state.plugins[pluginName].plugin
+    const plugin = state.plugins[pluginName].plugin;
     if (!plugin) {
-      throw new Error(`${pluginName} does not exist as a Plugin`)
+      throw new Error(`${pluginName} does not exist as a Plugin`);
     }
 
     if (enabled && plugin.on) {
-      plugin.on()
+      plugin.on();
     }
 
     if (!enabled && plugin.off) {
-      plugin.off()
+      plugin.off();
     }
 
     if (state.plugins[pluginName].enabled !== enabled)
-      dispatch('save', { pluginName, enabled })
-    commit('setEnabled', { pluginName, enabled })
+      dispatch("save", { pluginName, enabled });
+    commit("setEnabled", { pluginName, enabled });
   }
-}
+};
 
 // mutations
 const mutations = {
   addPlugin(state, { plugin }) {
-    if (!('name' in plugin)) throw new Error('Plugin must have a name')
+    if (!("name" in plugin)) throw new Error("Plugin must have a name");
 
-    Vue.set(state.plugins, plugin.name, { enabled: true, plugin })
+    Vue.set(state.plugins, plugin.name, { enabled: true, plugin });
   },
   setEnabled(state, { pluginName, enabled }) {
-    Vue.set(state.plugins[pluginName], 'enabled', enabled)
+    Vue.set(state.plugins[pluginName], "enabled", enabled);
   }
-}
+};
 
 export default {
   namespaced: true,
@@ -149,4 +149,4 @@ export default {
   actions,
   mutations,
   modules
-}
+};

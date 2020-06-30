@@ -1,11 +1,11 @@
-import fragmentShader from './Fisheye/fisheye.frag'
+import fragmentShader from "./Fisheye/fisheye.frag";
 
 export default {
   meta: {
-    name: 'Fisheye',
-    type: 'shader',
-    version: '1.0.0',
-    author: '???',
+    name: "Fisheye",
+    type: "shader",
+    version: "1.0.0",
+    author: "???",
     previewWithOutput: true
   },
 
@@ -13,12 +13,12 @@ export default {
 
   props: {
     aperture: {
-      type: 'float',
-      label: 'Aperture',
+      type: "float",
+      label: "Aperture",
       default: 180.0,
       min: 1.0,
       max: 360.0,
       step: 0.5
     }
   }
-}
+};

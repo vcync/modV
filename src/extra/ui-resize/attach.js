@@ -1,20 +1,20 @@
-import store from '@/store/'
-import top from './top'
-import left from './left'
+import store from "@/store/";
+import top from "./top";
+import left from "./left";
 
 export default function attachResizeHandles() {
-  const attachResizeTop = top()
-  const attachResizeLeft = left()
+  const attachResizeTop = top();
+  const attachResizeLeft = left();
 
-  attachResizeTop(document.querySelector('.resize-handle-top'), () => {
-    store.dispatch('size/resizePreviewCanvas')
+  attachResizeTop(document.querySelector(".resize-handle-top"), () => {
+    store.dispatch("size/resizePreviewCanvas");
 
-    const vuebarContainers = document.querySelectorAll('.vb')
+    const vuebarContainers = document.querySelectorAll(".vb");
 
     // @todo - this will eventually break.
     vuebarContainers.forEach(element =>
       window.modVVue.$vuebar.refreshScrollbar(element)
-    )
-  })
-  attachResizeLeft(document.querySelector('.resize-handle-left'))
+    );
+  });
+  attachResizeLeft(document.querySelector(".resize-handle-left"));
 }

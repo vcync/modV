@@ -1,6 +1,6 @@
-import component from './Modules'
+import component from "./Modules";
 
 export default {
-  name: 'modules',
+  name: "modules",
   component
-}
+};

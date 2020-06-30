@@ -67,50 +67,50 @@
 </template>
 
 <script>
-import { mapActions, mapGetters, mapMutations } from 'vuex'
-import ActiveModule from '@/components/ActiveModule'
-import { Container, Draggable } from 'vue-smooth-dnd'
-import { Menu, MenuItem } from 'nwjs-menu-browser'
+import { mapActions, mapGetters, mapMutations } from "vuex";
+import ActiveModule from "@/components/ActiveModule";
+import { Container, Draggable } from "vue-smooth-dnd";
+import { Menu, MenuItem } from "nwjs-menu-browser";
 
 if (!window.nw) {
   window.nw = {
     Menu,
     MenuItem
-  }
+  };
 }
 
-const nw = window.nw
+const nw = window.nw;
 
 const applyDrag = (arr, dragResult) => {
-  const { removedIndex, addedIndex, payload } = dragResult
-  if (removedIndex === null && addedIndex === null) return arr
+  const { removedIndex, addedIndex, payload } = dragResult;
+  if (removedIndex === null && addedIndex === null) return arr;
 
-  const result = [...arr]
-  let itemToAdd = payload
+  const result = [...arr];
+  let itemToAdd = payload;
 
   if (removedIndex !== null) {
-    itemToAdd = result.splice(removedIndex, 1)[0]
+    itemToAdd = result.splice(removedIndex, 1)[0];
   }
 
   if (addedIndex !== null) {
-    result.splice(addedIndex, 0, itemToAdd)
+    result.splice(addedIndex, 0, itemToAdd);
   }
 
-  return result
-}
+  return result;
+};
 
 export default {
-  name: 'Layer',
+  name: "Layer",
   components: {
     ActiveModule,
     Draggable,
     Container
   },
-  props: ['layer', 'layerIndex'],
+  props: ["layer", "layerIndex"],
   data() {
     return {
       menuOptions: {
-        match: ['layerItem'],
+        match: ["layerItem"],
         menuItems: [],
         createMenus: this.createMenus
       },
@@ -118,141 +118,141 @@ export default {
       inheritChecked: false,
       pipelineChecked: false,
       drawToOutputChecked: false
-    }
+    };
   },
   computed: {
     modules: {
       get() {
-        return this.layer.moduleOrder
+        return this.layer.moduleOrder;
       },
       set(value) {
-        this.updateModuleOrder({ layerIndex: this.layerIndex, order: value })
+        this.updateModuleOrder({ layerIndex: this.layerIndex, order: value });
       }
     },
     name() {
-      if (!this.layer) return ''
-      if (!('name' in this.layer)) return ''
-      return this.layer.name
+      if (!this.layer) return "";
+      if (!("name" in this.layer)) return "";
+      return this.layer.name;
     },
     locked() {
-      return this.layer.locked
+      return this.layer.locked;
     },
     collapsed() {
-      return this.layer.collapsed
+      return this.layer.collapsed;
     },
-    ...mapGetters('layers', {
-      focusedLayerIndex: 'focusedLayerIndex',
-      layers: 'allLayers'
+    ...mapGetters("layers", {
+      focusedLayerIndex: "focusedLayerIndex",
+      layers: "allLayers"
     })
   },
   watch: {
     Layer: {
       handler() {
-        this.updateChecked()
+        this.updateChecked();
       },
       deep: true
     }
   },
   beforeMount() {
-    this.updateChecked()
+    this.updateChecked();
   },
   methods: {
-    ...mapActions('layers', [
-      'addLayer',
-      'toggleLocked',
-      'toggleCollapsed',
-      'addModuleToLayer',
-      'updateModuleOrder',
-      'moveModuleInstance'
+    ...mapActions("layers", [
+      "addLayer",
+      "toggleLocked",
+      "toggleCollapsed",
+      "addModuleToLayer",
+      "updateModuleOrder",
+      "moveModuleInstance"
     ]),
-    ...mapActions('modVModules', ['createActiveModule']),
-    ...mapMutations('layers', [
-      'setLayerName',
-      'setLayerFocus',
-      'setClearing',
-      'setInherit',
-      'setInheritFrom',
-      'setPipeline',
-      'setDrawToOutput'
+    ...mapActions("modVModules", ["createActiveModule"]),
+    ...mapMutations("layers", [
+      "setLayerName",
+      "setLayerFocus",
+      "setClearing",
+      "setInherit",
+      "setInheritFrom",
+      "setPipeline",
+      "setDrawToOutput"
     ]),
     onDrop(e) {
-      const { moduleName, collection } = e.payload
+      const { moduleName, collection } = e.payload;
 
-      if (e.addedIndex === null && e.removedIndex === null) return
+      if (e.addedIndex === null && e.removedIndex === null) return;
 
-      if (collection === 'gallery') {
+      if (collection === "gallery") {
         this.createActiveModule({ moduleName }).then(module => {
           this.addModuleToLayer({
             module,
             layerIndex: this.layerIndex,
             position: e.addedIndex
-          })
-        })
-      } else if (collection === 'layer') {
-        e.payload = moduleName
-        this.modules = applyDrag(this.modules, e)
+          });
+        });
+      } else if (collection === "layer") {
+        e.payload = moduleName;
+        this.modules = applyDrag(this.modules, e);
       }
     },
     getChildPayload(e) {
-      const moduleName = this.modules[e]
+      const moduleName = this.modules[e];
 
-      return { moduleName, collection: 'layer', layerIndex: this.layerIndex }
+      return { moduleName, collection: "layer", layerIndex: this.layerIndex };
     },
     startNameEdit() {
-      const node = this.$el.querySelector('.layer-title')
-      if (node.classList.contains('editable')) return
+      const node = this.$el.querySelector(".layer-title");
+      if (node.classList.contains("editable")) return;
 
-      node.classList.add('editable')
-      node.contentEditable = true
-      node.focus()
-      node.addEventListener('blur', this.stopNameEdit)
+      node.classList.add("editable");
+      node.contentEditable = true;
+      node.focus();
+      node.addEventListener("blur", this.stopNameEdit);
     },
     stopNameEdit(e) {
-      const node = this.$el.querySelector('.layer-title')
-      node.removeEventListener('blur', this.stopNameEdit)
-      e.preventDefault()
+      const node = this.$el.querySelector(".layer-title");
+      node.removeEventListener("blur", this.stopNameEdit);
+      e.preventDefault();
 
-      if (!node.classList.contains('editable')) return
+      if (!node.classList.contains("editable")) return;
 
-      const inputText = node.textContent.trim()
+      const inputText = node.textContent.trim();
 
-      node.contentEditable = false
-      node.classList.remove('editable')
+      node.contentEditable = false;
+      node.classList.remove("editable");
 
       if (inputText.length > 0) {
         this.setLayerName({
           LayerIndex: this.layerIndex,
           name: inputText
-        })
+        });
       } else {
-        node.textContent = this.layer.name
+        node.textContent = this.layer.name;
       }
     },
     focusLayer() {
-      if (this.focusedLayerIndex === this.layerIndex) return
+      if (this.focusedLayerIndex === this.layerIndex) return;
       this.setLayerFocus({
         layerIndex: this.layerIndex
-      })
+      });
     },
     clickToggleLock() {
-      this.toggleLocked({ layerIndex: this.layerIndex })
+      this.toggleLocked({ layerIndex: this.layerIndex });
     },
     clickToggleCollapse() {
-      this.toggleCollapsed({ layerIndex: this.layerIndex })
+      this.toggleCollapsed({ layerIndex: this.layerIndex });
     },
     updateChecked() {
-      const Layer = this.layer
+      const Layer = this.layer;
 
-      this.clearingChecked = Layer.clearing
-      this.inheritChecked = Layer.inherit
-      this.inheritanceIndex = Layer.inheritFrom
-      this.pipelineChecked = Layer.pipeline
-      this.drawToOutputChecked = Layer.drawToOutput
+      this.clearingChecked = Layer.clearing;
+      this.inheritChecked = Layer.inherit;
+      this.inheritanceIndex = Layer.inheritFrom;
+      this.pipelineChecked = Layer.pipeline;
+      this.drawToOutputChecked = Layer.drawToOutput;
     },
     createMenus() {
-      const that = this
+      const that = this;
 
-      this.menuOptions.menuItems.splice(0, this.menuOptions.menuItems.length)
+      this.menuOptions.menuItems.splice(0, this.menuOptions.menuItems.length);
 
       // Create inheritance index options
 
@@ -263,43 +263,43 @@ export default {
       //       :value="idx"
       //     >{{ layer.name }}</b-dropdown-item>
 
-      const inheritFromSubmenu = new nw.Menu({})
+      const inheritFromSubmenu = new nw.Menu({});
 
       const item = new nw.MenuItem({
-        type: 'checkbox',
-        label: 'Last Layer',
+        type: "checkbox",
+        label: "Last Layer",
         checked: this.layer.inheritFrom === -1,
         click: function click() {
           that.setInheritFrom({
             layerIndex: that.LayerIndex,
             inheritFrom: -1
-          })
+          });
         }
-      })
+      });
 
-      inheritFromSubmenu.append(item)
+      inheritFromSubmenu.append(item);
 
       this.layers.forEach((layer, idx) => {
         const item = new nw.MenuItem({
-          type: 'checkbox',
+          type: "checkbox",
           label: layer.name,
           checked: this.layer.inheritFrom === idx,
           click: function click() {
             that.setInheritFrom({
               layerIndex: that.LayerIndex,
               inheritFrom: idx
-            })
+            });
           }
-        })
+        });
 
-        inheritFromSubmenu.append(item)
-      })
+        inheritFromSubmenu.append(item);
+      });
 
       const inheritFromItem = new nw.MenuItem({
-        label: 'Inherit From',
+        label: "Inherit From",
         submenu: inheritFromSubmenu,
-        tooltip: 'The Layer to inherit frames from'
-      })
+        tooltip: "The Layer to inherit frames from"
+      });
 
       this.menuOptions.menuItems.push(
         new nw.MenuItem({
@@ -307,54 +307,54 @@ export default {
           enabled: false
         }),
         new nw.MenuItem({
-          type: 'separator'
+          type: "separator"
         }),
         new nw.MenuItem({
-          type: 'checkbox',
-          label: 'Clearing',
-          tooltip: 'Clear this Layer at the beginning of its draw cycle',
+          type: "checkbox",
+          label: "Clearing",
+          tooltip: "Clear this Layer at the beginning of its draw cycle",
           checked: this.clearingChecked,
           click: function click() {
             that.setClearing({
               layerIndex: that.LayerIndex,
               clearing: this.checked
-            })
+            });
           }
         }),
         new nw.MenuItem({
-          type: 'checkbox',
-          label: 'Inherit',
+          type: "checkbox",
+          label: "Inherit",
           tooltip: "Inherit frames from the 'Inherit From' Layer",
           checked: this.inheritChecked,
           click: function click() {
             that.setInherit({
               layerIndex: that.LayerIndex,
               inherit: this.checked
-            })
+            });
           }
         }),
 
         inheritFromItem,
 
         new nw.MenuItem({
-          type: 'checkbox',
-          label: 'Pipeline',
+          type: "checkbox",
+          label: "Pipeline",
           tooltip: `Modules pass frames directly to the next Module,
               bypassing drawing to the Layer until the end Module's draw cycle`.replace(
             /\s\s+/g,
-            ' '
+            " "
           ),
           checked: this.pipelineChecked,
           click: function click() {
             that.setPipeline({
               layerIndex: that.LayerIndex,
               pipeline: this.checked
-            })
+            });
           }
         }),
         new nw.MenuItem({
-          type: 'checkbox',
-          label: 'Draw To Output',
+          type: "checkbox",
+          label: "Draw To Output",
           tooltip:
             "Draw the Layer to the Output Window(s) at the end of the Layer's draw cycle",
           checked: this.drawToOutputChecked,
@@ -362,13 +362,13 @@ export default {
             that.setDrawToOutput({
               layerIndex: that.LayerIndex,
               drawToOutput: this.checked
-            })
+            });
           }
         })
-      )
+      );
     }
   }
-}
+};
 </script>
 
 <style scoped lang="scss">
@@ -395,7 +395,7 @@ export default {
       text-shadow: 1px 1px rgba(138, 138, 138, 0.34), -1px -1px #0e0e0e;
       opacity: 0.7;
       pointer-events: none;
-      content: 'Drag Modules Here';
+      content: "Drag Modules Here";
       letter-spacing: normal;
     }
   }

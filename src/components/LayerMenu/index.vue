@@ -6,16 +6,16 @@
 </template>
 
 <script>
-import AddLayerButton from './AddLayerButton'
-import RemoveLayerButton from './RemoveLayerButton'
+import AddLayerButton from "./AddLayerButton";
+import RemoveLayerButton from "./RemoveLayerButton";
 
 export default {
-  name: 'LayerMenu',
+  name: "LayerMenu",
   components: {
     AddLayerButton,
     RemoveLayerButton
   }
-}
+};
 </script>
 
 <style scoped lang="scss">

@@ -68,17 +68,17 @@
 </template>
 
 <script>
-import { mapGetters } from 'vuex'
+import { mapGetters } from "vuex";
 
-import ModuleGallery from '@/components/Gallery/ModuleGallery'
-import PaletteGallery from '@/components/Gallery/PaletteGallery'
-import PluginGallery from '@/components/Gallery/PluginGallery'
-import PresetGallery from '@/components/Gallery/PresetGallery'
-import ProjectGallery from '@/components/Gallery/ProjectGallery'
-import SearchBar from '@/components/Gallery/SearchBar'
+import ModuleGallery from "@/components/Gallery/ModuleGallery";
+import PaletteGallery from "@/components/Gallery/PaletteGallery";
+import PluginGallery from "@/components/Gallery/PluginGallery";
+import PresetGallery from "@/components/Gallery/PresetGallery";
+import ProjectGallery from "@/components/Gallery/ProjectGallery";
+import SearchBar from "@/components/Gallery/SearchBar";
 
 export default {
-  name: 'Gallery',
+  name: "Gallery",
   components: {
     ModuleGallery,
     PaletteGallery,
@@ -90,28 +90,28 @@ export default {
   data() {
     return {
       currentActiveDrag: null,
-      phrase: ''
-    }
+      phrase: ""
+    };
   },
   computed: {
-    ...mapGetters('plugins', {
-      plugins: 'pluginsWithGalleryTab'
+    ...mapGetters("plugins", {
+      plugins: "pluginsWithGalleryTab"
     }),
     enabledPlugins() {
       return Object.keys(this.plugins)
         .filter(pluginName => this.plugins[pluginName].enabled)
         .reduce((obj, pluginName) => {
-          obj[pluginName] = this.plugins[pluginName]
-          return obj
-        }, {})
+          obj[pluginName] = this.plugins[pluginName];
+          return obj;
+        }, {});
     }
   },
   methods: {
     menuIconClicked() {
-      this.$emit('menuIconClicked')
+      this.$emit("menuIconClicked");
     }
   }
-}
+};
 </script>
 
 <style lang="scss">

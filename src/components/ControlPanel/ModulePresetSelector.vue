@@ -21,7 +21,7 @@
 
 <script>
 export default {
-  name: 'ModulePresetSelector',
+  name: "ModulePresetSelector",
 
   props: {
     presets: {
@@ -36,26 +36,26 @@ export default {
 
   data() {
     return {
-      preset: 'Select'
-    }
+      preset: "Select"
+    };
   },
 
   methods: {
     load() {
       Object.keys(this.presets[this.preset].props).forEach(async prop => {
-        const data = this.presets[this.preset].props[prop]
+        const data = this.presets[this.preset].props[prop];
 
-        await this.$store.dispatch('modVModules/resetModule', {
+        await this.$store.dispatch("modVModules/resetModule", {
           name: this.moduleName
-        })
+        });
 
-        this.$store.dispatch('modVModules/updateProp', {
+        this.$store.dispatch("modVModules/updateProp", {
           name: this.moduleName,
           prop,
           data
-        })
-      })
+        });
+      });
     }
   }
-}
+};
 </script>

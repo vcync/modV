@@ -73,4 +73,4 @@ export default {
       image.a = 1.;
       outColor = image;
     }`
-}
+};

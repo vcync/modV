@@ -11,26 +11,26 @@
 </template>
 
 <script>
-import { Menu, MenuItem } from 'nwjs-menu-browser'
+import { Menu, MenuItem } from "nwjs-menu-browser";
 
 if (!window.nw) {
   window.nw = {
     Menu,
     MenuItem
-  }
+  };
 }
 
-const nw = window.nw
+const nw = window.nw;
 
 export default {
-  name: 'TextControl',
+  name: "TextControl",
   data() {
     return {
       menuOptions: {
-        match: ['textControl'],
+        match: ["textControl"],
         menuItems: []
       }
-    }
+    };
   },
   beforeMount() {
     this.$data.menuOptions.menuItems.push(
@@ -39,9 +39,9 @@ export default {
         enabled: false
       }),
       new nw.MenuItem({
-        type: 'separator'
+        type: "separator"
       })
-    )
+    );
   }
-}
+};
 </script>

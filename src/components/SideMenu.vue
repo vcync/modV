@@ -5,10 +5,10 @@
 </template>
 
 <script>
-import GlobalControls from '@/components/GlobalControls'
+import GlobalControls from "@/components/GlobalControls";
 
 export default {
-  name: 'SideMenu',
+  name: "SideMenu",
   components: {
     GlobalControls
   },
@@ -18,7 +18,7 @@ export default {
       type: Boolean
     }
   }
-}
+};
 </script>
 
 <style scoped lang="scss">

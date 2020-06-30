@@ -21,29 +21,29 @@
 </template>
 
 <script>
-import { Menu, MenuItem } from 'nwjs-menu-browser'
+import { Menu, MenuItem } from "nwjs-menu-browser";
 
 if (!window.nw) {
   window.nw = {
     Menu,
     MenuItem
-  }
+  };
 }
 
-const nw = window.nw
+const nw = window.nw;
 
 export default {
   data() {
     return {
       menuOptions: {
-        match: ['buttonControl'],
+        match: ["buttonControl"],
         menuItems: []
       }
-    }
+    };
   },
 
   beforeMount() {
-    this.currentValue = this.processedValue || this.defaultValue
+    this.currentValue = this.processedValue || this.defaultValue;
 
     this.$data.menuOptions.menuItems.push(
       new nw.MenuItem({
@@ -51,21 +51,21 @@ export default {
         enabled: false
       }),
       new nw.MenuItem({
-        type: 'separator'
+        type: "separator"
       })
-    )
+    );
   },
 
   methods: {
     setValue(data) {
-      this.$store.dispatch('modVModules/updateProp', {
+      this.$store.dispatch("modVModules/updateProp", {
         name: this.moduleName,
         prop: this.variable,
         data
-      })
+      });
     }
   }
-}
+};
 </script>
 
 <style scoped></style>

@@ -85,16 +85,16 @@
 </template>
 
 <script>
-import { mapActions, mapGetters } from 'vuex'
-import naturalSort from '@/modv/utils/natural-sort'
+import { mapActions, mapGetters } from "vuex";
+import naturalSort from "@/modv/utils/natural-sort";
 
 export default {
-  name: 'PresetGallery',
+  name: "PresetGallery",
   props: {
     phrase: {
       type: String,
       required: true,
-      default: ''
+      default: ""
     }
   },
   data() {
@@ -104,34 +104,34 @@ export default {
       loadingIndex: null,
 
       nameError: false,
-      nameErrorMessage: 'Preset must have a name',
+      nameErrorMessage: "Preset must have a name",
 
       projectError: false,
-      projectErrorMessage: 'Please select a project',
+      projectErrorMessage: "Please select a project",
 
-      newPresetName: '',
-      newPresetProject: 'default',
+      newPresetName: "",
+      newPresetProject: "default",
 
       isComponentModalActive: false
-    }
+    };
   },
   computed: {
-    ...mapGetters('projects', ['currentProject']),
-    ...mapGetters('modVModules', ['registry']),
+    ...mapGetters("projects", ["currentProject"]),
+    ...mapGetters("modVModules", ["registry"]),
     currentProjectName() {
-      return this.$store.state.projects.currentProject
+      return this.$store.state.projects.currentProject;
     },
     project() {
-      const data = []
-      if (!this.currentProject) return data
+      const data = [];
+      if (!this.currentProject) return data;
 
       Object.keys(this.currentProject.presets)
         .sort(naturalSort.compare)
         .forEach(presetName => {
-          data.push(this.currentProject.presets[presetName])
-        })
+          data.push(this.currentProject.presets[presetName]);
+        });
 
-      return data
+      return data;
     },
 
     missingModuleNames() {
@@ -140,36 +140,38 @@ export default {
           this.project[this.loadingIndex] &&
             this.project[this.loadingIndex].moduleData
         ) || []
-      )
+      );
     }
   },
   watch: {
     isComponentModalActive(value) {
       if (!value) {
-        this.loading = null
-        this.loadingIndex = null
-        this.loadingPresetName = null
+        this.loading = null;
+        this.loadingIndex = null;
+        this.loadingPresetName = null;
       }
     }
   },
   methods: {
-    ...mapActions('projects', ['loadPresetFromProject', 'savePresetToProject']),
+    ...mapActions("projects", ["loadPresetFromProject", "savePresetToProject"]),
     search(textIn, termIn) {
-      const text = textIn.toLowerCase().trim()
-      const term = termIn.toLowerCase().trim()
-      if (termIn.length < 1) return true
+      const text = textIn.toLowerCase().trim();
+      const term = termIn.toLowerCase().trim();
+      if (termIn.length < 1) return true;
 
-      return text.indexOf(term) > -1
+      return text.indexOf(term) > -1;
     },
     makeStyle(rgb) {
       return {
         backgroundColor: `rgb(${rgb[0]},${rgb[1]},${rgb[2]})`
-      }
+      };
     },
     validateModuleRequirements(moduleData) {
       return !Object.keys(moduleData)
         .map(datumKey => moduleData[datumKey].meta.originalName)
-        .every(moduleName => Object.keys(this.registry).indexOf(moduleName) < 0)
+        .every(
+          moduleName => Object.keys(this.registry).indexOf(moduleName) < 0
+        );
     },
     getMissingModules(moduleData) {
       return (
@@ -179,68 +181,68 @@ export default {
           .filter(
             moduleName => Object.keys(this.registry).indexOf(moduleName) < 0
           )
-      )
+      );
     },
     continueLoad(cont) {
-      this.isComponentModalActive = false
+      this.isComponentModalActive = false;
 
       if (cont) {
         this.loadPreset({
           presetName: this.loadingPresetName,
           index: this.loadingIndex,
           override: true
-        })
-        return
+        });
+        return;
       }
 
-      this.loading = null
-      this.loadingIndex = null
-      this.loadingPresetName = null
+      this.loading = null;
+      this.loadingIndex = null;
+      this.loadingPresetName = null;
     },
     async loadPreset({ presetName, index, override }) {
-      const projectName = this.currentProjectName
-      this.loading = `${projectName}.${presetName}`
-      this.loadingIndex = index
-      this.loadingPresetName = presetName
+      const projectName = this.currentProjectName;
+      this.loading = `${projectName}.${presetName}`;
+      this.loadingIndex = index;
+      this.loadingPresetName = presetName;
 
       if (
         !this.validateModuleRequirements(this.project[index].moduleData) &&
         !override
       ) {
-        this.isComponentModalActive = true
+        this.isComponentModalActive = true;
       } else {
-        this.isComponentModalActive = false
-        this.loading = `${projectName}.${presetName}`
+        this.isComponentModalActive = false;
+        this.loading = `${projectName}.${presetName}`;
 
-        await this.loadPresetFromProject({ presetName, projectName })
-        this.loading = null
-        this.loadingIndex = null
-        this.loadingPresetName = null
+        await this.loadPresetFromProject({ presetName, projectName });
+        this.loading = null;
+        this.loadingIndex = null;
+        this.loadingPresetName = null;
       }
     },
     async savePreset() {
-      this.nameError = false
-      this.projectError = false
+      this.nameError = false;
+      this.projectError = false;
 
       if (!this.newPresetName.trim().length) {
-        this.nameError = true
-        return
+        this.nameError = true;
+        return;
       }
 
       if (!this.newPresetProject.trim().length) {
-        this.projectError = true
-        return
+        this.projectError = true;
+        return;
       }
 
       await this.savePresetToProject({
         presetName: this.newPresetName,
         projectName: this.currentProjectName
-      })
+      });
 
-      this.newPresetName = ''
+      this.newPresetName = "";
     }
   }
-}
+};
 </script>
 
 <style lang="scss" scoped>

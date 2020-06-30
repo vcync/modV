@@ -24,11 +24,11 @@
 </template>
 
 <script>
-import { mapActions, mapGetters } from 'vuex'
-import { modV } from '@/modv'
+import { mapActions, mapGetters } from "vuex";
+import { modV } from "@/modv";
 
 export default {
-  name: 'GalleryItem',
+  name: "GalleryItem",
   props: {
     moduleName: {
       type: String,
@@ -41,43 +41,43 @@ export default {
       context: false,
       Module: false,
       raf: false,
-      appendToName: '-gallery',
+      appendToName: "-gallery",
       isIsf: false
-    }
+    };
   },
 
   computed: {
-    ...mapGetters('layers', ['focusedLayerIndex']),
+    ...mapGetters("layers", ["focusedLayerIndex"]),
     name() {
-      const Module = this.Module
-      if (!Module) return ''
-      return Module.meta.originalName
+      const Module = this.Module;
+      if (!Module) return "";
+      return Module.meta.originalName;
     },
     credit() {
-      if (!this.Module) return ''
-      return this.Module.meta.author
+      if (!this.Module) return "";
+      return this.Module.meta.author;
     },
     version() {
-      if (!this.Module) return ''
-      return this.Module.meta.version
+      if (!this.Module) return "";
+      return this.Module.meta.version;
     },
     isfVersion() {
-      if (!this.Module) return ''
-      if (!this.isIsf) return 'N/A'
-      let outputString = `${this.Module.meta.isfVersion}`
+      if (!this.Module) return "";
+      if (!this.isIsf) return "N/A";
+      let outputString = `${this.Module.meta.isfVersion}`;
       if (this.Module.meta.isfVersion === 1)
-        outputString += ' (auto upgraded to 2)'
-      return outputString
+        outputString += " (auto upgraded to 2)";
+      return outputString;
     },
     description() {
-      if (!this.Module) return ''
-      return this.Module.meta.description
+      if (!this.Module) return "";
+      return this.Module.meta.description;
     }
   },
   mounted() {
-    this.canvas = this.$refs.canvas
-    const canvas = this.canvas
-    this.context = this.canvas.getContext('2d')
+    this.canvas = this.$refs.canvas;
+    const canvas = this.canvas;
+    this.context = this.canvas.getContext("2d");
 
     this.createActiveModule({
       moduleName: this.moduleName,
@@ -86,47 +86,47 @@ export default {
       enabled: false
     })
       .then(Module => {
-        this.Module = Module
-        const moduleType = Module.meta.type
+        this.Module = Module;
+        const moduleType = Module.meta.type;
 
-        if (moduleType === 'isf') {
-          this.isIsf = true
+        if (moduleType === "isf") {
+          this.isIsf = true;
         }
 
-        if ('init' in Module) {
-          const { renderers } = this.$store.state
+        if ("init" in Module) {
+          const { renderers } = this.$store.state;
           if (renderers[moduleType] && renderers[moduleType].initVars) {
             Module.init({
               canvas: { width: canvas.width, height: canvas.height },
               ...renderers[moduleType].initVars
-            })
+            });
           } else {
             Module.init({
               canvas: { width: canvas.width, height: canvas.height }
-            })
+            });
           }
         }
 
-        if ('resize' in Module) {
+        if ("resize" in Module) {
           Module.resize({
             canvas: { width: this.canvas.width, height: this.canvas.height }
-          })
+          });
         }
       })
       .catch(e => {
         console.log(
           `An error occoured whilst initialising a gallery module - ${this.Module.meta.name}`
-        )
-        console.error(e)
-      })
+        );
+        console.error(e);
+      });
   },
   methods: {
-    ...mapActions('layers', ['addModuleToLayer']),
-    ...mapActions('modVModules', ['createActiveModule']),
+    ...mapActions("layers", ["addModuleToLayer"]),
+    ...mapActions("modVModules", ["createActiveModule"]),
     draw(delta) {
-      this.raf = requestAnimationFrame(this.draw)
-      this.context.clearRect(0, 0, this.canvas.width, this.canvas.height)
-      const features = this.$modV.meyda.get(this.$modV.audioFeatures)
+      this.raf = requestAnimationFrame(this.draw);
+      this.context.clearRect(0, 0, this.canvas.width, this.canvas.height);
+      const features = this.$modV.meyda.get(this.$modV.audioFeatures);
 
       if (this.Module.meta.previewWithOutput) {
         this.context.drawImage(
@@ -135,7 +135,7 @@ export default {
           0,
           this.canvas.width,
           this.canvas.height
-        )
+        );
       }
 
       this.Module.draw({
@@ -146,24 +146,24 @@ export default {
         features,
         delta,
           meyda: modV.meyda._m, //eslint-disable-line
-      })
+      });
     },
     mouseover() {
-      if (this.raf) return
-      this.raf = requestAnimationFrame(this.draw)
-      this.$store.commit('modVModules/setActiveModuleEnabled', {
+      if (this.raf) return;
+      this.raf = requestAnimationFrame(this.draw);
+      this.$store.commit("modVModules/setActiveModuleEnabled", {
         moduleName: this.Module.meta.name,
         enabled: true
-      })
+      });
       // webgl.resize(this.canvas.width, this.canvas.height);
     },
     mouseout() {
-      cancelAnimationFrame(this.raf)
-      this.raf = false
-      this.$store.commit('modVModules/setActiveModuleEnabled', {
+      cancelAnimationFrame(this.raf);
+      this.raf = false;
+      this.$store.commit("modVModules/setActiveModuleEnabled", {
         moduleName: this.Module.meta.name,
         enabled: false
-      })
+      });
     },
     doubleclick() {
       this.createActiveModule({
@@ -173,14 +173,14 @@ export default {
         this.addModuleToLayer({
           module: Module,
           layerIndex: this.focusedLayerIndex
-        })
-      })
+        });
+      });
     },
     dragstart(e) {
-      e.dataTransfer.setData('module-name', this.Module.meta.name)
+      e.dataTransfer.setData("module-name", this.Module.meta.name);
     }
   }
-}
+};
 </script>
 
 <style lang="scss" scoped>

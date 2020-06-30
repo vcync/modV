@@ -52,21 +52,21 @@
 </template>
 
 <script>
-import CanvasPreview from '@/components/CanvasPreview'
-import ControlPanelHandler from '@/components/ControlPanelHandler'
-import Gallery from '@/components/Gallery'
-import GlobalControls from '@/components/GlobalControls'
-import LayerControls from '@/components/LayerControls'
-import LayerMenu from '@/components/LayerMenu'
-import List from '@/components/List'
-import SideMenu from '@/components/SideMenu'
-import StatusBar from '@/components/StatusBar'
-import Tabs from '@/components/Tabs'
+import CanvasPreview from "@/components/CanvasPreview";
+import ControlPanelHandler from "@/components/ControlPanelHandler";
+import Gallery from "@/components/Gallery";
+import GlobalControls from "@/components/GlobalControls";
+import LayerControls from "@/components/LayerControls";
+import LayerMenu from "@/components/LayerMenu";
+import List from "@/components/List";
+import SideMenu from "@/components/SideMenu";
+import StatusBar from "@/components/StatusBar";
+import Tabs from "@/components/Tabs";
 
-import { mapGetters } from 'vuex'
+import { mapGetters } from "vuex";
 
 export default {
-  name: 'App',
+  name: "App",
   components: {
     CanvasPreview,
     ControlPanelHandler,
@@ -82,22 +82,22 @@ export default {
   data() {
     return {
       menuOpen: false
-    }
+    };
   },
   computed: {
-    ...mapGetters('plugins', ['enabledPlugins']),
+    ...mapGetters("plugins", ["enabledPlugins"]),
     pluginComponents() {
       return this.enabledPlugins
-        .filter(plugin => 'component' in plugin.plugin)
-        .map(plugin => plugin.plugin.component.name)
+        .filter(plugin => "component" in plugin.plugin)
+        .map(plugin => plugin.plugin.component.name);
     }
   },
   methods: {
     menuIconClicked() {
-      this.$data.menuOpen = !this.$data.menuOpen
+      this.$data.menuOpen = !this.$data.menuOpen;
     }
   }
-}
+};
 </script>
 
 <style lang="scss">
