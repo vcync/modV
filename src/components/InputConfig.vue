@@ -3,24 +3,42 @@
     class="input-config"
     v-infoView="{ title: iVTitle, body: iVBody, id: 'Input Config Panel' }"
   >
-    <grid columns="2">
-      <c span="1..">{{ focusedInputTitle }}</c>
+    <div v-if="inputConfig">
+      <grid class="borders">
+        <c span="1.."
+          ><h3>{{ focusedInputTitle }}</h3></c
+        >
+        <c span="1..">
+          <grid columns="4">
+            <c span="1"><h4>Audio Feature</h4></c>
+            <c span="3">
+              <AudioFeatures :input-id="inputConfig.id" />
+            </c>
+          </grid>
+        </c>
 
-      <c span="1">Audio Feature</c>
-      <c span="1">
-        <AudioFeatures v-if="inputConfig" :input-id="inputConfig.id" />
-      </c>
+        <c span="1..">
+          <grid columns="4">
+            <c span="1"><h4>MIDI</h4></c>
+            <c span="3">
+              <MIDI :input-id="inputConfig.id" />
+            </c>
+          </grid>
+        </c>
 
-      <c span="1">MIDI</c>
-      <c span="1">
-        <MIDI v-if="inputConfig" :input-id="inputConfig.id" />
-      </c>
-
-      <c span="1">Tween</c>
-      <c span="1">
-        <Tween v-if="inputConfig" :input-id="inputConfig.id" />
-      </c>
-    </grid>
+        <c span="1..">
+          <grid columns="4">
+            <c span="1"><h4>Tween</h4></c>
+            <c span="3">
+              <Tween :input-id="inputConfig.id" />
+            </c>
+          </grid>
+        </c>
+      </grid>
+    </div>
+    <div v-else>
+      Select a Module control
+    </div>
   </div>
 </template>
 
@@ -70,5 +88,9 @@ export default {
 div.input-config {
   height: 100%;
   width: 100%;
+}
+
+grid.borders > c:not(:last-child):not(:first-child) {
+  border-bottom: 1px solid var(--foreground-color-2);
 }
 </style>

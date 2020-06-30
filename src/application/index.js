@@ -208,7 +208,9 @@ export default class ModV {
   }
 
   loop(delta) {
-    const { meyda: featuresToGet } = this.store.state;
+    const {
+      meyda: { features: featuresToGet }
+    } = this.store.state;
 
     const features = this.meyda.get(featuresToGet);
     this.updateBeatDetektor(delta, features);

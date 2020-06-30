@@ -1,6 +1,6 @@
 <template>
   <grid columns="4">
-    <c>
+    <c span="2">
       <select v-model="feature">
         <option v-for="feature in features" :key="feature" :value="feature">{{
           feature
@@ -12,6 +12,21 @@
     </c>
     <c>
       <button @click="removeLink" :disabled="!hasLink">Remove link</button>
+    </c>
+    <c span="2">
+      <label
+        >Use smoothing?<input type="checkbox" v-model="useSmoothing"
+      /></label>
+    </c>
+    <c span="2">
+      <label
+        >Smoothing<input
+          type="range"
+          min="0"
+          :max="MAX_SMOOTHING - SMOOTHING_STEP"
+          :step="SMOOTHING_STEP"
+          @input="smoothingInput"
+      /></label>
     </c>
   </grid>
 </template>
@@ -47,8 +62,21 @@ export default {
         "perceptualSharpness"
       ],
 
-      feature: "rms"
+      feature: "rms",
+      smoothingId: null,
+      smoothingValue: 0,
+      useSmoothing: false
     };
+  },
+
+  computed: {
+    MAX_SMOOTHING() {
+      return this.$modV.store.state.meyda.MAX_SMOOTHING;
+    },
+
+    SMOOTHING_STEP() {
+      return this.$modV.store.state.meyda.SMOOTHING_STEP;
+    }
   },
 
   methods: {
@@ -65,6 +93,49 @@ export default {
       this.$modV.store.dispatch("inputs/removeInputLink", {
         inputId: this.inputId
       });
+    },
+
+    smoothingInput(e) {
+      if (!this.useSmoothing || !this.smoothingId) {
+        return;
+      }
+
+      const realValue = parseFloat(e.target.value);
+      this.smoothingValue = this.MAX_SMOOTHING - realValue;
+
+      this.updateInputLinkArgs([
+        this.feature,
+        this.smoothingId,
+        this.smoothingValue
+      ]);
+    },
+
+    updateInputLinkArgs(value) {
+      this.$modV.store.dispatch("inputs/updateInputLink", {
+        inputId: this.inputId,
+        key: "args",
+        value: value
+      });
+    }
+  },
+
+  watch: {
+    async useSmoothing(value) {
+      if (value) {
+        this.smoothingId = await this.$modV.store.dispatch(
+          "meyda/getSmoothingId"
+        );
+
+        this.updateInputLinkArgs([
+          this.feature,
+          this.smoothingId,
+          this.smoothingValue
+        ]);
+      } else {
+        this.smoothingId = null;
+        this.$modV.store.dispatch("meyda/removeSmoothingId", this.smoothingId);
+        this.updateInputLinkArgs([this.feature]);
+      }
     }
   }
 };
