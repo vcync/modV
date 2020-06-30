@@ -2,7 +2,9 @@
   <main id="app">
     <golden-layout
       class="hscreen"
+      :showCloseIcon="false"
       :showPopoutIcon="false"
+      :showMaximiseIcon="false"
       :state.sync="layoutState"
       @state="updateLayoutState"
     >
