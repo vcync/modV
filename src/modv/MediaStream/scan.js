@@ -6,19 +6,19 @@ export default function scanMediaStreamSources() {
         const sources = {
           audio: [],
           video: []
-        }
+        };
 
         devices.forEach(device => {
-          if (device.kind === 'audioinput') {
-            sources.audio.push(device)
-          } else if (device.kind === 'videoinput') {
-            sources.video.push(device)
+          if (device.kind === "audioinput") {
+            sources.audio.push(device);
+          } else if (device.kind === "videoinput") {
+            sources.video.push(device);
           }
-        })
+        });
 
-        return sources
+        return sources;
       })
       .then(resolve)
-      .catch(reject)
-  })
+      .catch(reject);
+  });
 }

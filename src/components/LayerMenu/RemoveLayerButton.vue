@@ -13,14 +13,14 @@
 </template>
 
 <script>
-import { mapActions } from 'vuex'
+import { mapActions } from "vuex";
 
 export default {
-  name: 'RemoveLayerButton',
+  name: "RemoveLayerButton",
   methods: {
-    ...mapActions('layers', ['removeFocusedLayer'])
+    ...mapActions("layers", ["removeFocusedLayer"])
   }
-}
+};
 </script>
 
 <style scoped></style>

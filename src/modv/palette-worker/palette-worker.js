@@ -1,4 +1,4 @@
-import store from '@/store'
+import store from "@/store";
 
 const PaletteWorkerScript = require('worker-loader!./index.js'); //eslint-disable-line
 
@@ -11,8 +11,8 @@ class PaletteWorker {
      * @private
      * @type {Worker}
      */
-    this.worker = new PaletteWorkerScript()
-    this.worker.addEventListener('message', this.messageHandler.bind(this))
+    this.worker = new PaletteWorkerScript();
+    this.worker.addEventListener("message", this.messageHandler.bind(this));
   }
 
   /**
@@ -23,21 +23,21 @@ class PaletteWorker {
     switch (evt.data.message) {
       default:
       case undefined:
-        break
-      case 'palette-update':
-        store.dispatch('palettes/stepUpdate', {
+        break;
+      case "palette-update":
+        store.dispatch("palettes/stepUpdate", {
           id: evt.data.paletteId,
           currentStep: evt.data.currentStep,
           currentColor: evt.data.currentColor
-        })
+        });
 
-        store.dispatch('modVModules/updateProp', {
+        store.dispatch("modVModules/updateProp", {
           name: store.state.palettes.palettes[evt.data.paletteId].moduleName,
           prop: store.state.palettes.palettes[evt.data.paletteId].variable,
           data: evt.data.currentStep
-        })
+        });
 
-        break
+        break;
     }
   }
 
@@ -47,11 +47,11 @@ class PaletteWorker {
    */
   createPalette(id, colors, duration) {
     this.worker.postMessage({
-      message: 'create-palette',
+      message: "create-palette",
       paletteId: id,
       colors,
       duration
-    })
+    });
   }
 
   /**
@@ -61,24 +61,24 @@ class PaletteWorker {
    */
   setPalette(id, options) {
     this.worker.postMessage({
-      message: 'set-palette',
+      message: "set-palette",
       paletteId: id,
       options
-    })
+    });
   }
 
   /** @param {string} id */
   removePalette(id) {
     this.worker.postMessage({
-      message: 'remove-palette',
+      message: "remove-palette",
       paletteId: id
-    })
+    });
   }
 }
 
 /** @enum {string} */
 PaletteWorker.EventType = {
-  PALETTE_UPDATED: 'palette_updated'
-}
+  PALETTE_UPDATED: "palette_updated"
+};
 
-export default PaletteWorker
+export default PaletteWorker;

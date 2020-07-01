@@ -1,65 +1,65 @@
-import store from '@/store'
-import WebSocket from 'reconnecting-websocket'
+import store from "@/store";
+import WebSocket from "reconnecting-websocket";
 
 class MediaManagerClient {
   constructor() {
-    this.available = false
+    this.available = false;
 
-    let ws
+    let ws;
 
     try {
-      ws = new WebSocket('ws://localhost:3132/')
+      ws = new WebSocket("ws://localhost:3132/");
     } catch (e) {
       console.warn('Media Manager not connected, retrying'); //eslint-disable-line
     }
 
-    this.ws = ws
+    this.ws = ws;
 
-    ws.sendJSON = data => ws.send(JSON.stringify(data))
+    ws.sendJSON = data => ws.send(JSON.stringify(data));
 
-    ws.addEventListener('error', () => {
-      this.available = false
+    ws.addEventListener("error", () => {
+      this.available = false;
       console.warn('Media Manager not connected, retrying'); //eslint-disable-line
-    })
+    });
 
-    ws.addEventListener('open', () => {
-      this.update()
-      this.available = true
+    ws.addEventListener("open", () => {
+      this.update();
+      this.available = true;
       console.info('Media Manager connected, retrieving media list'); //eslint-disable-line
-    })
+    });
 
-    window.addEventListener('beforeunload', () => {
+    window.addEventListener("beforeunload", () => {
       ws.close({
         keepClosed: true
-      })
-      this.available = false
-    })
+      });
+      this.available = false;
+    });
 
-    ws.addEventListener('message', this.messageHandler)
+    ws.addEventListener("message", this.messageHandler);
   }
 
   update() {
-    this.ws.sendJSON({ request: 'update' })
+    this.ws.sendJSON({ request: "update" });
   }
 
   send(data) {
-    this.ws.sendJSON(data)
+    this.ws.sendJSON(data);
   }
 
   messageHandler(message) { //eslint-disable-line
-    const parsed = JSON.parse(message.data)
+    const parsed = JSON.parse(message.data);
     console.log('Media Manager says:', parsed); //eslint-disable-line
 
-    if ('type' in parsed) {
+    if ("type" in parsed) {
       switch (parsed.type) {
         default:
-          break
+          break;
 
-        case 'update':
+        case "update":
           Object.keys(parsed.payload).forEach(projectName => {
-            const project = parsed.payload[projectName]
+            const project = parsed.payload[projectName];
 
-            store.commit('projects/addProject', {
+            store.commit("projects/addProject", {
               projectName,
               images: project.images,
               palettes: project.palettes,
@@ -67,49 +67,49 @@ class MediaManagerClient {
               videos: project.videos,
               modules: project.modules,
               plugins: project.plugins
-            })
-          })
-          break
+            });
+          });
+          break;
 
-        case 'file-update-add':
-          if ('data' in parsed) {
-            const data = parsed.data
-            const type = data.type
-            const projectName = data.profile
-            const name = data.name
+        case "file-update-add":
+          if ("data" in parsed) {
+            const data = parsed.data;
+            const type = data.type;
+            const projectName = data.profile;
+            const name = data.name;
 
-            if (type === 'palette') {
-              store.commit('projects/addPaletteToProject', {
+            if (type === "palette") {
+              store.commit("projects/addPaletteToProject", {
                 projectName,
                 paletteName: name,
                 colors: data.contents
-              })
-            } else if (type === 'preset') {
-              store.commit('projects/addPresetToProject', {
+              });
+            } else if (type === "preset") {
+              store.commit("projects/addPresetToProject", {
                 projectName,
                 presetName: name,
                 presetData: data.contents
-              })
-            } else if (type === 'module') {
-              store.commit('projects/addModuleToProject', {
+              });
+            } else if (type === "module") {
+              store.commit("projects/addModuleToProject", {
                 projectName,
                 presetName: name,
                 path: data.path
-              })
-            } else if (type === 'plugin') {
-              store.commit('projects/addPluginToProject', {
+              });
+            } else if (type === "plugin") {
+              store.commit("projects/addPluginToProject", {
                 projectName,
                 pluginName: name,
                 pluginData: data.contents
-              })
-            } else if (type === 'image') {
+              });
+            } else if (type === "image") {
               // modV.profiles[profile].images[name] = data.path;
-            } else if (type === 'video') {
+            } else if (type === "video") {
               //  modV.profiles[profile].videos[name] = data.path;
             }
           }
 
-          break
+          break;
 
         //   case 'profile-add':
         //     data = parsed.data;
@@ -189,4 +189,4 @@ class MediaManagerClient {
   }
 }
 
-export default MediaManagerClient
+export default MediaManagerClient;

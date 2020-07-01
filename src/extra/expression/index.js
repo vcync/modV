@@ -1,104 +1,104 @@
-import store from '@/store'
-import { modV } from 'modv'
-import { MenuItem } from 'nwjs-menu-browser'
-import modvVue from '@/main'
+import store from "@/store";
+import { modV } from "modv";
+import { MenuItem } from "nwjs-menu-browser";
+import modvVue from "@/main";
 
-import expressionStore from './store'
-import ExpressionComponent from './ExpressionInput'
+import expressionStore from "./store";
+import ExpressionComponent from "./ExpressionInput";
 
 const Expression = {
-  name: 'Value Expression',
+  name: "Value Expression",
   store: expressionStore,
-  storeName: 'expression',
+  storeName: "expression",
 
   presetData: {
     save() {
-      const { assignments } = store.state.expression
+      const { assignments } = store.state.expression;
 
       return {
         assignments
-      }
+      };
     },
 
     load(data) {
-      const { assignments } = data
+      const { assignments } = data;
 
       Object.values(assignments).forEach(module => {
         Object.values(module).forEach(assignment => {
-          store.dispatch('expression/addExpression', {
+          store.dispatch("expression/addExpression", {
             expression: assignment.expression,
             moduleName: assignment.moduleName,
             controlVariable: assignment.controlVariable,
             scopeAdditions: assignment.additionalScope
-          })
-        })
-      })
+          });
+        });
+      });
     }
   },
 
   install() {
     store.subscribe(mutation => {
-      if (mutation.type === 'modVModules/removeActiveModule') {
-        store.commit('expression/removeExpressions', {
+      if (mutation.type === "modVModules/removeActiveModule") {
+        store.commit("expression/removeExpressions", {
           moduleName: mutation.payload.moduleName
-        })
+        });
       }
-    })
+    });
 
     modV.addContextMenuHook({
-      hook: 'rangeControl',
+      hook: "rangeControl",
       buildMenuItem: this.createMenuItem.bind(this)
-    })
+    });
   },
 
   createMenuItem(moduleName, controlVariable) {
     async function click() {
-      await store.dispatch('expression/setActiveControlData', {
+      await store.dispatch("expression/setActiveControlData", {
         moduleName,
         controlVariable
-      })
+      });
 
       modvVue.$modal.open({
         parent: modvVue,
         component: ExpressionComponent,
         hasModalCard: true
-      })
+      });
     }
 
     const menuItem = new MenuItem({
-      label: 'Edit expression',
+      label: "Edit expression",
       click: click.bind(this)
-    })
+    });
 
-    return menuItem
+    return menuItem;
   },
 
   processValue({ delta, currentValue, moduleName, controlVariable }) {
-    let value = currentValue
+    let value = currentValue;
 
-    const assignment = store.getters['expression/assignment'](
+    const assignment = store.getters["expression/assignment"](
       moduleName,
       controlVariable
-    )
+    );
 
     if (assignment) {
-      const additionalScope = assignment.additionalScope
+      const additionalScope = assignment.additionalScope;
 
       const scope = {
         value: currentValue,
         delta,
         map: Math.map
-      }
+      };
 
       Object.keys(additionalScope).forEach(key => {
-        scope[key] = additionalScope[key]
-      })
+        scope[key] = additionalScope[key];
+      });
 
-      value = assignment.func.eval(scope)
+      value = assignment.func.eval(scope);
     }
 
-    return value
+    return value;
   }
-}
+};
 
-export default Expression
+export default Expression;

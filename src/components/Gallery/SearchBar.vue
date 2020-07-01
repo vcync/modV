@@ -27,21 +27,21 @@
 </template>
 
 <script>
-import { mapGetters } from 'vuex'
+import { mapGetters } from "vuex";
 
 export default {
-  name: 'SearchBar',
+  name: "SearchBar",
   data() {
     return {
-      phrase: ''
-    }
+      phrase: ""
+    };
   },
   computed: mapGetters({
-    modules: 'registeredModules'
+    modules: "registeredModules"
   }),
   watch: {
     phrase() {
-      this.$emit('update:phrase', this.phrase)
+      this.$emit("update:phrase", this.phrase);
     }
   },
   methods: {
@@ -49,14 +49,14 @@ export default {
       // nothing here, but seems to be required for shortkey
     },
     clearSearch() {
-      if (this.$refs['gallery-search'] !== document.activeElement) return
-      this.phrase = ''
+      if (this.$refs["gallery-search"] !== document.activeElement) return;
+      this.phrase = "";
     },
     menuIconClicked() {
-      this.$emit('menuIconClicked')
+      this.$emit("menuIconClicked");
     }
   }
-}
+};
 </script>
 
 <style scoped lang="scss">

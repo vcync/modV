@@ -12,46 +12,46 @@
 </template>
 
 <script>
-import { Menu, MenuItem } from 'nwjs-menu-browser'
+import { Menu, MenuItem } from "nwjs-menu-browser";
 
 if (!window.nw) {
   window.nw = {
     Menu,
     MenuItem
-  }
+  };
 }
 
-const nw = window.nw
+const nw = window.nw;
 
 export default {
-  name: 'CheckboxControl',
+  name: "CheckboxControl",
   data() {
     return {
       menuOptions: {
-        match: ['checkboxControl'],
+        match: ["checkboxControl"],
         menuItems: []
       }
-    }
+    };
   },
 
   computed: {
     massagedValue: {
       get() {
-        return !!this.value
+        return !!this.value;
       },
 
       set(value) {
-        this.value = value
+        this.value = value;
       }
     }
   },
 
   beforeMount() {
-    if (typeof this.value === 'undefined') {
-      this.value = this.defaultValue
+    if (typeof this.value === "undefined") {
+      this.value = this.defaultValue;
     }
 
-    this.currentValue = this.processedValue || this.defaultValue
+    this.currentValue = this.processedValue || this.defaultValue;
 
     this.$data.menuOptions.menuItems.push(
       new nw.MenuItem({
@@ -59,17 +59,17 @@ export default {
         enabled: false
       }),
       new nw.MenuItem({
-        type: 'separator'
+        type: "separator"
       })
-    )
+    );
   },
 
   methods: {
     labelClicked() {
-      this.value = !this.value
+      this.value = !this.value;
     }
   }
-}
+};
 </script>
 
 <style scoped lang="scss"></style>

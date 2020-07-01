@@ -70,10 +70,10 @@
 </template>
 
 <script>
-import { mapGetters, mapMutations } from 'vuex'
+import { mapGetters, mapMutations } from "vuex";
 
 export default {
-  name: 'LayerControls',
+  name: "LayerControls",
   data() {
     return {
       clearingChecked: false,
@@ -82,33 +82,33 @@ export default {
       drawToOutputChecked: false,
       inheritanceIndex: -1,
       drawToWindowId: null
-    }
+    };
   },
   computed: {
-    ...mapGetters('layers', {
-      Layer: 'focusedLayer',
-      layers: 'allLayers',
-      layerIndex: 'focusedLayerIndex'
+    ...mapGetters("layers", {
+      Layer: "focusedLayer",
+      layers: "allLayers",
+      layerIndex: "focusedLayerIndex"
     }),
-    ...mapGetters('windows', ['windowIds']),
+    ...mapGetters("windows", ["windowIds"]),
     name() {
-      if (!this.Layer) return ''
-      if (!('name' in this.Layer)) return ''
-      return this.Layer.name
+      if (!this.Layer) return "";
+      if (!("name" in this.Layer)) return "";
+      return this.Layer.name;
     },
     inheritedLayerName() {
       if (this.inheritanceIndex < 0) {
-        return 'Last Layer'
+        return "Last Layer";
       }
 
-      return this.layers[this.inheritanceIndex || 0].name
+      return this.layers[this.inheritanceIndex || 0].name;
     }
   },
   watch: {
     Layer: {
       handler() {
-        if (!this.Layer) return
-        this.updateChecked()
+        if (!this.Layer) return;
+        this.updateChecked();
       },
       deep: true
     },
@@ -116,69 +116,69 @@ export default {
       this.setClearing({
         layerIndex: this.layerIndex,
         clearing: this.clearingChecked
-      })
+      });
     },
     inheritChecked() {
       this.setInherit({
         layerIndex: this.layerIndex,
         inherit: this.inheritChecked
-      })
+      });
     },
     inheritanceIndex() {
       this.setInheritFrom({
         layerIndex: this.layerIndex,
         inheritFrom: this.inheritanceIndex
-      })
+      });
     },
     pipelineChecked() {
       this.setPipeline({
         layerIndex: this.layerIndex,
         pipeline: this.pipelineChecked
-      })
+      });
     },
     drawToOutputChecked() {
       this.setDrawToOutput({
         layerIndex: this.layerIndex,
         drawToOutput: this.drawToOutputChecked
-      })
+      });
     },
     drawToWindowId(value) {
-      let commitValue = value
+      let commitValue = value;
 
-      if (value === '-1') commitValue = null
+      if (value === "-1") commitValue = null;
 
       this.setDrawToWindow({
         layerIndex: this.layerIndex,
         windowId: commitValue
-      })
+      });
     }
   },
   mounted() {
-    if (!this.Layer) return
+    if (!this.Layer) return;
 
-    this.updateChecked()
+    this.updateChecked();
   },
   methods: {
-    ...mapMutations('layers', [
-      'setClearing',
-      'setInherit',
-      'setInheritFrom',
-      'setPipeline',
-      'setDrawToOutput',
-      'setDrawToWindow'
+    ...mapMutations("layers", [
+      "setClearing",
+      "setInherit",
+      "setInheritFrom",
+      "setPipeline",
+      "setDrawToOutput",
+      "setDrawToWindow"
     ]),
     updateChecked() {
-      const Layer = this.Layer
+      const Layer = this.Layer;
 
-      this.clearingChecked = Layer.clearing
-      this.inheritChecked = Layer.inherit
-      this.inheritanceIndex = Layer.inheritFrom
-      this.pipelineChecked = Layer.pipeline
-      this.drawToOutputChecked = Layer.drawToOutput
-      this.drawToWindowId = Layer.drawToWindowId
+      this.clearingChecked = Layer.clearing;
+      this.inheritChecked = Layer.inherit;
+      this.inheritanceIndex = Layer.inheritFrom;
+      this.pipelineChecked = Layer.pipeline;
+      this.drawToOutputChecked = Layer.drawToOutput;
+      this.drawToWindowId = Layer.drawToWindowId;
     }
   }
-}
+};
 </script>
 
 <style lang="scss"></style>

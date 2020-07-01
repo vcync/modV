@@ -19,110 +19,119 @@
 </template>
 
 <script>
-import { mapActions } from 'vuex'
-import contextMenuItem from './MenuItem'
-import isDescendant from './is-descendant'
+import { mapActions } from "vuex";
+import contextMenuItem from "./MenuItem";
+import isDescendant from "./is-descendant";
 
 export default {
-  name: 'ContextMenu',
-  props: ['options'],
+  name: "ContextMenu",
+
+  components: {
+    contextMenuItem
+  },
+
+  props: ["options"],
+
   data() {
     return {
       offsetWidth: 0,
       offsetHeight: 0
-    }
+    };
   },
+
   computed: {
     items() {
-      return this.options.items
+      return this.options.items;
     },
     visible() {
-      return this.options.visible
+      return this.options.visible;
     },
     isSubmenu() {
-      return this.options.isSubmenu
+      return this.options.isSubmenu;
     },
     id() {
-      return this.options.$id
+      return this.options.$id;
     }
   },
+
+  beforeMount() {
+    if (!this.isSubmenu) {
+      this.popdownAll([this.id]);
+    }
+  },
+
+  mounted() {
+    this.reposition();
+
+    window.addEventListener("click", this.checkIfClickedMenu);
+  },
+
+  updated() {
+    this.reposition();
+  },
+
+  beforeDestroy() {
+    window.removeEventListener("click", this.checkIfClickedMenu);
+  },
+
   methods: {
-    ...mapActions('contextMenu', ['popdownAll']),
+    ...mapActions("contextMenu", ["popdownAll"]),
     checkIfClickedMenu(e) {
-      e.preventDefault()
+      e.preventDefault();
       if (
         !e.target === this.$refs.menu ||
         !isDescendant(this.$refs.menu, e.target)
       ) {
-        this.popdownAll()
+        this.popdownAll();
       }
     },
     reposition() {
-      const menuEl = this.$refs.menu
-      this.$data.offsetWidth = menuEl.offsetWidth
-      this.$data.offsetHeight = menuEl.offsetHeight
+      const menuEl = this.$refs.menu;
+      this.$data.offsetWidth = menuEl.offsetWidth;
+      this.$data.offsetHeight = menuEl.offsetHeight;
 
-      let setRight = false
+      let setRight = false;
 
-      let x = this.options.x
-      let y = this.options.y
+      let x = this.options.x;
+      let y = this.options.y;
 
-      const width = menuEl.clientWidth
-      const height = menuEl.clientHeight
+      const width = menuEl.clientWidth;
+      const height = menuEl.clientHeight;
 
       if (x + width > window.innerWidth) {
-        setRight = true
+        setRight = true;
         if (this.isSubmenu) {
-          const node = this.parentMenu.node
+          const node = this.parentMenu.node;
           x =
             node.offsetWidth +
             (window.innerWidth - node.offsetLeft - node.offsetWidth) -
-            2
+            2;
         } else {
-          x = 0
+          x = 0;
         }
       }
 
       if (y + height > window.innerHeight) {
-        y = window.innerHeight - height
+        y = window.innerHeight - height;
       }
 
       if (!setRight) {
-        menuEl.style.left = `${x}px`
-        menuEl.style.right = 'auto'
+        menuEl.style.left = `${x}px`;
+        menuEl.style.right = "auto";
       } else {
-        menuEl.style.right = `${x}px`
-        menuEl.style.left = 'auto'
+        menuEl.style.right = `${x}px`;
+        menuEl.style.left = "auto";
       }
 
-      menuEl.style.top = `${y}px`
+      menuEl.style.top = `${y}px`;
     }
-  },
-  beforeMount() {
-    if (!this.isSubmenu) {
-      this.popdownAll([this.id])
-    }
-  },
-  mounted() {
-    this.reposition()
-
-    window.addEventListener('click', this.checkIfClickedMenu)
-  },
-  updated() {
-    this.reposition()
-  },
-  beforeDestroy() {
-    window.removeEventListener('click', this.checkIfClickedMenu)
-  },
-  components: {
-    contextMenuItem
   }
-}
+};
 </script>
 
 <style lang="scss">
 .nwjs-menu {
-  font-family: 'Rubik', sans-serif;
+  font-family: "Rubik", sans-serif;
   font-size: 14px;
   color: #2c2c2c;
   -webkit-user-select: none;
@@ -258,7 +267,7 @@ li.menu-item.separator {
 }
 
 .menu-item.checkbox.checked .checkmark::before {
-  content: '✔';
+  content: "✔";
   text-align: center;
   width: 100%;
 }

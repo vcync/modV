@@ -13,14 +13,14 @@
 </template>
 
 <script>
-import { mapActions } from 'vuex'
+import { mapActions } from "vuex";
 
 export default {
-  name: 'AddLayerButton',
+  name: "AddLayerButton",
   methods: {
-    ...mapActions('layers', ['addLayer'])
+    ...mapActions("layers", ["addLayer"])
   }
-}
+};
 </script>
 
 <style scoped>

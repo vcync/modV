@@ -36,7 +36,7 @@
 
 <script>
 export default {
-  name: 'ControlPanel',
+  name: "ControlPanel",
 
   data() {
     return {
@@ -44,31 +44,31 @@ export default {
       quality: 90,
       motionBlurFrames: 16,
       capturing: false
-    }
+    };
   },
 
   computed: {
     capturer() {
-      return this.$store.state.plugins.plugins.Capture.plugin.capturer
+      return this.$store.state.plugins.plugins.Capture.plugin.capturer;
     }
   },
 
   methods: {
     start() {
-      this.capturer.start()
-      this.capturing = true
+      this.capturer.start();
+      this.capturing = true;
     },
 
     stop() {
-      this.capturer.stop()
-      this.capturing = false
+      this.capturer.stop();
+      this.capturing = false;
     },
 
     save() {
-      this.capturer.save()
+      this.capturer.save();
     }
   }
-}
+};
 </script>
 
 <style></style>

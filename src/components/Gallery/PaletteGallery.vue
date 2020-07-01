@@ -24,38 +24,38 @@
 </template>
 
 <script>
-import { mapGetters } from 'vuex'
+import { mapGetters } from "vuex";
 
 export default {
-  name: 'PaletteGallery',
+  name: "PaletteGallery",
   components: {},
   props: {
     phrase: {
       type: String,
       required: true,
-      default: ''
+      default: ""
     }
   },
   computed: {
-    ...mapGetters('projects', {
-      projects: 'allProjects'
+    ...mapGetters("projects", {
+      projects: "allProjects"
     })
   },
   methods: {
     search(textIn, termIn) {
-      const text = textIn.toLowerCase().trim()
-      const term = termIn.toLowerCase().trim()
-      if (termIn.length < 1) return true
+      const text = textIn.toLowerCase().trim();
+      const term = termIn.toLowerCase().trim();
+      if (termIn.length < 1) return true;
 
-      return text.indexOf(term) > -1
+      return text.indexOf(term) > -1;
     },
     makeStyle(rgb) {
       return {
         backgroundColor: `rgb(${rgb[0]},${rgb[1]},${rgb[2]})`
-      }
+      };
     }
   }
-}
+};
 </script>
 
 <style lang="scss" scoped>

@@ -1,9 +1,9 @@
-import Vue from 'vue'
+import Vue from "vue";
 
 const state = {
   devices: {},
   assignments: {}
-}
+};
 
 // getters
 const getters = {
@@ -14,29 +14,29 @@ const getters = {
     Object.keys(state.assignments).find(
       channel => state.assignments[channel].variable === assignmentString
     )
-}
+};
 
 // actions
-const actions = {}
+const actions = {};
 
 // mutations
 const mutations = {
   setAssignment(state, { key, value }) {
-    Vue.set(state.assignments, key, value)
+    Vue.set(state.assignments, key, value);
   },
   removeAssignment(state, { key }) {
-    Vue.delete(state.assignments, key)
+    Vue.delete(state.assignments, key);
   },
   removeAssignments(state, { moduleName }) {
     Object.keys(state.assignments).forEach(key => {
-      const assignment = state.assignments[key]
-      const data = assignment.variable.split(',')
+      const assignment = state.assignments[key];
+      const data = assignment.variable.split(",");
       if (moduleName === data[0]) {
-        Vue.delete(state.assignments, key)
+        Vue.delete(state.assignments, key);
       }
-    })
+    });
   }
-}
+};
 
 export default {
   namespaced: true,
@@ -44,4 +44,4 @@ export default {
   getters,
   actions,
   mutations
-}
+};

@@ -1,154 +1,154 @@
-import { isf } from '@/modv'
+import { isf } from "@/modv";
 import {
   Renderer as ISFRenderer,
   Parser as ISFParser,
   Upgrader as ISFUpgrader
-} from 'interactive-shader-format-for-modv'
+} from "interactive-shader-format-for-modv";
 
 function render({ Module, canvas, context, pipeline }) {
   if (Module.inputs) {
     Module.inputs.forEach(input => {
-      if (input.TYPE === 'image') {
+      if (input.TYPE === "image") {
         if (input.NAME in Module.props) {
           Module.renderer.setValue(
             input.NAME,
             (Module[input.NAME] && Module[input.NAME].texture) || canvas
-          )
+          );
         } else {
-          Module.renderer.setValue(input.NAME, canvas)
+          Module.renderer.setValue(input.NAME, canvas);
         }
       } else {
-        Module.renderer.setValue(input.NAME, Module[input.NAME])
+        Module.renderer.setValue(input.NAME, Module[input.NAME]);
       }
-    })
+    });
   }
 
-  isf.gl.clear(isf.gl.COLOR_BUFFER_BIT)
-  Module.renderer.draw(isf.canvas)
+  isf.gl.clear(isf.gl.COLOR_BUFFER_BIT);
+  Module.renderer.draw(isf.canvas);
 
-  context.save()
-  context.globalAlpha = Module.meta.alpha || 1
-  context.globalCompositeOperation = Module.meta.compositeOperation || 'normal'
-  if (pipeline) context.clearRect(0, 0, canvas.width, canvas.height)
-  context.drawImage(isf.canvas, 0, 0, canvas.width, canvas.height)
-  context.restore()
+  context.save();
+  context.globalAlpha = Module.meta.alpha || 1;
+  context.globalCompositeOperation = Module.meta.compositeOperation || "normal";
+  if (pipeline) context.clearRect(0, 0, canvas.width, canvas.height);
+  context.drawImage(isf.canvas, 0, 0, canvas.width, canvas.height);
+  context.restore();
 }
 
 function setup(Module) {
   return new Promise(resolve => {
-    let fragmentShader = Module.fragmentShader
-    let vertexShader = Module.vertexShader
+    let fragmentShader = Module.fragmentShader;
+    let vertexShader = Module.vertexShader;
 
-    const parser = new ISFParser()
-    parser.parse(fragmentShader, vertexShader)
+    const parser = new ISFParser();
+    parser.parse(fragmentShader, vertexShader);
     if (parser.error) {
       throw new Error(
         parser.error,
         `Error evaluating ${Module.meta.name}'s shaders`
-      )
+      );
     }
 
     if (parser.isfVersion < 2) {
-      fragmentShader = ISFUpgrader.convertFragment(fragmentShader)
-      if (vertexShader) vertexShader = ISFUpgrader.convertVertex(vertexShader)
+      fragmentShader = ISFUpgrader.convertFragment(fragmentShader);
+      if (vertexShader) vertexShader = ISFUpgrader.convertVertex(vertexShader);
     }
 
-    Module.meta.isfVersion = parser.isfVersion
-    Module.meta.author = parser.metadata.CREDIT
-    Module.meta.description = parser.metadata.DESCRIPTION
-    Module.meta.version = parser.metadata.VSN
+    Module.meta.isfVersion = parser.isfVersion;
+    Module.meta.author = parser.metadata.CREDIT;
+    Module.meta.description = parser.metadata.DESCRIPTION;
+    Module.meta.version = parser.metadata.VSN;
 
-    Module.renderer = new ISFRenderer(isf.gl)
-    Module.renderer.loadSource(fragmentShader, vertexShader)
+    Module.renderer = new ISFRenderer(isf.gl);
+    Module.renderer.loadSource(fragmentShader, vertexShader);
 
     function addProp(name, prop) {
       if (!Module.props) {
-        Module.props = {}
+        Module.props = {};
       }
 
-      Module.props[name] = prop
+      Module.props[name] = prop;
     }
 
-    Module.inputs = parser.inputs
+    Module.inputs = parser.inputs;
 
     parser.inputs.forEach(input => {
       switch (input.TYPE) {
         default:
-          break
+          break;
 
-        case 'float':
+        case "float":
           addProp(input.NAME, {
-            type: 'float',
+            type: "float",
             label: input.LABEL || input.NAME,
-            default: typeof input.DEFAULT !== 'undefined' ? input.DEFAULT : 0.0,
+            default: typeof input.DEFAULT !== "undefined" ? input.DEFAULT : 0.0,
             min: input.MIN,
             max: input.MAX,
             step: 0.01
-          })
-          break
+          });
+          break;
 
-        case 'bool':
+        case "bool":
           addProp(input.NAME, {
-            type: 'bool',
+            type: "bool",
             label: input.LABEL || input.NAME,
             default: Boolean(input.DEFAULT)
-          })
-          break
+          });
+          break;
 
-        case 'long':
+        case "long":
           addProp(input.NAME, {
-            type: 'enum',
+            type: "enum",
             label: input.NAME,
             enum: input.VALUES.map((value, idx) => ({
               label: input.LABELS[idx],
               value,
               selected: value === input.DEFAULT
             }))
-          })
-          break
+          });
+          break;
 
-        case 'color':
+        case "color":
           addProp(input.NAME, {
             control: {
-              type: 'colorControl',
+              type: "colorControl",
               options: {
-                returnFormat: 'mappedRgbaArray'
+                returnFormat: "mappedRgbaArray"
               }
             },
             label: input.LABEL || input.NAME,
             default: input.DEFAULT
-          })
-          break
+          });
+          break;
 
-        case 'point2D':
+        case "point2D":
           addProp(input.NAME, {
-            type: 'vec2',
+            type: "vec2",
             label: input.LABEL || input.NAME,
             default: input.DEFAULT || [0.0, 0.0],
             min: input.MIN,
             max: input.MAX
-          })
-          break
+          });
+          break;
 
-        case 'image':
-          Module.meta.previewWithOutput = true
+        case "image":
+          Module.meta.previewWithOutput = true;
 
           addProp(input.NAME, {
-            type: 'texture',
+            type: "texture",
             label: input.LABEL || input.NAME
-          })
+          });
 
-          break
+          break;
       }
-    })
+    });
 
-    Module.draw = render
+    Module.draw = render;
 
-    resolve(Module)
-  })
+    resolve(Module);
+  });
 }
 
 export {
   setup, //eslint-disable-line
   render
-}
+};

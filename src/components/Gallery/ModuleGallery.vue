@@ -113,13 +113,13 @@
 </template>
 
 <script>
-import { mapGetters } from 'vuex'
-import { Container, Draggable } from 'vue-smooth-dnd'
+import { mapGetters } from "vuex";
+import { Container, Draggable } from "vue-smooth-dnd";
 
-import GalleryItem from '@/components/GalleryItem'
+import GalleryItem from "@/components/GalleryItem";
 
 export default {
-  name: 'ModuleGallery',
+  name: "ModuleGallery",
   components: {
     GalleryItem,
     Container,
@@ -129,54 +129,54 @@ export default {
     phrase: {
       type: String,
       required: true,
-      default: ''
+      default: ""
     }
   },
   computed: {
-    ...mapGetters('modVModules', {
-      currentDragged: 'currentDragged',
-      modules: 'registry'
+    ...mapGetters("modVModules", {
+      currentDragged: "currentDragged",
+      modules: "registry"
     }),
     moduleShader() {
       return Object.keys(this.modules).filter(
-        key => this.modules[key].meta.type === 'shader'
-      )
+        key => this.modules[key].meta.type === "shader"
+      );
     },
     module2d() {
       return Object.keys(this.modules).filter(
-        key => this.modules[key].meta.type === '2d'
-      )
+        key => this.modules[key].meta.type === "2d"
+      );
     },
     moduleIsf() {
       return Object.keys(this.modules).filter(
-        key => this.modules[key].meta.type === 'isf'
-      )
+        key => this.modules[key].meta.type === "isf"
+      );
     },
     module3d() {
       return Object.keys(this.modules).filter(
-        key => this.modules[key].meta.type === '3d'
-      )
+        key => this.modules[key].meta.type === "3d"
+      );
     }
   },
   methods: {
     search(textIn, termIn) {
-      const text = textIn.toLowerCase().trim()
-      const term = termIn.toLowerCase().trim()
-      if (termIn.length < 1) return true
+      const text = textIn.toLowerCase().trim();
+      const term = termIn.toLowerCase().trim();
+      if (termIn.length < 1) return true;
 
-      return text.indexOf(term) > -1
+      return text.indexOf(term) > -1;
     },
     getChildPayload(group, index) {
-      let moduleName = this[group][index]
+      let moduleName = this[group][index];
 
-      if (group === 'modules') {
-        moduleName = Object.keys(this.modules)[index]
+      if (group === "modules") {
+        moduleName = Object.keys(this.modules)[index];
       }
 
-      return { moduleName, collection: 'gallery' }
+      return { moduleName, collection: "gallery" };
     }
   }
-}
+};
 </script>
 
 <style lang="scss" scoped>

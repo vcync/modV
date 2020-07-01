@@ -34,14 +34,14 @@
 </template>
 
 <script>
-import { mapGetters, mapMutations } from 'vuex'
-import groupControl from '@/components/Controls/GroupControl'
+import { mapGetters, mapMutations } from "vuex";
+import groupControl from "@/components/Controls/GroupControl";
 
-import generateControlData from './generate-control-data'
-import modulePresetSelector from './ModulePresetSelector'
+import generateControlData from "./generate-control-data";
+import modulePresetSelector from "./ModulePresetSelector";
 
 export default {
-  name: 'ControlPanel',
+  name: "ControlPanel",
   components: {
     groupControl,
     modulePresetSelector
@@ -61,35 +61,35 @@ export default {
     }
   },
   computed: {
-    ...mapGetters('modVModules', ['getActiveModule']),
+    ...mapGetters("modVModules", ["getActiveModule"]),
     module() {
-      if (!this.moduleName) return false
-      return this.$store.getters['modVModules/outerActive'][this.moduleName]
+      if (!this.moduleName) return false;
+      return this.$store.getters["modVModules/outerActive"][this.moduleName];
     },
     name() {
-      if (!this.module) return ''
-      return this.module.meta.name
+      if (!this.module) return "";
+      return this.module.meta.name;
     },
     controls() {
       return generateControlData({
         module: this.module
-      })
+      });
     },
     pinTitle() {
-      return this.pinned ? 'Unpin' : 'Pin'
+      return this.pinned ? "Unpin" : "Pin";
     }
   },
   methods: {
-    ...mapMutations('controlPanels', ['pinPanel', 'unpinPanel']),
+    ...mapMutations("controlPanels", ["pinPanel", "unpinPanel"]),
     pin() {
       if (!this.pinned) {
-        this.pinPanel({ moduleName: this.name })
+        this.pinPanel({ moduleName: this.name });
       } else {
-        this.unpinPanel({ moduleName: this.name })
+        this.unpinPanel({ moduleName: this.name });
       }
     }
   }
-}
+};
 </script>
 
 <style lang="scss"></style>

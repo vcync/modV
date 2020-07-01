@@ -27,45 +27,45 @@
 </template>
 
 <script>
-import { mapActions, mapGetters } from 'vuex'
-import scopeItem from './ScopeItem'
+import { mapActions, mapGetters } from "vuex";
+import scopeItem from "./ScopeItem";
 
 export default {
-  name: 'Expression',
+  name: "Expression",
   components: {
     scopeItem
   },
   props: [],
   data() {
     return {
-      expression: 'value'
-    }
+      expression: "value"
+    };
   },
   computed: {
-    ...mapGetters('expression', {
-      activeControlData: 'activeControlData',
-      getAssignment: 'assignment'
+    ...mapGetters("expression", {
+      activeControlData: "activeControlData",
+      getAssignment: "assignment"
     }),
     moduleName() {
-      return this.activeControlData.moduleName
+      return this.activeControlData.moduleName;
     },
     controlVariable() {
-      return this.activeControlData.controlVariable
+      return this.activeControlData.controlVariable;
     },
     assignment() {
-      return this.getAssignment(this.moduleName, this.controlVariable) || false
+      return this.getAssignment(this.moduleName, this.controlVariable) || false;
     },
     additionalScope: {
       get() {
-        if (!this.assignment) return {}
-        return this.assignment.additionalScope
+        if (!this.assignment) return {};
+        return this.assignment.additionalScope;
       },
       set(expression) {
         this.addExpression({
           expression,
           moduleName: this.moduleName,
           controlVariable: this.controlVariable
-        })
+        });
       }
     }
   },
@@ -75,27 +75,27 @@ export default {
         expression,
         moduleName: this.moduleName,
         controlVariable: this.controlVariable
-      })
+      });
     }
   },
   created() {
-    this.expression = this.assignment.expression || 'value'
+    this.expression = this.assignment.expression || "value";
   },
   methods: {
-    ...mapActions('expression', [
-      'addExpression',
-      'addToScope',
-      'renameScopeItem',
-      'updateScopeItem'
+    ...mapActions("expression", [
+      "addExpression",
+      "addToScope",
+      "renameScopeItem",
+      "updateScopeItem"
     ]),
     addNewScopeItem() {
-      const scopeAdditions = {}
-      scopeAdditions.newItem = 'function a(x) { return x * 2 }'
+      const scopeAdditions = {};
+      scopeAdditions.newItem = "function a(x) { return x * 2 }";
       this.addToScope({
         moduleName: this.moduleName,
         controlVariable: this.controlVariable,
         scopeAdditions
-      })
+      });
     },
     updateScopeItemName(oldName, newName) {
       this.renameScopeItem({
@@ -103,7 +103,7 @@ export default {
         newName,
         moduleName: this.moduleName,
         controlVariable: this.controlVariable
-      })
+      });
     },
     updateScopeItemContents(name, contents) {
       this.updateScopeItem({
@@ -111,10 +111,10 @@ export default {
         contents,
         moduleName: this.moduleName,
         controlVariable: this.controlVariable
-      })
+      });
     }
   }
-}
+};
 </script>
 
 <style lang="scss">

@@ -15,48 +15,48 @@
 </template>
 
 <script>
-import { mapGetters } from 'vuex'
+import { mapGetters } from "vuex";
 
 export default {
-  name: 'PaletteSelector',
-  props: ['value', 'project'],
+  name: "PaletteSelector",
+  props: ["value", "project"],
   data() {
     return {
       currentPalette: null
-    }
+    };
   },
   computed: {
-    ...mapGetters('projects', ['allProjects']),
+    ...mapGetters("projects", ["allProjects"]),
     selectData() {
-      const data = []
-      const allProjects = this.allProjects
+      const data = [];
+      const allProjects = this.allProjects;
 
       if (!Object.prototype.hasOwnProperty.call(allProjects, this.project))
-        return []
-      const project = allProjects[this.project]
+        return [];
+      const project = allProjects[this.project];
 
       Object.keys(project.palettes).forEach(paletteName => {
         data.push({
           label: paletteName,
           value: paletteName
-        })
-      })
+        });
+      });
 
       data.sort((a, b) => {
-        if (a.label < b.label) return -1
-        if (a.label > b.label) return 1
-        return 0
-      })
+        if (a.label < b.label) return -1;
+        if (a.label > b.label) return 1;
+        return 0;
+      });
 
-      return data
+      return data;
     }
   },
   watch: {
     currentPalette() {
-      this.$emit('input', this.currentPalette)
+      this.$emit("input", this.currentPalette);
     }
   }
-}
+};
 </script>
 
 <style lang="scss">

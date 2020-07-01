@@ -1,59 +1,59 @@
 /* eslint-disable no-underscore-dangle */
 
-import awesomeText from '@/extra/awesome-text'
+import awesomeText from "@/extra/awesome-text";
 
 function getTextHeight(font, textContent) {
-  const result = {}
+  const result = {};
 
-  const text = document.createElement('span')
-  text.style.font = font
-  text.textContent = textContent
+  const text = document.createElement("span");
+  text.style.font = font;
+  text.textContent = textContent;
 
-  const block = document.createElement('div')
-  block.style.display = 'inline-block'
-  block.style.width = '1px'
-  block.style.height = '0px'
+  const block = document.createElement("div");
+  block.style.display = "inline-block";
+  block.style.width = "1px";
+  block.style.height = "0px";
 
-  const div = document.createElement('div')
-  div.appendChild(text)
-  div.appendChild(block)
+  const div = document.createElement("div");
+  div.appendChild(text);
+  div.appendChild(block);
 
-  document.body.appendChild(div)
+  document.body.appendChild(div);
 
-  block.style.verticalAlign = 'baseline'
-  result.ascent = block.offsetHeight - text.offsetHeight
+  block.style.verticalAlign = "baseline";
+  result.ascent = block.offsetHeight - text.offsetHeight;
 
-  block.style.verticalAlign = 'bottom'
-  result.height = block.offsetHeight - text.offsetHeight
+  block.style.verticalAlign = "bottom";
+  result.height = block.offsetHeight - text.offsetHeight;
 
-  result.descent = result.height - result.ascent
+  result.descent = result.height - result.ascent;
 
-  div.remove()
+  div.remove();
 
-  return result
+  return result;
 }
 
 export default {
   meta: {
-    name: 'Text',
-    author: '2xAA',
+    name: "Text",
+    author: "2xAA",
     version: 0.1,
-    type: '2d'
+    type: "2d"
   },
 
   props: {
     text: {
-      type: 'string',
-      label: 'Text',
-      default: 'modV',
+      type: "string",
+      label: "Text",
+      default: "modV",
       set(value) {
-        this.h = getTextHeight(this.font, value)
+        this.h = getTextHeight(this.font, value);
       }
     },
 
     size: {
-      type: 'int',
-      label: 'Size',
+      type: "int",
+      label: "Size",
       min: 1,
       max: 200,
       default: 50,
@@ -61,55 +61,55 @@ export default {
         this.h = getTextHeight(
           `${value}pt "${this.customFont}", sans-serif`,
           this.text
-        )
+        );
       }
     },
 
     customFont: {
-      type: 'string',
-      label: 'Font',
-      default: 'Rubik'
+      type: "string",
+      label: "Font",
+      default: "Rubik"
     },
 
     fill: {
-      type: 'bool',
-      label: 'Fill',
+      type: "bool",
+      label: "Fill",
       default: true
     },
 
     stroke: {
-      type: 'bool',
-      label: 'Outline',
+      type: "bool",
+      label: "Outline",
       default: false
     },
 
     strokeWidth: {
-      type: 'float',
-      label: 'Outline Width',
+      type: "float",
+      label: "Outline Width",
       min: 0,
       max: 20,
       default: 1
     },
 
     alignment: {
-      type: 'enum',
+      type: "enum",
       enum: [
-        { label: 'Left', value: 'left' },
-        { label: 'Center', value: 'center', selected: true },
-        { label: 'Right', value: 'right' }
+        { label: "Left", value: "left" },
+        { label: "Center", value: "center", selected: true },
+        { label: "Right", value: "right" }
       ]
     },
 
     position: {
-      type: 'vec2',
+      type: "vec2",
       default: [1.0, 1.0],
       min: 2,
       max: 0
     },
 
     maxWidth: {
-      type: 'float',
-      label: 'Max Width',
+      type: "float",
+      label: "Max Width",
       min: 0,
       max: 1,
       default: 0.6
@@ -117,7 +117,7 @@ export default {
 
     color: {
       control: {
-        type: 'paletteControl',
+        type: "paletteControl",
         default: { r: 199, g: 64, b: 163 },
         options: {
           colors: [
@@ -149,20 +149,20 @@ export default {
   },
 
   init() {
-    this.font = `${this.size}pt "Helvetica", sans-serif`
-    this.h = getTextHeight(this.font, this.text)
+    this.font = `${this.size}pt "Helvetica", sans-serif`;
+    this.h = getTextHeight(this.font, this.text);
   },
 
   draw({ canvas, context }) {
-    context.textBaseline = 'middle'
+    context.textBaseline = "middle";
 
-    this.font = `${this.size}pt "${this.customFont}", sans-serif`
-    context.font = this.font
+    this.font = `${this.size}pt "${this.customFont}", sans-serif`;
+    context.font = this.font;
 
-    context.textAlign = 'left'
-    context.fillStyle = this.color
-    context.strokeStyle = this.color
-    context.lineWidth = this.strokeWidth
+    context.textAlign = "left";
+    context.fillStyle = this.color;
+    context.strokeStyle = this.color;
+    context.lineWidth = this.strokeWidth;
 
     awesomeText(
       context,
@@ -174,6 +174,6 @@ export default {
       this.alignment,
       this.stroke,
       this.fill
-    )
+    );
   }
-}
+};

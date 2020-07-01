@@ -103,15 +103,15 @@
 </template>
 
 <script>
-import { mapActions, mapGetters } from 'vuex'
-import draggable from 'vuedraggable'
-import { Sketch } from 'vue-color'
+import { mapActions, mapGetters } from "vuex";
+import draggable from "vuedraggable";
+import { Sketch } from "vue-color";
 
-import PaletteSelector from './PaletteSelector'
-import ProjectSelector from '../ProjectSelector'
+import PaletteSelector from "./PaletteSelector";
+import ProjectSelector from "../ProjectSelector";
 
 const defaultProps = {
-  hex: '#194d33',
+  hex: "#194d33",
   hsl: {
     h: 150,
     s: 0.5,
@@ -131,12 +131,12 @@ const defaultProps = {
     a: 1
   },
   a: 1
-}
+};
 
 export default {
-  name: 'PaletteControl',
+  name: "PaletteControl",
   components: {
-    'sketch-picker': Sketch,
+    "sketch-picker": Sketch,
     PaletteSelector,
     ProjectSelector,
     draggable
@@ -145,7 +145,7 @@ export default {
     return {
       dragOptions: {
         group: {
-          name: 'palette',
+          name: "palette",
           pull: true,
           put: true
         }
@@ -155,54 +155,54 @@ export default {
       showPicker: false,
       useBpmInput: false,
       bpmDivisionInput: 16,
-      projectSelectorInput: 'default',
-      paletteSelectorInput: '',
-      savePaletteNameInput: ''
-    }
+      projectSelectorInput: "default",
+      paletteSelectorInput: "",
+      savePaletteNameInput: ""
+    };
   },
   computed: {
     options() {
-      return this.meta.control.options
+      return this.meta.control.options;
     },
     defaultValue() {
-      return this.options.colors
+      return this.options.colors;
     },
-    ...mapGetters('palettes', ['allPalettes']),
+    ...mapGetters("palettes", ["allPalettes"]),
     palette() {
       return this.$store.state.palettes.palettes[
         `${this.moduleName}-${this.variable}`
-      ]
+      ];
     },
     colors: {
       get() {
-        return this.palette.colors
+        return this.palette.colors;
       },
       set(value) {
         this.updateColors({
           id: this.inputId,
           colors: value
-        })
+        });
       }
     },
     duration() {
-      return this.palette.duration
+      return this.palette.duration;
     },
     useBpm() {
-      return this.palette.useBpm
+      return this.palette.useBpm;
     },
     bpmDivision() {
-      return this.palette.bpmDivision
+      return this.palette.bpmDivision;
     },
     pickerButtonText() {
-      return this.showPicker ? 'Hide' : 'Show'
+      return this.showPicker ? "Hide" : "Show";
     },
     currentColor() {
-      return this.palette.currentColor
+      return this.palette.currentColor;
     },
     toColor() {
-      const nextColor = this.palette.currentColor + 1
-      if (nextColor > this.colors.length - 1) return 0
-      return nextColor
+      const nextColor = this.palette.currentColor + 1;
+      if (nextColor > this.colors.length - 1) return 0;
+      return nextColor;
     }
   },
   watch: {
@@ -210,83 +210,83 @@ export default {
       this.updateDuration({
         id: this.inputId,
         duration: this.durationInput
-      })
+      });
     },
     useBpmInput() {
       this.updateUseBpm({
         id: this.inputId,
         useBpm: this.useBpmInput
-      })
+      });
     },
     bpmDivisionInput() {
       this.updateBpmDivision({
         id: this.inputId,
         bpmDivision: this.bpmDivisionInput
-      })
+      });
     }
   },
   beforeMount() {
-    if (typeof this.value === 'undefined') this.value = this.options.colors
+    if (typeof this.value === "undefined") this.value = this.options.colors;
 
-    this.durationInput = this.duration
-    this.useBpmInput = this.useBpm
-    this.bpmDivisionInput = this.bpmDivision
+    this.durationInput = this.duration;
+    this.useBpmInput = this.useBpm;
+    this.bpmDivisionInput = this.bpmDivision;
   },
   methods: {
-    ...mapActions('palettes', [
-      'createPalette',
-      'updateColors',
-      'updateDuration',
-      'updateUseBpm',
-      'updateBpmDivision'
+    ...mapActions("palettes", [
+      "createPalette",
+      "updateColors",
+      "updateDuration",
+      "updateUseBpm",
+      "updateBpmDivision"
     ]),
-    ...mapGetters('projects', ['getPaletteFromProject']),
-    ...mapActions('projects', ['savePaletteToProject']),
+    ...mapGetters("projects", ["getPaletteFromProject"]),
+    ...mapActions("projects", ["savePaletteToProject"]),
     addSwatch() {
-      const updatedColors = this.colors.slice()
-      updatedColors.push(this.pickerColors.rgba)
+      const updatedColors = this.colors.slice();
+      updatedColors.push(this.pickerColors.rgba);
 
       this.updateColors({
         id: this.inputId,
         colors: updatedColors
-      })
+      });
     },
     removeSwatch(idx) {
-      const updatedColors = this.colors.slice()
-      updatedColors.splice(idx, 1)
+      const updatedColors = this.colors.slice();
+      updatedColors.splice(idx, 1);
 
       this.updateColors({
         id: this.inputId,
         colors: updatedColors
-      })
+      });
     },
     togglePicker() {
-      this.showPicker = !this.showPicker
+      this.showPicker = !this.showPicker;
     },
     clickLoadPalette() {
       let palette = this.getPaletteFromProject()({
         paletteName: this.paletteSelectorInput,
         projectName: this.projectSelectorInput
-      })
+      });
 
       if (Array.isArray(palette)) {
-        palette = palette.map(c => ({ r: c[0], g: c[1], b: c[2] }))
+        palette = palette.map(c => ({ r: c[0], g: c[1], b: c[2] }));
       }
 
       this.updateColors({
         id: this.inputId,
         colors: palette
-      })
+      });
     },
     clickSavePalette() {
       this.savePaletteToProject({
         projectName: this.projectSelectorInput,
         paletteName: this.savePaletteNameInput,
         colors: this.colors
-      })
+      });
     }
   }
-}
+};
 </script>
 
 <style scoped lang="scss">
@@ -313,7 +313,7 @@ export default {
 }
 
 .add-swatch::before {
-  content: '+';
+  content: "+";
   line-height: 8px;
   display: inline-block;
   vertical-align: top;

@@ -105,99 +105,99 @@
 </template>
 
 <script>
-import { mapActions, mapGetters } from 'vuex'
-import Tt from 'tap-tempo'
+import { mapActions, mapGetters } from "vuex";
+import Tt from "tap-tempo";
 
-const tapTempo = new Tt()
+const tapTempo = new Tt();
 
 export default {
-  name: 'GlobalControls',
+  name: "GlobalControls",
   data() {
     return {
-      mediaPathInput: ''
-    }
+      mediaPathInput: ""
+    };
   },
   computed: {
-    ...mapGetters('mediaStream', ['audioSources', 'videoSources']),
-    ...mapGetters('tempo', ['bpm', 'detect']),
-    ...mapGetters('user', ['mediaPath']),
+    ...mapGetters("mediaStream", ["audioSources", "videoSources"]),
+    ...mapGetters("tempo", ["bpm", "detect"]),
+    ...mapGetters("user", ["mediaPath"]),
 
     detect: {
       get() {
-        return this.$store.state.tempo.detect
+        return this.$store.state.tempo.detect;
       },
       set(value) {
-        this.$store.commit('tempo/setBpmDetect', {
+        this.$store.commit("tempo/setBpmDetect", {
           detect: value
-        })
+        });
       }
     },
 
     constrainToOneOne: {
       get() {
-        return this.$store.state.user.constrainToOneOne
+        return this.$store.state.user.constrainToOneOne;
       },
       set(value) {
-        this.$store.dispatch('user/setConstrainToOneOne', value)
+        this.$store.dispatch("user/setConstrainToOneOne", value);
       }
     },
 
     retina: {
       get() {
-        return this.$store.state.user.useRetina
+        return this.$store.state.user.useRetina;
       },
       set(value) {
-        this.$store.dispatch('user/setUseRetina', { useRetina: value })
+        this.$store.dispatch("user/setUseRetina", { useRetina: value });
       }
     },
 
     audioSource: {
       get() {
-        return this.$store.state.user.currentAudioSource || 'default'
+        return this.$store.state.user.currentAudioSource || "default";
       },
       set(value) {
-        this.$store.dispatch('user/setCurrentAudioSource', { sourceId: value })
+        this.$store.dispatch("user/setCurrentAudioSource", { sourceId: value });
       }
     },
 
     videoSource: {
       get() {
-        return this.$store.state.user.currentVideoSource || 'default'
+        return this.$store.state.user.currentVideoSource || "default";
       },
       set(value) {
-        this.$store.dispatch('user/setCurrentVideoSource', { sourceId: value })
+        this.$store.dispatch("user/setCurrentVideoSource", { sourceId: value });
       }
     },
 
     nameInput: {
       get() {
-        return this.$store.state.user.name
+        return this.$store.state.user.name;
       },
       set(value) {
-        this.saveName(value)
+        this.saveName(value);
       }
     },
 
     devicePixelRatio() {
-      return window.devicePixelRatio
+      return window.devicePixelRatio;
     }
   },
   created() {
-    tapTempo.on('tempo', bpm => {
-      if (this.bpm === Math.round(bpm)) return
-      this.setBpm({ bpm: Math.round(bpm) })
-    })
+    tapTempo.on("tempo", bpm => {
+      if (this.bpm === Math.round(bpm)) return;
+      this.setBpm({ bpm: Math.round(bpm) });
+    });
   },
   methods: {
-    ...mapActions('tempo', ['setBpm']),
+    ...mapActions("tempo", ["setBpm"]),
     tempoTap() {
-      tapTempo.tap()
+      tapTempo.tap();
     },
     saveName(value) {
-      this.$store.commit('user/setName', { name: value })
+      this.$store.commit("user/setName", { name: value });
     }
   }
-}
+};
 </script>
 
 <style scoped>

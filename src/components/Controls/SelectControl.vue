@@ -20,16 +20,16 @@
 
 <script>
 export default {
-  name: 'SelectControl',
+  name: "SelectControl",
   computed: {
     enumVals() {
-      return this.meta.enum
+      return this.meta.enum;
     },
     selectedLabel() {
-      if (typeof this.value === 'undefined') return -1
+      if (typeof this.value === "undefined") return -1;
       return this.meta.enum.find(enumValue => enumValue.value === this.value)
-        .label
+        .label;
     }
   }
-}
+};
 </script>

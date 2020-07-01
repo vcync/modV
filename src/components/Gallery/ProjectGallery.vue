@@ -28,7 +28,7 @@
             :disabled="!isCurrent(projectName)"
             @click="useProject({ projectName })"
           >
-            {{ isCurrent(projectName) ? 'Use' : 'In use' }}
+            {{ isCurrent(projectName) ? "Use" : "In use" }}
           </button>
         </div>
       </div>
@@ -37,58 +37,58 @@
 </template>
 
 <script>
-import naturalSort from '@/modv/utils/natural-sort'
-import { modV } from '@/modv'
+import naturalSort from "@/modv/utils/natural-sort";
+import { modV } from "@/modv";
 
 export default {
-  name: 'ProjectGallery',
+  name: "ProjectGallery",
   props: {
     phrase: {
       type: String,
       required: true,
-      default: ''
+      default: ""
     }
   },
   data() {
     return {
-      newProjectName: '',
+      newProjectName: "",
 
       nameError: false,
-      nameErrorMessage: 'Project must have a name'
-    }
+      nameErrorMessage: "Project must have a name"
+    };
   },
   computed: {
     allProjects() {
-      return this.$store.state.projects.projects
+      return this.$store.state.projects.projects;
     },
     projects() {
-      return Object.keys(this.allProjects).sort(naturalSort.compare)
+      return Object.keys(this.allProjects).sort(naturalSort.compare);
     }
   },
   methods: {
     search(textIn, termIn) {
-      const text = textIn.toLowerCase().trim()
-      const term = termIn.toLowerCase().trim()
-      if (termIn.length < 1) return true
+      const text = textIn.toLowerCase().trim();
+      const term = termIn.toLowerCase().trim();
+      if (termIn.length < 1) return true;
 
-      return text.indexOf(term) > -1
+      return text.indexOf(term) > -1;
     },
     useProject({ projectName }) {
-      this.$store.dispatch('projects/setCurrent', { projectName })
+      this.$store.dispatch("projects/setCurrent", { projectName });
     },
     isCurrent(projectName) {
-      return this.$store.state.projects.currentProject !== projectName
+      return this.$store.state.projects.currentProject !== projectName;
     },
     newProject() {
-      const MediaManager = modV.MediaManagerClient
+      const MediaManager = modV.MediaManagerClient;
 
       MediaManager.send({
-        request: 'make-profile',
+        request: "make-profile",
         profileName: this.newProjectName
-      })
+      });
     }
   }
-}
+};
 </script>
 
 <style lang="scss" scoped>

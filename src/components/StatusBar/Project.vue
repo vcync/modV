@@ -24,7 +24,7 @@
                     :disabled="!isCurrent(projectName)"
                     @click="useProject({ projectName })"
                   >
-                    {{ isCurrent(projectName) ? 'Use' : 'In use' }}
+                    {{ isCurrent(projectName) ? "Use" : "In use" }}
                   </button>
                 </div>
               </div>
@@ -38,19 +38,19 @@
 
 <script>
 export default {
-  name: 'StatusBarItemProject',
+  name: "StatusBarItemProject",
   data() {
     return {
       modalOpen: false
-    }
+    };
   },
   methods: {
     useProject({ projectName }) {
-      this.$store.dispatch('projects/setCurrent', { projectName })
+      this.$store.dispatch("projects/setCurrent", { projectName });
     },
     isCurrent(projectName) {
-      return this.$store.state.projects.currentProject !== projectName
+      return this.$store.state.projects.currentProject !== projectName;
     }
   }
-}
+};
 </script>

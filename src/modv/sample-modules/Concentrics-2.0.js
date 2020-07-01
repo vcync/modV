@@ -2,31 +2,31 @@
 
 export default {
   meta: {
-    name: 'Concentrics 2',
-    author: '2xAA',
-    version: '2.0.0',
-    audioFeatures: ['zcr', 'rms'],
-    type: '2d'
+    name: "Concentrics 2",
+    author: "2xAA",
+    version: "2.0.0",
+    audioFeatures: ["zcr", "rms"],
+    type: "2d"
   },
 
   props: {
     groups: {
-      type: 'group',
+      type: "group",
       default: 2,
       props: {
         spacing: {
-          type: 'float',
+          type: "float",
           abs: true,
           default: 5
         },
 
         groupDistance: {
-          type: 'float',
+          type: "float",
           default: 10
         },
 
         strokeWeight: {
-          type: 'int',
+          type: "int",
           abs: true,
           default: 1,
           min: 1,
@@ -42,7 +42,7 @@ export default {
   },
 
   drawCircles(ctx, zcr, strokeWeight, spacing, x, y) {
-    ctx.lineWidth = strokeWeight
+    ctx.lineWidth = strokeWeight;
     // ctx.strokeStyle = `hsl(${this.hue}, 50%, 50%)`;
 
     for (let i = 0; i < zcr; i += 1) {
@@ -50,10 +50,10 @@ export default {
         // ctx.strokeStyle = `hsl(${this.hue}, 50%, ${(1 - (zcr - Math.round(zcr))) * 50}%)`;
       }
 
-      ctx.beginPath()
-      ctx.arc(x, y, i * spacing, 0, 2 * Math.PI)
-      ctx.closePath()
-      ctx.stroke()
+      ctx.beginPath();
+      ctx.arc(x, y, i * spacing, 0, 2 * Math.PI);
+      ctx.closePath();
+      ctx.stroke();
     }
 
     // if (this.hue > 360) this.hue = 0;
@@ -62,10 +62,10 @@ export default {
 
   draw({ canvas, context, features, delta }) {
     for (let i = 0; i < this.groups.length; i += 1) {
-      const groupProps = this.groups.props
-      const strokeWeight = groupProps.strokeWeight[i]
-      const spacing = groupProps.spacing[i]
-      const groupDistance = groupProps.groupDistance[i]
+      const groupProps = this.groups.props;
+      const strokeWeight = groupProps.strokeWeight[i];
+      const spacing = groupProps.spacing[i];
+      const groupDistance = groupProps.groupDistance[i];
 
       this.x[i] = ((canvas.width / 2) + Math.sin(delta / 1000) * groupDistance); //eslint-disable-line
       this.y[i] = ((canvas.height / 2) + Math.cos(delta / 1000) * (groupDistance / 2)); //eslint-disable-line
@@ -77,7 +77,7 @@ export default {
         spacing,
         this.x[i],
         this.y[i]
-      )
+      );
     }
   }
-}
+};

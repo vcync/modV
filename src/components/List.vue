@@ -19,30 +19,30 @@
 </template>
 
 <script>
-import { mapActions, mapMutations, mapGetters } from 'vuex'
-import LayerComponent from '@/components/Layer'
-import { Container, Draggable } from 'vue-smooth-dnd'
+import { mapActions, mapMutations, mapGetters } from "vuex";
+import LayerComponent from "@/components/Layer";
+import { Container, Draggable } from "vue-smooth-dnd";
 
 const applyDrag = (arr, dragResult) => {
-  const { removedIndex, addedIndex, payload } = dragResult
-  if (removedIndex === null && addedIndex === null) return arr
+  const { removedIndex, addedIndex, payload } = dragResult;
+  if (removedIndex === null && addedIndex === null) return arr;
 
-  const result = [...arr]
-  let itemToAdd = payload
+  const result = [...arr];
+  let itemToAdd = payload;
 
   if (removedIndex !== null) {
-    itemToAdd = result.splice(removedIndex, 1)[0]
+    itemToAdd = result.splice(removedIndex, 1)[0];
   }
 
   if (addedIndex !== null) {
-    result.splice(addedIndex, 0, itemToAdd)
+    result.splice(addedIndex, 0, itemToAdd);
   }
 
-  return result
-}
+  return result;
+};
 
 export default {
-  name: 'List',
+  name: "List",
   components: {
     Draggable,
     Container,
@@ -52,42 +52,42 @@ export default {
     return {
       dragOptions: {
         group: {
-          name: 'layers',
+          name: "layers",
           pull: true,
           put: true
         },
-        handle: '.handle',
-        chosenClass: 'chosen'
+        handle: ".handle",
+        chosenClass: "chosen"
       }
-    }
+    };
   },
   computed: {
-    ...mapGetters('layers', {
-      allLayers: 'allLayers',
-      focusedLayer: 'focusedLayer'
+    ...mapGetters("layers", {
+      allLayers: "allLayers",
+      focusedLayer: "focusedLayer"
     }),
     layers: {
       get() {
-        return this.allLayers
+        return this.allLayers;
       },
       set(value) {
-        this.updateLayers({ layers: value })
+        this.updateLayers({ layers: value });
       }
     }
   },
   created() {
     this.addLayer().then(({ Layer }) => {
-      this.Layer = Layer
-    })
+      this.Layer = Layer;
+    });
   },
   methods: {
-    ...mapActions('layers', ['addLayer']),
-    ...mapMutations('layers', ['updateLayers']),
+    ...mapActions("layers", ["addLayer"]),
+    ...mapMutations("layers", ["updateLayers"]),
     onDrop(e) {
-      this.layers = applyDrag(this.layers, e)
+      this.layers = applyDrag(this.layers, e);
     }
   }
-}
+};
 </script>
 
 <style>

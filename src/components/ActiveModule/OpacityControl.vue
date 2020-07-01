@@ -13,7 +13,7 @@
 
 <script>
 export default {
-  name: 'OpacityControl',
+  name: "OpacityControl",
   props: {
     moduleName: {
       type: String,
@@ -23,20 +23,20 @@ export default {
   computed: {
     alpha: {
       get() {
-        if (!this.moduleName) return 0
+        if (!this.moduleName) return 0;
         return (
           this.$store.state.modVModules.active[this.moduleName] &&
           this.$store.state.modVModules.active[this.moduleName].meta.alpha
-        )
+        );
       },
       set(value) {
-        this.$store.dispatch('modVModules/updateMeta', {
+        this.$store.dispatch("modVModules/updateMeta", {
           name: this.moduleName,
-          metaKey: 'alpha',
+          metaKey: "alpha",
           data: value
-        })
+        });
       }
     }
   }
-}
+};
 </script>

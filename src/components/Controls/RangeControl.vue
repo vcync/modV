@@ -27,23 +27,23 @@
 </template>
 
 <script>
-import { Menu, MenuItem } from 'nwjs-menu-browser'
+import { Menu, MenuItem } from "nwjs-menu-browser";
 
 if (!window.nw) {
   window.nw = {
     Menu,
     MenuItem
-  }
+  };
 }
 
-const nw = window.nw
+const nw = window.nw;
 
 export default {
-  name: 'RangeControl',
+  name: "RangeControl",
   data() {
     return {
       menuOptions: {
-        match: ['rangeControl'],
+        match: ["rangeControl"],
         menuItems: []
       },
       updateQueue: [],
@@ -53,35 +53,35 @@ export default {
       context: null,
       mousePressed: false,
       canvasX: 0
-    }
+    };
   },
   computed: {
     min() {
-      return this.meta.min || 0
+      return this.meta.min || 0;
     },
     max() {
-      return this.meta.max || 1
+      return this.meta.max || 1;
     },
     step() {
-      return this.meta.step || 1
+      return this.meta.step || 1;
     },
     defaultValue() {
-      return this.meta.default
+      return this.meta.default;
     },
     strict() {
-      return this.meta.strict || false
+      return this.meta.strict || false;
     }
   },
   watch: {
     value(value) {
-      this.canvasX = this.unmapValue(value)
+      this.canvasX = this.unmapValue(value);
     },
     canvasX() {
-      this.draw()
+      this.draw();
     }
   },
   beforeMount() {
-    this.currentValue = this.processedValue || this.defaultValue
+    this.currentValue = this.processedValue || this.defaultValue;
 
     this.$data.menuOptions.menuItems.push(
       new nw.MenuItem({
@@ -89,62 +89,62 @@ export default {
         enabled: false
       }),
       new nw.MenuItem({
-        type: 'separator'
+        type: "separator"
       })
-    )
+    );
   },
   mounted() {
-    window.addEventListener('mouseup', this.mouseUp.bind(this))
-    window.addEventListener('mousemove', this.mouseMove.bind(this))
-    this.$refs.canvas.width = 170
-    this.$refs.canvas.height = 32
-    this.context = this.$refs.canvas.getContext('2d')
-    this.canvasX = this.unmapValue(this.value)
-    this.draw()
+    window.addEventListener("mouseup", this.mouseUp.bind(this));
+    window.addEventListener("mousemove", this.mouseMove.bind(this));
+    this.$refs.canvas.width = 170;
+    this.$refs.canvas.height = 32;
+    this.context = this.$refs.canvas.getContext("2d");
+    this.canvasX = this.unmapValue(this.value);
+    this.draw();
   },
   methods: {
     mapValue(x) {
-      const mappedX = Math.map(x, 0, 170, this.min, this.max)
-      return this.formatValue(+mappedX.toFixed(2))
+      const mappedX = Math.map(x, 0, 170, this.min, this.max);
+      return this.formatValue(+mappedX.toFixed(2));
     },
     unmapValue(x) {
-      const unmappedX = Math.map(x, this.min, this.max, 0, 170)
-      return unmappedX
+      const unmappedX = Math.map(x, this.min, this.max, 0, 170);
+      return unmappedX;
     },
     mouseDown() {
-      this.mousePressed = true
+      this.mousePressed = true;
     },
     mouseUp() {
-      this.mousePressed = false
+      this.mousePressed = false;
     },
     mouseMove(e) {
-      if (!this.mousePressed) return
-      this.calculateValues(e)
+      if (!this.mousePressed) return;
+      this.calculateValues(e);
     },
     touchstart() {
-      this.mousePressed = true
+      this.mousePressed = true;
     },
     touchmove(e) {
-      this.calculateValues(e)
+      this.calculateValues(e);
     },
     touchend() {
-      this.mousePressed = false
+      this.mousePressed = false;
     },
     click(e) {
-      this.calculateValues(e, true)
+      this.calculateValues(e, true);
     },
     calculateValues(e, clicked = false) {
-      const rect = this.$refs.canvas.getBoundingClientRect()
-      let clientX
+      const rect = this.$refs.canvas.getBoundingClientRect();
+      let clientX;
       // let clientY;
       // let divisor = 1;
 
-      if ('clientX' in e) {
-        clientX = e.clientX
+      if ("clientX" in e) {
+        clientX = e.clientX;
         // clientY = e.clientY;
       } else {
-        e.preventDefault()
-        clientX = e.targetTouches[0].clientX
+        e.preventDefault();
+        clientX = e.targetTouches[0].clientX;
         // clientY = e.targetTouches[0].clientY;
       }
 
@@ -156,59 +156,59 @@ export default {
       //   console.log(divisor, clientX, clientX / divisor);
       // }
 
-      let x = /* ( */ clientX /* / divisor) */ - Math.round(rect.left)
+      let x = /* ( */ clientX /* / divisor) */ - Math.round(rect.left);
 
       if (this.meta.abs && x < 0) {
-        x = 0
+        x = 0;
       }
 
       if (this.mousePressed || clicked) {
-        this.value = this.mapValue(x)
+        this.value = this.mapValue(x);
         // this.canvasX = x;
         // this.currentX = this.value;
       }
     },
     formatValue(valueIn) {
-      let value = valueIn
+      let value = valueIn;
 
       if (this.strict) {
         if (value < this.min) {
-          value = this.min
+          value = this.min;
         }
 
         if (value > this.max) {
-          value = this.max
+          value = this.max;
         }
 
-        if (this.varType === 'int') {
-          value = parseInt(value, 10)
+        if (this.varType === "int") {
+          value = parseInt(value, 10);
         }
       }
 
-      return value
+      return value;
     },
     draw() {
-      const x = this.canvasX
-      const canvas = this.$refs.canvas
-      const context = this.context
+      const x = this.canvasX;
+      const canvas = this.$refs.canvas;
+      const context = this.context;
 
-      context.fillStyle = '#393939'
-      context.fillRect(0, 0, canvas.width, canvas.height)
+      context.fillStyle = "#393939";
+      context.fillRect(0, 0, canvas.width, canvas.height);
 
       if (x > 0) {
-        context.fillStyle = '#ffa500'
-        context.fillRect(0, 0, x, canvas.height)
+        context.fillStyle = "#ffa500";
+        context.fillRect(0, 0, x, canvas.height);
       } else {
-        context.fillStyle = '#005aff'
-        context.fillRect(0, 0, Math.abs(x), canvas.height)
+        context.fillStyle = "#005aff";
+        context.fillRect(0, 0, Math.abs(x), canvas.height);
       }
     }
   },
   destroy() {
-    window.removeEventListener('mouseup', this.mouseUp.bind(this))
-    window.removeEventListener('mousemove', this.mouseMove.bind(this))
+    window.removeEventListener("mouseup", this.mouseUp.bind(this));
+    window.removeEventListener("mousemove", this.mouseMove.bind(this));
   }
-}
+};
 </script>
 
 <style scoped lang="scss">

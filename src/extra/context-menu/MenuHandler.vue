@@ -9,11 +9,11 @@
 </template>
 
 <script>
-import { mapGetters } from 'vuex'
-import Menu from './Menu'
+import { mapGetters } from "vuex";
+import Menu from "./Menu";
 
 export default {
-  name: 'ContextMenuHandler',
+  name: "ContextMenuHandler",
   components: {
     contextMenu: Menu
   },
@@ -21,12 +21,12 @@ export default {
     return {
       offsetWidth: 0,
       offsetHeight: 0
-    }
+    };
   },
   computed: {
-    ...mapGetters('contextMenu', ['activeMenus'])
+    ...mapGetters("contextMenu", ["activeMenus"])
   }
-}
+};
 </script>
 
 <style scoped lang="scss"></style>

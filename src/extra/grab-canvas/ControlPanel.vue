@@ -10,69 +10,69 @@
       <b-input v-model="url" type="string"></b-input>
     </b-field>
     <button class="button" @click="showCanvas = !showCanvas">
-      {{ showCanvas ? 'Hide ' : 'Show ' }}Canvas
+      {{ showCanvas ? "Hide " : "Show " }}Canvas
     </button>
   </div>
 </template>
 
 <script>
-import { mapMutations } from 'vuex'
+import { mapMutations } from "vuex";
 
 export default {
-  name: 'GrabCanvasControlPanel',
+  name: "GrabCanvasControlPanel",
   computed: {
     x: {
       get() {
-        return this.$store.state.grabCanvas.selectionX
+        return this.$store.state.grabCanvas.selectionX;
       },
 
       set(value) {
         this.setSelection({
           selectionX: value
-        })
+        });
       }
     },
 
     y: {
       get() {
-        return this.$store.state.grabCanvas.selectionY
+        return this.$store.state.grabCanvas.selectionY;
       },
 
       set(value) {
         this.setSelection({
           selectionY: value
-        })
+        });
       }
     },
 
     url: {
       get() {
-        return this.$store.state.grabCanvas.url
+        return this.$store.state.grabCanvas.url;
       },
 
       set(value) {
         this.setUrl({
           url: value
-        })
+        });
       }
     },
 
     showCanvas: {
       get() {
-        return this.$store.state.grabCanvas.showCanvas
+        return this.$store.state.grabCanvas.showCanvas;
       },
 
       set(value) {
         this.setShowCanvas({
           showCanvas: value
-        })
+        });
       }
     }
   },
   methods: {
-    ...mapMutations('grabCanvas', ['setSelection', 'setUrl', 'setShowCanvas'])
+    ...mapMutations("grabCanvas", ["setSelection", "setUrl", "setShowCanvas"])
   }
-}
+};
 </script>
 
 <style lang="scss"></style>

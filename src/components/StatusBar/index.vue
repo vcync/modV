@@ -9,21 +9,21 @@
 </template>
 
 <script>
-import StatusBarItem from './StatusBarItem'
-import projectItem from './Project'
+import StatusBarItem from "./StatusBarItem";
+import projectItem from "./Project";
 
 export default {
-  name: 'StatusBar',
+  name: "StatusBar",
   components: {
     projectItem,
     StatusBarItem
   },
   computed: {
     statusBarItems() {
-      return this.$store.state.plugins.statusbar
+      return this.$store.state.plugins.statusbar;
     }
   }
-}
+};
 </script>
 
 <style lang="scss">

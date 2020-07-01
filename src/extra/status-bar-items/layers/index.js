@@ -1,6 +1,6 @@
-import component from './Layers'
+import component from "./Layers";
 
 export default {
-  name: 'layers',
+  name: "layers",
   component
-}
+};

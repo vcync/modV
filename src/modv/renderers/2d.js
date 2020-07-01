@@ -1,5 +1,5 @@
-const twoDCanvas = document.createElement('canvas')
-const twoDContext = twoDCanvas.getContext('2d')
+const twoDCanvas = document.createElement("canvas");
+const twoDContext = twoDCanvas.getContext("2d");
 
 /**
  * Called each frame to update the Module
@@ -27,11 +27,11 @@ export default function render2d({
   bpm,
   kick
 }) {
-  twoDCanvas.width = canvas.width
-  twoDCanvas.height = canvas.height
-  twoDContext.drawImage(canvas, 0, 0, canvas.width, canvas.height)
+  twoDCanvas.width = canvas.width;
+  twoDCanvas.height = canvas.height;
+  twoDContext.drawImage(canvas, 0, 0, canvas.width, canvas.height);
 
-  twoDContext.save()
+  twoDContext.save();
   Module.draw({
     canvas: twoDCanvas,
     context: twoDContext,
@@ -41,12 +41,12 @@ export default function render2d({
     delta,
     bpm,
     kick
-  })
-  twoDContext.restore()
+  });
+  twoDContext.restore();
 
-  context.save()
-  context.globalAlpha = Module.meta.alpha || 1
-  context.globalCompositeOperation = Module.meta.compositeOperation || 'normal'
-  context.drawImage(twoDCanvas, 0, 0, canvas.width, canvas.height)
-  context.restore()
+  context.save();
+  context.globalAlpha = Module.meta.alpha || 1;
+  context.globalCompositeOperation = Module.meta.compositeOperation || "normal";
+  context.drawImage(twoDCanvas, 0, 0, canvas.width, canvas.height);
+  context.restore();
 }

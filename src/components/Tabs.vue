@@ -27,7 +27,7 @@
 
 <script>
 export default {
-  name: 'Tabs',
+  name: "Tabs",
   props: {
     title: {
       default: () => [],
@@ -37,20 +37,20 @@ export default {
   data() {
     return {
       focusedTabIndex: 1
-    }
+    };
   },
   computed: {
     amount() {
-      if (!this.titles) return 0
-      return this.titles.length
+      if (!this.titles) return 0;
+      return this.titles.length;
     }
   },
   methods: {
     focusTab(tabIndex) {
-      this.focusedTabIndex = tabIndex
+      this.focusedTabIndex = tabIndex;
     }
   }
-}
+};
 </script>
 
 <style scoped lang="scss">
