@@ -48,5 +48,5 @@ deploy:
   skip_cleanup: true
   file: "./dist_electron/*.{exe,snap,dmg,AppImage}"
   on:
-    repo: vcync/modv-3
+    repo: vcync/modV
     all_branches: true
