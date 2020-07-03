@@ -1,9 +1,17 @@
 {
   "name": "modv",
   "productName": "modV",
-  "author": "vcync",
+  "author": "Sam Wray",
   "version": "3.0.8-alpha",
   "private": false,
+  "homepage": "https://modv.vcync.gl/",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/vcync/modV.git"
+  },
+  "bugs": {
+    "url": "https://github.com/vcync/modV/issues"
+  },
   "scripts": {
     "serve": "vue-cli-service serve",
     "build": "vue-cli-service build",
