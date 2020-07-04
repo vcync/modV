@@ -49,13 +49,9 @@ async function buildFrames({
 
     newDuration = durationAsTotalTime
       ? calculatedBpm
-      : calculatedBpm * data.length;
+      : calculatedBpm / data.length;
   } else {
-    newDuration = durationAsTotalTime ? duration : duration * data.length;
-  }
-
-  if (loop) {
-    newDuration *= 2;
+    newDuration = durationAsTotalTime ? duration : duration / data.length;
   }
 
   let seek = 0;
@@ -70,17 +66,11 @@ async function buildFrames({
 
     const newData = data;
 
-    if (loop) {
-      // newData = data.concat([data[0]]);
-    }
-
-    const frameDuration = newDuration / newData.length;
-
     for (let i = 0, len = newData.length; i < len; i++) {
       const datum = newData[i];
 
       let index = 0;
-      for (let j = 0, len = datum.length; j < len; j++) {
+      for (let j = 0, lenj = datum.length; j < lenj; j++) {
         const value = datum[j];
 
         if (!(index in objOut)) {
@@ -88,13 +78,7 @@ async function buildFrames({
           mapped[index] = [];
         }
 
-        mapped[index].push({
-          value,
-          duration:
-            i === 0 || i === newData.length - 1
-              ? frameDuration / 2
-              : frameDuration
-        });
+        mapped[index].push(value);
         index++;
       }
     }
