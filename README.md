@@ -51,7 +51,7 @@ yarn electron:build
 
 
 
-## Platform specifics for building
+## Platform specifics for building and development
 
 ### Windows
 
