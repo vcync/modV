@@ -14,7 +14,7 @@
   <a href="https://github.com/vcync/modV/blob/main/LICENSE" target="_blank">
     <img alt="License: MIT" src="https://img.shields.io/github/license/vcync/modV" />
   </a>
-  <a href="https://twitter.com/\_2xAA" target="_blank">
+  <a href="https://twitter.com/_modV_" target="_blank">
     <img alt="Twitter: @_modV_" src="https://img.shields.io/twitter/follow/_modV_.svg?style=social" />
   </a>
 </p>
@@ -113,5 +113,5 @@ Thank you to:
 
 ## License
 
-Copyright © 2020 [Sam Wray](https://github.com/vcync). 
+Copyright © 2020 [Sam Wray](https://github.com/vcync).
 This project is [MIT](https://github.com/vcync/modV/blob/master/LICENSE) licensed.
