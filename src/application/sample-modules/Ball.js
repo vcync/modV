@@ -160,7 +160,7 @@ export default {
     };
   },
 
-  updateBall({ canvas, ball, speed, radius }) {
+  updateBall({ canvas: { width, height }, ball, speed, radius, wrap }) {
     const {
       position: { x, y },
       direction: { x: directionX, y: directionY }
@@ -179,11 +179,30 @@ export default {
       dy = -dy;
     }
 
-    if (x + dx > canvas.width - radius || x + dx < radius) {
-      ball.direction.x = !ball.direction.x;
-    }
-    if (y + dy > canvas.height - radius || y + dy < radius) {
-      ball.direction.y = !ball.direction.y;
+    if (wrap) {
+      if (ball.position.x - radius < 1) {
+        ball.position.x = width - radius;
+      }
+
+      if (ball.position.y - radius < 1) {
+        ball.position.y = height - radius;
+      }
+
+      if (ball.position.x + radius > width) {
+        ball.position.x = radius;
+      }
+
+      if (ball.position.y + radius > height) {
+        ball.position.y = radius;
+      }
+    } else {
+      if (x + dx > width - radius || x + dx < radius) {
+        ball.direction.x = !ball.direction.x;
+      }
+
+      if (y + dy > height - radius || y + dy < radius) {
+        ball.direction.y = !ball.direction.y;
+      }
     }
 
     ball.position.x += dx;
@@ -200,7 +219,7 @@ export default {
     context.arc(
       ball.position.x,
       ball.position.y,
-      Math.round(ball.radius * analysed),
+      Math.round(ball.radius + ball.radius * analysed),
       0,
       2 * Math.PI,
       true
