@@ -151,7 +151,6 @@ async function start() {
     }
 
     lastFrameTimestamp = timestamp;
-    console.log(delta);
   }
 
   self.addEventListener("message", async e => {
