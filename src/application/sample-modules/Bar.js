@@ -38,7 +38,7 @@ export default {
     }
   },
 
-  draw({ canvas: { width, height }, context, delta, props }) {
+  draw({ canvas: { width, height }, context, timestamp, props }) {
     const { thickness, strobe, color1, color2, rotation } = props;
 
     context.translate(width / 2, height / 2);
@@ -49,7 +49,7 @@ export default {
     context.beginPath();
     context.moveTo(0, height / 2);
     context.lineTo(width, height / 2);
-    if (Math.round(delta) % strobe < Math.round(strobe / 2)) {
+    if (Math.round(timestamp) % strobe < Math.round(strobe / 2)) {
       context.strokeStyle = color1;
     } else {
       context.strokeStyle = color2;

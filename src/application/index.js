@@ -42,7 +42,7 @@ export default class ModV {
 
     this.$worker.addEventListener("message", e => {
       if (e.data.type === "tick" && this.ready) {
-        this.tick(e.data.payload);
+        this.tick(e.data.payload.timestamp, e.data.payload.delta);
         return;
       }
 
@@ -207,11 +207,11 @@ export default class ModV {
     }
   }
 
-  loop(delta) {
+  loop(timestamp) {
     const { meyda: featuresToGet } = this.store.state;
 
     const features = this.meyda.get(featuresToGet);
-    this.updateBeatDetektor(delta, features);
+    this.updateBeatDetektor(timestamp, features);
     this.$worker.postMessage({ type: "meyda", payload: features });
   }
 
@@ -219,9 +219,9 @@ export default class ModV {
     this.store.dispatch("size/setSize", { width, height });
   }
 
-  tick(delta) {
-    this.loop(delta);
-    this.inputLoop(delta);
+  tick(timestamp, delta) {
+    this.loop(timestamp, delta);
+    this.inputLoop(timestamp, delta);
   }
 
   async generatePreset() {

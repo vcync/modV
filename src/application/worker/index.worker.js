@@ -124,30 +124,34 @@ async function start() {
   let raf = requestAnimationFrame(looper);
   let frames = 0;
   let prevTime = 0;
+  let lastFrameTimestamp = 0;
 
-  function looper(delta) {
+  function looper(timestamp) {
+    const delta = (timestamp - lastFrameTimestamp) / 1000;
+
     raf = requestAnimationFrame(looper);
     self.postMessage({
       type: "tick",
-      payload: delta
+      payload: { timestamp, delta }
     });
 
-    loop(delta, getFeatures());
+    loop(timestamp, delta, getFeatures());
 
     frameTick();
     frames += 1;
 
-    const time = performance.now();
-
-    if (time >= prevTime + 1000) {
+    if (timestamp >= prevTime + 1000) {
       store.commit(
         "metrics/SET_FPS_MEASURE",
-        (frames * 1000) / (time - prevTime)
+        (frames * 1000) / (timestamp - prevTime)
       );
 
-      prevTime = time;
+      prevTime = timestamp;
       frames = 0;
     }
+
+    lastFrameTimestamp = timestamp;
+    console.log(delta);
   }
 
   self.addEventListener("message", async e => {

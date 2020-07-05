@@ -97,7 +97,7 @@ export default {
     return data;
   },
 
-  draw({ context, delta, data, props }) {
+  draw({ context, timestamp, data, props }) {
     const { dripBaseHeight, insetHeight, maxDripHeight } = props;
     const { color, pattern } = data;
     const { width, height } = context.canvas;
@@ -112,7 +112,7 @@ export default {
     for (let i = 0; i < patternLength; i += 1) {
       const piece = pattern[i];
       const h =
-        (piece.width / 2 + Math.sin((delta / 500) * piece.random) * 30) *
+        (piece.width / 2 + Math.sin((timestamp / 500) * piece.random) * 30) *
         maxDripHeight;
 
       if (piece.type === "width") {

@@ -321,7 +321,7 @@ const actions = {
     //     const newValue = plugin.plugin.processValue({
     //       currentValue: data,
     //       controlVariable: prop,
-    //       delta: modV.delta,
+    //       timestamp: modV.timestamp,
     //       moduleName: name
     //     })
 

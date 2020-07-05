@@ -18,7 +18,7 @@ store.dispatch("outputs/addAuxillaryOutput", {
  * @param  {Meyda}                    meyda         The Meyda instance
  *                                                  (for Windowing functions etc.)
  *
- * @param  {DOMHighResTimeStamp}      delta         Timestamp returned by requestAnimationFrame
+ * @param  {DOMHighResTimeStamp}      timestamp     Timestamp returned by requestAnimationFrame
  * @param  {Number}                   bpm           The detected or tapped BPM
  * @param  {Boolean}                  kick          Indicates if BeatDetektor detected a kick in
  *                                                  the audio stream
@@ -30,7 +30,7 @@ function render({
   video,
   features,
   meyda,
-  delta,
+  timestamp,
   bpm,
   kick,
   props,
@@ -54,7 +54,7 @@ function render({
     video,
     features,
     meyda,
-    delta,
+    timestamp,
     bpm,
     kick,
     props,

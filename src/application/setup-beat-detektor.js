@@ -4,12 +4,12 @@ export default function() {
   const beatDetektor = new BeatDetektor(85, 169);
   const beatDetektorKick = new BeatDetektor.modules.vis.BassKick();
 
-  this.updateBeatDetektor = (delta, features) => {
+  this.updateBeatDetektor = (timeStamp, features) => {
     if (!features) {
       return;
     }
 
-    beatDetektor.process(delta / 1000.0, features.complexSpectrum.real);
+    beatDetektor.process(timeStamp / 1000.0, features.complexSpectrum.real);
     beatDetektorKick.process(beatDetektor);
     const kick = beatDetektorKick.isKick();
     const bpm = beatDetektor.win_bpm_int_lo;

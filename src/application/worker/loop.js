@@ -10,7 +10,7 @@ const meyda = { windowing: applyWindow };
 let bufferCanvas;
 let bufferContext;
 
-function loop(delta, features) {
+function loop(timestamp, delta, features) {
   if (!bufferCanvas) {
     bufferCanvas = new OffscreenCanvas(300, 300);
     bufferContext = bufferCanvas.getContext("2d");
@@ -177,6 +177,7 @@ function loop(delta, features) {
           data: { ...data },
           // canvas: drawTo.canvas,
           canvas,
+          timestamp,
           delta
         });
 
@@ -195,6 +196,7 @@ function loop(delta, features) {
       renderers[module.meta.type].render({
         canvas,
         context: drawTo,
+        timestamp,
         delta,
         module: moduleDefinition,
         features,

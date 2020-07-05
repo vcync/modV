@@ -68,21 +68,21 @@ export default {
     return data;
   },
 
-  update({ canvas, data, delta, props }) {
+  update({ canvas, data, timestamp, props }) {
     const { width, height } = canvas;
     const widthHalf = width / 2;
     const heightHalf = height / 2;
 
     this.updateCircles({
       circles: data.circles[0],
-      x: widthHalf + Math.sin(delta / 1000) * props.objectDistance,
-      y: heightHalf + Math.cos(delta / 1000) * (props.objectDistance / 2)
+      x: widthHalf + Math.sin(timestamp / 1000) * props.objectDistance,
+      y: heightHalf + Math.cos(timestamp / 1000) * (props.objectDistance / 2)
     });
 
     this.updateCircles({
       circles: data.circles[1],
-      x: widthHalf + -Math.sin(delta / 1000) * props.objectDistance,
-      y: heightHalf + -Math.cos(delta / 1000) * (props.objectDistance / 2)
+      x: widthHalf + -Math.sin(timestamp / 1000) * props.objectDistance,
+      y: heightHalf + -Math.cos(timestamp / 1000) * (props.objectDistance / 2)
     });
 
     return data;
