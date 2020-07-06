@@ -162,7 +162,12 @@ canvas {
   justify-content: center;
   align-items: center;
 
-  canvas {
+  <<<<<<<updatedupstream=======max-width: 140px;
+
+  border-radius: 8px;
+  overflow: hidden;
+
+  >>>>>>>Stashed changes canvas {
     opacity: 0.3;
     transition: 150ms opacity;
   }
