@@ -1,12 +1,13 @@
 <template>
   <div
+    ref="container"
     v-searchTerms="{
       terms: ['preview', 'canvas', 'debugger'],
       title: 'Canvas Debugger',
       type: 'Panel'
     }"
   >
-    <label><input type="checkbox" v-model="debug" /> Debug Canvas</label><br />
+    <label><input type="checkbox" v-model="debug" />Debug Canvas</label><br />
     <select v-model="debugId">
       <option value="main">Main Output</option>
       <optgroup v-for="(outputs, group) in groups" :label="group" :key="group">
@@ -21,6 +22,28 @@
 
 <script>
 export default {
+  data() {
+    return {
+      resizeObserver: null
+    };
+  },
+
+  mounted() {
+    const { canvas, container } = this.$refs;
+    const offscreen = canvas.transferControlToOffscreen();
+
+    this.$modV.$worker.postMessage(
+      {
+        type: "dispatch",
+        identifier: "outputs/setDebugContext",
+        payload: offscreen
+      },
+      [offscreen]
+    );
+
+    this.resizeObserver = new ResizeObserver(this.resize).observe(container);
+  },
+
   computed: {
     auxillaries() {
       return this.$modV.store.state.outputs.auxillary;
@@ -63,18 +86,16 @@ export default {
     }
   },
 
-  mounted() {
-    const { canvas } = this.$refs;
-    const offscreen = canvas.transferControlToOffscreen();
+  methods: {
+    resize(e) {
+      const { width } = e[0].contentRect;
 
-    this.$modV.$worker.postMessage(
-      {
+      this.$modV.$worker.postMessage({
         type: "dispatch",
-        identifier: "outputs/setDebugContext",
-        payload: offscreen
-      },
-      [offscreen]
-    );
+        identifier: "outputs/resizeDebug",
+        payload: { width }
+      });
+    }
   }
 };
 </script>

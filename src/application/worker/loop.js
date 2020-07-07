@@ -290,14 +290,20 @@ function loop(delta, features) {
     const canvasToDebug = store.getters["outputs/canvasToDebug"];
 
     if (canvasToDebug) {
-      debugCanvas.width = canvasToDebug.context.canvas.width;
-      debugCanvas.height = canvasToDebug.context.canvas.height;
+      const { width: dWidth, height: dHeight } = canvasToDebug.context.canvas;
+      const aspectRatio = dWidth / dHeight;
+      debugCanvas.height = debugCanvas.width / aspectRatio;
 
       debugContext.clearRect(0, 0, debugCanvas.width, debugCanvas.height);
-      debugContext.drawImage(canvasToDebug.context.canvas, 0, 0);
+      debugContext.drawImage(
+        canvasToDebug.context.canvas,
+        0,
+        0,
+        debugCanvas.width,
+        debugCanvas.height
+      );
       debugContext.font = "32px monospace";
       debugContext.textBaseline = "hanging";
-      debugContext.save();
       debugContext.fillStyle = "#fff";
       debugContext.globalCompositeOperation = "difference";
       debugContext.fillText(
@@ -305,7 +311,6 @@ function loop(delta, features) {
         10,
         10
       );
-      debugContext.restore();
     }
   }
 
