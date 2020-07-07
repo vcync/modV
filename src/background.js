@@ -160,6 +160,13 @@ function generateMenuTemplate() {
     {
       label: "View",
       submenu: [
+        {
+          label: "New Output Window",
+          click: () => {
+            win.webContents.send("create-output-window");
+          }
+        },
+        { type: "separator" },
         { role: "reload" },
         { role: "forcereload" },
         { role: "toggledevtools" },

@@ -165,6 +165,10 @@ export default class ModV {
       );
     });
 
+    ipcRenderer.on("create-output-window", () => {
+      this.store.dispatch("windows/createWindow");
+    });
+
     this.ready = true;
     ipcRenderer.send("modv-ready");
     ipcRenderer.send("get-media-manager-state");
