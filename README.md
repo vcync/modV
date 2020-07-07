@@ -1,7 +1,7 @@
 <h1 align="center">modV</h1>
-<img alt="modV logo" src="https://github.com/vcync/modV/raw/main/build/icon.png" width="256" />
+<p align="center"><img alt="modV logo" src="https://github.com/vcync/modV/raw/main/build/icon.png" width="256" /></p>
 
-<p>
+<p align="center">
   <a href="https://github.com/vcync/modV/releases/latest">
     <img alt="Version" src="https://img.shields.io/badge/version-3.0.8--alpha-blue.svg?cacheSeconds=2592000" />
   </a>
@@ -18,9 +18,9 @@
     <img alt="Twitter: @_modV_" src="https://img.shields.io/twitter/follow/_modV_.svg?style=social" />
   </a>
 </p>
-
+<p align="center">
 modV is a modular audio visualisation environment built upon web technologies.
-
+</p>
 
 
 ## Download
