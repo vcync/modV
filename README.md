@@ -113,5 +113,5 @@ Thank you to:
 
 ## License
 
-Copyright © 2020 [Sam Wray](https://github.com/vcync).
+Copyright © 2020 [vcync](https://github.com/vcync).
 This project is [MIT](https://github.com/vcync/modV/blob/master/LICENSE) licensed.
