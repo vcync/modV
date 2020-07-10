@@ -13,20 +13,23 @@
     <c>
       <button @click="removeLink" :disabled="!hasLink">Remove link</button>
     </c>
-    <c span="2">
-      <label
-        >Use smoothing?<input type="checkbox" v-model="useSmoothing"
-      /></label>
-    </c>
-    <c span="2">
-      <label
-        >Smoothing<input
-          type="range"
-          min="0"
-          :max="MAX_SMOOTHING - SMOOTHING_STEP"
-          :step="SMOOTHING_STEP"
-          @input="smoothingInput"
-      /></label>
+    <c span="4" v-infoView="{ title: iVTitle, body: iVBody, id: iVID }">
+      <grid columns="2"
+        ><c>
+          <label
+            >Use smoothing?<input type="checkbox" v-model="useSmoothing"
+          /></label>
+        </c>
+        <c>
+          <label
+            >Smoothing<input
+              type="range"
+              min="0"
+              :max="MAX_SMOOTHING - SMOOTHING_STEP"
+              :step="SMOOTHING_STEP"
+              @input="smoothingInput"/></label
+        ></c>
+      </grid>
     </c>
   </grid>
 </template>
@@ -46,6 +49,11 @@ export default {
 
   data() {
     return {
+      iVTitle: "Audio Feature Smoothing",
+      iVBody:
+        "Turning on audio feature smoothing gives the audio feature a smoother decent to the set minimum value when linked to module properties. Smoothing captures the last peak value of the selected audio feature and attempts to slowly decrease the value back down to the minumum value. If the peak value is greater than the current captured peak the new peak will take priority.",
+      iVID: "Audio Feature Smoothing",
+
       features: [
         "rms",
         "zcr",
