@@ -50,7 +50,7 @@ export default function windowHandler() {
 
       const win = window.open(
         "./output-window.html",
-        "_blank",
+        "modal",
         `width=${width}, height=${height}, location=no, menubar=no, left=0`
       );
 

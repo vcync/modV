@@ -233,6 +233,21 @@ function createWindow() {
     }
   });
 
+  // Configure child windows to open without a menubar (windows/linux)
+  win.webContents.on(
+    "new-window",
+    (event, url, frameName, disposition, options) => {
+      if (frameName === "modal") {
+        event.preventDefault();
+        event.newGuest = new BrowserWindow(options);
+
+        setTimeout(() => {
+          event.newGuest.setMenu(null);
+        }, 500);
+      }
+    }
+  );
+
   const mm = new MediaManager({
     update(message) {
       win.webContents.send("media-manager-update", message);
