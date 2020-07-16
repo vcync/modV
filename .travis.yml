@@ -6,7 +6,7 @@ jobs:
   include:
   - name: "Build on macOS for macOS and Windows"
     os: osx
-    osx_image: xcode10.2
+    osx_image: xcode12
     env:
     - ELECTRON_CACHE=$HOME/.cache/electron
     - ELECTRON_BUILDER_CACHE=$HOME/.cache/electron-builder
