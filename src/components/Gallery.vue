@@ -1,5 +1,13 @@
 <template>
-  <div class="gallery">
+  <div
+    class="gallery"
+    v-infoView="{ title: iVTitle, body: iVBody, id: 'Module Gallery Panel' }"
+    v-searchTerms="{
+      terms: ['gallery'],
+      title: 'Gallery',
+      type: 'Panel'
+    }"
+  >
     <grid columns="4">
       <c span="1..">
         <input
@@ -42,6 +50,12 @@
                   v-if="groupId"
                   :moduleName="name"
                   :groupId="groupId"
+                  v-searchTerms="{
+                    terms: [name, 'module'],
+                    title: name,
+                    focusElement: true,
+                    type: 'Module'
+                  }"
                 />
               </Draggable>
             </Container>
@@ -70,6 +84,9 @@ export default {
 
   data() {
     return {
+      iVTitle: "Module Gallery",
+      iVBody:
+        "The Module Gallery displays all available Modules. A module can be dragged into a Group. Double clicking a Module will add it to the currently focused Group.",
       groupId: null,
       searchTerm: "",
       renderers: {},
@@ -159,7 +176,10 @@ export default {
     },
 
     keyDownListener(e) {
-      if (e.keyCode === 114 || ((e.ctrlKey || e.metaKey) && e.keyCode === 70)) {
+      if (
+        e.keyCode === 114 ||
+        ((e.ctrlKey || e.metaKey) && !e.shiftKey && e.keyCode === 70)
+      ) {
         e.preventDefault();
         this.$refs.searchField.focus();
         this.$refs.searchField.select();

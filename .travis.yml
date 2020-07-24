@@ -4,14 +4,21 @@ language: node_js
 node_js: '10'
 jobs:
   include:
-  - name: "Build on macOS for macOS and Windows"
+  - name: "Build on Windows"
+    os: windows
+    env:
+    - ELECTRON_CACHE=$HOME/.cache/electron
+    - ELECTRON_BUILDER_CACHE=$HOME/.cache/electron-builder
+    - USE_HARD_LINKS=false
+    - YARN_GPG=no
+  - name: "Build on macOS"
     os: osx
     osx_image: xcode12
     env:
     - ELECTRON_CACHE=$HOME/.cache/electron
     - ELECTRON_BUILDER_CACHE=$HOME/.cache/electron-builder
     - USE_HARD_LINKS=false
-  - name: "Build on Linux for Linux"
+  - name: "Build on Linux"
     os: linux
     dist: xenial
     env:
@@ -26,7 +33,8 @@ cache:
 before_install:
   - if [ "$TRAVIS_OS_NAME" = "linux" ]; then wget https://github.com/Palakis/obs-ndi/releases/download/4.9.0/libndi4_4.5.1-1_amd64.deb && sudo dpkg -i libndi4_4.5.1-1_amd64.deb; fi
 script:
-  - if [ "$TRAVIS_OS_NAME" = "osx" ];   then yarn run electron:build -mw --publish=never; fi
+  - if [ "$TRAVIS_OS_NAME" = "windows" ];   then yarn run electron:build -w --publish=never; fi
+  - if [ "$TRAVIS_OS_NAME" = "osx" ];   then yarn run electron:build -m --publish=never; fi
   - if [ "$TRAVIS_OS_NAME" = "linux" ]; then yarn run electron:build -l  --publish=never; fi
 before_cache:
 - rm -rf $HOME/.cache/electron-builder/wine
@@ -35,11 +43,10 @@ branches:
   - "/^v\\d+\\.\\d+\\.\\d+$/"
 deploy:
   provider: releases
-  api_key:
-    secure: $GITHUB_TOKEN
+  api_key: $GITHUB_TOKEN
   file_glob: true
   skip_cleanup: true
   file: "./dist_electron/*.{exe,snap,dmg,AppImage}"
   on:
-    repo: vcync/modv-3
+    repo: vcync/modV
     all_branches: true

@@ -5,6 +5,14 @@
   "author": "vcync",
   "version": "3.0.8-alpha",
   "private": false,
+  "homepage": "https://modv.vcync.gl/",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/vcync/modV.git"
+  },
+  "bugs": {
+    "url": "https://github.com/vcync/modV/issues"
+  },
   "scripts": {
     "serve": "vue-cli-service serve",
     "build": "vue-cli-service build",
@@ -25,6 +33,8 @@
     "dotenv": "^8.2.0",
     "electron-updater": "^4.3.1",
     "fluent-ffmpeg": "^2.1.2",
+    "font-list": "^1.2.11",
+    "fuse.js": "^6.2.1",
     "golden-layout": "^1.5.9",
     "grandiose": "github:vcync/grandiose#feat/workerCompatibility",
     "interactive-shader-format": "github:vcync/interactive-shader-format-js#feat/ImageBitmap",
@@ -32,7 +42,7 @@
     "lodash.get": "^4.4.2",
     "meyda": "^5.0.1",
     "mkdirp": "^0.5.1",
-    "npm": "6.13.4",
+    "npm": "6.14.6",
     "nwjs-menu-browser": "^1.0.0",
     "ospath": "^1.2.2",
     "pex-context": "^2.10.2",
@@ -43,7 +53,8 @@
     "tap-tempo": "^0.1.1",
     "uuid": "^3.3.3",
     "vue": "^2.6.10",
-    "vue-golden-layout": "^2.0.6",
+    "vue-class-component": "^7.2.3",
+    "vue-golden-layout": "^2.0.8",
     "vue-property-decorator": "^8.3.0",
     "vue-smooth-dnd": "^0.8.1",
     "vuex": "^3.1.2",

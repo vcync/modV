@@ -59,6 +59,7 @@ import Vec2DControl from "./Controls/Vec2DControl";
 import TweenControl from "./Controls/TweenControl";
 import PaletteControl from "./Controls/PaletteControl";
 import TextureControl from "./Controls/TextureControl";
+import FontControl from "./Controls/FontControl";
 import hasLink from "./mixins/has-input-link";
 import inputIsFocused from "./mixins/input-is-focused";
 
@@ -72,7 +73,8 @@ export default {
     Vec2DControl,
     TweenControl,
     PaletteControl,
-    TextureControl
+    TextureControl,
+    FontControl
   },
 
   data() {

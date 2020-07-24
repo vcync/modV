@@ -56,7 +56,8 @@ export default {
 
     font: {
       type: "text",
-      default: "Proxima Nova",
+      component: "FontControl",
+      default: "sans-serif",
       set(args) {
         this.drawText(args);
       }

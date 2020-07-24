@@ -1,5 +1,14 @@
 <template>
-  <grid columns="4" class="device-config">
+  <grid
+    v-infoView="{ title: iVTitle, body: iVBody, id: 'Media Input Config' }"
+    v-searchTerms="{
+      terms: ['audio', 'video', 'input'],
+      title: 'Audio/Video Input Config',
+      type: 'Panel'
+    }"
+    columns="4"
+    class="device-config"
+  >
     <c span="1">Audio Input</c>
     <c span="3">
       <select v-model="currentAudioSource">
@@ -32,6 +41,14 @@
 
 <script>
 export default {
+  data() {
+    return {
+      iVTitle: "Media Input Config",
+      iVBody:
+        "Configure your audio and video inputs here. Click Renumerate Devices to scan for new sources."
+    };
+  },
+
   computed: {
     audioInputs() {
       return this.$modV.store.state.mediaStream.audio;

@@ -1,5 +1,16 @@
 <template>
-  <div @focus="focus" @mousedown="focus" :class="{ focused }" class="group">
+  <div
+    v-searchTerms="{
+      terms: ['group'],
+      title: name,
+      type: 'Group',
+      focusElement: true
+    }"
+    @focus="focus"
+    @mousedown="focus"
+    :class="{ focused }"
+    class="group"
+  >
     <section class="group-controls">
       <input type="checkbox" v-model="enabled" title="Enabled" />
       <input type="checkbox" v-model="inherit" title="Inherit" />
@@ -113,6 +124,10 @@ export default {
 
   created() {
     this.localName = this.name;
+
+    if (!this.focusedGroup) {
+      this.focus();
+    }
   },
 
   computed: {
@@ -139,8 +154,12 @@ export default {
       }
     },
 
+    focusedGroup() {
+      return this.$store.state["ui-groups"].focused;
+    },
+
     focused() {
-      return this.groupId === this.$store.state["ui-groups"].focused;
+      return this.groupId === this.focusedGroup;
     },
 
     enabled: {

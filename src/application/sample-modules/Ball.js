@@ -4,7 +4,7 @@ export default {
   meta: {
     name: "Ball",
     author: "2xAA",
-    version: "1.0.0",
+    version: "1.0.1",
     audioFeatures: ["zcr", "rms"],
     type: "2d"
   },
@@ -62,30 +62,14 @@ export default {
       default: false
     },
 
-    // color: {
-    //   default: { r: 255, g: 104, b: 163, a: 1 },
-    //   // explicitly define a control
-    //   control: {
-    //     type: "paletteControl",
-
-    //     // pass options to the control
-    //     options: {
-    //       returnFormat: "rgbaString",
-    //       colors: [
-    //         { r: 255, g: 255, b: 255, a: 1 },
-    //         { r: 0, g: 0, b: 0, a: 1 },
-    //         { r: 255, g: 0, b: 0, a: 0.5 }
-    //       ],
-    //       duration: 1000
-    //     }
-    //   }
-    // }
-
     color: {
       type: "tween",
       component: "PaletteControl",
       default: {
-        data: [[0, 0, 0], [255, 255, 255]],
+        data: [
+          [0, 0, 0],
+          [255, 255, 255]
+        ],
         duration: 10000,
         easing: "linear"
       }
@@ -149,7 +133,9 @@ export default {
     for (let i = 0; i < 300; i += 1) {
       const ball = this.ballFactory({
         positionX: Math.floor(Math.random() * canvas.width + 1),
-        positionY: Math.floor(Math.random() * canvas.height + 1)
+        positionY: Math.floor(Math.random() * canvas.height + 1),
+        directionX: Math.round(Math.random()),
+        directionY: Math.round(Math.random())
       });
 
       balls.push(ball);
@@ -158,16 +144,23 @@ export default {
     return balls;
   },
 
-  ballFactory({ positionX, positionY, speed = 0, radius = 0 }) {
+  ballFactory({
+    positionX,
+    positionY,
+    directionX,
+    directionY,
+    speed = 0,
+    radius = 0
+  }) {
     return {
       radius,
       speed,
       position: { x: positionX, y: positionY },
-      direction: { x: false, y: false }
+      direction: { x: directionX, y: directionY }
     };
   },
 
-  updateBall({ canvas, ball, speed, radius }) {
+  updateBall({ canvas: { width, height }, ball, speed, radius, wrap }) {
     const {
       position: { x, y },
       direction: { x: directionX, y: directionY }
@@ -186,11 +179,30 @@ export default {
       dy = -dy;
     }
 
-    if (x + dx > canvas.width - radius || x + dx < radius) {
-      ball.direction.x = !ball.direction.x;
-    }
-    if (y + dy > canvas.height - radius || y + dy < radius) {
-      ball.direction.y = !ball.direction.y;
+    if (wrap) {
+      if (ball.position.x - radius < 1) {
+        ball.position.x = width - radius;
+      }
+
+      if (ball.position.y - radius < 1) {
+        ball.position.y = height - radius;
+      }
+
+      if (ball.position.x + radius > width) {
+        ball.position.x = radius;
+      }
+
+      if (ball.position.y + radius > height) {
+        ball.position.y = radius;
+      }
+    } else {
+      if (x + dx > width - radius || x + dx < radius) {
+        ball.direction.x = !ball.direction.x;
+      }
+
+      if (y + dy > height - radius || y + dy < radius) {
+        ball.direction.y = !ball.direction.y;
+      }
     }
 
     ball.position.x += dx;
@@ -207,7 +219,7 @@ export default {
     context.arc(
       ball.position.x,
       ball.position.y,
-      Math.round(ball.radius * analysed),
+      Math.round(ball.radius + ball.radius * analysed),
       0,
       2 * Math.PI,
       true

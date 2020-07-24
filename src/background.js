@@ -161,6 +161,13 @@ function generateMenuTemplate() {
     {
       label: "View",
       submenu: [
+        {
+          label: "New Output Window",
+          click: () => {
+            win.webContents.send("create-output-window");
+          }
+        },
+        { type: "separator" },
         { role: "reload" },
         { role: "forcereload" },
         { role: "toggledevtools" },
@@ -226,6 +233,21 @@ function createWindow() {
       affinity: "main-window" // main window, and addition windows should work in one process,
     }
   });
+
+  // Configure child windows to open without a menubar (windows/linux)
+  win.webContents.on(
+    "new-window",
+    (event, url, frameName, disposition, options) => {
+      if (frameName === "modal") {
+        event.preventDefault();
+        event.newGuest = new BrowserWindow(options);
+
+        setTimeout(() => {
+          event.newGuest.setMenu(null);
+        }, 500);
+      }
+    }
+  );
 
   const mm = new MediaManager({
     update(message) {

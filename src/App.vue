@@ -1,15 +1,24 @@
 <template>
   <main id="app">
-    <golden-layout class="hscreen" :showPopoutIcon="false" v-model="state">
+    <golden-layout
+      class="hscreen"
+      :showCloseIcon="false"
+      :showPopoutIcon="false"
+      :showMaximiseIcon="false"
+      :state.sync="layoutState"
+      @state="updateLayoutState"
+    >
       <gl-col>
         <gl-row>
           <gl-col :closable="false" :minItemWidth="100" id="lr-col">
-            <gl-component title="Groups" :closable="false">
-              <Groups />
-            </gl-component>
+            <gl-stack title="Groups Stack">
+              <gl-component title="Groups" :closable="false">
+                <Groups />
+              </gl-component>
+            </gl-stack>
           </gl-col>
           <gl-col :width="33" :closable="false" ref="rightColumn">
-            <gl-stack title="Module Inspector">
+            <gl-stack title="Module Inspector Stack">
               <gl-component title="hidden">
                 <!-- hack around dynamic components not working correctly. CSS below hides tabs with the title "hidden" -->
               </gl-component>
@@ -19,39 +28,30 @@
                 :title="`${module.meta.name} properties`"
                 :closable="false"
                 ref="moduleInspector"
+                :state="{ is: 'dynamic' }"
               >
-                <grid v-if="module.props">
-                  <c span="1..">
-                    <button @click="toggleModulePin(module.$id)">
-                      {{ isPinned(module.$id) ? "Unpin" : "Pin" }}
-                    </button>
-                  </c>
-                  <c span="1..">
-                    <Control
-                      v-for="key in getProps(module.$moduleName)"
-                      :id="module.$id"
-                      :prop="key"
-                      :key="key"
-                    />
-                  </c>
-                </grid>
+                <ModuleInspector :moduleId="module.$id" />
               </gl-component>
             </gl-stack>
           </gl-col>
         </gl-row>
         <gl-row>
+          <gl-component title="Info View" :closable="false">
+            <InfoView />
+          </gl-component>
+
           <gl-component title="Gallery" :closable="false">
             <Gallery />
           </gl-component>
 
-          <gl-stack>
+          <gl-stack title="Input Stack">
             <gl-component title="Input config" :closable="false">
               <InputConfig />
             </gl-component>
 
             <gl-stack title="Input Device Config" :closable="false">
-              <gl-component title="Audio" :closable="false">
-                <AudioDeviceConfig />
+              <gl-component title="Audio/Video" :closable="false">
+                <AudioVideoDeviceConfig />
               </gl-component>
               <gl-component title="MIDI" :closable="false">
                 <MIDIDeviceConfig />
@@ -65,7 +65,7 @@
             </gl-stack>
           </gl-stack>
 
-          <gl-stack>
+          <gl-stack title="Preview Stack">
             <gl-component title="Preview" :closable="false">
               <CanvasDebugger />
             </gl-component>
@@ -79,6 +79,7 @@
     </golden-layout>
 
     <StatusBar />
+    <Search />
   </main>
 </template>
 
@@ -88,12 +89,16 @@ import ABSwap from "@/components/ABSwap";
 import Groups from "@/components/Groups";
 import Gallery from "@/components/Gallery";
 import InputConfig from "@/components/InputConfig";
-import AudioDeviceConfig from "@/components/InputDeviceConfig/Audio.vue";
+import AudioVideoDeviceConfig from "@/components/InputDeviceConfig/AudioVideo.vue";
 import MIDIDeviceConfig from "@/components/InputDeviceConfig/MIDI.vue";
 import BPMConfig from "@/components/InputDeviceConfig/BPM.vue";
 import NDIConfig from "@/components/InputDeviceConfig/NDI.vue";
 import StatusBar from "@/components/StatusBar";
-import Control from "@/components/Control";
+import ModuleInspector from "@/components/ModuleInspector";
+import InfoView from "@/components/InfoView";
+import Search from "@/components/Search";
+
+import * as GoldenLayout from "golden-layout";
 
 import "@/css/golden-layout_theme.css";
 
@@ -108,17 +113,23 @@ export default {
     Groups,
     Gallery,
     InputConfig,
-    AudioDeviceConfig,
+    AudioVideoDeviceConfig,
     MIDIDeviceConfig,
     BPMConfig,
     NDIConfig,
     StatusBar,
-    Control
+    InfoView,
+    ModuleInspector,
+    Search
   },
 
   data() {
     return {
+      moduleInspectorIVTitle: "Module Inspector",
+      moduleInspectorIVBody:
+        "The properties of the selected Module. This panel can be pinned for easy access.",
       state: null,
+      layoutState: null,
 
       showUi: true,
       mouseTimer: null,
@@ -144,6 +155,13 @@ export default {
 
     focusedActiveModule() {
       return this.$store.state["ui-modules"].focused;
+    }
+  },
+
+  created() {
+    const layoutState = window.localStorage.getItem("layoutState");
+    if (layoutState) {
+      this.layoutState = JSON.parse(layoutState);
     }
   },
 
@@ -227,6 +245,82 @@ export default {
 
     isPinned(id) {
       return this.$store.state["ui-modules"].pinned.indexOf(id) > -1;
+    },
+
+    /**
+     * @description Traverses a Golden Layout state object to find GL Components
+     * which have `componentState.is === "dynamic"` and removes them.
+     *
+     * If the containing GL Stack has no title, we can assume the dynamically
+     * added component has been moved in the UI and the stack was created to
+     * house the component, so we remove that too.
+     *
+     * We must remove these elements as GL's state must match the Vue virtual
+     * DOM at time of mounting <golden-layout />. If we left these dynamically
+     * created GL Components in the state, GL would not know what they are and
+     * would error, resulting in the app not mounting and breaking.
+     *
+     * @param {GoldenLayout config}  config
+     * @returns {GoldenLayout config}
+     */
+    purgeDynamicPanels(config) {
+      if (Array.isArray(config.content)) {
+        const itemsToSplice = [];
+
+        const content = config.content;
+        const childrenToSplice = [];
+        for (let index = 0, len = content.length; index < len; index++) {
+          const item = content[index];
+
+          if (
+            item.type === "component" &&
+            item.componentState.is === "dynamic"
+          ) {
+            itemsToSplice.push(index);
+          } else {
+            if (this.purgeDynamicPanels(item) === true) {
+              childrenToSplice.push(index);
+            }
+          }
+        }
+
+        // eslint-disable-next-line no-for-each/no-for-each
+        childrenToSplice.forEach(index => {
+          content.splice(index, 1);
+          config.activeItemIndex = 0;
+        });
+
+        if (itemsToSplice.length > 0) {
+          // eslint-disable-next-line no-for-each/no-for-each
+          itemsToSplice.forEach(index => {
+            config.content.splice(index, 1);
+            config.activeItemIndex = 0;
+          });
+
+          if (config.title === "" && config.type === "stack") {
+            return true;
+          }
+        }
+      }
+
+      return config;
+    },
+
+    /**
+     * @description Called when <golden-layout /> updates its state.
+     * Unminifies config, purges dynamically added panels, minifies and saves to
+     * localStorage key "layoutState".
+     *
+     * @param {GoldenLayout config} value
+     */
+    updateLayoutState(configIn) {
+      const config = GoldenLayout.unminifyConfig(configIn);
+      const cleanedConfig = this.purgeDynamicPanels(config);
+
+      window.localStorage.setItem(
+        "layoutState",
+        JSON.stringify(GoldenLayout.minifyConfig(cleanedConfig))
+      );
     }
   },
 
@@ -252,11 +346,22 @@ export default {
   --fontSize: 14px;
   --foreground-color-rgb: 255, 255, 255;
   --foreground-color-a: 1;
-  --background-color: #111;
   --foreground-color-1: rgba(var(--foreground-color-rgb), 0.5);
   --foreground-color-2: rgba(var(--foreground-color-rgb), 0.4);
   --foreground-color-3: rgba(var(--foreground-color-rgb), 0.2);
   --foreground-color-4: rgba(var(--foreground-color-rgb), 0.1);
+
+  --background-color-rgb: 17, 17, 17;
+  --background-color-a: 1;
+  --background-color: rgba(
+    var(--background-color-rgb),
+    var(--background-color-a)
+  );
+  --background-color-1: rgba(var(--background-color-rgb), 0.8);
+  --background-color-2: rgba(var(--background-color-rgb), 0.7);
+  --background-color-3: rgba(var(--background-color-rgb), 0.5);
+  --background-color-4: rgba(var(--background-color-rgb), 0.4);
+
   --columnGap: calc(var(--lineHeight));
 
   --focus-color-rgb: 241, 196, 16;
@@ -276,6 +381,10 @@ export default {
 
 * {
   box-sizing: border-box;
+}
+
+.hidden {
+  display: none;
 }
 
 select {
