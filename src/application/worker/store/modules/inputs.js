@@ -48,6 +48,10 @@ const actions = {
     return true;
   },
 
+  updateInputLink({ commit }, { inputId, key, value, writeToSwap }) {
+    commit("UPDATE_INPUT_LINK", { inputId, key, value, writeToSwap });
+  },
+
   removeInputLink({ commit }, { inputId, writeToSwap }) {
     const writeTo = writeToSwap ? swap : state;
 
@@ -113,6 +117,10 @@ const mutations = {
 
   UPDATE_INPUT_LINK(state, { inputId, key, value, writeToSwap }) {
     const writeTo = writeToSwap ? swap : state;
+
+    if (!writeTo.inputLinks[inputId]) {
+      return;
+    }
 
     Vue.set(writeTo.inputLinks[inputId], key, value);
   },

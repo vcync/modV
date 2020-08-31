@@ -1,32 +1,73 @@
-import { getFeature } from "../../audio-features";
+import {
+  getFeature,
+  addSmoothingId,
+  removeSmoothingId,
+  getSmoothedFeature,
+  MAX_SMOOTHING,
+  SMOOTHING_STEP
+} from "../../audio-features";
+import uuidv4 from "uuid/v4";
 
-const state = ["complexSpectrum"];
+const state = {
+  features: ["complexSpectrum"],
+  smoothingIds: [],
+  MAX_SMOOTHING,
+  SMOOTHING_STEP
+};
 
 const getters = {
-  getFeature: () => key => {
-    return getFeature(key);
+  getFeature: () => (feature, smoothingId, smoothingValue) => {
+    if (smoothingId && smoothingValue) {
+      return getSmoothedFeature(feature, smoothingId, smoothingValue);
+    }
+
+    return getFeature(feature);
   }
 };
 
 const actions = {
   addFeature({ commit }, feature) {
     commit("ADD_FEATURE", feature);
+  },
+
+  getSmoothingId() {
+    const id = uuidv4();
+    addSmoothingId(id);
+    return id;
+  },
+
+  // eslint-disable-next-line no-empty-pattern
+  removeSmoothingId({}, id) {
+    removeSmoothingId(id);
   }
 };
 
 const mutations = {
   ADD_FEATURE(state, feature) {
-    const index = state.indexOf(feature);
+    const index = state.features.indexOf(feature);
 
     if (index < 0) {
-      state.push(feature);
+      state.features.push(feature);
     }
   },
+
   REMOVE_FEATURE(state, feature) {
-    const index = state.indexOf(feature);
+    const index = state.features.indexOf(feature);
 
     if (index > -1) {
-      state.splice(index, 1);
+      state.features.splice(index, 1);
+    }
+  },
+
+  ADD_SMOOTHING_ID(state, id) {
+    state.smoothingIds.push(id);
+  },
+
+  REMOVE_SMOOTHING_ID(state, id) {
+    const index = state.smoothingIds.indexOf(id);
+
+    if (index > -1) {
+      state.smoothingIds.splice(index, 1);
     }
   }
 };
