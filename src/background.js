@@ -9,6 +9,7 @@ import {
 } from "electron";
 
 import { createProtocol } from "vue-cli-plugin-electron-builder/lib";
+import { autoUpdater } from "electron-updater";
 
 import fs from "fs";
 import MediaManager from "./media-manager";
@@ -294,6 +295,8 @@ function createWindow() {
     createProtocol("app");
     // Load the index.html when not in development
     win.loadURL("app://./index.html");
+    // Check for updates
+    autoUpdater.checkForUpdatesAndNotify();
   }
 
   if (!isDevelopment || process.env.IS_TEST) {

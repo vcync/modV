@@ -59,9 +59,9 @@
               <gl-component title="BPM" :closable="false">
                 <BPMConfig />
               </gl-component>
-              <gl-component title="NDI" :closable="false">
+              <!-- <gl-component title="NDI" :closable="false">
                 <NDIConfig />
-              </gl-component>
+              </gl-component> -->
             </gl-stack>
           </gl-stack>
 
@@ -92,7 +92,7 @@ import InputConfig from "@/components/InputConfig";
 import AudioVideoDeviceConfig from "@/components/InputDeviceConfig/AudioVideo.vue";
 import MIDIDeviceConfig from "@/components/InputDeviceConfig/MIDI.vue";
 import BPMConfig from "@/components/InputDeviceConfig/BPM.vue";
-import NDIConfig from "@/components/InputDeviceConfig/NDI.vue";
+// import NDIConfig from "@/components/InputDeviceConfig/NDI.vue";
 import StatusBar from "@/components/StatusBar";
 import ModuleInspector from "@/components/ModuleInspector";
 import InfoView from "@/components/InfoView";
@@ -116,7 +116,7 @@ export default {
     AudioVideoDeviceConfig,
     MIDIDeviceConfig,
     BPMConfig,
-    NDIConfig,
+    // NDIConfig,
     StatusBar,
     InfoView,
     ModuleInspector,

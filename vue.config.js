@@ -48,7 +48,24 @@ module.exports = {
 
         linux: {
           category: "Graphics"
+        },
+
+        // See https://www.electron.build/configuration/mac
+        mac: {
+          // See https://developer.apple.com/documentation/security/hardened_runtime
+          hardenedRuntime: true,
+          gatekeeperAssess: false,
+          entitlements: "build/entitlements.mac.plist",
+          entitlementsInherit: "build/entitlements.mac.plist"
+        },
+
+        dmg: {
+          sign: false
         }
+      },
+
+      build: {
+        afterSign: "notarize.js"
       },
 
       chainWebpackMainProcess: config => {
