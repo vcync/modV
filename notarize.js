@@ -9,6 +9,8 @@ exports.default = async function notarizing(context) {
 
   const appName = context.packager.appInfo.productFilename;
 
+  console.log("Notarizing macOS application…");
+
   return await notarize({
     appBundleId: "gl.vcync.modv",
     appPath: `${appOutDir}/${appName}.app`,

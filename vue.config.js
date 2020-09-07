@@ -61,10 +61,8 @@ module.exports = {
 
         dmg: {
           sign: false
-        }
-      },
+        },
 
-      build: {
         afterSign: "notarize.js"
       },
 
