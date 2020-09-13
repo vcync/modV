@@ -4,7 +4,7 @@
   "description": "modular audio visualisation powered by JavaScript",
   "author": "vcync",
   "version": "3.0.12-alpha",
-  "private": false,
+  "private": true,
   "homepage": "https://modv.vcync.gl/",
   "repository": {
     "type": "git",
