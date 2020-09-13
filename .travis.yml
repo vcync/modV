@@ -1,30 +1,45 @@
-# Only build tags
-if: tag IS present
 language: node_js
 node_js: '10'
 jobs:
   include:
-  - name: "Build on Windows"
-    os: windows
-    env:
-    - ELECTRON_CACHE=$HOME/.cache/electron
-    - ELECTRON_BUILDER_CACHE=$HOME/.cache/electron-builder
-    - USE_HARD_LINKS=false
-    - YARN_GPG=no
-  - name: "Build on macOS"
-    os: osx
-    osx_image: xcode12
-    env:
-    - ELECTRON_CACHE=$HOME/.cache/electron
-    - ELECTRON_BUILDER_CACHE=$HOME/.cache/electron-builder
-    - USE_HARD_LINKS=false
-  - name: "Build on Linux"
-    os: linux
-    dist: xenial
-    env:
-    - ELECTRON_CACHE=$HOME/.cache/electron
-    - ELECTRON_BUILDER_CACHE=$HOME/.cache/electron-builder
-    - USE_HARD_LINKS=false
+    - stage: Create release
+      name: Semantic release
+      node_js: lts/*
+      script: skip
+      deploy:
+        provider: script
+        cleanup: false
+        script: npx semantic-release
+
+    - stage: Build stage
+      if: tag IS present
+      name: "Build on Windows"
+      os: windows
+      env:
+      - ELECTRON_CACHE=$HOME/.cache/electron
+      - ELECTRON_BUILDER_CACHE=$HOME/.cache/electron-builder
+      - USE_HARD_LINKS=false
+      - YARN_GPG=no
+
+    - stage: Build stage
+      if: tag IS present
+      name: "Build on macOS"
+      os: osx
+      osx_image: xcode12
+      env:
+      - ELECTRON_CACHE=$HOME/.cache/electron
+      - ELECTRON_BUILDER_CACHE=$HOME/.cache/electron-builder
+      - USE_HARD_LINKS=false
+
+    - stage: Build stage
+      if: tag IS present
+      name: "Build on Linux"
+      os: linux
+      dist: xenial
+      env:
+      - ELECTRON_CACHE=$HOME/.cache/electron
+      - ELECTRON_BUILDER_CACHE=$HOME/.cache/electron-builder
+      - USE_HARD_LINKS=false
 cache:
   directories:
   - node_modules
