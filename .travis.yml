@@ -42,12 +42,3 @@ before_cache:
 branches:
   except:
   - "/^v\\d+\\.\\d+\\.\\d+$/"
-deploy:
-  provider: releases
-  api_key: $GITHUB_TOKEN
-  file_glob: true
-  skip_cleanup: true
-  file: "./dist_electron/*.{exe,snap,dmg,AppImage}"
-  on:
-    repo: vcync/modV
-    all_branches: true
