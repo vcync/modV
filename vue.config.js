@@ -63,7 +63,13 @@ module.exports = {
           sign: false
         },
 
-        afterSign: "notarize.js"
+        afterSign: "notarize.js",
+
+        publish: {
+          provider: "github",
+          releaseType: "prerelease",
+          vPrefixedTagName: false
+        }
       },
 
       chainWebpackMainProcess: config => {

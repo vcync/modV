@@ -34,20 +34,11 @@ before_install:
   - if [ "$TRAVIS_OS_NAME" = "linux" ]; then wget https://github.com/Palakis/obs-ndi/releases/download/4.9.0/libndi4_4.5.1-1_amd64.deb && sudo dpkg -i libndi4_4.5.1-1_amd64.deb; fi
   - if [ "$TRAVIS_OS_NAME" = "windows" ] || [ "$TRAVIS_OS_NAME" = "linux" ]; then unset CSC_KEY_PASSWORD CSC_LINK; fi
 script:
-  - if [ "$TRAVIS_OS_NAME" = "windows" ];   then yarn run electron:build -w --publish=never; fi
-  - if [ "$TRAVIS_OS_NAME" = "osx" ];   then yarn run electron:build -m --publish=never; fi
-  - if [ "$TRAVIS_OS_NAME" = "linux" ]; then yarn run electron:build -l  --publish=never; fi
+  - if [ "$TRAVIS_OS_NAME" = "windows" ];   then yarn run electron:build -w; fi
+  - if [ "$TRAVIS_OS_NAME" = "osx" ];   then yarn run electron:build -m; fi
+  - if [ "$TRAVIS_OS_NAME" = "linux" ]; then yarn run electron:build -l ; fi
 before_cache:
 - rm -rf $HOME/.cache/electron-builder/wine
 branches:
   except:
   - "/^v\\d+\\.\\d+\\.\\d+$/"
-deploy:
-  provider: releases
-  api_key: $GITHUB_TOKEN
-  file_glob: true
-  skip_cleanup: true
-  file: "./dist_electron/*.{exe,snap,dmg,AppImage}"
-  on:
-    repo: vcync/modV
-    all_branches: true
