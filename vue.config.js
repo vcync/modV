@@ -1,5 +1,11 @@
 const DefinePlugin = require("webpack").DefinePlugin;
 
+const publishingOptions = {
+  provider: "github",
+  releaseType: "prerelease",
+  vPrefixedTagName: false
+};
+
 module.exports = {
   configureWebpack: {
     module: {
@@ -50,6 +56,10 @@ module.exports = {
           category: "Graphics"
         },
 
+        snap: {
+          publish: publishingOptions
+        },
+
         // See https://www.electron.build/configuration/mac
         mac: {
           // See https://developer.apple.com/documentation/security/hardened_runtime
@@ -65,11 +75,7 @@ module.exports = {
 
         afterSign: "notarize.js",
 
-        publish: {
-          provider: "github",
-          releaseType: "prerelease",
-          vPrefixedTagName: false
-        }
+        publish: publishingOptions
       },
 
       chainWebpackMainProcess: config => {
