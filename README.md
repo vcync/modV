@@ -3,7 +3,7 @@
 
 <p align="center">
   <a href="https://github.com/vcync/modV/releases/latest">
-    <img alt="Version" src="https://img.shields.io/badge/version-3.0.8--alpha-blue.svg?cacheSeconds=2592000" />
+    <img alt="GitHub release (latest by date including pre-releases)" src="https://img.shields.io/github/v/release/vcync/modV?color=blue&include_prereleases" /> 
   </a>
   <a href="https://modv.vcync.gl/" target="_blank">
     <img alt="Documentation" src="https://img.shields.io/badge/documentation-living-blue.svg" />
