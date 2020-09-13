@@ -51,7 +51,7 @@ module.exports = {
         },
 
         snap: {
-          publish: "never"
+          publish: false
         },
 
         // See https://www.electron.build/configuration/mac
