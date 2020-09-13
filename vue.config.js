@@ -47,7 +47,8 @@ module.exports = {
         productName: "modV",
 
         linux: {
-          category: "Graphics"
+          category: "Graphics",
+          publish: ["github"]
         },
 
         // See https://www.electron.build/configuration/mac
