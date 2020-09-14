@@ -301,19 +301,15 @@ function createWindow() {
 
   if (!isDevelopment || process.env.IS_TEST) {
     win.on("close", async e => {
-      if (app.showExitPrompt) {
-        e.preventDefault(); // Prevents the window from closing
-        const { response } = await dialog.showMessageBox({
-          type: "question",
-          buttons: ["Yes", "No"],
-          message: "modV",
-          detail: "Are you sure you want to quit?"
-        });
+      const { response } = await dialog.showMessageBox(this, {
+        type: "question",
+        buttons: ["Yes", "No"],
+        message: "modV",
+        detail: "Are you sure you want to quit?"
+      });
 
-        if (!response) {
-          app.showExitPrompt = false;
-          app.quit();
-        }
+      if (response === 1) {
+        e.preventDefault();
       }
     });
   }
