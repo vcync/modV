@@ -1,5 +1,5 @@
 {
-  "branches": ["main"],
+  "branches": [{ name: "main", prerelease: true }],
   "tagFormat": "${version}",
   "dryRun": true
 }
