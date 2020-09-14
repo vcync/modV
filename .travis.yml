@@ -7,6 +7,8 @@ jobs:
       node_js: lts/*
       script: skip
       deploy:
+        on:
+          branch: main
         provider: script
         cleanup: false
         script: npx semantic-release
@@ -20,6 +22,8 @@ jobs:
       - ELECTRON_BUILDER_CACHE=$HOME/.cache/electron-builder
       - USE_HARD_LINKS=false
       - YARN_GPG=no
+      script:
+        - yarn run electron:build -w
 
     - stage: Build stage
       if: tag IS present
@@ -30,6 +34,8 @@ jobs:
       - ELECTRON_CACHE=$HOME/.cache/electron
       - ELECTRON_BUILDER_CACHE=$HOME/.cache/electron-builder
       - USE_HARD_LINKS=false
+      script:
+        - yarn run electron:build -m
 
     - stage: Build stage
       if: tag IS present
@@ -40,18 +46,17 @@ jobs:
       - ELECTRON_CACHE=$HOME/.cache/electron
       - ELECTRON_BUILDER_CACHE=$HOME/.cache/electron-builder
       - USE_HARD_LINKS=false
+      before_install:
+        - if [ "$TRAVIS_OS_NAME" = "linux" ]; then wget https://github.com/Palakis/obs-ndi/releases/download/4.9.0/libndi4_4.5.1-1_amd64.deb && sudo dpkg -i libndi4_4.5.1-1_amd64.deb; fi
+      script:
+        - yarn run electron:build -l
 cache:
   directories:
   - node_modules
   - "$HOME/.cache/electron"
   - "$HOME/.cache/electron-builder"
 before_install:
-  - if [ "$TRAVIS_OS_NAME" = "linux" ]; then wget https://github.com/Palakis/obs-ndi/releases/download/4.9.0/libndi4_4.5.1-1_amd64.deb && sudo dpkg -i libndi4_4.5.1-1_amd64.deb; fi
   - if [ "$TRAVIS_OS_NAME" = "windows" ] || [ "$TRAVIS_OS_NAME" = "linux" ]; then unset CSC_KEY_PASSWORD CSC_LINK; fi
-script:
-  - if [ "$TRAVIS_OS_NAME" = "windows" ];   then yarn run electron:build -w; fi
-  - if [ "$TRAVIS_OS_NAME" = "osx" ];   then yarn run electron:build -m; fi
-  - if [ "$TRAVIS_OS_NAME" = "linux" ]; then yarn run electron:build -l ; fi
 before_cache:
 - rm -rf $HOME/.cache/electron-builder/wine
 branches:
