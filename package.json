@@ -61,6 +61,7 @@
     "webpack-2": "npm:webpack@2.7.0"
   },
   "devDependencies": {
+    "@semantic-release/git": "^9.0.0",
     "@vue/cli-plugin-babel": "^3.12.1",
     "@vue/cli-plugin-eslint": "^3.12.1",
     "@vue/cli-service": "^3.12.1",
