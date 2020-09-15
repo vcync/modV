@@ -3,6 +3,7 @@ node_js: '10'
 jobs:
   include:
     - stage: Create release
+      if: branch = main
       name: Semantic release
       node_js: lts/*
       script: skip
