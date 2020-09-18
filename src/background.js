@@ -17,12 +17,142 @@ import store from "./media-manager/store";
 
 const isDevelopment = process.env.NODE_ENV !== "production";
 
-// Keep a global reference of the window object, if you don't, the window will
-// be closed automatically when the JavaScript object is garbage collected.
-let win;
+// Keep a global reference of the window objects, if you don't, the windows will
+// be closed automatically when the JavaScript objects are garbage collected.
+const windows = {};
+
+let mm;
 
 let projectNames = ["default"];
 let currentProject = "default";
+
+const windowPrefs = {
+  mainWindow: {
+    devPath: "",
+    prodPath: "index.html",
+    options: {
+      webPreferences: {
+        nodeIntegration: true,
+        nodeIntegrationInWorker: true,
+        nativeWindowOpen: true, // window.open return Window object(like in regular browsers), not BrowserWindowProxy
+        affinity: "main-window" // main window, and addition windows should work in one process,
+      }
+    },
+    unique: true,
+
+    beforeCreate() {
+      const { width, height } = screen.getPrimaryDisplay().workAreaSize;
+
+      return {
+        options: {
+          width,
+          height
+        }
+      };
+    },
+
+    create(window) {
+      // Configure child windows to open without a menubar (windows/linux)
+      window.webContents.on(
+        "new-window",
+        (event, url, frameName, disposition, options) => {
+          if (frameName === "modal") {
+            event.preventDefault();
+            event.newGuest = new BrowserWindow(options);
+
+            setTimeout(() => {
+              event.newGuest.setMenu(null);
+            }, 500);
+          }
+        }
+      );
+      if (!mm) {
+        mm = new MediaManager({
+          update(message) {
+            window.webContents.send("media-manager-update", message);
+
+            projectNames = mm.$store.getters["media/projects"];
+            updateMenu();
+          }
+        });
+      } else {
+        mm.update = message => {
+          window.webContents.send("media-manager-update", message);
+
+          projectNames = mm.$store.getters["media/projects"];
+          updateMenu();
+        };
+      }
+
+      ipcMain.on("open-window", (event, message) => {
+        createWindow(message, event);
+      });
+
+      ipcMain.on("modv-ready", () => {
+        mm.start();
+      });
+
+      ipcMain.on("modv-destroy", () => {
+        mm.reset();
+      });
+
+      ipcMain.on("get-media-manager-state", event => {
+        event.reply("media-manager-state", store.state.media);
+      });
+
+      ipcMain.on("save-file", async (event, message) => {
+        try {
+          mm.saveFile(message);
+        } catch (e) {
+          event.reply("save-file", e);
+        }
+
+        event.reply("save-file", "saved");
+      });
+
+      ipcMain.on("current-project", (event, message) => {
+        currentProject = message;
+        updateMenu();
+      });
+
+      ipcMain.on("input-update", (event, message) => {
+        window.webContents.send("input-update", message);
+      });
+
+      if (!isDevelopment || process.env.IS_TEST) {
+        window.on("close", async e => {
+          if (app.showExitPrompt) {
+            e.preventDefault(); // Prevents the window from closing
+            const { response } = await dialog.showMessageBox({
+              type: "question",
+              buttons: ["Yes", "No"],
+              message: "modV",
+              detail: "Are you sure you want to quit?"
+            });
+
+            if (!response) {
+              app.showExitPrompt = false;
+              app.quit();
+            }
+          }
+        });
+      }
+
+      // Check for updates
+      autoUpdater.checkForUpdatesAndNotify();
+    },
+
+    destroy() {
+      ipcMain.removeAllListeners("open-window");
+      ipcMain.removeAllListeners("modv-ready");
+      ipcMain.removeAllListeners("modv-destroy");
+      ipcMain.removeAllListeners("get-media-manager-state");
+      ipcMain.removeAllListeners("save-file");
+      ipcMain.removeAllListeners("current-project");
+      ipcMain.removeAllListeners("input-update");
+    }
+  }
+};
 
 // Scheme must be registered before the app is ready
 protocol.registerSchemesAsPrivileged([
@@ -38,7 +168,7 @@ protocol.registerSchemesAsPrivileged([
 const isMac = process.platform === "darwin";
 
 function setCurrentProject(name) {
-  win.webContents.send("set-current-project", name);
+  windows["mainWindow"].webContents.send("set-current-project", name);
 }
 
 function generateMenuTemplate() {
@@ -70,14 +200,17 @@ function generateMenuTemplate() {
           label: "Open Preset",
           accelerator: "CmdOrCtrl+O",
           async click() {
-            const result = await dialog.showOpenDialog(win, {
+            const result = await dialog.showOpenDialog(windows["mainWindow"], {
               filters: [{ name: "Presets", extensions: ["json"] }],
               properties: ["openFile"],
               multiSelections: false
             });
 
             if (!result.canceled) {
-              win.webContents.send("open-preset", result.filePaths[0]);
+              windows["mainWindow"].webContents.send(
+                "open-preset",
+                result.filePaths[0]
+              );
             }
           }
         },
@@ -85,7 +218,7 @@ function generateMenuTemplate() {
           label: "Save Preset",
           accelerator: "CmdOrCtrl+Shift+S",
           async click() {
-            const result = await dialog.showSaveDialog(win, {
+            const result = await dialog.showSaveDialog(windows["mainWindow"], {
               filters: [{ name: "Presets", extensions: ["json"] }]
             });
 
@@ -97,7 +230,7 @@ function generateMenuTemplate() {
               try {
                 await fs.promises.writeFile(result.filePath, presetData);
               } catch (e) {
-                dialog.showMessageBox(win, {
+                dialog.showMessageBox(windows["mainWindow"], {
                   type: "error",
                   message: "Could not save preset to file",
                   detail: e.toString()
@@ -106,9 +239,9 @@ function generateMenuTemplate() {
             });
 
             try {
-              win.webContents.send("generate-preset");
+              windows["mainWindow"].webContents.send("generate-preset");
             } catch (e) {
-              dialog.showMessageBox(win, {
+              dialog.showMessageBox(windows["mainWindow"], {
                 type: "error",
                 message: "Could not generate preset",
                 detail: e.toString()
@@ -164,7 +297,7 @@ function generateMenuTemplate() {
         {
           label: "New Output Window",
           click: () => {
-            win.webContents.send("create-output-window");
+            windows["mainWindow"].webContents.send("create-output-window");
           }
         },
         { type: "separator" },
@@ -215,112 +348,71 @@ function updateMenu() {
   Menu.setApplicationMenu(menu);
 }
 
-function createWindow() {
+function createWindow(windowName, event) {
   updateMenu();
+
+  if (windowPrefs[windowName].unique && windows[windowName]) {
+    windows[windowName].focus();
+
+    if (event) {
+      event.reply("window-ready", {
+        id: windows[windowName].webContents.id,
+        window: windowName
+      });
+    }
+
+    return;
+  }
 
   // Should the application promt when attempting to quit?
   app.showExitPrompt = true;
 
-  const { width, height } = screen.getPrimaryDisplay().workAreaSize;
+  let windowOptions = windowPrefs[windowName].options;
+
+  if (typeof windowPrefs[windowName].beforeCreate === "function") {
+    const { options } = windowPrefs[windowName].beforeCreate();
+    windowOptions = { ...windowOptions, ...options };
+  }
+
   // Create the browser window.
-  win = new BrowserWindow({
-    width,
-    height,
-    webPreferences: {
-      nodeIntegration: true,
-      nodeIntegrationInWorker: true,
-      nativeWindowOpen: true, // window.open return Window object(like in regular browsers), not BrowserWindowProxy
-      affinity: "main-window" // main window, and addition windows should work in one process,
-    }
+  windows[windowName] = new BrowserWindow({
+    ...windowOptions
   });
 
-  // Configure child windows to open without a menubar (windows/linux)
-  win.webContents.on(
-    "new-window",
-    (event, url, frameName, disposition, options) => {
-      if (frameName === "modal") {
-        event.preventDefault();
-        event.newGuest = new BrowserWindow(options);
-
-        setTimeout(() => {
-          event.newGuest.setMenu(null);
-        }, 500);
-      }
-    }
-  );
-
-  const mm = new MediaManager({
-    update(message) {
-      win.webContents.send("media-manager-update", message);
-
-      projectNames = mm.$store.getters["media/projects"];
-      updateMenu(); // potentially janky
-    }
-  });
-
-  ipcMain.on("modv-ready", () => {
-    mm.start();
-  });
-
-  ipcMain.on("modv-destroy", () => {
-    mm.reset();
-  });
-
-  ipcMain.on("get-media-manager-state", event => {
-    event.reply("media-manager-state", store.state.media);
-  });
-
-  ipcMain.on("save-file", async (event, message) => {
-    try {
-      mm.saveFile(message);
-    } catch (e) {
-      event.reply("save-file", e);
-    }
-
-    event.reply("save-file", "saved");
-  });
-
-  ipcMain.on("current-project", (event, message) => {
-    currentProject = message;
-    updateMenu();
-  });
+  if (typeof windowPrefs[windowName].create === "function") {
+    windowPrefs[windowName].create(windows[windowName]);
+  }
 
   if (process.env.WEBPACK_DEV_SERVER_URL) {
     // Load the url of the dev server if in development mode
-    win.loadURL(process.env.WEBPACK_DEV_SERVER_URL);
+    windows[windowName].loadURL(
+      process.env.WEBPACK_DEV_SERVER_URL + windowPrefs[windowName].devPath
+    );
     if (!process.env.IS_TEST) {
-      win.webContents.openDevTools();
+      windows[windowName].webContents.openDevTools();
     }
   } else {
     createProtocol("app");
     // Load the index.html when not in development
-    win.loadURL("app://./index.html");
-    // Check for updates
-    autoUpdater.checkForUpdatesAndNotify();
+    windows[windowName].loadURL(`app://./${windowPrefs[windowName].prodPath}`);
   }
 
-  if (!isDevelopment || process.env.IS_TEST) {
-    win.on("close", async e => {
-      if (app.showExitPrompt) {
-        e.preventDefault(); // Prevents the window from closing
-        const { response } = await dialog.showMessageBox({
-          type: "question",
-          buttons: ["Yes", "No"],
-          message: "modV",
-          detail: "Are you sure you want to quit?"
-        });
+  windows[windowName].on("closed", () => {
+    if (typeof windowPrefs[windowName].destroy === "function") {
+      windowPrefs[windowName].destroy();
+    }
 
-        if (!response) {
-          app.showExitPrompt = false;
-          app.quit();
-        }
-      }
+    windows[windowName] = null;
+  });
+
+  if (event) {
+    windows[windowName].webContents.once("dom-ready", () => {
+      event.reply("window-ready", {
+        id: windows[windowName].webContents.id,
+        window: windowName
+      });
     });
   }
-
-  win.on("closed", () => {
-    win = null;
-  });
 }
 
 // Quit when all windows are closed.
@@ -335,9 +427,7 @@ app.on("window-all-closed", () => {
 app.on("activate", () => {
   // On macOS it's common to re-create a window in the app when the
   // dock icon is clicked and there are no other windows open.
-  if (win === null) {
-    createWindow();
-  }
+  createWindow("mainWindow");
 });
 
 // This method will be called when Electron has finished
@@ -349,7 +439,7 @@ app.on("ready", async () => {
     "true"
   );
 
-  createWindow();
+  createWindow("mainWindow");
 });
 
 // Exit cleanly on request from parent process in development mode.
