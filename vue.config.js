@@ -7,6 +7,11 @@ const publishingOptions = {
 };
 
 module.exports = {
+  // https://cli.vuejs.org/config/#pages
+  pages: {
+    index: "src/main.js"
+  },
+
   configureWebpack: {
     module: {
       rules: [
