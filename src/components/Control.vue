@@ -32,7 +32,7 @@
         <input type="checkbox" v-model="value" />
       </div>
       <div class="input" v-else-if="type === 'color'">
-        <input type="color" v-model="value" />
+        <ColorControl v-model="value" :moduleId="id" :prop="prop" />
       </div>
       <div class="input" v-else-if="type === 'texture'">
         <TextureControl v-model="value" />
@@ -60,6 +60,7 @@ import TweenControl from "./Controls/TweenControl";
 import PaletteControl from "./Controls/PaletteControl";
 import TextureControl from "./Controls/TextureControl";
 import FontControl from "./Controls/FontControl";
+import ColorControl from "./Controls/ColorControl";
 import hasLink from "./mixins/has-input-link";
 import inputIsFocused from "./mixins/input-is-focused";
 
@@ -74,7 +75,8 @@ export default {
     TweenControl,
     PaletteControl,
     TextureControl,
-    FontControl
+    FontControl,
+    ColorControl
   },
 
   data() {
