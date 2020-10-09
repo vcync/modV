@@ -39,6 +39,18 @@ import uuidv4 from "uuid/v4";
  * @property {String}  drawToCanvasId      The ID of the auxillary Canvas to draw the Group to,
  *                                         null indicates the Group should draw to the main output
  *
+ * @property {String}  alphaInputId        The Input ID for the Alpha control
+ *
+ * @property {String}  enabledInputId      The Input ID for the Enabled control
+ *
+ * @property {String}  clearingInputId     The Input ID for the Clearing control
+ *
+ * @property {String}  inheritInputId      The Input ID for the Inherit control
+ *
+ * @property {String}  compositeOperationInputId  The Input ID for the Composite Operation control
+ *
+ * @property {String}  pipelineInputId     The Input ID for the Pipeline control
+ *
  * @example
  * const Group = {
  *   name: 'Group',
@@ -116,6 +128,48 @@ const actions = {
       }),
       id: args.id || uuidv4()
     };
+
+    const alphaInputBind = await store.dispatch("inputs/addInput", {
+      type: "commit",
+      location: "groups/UPDATE_GROUP_BY_KEY",
+      data: { groupId: group.id, key: "alpha" }
+    });
+    group.alphaInputId = alphaInputBind.id;
+
+    const enabledInputBind = await store.dispatch("inputs/addInput", {
+      type: "commit",
+      location: "groups/UPDATE_GROUP_BY_KEY",
+      data: { groupId: group.id, key: "enabled" }
+    });
+    group.enabledInputId = enabledInputBind.id;
+
+    const clearingInputBind = await store.dispatch("inputs/addInput", {
+      type: "commit",
+      location: "groups/UPDATE_GROUP_BY_KEY",
+      data: { groupId: group.id, key: "clearing" }
+    });
+    group.clearingInputId = clearingInputBind.id;
+
+    const inheritInputBind = await store.dispatch("inputs/addInput", {
+      type: "commit",
+      location: "groups/UPDATE_GROUP_BY_KEY",
+      data: { groupId: group.id, key: "inherit" }
+    });
+    group.inheritInputId = inheritInputBind.id;
+
+    const coInputBind = await store.dispatch("inputs/addInput", {
+      type: "commit",
+      location: "groups/UPDATE_GROUP_BY_KEY",
+      data: { groupId: group.id, key: "compositeOperation" }
+    });
+    group.compositeOperationInputId = coInputBind.id;
+
+    const pipelineInputBind = await store.dispatch("inputs/addInput", {
+      type: "commit",
+      location: "groups/UPDATE_GROUP_BY_KEY",
+      data: { groupId: group.id, key: "pipeline" }
+    });
+    group.pipelineInputId = pipelineInputBind.id;
 
     commit("ADD_GROUP", { group, writeToSwap: args.writeToSwap });
 
@@ -225,6 +279,15 @@ const mutations = {
         const value = data[key];
         writeTo.groups[index][key] = value;
       }
+    }
+  },
+
+  UPDATE_GROUP_BY_KEY(state, { groupId, key, data, writeToSwap }) {
+    const writeTo = writeToSwap ? swap : state;
+    const index = writeTo.groups.findIndex(group => group.id === groupId);
+
+    if (index > -1) {
+      writeTo.groups[index][key] = data;
     }
   },
 

@@ -162,6 +162,11 @@ canvas {
   justify-content: center;
   align-items: center;
 
+  max-width: 140px;
+
+  border-radius: 8px;
+  overflow: hidden;
+
   canvas {
     opacity: 0.3;
     transition: 150ms opacity;

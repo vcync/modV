@@ -12,10 +12,46 @@
     class="group"
   >
     <section class="group-controls">
-      <input type="checkbox" v-model="enabled" title="Enabled" />
-      <input type="checkbox" v-model="inherit" title="Inherit" />
-      <input type="checkbox" v-model="clearing" title="Clearing" />
-      <input type="checkbox" v-model="pipeline" title="Pipeline" />
+      <input
+        type="checkbox"
+        v-model="enabled"
+        title="Enabled"
+        @mousedown="focusInput(group.enabledInputId, 'Enabled')"
+        :class="{
+          'has-link': hasLink(group.enabledInputId),
+          focused: isFocused(group.enabledInputId)
+        }"
+      />
+      <input
+        type="checkbox"
+        v-model="inherit"
+        title="Inherit"
+        @mousedown="focusInput(group.inheritInputId, 'Inherit')"
+        :class="{
+          'has-link': hasLink(group.inheritInputId),
+          focused: isFocused(group.inheritInputId)
+        }"
+      />
+      <input
+        type="checkbox"
+        v-model="clearing"
+        title="Clearing"
+        @mousedown="focusInput(group.clearingInputId, 'Clearing')"
+        :class="{
+          'has-link': hasLink(group.clearingInputId),
+          focused: isFocused(group.clearingInputId)
+        }"
+      />
+      <input
+        type="checkbox"
+        v-model="pipeline"
+        title="Pipeline"
+        @mousedown="focusInput(group.pipelineInputId, 'Pipeline')"
+        :class="{
+          'has-link': hasLink(group.pipelineInputId),
+          focused: isFocused(group.pipelineInputId)
+        }"
+      />
       <input
         type="range"
         v-model.number="alpha"
@@ -23,8 +59,23 @@
         min="0"
         step="0.001"
         class="group-alpha"
+        @mousedown="focusInput(group.alphaInputId, 'Alpha')"
+        :class="{
+          'has-link': hasLink(group.alphaInputId),
+          focused: isFocused(group.alphaInputId)
+        }"
       />
-      <select v-model="compositeOperation" class="group-composite-operation">
+      <select
+        v-model="compositeOperation"
+        class="group-composite-operation"
+        @mousedown="
+          focusInput(group.compositeOperationInputId, 'Composite Operation')
+        "
+        :class="{
+          'has-link': hasLink(group.compositeOperationInputId),
+          focused: isFocused(group.compositeOperationInputId)
+        }"
+      >
         <optgroup
           v-for="group in compositeOperations"
           :label="group.label"
@@ -323,6 +374,20 @@ export default {
       }
 
       this.titleEditable = false;
+    },
+
+    focusInput(id, title) {
+      this.$modV.store.dispatch("inputs/setFocusedInput", {
+        id,
+        title: `${this.name}: ${title}`
+      });
+    },
+    hasLink(id) {
+      return this.$modV.store.state.inputs.inputLinks[id];
+    },
+
+    isFocused(id) {
+      return this.$modV.store.state.inputs.focusedInput.id === id;
     }
   },
 
@@ -343,6 +408,8 @@ div.group {
 
 section.group-body {
   flex: 1;
+  overflow: hidden;
+  border-radius: 8px;
   overflow: hidden;
 }
 
