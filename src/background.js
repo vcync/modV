@@ -121,19 +121,15 @@ const windowPrefs = {
 
       if (!isDevelopment || process.env.IS_TEST) {
         window.on("close", async e => {
-          if (app.showExitPrompt) {
-            e.preventDefault(); // Prevents the window from closing
-            const { response } = await dialog.showMessageBox({
-              type: "question",
-              buttons: ["Yes", "No"],
-              message: "modV",
-              detail: "Are you sure you want to quit?"
-            });
+          const { response } = await dialog.showMessageBox(this, {
+            type: "question",
+            buttons: ["Yes", "No"],
+            message: "modV",
+            detail: "Are you sure you want to quit?"
+          });
 
-            if (!response) {
-              app.showExitPrompt = false;
-              app.quit();
-            }
+          if (response === 1) {
+            e.preventDefault();
           }
         });
       }
@@ -364,9 +360,6 @@ function createWindow(windowName, event) {
     return;
   }
 
-  // Should the application promt when attempting to quit?
-  app.showExitPrompt = true;
-
   let windowOptions = windowPrefs[windowName].options;
 
   if (typeof windowPrefs[windowName].beforeCreate === "function") {
@@ -419,7 +412,7 @@ function createWindow(windowName, event) {
 app.on("window-all-closed", () => {
   // On macOS it is common for applications and their menu bar
   // to stay active until the user quits explicitly with Cmd + Q
-  if (process.platform !== "darwin" || !app.showExitPrompt) {
+  if (process.platform !== "darwin") {
     app.quit();
   }
 });
