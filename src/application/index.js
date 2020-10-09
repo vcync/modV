@@ -169,6 +169,14 @@ export default class ModV {
       this.store.dispatch("windows/createWindow");
     });
 
+    ipcRenderer.on("input-update", (event, { moduleId, prop, data }) => {
+      this.store.dispatch("modules/updateProp", {
+        moduleId,
+        prop,
+        data
+      });
+    });
+
     this.ready = true;
     ipcRenderer.send("modv-ready");
     ipcRenderer.send("get-media-manager-state");

@@ -27,6 +27,23 @@ let projectNames = ["default"];
 let currentProject = "default";
 
 const windowPrefs = {
+  colorPicker: {
+    devPath: "colorPicker",
+    prodPath: "colorPicker.html",
+    options: {
+      webPreferences: {
+        nodeIntegration: true
+      },
+      transparent: true,
+      frame: false,
+      alwaysOnTop: true,
+      resizable: false,
+      skipTaskbar: true,
+      fullscreenable: false
+    },
+    unique: true
+  },
+
   mainWindow: {
     devPath: "",
     prodPath: "index.html",
