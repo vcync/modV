@@ -54,6 +54,7 @@
     "vue": "^2.6.10",
     "vue-class-component": "^7.2.3",
     "vue-color": "^2.7.1",
+    "vue-fragment": "^1.5.1",
     "vue-golden-layout": "^2.0.8",
     "vue-property-decorator": "^8.3.0",
     "vue-smooth-dnd": "^0.8.1",

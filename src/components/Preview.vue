@@ -1,5 +1,6 @@
 <template>
-  <div
+  <grid
+    class="preview"
     ref="container"
     v-searchTerms="{
       terms: ['preview', 'canvas', 'debugger'],
@@ -7,17 +8,28 @@
       type: 'Panel'
     }"
   >
-    <label><input type="checkbox" v-model="debug" />Debug Canvas</label><br />
-    <select v-model="debugId">
-      <option value="main">Main Output</option>
-      <optgroup v-for="(outputs, group) in groups" :label="group" :key="group">
-        <option v-for="output in outputs" :key="output.id" :value="output.id">{{
-          output.name
-        }}</option>
-      </optgroup>
-    </select>
-    <canvas ref="canvas"></canvas>
-  </div>
+    <c span="1..">
+      <Select class="light" v-model="debugId">
+        <option value="main">Main Output</option>
+        <optgroup
+          v-for="(outputs, group) in groups"
+          :label="group"
+          :key="group"
+        >
+          <option
+            v-for="output in outputs"
+            :key="output.id"
+            :value="output.id"
+            >{{ output.name }}</option
+          >
+        </optgroup>
+      </Select>
+    </c>
+
+    <c span="1..">
+      <canvas ref="canvas"></canvas>
+    </c>
+  </grid>
 </template>
 
 <script>
@@ -41,7 +53,17 @@ export default {
       [offscreen]
     );
 
-    this.resizeObserver = new ResizeObserver(this.resize).observe(container);
+    this.resizeObserver = new ResizeObserver(entries => {
+      requestAnimationFrame(() => {
+        if (!Array.isArray(entries) || !entries.length) {
+          return;
+        }
+
+        this.resize();
+      });
+    }).observe(container);
+
+    this.$modV.store.commit("outputs/TOGGLE_DEBUG", true);
   },
 
   computed: {
@@ -73,16 +95,6 @@ export default {
       set(value) {
         this.$modV.store.commit("outputs/SET_DEBUG_ID", value);
       }
-    },
-
-    debug: {
-      get() {
-        return this.$modV.store.state.outputs.debug;
-      },
-
-      set(value) {
-        this.$modV.store.commit("outputs/TOGGLE_DEBUG", value);
-      }
     }
   },
 
@@ -101,9 +113,8 @@ export default {
 </script>
 
 <style scoped>
-div {
-  color: var(--foreground-color);
-  background-color: var(--background-color);
+.preview {
+  overflow: hidden;
 }
 
 canvas {

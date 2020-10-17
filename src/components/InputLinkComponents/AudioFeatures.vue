@@ -1,34 +1,36 @@
 <template>
   <grid columns="4">
-    <c span="2">
-      <select v-model="feature">
-        <option v-for="feature in features" :key="feature" :value="feature">{{
-          feature
-        }}</option>
-      </select>
-    </c>
-    <c>
-      <button @click="makeLink">Make link</button>
-    </c>
-    <c>
-      <button @click="removeLink" :disabled="!hasLink">Remove link</button>
-    </c>
-    <c span="4" v-infoView="{ title: iVTitle, body: iVBody, id: iVID }">
-      <grid columns="2"
-        ><c>
-          <label
-            >Use smoothing?<input type="checkbox" v-model="useSmoothing"
-          /></label>
+    <c span="1..">
+      <grid columns="4">
+        <c span="1">
+          Audio Feature
         </c>
-        <c>
-          <label
-            >Smoothing<input
-              type="range"
-              min="0"
-              :max="MAX_SMOOTHING - SMOOTHING_STEP"
-              :step="SMOOTHING_STEP"
-              @input="smoothingInput"/></label
-        ></c>
+        <c span="3">
+          <Select v-model="feature" class="light">
+            <option
+              v-for="featureValue in features"
+              :key="featureValue"
+              :value="featureValue"
+              >{{ featureValue }}</option
+            >
+          </Select>
+        </c>
+      </grid>
+    </c>
+
+    <c span="1..">
+      <grid columns="4">
+        <c span="1">
+          Smoothing
+        </c>
+        <c span="3">
+          <RangeControl
+            min="0"
+            :max="MAX_SMOOTHING - SMOOTHING_STEP"
+            :step="SMOOTHING_STEP"
+            v-model="smoothingValue"
+          />
+        </c>
       </grid>
     </c>
   </grid>
@@ -36,6 +38,7 @@
 
 <script>
 import hasLink from "../mixins/has-input-link";
+import RangeControl from "../Controls/RangeControl";
 
 export default {
   mixins: [hasLink],
@@ -47,6 +50,10 @@ export default {
     }
   },
 
+  components: {
+    RangeControl
+  },
+
   data() {
     return {
       iVTitle: "Audio Feature Smoothing",
@@ -55,6 +62,7 @@ export default {
       iVID: "Audio Feature Smoothing",
 
       features: [
+        "none",
         "rms",
         "zcr",
         "energy",
@@ -70,7 +78,7 @@ export default {
         "perceptualSharpness"
       ],
 
-      feature: "rms",
+      feature: "none",
       smoothingId: null,
       smoothingValue: 0,
       useSmoothing: false
@@ -84,6 +92,10 @@ export default {
 
     SMOOTHING_STEP() {
       return this.$modV.store.state.meyda.SMOOTHING_STEP;
+    },
+
+    inputLink() {
+      return this.$modV.store.state.inputs.inputLinks[this.inputId];
     }
   },
 
@@ -128,8 +140,16 @@ export default {
   },
 
   watch: {
-    async useSmoothing(value) {
-      if (value) {
+    feature(value) {
+      if (value === "none") {
+        this.removeLink();
+      } else {
+        this.makeLink();
+      }
+    },
+
+    async smoothingValue(value) {
+      if (value && !this.smoothingId) {
         this.smoothingId = await this.$modV.store.dispatch(
           "meyda/getSmoothingId"
         );
@@ -143,6 +163,16 @@ export default {
         this.smoothingId = null;
         this.$modV.store.dispatch("meyda/removeSmoothingId", this.smoothingId);
         this.updateInputLinkArgs([this.feature]);
+      }
+    },
+
+    inputId() {
+      if (this.inputLink) {
+        if (this.inputLink.args.length > 2) {
+          this.smoothingValue = this.inputLink.args[2];
+        }
+
+        this.feature = this.inputLink.args[0];
       }
     }
   }

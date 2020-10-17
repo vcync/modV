@@ -1,78 +1,64 @@
 <template>
   <div
     class="active-module"
-    ref="activeModule"
     tabindex="0"
     @keydown="removeModule"
+    ref="activeModule"
   >
-    <grid
-      columns="4"
-      class="head padded-grid"
-      @click="clickActiveModule(module.meta.enabledInputId, 'Enabled')"
-      :class="{
-        'has-link': hasLink(module.meta.enabledInputId),
-        focused: isFocused(module.meta.enabledInputId)
-      }"
-    >
-      <c class="checkbox">
-        <input type="checkbox" v-model="enabled" :id="id" />
-      </c>
-      <c span="2" class="label">
-        <label :for="id">{{ name }}</label>
-      </c>
-
-      <c class="show-more">
-        <grid columns="2">
-          <c>
-            <div class="handle"></div>
-          </c>
-          <c>
-            <button @click="showMore = !showMore">
-              {{ showMore ? "▲" : "▼" }}
-            </button>
-          </c>
-        </grid>
-      </c>
-    </grid>
-
-    <grid class="controls">
+    <div class="active-module__title handle">
+      {{ name }}
+    </div>
+    <grid class="active-module__controls" columns="6">
       <c span="1..">
         <grid
-          columns="4"
-          class="padded-grid"
-          @click="focusInput(module.meta.alphaInputId, 'Alpha')"
+          columns="6"
+          @mousedown="clickActiveModule(module.meta.enabledInputId, 'Enable')"
+          :class="{
+            'has-link': hasLink(module.meta.enabledInputId),
+            focused: isFocused(module.meta.enabledInputId)
+          }"
+        >
+          <c span="2">Enable</c>
+          <c span="4"><Checkbox v-model="enabled"/></c>
+        </grid>
+      </c>
+
+      <c span="1..">
+        <grid
+          columns="6"
+          @mousedown="focusInput(module.meta.alphaInputId, 'Alpha')"
           :class="{
             'has-link': hasLink(module.meta.alphaInputId),
             focused: isFocused(module.meta.alphaInputId)
           }"
         >
-          <c span="2">
-            <label>Alpha</label>
-          </c>
-          <c span="2">
-            <input type="range" v-model="alpha" min="0" max="1" step="0.01" />
+          <c span="2">Alpha</c>
+          <c span="4">
+            <Range
+              value="1"
+              min="0"
+              max="1"
+              step="0.001"
+              v-model.number="alpha"
+            />
           </c>
         </grid>
       </c>
 
       <c span="1..">
         <grid
-          columns="4"
-          class="padded-grid"
-          @click="
-            focusInput(
-              module.meta.compositeOperationInputId,
-              'Composite Operation'
-            )
+          columns="6"
+          @mousedown="
+            focusInput(module.meta.compositeOperationInputId, 'Blend Mode')
           "
           :class="{
             'has-link': hasLink(module.meta.compositeOperationInputId),
             focused: isFocused(module.meta.compositeOperationInputId)
           }"
         >
-          <c span="2"><label>Blend</label></c>
-          <c span="2">
-            <select class="blend-controls" v-model="blendMode">
+          <c span="2">Blend</c>
+          <c span="4">
+            <Select v-model="blendMode">
               <optgroup
                 v-for="group in blendModes"
                 :label="group.label"
@@ -85,27 +71,17 @@
                   >{{ mode.label }}</option
                 >
               </optgroup>
-            </select>
+            </Select>
           </c>
         </grid>
-      </c>
-
-      <c span="1.." v-if="module.props && showMore">
-        <Control
-          class="padded-grid"
-          v-for="key in getProps(module.$moduleName)"
-          :id="id"
-          :prop="key"
-          :key="key"
-        />
       </c>
     </grid>
   </div>
 </template>
 
 <script>
-import Control from "@/components/Control";
 import blendModes from "../util/composite-operations";
+
 export default {
   props: ["id"],
 
@@ -168,10 +144,6 @@ export default {
     }
   },
 
-  components: {
-    Control
-  },
-
   methods: {
     getProps(moduleName) {
       const moduleDefinition = this.$modV.store.state.modules.registered[
@@ -224,64 +196,44 @@ export default {
 </script>
 
 <style scoped>
-.has-link {
-  border: 1px solid var(--focus-color);
+.active-module {
+  color: #000;
+  width: 200px;
+  font-size: 14px;
 }
 
-.focused {
-  background-color: var(--foreground-color-3);
-  color: var(--background-color);
+.active-module:focus {
+  outline: #c4c4c4 2px solid;
 }
 
-.padded-grid {
-  padding: 0.75em 0.75em;
+.active-module__title {
+  background: #9a9a9a;
+  width: 100%;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
-.blend-controls {
-  max-width: 100%;
+.active-module__controls,
+.active-module__controls grid {
+  grid-row-gap: 0;
+  grid-column-gap: 0;
+  background: #e5e5e5;
 }
 
-.active-module .head {
-  display: flex;
+.active-module__controls grid,
+.active-module__title {
+  box-sizing: border-box;
+  padding: 0 4px;
 }
 
-.active-module .head .label {
-  flex-grow: 1;
-  margin: 0 5px;
+.active-module__controls grid c {
+  display: inline-flex;
+  align-items: center;
 }
 
-.active-module .show-more {
-  align-self: flex-end;
-}
-
-input[type="checkbox"] {
-  margin: 0;
-}
-
-.handle {
-  position: relative;
-  cursor: -webkit-grab;
-  height: 100%;
-}
-
-.handle::before,
-.handle::after {
-  content: "";
-  right: 15%;
-  height: 11%;
-  left: 15%;
-
-  position: absolute;
-  border-top: 2px solid;
-  border-bottom: 2px solid;
-}
-
-.handle::before {
-  top: 16%;
-}
-
-.handle::after {
-  bottom: 21%;
+.active-module__controls .focused {
+  background: #363636;
+  color: #ffffff;
 }
 </style>
 

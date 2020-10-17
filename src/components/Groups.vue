@@ -8,25 +8,22 @@
       type: 'Panel'
     }"
   >
-    <grid>
-      <c span="1..">
-        <button @click="createGroup">Create new Group</button>
-      </c>
-      <Container
-        drag-handle-selector=".group-title"
-        lock-axis="y"
-        group-name="groups"
-        :should-animate-drop="() => false"
-        tag="c"
-        span="1.."
-        class="group-container"
-        @drop="onDrop"
-      >
-        <Draggable v-for="group in groups" :key="group.id">
-          <Group :groupId="group.id" />
-        </Draggable>
-      </Container>
-    </grid>
+    <Container
+      drag-handle-selector=".group__title"
+      lock-axis="y"
+      group-name="groups"
+      :should-animate-drop="() => false"
+      tag="c"
+      span="1.."
+      class="group-container"
+      @drop="onDrop"
+    >
+      <Draggable v-for="group in groups" :key="group.id">
+        <Group :groupId="group.id" />
+      </Draggable>
+    </Container>
+
+    <Button class="light" @click="createGroup">New Group</Button>
   </div>
 </template>
 

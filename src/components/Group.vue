@@ -1,5 +1,6 @@
 <template>
   <div
+    class="group"
     v-searchTerms="{
       terms: ['group'],
       title: name,
@@ -9,49 +10,193 @@
     @focus="focus"
     @mousedown="focus"
     :class="{ focused }"
-    class="group"
+  >
+    <div
+      class="group__controls"
+      :class="{ 'group__controls-hidden': !controlsShown }"
+    >
+      <grid columns="6">
+        <c span="1..">
+          <grid
+            columns="6"
+            @mousedown="focusInput(group.enabledInputId, 'Enable')"
+            :class="{
+              'has-link': hasLink(group.enabledInputId),
+              focused: isFocused(group.enabledInputId)
+            }"
+          >
+            <c span="2">Enable</c>
+          </grid>
+        </c>
+
+        <c span="1..">
+          <grid
+            columns="6"
+            @mousedown="focusInput(group.inheritInputId, 'Inherit')"
+            :class="{
+              'has-link': hasLink(group.inheritInputId),
+              focused: isFocused(group.inheritInputId)
+            }"
+          >
+            <c span="2">Inherit</c>
+            <c span="4"
+              ><Checkbox
+                v-model="inherit"
+                :class="{ light: isFocused(group.inheritInputId) }"
+            /></c>
+          </grid>
+        </c>
+
+        <c span="1..">
+          <grid
+            columns="6"
+            @mousedown="focusInput(group.clearingInputId, 'Clearing')"
+            :class="{
+              'has-link': hasLink(group.clearingInputId),
+              focused: isFocused(group.clearingInputId)
+            }"
+          >
+            <c span="2">Clearing</c>
+            <c span="4"
+              ><Checkbox
+                v-model="clearing"
+                :class="{ light: isFocused(group.clearingInputId) }"
+            /></c>
+          </grid>
+        </c>
+
+        <c span="1..">
+          <grid
+            columns="6"
+            @mousedown="focusInput(group.pipelineInputId, 'Pipeline')"
+            :class="{
+              'has-link': hasLink(group.pipelineInputId),
+              focused: isFocused(group.pipelineInputId)
+            }"
+          >
+            <c span="2">Pipeline</c>
+            <c span="4"
+              ><Checkbox
+                v-model="pipeline"
+                :class="{ light: isFocused(group.pipelineInputId) }"
+            /></c>
+          </grid>
+        </c>
+
+        <c span="1..">
+          <grid
+            columns="6"
+            @mousedown="focusInput(group.alphaInputId, 'Alpha')"
+            :class="{
+              'has-link': hasLink(group.alphaInputId),
+              focused: isFocused(group.alphaInputId)
+            }"
+          >
+            <c span="2">Alpha</c>
+            <c span="4">
+              <Range value="1" max="1" step="0.001" v-model="alpha" />
+            </c>
+          </grid>
+        </c>
+
+        <c span="1..">
+          <grid
+            columns="6"
+            @mousedown="
+              focusInput(group.compositeOperationInputId, 'Blend Mode')
+            "
+            :class="{
+              'has-link': hasLink(group.compositeOperationInputId),
+              focused: isFocused(group.compositeOperationInputId)
+            }"
+          >
+            <c span="2">Blend</c>
+            <c span="4">
+              <Select
+                v-model="blendMode"
+                :class="{ light: isFocused(group.compositeOperationInputId) }"
+              >
+                <optgroup
+                  v-for="group in compositeOperations"
+                  :label="group.label"
+                  :key="group.label"
+                >
+                  <option
+                    v-for="mode in group.children"
+                    :value="mode.value"
+                    :key="mode.label"
+                    >{{ mode.label }}</option
+                  >
+                </optgroup>
+              </Select>
+            </c>
+          </grid>
+        </c>
+
+        <!-- <c span="1..">
+          <grid columns="6">
+            <c span="2">Quality</c>
+            <c span="4">
+              <Select v-model="quality">
+                <option value="full">Full</option>
+                <option value="half">Half</option>
+                <option value="quarter">Quarter</option>
+                <option value="bad">Bad</option>
+                <option value="awful">Awful</option>
+              </Select>
+            </c>
+          </grid>
+        </c> -->
+      </grid>
+    </div>
+    <div class="group__left">
+      <Checkbox class="group__enabledCheckbox" v-model="enabled" />
+      <button
+        class="group__controlsButton"
+        :class="{ 'group__controlsButton-hidden': !controlsShown }"
+        @click="controlsShown = !controlsShown"
+      >
+        <img :src="Arrow" />
+      </button>
+    </div>
+    <div class="group__right">
+      <div class="group__title" @click.self="endTitleEditable">
+        <span v-if="!titleEditable" @dblclick="toggleTitleEditable">{{
+          name
+        }}</span>
+        <TextInput
+          v-model="localName"
+          v-else
+          @keypress.enter="endTitleEditable"
+        />
+      </div>
+      <Container
+        drag-handle-selector=".handle"
+        orientation="horizontal"
+        group-name="modules"
+        :should-animate-drop="() => false"
+        :get-child-payload="getChildPayload"
+        tag="div"
+        class="group__modules"
+        @drop="onDrop"
+      >
+        <Draggable
+          v-for="moduleId in modules"
+          :key="moduleId"
+          class="group__module"
+        >
+          <div class="group-module-container">
+            <ActiveModule :id="moduleId" @remove-module="removeModule" />
+          </div>
+        </Draggable>
+      </Container>
+    </div>
+  </div>
+
+  <!-- <div
+
   >
     <section class="group-controls">
-      <input
-        type="checkbox"
-        v-model="enabled"
-        title="Enabled"
-        @mousedown="focusInput(group.enabledInputId, 'Enabled')"
-        :class="{
-          'has-link': hasLink(group.enabledInputId),
-          focused: isFocused(group.enabledInputId)
-        }"
-      />
-      <input
-        type="checkbox"
-        v-model="inherit"
-        title="Inherit"
-        @mousedown="focusInput(group.inheritInputId, 'Inherit')"
-        :class="{
-          'has-link': hasLink(group.inheritInputId),
-          focused: isFocused(group.inheritInputId)
-        }"
-      />
-      <input
-        type="checkbox"
-        v-model="clearing"
-        title="Clearing"
-        @mousedown="focusInput(group.clearingInputId, 'Clearing')"
-        :class="{
-          'has-link': hasLink(group.clearingInputId),
-          focused: isFocused(group.clearingInputId)
-        }"
-      />
-      <input
-        type="checkbox"
-        v-model="pipeline"
-        title="Pipeline"
-        @mousedown="focusInput(group.pipelineInputId, 'Pipeline')"
-        :class="{
-          'has-link': hasLink(group.pipelineInputId),
-          focused: isFocused(group.pipelineInputId)
-        }"
-      />
       <input
         type="range"
         v-model.number="alpha"
@@ -123,13 +268,14 @@
         </Draggable>
       </Container>
     </section>
-  </div>
+  </div> -->
 </template>
 
 <script>
 import { Container, Draggable } from "vue-smooth-dnd";
 import ActiveModule from "./ActiveModule";
 import compositeOperations from "../util/composite-operations";
+import Arrow from "../assets/graphics/Arrow.svg";
 
 const applyDrag = (arr, dragResult) => {
   const { removedIndex, addedIndex, payload } = dragResult;
@@ -169,7 +315,9 @@ export default {
     return {
       compositeOperations,
       titleEditable: false,
-      localName: ""
+      localName: "",
+      controlsShown: false,
+      Arrow
     };
   },
 
@@ -288,7 +436,7 @@ export default {
       }
     },
 
-    compositeOperation: {
+    blendMode: {
       get() {
         return this.group.compositeOperation;
       },
@@ -400,78 +548,151 @@ export default {
 </script>
 
 <style scoped>
-div.group {
+.group {
+  font-size: 14px;
   display: flex;
-  max-width: 100%;
-  margin-bottom: 10px;
+  width: 100%;
+  margin-bottom: 8px;
 }
 
-section.group-body {
+.group.focused {
+  outline: #c4c4c4 2px solid;
+}
+
+.group__body {
+  display: flex;
+  width: 100%;
+}
+
+.group__left {
+  background: #363636;
+  box-sizing: border-box;
+  display: flex;
+  padding: 8px;
+  width: 32px;
+
+  flex-direction: column;
+}
+
+.group__right {
   flex: 1;
   overflow: hidden;
-  border-radius: 8px;
-  overflow: hidden;
-}
-
-section.group-controls {
   display: flex;
   flex-direction: column;
 }
 
-.focused div.group-title {
-  background-color: var(--foreground-color-3);
-  color: var(--foreground-color);
-}
-
-div.group-title {
-  padding: var(--baseline);
-  width: 100%;
-  background-color: var(--foreground-color-3);
-  color: var(--foreground-color-2);
-  box-sizing: border-box;
-}
-
-.focused div.group-modules {
-  background-color: var(--foreground-color-2);
-}
-
-div.group-modules {
-  display: flex;
-  overflow-x: auto;
-  min-height: 174px;
-  background-color: var(--foreground-color-3);
-}
-
-div.group-module {
-  min-height: 80px;
+.group__enabledCheckbox {
   position: relative;
+  z-index: 1;
 }
 
-div.group-module:not(:last-child) {
-  margin-right: 20px;
-}
-
-div.group-module:not(:last-child)::after {
-  content: "→";
-  position: absolute;
-  top: 0;
-  right: -14px;
+.group__controlsButton {
+  appearance: none;
+  background: none;
+  border: none;
+  padding: 0;
   height: 100%;
+  margin-top: -16px;
+
   display: flex;
   align-items: center;
 }
 
-div.group-module-container {
-  background-color: var(--foreground-color-3);
-  width: 300px;
+.group__controlsButton:focus {
+  outline: none;
 }
 
-input.group-alpha {
-  -webkit-appearance: slider-vertical;
-  width: 13px;
+.group__controlsButton-hidden {
+  transform: rotate(180deg);
 }
 
-select.group-composite-operation {
+.group__modules {
+  background: #484848;
+  padding: 8px;
+  overflow-x: scroll;
+  white-space: nowrap;
+  display: block !important;
+  flex: 1;
+}
+
+.group__module {
+  display: inline-block !important;
+}
+
+.group__modules > * {
+  flex-shrink: 0;
+  display: inline-block;
+}
+
+.group__modules > * + * {
+  position: relative;
+  margin-left: 24px;
+}
+
+.group__modules > * + *::before {
+  background-image: url(../assets/graphics/Arrow.svg);
+  background-repeat: no-repeat;
+  background-position: center;
+  background-size: 50%;
+
+  content: "";
+  position: absolute;
+  transform: rotate(180deg);
+  left: -18px;
+  height: 100%;
   width: 13px;
+  display: flex;
+  align-items: center;
+}
+
+.group__title {
+  background: #363636;
+  color: white;
+  padding: 8px;
+  line-height: 1;
+}
+
+.group__title input {
+  max-width: 120px;
+}
+
+.group__controls {
+  background: #363636;
+  color: white;
+  padding: 0;
+  box-sizing: border-box;
+  flex-shrink: 0;
+}
+
+.group__controls grid {
+  grid-row-gap: 0;
+  grid-column-gap: 0;
+}
+
+.group__controls c {
+  line-height: 1;
+  display: inline-flex;
+  align-items: center;
+}
+
+.group__controls > grid {
+  padding: 4px 0;
+}
+
+.group__controls c grid {
+  padding: 4px 8px;
+  width: 100%;
+}
+
+.group__controls .focused {
+  background: #151515;
+  color: #ffffff;
+}
+
+.group__controls-hidden {
+  padding-left: 0;
+  padding-right: 0;
+  width: 0;
+  overflow: hidden;
 }
 </style>

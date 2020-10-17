@@ -10,8 +10,7 @@
   >
     <grid columns="4">
       <c span="1..">
-        <input
-          type="text"
+        <TextInput
           placeholder="search"
           v-model="searchTerm"
           ref="searchField"
@@ -26,21 +25,18 @@
             span="4"
             v-show="renderersToShow.indexOf(renderer) > -1"
           >
-            <h1>{{ renderer }}</h1>
+            <div class="title">{{ renderer }}</div>
             <Container
               behaviour="copy"
               group-name="modules"
               :get-child-payload="
                 e => getChildPayload('modulesByRenderer', e, renderer)
               "
-              tag="grid"
-              columns="4"
               class="fluid"
             >
               <Draggable
                 v-for="(module, name) in modules"
                 :key="name"
-                tag="c"
                 ghost-class="ghost"
                 v-show="modulesToShow.indexOf(name) > -1"
                 tabindex="0"
@@ -224,13 +220,12 @@ export default {
   display: none !important;
 }
 
-grid.fluid {
-  grid-template-columns: repeat(auto-fit, minmax(90px, 1fr));
+.fluid > .smooth-dnd-draggable-wrapper {
+  display: inline-block;
+  margin-right: 8px;
 }
 
 div.gallery {
-  color: var(--foreground-color);
-
   display: flex;
   flex-direction: column;
   box-sizing: border-box;
@@ -245,5 +240,15 @@ div.gallery > grid {
 .results {
   height: 100%;
   overflow-y: scroll;
+}
+
+.results grid {
+  margin-right: 8px;
+}
+
+.title {
+  font-size: 24px;
+  text-transform: uppercase;
+  margin-bottom: 8px;
 }
 </style>

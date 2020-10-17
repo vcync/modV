@@ -1,42 +1,61 @@
 <template>
-  <grid
+  <div
+    class="device-config"
     v-infoView="{ title: iVTitle, body: iVBody, id: 'Media Input Config' }"
     v-searchTerms="{
       terms: ['audio', 'video', 'input'],
       title: 'Audio/Video Input Config',
       type: 'Panel'
     }"
-    columns="4"
-    class="device-config"
   >
-    <c span="1">Audio Input</c>
-    <c span="3">
-      <select v-model="currentAudioSource">
-        <option
-          v-for="input in audioInputs"
-          :key="input.deviceId"
-          :value="input.deviceId"
-          >{{ input.label }}</option
-        >
-      </select>
-    </c>
+    <div>
+      <grid class="borders">
+        <c span="1..">
+          <grid columns="4">
+            <c span="1">
+              Audio Input
+            </c>
+            <c span="3">
+              <Select class="light" v-model="currentAudioSource">
+                <option
+                  v-for="input in audioInputs"
+                  :key="input.deviceId"
+                  :value="input.deviceId"
+                  >{{ input.label }}</option
+                >
+              </Select>
+            </c>
+          </grid>
+        </c>
 
-    <c span="1">Video Input</c>
-    <c span="3">
-      <select v-model="currentVideoSource">
-        <option
-          v-for="input in videoInputs"
-          :key="input.deviceId"
-          :value="input.deviceId"
-          >{{ input.label }}</option
-        >
-      </select>
-    </c>
+        <c span="1..">
+          <grid columns="4">
+            <c span="1">
+              Video Input
+            </c>
+            <c span="3">
+              <Select class="light" v-model="currentVideoSource">
+                <option
+                  v-for="input in videoInputs"
+                  :key="input.deviceId"
+                  :value="input.deviceId"
+                  >{{ input.label }}</option
+                >
+              </Select>
+            </c>
+          </grid>
+        </c>
 
-    <c span="1..">
-      <button @click="renumerate">Renumerate Devices</button>
-    </c>
-  </grid>
+        <c span="1..">
+          <grid columns="4">
+            <c span="2+3">
+              <Button class="light" @click="renumerate">Re-scan devices</Button>
+            </c>
+          </grid>
+        </c>
+      </grid>
+    </div>
+  </div>
 </template>
 
 <script>
@@ -51,11 +70,19 @@ export default {
 
   computed: {
     audioInputs() {
-      return this.$modV.store.state.mediaStream.audio;
+      const audioInputs = Object.values(
+        this.$modV.store.state.mediaStream.audio
+      );
+
+      return audioInputs.sort((a, b) => a.label.localeCompare(b.label));
     },
 
     videoInputs() {
-      return this.$modV.store.state.mediaStream.video;
+      const videoInputs = Object.values(
+        this.$modV.store.state.mediaStream.video
+      );
+
+      return videoInputs.sort((a, b) => a.label.localeCompare(b.label));
     },
 
     currentAudioSource: {
@@ -86,3 +113,15 @@ export default {
   }
 };
 </script>
+
+<style scoped>
+.device-config input,
+.device-config textarea,
+.device-config .select {
+  max-width: 120px !important;
+}
+
+.device-config .range-control {
+  max-width: 240px !important;
+}
+</style>

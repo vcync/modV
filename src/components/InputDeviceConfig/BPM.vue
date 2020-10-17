@@ -10,17 +10,19 @@
   >
     <c span="1..">BPM Source</c>
     <c span="3">
-      <select v-model="bpmSource">
+      <Select class="light" v-model="bpmSource">
         <option
           v-for="(source, index) in bpmSources"
           :value="source"
           :key="index"
           >{{ source }}</option
         >
-      </select>
+      </Select>
     </c>
     <c span="1..">
-      <button :disabled="bpmSource !== 'tap'" @mousedown="tap">TAP</button>
+      <Button class="light" :disabled="bpmSource !== 'tap'" @mousedown="tap"
+        >TAP</Button
+      >
       {{ bpm }}
     </c>
   </grid>
@@ -87,3 +89,15 @@ export default {
   }
 };
 </script>
+
+<style scoped>
+.device-config input,
+.device-config textarea,
+.device-config .select {
+  max-width: 120px !important;
+}
+
+.device-config .range-control {
+  max-width: 240px !important;
+}
+</style>

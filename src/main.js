@@ -1,9 +1,10 @@
 import Vue from "vue";
 import vgl from "vue-golden-layout";
-import "golden-layout/src/css/goldenlayout-dark-theme.css";
+import Fragment from "vue-fragment";
+import "./components/inputs";
 import "./components/directives/InfoView";
-
 import "./components/directives/Search";
+import "./components/directives/ValueTooltip";
 
 import App from "./App.vue";
 import ModV from "./application";
@@ -13,6 +14,7 @@ import contextMenuPlugin from "./application/plugins/context-menu";
 Vue.config.ignoredElements = ["grid", "c"];
 Vue.config.productionTip = false;
 Vue.use(vgl);
+Vue.use(Fragment.Plugin);
 
 const modV = new ModV();
 window.modV = modV;

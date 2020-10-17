@@ -1,7 +1,8 @@
 <template>
-  <grid>
-    <c span="1.."><textarea v-model.lazy="modelData"></textarea></c>
-    <c span="1..">
+  <grid columns="4">
+    <c span="1">Colors</c>
+
+    <c span="2">
       <div class="swatches">
         <label
           class="swatch"
@@ -23,25 +24,30 @@
         <button class="swatch add-swatch" @click="addSwatch"></button>
       </div>
     </c>
-    <c span="1..">
-      <input type="number" v-model="modelDuration" :disabled="modelUseBpm" />
-    </c>
-    <c span="1..">
-      <select v-model.number="modelEasing" :disabled="!!modelSteps">
+
+    <c span="1+1">Easing</c>
+    <c span="2">
+      <Select v-model.number="modelEasing" :disabled="!!modelSteps">
         <option
           v-for="easing in easings"
           :key="easing.value"
           :value="easing.value"
           >{{ easing.label }}</option
         >
-      </select>
+      </Select>
     </c>
+
+    <c span="1+1">Duration</c>
     <c span="2">
-      <label>Use BPM <input type="checkbox" v-model="modelUseBpm"/></label
-    ></c>
+      <Number v-model="modelDuration" :disabled="modelUseBpm" />
+    </c>
+
+    <c span="1+1">Use BPM</c>
+    <c><Checkbox v-model="modelUseBpm"/></c>
+
+    <c span="1+1"><label :for="`${111}-bpmDivision`">BPM Division</label></c>
     <c span="2">
-      <label :for="`${111}-bpmDivision`">BPM Division</label>
-      <select v-model.number="modelBpmDivision">
+      <Select v-model.number="modelBpmDivision">
         <option value="1">1</option>
         <option value="2">2</option>
         <option value="4">4</option>
@@ -51,20 +57,28 @@
         <option value="64">64</option>
         <option value="128">128</option>
         <option value="256">256</option>
-      </select></c
-    >
-    <c span="2">
+      </Select>
+    </c>
+
+    <c span="1+1">
       <label
         title="If unchecked the duration will be used per step. duration * numberOfSteps"
-        >Use duration as total time?
-        <input type="checkbox" v-model="modelDurationAsTotalTime"
-      /></label>
+        >Duration as total time</label
+      >
     </c>
     <c span="2">
+      <Checkbox v-model="modelDurationAsTotalTime" />
+    </c>
+
+    <c span="1+1">
       <label
         title="If greater than 0 step mode will be enabled, which steps a linear animation over the given amount of steps"
-        >Steps<input type="number" v-model.number="modelSteps"
-      /></label>
+      >
+        Steps
+      </label>
+    </c>
+    <c span="2">
+      <Number v-model.number="modelSteps" />
     </c>
   </grid>
 </template>
