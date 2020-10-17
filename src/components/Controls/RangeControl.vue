@@ -1,29 +1,26 @@
 <template>
-  <div
-    ref="container"
-    v-infoView="{ title: iVTitle, body: iVBody, id: 'Range Control' }"
-  >
+  <div class="range-control" ref="container">
     <canvas
+      v-tooltip
+      @mousedown.left="requestPointerLock"
+      @mouseup.left="exitPointerLock"
+      @click.right="toggleEditMode"
+      v-show="!editMode"
       ref="canvas"
-      @mousedown="requestPointerLock"
-      @mouseup="exitPointerLock"
-      @dblclick="toggleEditMode"
     ></canvas>
-    <input
+    <Number
       v-model="inputValue"
       type="number"
       step="0.01"
+      @keypress.enter="toggleEditMode"
+      @click.right="toggleEditMode"
       v-show="editMode"
-      @input="input"
-      @keypress.enter="editMode = false"
       ref="input"
     />
   </div>
 </template>
 
 <script>
-import fontFamily from "../../util/font-family";
-
 export default {
   props: {
     min: {
@@ -42,26 +39,15 @@ export default {
       type: Number,
       default: 2
     },
-    type: {
-      type: String,
-      validator: val => ["int", "float"].includes(val),
-      default: "float"
-    },
     default: Number,
     value: Number
   },
 
   data() {
     return {
-      iVTitle: "Range Control",
-      iVBody:
-        "Drag and hold Shift to move through values quickly. Drag and hold Alt for more precision. Double click to enter a specific value, press enter to set the value.",
-
       context: null,
       active: false,
       position: 0,
-      actualPosition: 0,
-      internalValue: 0,
       editMode: false,
       inputValue: 0,
       lastCursor: "",
@@ -69,49 +55,143 @@ export default {
       baseLineHeight: 8,
       modifiedLineHeight: 5,
       inbetweenLineHeight: 12,
-      resizeObserver: null,
-      raf: -1,
-      lastLoopValue: -1
+      mouseIsDown: false,
+      overrideMinMax: false,
+      hasOverridenMinMax: false,
+      fontFamily: "",
+      resizeObserver: null
     };
   },
 
   computed: {
+    spacingScale() {
+      const range = this.max - this.min;
+
+      return range > 1 ? 1 : 1 / 1 + range;
+    },
+
     spacingCalc() {
-      const { devicePixelRatio: dpr } = window;
-      return (this.spacing * dpr) / this.spacingModifier;
+      return (this.spacing * this.spacingScale) / this.spacingModifier;
     }
   },
 
   created() {
     this.position = -this.value * this.spacingCalc;
-    this.internalValue = this.value;
   },
 
   mounted() {
-    const { devicePixelRatio: dpr } = window;
     this.canvas = this.$refs.canvas;
     this.context = this.$refs.canvas.getContext("2d");
-    this.canvas.width = 200 * dpr;
-    this.canvas.height = 20 * dpr;
 
-    this.context.fillStyle = "#333";
-    this.context.strokeStyle = "#fff";
-    this.loop();
+    this.fontFamily = getComputedStyle(
+      document.documentElement
+    ).getPropertyValue("--sansFont");
 
-    this.actualPosition = -this.value * this.spacingCalc;
+    window.addEventListener("keydown", this.keyDown);
+    window.addEventListener("keyup", this.keyUp);
 
     this.resizeObserver = new ResizeObserver(this.resize).observe(
       this.$refs.container
     );
   },
 
-  beforeDestroy() {
+  beforeUnmount() {
     if (this.resizeObserver) {
       this.resizeObserver.disconnect();
     }
+
+    window.removeEventListener("keydown", this.keyDown);
+    window.removeEventListener("keyup", this.keyUp);
   },
 
   methods: {
+    draw() {
+      const { devicePixelRatio: dpr } = window;
+      const {
+        canvas,
+        context,
+        position,
+        spacingCalc,
+        value,
+        baseLineHeight,
+        modifiedLineHeight,
+        inbetweenLineHeight,
+        fontFamily
+      } = this;
+
+      context.fillStyle = "#C4C4C4";
+      context.fillRect(0, 0, canvas.width, canvas.height);
+      let isExact = false;
+      const canvasWidthHalf = canvas.width / 2;
+
+      context.strokeStyle = "#fff";
+
+      let maxIndicators = canvas.width / spacingCalc;
+      if (maxIndicators % 2 !== 0) {
+        maxIndicators += 1;
+      }
+
+      const min = Math.round(value - maxIndicators / 2);
+      const max = Math.round(value + maxIndicators / 2);
+
+      for (let i = min; i < max + 1; i += 1) {
+        context.strokeStyle = "#fff";
+        let heightMod = baseLineHeight;
+        if (i % 10 === 0) {
+          heightMod = modifiedLineHeight;
+        }
+
+        if (i === value) {
+          isExact = true;
+        }
+
+        const gap = canvasWidthHalf + position + i * spacingCalc + 0.5;
+
+        context.beginPath();
+        context.moveTo(gap, heightMod);
+        context.lineTo(gap, canvas.height - heightMod);
+        context.stroke();
+
+        const inbetweenGap = spacingCalc / 6;
+
+        for (let j = 1; j < 6; j += 1) {
+          context.strokeStyle = "#777";
+          context.beginPath();
+          context.moveTo(
+            Math.floor(gap + j * inbetweenGap) + 0.5,
+            inbetweenLineHeight
+          );
+          context.lineTo(
+            Math.floor(gap + j * inbetweenGap) + 0.5,
+            canvas.height - inbetweenLineHeight
+          );
+          context.stroke();
+        }
+        context.fillStyle = "#C4C4C4";
+        context.fillRect(
+          gap - 5 * dpr,
+          Math.floor(canvas.height / 2) - 5 * dpr,
+          10 * dpr,
+          10 * dpr
+        );
+
+        context.fillStyle = "#000000";
+        context.font = `${12 * dpr}px ${fontFamily}`;
+        context.textAlign = "center";
+        context.textBaseline = "middle";
+        context.fillText(i, gap, canvas.height / 1.75 + 0.5);
+      }
+
+      if (isExact) {
+        context.strokeStyle = "#ff0000";
+      }
+
+      context.beginPath();
+      context.moveTo(canvasWidthHalf + 0.5, 0);
+      context.lineTo(canvasWidthHalf + 0.5, canvas.height + 0.5);
+      context.stroke();
+    },
+
     requestPointerLock() {
       const {
         $refs: { canvas }
@@ -140,182 +220,66 @@ export default {
       } = this;
 
       if (document.pointerLockElement === canvas) {
-        document.addEventListener("mousemove", this.mouseMove, false);
-        document.addEventListener("mouseup", this.mouseUp);
-        window.addEventListener("keydown", this.keyDown);
-        window.addEventListener("keyup", this.keyUp);
+        this.mouseIsDown = true;
+        window.addEventListener("mousemove", this.mouseMove, false);
+        window.addEventListener("mouseup", this.mouseUp);
       } else {
         document.removeEventListener("mousemove", this.mouseMove, false);
         this.mouseUp();
       }
     },
 
-    draw() {
-      const { devicePixelRatio: dpr } = window;
-      const {
-        canvas,
-        context,
-        position,
-        spacingCalc,
-        internalValue,
-        baseLineHeight,
-        modifiedLineHeight,
-        inbetweenLineHeight
-      } = this;
-      let isExact = false;
-      const canvasWidthHalf = canvas.width / 2;
-
-      context.strokeStyle = "#fff";
-      context.lineWidth = 1 * dpr;
-
-      let maxIndicators = canvas.width / spacingCalc;
-      if (maxIndicators % 2 !== 0) {
-        maxIndicators += 1;
-      }
-
-      const min = Math.round(internalValue - maxIndicators / 2);
-      const max = Math.round(internalValue + maxIndicators / 2);
-
-      context.fillStyle = "#333";
-      context.fillRect(0, 0, canvas.width, canvas.height);
-
-      for (let i = min; i < max + 1; i += 1) {
-        context.strokeStyle = "#fff";
-        let heightMod = baseLineHeight;
-        if (i % 10 === 0) {
-          heightMod = modifiedLineHeight;
-        }
-
-        if (i === internalValue) {
-          isExact = true;
-        }
-
-        const gap = canvasWidthHalf + position + i * spacingCalc + 0.5;
-
-        context.beginPath();
-        context.moveTo(gap, heightMod);
-        context.lineTo(gap, canvas.height - heightMod);
-        context.stroke();
-
-        const inbetweenGap = spacingCalc / 6;
-
-        for (let j = 1; j < 6; j += 1) {
-          context.strokeStyle = "#777";
-          context.beginPath();
-          context.moveTo(
-            Math.floor(gap + j * inbetweenGap) + 0.5,
-            inbetweenLineHeight
-          );
-          context.lineTo(
-            Math.floor(gap + j * inbetweenGap) + 0.5,
-            canvas.height - inbetweenLineHeight
-          );
-          context.stroke();
-        }
-
-        context.fillStyle = "#333";
-        context.fillRect(
-          gap - 5 * dpr,
-          Math.floor(canvas.height / 2) - 5 * dpr,
-          10 * dpr,
-          10 * dpr
-        );
-
-        context.fillStyle = "#fff";
-        context.font = `${12 * dpr}px ${fontFamily}`;
-        context.textAlign = "center";
-        context.textBaseline = "middle";
-        context.fillText(i, gap, Math.floor(canvas.height / 2));
-      }
-
-      if (isExact) {
-        context.strokeStyle = "#ff0000";
-      }
-
-      context.beginPath();
-      context.moveTo(canvasWidthHalf + 0.5, 0);
-      context.lineTo(canvasWidthHalf + 0.5, canvas.height + 0.5);
-      context.stroke();
-    },
-
-    mouseDown(e) {
-      this.startX = e.clientX;
-
-      window.addEventListener("mousemove", this.mouseMove);
-      window.addEventListener("mouseup", this.mouseUp);
-      window.addEventListener("keydown", this.keyDown);
-      window.addEventListener("keyup", this.keyUp);
-      this.lastCursor = document.body.style.cursor;
-      document.body.style.cursor = "ew-resize";
-    },
-
     mouseUp() {
-      document.removeEventListener("mousemove", this.mouseMove, false);
-      document.removeEventListener("mouseup", this.mouseUp);
-      window.removeEventListener("keydown", this.keyDown);
-      window.removeEventListener("keyup", this.keyUp);
-      document.body.style.cursor =
-        this.lastCursor === "ew-resize" ? "default" : this.lastCursor;
+      this.mouseIsDown = false;
+
+      window.removeEventListener("mousemove", this.mouseMove);
+      window.removeEventListener("mouseup", this.mouseUp);
+      document.body.style.cursor = this.lastCursor;
+
+      this.spacingModifier = 1;
+      this.position = -this.value * this.spacingCalc;
+      this.overrideMinMax = false;
+      requestAnimationFrame(this.draw);
     },
 
     mouseMove(e) {
       const { devicePixelRatio: dpr } = window;
-      const { type, actualPosition, spacingCalc, min, max } = this;
 
       const comp = e.movementX * dpr;
 
-      let newPosition = actualPosition + comp;
+      let newPosition = this.position + comp;
 
-      if (newPosition === actualPosition) {
+      if (newPosition === this.position) {
         return;
       }
 
-      let value = -newPosition / spacingCalc;
+      let value = -newPosition / this.spacingCalc;
 
-      if (value < this.min) {
-        newPosition = -min * spacingCalc;
+      if (
+        value < this.min &&
+        !this.overrideMinMax &&
+        !this.hasOverridenMinMax
+      ) {
+        newPosition = -this.min * this.spacingCalc;
       }
 
-      if (value > this.max) {
-        newPosition = -max * spacingCalc;
+      if (
+        value > this.max &&
+        !this.overrideMinMax &&
+        !this.hasOverridenMinMax
+      ) {
+        newPosition = -this.max * this.spacingCalc;
       }
 
+      if (this.hasOverridenMinMax && value < this.max && value > this.min) {
+        this.hasOverridenMinMax = false;
+      }
+
+      this.position = newPosition;
       value = -newPosition / this.spacingCalc;
 
-      this.actualPosition = newPosition;
-
-      if (type === "int") {
-        const rounded = Math.round(value);
-
-        if (rounded === this.internalValue) {
-          return;
-        } else {
-          this.position = rounded * spacingCalc;
-          this.internalValue = rounded;
-        }
-      } else {
-        this.internalValue = value;
-        this.position = this.actualPosition;
-      }
-
-      if (this.raf < 0) {
-        this.loop();
-      }
-
-      this.$emit("input", this.internalValue);
-      this.inputValue = this.internalValue;
-    },
-
-    loop() {
-      if (this.lastLoopValue === this.value) {
-        cancelAnimationFrame(this.raf);
-        this.raf = -1;
-        return;
-      }
-      this.raf = requestAnimationFrame(this.loop);
-
-      this.draw();
-      this.lastLoopValue = this.value;
+      this.$emit("input", value);
+      requestAnimationFrame(this.draw);
     },
 
     input(e) {
@@ -326,32 +290,57 @@ export default {
       }
 
       this.position = -value * this.spacingCalc;
-      this.internalValue = -this.position / this.spacingCalc;
-      this.$emit("input", this.internalValue);
+      const newValue = -this.position / this.spacingCalc;
+
+      this.$emit("input", newValue);
+      requestAnimationFrame(this.draw);
     },
 
-    toggleEditMode() {
+    toggleEditMode(e) {
+      e.preventDefault();
       this.editMode = !this.editMode;
 
       if (this.editMode) {
         this.$refs.input.focus();
       }
-
-      return false;
     },
 
     keyDown(e) {
+      if (!this.mouseIsDown) {
+        return;
+      }
+      e.preventDefault();
+
       if (e.key === "Shift") {
         this.spacingModifier = 2;
       } else if (e.key === "Alt") {
         this.spacingModifier = 0.5;
       }
+
+      if (e.key === "Control") {
+        this.overrideMinMax = true;
+        this.hasOverridenMinMax = true;
+      }
+
+      this.position = -this.value * this.spacingCalc;
+      requestAnimationFrame(this.draw);
     },
 
     keyUp(e) {
+      if (!this.mouseIsDown) {
+        return;
+      }
+
       if (e.key === "Shift" || e.key === "Alt") {
         this.spacingModifier = 1;
       }
+
+      if (e.key === "Control") {
+        this.overrideMinMax = false;
+      }
+
+      this.position = -this.value * this.spacingCalc;
+      requestAnimationFrame(this.draw);
     },
 
     resize(e) {
@@ -371,29 +360,29 @@ export default {
       }
 
       this.position = -value * this.spacingCalc;
-      this.internalValue = value;
       this.inputValue = value;
+      requestAnimationFrame(this.draw);
+    },
 
-      if (this.raf < 0) {
-        this.loop();
-      }
+    inputValue(value) {
+      this.position = -value * this.spacingCalc;
+      this.$emit("input", value);
     }
   }
 };
 </script>
 
 <style scoped>
+canvas {
+  border-radius: 23px;
+  width: 100%;
+}
+
 div {
   position: relative;
   width: 100%;
-  min-width: 200px;
+  height: 16px;
   display: inline-block;
-}
-
-canvas {
-  height: 20px;
-  width: 100%;
-  cursor: ew-resize;
 }
 
 input {
@@ -402,5 +391,6 @@ input {
   left: 0;
   right: 0;
   bottom: 0;
+  width: 100%;
 }
 </style>

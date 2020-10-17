@@ -225,14 +225,11 @@ export default {
   z-index: 1;
 
   .search-box-container {
-    background: var(--background-color-1);
     border-radius: 5px;
     padding: 0.5rem;
     z-index: 1;
 
     .search-box {
-      color: var(--background-color);
-      background: var(--foreground-color-1);
       border-radius: 5px;
       width: 100%;
       padding-left: var(--baseline);

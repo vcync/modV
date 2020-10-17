@@ -6,6 +6,9 @@
       </button>
     </c>
     <c span="1..">
+      <div class="title">{{ module.meta.name }}</div>
+    </c>
+    <c span="1..">
       <Control
         v-for="key in getProps(module.$moduleName)"
         :id="module.$id"
@@ -84,11 +87,18 @@ button.pin-button {
   padding: 1px 0.5rem;
   vertical-align: top;
   cursor: pointer;
+  color: white;
+}
+</style>
 
-  color: var(--foreground-color);
+<style scoped>
+grid {
+  row-gap: 0;
+  margin: -8px;
+}
 
-  &:hover {
-    background-color: var(--foreground-color-3);
-  }
+.title {
+  font-size: 24px;
+  padding: 8px;
 }
 </style>

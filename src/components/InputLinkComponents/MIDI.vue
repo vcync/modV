@@ -1,16 +1,7 @@
 <template>
   <grid columns="4">
-    <c>
-      <button @click="learn">Learn</button>
-    </c>
-    <c>
-      min: <input type="number" v-model.number="min" min="-100" max="100" />
-    </c>
-    <c>
-      max: <input type="number" v-model.number="max" min="-100" max="100" />
-    </c>
-    <c>
-      <button @click="removeLink" :disabled="!hasLink">Remove link</button>
+    <c span="2+3">
+      <Button class="light" @click="learn">Learn</Button>
     </c>
   </grid>
 </template>
@@ -36,34 +27,6 @@ export default {
     inputConfig() {
       const { $modV } = this;
       return $modV.store.state.inputs.inputLinks[this.inputId] || {};
-    },
-
-    min: {
-      get() {
-        return this.inputConfig.min;
-      },
-
-      set(value) {
-        this.$modV.store.commit("inputs/UPDATE_INPUT_LINK", {
-          inputId: this.inputId,
-          key: "min",
-          value
-        });
-      }
-    },
-
-    max: {
-      get() {
-        return this.inputConfig.max;
-      },
-
-      set(value) {
-        this.$modV.store.commit("inputs/UPDATE_INPUT_LINK", {
-          inputId: this.inputId,
-          key: "max",
-          value
-        });
-      }
     }
   },
 

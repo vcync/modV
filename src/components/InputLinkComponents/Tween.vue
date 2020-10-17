@@ -1,15 +1,5 @@
 <template>
-  <grid columns="4">
-    <c>
-      <TweenControl v-model="localCache" />
-    </c>
-    <c>
-      <button @click="makeLink">Make link</button>
-    </c>
-    <c>
-      <button @click="removeLink" :disabled="!hasLink">Remove link</button>
-    </c>
-  </grid>
+  <TweenControl color="light" v-model="localCache" />
 </template>
 
 <script>

@@ -1,65 +1,76 @@
 <template>
-  <div>
-    <textarea v-model="modelData" @change="updateValue"></textarea>
-    <input
-      type="number"
-      v-model="modelDuration"
-      @change="updateValue"
-      :disabled="useBpm"
-    />
-    <select
-      v-model="modelEasing"
-      @change="updateValue"
-      :disabled="!!modelSteps"
-    >
-      <option
-        v-for="easing in easings"
-        :key="easing.value"
-        :value="easing.value"
-        >{{ easing.label }}</option
+  <grid columns="4">
+    <c span="1">Data</c>
+
+    <c span="2">
+      <Textarea :class="color" v-model="modelData" @change="updateValue" />
+    </c>
+
+    <c span="1+1">Easing</c>
+    <c span="2">
+      <Select
+        :class="color"
+        v-model.number="modelEasing"
+        :disabled="!!modelSteps"
       >
-    </select>
-    <br />
-    <label
-      title="If unchecked the duration will be used per step. duration * numberOfSteps"
-      >Use duration as total time?
-      <input
-        type="checkbox"
-        v-model="modelDurationAsTotalTime"
-        @change="updateValue"/></label
-    ><br />
-    <label
-      >Use BPM<input
-        type="checkbox"
-        v-model="useBpm"
-        @change="updateValue"/></label
-    ><br />
-    <label for="bpmDivision">BPM Division</label>
-    <select v-model.number="modelBpmDivision" @change="updateValue">
-      <option value="1">1</option>
-      <option value="2">2</option>
-      <option value="4">4</option>
-      <option value="8">8</option>
-      <option value="16">16</option>
-      <option value="32">32</option>
-      <option value="64">64</option>
-      <option value="128">128</option>
-      <option value="256">256</option>
-    </select>
-    <br />
-    <label
-      title="If greater than 0 step mode will be enabled, which steps a linear animation over the given amount of steps"
-      >Steps<input
-        type="number"
-        v-model.number="modelSteps"
-        @change="updateValue"
-    /></label>
-  </div>
+        <option
+          v-for="easing in easings"
+          :key="easing.value"
+          :value="easing.value"
+          >{{ easing.label }}</option
+        >
+      </Select>
+    </c>
+
+    <c span="1+1">Duration</c>
+    <c span="2">
+      <Number :class="color" v-model="modelDuration" :disabled="modelUseBpm" />
+    </c>
+
+    <c span="1+1">Use BPM</c>
+    <c><Checkbox :class="color" v-model="modelUseBpm"/></c>
+
+    <c span="1+1"><label :for="`${111}-bpmDivision`">BPM Division</label></c>
+    <c span="2">
+      <Select :class="color" v-model.number="modelBpmDivision">
+        <option value="1">1</option>
+        <option value="2">2</option>
+        <option value="4">4</option>
+        <option value="8">8</option>
+        <option value="16">16</option>
+        <option value="32">32</option>
+        <option value="64">64</option>
+        <option value="128">128</option>
+        <option value="256">256</option>
+      </Select>
+    </c>
+
+    <c span="1+1">
+      <label
+        title="If unchecked the duration will be used per step. duration * numberOfSteps"
+        >Duration as total time</label
+      >
+    </c>
+    <c span="2">
+      <Checkbox :class="color" v-model="modelDurationAsTotalTime" />
+    </c>
+
+    <c span="1+1">
+      <label
+        title="If greater than 0 step mode will be enabled, which steps a linear animation over the given amount of steps"
+      >
+        Steps
+      </label>
+    </c>
+    <c span="2">
+      <Number :class="color" v-model.number="modelSteps" />
+    </c>
+  </grid>
 </template>
 
 <script>
 export default {
-  props: ["value"],
+  props: ["value", "color"],
   data() {
     return {
       modelData: "",
@@ -77,17 +88,6 @@ export default {
       this.modelData = JSON.stringify(this.value.data);
     }
   },
-
-  // computed: {
-  //   inputData: {
-  //     get() {
-  //       return JSON.stringify(this.value.data);
-  //     },
-  //     set(value) {
-  //       this.modelData = value;
-  //     }
-  //   }
-  // },
 
   computed: {
     easings() {
