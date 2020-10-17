@@ -4,7 +4,12 @@
       <grid columns="4">
         <c span="1"><slot name="label"/></c>
         <c span="3">
-          <Button @mousedown="open = !open">Open/Close</Button>
+          <Button @mousedown="open = !open">
+            <img
+              :class="{ flip: !open }"
+              src="../assets/graphics/Arrow-vertical.svg"
+            />
+          </Button>
         </c>
       </grid>
     </c>
@@ -32,5 +37,9 @@ export default {
 <style scoped>
 .label-row {
   border-bottom: 1px solid #9a9a9a;
+}
+
+.flip {
+  transform: scaleY(-1);
 }
 </style>
