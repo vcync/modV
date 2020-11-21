@@ -1,6 +1,6 @@
 <template>
   <fragment>
-    <c span="1.." class="label-row" v-if="hasLabelSlot">
+    <c span="1.." class="label-row" :class="{ disabled }" v-if="hasLabelSlot">
       <grid columns="4">
         <c span="1"><slot name="label"/></c>
         <c span="3">
@@ -14,12 +14,19 @@
       </grid>
     </c>
 
-    <slot name="body" v-if="open" />
+    <slot name="body" v-if="!disabled && open" />
   </fragment>
 </template>
 
 <script>
 export default {
+  props: {
+    disabled: {
+      type: Boolean,
+      default: false
+    }
+  },
+
   data() {
     return {
       open: false
@@ -37,6 +44,11 @@ export default {
 <style scoped>
 .label-row {
   border-bottom: 1px solid #9a9a9a;
+}
+
+.label-row.disabled {
+  opacity: 0.3;
+  pointer-events: none;
 }
 
 .flip {

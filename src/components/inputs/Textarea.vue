@@ -1,6 +1,7 @@
 <template>
   <textarea
     @input="$emit('input', $event.target.value)"
+    @change="$emit('change', $event.target.value)"
     :value="value"
     :cols="cols"
     :rows="rows"

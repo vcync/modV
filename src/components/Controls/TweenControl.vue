@@ -12,6 +12,7 @@
         :class="color"
         v-model.number="modelEasing"
         :disabled="!!modelSteps"
+        @input="updateValue"
       >
         <option
           v-for="easing in easings"
@@ -24,15 +25,24 @@
 
     <c span="1+1">Duration</c>
     <c span="2">
-      <Number :class="color" v-model="modelDuration" :disabled="modelUseBpm" />
+      <Number
+        :class="color"
+        v-model="modelDuration"
+        :disabled="modelUseBpm"
+        @input="updateValue"
+      />
     </c>
 
     <c span="1+1">Use BPM</c>
-    <c><Checkbox :class="color" v-model="modelUseBpm"/></c>
+    <c><Checkbox :class="color" v-model="modelUseBpm" @input="updateValue"/></c>
 
     <c span="1+1"><label :for="`${111}-bpmDivision`">BPM Division</label></c>
     <c span="2">
-      <Select :class="color" v-model.number="modelBpmDivision">
+      <Select
+        :class="color"
+        v-model.number="modelBpmDivision"
+        @input="updateValue"
+      >
         <option value="1">1</option>
         <option value="2">2</option>
         <option value="4">4</option>
@@ -52,7 +62,11 @@
       >
     </c>
     <c span="2">
-      <Checkbox :class="color" v-model="modelDurationAsTotalTime" />
+      <Checkbox
+        :class="color"
+        v-model="modelDurationAsTotalTime"
+        @input="updateValue"
+      />
     </c>
 
     <c span="1+1">
@@ -63,7 +77,7 @@
       </label>
     </c>
     <c span="2">
-      <Number :class="color" v-model.number="modelSteps" />
+      <Number :class="color" v-model.number="modelSteps" @input="updateValue" />
     </c>
   </grid>
 </template>
@@ -71,6 +85,7 @@
 <script>
 export default {
   props: ["value", "color"],
+
   data() {
     return {
       modelData: "",
@@ -97,7 +112,7 @@ export default {
 
   methods: {
     updateValue() {
-      const data = JSON.parse(this.modelData);
+      const data = this.modelData.length ? JSON.parse(this.modelData) : [];
       const duration = this.modelDuration;
       const easing = this.modelEasing;
       const useBpm = this.useBpm;
