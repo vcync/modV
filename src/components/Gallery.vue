@@ -221,7 +221,7 @@ export default {
 }
 
 .fluid > .smooth-dnd-draggable-wrapper {
-  display: inline-block;
+  display: inline-block !important;
   margin-right: 8px;
 }
 

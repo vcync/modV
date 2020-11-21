@@ -409,11 +409,6 @@ export default {
   display: none;
 }
 
-.lm_header .lm_tab {
-  padding: 0 1em 5px;
-  font-size: 1rem;
-}
-
 html,
 body,
 #app {
