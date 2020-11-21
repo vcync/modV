@@ -19,6 +19,7 @@ export default {
 input {
   width: 0;
   height: 0;
+  -webkit-appearance: none;
 }
 
 label {
