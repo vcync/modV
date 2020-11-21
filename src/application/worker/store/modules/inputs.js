@@ -30,11 +30,26 @@ const actions = {
 
   createInputLink(
     { commit },
-    { inputId, location, type = "state", args, min = 0, max = 1, writeToSwap }
+    {
+      inputId,
+      location,
+      type = "state",
+      args,
+      min = 0,
+      max = 1,
+      source,
+      writeToSwap
+    }
   ) {
     const writeTo = writeToSwap ? swap : state;
 
-    const inputLink = { id: inputId, location, type, args, min, max };
+    if (!source) {
+      console.warn("Did not create inputLink. Require source", inputId);
+
+      return false;
+    }
+
+    const inputLink = { id: inputId, location, type, args, min, max, source };
     if (!writeTo.inputs[inputId]) {
       console.warn(
         "Did not create inputLink. Could not find input with id",

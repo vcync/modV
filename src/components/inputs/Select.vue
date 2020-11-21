@@ -19,6 +19,7 @@ export default {
       // eslint-disable vue/no-deprecated-dollar-listeners-api
       const listeners = { ...this.$listeners };
       delete listeners.change;
+      delete listeners.input;
 
       return listeners;
     }
