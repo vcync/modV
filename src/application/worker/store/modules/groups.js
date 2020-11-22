@@ -105,7 +105,7 @@ const actions = {
     const writeTo = args.writeToSwap ? swap : state;
 
     const existingGroupIndex = writeTo.groups.findIndex(
-      group => group.name === args.name
+      group => group.id === args.id
     );
 
     if (existingGroupIndex > -1) {
