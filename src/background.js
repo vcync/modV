@@ -25,6 +25,7 @@ let mm;
 
 let projectNames = ["default"];
 let currentProject = "default";
+let shouldCloseMainWindow = false;
 
 const windowPrefs = {
   colorPicker: {
@@ -138,15 +139,23 @@ const windowPrefs = {
 
       if (!isDevelopment || process.env.IS_TEST) {
         window.on("close", async e => {
-          const { response } = await dialog.showMessageBox(this, {
+          if (shouldCloseMainWindow) {
+            shouldCloseMainWindow = false;
+            return;
+          }
+
+          e.preventDefault();
+
+          const { response } = await dialog.showMessageBox(window, {
             type: "question",
             buttons: ["Yes", "No"],
             message: "modV",
             detail: "Are you sure you want to quit?"
           });
 
-          if (response === 1) {
-            e.preventDefault();
+          if (response === 0) {
+            shouldCloseMainWindow = true;
+            window.close();
           }
         });
       }
