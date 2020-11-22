@@ -220,8 +220,8 @@ export default {
   display: none !important;
 }
 
-.fluid > .smooth-dnd-draggable-wrapper {
-  display: inline-block !important;
+.smooth-dnd-container.vertical > .smooth-dnd-draggable-wrapper {
+  display: inline-block;
   margin-right: 8px;
 }
 
