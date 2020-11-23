@@ -33,7 +33,7 @@ export default {
           return;
         }
 
-        ipcRenderer.sendTo(id, "return-format");
+        ipcRenderer.sendTo(id, "return-format", "hex");
 
         ipcRenderer.sendTo(id, "module-info", {
           moduleId: this.moduleId,
