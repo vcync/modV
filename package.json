@@ -3,7 +3,7 @@
   "productName": "modV",
   "description": "modular audio visualisation powered by JavaScript",
   "author": "vcync",
-  "version": "3.3.9",
+  "version": "3.4.0",
   "private": true,
   "homepage": "https://modv.vcync.gl/",
   "repository": {
