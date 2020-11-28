@@ -301,6 +301,7 @@ const actions = {
     { moduleId, prop, data, group, groupName, writeToSwap }
   ) {
     const moduleName = state.active[moduleId].$moduleName;
+    const inputId = state.active[moduleId].$props[prop].id;
     const propData = state.registered[moduleName].props[prop];
     const currentValue = state.active[moduleId][prop];
     const { type } = propData;
@@ -315,18 +316,17 @@ const actions = {
 
     let dataOut = data;
 
-    // store.getters['plugins/enabledPlugins']
-    //   .filter(plugin => 'processValue' in plugin.plugin)
-    //   .forEach(plugin => {
-    //     const newValue = plugin.plugin.processValue({
-    //       currentValue: data,
-    //       controlVariable: prop,
-    //       delta: modV.delta,
-    //       moduleName: name
-    //     })
+    const expressionAssignment = store.getters["expressions/getByInputId"](
+      inputId
+    );
 
-    //     if (typeof newValue !== 'undefined') dataOut = newValue
-    //   })
+    if (expressionAssignment) {
+      const scope = {
+        value: dataOut
+      };
+
+      dataOut = expressionAssignment.func.eval(scope);
+    }
 
     if (store.state.dataTypes[type] && store.state.dataTypes[type].create) {
       dataOut = await store.state.dataTypes[type].create(dataOut);
