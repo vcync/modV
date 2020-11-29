@@ -17,35 +17,37 @@ export default {
       max: 5,
       step: 0.001
     },
-    positionX: {
-      label: "Position X",
+    offsetX: {
+      label: "Offset X in %",
       type: "float",
       default: 0,
-      min: -2000,
-      max: 2000,
+      min: -500,
+      max: 500,
       step: 1
     },
-    positionY: {
-      label: "Position Y",
+    offsetY: {
+      label: "Offset Y in %",
       type: "float",
       default: 0,
-      min: -2000,
-      max: 2000,
+      min: -500,
+      max: 500,
       step: 1
     }
   },
   draw({ canvas: { width, height }, context, props }) {
-    const { scale, positionX, positionY } = props;
+    const { scale, offsetX, offsetY } = props;
 
     if (props.texture.value) {
       const { width: imageWidth, height: imageHeight } = props.texture.value;
       const x = (width - imageWidth * scale) / 2;
       const y = (height - imageHeight * scale) / 2;
+      const calculatedOffsetX = (width / 100) * offsetX;
+      const calculatedOffsetY = (height / 100) * offsetY;
 
       context.drawImage(
         props.texture.value,
-        x + positionX,
-        y + positionY,
+        x + calculatedOffsetX,
+        y + calculatedOffsetY,
         imageWidth * scale,
         imageHeight * scale
       );
