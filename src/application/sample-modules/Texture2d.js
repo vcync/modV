@@ -21,16 +21,16 @@ export default {
       label: "Offset X in %",
       type: "float",
       default: 0,
-      min: -500,
-      max: 500,
+      min: -100,
+      max: 100,
       step: 1
     },
     offsetY: {
       label: "Offset Y in %",
       type: "float",
       default: 0,
-      min: -500,
-      max: 500,
+      min: -100,
+      max: 100,
       step: 1
     }
   },
