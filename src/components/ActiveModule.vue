@@ -12,10 +12,12 @@
       <c span="1..">
         <grid
           columns="6"
-          @mousedown="clickActiveModule(module.meta.enabledInputId, 'Enable')"
+          @mousedown="
+            clickActiveModule(module && module.meta.enabledInputId, 'Enable')
+          "
           :class="{
-            'has-link': hasLink(module.meta.enabledInputId),
-            focused: isFocused(module.meta.enabledInputId)
+            'has-link': hasLink(module && module.meta.enabledInputId),
+            focused: isFocused(module && module.meta.enabledInputId)
           }"
         >
           <c span="2">Enable</c>
@@ -26,10 +28,10 @@
       <c span="1..">
         <grid
           columns="6"
-          @mousedown="focusInput(module.meta.alphaInputId, 'Alpha')"
+          @mousedown="focusInput(module && module.meta.alphaInputId, 'Alpha')"
           :class="{
-            'has-link': hasLink(module.meta.alphaInputId),
-            focused: isFocused(module.meta.alphaInputId)
+            'has-link': hasLink(module && module.meta.alphaInputId),
+            focused: isFocused(module && module.meta.alphaInputId)
           }"
         >
           <c span="2">Alpha</c>
@@ -49,11 +51,16 @@
         <grid
           columns="6"
           @mousedown="
-            focusInput(module.meta.compositeOperationInputId, 'Blend Mode')
+            focusInput(
+              module && module.meta.compositeOperationInputId,
+              'Blend Mode'
+            )
           "
           :class="{
-            'has-link': hasLink(module.meta.compositeOperationInputId),
-            focused: isFocused(module.meta.compositeOperationInputId)
+            'has-link': hasLink(
+              module && module.meta.compositeOperationInputId
+            ),
+            focused: isFocused(module && module.meta.compositeOperationInputId)
           }"
         >
           <c span="2">Blend</c>
@@ -99,7 +106,11 @@ export default {
 
     alpha: {
       get() {
-        return this.$modV.store.state.modules.active[this.id].meta.alpha;
+        if (!this.module) {
+          return 1;
+        }
+
+        return this.module.meta.alpha;
       },
       set(value) {
         this.$modV.store.commit("modules/UPDATE_ACTIVE_MODULE_META", {
@@ -112,10 +123,11 @@ export default {
 
     blendMode: {
       get() {
-        return (
-          this.$modV.store.state.modules.active[this.id].meta
-            .compositeOperation || "normal"
-        );
+        if (!this.module) {
+          return "normal";
+        }
+
+        return this.module.meta.compositeOperation || "normal";
       },
       set(value) {
         this.$modV.store.commit("modules/UPDATE_ACTIVE_MODULE_META", {
@@ -128,7 +140,11 @@ export default {
 
     enabled: {
       get() {
-        return this.$modV.store.state.modules.active[this.id].meta.enabled;
+        if (!this.module) {
+          return false;
+        }
+
+        return this.module.meta.enabled;
       },
       set(value) {
         this.$modV.store.commit("modules/UPDATE_ACTIVE_MODULE_META", {
@@ -140,6 +156,10 @@ export default {
     },
 
     name() {
+      if (!this.module) {
+        return "";
+      }
+
       return this.module.meta.name;
     }
   },
@@ -167,7 +187,7 @@ export default {
     focusInput(id, title) {
       this.$modV.store.dispatch("inputs/setFocusedInput", {
         id,
-        title: `${this.module.meta.name}: ${title}`
+        title: `${this.module && this.module.meta.name}: ${title}`
       });
     },
 

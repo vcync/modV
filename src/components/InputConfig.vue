@@ -30,7 +30,7 @@
           </grid>
         </c>
 
-        <CollapsibleRow>
+        <CollapsibleRow :disabled="source && source !== 'meyda'">
           <template v-slot:label>
             Audio
           </template>
@@ -42,7 +42,7 @@
           </template>
         </CollapsibleRow>
 
-        <CollapsibleRow>
+        <CollapsibleRow :disabled="source && source !== 'midi'">
           <template v-slot:label>
             MIDI
           </template>
@@ -54,7 +54,7 @@
           </template>
         </CollapsibleRow>
 
-        <CollapsibleRow>
+        <CollapsibleRow :disabled="source && source !== 'tween'">
           <template v-slot:label>
             Tween
           </template>
@@ -120,16 +120,25 @@ export default {
       );
     },
 
+    inputLink() {
+      const { $modV } = this;
+      return (
+        $modV.store.state.inputs.inputLinks[
+          $modV.store.state.inputs.focusedInput.id
+        ] || false
+      );
+    },
+
+    source() {
+      return (this.inputLink && this.inputLink.source) || false;
+    },
+
     isProp() {
       return "prop" in this.inputConfig;
     },
 
     focusedInputTitle() {
       return this.$modV.store.state.inputs.focusedInput.title;
-    },
-
-    inputLink() {
-      return this.$modV.store.state.inputs.inputLinks[this.inputConfig.id];
     },
 
     min: {

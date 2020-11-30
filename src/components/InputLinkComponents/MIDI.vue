@@ -1,17 +1,15 @@
 <template>
   <grid columns="4">
     <c span="2+3">
-      <Button class="light" @click="learn">Learn</Button>
+      <Button class="light" @click="manageLink">{{
+        hasLink ? "Forget" : "Learn"
+      }}</Button>
     </c>
   </grid>
 </template>
 
 <script>
-import hasLink from "../mixins/has-input-link";
-
 export default {
-  mixins: [hasLink],
-
   props: {
     inputId: {
       type: String,
@@ -19,22 +17,33 @@ export default {
     }
   },
 
-  data() {
-    return {};
-  },
-
   computed: {
     inputConfig() {
-      const { $modV } = this;
-      return $modV.store.state.inputs.inputLinks[this.inputId] || {};
+      return this.$modV.store.state.inputs.inputLinks[this.inputId] || {};
+    },
+
+    hasLink() {
+      const link = this.$modV.store.state.inputs.inputLinks[this.inputId];
+
+      return link && link.source === "midi";
     }
   },
 
   methods: {
+    manageLink() {
+      if (this.hasLink) {
+        this.removeLink();
+      } else {
+        this.learn();
+      }
+    },
+
     removeLink() {
       this.$modV.store.dispatch("inputs/removeInputLink", {
         inputId: this.inputId
       });
+
+      this.hasLink = false;
     },
 
     async learn() {
@@ -45,9 +54,10 @@ export default {
         currentTarget: { id, name, manufacturer }
       } = message;
 
-      this.$modV.store.dispatch("inputs/createInputLink", {
+      this.hasLink = await this.$modV.store.dispatch("inputs/createInputLink", {
         inputId: this.inputId,
         type: "state",
+        source: "midi",
         location: `midi.devices['${id}-${name}-${manufacturer}'].channelData['${channel}']['${type}']`,
         min: 0,
         max: 1
@@ -56,5 +66,3 @@ export default {
   }
 };
 </script>
-
-<style scoped></style>

@@ -6,7 +6,7 @@
           Audio Feature
         </c>
         <c span="3">
-          <Select v-model="feature" class="light">
+          <Select v-model="feature" class="light" @input="checkFeature">
             <option
               v-for="featureValue in features"
               :key="featureValue"
@@ -37,12 +37,9 @@
 </template>
 
 <script>
-import hasLink from "../mixins/has-input-link";
 import RangeControl from "../Controls/RangeControl";
 
 export default {
-  mixins: [hasLink],
-
   props: {
     inputId: {
       type: String,
@@ -85,6 +82,10 @@ export default {
     };
   },
 
+  created() {
+    this.restoreLinkValues();
+  },
+
   computed: {
     MAX_SMOOTHING() {
       return this.$modV.store.state.meyda.MAX_SMOOTHING;
@@ -100,11 +101,22 @@ export default {
   },
 
   methods: {
+    restoreLinkValues() {
+      if (this.inputLink && this.inputLink.source === "meyda") {
+        if (this.inputLink.args.length > 2) {
+          this.smoothingValue = this.inputLink.args[2];
+        }
+
+        this.feature = this.inputLink.args[0];
+      }
+    },
+
     makeLink() {
       this.$modV.store.dispatch("inputs/createInputLink", {
         inputId: this.inputId,
         type: "getter",
         location: "meyda/getFeature",
+        source: "meyda",
         args: [this.feature]
       });
     },
@@ -136,18 +148,22 @@ export default {
         key: "args",
         value: value
       });
-    }
-  },
+    },
 
-  watch: {
-    feature(value) {
-      if (value === "none") {
+    checkFeature() {
+      if (
+        this.feature === "none" &&
+        this.inputLink &&
+        this.inputLink.source === "meyda"
+      ) {
         this.removeLink();
       } else {
         this.makeLink();
       }
-    },
+    }
+  },
 
+  watch: {
     async smoothingValue(value) {
       if (value && !this.smoothingId) {
         this.smoothingId = await this.$modV.store.dispatch(
@@ -167,16 +183,15 @@ export default {
     },
 
     inputId() {
-      if (this.inputLink) {
-        if (this.inputLink.args.length > 2) {
-          this.smoothingValue = this.inputLink.args[2];
-        }
+      this.restoreLinkValues();
 
-        this.feature = this.inputLink.args[0];
+      if (!this.inputLink || this.inputLink.source !== "meyda") {
+        this.feature = "none";
+        this.smoothingId = null;
+        this.smoothingValue = 0;
+        this.useSmoothing = false;
       }
     }
   }
 };
 </script>
-
-<style scoped></style>

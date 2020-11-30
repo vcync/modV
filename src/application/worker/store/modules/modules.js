@@ -79,7 +79,7 @@ async function initialiseModuleProperties(
 }
 
 const actions = {
-  async registerModule({ commit, rootState }, module) {
+  async registerModule({ commit, rootState }, { module, hot = false }) {
     const { renderers } = rootState;
 
     if (!module) {
@@ -98,7 +98,7 @@ const actions = {
       state.registered
     ).findIndex(registeredModule => registeredModule.meta.name === name);
 
-    if (existingModuleWithDuplicateName > -1) {
+    if (!hot && existingModuleWithDuplicateName > -1) {
       console.error(`Module registered with name "${name}" already exists.`);
       return;
     }
@@ -116,6 +116,38 @@ const actions = {
     }
 
     commit("ADD_REGISTERED_MODULE", { module });
+
+    if (hot) {
+      const activeModuleValues = Object.values(state.active);
+
+      for (let i = 0; i < activeModuleValues.length; i += 1) {
+        const activeModule = activeModuleValues[i];
+
+        if (activeModule.meta.name === name) {
+          const { canvas } = rootState.outputs.main || {
+            canvas: { width: 0, height: 0 }
+          };
+
+          if ("init" in module) {
+            const { data } = activeModule;
+            const returnedData = module.init({
+              canvas,
+              data: { ...data },
+              props: activeModule.props
+            });
+
+            if (returnedData) {
+              commit("UPDATE_ACTIVE_MODULE", {
+                id: activeModule.$id,
+                key: "data",
+                value: returnedData,
+                writeToSwap: false
+              });
+            }
+          }
+        }
+      }
+    }
   },
 
   async makeActiveModule(

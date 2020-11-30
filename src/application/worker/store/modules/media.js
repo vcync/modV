@@ -39,7 +39,7 @@ const actions = {
       }
 
       try {
-        await store.dispatch("modules/registerModule", module);
+        await store.dispatch("modules/registerModule", { module, hot: true });
       } catch (e) {
         console.error(`Could not load module`, item.name);
         console.log(module);
