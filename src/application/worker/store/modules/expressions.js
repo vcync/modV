@@ -16,7 +16,7 @@ const getters = {
 };
 
 function compileExpression(expression) {
-  const scope = { value: 0, delta: 0 };
+  const scope = { value: 0, time: 0 };
 
   let newFunction;
   try {

@@ -322,7 +322,8 @@ const actions = {
 
     if (expressionAssignment) {
       const scope = {
-        value: dataOut
+        value: dataOut,
+        time: Date.now()
       };
 
       dataOut = expressionAssignment.func.eval(scope);
