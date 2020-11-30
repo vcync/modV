@@ -2,8 +2,7 @@ import math from "mathjs";
 import uuidv4 from "uuid/v4";
 
 const state = {
-  assignments: {},
-  delta: 0
+  assignments: {}
 };
 
 // getters
@@ -33,7 +32,7 @@ function compileExpression(expression) {
 
 // actions
 const actions = {
-  create({ commit }, { expression = "value", inputId }) {
+  create({ commit }, { expression = "value", id, inputId }) {
     if (!inputId) {
       throw new Error("Input ID required");
     }
@@ -42,7 +41,7 @@ const actions = {
       return null;
     }
 
-    const expressionId = uuidv4();
+    const expressionId = id || uuidv4();
 
     const func = compileExpression(expression);
 
@@ -93,6 +92,19 @@ const actions = {
 
   remove({ commit }, args) {
     commit("REMOVE_EXPRESSION", args);
+  },
+
+  createPresetData() {
+    return state;
+  },
+
+  async loadPresetData({ dispatch }, data) {
+    const assignments = Object.values(data.assignments);
+    for (let i = 0, len = assignments.length; i < len; i++) {
+      const assignment = assignments[i];
+
+      await dispatch("create", assignment);
+    }
   }
 };
 
