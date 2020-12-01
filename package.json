@@ -39,6 +39,7 @@
     "interactive-shader-format": "github:vcync/interactive-shader-format-js#feat/ImageBitmap",
     "lfo-for-modv": "0.0.1",
     "lodash.get": "^4.4.2",
+    "mathjs": "^3.20.2",
     "meyda": "^5.0.1",
     "mkdirp": "^0.5.1",
     "npm": "6.14.6",
