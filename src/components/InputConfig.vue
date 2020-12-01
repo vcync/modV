@@ -189,7 +189,6 @@ grid.borders > c:not(:last-child):not(:first-child) {
 
 <style>
 .input-config input,
-.input-config textarea,
 .input-config .select {
   max-width: 120px !important;
 }
