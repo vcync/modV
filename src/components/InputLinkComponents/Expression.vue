@@ -2,7 +2,7 @@
   <grid columns="4" v-infoView="{ title: iVTitle, body: iVBody, id: iVID }">
     <c span="1..">
       <grid columns="4">
-        <c span="2+3">
+        <c span="2+2">
           <Textarea v-model="expression" @change="updateExpression" />
         </c>
       </grid>
