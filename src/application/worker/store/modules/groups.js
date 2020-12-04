@@ -103,6 +103,7 @@ const actions = {
   async createGroup({ commit }, args = {}) {
     const name = args.name || "New Group";
     const writeTo = args.writeToSwap ? swap : state;
+    const inherit = args.inherit === undefined ? true : args.inherit;
 
     const existingGroupIndex = writeTo.groups.findIndex(
       group => group.id === args.id
@@ -119,7 +120,7 @@ const actions = {
       enabled: args.enabled || false,
       hidden: args.hidden || false,
       modules: args.modules || [],
-      inherit: args.inherit || -1,
+      inherit,
       alpha: args.alpha || 1,
       compositeOperation: args.compositeOperation || "normal",
       context: await store.dispatch("outputs/getAuxillaryOutput", {
