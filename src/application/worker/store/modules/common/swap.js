@@ -1,13 +1,9 @@
 import Vue from "vue";
 // import cloneDeep from "lodash.clonedeep";
 
-export default function SWAP(
-  swap,
-  temp,
-  getDefault,
-  sharedPropertyRestrictions
-) {
+export default function SWAP(swap, getDefault, sharedPropertyRestrictions) {
   return function(state) {
+    debugger;
     const stateKeys = Object.keys(state);
 
     if (stateKeys.length) {
@@ -17,38 +13,32 @@ export default function SWAP(
 
         if (sharedPropertyRestrictions) {
           if (typeof sharedPropertyRestrictions[key] === "function") {
-            const restrictedKeys = sharedPropertyRestrictions[key](state[key]);
             const stateChildKeys = Object.keys(state[key]);
 
-            if (isArray) {
-              Vue.set(temp, key, []);
-            } else {
-              Vue.set(temp, key, {});
-            }
-
             // eslint-disable-next-line
-            stateChildKeys.forEach(stateChildKey => {
-              if (restrictedKeys.indexOf(stateChildKey) < 0) {
-                if (isArray) {
-                  temp[key].push(state[key][stateChildKey]);
-                  state[key].splice(stateChildKey, 1);
-                } else {
-                  Vue.set(temp[key], stateChildKey, state[key][stateChildKey]);
+            if (isArray) {
+              state[key] = state[key].filter(
+                sharedPropertyRestrictions[key](state[key])
+              );
+            } else {
+              const restrictedKeys = sharedPropertyRestrictions[key](
+                state[key]
+              );
+
+              // eslint-disable-next-line
+              stateChildKeys.forEach(stateChildKey => {
+                if (restrictedKeys.indexOf(stateChildKey) < 0) {
                   delete state[key][stateChildKey];
                 }
-              }
-            });
+              });
+            }
           } else if (sharedPropertyRestrictions[key]) {
-            Vue.set(temp, key, state[key]);
             delete state[key];
           }
         } else {
-          Vue.set(temp, key, state[key]);
           delete state[key];
         }
       });
-    } else {
-      Object.assign(temp, getDefault());
     }
 
     const swapKeys = Object.keys(swap);
@@ -60,19 +50,22 @@ export default function SWAP(
 
         if (sharedPropertyRestrictions) {
           if (typeof sharedPropertyRestrictions[key] === "function") {
-            const restrictedKeys = sharedPropertyRestrictions[key](swap[key]);
             const swapChildKeys = Object.keys(swap[key]);
 
-            // eslint-disable-next-line
-            swapChildKeys.forEach(swapChildKey => {
-              if (restrictedKeys.indexOf(swapChildKey) < 0) {
-                if (isArray) {
-                  state[key].push(swap[key][swapChildKey]);
-                } else {
+            if (isArray) {
+              state[key] = swap[key].filter(
+                sharedPropertyRestrictions[key](swap[key])
+              );
+            } else {
+              const restrictedKeys = sharedPropertyRestrictions[key](swap[key]);
+
+              // eslint-disable-next-line
+              swapChildKeys.forEach(swapChildKey => {
+                if (restrictedKeys.indexOf(swapChildKey) < 0) {
                   Vue.set(state[key], swapChildKey, swap[key][swapChildKey]);
                 }
-              }
-            });
+              });
+            }
           } else if (sharedPropertyRestrictions[key]) {
             if (isArray) {
               Vue.set(state, key, [...swap[key]]);
@@ -92,6 +85,6 @@ export default function SWAP(
       Object.assign(swap, getDefault());
     }
 
-    Object.assign(swap, temp || getDefault());
+    Object.assign(swap, getDefault());
   };
 }

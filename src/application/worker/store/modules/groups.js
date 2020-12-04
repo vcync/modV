@@ -82,21 +82,17 @@ import uuidv4 from "uuid/v4";
 
 const state = { groups: [] };
 const swap = { groups: [] };
-const temp = { groups: [] };
 
 // Any keys marked false or arrays with keys given
 // will not be moved from the base state when swapped
 const sharedPropertyRestrictions = {
   groups: (
-    // keeps gallery group in place
-    value
-  ) => {
-    const index = value.findIndex(
-      group => group.name === constants.GALLERY_GROUP_NAME
-    );
-
-    return index > -1 ? [`${index}`] : [];
-  }
+    // As state.groups is an Array, we return a function which checks the item in the Array,
+    // returns a boolean. True to remove, false to keep.
+    // Objects return an Array of keys to remove.
+    // This keeps gallery group in place
+    group
+  ) => () => group.name !== constants.GALLERY_GROUP_NAME
 };
 
 const actions = {
@@ -291,7 +287,7 @@ const mutations = {
     }
   },
 
-  SWAP: SWAP(swap, temp, () => ({ groups: [] }), sharedPropertyRestrictions)
+  SWAP: SWAP(swap, () => ({ groups: [] }), sharedPropertyRestrictions)
 };
 
 export default {
