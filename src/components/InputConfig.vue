@@ -65,6 +65,18 @@
             </c>
           </template>
         </CollapsibleRow>
+
+        <CollapsibleRow>
+          <template v-slot:label>
+            Expression
+          </template>
+
+          <template v-slot:body>
+            <c span="1..">
+              <Expression :input-id="inputConfig.id" />
+            </c>
+          </template>
+        </CollapsibleRow>
       </grid>
     </div>
     <div v-else>
@@ -77,6 +89,7 @@
 import AudioFeatures from "./InputLinkComponents/AudioFeatures";
 import MIDI from "./InputLinkComponents/MIDI";
 import Tween from "./InputLinkComponents/Tween";
+import Expression from "./InputLinkComponents/Expression";
 import CollapsibleRow from "./CollapsibleRow";
 
 export default {
@@ -84,6 +97,7 @@ export default {
     AudioFeatures,
     MIDI,
     Tween,
+    Expression,
     CollapsibleRow
   },
 
@@ -175,7 +189,6 @@ grid.borders > c:not(:last-child):not(:first-child) {
 
 <style>
 .input-config input,
-.input-config textarea,
 .input-config .select {
   max-width: 120px !important;
 }
