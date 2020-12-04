@@ -119,7 +119,7 @@ const actions = {
       enabled: args.enabled || false,
       hidden: args.hidden || false,
       modules: args.modules || [],
-      inherit: args.inherit || -1,
+      inherit: !!args.inherit,
       alpha: args.alpha || 1,
       compositeOperation: args.compositeOperation || "normal",
       context: await store.dispatch("outputs/getAuxillaryOutput", {
