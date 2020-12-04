@@ -13,7 +13,6 @@ function getDefaultState() {
 
 const state = getDefaultState();
 const swap = getDefaultState();
-const temp = getDefaultState();
 
 const getters = {};
 
@@ -146,7 +145,7 @@ const mutations = {
     Vue.delete(writeTo.inputLinks, inputId);
   },
 
-  SWAP: SWAP(swap, temp, getDefaultState)
+  SWAP: SWAP(swap, getDefaultState)
 };
 
 export default {
