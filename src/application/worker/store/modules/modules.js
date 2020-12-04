@@ -35,13 +35,6 @@ const swap = {
   metaQueue: {}
 };
 
-const temp = {
-  registered: {},
-  active: {},
-  propQueue: {},
-  metaQueue: {}
-};
-
 // this function either creates module properties from an existing module
 // (e.g. loading a preset) or initialises the default value
 async function initialiseModuleProperties(
@@ -536,7 +529,7 @@ const mutations = {
     Vue.set(writeTo.active[id].meta, metaKey, data);
   },
 
-  SWAP: SWAP(swap, temp, () => ({}), sharedPropertyRestrictions)
+  SWAP: SWAP(swap, () => ({}), sharedPropertyRestrictions)
 };
 
 export default {
