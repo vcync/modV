@@ -70,10 +70,6 @@
             <gl-component title="Preview" :closable="false">
               <Preview />
             </gl-component>
-
-            <gl-component title="Swap" :closable="false">
-              <ABSwap />
-            </gl-component>
           </gl-stack>
         </gl-row>
       </gl-col>
@@ -86,7 +82,6 @@
 
 <script>
 import Preview from "@/components/Preview";
-import ABSwap from "@/components/ABSwap";
 import Groups from "@/components/Groups";
 import Gallery from "@/components/Gallery";
 import InputConfig from "@/components/InputConfig";
@@ -106,7 +101,6 @@ export default {
 
   components: {
     Preview,
-    ABSwap,
     Groups,
     Gallery,
     InputConfig,
