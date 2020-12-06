@@ -521,7 +521,6 @@ export default {
     },
 
     removeGroup(e) {
-      console.log(e.keyCode);
       if (e.keyCode === 8 || e.keyCode === 46) {
         this.$modV.store.commit("groups/REMOVE_GROUP", { id: this.groupId });
       }
