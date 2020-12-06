@@ -80,7 +80,7 @@ async function start() {
     //   );
     // }
 
-    store.dispatch("modules/registerModule", sampleModule);
+    store.dispatch("modules/registerModule", { module: sampleModule });
   }
 
   const isfModules = require.context("../sample-modules/isf", false, /\.fs$/);
@@ -106,7 +106,7 @@ async function start() {
       fragmentShader,
       vertexShader
     };
-    store.dispatch("modules/registerModule", module);
+    store.dispatch("modules/registerModule", { module });
   }
 
   // store.dispatch("plugins/add", featureAssignmentPlugin);
@@ -210,6 +210,10 @@ async function start() {
       store.commit("groups/SWAP", {});
       store.commit("modules/SWAP", {});
       store.commit("inputs/SWAP", {});
+
+      store.commit("groups/CLEAR_SWAP", {});
+      store.commit("modules/CLEAR_SWAP", {});
+      store.commit("inputs/CLEAR_SWAP", {});
 
       return;
     }

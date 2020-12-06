@@ -4,9 +4,7 @@
     v-infoView="{ title: iVTitle, body: iVBody, id: 'Info View Panel' }"
   >
     <grid columns="1">
-      <c class="title"
-        ><h1>{{ focused && focused.title }}</h1></c
-      >
+      <c class="title">{{ focused && focused.title }}</c>
       <c class="body">{{ focused && focused.body }}</c>
     </grid>
   </div>
@@ -34,5 +32,11 @@ export default {
 <style scoped>
 .info-view {
   height: 100%;
+}
+
+.title {
+  font-weight: normal;
+  margin: 0;
+  font-size: 24px;
 }
 </style>

@@ -1,6 +1,18 @@
 const DefinePlugin = require("webpack").DefinePlugin;
 
+const publishingOptions = {
+  provider: "github",
+  releaseType: "prerelease",
+  vPrefixedTagName: false
+};
+
 module.exports = {
+  // https://cli.vuejs.org/config/#pages
+  pages: {
+    index: "src/main.js",
+    colorPicker: "src/subpages/color-picker/main.js"
+  },
+
   configureWebpack: {
     module: {
       rules: [
@@ -39,7 +51,8 @@ module.exports = {
         "stream-to-blob",
         "grandiose",
         "npm",
-        "webpack-2"
+        "webpack-2",
+        "font-list"
       ],
 
       builderOptions: {
@@ -48,7 +61,32 @@ module.exports = {
 
         linux: {
           category: "Graphics"
-        }
+        },
+
+        snap: {
+          publish: publishingOptions
+        },
+
+        // See https://www.electron.build/configuration/mac
+        mac: {
+          // See https://developer.apple.com/documentation/security/hardened_runtime
+          hardenedRuntime: true,
+          gatekeeperAssess: false,
+          entitlements: "build/entitlements.mac.plist",
+          entitlementsInherit: "build/entitlements.mac.plist"
+        },
+
+        dmg: {
+          sign: false
+        },
+
+        afterSign: "notarize.js",
+
+        win: {
+          icon: "build/icon.ico"
+        },
+
+        publish: publishingOptions
       },
 
       chainWebpackMainProcess: config => {

@@ -1,51 +1,65 @@
-# Only build tags
-if: tag IS present
 language: node_js
 node_js: '10'
 jobs:
   include:
-  - name: "Build on Windows"
-    os: windows
-    env:
-    - ELECTRON_CACHE=$HOME/.cache/electron
-    - ELECTRON_BUILDER_CACHE=$HOME/.cache/electron-builder
-    - USE_HARD_LINKS=false
-  - name: "Build on macOS"
-    os: osx
-    osx_image: xcode10.2
-    env:
-    - ELECTRON_CACHE=$HOME/.cache/electron
-    - ELECTRON_BUILDER_CACHE=$HOME/.cache/electron-builder
-    - USE_HARD_LINKS=false
-  - name: "Build on Linux"
-    os: linux
-    dist: xenial
-    env:
-    - ELECTRON_CACHE=$HOME/.cache/electron
-    - ELECTRON_BUILDER_CACHE=$HOME/.cache/electron-builder
-    - USE_HARD_LINKS=false
+    - stage: Create release
+      if: branch = main
+      name: Semantic release
+      node_js: lts/*
+      script: skip
+      deploy:
+        on:
+          branch: main
+        provider: script
+        skip_cleanup: true
+        script: npx semantic-release
+
+    - stage: Build stage
+      if: tag IS present
+      name: "Build on Windows"
+      os: windows
+      env:
+      - ELECTRON_CACHE=$HOME/.cache/electron
+      - ELECTRON_BUILDER_CACHE=$HOME/.cache/electron-builder
+      - USE_HARD_LINKS=false
+      - YARN_GPG=no
+      script:
+        - yarn run electron:build -w
+
+    - stage: Build stage
+      if: tag IS present
+      name: "Build on macOS"
+      os: osx
+      osx_image: xcode12
+      env:
+      - ELECTRON_CACHE=$HOME/.cache/electron
+      - ELECTRON_BUILDER_CACHE=$HOME/.cache/electron-builder
+      - USE_HARD_LINKS=false
+      script:
+        - yarn run electron:build -m
+
+    - stage: Build stage
+      if: tag IS present
+      name: "Build on Linux"
+      os: linux
+      dist: xenial
+      env:
+      - ELECTRON_CACHE=$HOME/.cache/electron
+      - ELECTRON_BUILDER_CACHE=$HOME/.cache/electron-builder
+      - USE_HARD_LINKS=false
+      before_install:
+        - if [ "$TRAVIS_OS_NAME" = "linux" ]; then wget https://github.com/Palakis/obs-ndi/releases/download/4.9.0/libndi4_4.5.1-1_amd64.deb && sudo dpkg -i libndi4_4.5.1-1_amd64.deb; fi
+      script:
+        - yarn run electron:build -l
 cache:
   directories:
   - node_modules
   - "$HOME/.cache/electron"
   - "$HOME/.cache/electron-builder"
 before_install:
-  - if [ "$TRAVIS_OS_NAME" = "linux" ]; then wget https://github.com/Palakis/obs-ndi/releases/download/4.9.0/libndi4_4.5.1-1_amd64.deb && sudo dpkg -i libndi4_4.5.1-1_amd64.deb; fi
-script:
-  - if [ "$TRAVIS_OS_NAME" = "windows" ];   then yarn run electron:build -w --publish=never; fi
-  - if [ "$TRAVIS_OS_NAME" = "osx" ];   then yarn run electron:build -m --publish=never; fi
-  - if [ "$TRAVIS_OS_NAME" = "linux" ]; then yarn run electron:build -l  --publish=never; fi
+  - if [ "$TRAVIS_OS_NAME" = "windows" ] || [ "$TRAVIS_OS_NAME" = "linux" ]; then unset CSC_KEY_PASSWORD CSC_LINK; fi
 before_cache:
 - rm -rf $HOME/.cache/electron-builder/wine
 branches:
   except:
   - "/^v\\d+\\.\\d+\\.\\d+$/"
-deploy:
-  provider: releases
-  api_key: $GITHUB_TOKEN
-  file_glob: true
-  skip_cleanup: true
-  file: "./dist_electron/*.{exe,snap,dmg,AppImage}"
-  on:
-    repo: vcync/modv-3
-    all_branches: true

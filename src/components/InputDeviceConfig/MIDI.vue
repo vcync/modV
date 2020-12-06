@@ -21,14 +21,20 @@
       <grid columns="4">
         <c>{{ device.name }}</c>
         <c>
-          <button @click="toggleInput(deviceId, !device.listenForInput)">
+          <Button
+            class="light"
+            @click="toggleInput(deviceId, !device.listenForInput)"
+          >
             {{ device.listenForInput ? "On" : "Off" }}
-          </button>
+          </Button>
         </c>
         <c>
-          <button @click="toggleClock(deviceId, !device.listenForClock)">
+          <Button
+            class="light"
+            @click="toggleClock(deviceId, !device.listenForClock)"
+          >
             {{ device.listenForClock ? "On" : "Off" }}
-          </button>
+          </Button>
         </c>
       </grid>
     </c>

@@ -1,26 +1,15 @@
 <template>
   <grid columns="4">
-    <c>
-      <button @click="learn">Learn</button>
-    </c>
-    <c>
-      min: <input type="number" v-model.number="min" min="-100" max="100" />
-    </c>
-    <c>
-      max: <input type="number" v-model.number="max" min="-100" max="100" />
-    </c>
-    <c>
-      <button @click="removeLink" :disabled="!hasLink">Remove link</button>
+    <c span="2+3">
+      <Button class="light" @click="manageLink">{{
+        hasLink ? "Forget" : "Learn"
+      }}</Button>
     </c>
   </grid>
 </template>
 
 <script>
-import hasLink from "../mixins/has-input-link";
-
 export default {
-  mixins: [hasLink],
-
   props: {
     inputId: {
       type: String,
@@ -28,50 +17,33 @@ export default {
     }
   },
 
-  data() {
-    return {};
-  },
-
   computed: {
     inputConfig() {
-      const { $modV } = this;
-      return $modV.store.state.inputs.inputLinks[this.inputId] || {};
+      return this.$modV.store.state.inputs.inputLinks[this.inputId] || {};
     },
 
-    min: {
-      get() {
-        return this.inputConfig.min;
-      },
+    hasLink() {
+      const link = this.$modV.store.state.inputs.inputLinks[this.inputId];
 
-      set(value) {
-        this.$modV.store.commit("inputs/UPDATE_INPUT_LINK", {
-          inputId: this.inputId,
-          key: "min",
-          value
-        });
-      }
-    },
-
-    max: {
-      get() {
-        return this.inputConfig.max;
-      },
-
-      set(value) {
-        this.$modV.store.commit("inputs/UPDATE_INPUT_LINK", {
-          inputId: this.inputId,
-          key: "max",
-          value
-        });
-      }
+      return link && link.source === "midi";
     }
   },
 
   methods: {
+    manageLink() {
+      if (this.hasLink) {
+        this.removeLink();
+      } else {
+        this.learn();
+      }
+    },
+
     removeLink() {
       this.$modV.store.dispatch("inputs/removeInputLink", {
         inputId: this.inputId
       });
+
+      this.hasLink = false;
     },
 
     async learn() {
@@ -82,9 +54,10 @@ export default {
         currentTarget: { id, name, manufacturer }
       } = message;
 
-      this.$modV.store.dispatch("inputs/createInputLink", {
+      this.hasLink = await this.$modV.store.dispatch("inputs/createInputLink", {
         inputId: this.inputId,
         type: "state",
+        source: "midi",
         location: `midi.devices['${id}-${name}-${manufacturer}'].channelData['${channel}']['${type}']`,
         min: 0,
         max: 1
@@ -93,5 +66,3 @@ export default {
   }
 };
 </script>
-
-<style scoped></style>

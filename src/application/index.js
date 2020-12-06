@@ -165,6 +165,18 @@ export default class ModV {
       );
     });
 
+    ipcRenderer.on("create-output-window", () => {
+      this.store.dispatch("windows/createWindow");
+    });
+
+    ipcRenderer.on("input-update", (event, { moduleId, prop, data }) => {
+      this.store.dispatch("modules/updateProp", {
+        moduleId,
+        prop,
+        data
+      });
+    });
+
     this.ready = true;
     ipcRenderer.send("modv-ready");
     ipcRenderer.send("get-media-manager-state");
@@ -208,7 +220,9 @@ export default class ModV {
   }
 
   loop(delta) {
-    const { meyda: featuresToGet } = this.store.state;
+    const {
+      meyda: { features: featuresToGet }
+    } = this.store.state;
 
     const features = this.meyda.get(featuresToGet);
     this.updateBeatDetektor(delta, features);

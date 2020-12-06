@@ -1,24 +1,13 @@
 <template>
-  <grid columns="4">
-    <c>
-      <TweenControl v-model="localCache" />
-    </c>
-    <c>
-      <button @click="makeLink">Make link</button>
-    </c>
-    <c>
-      <button @click="removeLink" :disabled="!hasLink">Remove link</button>
-    </c>
-  </grid>
+  <div>
+    <TweenControl color="light" v-model="localCache" @input="manageLink" />
+  </div>
 </template>
 
 <script>
-import hasLink from "../mixins/has-input-link";
 import TweenControl from "../Controls/TweenControl";
 
 export default {
-  mixins: [hasLink],
-
   components: {
     TweenControl
   },
@@ -36,17 +25,35 @@ export default {
     };
   },
 
+  computed: {
+    hasLink() {
+      return !!this.$modV.store.state.inputs.inputLinks[this.inputId];
+    }
+  },
+
   methods: {
+    manageLink() {
+      if (this.hasLink && this.localCache.data.length) {
+        this.removeLink();
+        this.makeLink();
+      } else if (this.hasLink && !this.localCache.data.length) {
+        this.removeLink();
+      } else {
+        this.makeLink();
+      }
+    },
+
     async makeLink() {
       const tween = await this.$modV.store.dispatch("dataTypes/createType", {
         type: "tween",
         args: this.localCache
       });
 
-      this.$modV.store.dispatch("inputs/createInputLink", {
+      this.hasLink = await this.$modV.store.dispatch("inputs/createInputLink", {
         inputId: this.inputId,
         type: "state",
-        location: `tweens.tweens['${tween.id}'].value[0]`
+        location: `tweens.tweens['${tween.id}'].value[0]`,
+        source: "tween"
       });
     },
 
@@ -58,5 +65,3 @@ export default {
   }
 };
 </script>
-
-<style scoped></style>

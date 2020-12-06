@@ -1,7 +1,7 @@
 <template>
   <grid
     columns="4"
-    @click="focusInput"
+    @mousedown="focusInput"
     :class="{ 'has-link': hasLink, focused: inputIsFocused }"
   >
     <c span="1">
@@ -29,10 +29,10 @@
         <input type="text" v-model="value" />
       </div>
       <div class="input" v-else-if="type === 'bool'">
-        <input type="checkbox" v-model="value" />
+        <Checkbox :class="{ light: !inputIsFocused }" v-model="value" />
       </div>
       <div class="input" v-else-if="type === 'color'">
-        <input type="color" v-model="value" />
+        <ColorControl v-model="value" :moduleId="id" :prop="prop" />
       </div>
       <div class="input" v-else-if="type === 'texture'">
         <TextureControl v-model="value" />
@@ -60,6 +60,7 @@ import TweenControl from "./Controls/TweenControl";
 import PaletteControl from "./Controls/PaletteControl";
 import TextureControl from "./Controls/TextureControl";
 import FontControl from "./Controls/FontControl";
+import ColorControl from "./Controls/ColorControl";
 import hasLink from "./mixins/has-input-link";
 import inputIsFocused from "./mixins/input-is-focused";
 
@@ -74,7 +75,8 @@ export default {
     TweenControl,
     PaletteControl,
     TextureControl,
-    FontControl
+    FontControl,
+    ColorControl
   },
 
   data() {
@@ -176,12 +178,21 @@ export default {
 </script>
 
 <style scoped>
+grid {
+  padding: 8px;
+  margin: 0 !important;
+}
+
 .has-link {
-  border: 1px solid var(--focus-color);
+  background: rgba(255, 199, 0, 0.7);
 }
 
 .focused {
-  background-color: var(--foreground-color-2);
+  background: #363636;
+}
+
+.has-link.focused {
+  background: rgba(255, 199, 0, 0.9);
 }
 
 label {

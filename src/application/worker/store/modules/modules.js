@@ -35,13 +35,6 @@ const swap = {
   metaQueue: {}
 };
 
-const temp = {
-  registered: {},
-  active: {},
-  propQueue: {},
-  metaQueue: {}
-};
-
 // this function either creates module properties from an existing module
 // (e.g. loading a preset) or initialises the default value
 async function initialiseModuleProperties(
@@ -79,7 +72,7 @@ async function initialiseModuleProperties(
 }
 
 const actions = {
-  async registerModule({ commit, rootState }, module) {
+  async registerModule({ commit, rootState }, { module, hot = false }) {
     const { renderers } = rootState;
 
     if (!module) {
@@ -98,7 +91,7 @@ const actions = {
       state.registered
     ).findIndex(registeredModule => registeredModule.meta.name === name);
 
-    if (existingModuleWithDuplicateName > -1) {
+    if (!hot && existingModuleWithDuplicateName > -1) {
       console.error(`Module registered with name "${name}" already exists.`);
       return;
     }
@@ -116,6 +109,38 @@ const actions = {
     }
 
     commit("ADD_REGISTERED_MODULE", { module });
+
+    if (hot) {
+      const activeModuleValues = Object.values(state.active);
+
+      for (let i = 0; i < activeModuleValues.length; i += 1) {
+        const activeModule = activeModuleValues[i];
+
+        if (activeModule.meta.name === name) {
+          const { canvas } = rootState.outputs.main || {
+            canvas: { width: 0, height: 0 }
+          };
+
+          if ("init" in module) {
+            const { data } = activeModule;
+            const returnedData = module.init({
+              canvas,
+              data: { ...data },
+              props: activeModule.props
+            });
+
+            if (returnedData) {
+              commit("UPDATE_ACTIVE_MODULE", {
+                id: activeModule.$id,
+                key: "data",
+                value: returnedData,
+                writeToSwap: false
+              });
+            }
+          }
+        }
+      }
+    }
   },
 
   async makeActiveModule(
@@ -301,6 +326,7 @@ const actions = {
     { moduleId, prop, data, group, groupName, writeToSwap }
   ) {
     const moduleName = state.active[moduleId].$moduleName;
+    const inputId = state.active[moduleId].$props[prop].id;
     const propData = state.registered[moduleName].props[prop];
     const currentValue = state.active[moduleId][prop];
     const { type } = propData;
@@ -315,18 +341,18 @@ const actions = {
 
     let dataOut = data;
 
-    // store.getters['plugins/enabledPlugins']
-    //   .filter(plugin => 'processValue' in plugin.plugin)
-    //   .forEach(plugin => {
-    //     const newValue = plugin.plugin.processValue({
-    //       currentValue: data,
-    //       controlVariable: prop,
-    //       delta: modV.delta,
-    //       moduleName: name
-    //     })
+    const expressionAssignment = store.getters["expressions/getByInputId"](
+      inputId
+    );
 
-    //     if (typeof newValue !== 'undefined') dataOut = newValue
-    //   })
+    if (expressionAssignment) {
+      const scope = {
+        value: dataOut,
+        time: Date.now()
+      };
+
+      dataOut = expressionAssignment.func.eval(scope);
+    }
 
     if (store.state.dataTypes[type] && store.state.dataTypes[type].create) {
       dataOut = await store.state.dataTypes[type].create(dataOut);
@@ -503,7 +529,7 @@ const mutations = {
     Vue.set(writeTo.active[id].meta, metaKey, data);
   },
 
-  SWAP: SWAP(swap, temp, () => ({}), sharedPropertyRestrictions)
+  SWAP: SWAP(swap, () => ({}), sharedPropertyRestrictions)
 };
 
 export default {

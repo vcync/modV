@@ -2,9 +2,12 @@
   <main id="app">
     <golden-layout
       class="hscreen"
+      :showCloseIcon="false"
       :showPopoutIcon="false"
+      :showMaximiseIcon="false"
       :state.sync="layoutState"
       @state="updateLayoutState"
+      :headerHeight="18"
     >
       <gl-col>
         <gl-row>
@@ -57,15 +60,15 @@
               <gl-component title="BPM" :closable="false">
                 <BPMConfig />
               </gl-component>
-              <gl-component title="NDI" :closable="false">
+              <!-- <gl-component title="NDI" :closable="false">
                 <NDIConfig />
-              </gl-component>
+              </gl-component> -->
             </gl-stack>
           </gl-stack>
 
           <gl-stack title="Preview Stack">
             <gl-component title="Preview" :closable="false">
-              <CanvasDebugger />
+              <Preview />
             </gl-component>
 
             <gl-component title="Swap" :closable="false">
@@ -82,7 +85,7 @@
 </template>
 
 <script>
-import CanvasDebugger from "@/components/CanvasDebugger";
+import Preview from "@/components/Preview";
 import ABSwap from "@/components/ABSwap";
 import Groups from "@/components/Groups";
 import Gallery from "@/components/Gallery";
@@ -90,7 +93,7 @@ import InputConfig from "@/components/InputConfig";
 import AudioVideoDeviceConfig from "@/components/InputDeviceConfig/AudioVideo.vue";
 import MIDIDeviceConfig from "@/components/InputDeviceConfig/MIDI.vue";
 import BPMConfig from "@/components/InputDeviceConfig/BPM.vue";
-import NDIConfig from "@/components/InputDeviceConfig/NDI.vue";
+// import NDIConfig from "@/components/InputDeviceConfig/NDI.vue";
 import StatusBar from "@/components/StatusBar";
 import ModuleInspector from "@/components/ModuleInspector";
 import InfoView from "@/components/InfoView";
@@ -100,15 +103,11 @@ import getNextName from "@/application/utils/get-next-name";
 import constants from "@/application/constants";
 import * as GoldenLayout from "golden-layout";
 
-import "@/css/golden-layout_theme.css";
-
 export default {
   name: "app",
 
   components: {
-    // SizeDisplay,
-
-    CanvasDebugger,
+    Preview,
     ABSwap,
     Groups,
     Gallery,
@@ -116,7 +115,7 @@ export default {
     AudioVideoDeviceConfig,
     MIDIDeviceConfig,
     BPMConfig,
-    NDIConfig,
+    // NDIConfig,
     StatusBar,
     InfoView,
     ModuleInspector,
@@ -369,30 +368,55 @@ export default {
 </script>
 
 <style>
-@import url("https://fonts.googleapis.com/css?family=IBM+Plex+Mono:100,100i,200,200i,300,300i,400,400i,500,500i,600,600i,700,700i|IBM+Plex+Sans:100,100i,200,200i,300,300i,400,400i,500,500i,600,600i,700,700i&display=swap");
+.tooltip {
+  position: absolute;
+  padding: 4px;
+  color: white;
+  background: #151515;
+  pointer-events: none;
+  z-index: 100;
+}
+
+.tooltip pre {
+  overflow: hidden;
+}
+</style>
+
+<style>
+.smooth-dnd-container.vertical > .smooth-dnd-draggable-wrapper {
+  overflow: initial;
+}
+</style>
+
+<style>
 @import url("https://rsms.me/raster/raster.css?v=20");
+@import url("./css/golden-layout_theme.css");
 
 :root {
-  --fontSize: 14px;
-  --foreground-color-rgb: 255, 255, 255;
+  --fontSize: 16px;
+  --sansFont: "Inter var", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
+    "Helvetica Neue", "微軟雅黑", "Microsoft YaHei", "微軟正黑體",
+    "Microsoft JhengHei", Verdana, Arial, sans-serif !important;
+  --monoFont: "iaw-mono";
+  --lineHeight: calc(var(--fontSize) * 1.5);
+  --baseline: calc(var(--lineHeight) / 2);
+  --blockSpacingTop: 0px;
+  --blockSpacingBottom: var(--lineHeight);
+  --hrThickness: 2px;
+  --h1-size: 2.8rem;
+  --h2-size: 2.2rem;
+  --h3-size: 1.4rem;
+  --h4-size: 1.1rem;
+  --columnGap: 8px;
+  --rowGap: 8px;
+  --displayScale: 1;
+  --pixel: 1px;
+  --foreground-color-rgb: 0, 0, 0;
   --foreground-color-a: 1;
-  --foreground-color-1: rgba(var(--foreground-color-rgb), 0.5);
-  --foreground-color-2: rgba(var(--foreground-color-rgb), 0.4);
-  --foreground-color-3: rgba(var(--foreground-color-rgb), 0.2);
-  --foreground-color-4: rgba(var(--foreground-color-rgb), 0.1);
-
-  --background-color-rgb: 17, 17, 17;
-  --background-color-a: 1;
-  --background-color: rgba(
-    var(--background-color-rgb),
-    var(--background-color-a)
+  --foreground-color: rgba(
+    var(--foreground-color-rgb),
+    var(--foreground-color-a)
   );
-  --background-color-1: rgba(var(--background-color-rgb), 0.8);
-  --background-color-2: rgba(var(--background-color-rgb), 0.7);
-  --background-color-3: rgba(var(--background-color-rgb), 0.5);
-  --background-color-4: rgba(var(--background-color-rgb), 0.4);
-
-  --columnGap: calc(var(--lineHeight));
 
   --focus-color-rgb: 241, 196, 16;
   --focus-color-a: 1;
@@ -417,33 +441,6 @@ export default {
   display: none;
 }
 
-select {
-  box-sizing: border-box;
-  border: none;
-  position: relative;
-  display: inline-block;
-  background-color: var(--foreground-color);
-}
-
-input[type="text"],
-input[type="number"],
-textarea,
-select {
-  padding: 0.3em 0.5em;
-}
-
-.lm_header .lm_tab {
-  padding: 0 1em 5px;
-  font-size: 1rem;
-}
-
-input,
-textarea {
-  background: var(--foreground-color-3);
-  color: var(--foreground-color);
-  border: none;
-}
-
 html,
 body,
 #app {
@@ -455,10 +452,7 @@ body,
 body {
   margin: 0;
   padding: 0;
-
-  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
-    "Helvetica Neue", "微軟雅黑", "Microsoft YaHei", "微軟正黑體",
-    "Microsoft JhengHei", Verdana, Arial, sans-serif !important;
+  font-size: 14px;
 }
 
 .hscreen {
@@ -480,26 +474,26 @@ body,
   justify-content: stretch;
   align-items: stretch;
 }
-
-.lm_header .lm_tab {
-  margin-bottom: unset;
-}
-
-.lm_tab[title="hidden"] {
-  display: none !important;
-}
 </style>
 
-<style scoped>
-canvas {
-  position: fixed;
-  left: 0;
-  right: 0;
+<style>
+::-webkit-scrollbar {
+  width: 12px;
+  height: 12px;
 }
 
-.top-right {
-  position: fixed;
-  top: 0;
-  right: 0;
+::-webkit-scrollbar-track {
+  background: #c4c4c4;
+  border-radius: 10px;
+}
+
+::-webkit-scrollbar-thumb {
+  border-radius: 10px;
+  background: #363636;
+}
+
+::-webkit-scrollbar-corner,
+::-webkit-resizer {
+  background: transparent;
 }
 </style>

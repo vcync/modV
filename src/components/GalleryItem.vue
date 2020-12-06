@@ -158,9 +158,13 @@ canvas {
   width: 100%;
   /* padding-bottom: 56.249999993%; */
   cursor: move;
-  display: flex;
+  display: inline-flex;
   justify-content: center;
   align-items: center;
+
+  max-width: 140px;
+
+  overflow: hidden;
 
   canvas {
     opacity: 0.3;

@@ -101,6 +101,10 @@ const actions = {
 
       commit("RESIZE_AUXILLARY", { id: outputContext.id, width, height });
     }
+  },
+
+  resizeDebug({ commit }, { width, height }) {
+    commit("RESIZE_DEBUG", { width, height });
   }
 };
 
@@ -140,6 +144,20 @@ const mutations = {
 
   TOGGLE_DEBUG(state, debug) {
     state.debug = debug;
+  },
+
+  RESIZE_DEBUG(state, { width, height }) {
+    if (!state.debugContext.canvas) {
+      return;
+    }
+
+    if (width) {
+      state.debugContext.canvas.width = width;
+    }
+
+    if (height) {
+      state.debugContext.canvas.height = height;
+    }
   },
 
   SET_DEBUG_ID(state, id) {

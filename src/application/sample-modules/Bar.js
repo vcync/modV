@@ -22,7 +22,7 @@ export default {
 
     strobe: {
       type: "int",
-      default: 5,
+      default: 0,
       min: 0,
       max: 240
     },

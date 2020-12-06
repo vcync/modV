@@ -2,6 +2,9 @@
 node_modules
 /dist
 
+# npm lockfile
+package-lock.json
+
 # local env files
 .env.local
 .env.*.local
@@ -22,3 +25,4 @@ yarn-error.log*
 
 #Electron-builder output
 /dist_electron
+.env

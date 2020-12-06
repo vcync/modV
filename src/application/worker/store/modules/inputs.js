@@ -13,7 +13,6 @@ function getDefaultState() {
 
 const state = getDefaultState();
 const swap = getDefaultState();
-const temp = getDefaultState();
 
 const getters = {};
 
@@ -30,11 +29,26 @@ const actions = {
 
   createInputLink(
     { commit },
-    { inputId, location, type = "state", args, min = 0, max = 1, writeToSwap }
+    {
+      inputId,
+      location,
+      type = "state",
+      args,
+      min = 0,
+      max = 1,
+      source,
+      writeToSwap
+    }
   ) {
     const writeTo = writeToSwap ? swap : state;
 
-    const inputLink = { id: inputId, location, type, args, min, max };
+    if (!source) {
+      console.warn("Did not create inputLink. Require source", inputId);
+
+      return false;
+    }
+
+    const inputLink = { id: inputId, location, type, args, min, max, source };
     if (!writeTo.inputs[inputId]) {
       console.warn(
         "Did not create inputLink. Could not find input with id",
@@ -46,6 +60,10 @@ const actions = {
 
     commit("ADD_INPUT_LINK", { inputLink, writeToSwap });
     return true;
+  },
+
+  updateInputLink({ commit }, { inputId, key, value, writeToSwap }) {
+    commit("UPDATE_INPUT_LINK", { inputId, key, value, writeToSwap });
   },
 
   removeInputLink({ commit }, { inputId, writeToSwap }) {
@@ -114,6 +132,10 @@ const mutations = {
   UPDATE_INPUT_LINK(state, { inputId, key, value, writeToSwap }) {
     const writeTo = writeToSwap ? swap : state;
 
+    if (!writeTo.inputLinks[inputId]) {
+      return;
+    }
+
     Vue.set(writeTo.inputLinks[inputId], key, value);
   },
 
@@ -123,7 +145,7 @@ const mutations = {
     Vue.delete(writeTo.inputLinks, inputId);
   },
 
-  SWAP: SWAP(swap, temp, getDefaultState)
+  SWAP: SWAP(swap, getDefaultState)
 };
 
 export default {

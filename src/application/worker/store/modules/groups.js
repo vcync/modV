@@ -39,6 +39,18 @@ import uuidv4 from "uuid/v4";
  * @property {String}  drawToCanvasId      The ID of the auxillary Canvas to draw the Group to,
  *                                         null indicates the Group should draw to the main output
  *
+ * @property {String}  alphaInputId        The Input ID for the Alpha control
+ *
+ * @property {String}  enabledInputId      The Input ID for the Enabled control
+ *
+ * @property {String}  clearingInputId     The Input ID for the Clearing control
+ *
+ * @property {String}  inheritInputId      The Input ID for the Inherit control
+ *
+ * @property {String}  compositeOperationInputId  The Input ID for the Composite Operation control
+ *
+ * @property {String}  pipelineInputId     The Input ID for the Pipeline control
+ *
  * @example
  * const Group = {
  *   name: 'Group',
@@ -70,30 +82,27 @@ import uuidv4 from "uuid/v4";
 
 const state = { groups: [] };
 const swap = { groups: [] };
-const temp = { groups: [] };
 
 // Any keys marked false or arrays with keys given
 // will not be moved from the base state when swapped
 const sharedPropertyRestrictions = {
   groups: (
-    // keeps gallery group in place
-    value
-  ) => {
-    const index = value.findIndex(
-      group => group.name === constants.GALLERY_GROUP_NAME
-    );
-
-    return index > -1 ? [`${index}`] : [];
-  }
+    // As state.groups is an Array, we return a function which checks the item in the Array,
+    // returns a boolean. True to remove, false to keep.
+    // Objects return an Array of keys to remove.
+    // This keeps gallery group in place
+    group
+  ) => () => group.name !== constants.GALLERY_GROUP_NAME
 };
 
 const actions = {
   async createGroup({ commit }, args = {}) {
     const name = args.name || "New Group";
     const writeTo = args.writeToSwap ? swap : state;
+    const inherit = args.inherit === undefined ? true : args.inherit;
 
     const existingGroupIndex = writeTo.groups.findIndex(
-      group => group.name === args.name
+      group => group.id === args.id
     );
 
     if (existingGroupIndex > -1) {
@@ -107,7 +116,7 @@ const actions = {
       enabled: args.enabled || false,
       hidden: args.hidden || false,
       modules: args.modules || [],
-      inherit: args.inherit || -1,
+      inherit,
       alpha: args.alpha || 1,
       compositeOperation: args.compositeOperation || "normal",
       context: await store.dispatch("outputs/getAuxillaryOutput", {
@@ -116,6 +125,48 @@ const actions = {
       }),
       id: args.id || uuidv4()
     };
+
+    const alphaInputBind = await store.dispatch("inputs/addInput", {
+      type: "commit",
+      location: "groups/UPDATE_GROUP_BY_KEY",
+      data: { groupId: group.id, key: "alpha" }
+    });
+    group.alphaInputId = alphaInputBind.id;
+
+    const enabledInputBind = await store.dispatch("inputs/addInput", {
+      type: "commit",
+      location: "groups/UPDATE_GROUP_BY_KEY",
+      data: { groupId: group.id, key: "enabled" }
+    });
+    group.enabledInputId = enabledInputBind.id;
+
+    const clearingInputBind = await store.dispatch("inputs/addInput", {
+      type: "commit",
+      location: "groups/UPDATE_GROUP_BY_KEY",
+      data: { groupId: group.id, key: "clearing" }
+    });
+    group.clearingInputId = clearingInputBind.id;
+
+    const inheritInputBind = await store.dispatch("inputs/addInput", {
+      type: "commit",
+      location: "groups/UPDATE_GROUP_BY_KEY",
+      data: { groupId: group.id, key: "inherit" }
+    });
+    group.inheritInputId = inheritInputBind.id;
+
+    const coInputBind = await store.dispatch("inputs/addInput", {
+      type: "commit",
+      location: "groups/UPDATE_GROUP_BY_KEY",
+      data: { groupId: group.id, key: "compositeOperation" }
+    });
+    group.compositeOperationInputId = coInputBind.id;
+
+    const pipelineInputBind = await store.dispatch("inputs/addInput", {
+      type: "commit",
+      location: "groups/UPDATE_GROUP_BY_KEY",
+      data: { groupId: group.id, key: "pipeline" }
+    });
+    group.pipelineInputId = pipelineInputBind.id;
 
     commit("ADD_GROUP", { group, writeToSwap: args.writeToSwap });
 
@@ -228,7 +279,16 @@ const mutations = {
     }
   },
 
-  SWAP: SWAP(swap, temp, () => ({ groups: [] }), sharedPropertyRestrictions)
+  UPDATE_GROUP_BY_KEY(state, { groupId, key, data, writeToSwap }) {
+    const writeTo = writeToSwap ? swap : state;
+    const index = writeTo.groups.findIndex(group => group.id === groupId);
+
+    if (index > -1) {
+      writeTo.groups[index][key] = data;
+    }
+  },
+
+  SWAP: SWAP(swap, () => ({ groups: [] }), sharedPropertyRestrictions)
 };
 
 export default {
