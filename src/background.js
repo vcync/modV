@@ -4,6 +4,7 @@ import {
   ipcMain,
   protocol,
   screen,
+  shell,
   BrowserWindow,
   Menu
 } from "electron";
@@ -272,6 +273,15 @@ function generateMenuTemplate() {
           }
         },
 
+        { type: "separator" },
+        {
+          label: "Open Media folder",
+          click() {
+            if (mm.mediaDirectoryPath) {
+              shell.openItem(mm.mediaDirectoryPath);
+            }
+          }
+        },
         { type: "separator" },
         isMac ? { role: "close" } : { role: "quit" }
       ]
