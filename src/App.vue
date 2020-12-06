@@ -7,6 +7,7 @@
       :showMaximiseIcon="false"
       :state.sync="layoutState"
       @state="updateLayoutState"
+      @creation-error="reset"
       :headerHeight="18"
     >
       <gl-col>
@@ -99,6 +100,8 @@ import ModuleInspector from "@/components/ModuleInspector";
 import InfoView from "@/components/InfoView";
 import Search from "@/components/Search";
 
+import getNextName from "@/application/utils/get-next-name";
+import constants from "@/application/constants";
 import * as GoldenLayout from "golden-layout";
 
 export default {
@@ -156,7 +159,18 @@ export default {
   },
 
   created() {
-    const layoutState = window.localStorage.getItem("layoutState");
+    const layoutErroredLastLoad = window.localStorage.getItem(
+      constants.LAYOUT_LOAD_ERROR_KEY
+    );
+
+    if (layoutErroredLastLoad) {
+      console.warn(
+        "Layout could not be restored. Default layout loaded and old layout was saved to a backup local storage key"
+      );
+      window.localStorage.removeItem(constants.LAYOUT_LOAD_ERROR_KEY);
+    }
+
+    const layoutState = window.localStorage.getItem(constants.LAYOUT_STATE_KEY);
     if (layoutState) {
       this.layoutState = JSON.parse(layoutState);
     }
@@ -306,7 +320,7 @@ export default {
     /**
      * @description Called when <golden-layout /> updates its state.
      * Unminifies config, purges dynamically added panels, minifies and saves to
-     * localStorage key "layoutState".
+     * localStorage key `constants.LAYOUT_STATE_KEY`.
      *
      * @param {GoldenLayout config} value
      */
@@ -315,9 +329,29 @@ export default {
       const cleanedConfig = this.purgeDynamicPanels(config);
 
       window.localStorage.setItem(
-        "layoutState",
+        constants.LAYOUT_STATE_KEY,
         JSON.stringify(GoldenLayout.minifyConfig(cleanedConfig))
       );
+    },
+
+    async reset() {
+      console.log("golden layout creation error");
+      const localStorageKeys = Object.keys(window.localStorage);
+
+      const nextKey = await getNextName(
+        constants.LAYOUT_STATE_KEY,
+        localStorageKeys
+      );
+      window.localStorage.setItem(nextKey, JSON.stringify(this.layoutState));
+
+      window.localStorage.removeItem(constants.LAYOUT_STATE_KEY);
+
+      window.localStorage.setItem(
+        constants.LAYOUT_LOAD_ERROR_KEY,
+        JSON.stringify(true)
+      );
+
+      window.location.reload();
     }
   },
 
