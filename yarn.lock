@@ -12386,10 +12386,10 @@ vue-fragment@^1.5.1:
   resolved "https://registry.yarnpkg.com/vue-fragment/-/vue-fragment-1.5.1.tgz#44c070d55ed1e9a6c698ef57a5c83f64bb06feeb"
   integrity sha512-ig6eES6TcMBbANW71ylB+AJgRN+Zksb3f50AxjGpAk6hMzqmeuD80qeh4LJP0jVw2dMBMjgRUfIkrvxygoRgtQ==
 
-vue-golden-layout@^2.0.8:
-  version "2.0.8"
-  resolved "https://registry.yarnpkg.com/vue-golden-layout/-/vue-golden-layout-2.0.8.tgz#3e2ca299cbc119f6e3af94d6499fa62148b6fb3f"
-  integrity sha512-kxQrX8VHtFG9rO+v4rPlpSebMzjhJX8WvuPDG0fHjjnK2wCDdDAjs7ifoSPZl0rdY0g/I7vbjnvKLSyS8RDf/w==
+vue-golden-layout@^2.1.0:
+  version "2.1.0"
+  resolved "https://registry.yarnpkg.com/vue-golden-layout/-/vue-golden-layout-2.1.0.tgz#a3b8f1a976a5d3916ec95da5cdddbfdeda010246"
+  integrity sha512-bRUKSPfG/QpmWvB8wIl+ns/4G3reB1aP5qKh8rF7AkUYrqA/CJHrfL9/IE6Zd6lWWCm7rk5gHNSLVeVatQ/P4g==
   dependencies:
     jquery "^3.5.0"
     vue-resize-directive "^1.2.0"

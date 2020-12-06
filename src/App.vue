@@ -7,6 +7,7 @@
       :showMaximiseIcon="false"
       :state.sync="layoutState"
       @state="updateLayoutState"
+      @creation-error="reset"
       :headerHeight="18"
     >
       <gl-col>
@@ -158,25 +159,6 @@ export default {
   },
 
   created() {
-    window.onerror = async message => {
-      if (message === "Uncaught TypeError: next.getChild is not a function") {
-        const localStorageKeys = Object.keys(window.localStorage);
-
-        const nextKey = await getNextName(
-          constants.LAYOUT_STATE_KEY,
-          localStorageKeys
-        );
-        window.localStorage.setItem(nextKey, JSON.stringify(this.layoutState));
-
-        window.localStorage.removeItem(constants.LAYOUT_STATE_KEY);
-
-        window.localStorage.setItem(
-          constants.LAYOUT_LOAD_ERROR_KEY,
-          JSON.stringify(true)
-        );
-      }
-    };
-
     const layoutErroredLastLoad = window.localStorage.getItem(
       constants.LAYOUT_LOAD_ERROR_KEY
     );
@@ -350,6 +332,26 @@ export default {
         constants.LAYOUT_STATE_KEY,
         JSON.stringify(GoldenLayout.minifyConfig(cleanedConfig))
       );
+    },
+
+    async reset() {
+      console.log("golden layout creation error");
+      const localStorageKeys = Object.keys(window.localStorage);
+
+      const nextKey = await getNextName(
+        constants.LAYOUT_STATE_KEY,
+        localStorageKeys
+      );
+      window.localStorage.setItem(nextKey, JSON.stringify(this.layoutState));
+
+      window.localStorage.removeItem(constants.LAYOUT_STATE_KEY);
+
+      window.localStorage.setItem(
+        constants.LAYOUT_LOAD_ERROR_KEY,
+        JSON.stringify(true)
+      );
+
+      window.location.reload();
     }
   },
 
