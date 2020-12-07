@@ -7,9 +7,8 @@
       type: 'Group',
       focusElement: true
     }"
-    @focus="focus"
-    @mousedown="focus"
-    :class="{ focused }"
+    tabindex="0"
+    @keydown="removeGroup"
   >
     <div
       class="group__controls"
@@ -323,10 +322,6 @@ export default {
 
   created() {
     this.localName = this.name;
-
-    if (!this.focusedGroup) {
-      this.focus();
-    }
   },
 
   computed: {
@@ -351,14 +346,6 @@ export default {
           modules
         });
       }
-    },
-
-    focusedGroup() {
-      return this.$store.state["ui-groups"].focused;
-    },
-
-    focused() {
-      return this.groupId === this.focusedGroup;
     },
 
     enabled: {
@@ -483,12 +470,6 @@ export default {
       return { moduleId, collection: "layer" };
     },
 
-    focus() {
-      if (!this.focused) {
-        this.$store.commit("ui-groups/SET_FOCUSED", this.groupId);
-      }
-    },
-
     removeModule(moduleId) {
       const { groupId } = this;
 
@@ -530,12 +511,19 @@ export default {
         title: `${this.name}: ${title}`
       });
     },
+
     hasLink(id) {
       return this.$modV.store.state.inputs.inputLinks[id];
     },
 
     isFocused(id) {
       return this.$modV.store.state.inputs.focusedInput.id === id;
+    },
+
+    removeGroup(e) {
+      if (e.keyCode === 8 || e.keyCode === 46) {
+        this.$modV.store.commit("groups/REMOVE_GROUP", { id: this.groupId });
+      }
     }
   },
 
@@ -555,7 +543,7 @@ export default {
   margin-bottom: 8px;
 }
 
-.group.focused {
+.group:focus {
   outline: #c4c4c4 2px solid;
 }
 

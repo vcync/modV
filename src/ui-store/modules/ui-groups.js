@@ -1,17 +1,8 @@
 const state = {
-  focused: "",
   pinned: []
 };
 
 const mutations = {
-  SET_FOCUSED(state, id) {
-    state.focused = id;
-  },
-
-  CLEAR_FOCUSED(state) {
-    state.focused = "";
-  },
-
   ADD_PINNED(state, id) {
     if (Array.isArray(id)) {
       state.pinned = state.pinned.concat(id);
