@@ -478,7 +478,7 @@ export default {
         groupId
       });
 
-      this.$modV.store.commit("modules/REMOVE_ACTIVE_MODULE", {
+      this.$modV.store.dispatch("modules/removeActiveModule", {
         moduleId
       });
     },

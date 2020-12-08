@@ -77,10 +77,11 @@ export default {
     window.dispatchEvent(new Event("resize"));
   },
 
-  beforeDestroy() {
-    this.$modV.store.commit("modules/REMOVE_ACTIVE_MODULE", {
+  async beforeDestroy() {
+    await this.$modV.store.dispatch("modules/removeActiveModule", {
       moduleId: this.id
     });
+
     this.$modV.store.commit("outputs/REMOVE_AUXILLARY", this.outputId);
     this.$modV.store.commit("groups/REMOVE_MODULE_FROM_GROUP", {
       groupId: this.groupId,
