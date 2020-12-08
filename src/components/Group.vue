@@ -8,7 +8,7 @@
       focusElement: true
     }"
     tabindex="0"
-    @keydown="removeGroup"
+    @keydown.self="removeGroup"
   >
     <div
       class="group__controls"
