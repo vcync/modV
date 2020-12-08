@@ -3,7 +3,9 @@
     class="active-module"
     tabindex="0"
     @keydown="removeModule"
+    @focus="clickActiveModule"
     ref="activeModule"
+    :class="{ focused }"
   >
     <div class="active-module__title handle">
       {{ name }}
@@ -13,7 +15,7 @@
         <grid
           columns="6"
           @mousedown="
-            clickActiveModule(module && module.meta.enabledInputId, 'Enable')
+            focusInput(module && module.meta.enabledInputId, 'Enable')
           "
           :class="{
             'has-link': hasLink(module && module.meta.enabledInputId),
@@ -161,6 +163,14 @@ export default {
       }
 
       return this.module.meta.name;
+    },
+
+    focusedModule() {
+      return this.$store.state["focus"].type === "module";
+    },
+
+    focused() {
+      return this.focusedModule && this.id === this.$store.state["focus"].id;
     }
   },
 
@@ -191,9 +201,12 @@ export default {
       });
     },
 
-    clickActiveModule(inputId, title) {
-      this.focusInput(inputId, title);
-      this.$refs.activeModule.focus();
+    async clickActiveModule() {
+      await this.$store.dispatch("focus/setFocus", {
+        id: this.id,
+        type: "module"
+      });
+
       this.$store.commit("ui-modules/SET_FOCUSED", this.id);
     },
 
@@ -222,7 +235,8 @@ export default {
   font-size: 14px;
 }
 
-.active-module:focus {
+.active-module:focus,
+.active-module.focused {
   outline: #c4c4c4 2px solid;
 }
 
