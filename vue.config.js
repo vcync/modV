@@ -82,6 +82,10 @@ module.exports = {
 
         afterSign: "notarize.js",
 
+        win: {
+          icon: "build/icon.ico"
+        },
+
         publish: publishingOptions
       },
 

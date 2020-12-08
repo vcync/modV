@@ -475,6 +475,36 @@ const actions = {
     }
 
     return;
+  },
+
+  async removeActiveModule({ commit }, { moduleId, writeToSwap }) {
+    const writeTo = writeToSwap ? swap : state;
+
+    const module = writeTo.active[moduleId];
+    const { meta } = module;
+
+    if (!module) {
+      throw new Error(`No module with id "${moduleId}" found`);
+    }
+
+    const metaInputIds = [
+      meta.alphaInputId,
+      meta.compositeOperationInputId,
+      meta.enabledInputId
+    ];
+    const moduleProperties = Object.values(module.$props).map(prop => prop.id);
+    const inputIds = [...moduleProperties, ...metaInputIds];
+
+    for (let i = 0, len = inputIds.length; i < len; i++) {
+      const inputId = inputIds[i];
+
+      await store.dispatch("inputs/removeInputLink", {
+        inputId,
+        writeToSwap
+      });
+    }
+
+    commit("REMOVE_ACTIVE_MODULE", { moduleId, writeToSwap });
   }
 };
 
