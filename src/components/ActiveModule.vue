@@ -205,9 +205,11 @@ export default {
       return this.$modV.store.state.inputs.focusedInput.id === id;
     },
 
-    removeModule(e) {
+    async removeModule(e) {
       if (e.keyCode === 8 || e.keyCode === 46) {
         this.$store.commit("ui-modules/SET_FOCUSED", null);
+        await this.$modV.store.dispatch("inputs/clearFocusedInput");
+
         this.$emit("remove-module", this.id);
       }
     }
