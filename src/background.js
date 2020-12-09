@@ -341,7 +341,26 @@ function generateMenuTemplate() {
         { role: "zoomin" },
         { role: "zoomout" },
         { type: "separator" },
-        { role: "togglefullscreen" }
+        { role: "togglefullscreen" },
+        { type: "separator" },
+        {
+          label: "Reset layout",
+          async click() {
+            const { response } = await dialog.showMessageBox(
+              windows["mainWindow"],
+              {
+                type: "question",
+                buttons: ["Yes", "No"],
+                message: "modV",
+                detail: "Are you sure you want to reset the current layout?"
+              }
+            );
+
+            if (response === 0) {
+              windows["mainWindow"].webContents.send("reset-layout");
+            }
+          }
+        }
       ]
     },
     // { role: 'windowMenu' }
