@@ -5,7 +5,7 @@
         <c span="1">
           Audio Feature
         </c>
-        <c span="3">
+        <c span="2">
           <Select v-model="feature" class="light" @input="checkFeature">
             <option
               v-for="featureValue in features"
@@ -14,6 +14,9 @@
               >{{ featureValue }}</option
             >
           </Select>
+        </c>
+        <c span="1">
+          ({{ $modV.features[feature] && $modV.features[feature].toFixed(2) }})
         </c>
       </grid>
     </c>
@@ -70,7 +73,6 @@ export default {
         "spectralSpread",
         "spectralSkewness",
         "spectralKurtosis",
-        "loudness",
         "perceptualSpread",
         "perceptualSharpness"
       ],
