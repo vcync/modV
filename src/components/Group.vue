@@ -9,6 +9,9 @@
     }"
     tabindex="0"
     @keydown.self="removeGroup"
+    @focus.self="focus"
+    @mousedown.self="focus"
+    :class="{ focused }"
   >
     <div
       class="group__controls"
@@ -322,6 +325,10 @@ export default {
 
   created() {
     this.localName = this.name;
+
+    if (!this.focusedGroup) {
+      this.focus();
+    }
   },
 
   computed: {
@@ -346,6 +353,16 @@ export default {
           modules
         });
       }
+    },
+
+    focusedGroup() {
+      return this.$store.state["focus"].type === "group";
+    },
+
+    focused() {
+      return (
+        this.focusedGroup && this.groupId === this.$store.state["focus"].id
+      );
     },
 
     enabled: {
@@ -470,6 +487,15 @@ export default {
       return { moduleId, collection: "layer" };
     },
 
+    focus() {
+      if (!this.focused) {
+        this.$store.dispatch("focus/setFocus", {
+          id: this.groupId,
+          type: "group"
+        });
+      }
+    },
+
     removeModule(moduleId) {
       const { groupId } = this;
 
@@ -506,7 +532,7 @@ export default {
     },
 
     focusInput(id, title) {
-      this.$modV.store.dispatch("inputs/setFocusedInput", {
+      this.store.dispatch("inputs/setFocusedInput", {
         id,
         title: `${this.name}: ${title}`
       });
@@ -543,7 +569,8 @@ export default {
   margin-bottom: 8px;
 }
 
-.group:focus {
+.group:focus,
+.group.focused {
   outline: #c4c4c4 2px solid;
 }
 
