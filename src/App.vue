@@ -7,8 +7,9 @@
       :showMaximiseIcon="false"
       :state.sync="layoutState"
       @state="updateLayoutState"
-      @creation-error="reset"
+      @creation-error="creationError"
       :headerHeight="18"
+      :key="triggerUiRestart"
     >
       <gl-col>
         <gl-row>
@@ -97,7 +98,9 @@ import Search from "@/components/Search";
 
 import getNextName from "@/application/utils/get-next-name";
 import constants from "@/application/constants";
+
 import * as GoldenLayout from "golden-layout";
+import { ipcRenderer, remote } from "electron";
 
 export default {
   name: "app",
@@ -127,7 +130,8 @@ export default {
 
       showUi: true,
       mouseTimer: null,
-      cursor: "none"
+      cursor: "none",
+      triggerUiRestart: 0
     };
   },
 
@@ -153,21 +157,19 @@ export default {
   },
 
   created() {
-    const layoutErroredLastLoad = window.localStorage.getItem(
-      constants.LAYOUT_LOAD_ERROR_KEY
-    );
-
-    if (layoutErroredLastLoad) {
-      console.warn(
-        "Layout could not be restored. Default layout loaded and old layout was saved to a backup local storage key"
-      );
-      window.localStorage.removeItem(constants.LAYOUT_LOAD_ERROR_KEY);
-    }
-
     const layoutState = window.localStorage.getItem(constants.LAYOUT_STATE_KEY);
     if (layoutState) {
-      this.layoutState = JSON.parse(layoutState);
+      try {
+        this.layoutState = JSON.parse(layoutState);
+      } catch (e) {
+        this.creationError();
+      }
     }
+
+    ipcRenderer.on("reset-layout", () => {
+      this.resetGoldenLayoutState();
+      this.restartLayout();
+    });
   },
 
   async mounted() {
@@ -328,8 +330,7 @@ export default {
       );
     },
 
-    async reset() {
-      console.log("golden layout creation error");
+    async creationError() {
       const localStorageKeys = Object.keys(window.localStorage);
 
       const nextKey = await getNextName(
@@ -338,14 +339,27 @@ export default {
       );
       window.localStorage.setItem(nextKey, JSON.stringify(this.layoutState));
 
-      window.localStorage.removeItem(constants.LAYOUT_STATE_KEY);
-
-      window.localStorage.setItem(
-        constants.LAYOUT_LOAD_ERROR_KEY,
-        JSON.stringify(true)
+      console.warn(
+        "Layout could not be restored. Default layout loaded and old layout was saved to a backup local storage key"
       );
 
-      window.location.reload();
+      this.resetGoldenLayoutState();
+      this.restartLayout();
+    },
+
+    resetGoldenLayoutState() {
+      window.localStorage.removeItem(constants.LAYOUT_STATE_KEY);
+      this.layoutState = undefined;
+    },
+
+    /**
+     * @description Restarts Golden Layout.
+     * We increment a variable which is assigned to the key of the root Golden Layout element.
+     * If the key is updated, the element is forced to dismount and mount again.
+     */
+    restartLayout() {
+      this.resetGoldenLayoutState();
+      this.triggerUiRestart++;
     }
   },
 
