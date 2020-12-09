@@ -8,7 +8,7 @@
       focusElement: true
     }"
     tabindex="0"
-    @keydown="removeGroup"
+    @keydown.self="removeGroup"
     @focus.self="focus"
     @mousedown.self="focus"
     :class="{ focused }"
