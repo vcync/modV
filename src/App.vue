@@ -100,7 +100,7 @@ import getNextName from "@/application/utils/get-next-name";
 import constants from "@/application/constants";
 
 import * as GoldenLayout from "golden-layout";
-import { ipcRenderer, remote } from "electron";
+import { ipcRenderer } from "electron";
 
 export default {
   name: "app",
