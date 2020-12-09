@@ -94,7 +94,6 @@ export default {
     },
 
     onDrop(e) {
-      console.log("drop");
       this.groups = applyDrag(this.groups, e);
     }
   }
