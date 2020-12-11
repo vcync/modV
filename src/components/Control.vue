@@ -94,15 +94,17 @@ export default {
   },
 
   methods: {
-    queueLoop() {
-      this.dirty = false;
+    async queueLoop() {
       const { id, prop, queued } = this;
 
-      this.$modV.store.dispatch("modules/updateProp", {
+      await this.$modV.store.dispatch("modules/updateProp", {
         moduleId: id,
         prop,
         data: queued
       });
+
+      this.queued = null;
+      this.dirty = false;
     },
 
     focusInput() {
