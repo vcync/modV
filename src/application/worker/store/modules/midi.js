@@ -37,7 +37,8 @@ const mutations = {
       manufacturer,
       channelData: {},
       listenForInput: true,
-      listenForClock: false
+      listenForClock: false,
+      ccAsNoteOn: false
     });
   },
 

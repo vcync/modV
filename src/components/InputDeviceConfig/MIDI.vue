@@ -15,6 +15,7 @@
         <c>Name</c>
         <c>Input</c>
         <c>Clock</c>
+        <c>CC as NoteOn</c>
       </grid>
     </c>
     <c span="1.." v-for="(device, deviceId) in devices" :key="deviceId">
@@ -34,6 +35,14 @@
             @click="toggleClock(deviceId, !device.listenForClock)"
           >
             {{ device.listenForClock ? "On" : "Off" }}
+          </Button>
+        </c>
+        <c>
+          <Button
+            class="light"
+            @click="toggleCcAsNoteOn(deviceId, !device.ccAsNoteOn)"
+          >
+            {{ device.ccAsNoteOn ? "On" : "Off" }}
           </Button>
         </c>
       </grid>
@@ -70,6 +79,14 @@ export default {
       this.$modV.store.commit("midi/UPDATE_DEVICE", {
         id,
         key: "listenForClock",
+        value
+      });
+    },
+
+    toggleCcAsNoteOn(id, value) {
+      this.$modV.store.commit("midi/UPDATE_DEVICE", {
+        id,
+        key: "ccAsNoteOn",
         value
       });
     }
