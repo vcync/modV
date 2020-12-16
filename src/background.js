@@ -6,7 +6,8 @@ import {
   screen,
   shell,
   BrowserWindow,
-  Menu
+  Menu,
+  systemPreferences
 } from "electron";
 
 import { createProtocol } from "vue-cli-plugin-electron-builder/lib";
@@ -17,6 +18,14 @@ import MediaManager from "./media-manager";
 import store from "./media-manager/store";
 
 const isDevelopment = process.env.NODE_ENV !== "production";
+
+// We need to ask macOS permission to access media devices
+async function getMediaPermission() {
+  await systemPreferences.askForMediaAccess("microphone");
+  await systemPreferences.askForMediaAccess("camera");
+}
+
+getMediaPermission();
 
 // Keep a global reference of the window objects, if you don't, the windows will
 // be closed automatically when the JavaScript objects are garbage collected.
