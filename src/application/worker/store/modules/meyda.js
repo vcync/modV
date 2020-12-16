@@ -9,7 +9,21 @@ import {
 import uuidv4 from "uuid/v4";
 
 const state = {
-  features: ["complexSpectrum"],
+  features: [
+    "complexSpectrum",
+    "rms",
+    "zcr",
+    "energy",
+    "spectralCentroid",
+    "spectralFlatness",
+    "spectralSlope",
+    "spectralRolloff",
+    "spectralSpread",
+    "spectralSkewness",
+    "spectralKurtosis",
+    "perceptualSpread",
+    "perceptualSharpness"
+  ],
   smoothingIds: [],
   MAX_SMOOTHING,
   SMOOTHING_STEP

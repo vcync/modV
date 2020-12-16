@@ -59,7 +59,7 @@ export default {
           return;
         }
 
-        this.resize();
+        this.resize(entries);
       });
     }).observe(container);
 

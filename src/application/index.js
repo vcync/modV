@@ -8,7 +8,7 @@ import windowHandler from "./window-handler";
 import use from "./use";
 
 import PromiseWorker from "promise-worker-transferable";
-
+import Vue from "vue";
 import { ipcRenderer, remote } from "electron";
 
 let imageBitmap;
@@ -25,6 +25,20 @@ export default class ModV {
   use = use;
   debug = false;
   ready = false;
+  features = Vue.observable({
+    energy: 0,
+    rms: 0,
+    zcr: 0,
+    spectralCentroid: 0,
+    spectralFlatness: 0,
+    spectralSlope: 0,
+    spectralRolloff: 0,
+    spectralSpread: 0,
+    spectralSkewness: 0,
+    spectralKurtosis: 0,
+    perceptualSpread: 0,
+    perceptualSharpness: 0
+  });
 
   _store = store;
   store = {
@@ -227,6 +241,11 @@ export default class ModV {
     const features = this.meyda.get(featuresToGet);
     this.updateBeatDetektor(delta, features);
     this.$worker.postMessage({ type: "meyda", payload: features });
+
+    for (let i = 0; i < featuresToGet.length; i += 1) {
+      const feature = featuresToGet[i];
+      this.features[feature] = features[feature];
+    }
   }
 
   setSize({ width, height }) {
