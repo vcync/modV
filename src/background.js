@@ -21,11 +21,46 @@ const isDevelopment = process.env.NODE_ENV !== "production";
 
 // We need to ask macOS permission to access media devices
 async function getMediaPermission() {
-  await systemPreferences.askForMediaAccess("microphone");
-  await systemPreferences.askForMediaAccess("camera");
+  let accessGranted = false;
+
+  accessGranted = await systemPreferences.askForMediaAccess("microphone");
+  accessGranted = await systemPreferences.askForMediaAccess("camera");
+
+  return accessGranted;
 }
 
-getMediaPermission();
+async function checkMediaPermission() {
+  const { platform } = process;
+
+  let macOSMediaDialogsAccepted = false;
+  let hasMediaPermission = false;
+
+  const microphoneAccessStatus = systemPreferences.getMediaAccessStatus(
+    "microphone"
+  );
+  const cameraAccessStatus = systemPreferences.getMediaAccessStatus("camera");
+
+  hasMediaPermission = microphoneAccessStatus === "granted";
+  hasMediaPermission = cameraAccessStatus === "granted";
+
+  if (platform === "darwin" && !hasMediaPermission) {
+    macOSMediaDialogsAccepted = await getMediaPermission();
+  } else if (platform === "darwin" && hasMediaPermission) {
+    macOSMediaDialogsAccepted = true;
+  }
+
+  if (
+    (platform === "win32" && !hasMediaPermission) ||
+    (platform === "darwin" && !macOSMediaDialogsAccepted)
+  ) {
+    dialog.showMessageBox({
+      type: "warning",
+      message: "modV does not have access to camera or microphone",
+      detail:
+        "While modV can still be used without these permissions, some functionality will be limited or broken. Please close modV, update your Security permissions and start modV again."
+    });
+  }
+}
 
 // Keep a global reference of the window objects, if you don't, the windows will
 // be closed automatically when the JavaScript objects are garbage collected.
@@ -79,7 +114,7 @@ const windowPrefs = {
       };
     },
 
-    create(window) {
+    async create(window) {
       // Configure child windows to open without a menubar (windows/linux)
       window.webContents.on(
         "new-window",
@@ -172,6 +207,8 @@ const windowPrefs = {
 
       // Check for updates
       autoUpdater.checkForUpdatesAndNotify();
+
+      await checkMediaPermission();
     },
 
     destroy() {
@@ -481,7 +518,7 @@ app.on("window-all-closed", () => {
   }
 });
 
-app.on("activate", () => {
+app.on("activate", async () => {
   // On macOS it's common to re-create a window in the app when the
   // dock icon is clicked and there are no other windows open.
   createWindow("mainWindow");
