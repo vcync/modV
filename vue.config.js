@@ -73,7 +73,13 @@ module.exports = {
           hardenedRuntime: true,
           gatekeeperAssess: false,
           entitlements: "build/entitlements.mac.plist",
-          entitlementsInherit: "build/entitlements.mac.plist"
+          entitlementsInherit: "build/entitlements.mac.plist",
+          extendInfo: {
+            NSCameraUsageDescription:
+              "This app requires camera access to record video.",
+            NSMicrophoneUsageDescription:
+              "This app requires microphone access to record audio."
+          }
         },
 
         dmg: {
