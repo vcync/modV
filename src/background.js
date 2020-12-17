@@ -19,16 +19,6 @@ import store from "./media-manager/store";
 
 const isDevelopment = process.env.NODE_ENV !== "production";
 
-// We need to ask macOS permission to access media devices
-async function getMediaPermission() {
-  let accessGranted = false;
-
-  accessGranted = await systemPreferences.askForMediaAccess("microphone");
-  accessGranted = await systemPreferences.askForMediaAccess("camera");
-
-  return accessGranted;
-}
-
 async function checkMediaPermission() {
   const { platform } = process;
 
@@ -40,8 +30,8 @@ async function checkMediaPermission() {
   );
   const cameraAccessStatus = systemPreferences.getMediaAccessStatus("camera");
 
-  hasMediaPermission = microphoneAccessStatus === "granted";
-  hasMediaPermission = cameraAccessStatus === "granted";
+  hasMediaPermission =
+    microphoneAccessStatus === "granted" && cameraAccessStatus === "granted";
 
   if (platform === "darwin" && !hasMediaPermission) {
     macOSMediaDialogsAccepted = await getMediaPermission();
@@ -60,6 +50,19 @@ async function checkMediaPermission() {
         "While modV can still be used without these permissions, some functionality will be limited or broken. Please close modV, update your Security permissions and start modV again."
     });
   }
+}
+
+// Asks macOS permission to access media devices
+async function getMediaPermission() {
+  let accessGrantedMicrophone = false;
+  let accessGrantedCamera = false;
+
+  accessGrantedMicrophone = await systemPreferences.askForMediaAccess(
+    "microphone"
+  );
+  accessGrantedCamera = await systemPreferences.askForMediaAccess("camera");
+
+  return accessGrantedMicrophone && accessGrantedCamera;
 }
 
 // Keep a global reference of the window objects, if you don't, the windows will
