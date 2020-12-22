@@ -94,7 +94,7 @@ const actions = {
     commit("SET_DISCOVERING", true);
 
     try {
-      const sources = await grandiose.find(state.discoveryOptions);
+      const sources = await grandiose.find(state.discoveryOptions, 30 * 1000);
       commit("SET_SOURCES", sources);
     } catch (e) {
       console.log(e);
