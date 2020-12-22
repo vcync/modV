@@ -95,5 +95,8 @@
       "vue-cli-service lint",
       "git add"
     ]
+  },
+  "resolutions": {
+    "electron-builder": "22.9.1"
   }
 }
