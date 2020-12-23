@@ -10,9 +10,11 @@
     <grid columns="4" class="device-config">
       <c span="3">Available NDI Sources</c>
       <c span="1"
-        ><button @click="discover" :disabled="discovering">
-          {{ discovering ? "Discovering…" : "Discover Sources" }}
-        </button></c
+        ><Button class="light" @click="discover" :disabled="discovering">
+          {{
+            discovering ? `Discovering… (${timeRemaining})` : "Discover Sources"
+          }}
+        </Button></c
       >
       <c
         span="1.."
@@ -22,7 +24,11 @@
       >
         <grid columns="4">
           <c span="3">{{ source.name }}</c>
-          <c><button @click="recieve(source)">Recieve source</button></c>
+          <c
+            ><Button class="light" @click="recieve(source)"
+              >Recieve source</Button
+            ></c
+          >
         </grid>
       </c>
     </grid>
@@ -41,14 +47,14 @@
         <grid columns="4">
           <c span="2">{{ receiver.receiver.source.name }}</c>
           <c
-            ><button @click="toggleReceiver(receiver)">
+            ><Button class="light" @click="toggleReceiver(receiver)">
               {{ receiver.enabled ? "Disable" : "Enable" }}
-            </button></c
+            </Button></c
           >
           <c
-            ><button @click="removeReceiver(receiver)">
+            ><Button class="light" @click="removeReceiver(receiver)">
               Remove receiver
-            </button></c
+            </Button></c
           >
         </grid>
       </c>
@@ -62,7 +68,10 @@ export default {
     return {
       iVTitle: "NDI Input Config",
       iVBody:
-        "Configure your NDI inputs here. Click Discover Sources to search for NDI sources available on your network. Click Enable to create an NDI reciever so modV can consume the NDI source. Once a receiver has been created, click Remove Receiver to stop modV consuming the NDI source."
+        "Configure your NDI inputs here. Click Discover Sources to search for NDI sources available on your network. Click Enable to create an NDI reciever so modV can consume the NDI source. Once a receiver has been created, click Remove Receiver to stop modV consuming the NDI source.",
+
+      timeRemaining: 0,
+      timer: null
     };
   },
 
@@ -83,6 +92,15 @@ export default {
   methods: {
     discover() {
       this.$modV.store.dispatch("ndi/discoverSources");
+      this.timeRemaining = this.$modV.store.state.ndi.timeout / 1000;
+
+      this.timer = setInterval(() => {
+        this.timeRemaining -= 1;
+
+        if (this.timeRemaining < 1) {
+          clearInterval(this.timer);
+        }
+      }, 1000);
     },
 
     recieve(source) {

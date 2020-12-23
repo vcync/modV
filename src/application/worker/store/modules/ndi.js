@@ -14,6 +14,7 @@ __dirname = __dirname.replace("/node_modules/grandiose", "");
 
 const state = {
   discovering: false,
+  timeout: 30 * 1000,
 
   receivers: {
     // "receiver-uuidv4": {
@@ -94,7 +95,10 @@ const actions = {
     commit("SET_DISCOVERING", true);
 
     try {
-      const sources = await grandiose.find(state.discoveryOptions, 30 * 1000);
+      const sources = await grandiose.find(
+        state.discoveryOptions,
+        state.timeout
+      );
       commit("SET_SOURCES", sources);
     } catch (e) {
       console.log(e);
