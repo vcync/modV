@@ -124,6 +124,14 @@ export default {
         receiverId: receiver.id
       });
     }
+  },
+
+  watch: {
+    discovering(value) {
+      if (!value) {
+        clearInterval(this.timer);
+      }
+    }
   }
 };
 </script>
