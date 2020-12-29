@@ -114,7 +114,6 @@ function handleInput(message) {
     }
 
     if (commitValue) {
-      console.log(_type, _data);
       store.commit("midi/WRITE_DATA", {
         id: `${id}-${name}-${manufacturer}`,
         type: _type,
