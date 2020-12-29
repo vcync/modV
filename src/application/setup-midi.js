@@ -32,7 +32,7 @@ function handleInput(message) {
     return;
   }
 
-  const { listenForClock, listenForInput, ccAsNoteOn } = device;
+  const { listenForClock, listenForInput, ccLatch, noteOnLatch } = device;
 
   // clock
   if (type === 248 && listenForClock) {
@@ -84,8 +84,9 @@ function handleInput(message) {
     let _data = data;
     let _type = type;
 
-    // Overwrite the default behavior for ControlChange messages
-    if (_type === TYPE_CC && ccAsNoteOn) {
+    // Overwrite the default behavior for ControlChange messages so that they
+    // behave like NoteOn
+    if (_type === TYPE_CC && ccLatch) {
       _type = TYPE_NOTEON;
     }
 
@@ -94,11 +95,16 @@ function handleInput(message) {
       if (data > 0) {
         if (device.channelData !== undefined && device.channelData[channel]) {
           _data = device.channelData[channel][_type] === 1 ? 0 : 1;
+
+          // Set the inital value if no value exists yet
         } else {
           _data = 1;
         }
-        // Don't commit the value as this is "NoteOff"
-      } else {
+
+        // Don't commit the value as this is "NoteOff" and we want
+        // to make sure that the button is not deactivated when it's
+        // released by the user
+      } else if (noteOnLatch) {
         commitValue = false;
       }
     }
@@ -108,6 +114,7 @@ function handleInput(message) {
     }
 
     if (commitValue) {
+      console.log(_type, _data);
       store.commit("midi/WRITE_DATA", {
         id: `${id}-${name}-${manufacturer}`,
         type: _type,

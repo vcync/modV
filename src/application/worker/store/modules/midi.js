@@ -38,7 +38,8 @@ const mutations = {
       channelData: {},
       listenForInput: true,
       listenForClock: false,
-      ccAsNoteOn: false
+      ccLatch: false,
+      noteOnLatch: false
     });
   },
 
