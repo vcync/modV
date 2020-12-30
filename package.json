@@ -27,7 +27,7 @@
     "animated-gif-detector": "^1.2.0",
     "animejs": "3.2.0",
     "aws-sdk": "^2.580.0",
-    "canvas-text-wrapper": "^0.10.2",
+    "canvas-text-wrapper": "github:cyberj/canvas-text-wrapper#master",
     "color": "^3.1.2",
     "core-js": "^2.6.10",
     "dotenv": "^8.2.0",

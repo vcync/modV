@@ -2632,10 +2632,9 @@ caniuse-lite@^1.0.0, caniuse-lite@^1.0.30001043, caniuse-lite@^1.0.30001061:
   resolved "https://registry.yarnpkg.com/caniuse-lite/-/caniuse-lite-1.0.30001084.tgz#00e471931eaefbeef54f46aa2203914d3c165669"
   integrity sha512-ftdc5oGmhEbLUuMZ/Qp3mOpzfZLCxPYKcvGv6v2dJJ+8EdqcvZRbAGOiLmkM/PV1QGta/uwBs8/nCl6sokDW6w==
 
-canvas-text-wrapper@^0.10.2:
-  version "0.10.2"
-  resolved "https://registry.yarnpkg.com/canvas-text-wrapper/-/canvas-text-wrapper-0.10.2.tgz#cf00996c131c0eac3de25cbf4a56d07d1da2b0c3"
-  integrity sha512-nFnN8q8ydtkBUWVn/dAdetpwNOkz3KtyD6jTI2HGD43ant2FQcnLugAVaGLJloyRTNK/exn7efpYy2zPV5bHiQ==
+"canvas-text-wrapper@github:cyberj/canvas-text-wrapper#master":
+  version "0.11.0"
+  resolved "https://codeload.github.com/cyberj/canvas-text-wrapper/tar.gz/5335c7bd6ecadc32756c66137dba6360f67dcffd"
 
 capture-stack-trace@^1.0.0:
   version "1.0.1"
