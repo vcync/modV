@@ -27,20 +27,26 @@ export default {
       }
     },
 
-    positionX: {
+    offsetX: {
       type: "float",
-      default: 0.5,
-      max: 1,
-      min: 0,
-      strict: true
+      default: 0,
+      max: 100,
+      min: -100,
+      step: 1,
+      set(args) {
+        this.drawText(args);
+      }
     },
 
-    positionY: {
+    offsetY: {
       type: "float",
-      default: 0.5,
-      max: 1,
-      min: 0,
-      strict: true
+      default: 0,
+      max: 100,
+      min: -100,
+      step: 1,
+      set(args) {
+        this.drawText(args);
+      }
     },
 
     strokeSize: {
@@ -132,7 +138,9 @@ export default {
       stroke,
       strokeColor,
       fillColor,
-      fill
+      fill,
+      offsetX,
+      offsetY
     } = props;
 
     const {
@@ -150,11 +158,16 @@ export default {
     context.lineWidth = strokeSize;
     context.clearRect(0, 0, width, height);
 
+    const calculatedOffsetX = (width / 100) * offsetX;
+    const calculatedOffsetY = (height / 100) * offsetY;
+
     CanvasTextWrapper(canvas, text, {
       font: `${weight} ${size}px ${font}`,
       verticalAlign: "middle",
       textAlign: "center",
-      strokeText: stroke
+      strokeText: stroke,
+      offsetX: calculatedOffsetX,
+      offsetY: calculatedOffsetY
     });
   }
 };
