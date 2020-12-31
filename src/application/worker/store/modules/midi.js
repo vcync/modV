@@ -37,7 +37,9 @@ const mutations = {
       manufacturer,
       channelData: {},
       listenForInput: true,
-      listenForClock: false
+      listenForClock: false,
+      ccLatch: false,
+      noteOnLatch: false
     });
   },
 
@@ -58,7 +60,13 @@ const mutations = {
   },
 
   SET_STATE(state, newState) {
-    state = { ...newState };
+    const keys = Object.keys(newState);
+
+    for (let i = 0, len = keys.length; i < len; i++) {
+      const key = keys[i];
+
+      state[key] = newState[key];
+    }
   }
 };
 

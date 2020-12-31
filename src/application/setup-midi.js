@@ -3,6 +3,8 @@ let store;
 const clockHistory = [];
 const diffHistory = [];
 let nextBpmUpdate = 0;
+const TYPE_NOTEON = 144;
+const TYPE_CC = 176;
 
 // create a new audioContext to use intead of modV's
 // existing context - we get timing jitters otherwise
@@ -30,7 +32,7 @@ function handleInput(message) {
     return;
   }
 
-  const { listenForClock, listenForInput } = device;
+  const { listenForClock, listenForInput, ccLatch, noteOnLatch } = device;
 
   // clock
   if (type === 248 && listenForClock) {
@@ -78,14 +80,52 @@ function handleInput(message) {
       }
     }
   } else if (listenForInput) {
-    store.commit("midi/WRITE_DATA", {
-      id: `${id}-${name}-${manufacturer}`,
-      type,
-      channel,
-      data: type === 176 ? data / 127 : data
-    });
+    let commitValue = true;
+    let _data = data;
+    let _type = type;
+
+    // Overwrite the default behavior for ControlChange messages so that they
+    // behave like NoteOn
+    if (_type === TYPE_CC && ccLatch) {
+      _type = TYPE_NOTEON;
+    }
+
+    if (_type === TYPE_NOTEON) {
+      // We want to know when the button was pressed
+      if (data > 0) {
+        if (device.channelData !== undefined && device.channelData[channel]) {
+          _data = device.channelData[channel][_type] === 1 ? 0 : 1;
+
+          // Set the inital value if no value exists yet
+        } else {
+          _data = 1;
+        }
+
+        // Don't commit the value as this is "NoteOff" and we want
+        // to make sure that the button is not deactivated when it's
+        // released by the user
+      } else if (noteOnLatch) {
+        commitValue = false;
+      }
+    }
+
+    if (_type === TYPE_CC) {
+      _data = _data / 127;
+    }
+
+    if (commitValue) {
+      store.commit("midi/WRITE_DATA", {
+        id: `${id}-${name}-${manufacturer}`,
+        type: _type,
+        channel,
+        data: _data
+      });
+    }
 
     if (store.state.midi.learning) {
+      // Make sure to use the overwritten type
+      message.data[0] = _type;
+
       store.state.midi.learning(message);
     }
   }
