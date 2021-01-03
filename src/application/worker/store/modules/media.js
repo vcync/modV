@@ -1,6 +1,7 @@
 import store from "../";
 import streamToBlob from "stream-to-blob";
 import fs from "fs";
+import path from "path";
 import media from "../../../../media-manager/store/modules/media";
 
 /**
@@ -8,7 +9,7 @@ import media from "../../../../media-manager/store/modules/media";
  *
  * @type {Object}
  */
-const state = {};
+const state = media.state;
 
 const getters = media.getters;
 
@@ -17,7 +18,9 @@ const actions = {
 
   async addMedia({ commit }, { project, folder, item }) {
     if (folder === "module") {
-      const stream = fs.createReadStream(item.path);
+      const stream = fs.createReadStream(
+        path.join(store.state.media.path, item.path)
+      );
       const blob = await streamToBlob(stream);
 
       let text;

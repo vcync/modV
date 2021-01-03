@@ -46,7 +46,17 @@ export default class MediaManager {
     this.fsCreateProfile = fsCreateProfile.bind(this);
     this.$store = store;
 
-    this.update = options.update;
+    this.update = () => {
+      if (options.update) {
+        options.update(...arguments);
+      }
+    };
+
+    this.pathChanged = () => {
+      if (options.pathChanged) {
+        options.pathChanged(...arguments);
+      }
+    };
 
     Object.assign(this, defaults, options);
 
@@ -60,11 +70,12 @@ export default class MediaManager {
     store.subscribe(mutation => {
       if (mutation.type.split("/")[0] !== "media") {
         return;
+      } else if (mutation.type === "media/SET_MEDIA_DIRECTORY_PATH") {
+        this.pathChanged(mutation);
+        return;
       }
 
-      if (this.update) {
-        this.update(mutation);
-      }
+      this.update(mutation);
     });
 
     (async () => {
@@ -83,11 +94,17 @@ export default class MediaManager {
   }
 
   async start() {
+    await store.dispatch("media/setMediaDirectoryPath", {
+      path: this.mediaDirectoryPath
+    });
     await this.createWatcher();
   }
 
   async reset() {
     await store.dispatch("resetAll");
+    await store.dispatch("media/setMediaDirectoryPath", {
+      path: this.mediaDirectoryPath
+    });
   }
 
   async saveFile({ what, name, fileType, project, payload }) {

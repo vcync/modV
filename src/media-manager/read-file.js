@@ -44,18 +44,19 @@ export default async function readFile(filePath) {
         folder,
         item: {
           name: fileName,
-          path: filePath
+          path: relativePath
         }
       });
     } else if (processResult && typeof processResult === "object") {
       const { filePath: path } = processResult;
+      const relativePath = path.replace(this.mediaDirectoryPath, "");
 
       store.dispatch("media/addMedia", {
         project,
         folder,
         item: {
           name: fileName,
-          path
+          path: relativePath
         }
       });
     }

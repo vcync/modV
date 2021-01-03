@@ -100,7 +100,7 @@ export default {
     },
 
     images() {
-      return this.$modV.store.state.media[
+      return this.$modV.store.state.media.media[
         this.$modV.store.state.projects.currentProject
       ].image;
     }
