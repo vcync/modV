@@ -35,6 +35,7 @@
     "fluent-ffmpeg": "^2.1.2",
     "font-list": "^1.2.11",
     "fuse.js": "^6.2.1",
+    "grandiose": "github:vcync/grandiose#feat/workerCompatibility",
     "golden-layout": "^1.5.9",
     "interactive-shader-format": "github:vcync/interactive-shader-format-js#feat/ImageBitmap",
     "lfo-for-modv": "0.0.1",
@@ -71,7 +72,7 @@
     "@vue/eslint-config-prettier": "^4.0.1",
     "babel-eslint": "^10.0.3",
     "electron": "^7.1.2",
-    "electron-builder": "^22.7.0",
+    "electron-builder": "^22.9.1",
     "electron-notarize": "^1.0.0",
     "eslint": "^5.16.0",
     "eslint-plugin-no-for-each": "^0.1.14",
@@ -94,5 +95,8 @@
       "vue-cli-service lint",
       "git add"
     ]
+  },
+  "resolutions": {
+    "electron-builder": "22.9.1"
   }
 }

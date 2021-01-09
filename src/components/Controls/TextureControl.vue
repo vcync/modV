@@ -118,6 +118,10 @@ export default {
       }
 
       if (type === "canvas") {
+        if (!this.modelCanvasId) {
+          return;
+        }
+
         textureDefinition.options.id = this.modelCanvasId;
       }
 

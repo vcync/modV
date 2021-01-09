@@ -97,11 +97,15 @@ export default {
     async queueLoop() {
       const { id, prop, queued } = this;
 
-      await this.$modV.store.dispatch("modules/updateProp", {
-        moduleId: id,
-        prop,
-        data: queued
-      });
+      try {
+        await this.$modV.store.dispatch("modules/updateProp", {
+          moduleId: id,
+          prop,
+          data: queued
+        });
+      } catch (e) {
+        console.error(e.message);
+      }
 
       this.queued = null;
       this.dirty = false;
