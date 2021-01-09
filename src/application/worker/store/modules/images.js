@@ -1,8 +1,11 @@
 import streamToBlob from "stream-to-blob";
 import fs from "fs";
+import path from "path";
 
 import Vue from "vue";
 import uuidv4 from "uuid/v4";
+
+import store from "../";
 
 const state = {};
 
@@ -11,8 +14,10 @@ const getters = {
 };
 
 const actions = {
-  async createImageFromPath({ commit }, { path }) {
-    const stream = fs.createReadStream(path);
+  async createImageFromPath({ commit }, { path: filePath }) {
+    const stream = fs.createReadStream(
+      path.join(store.state.media.path, filePath)
+    );
     const blob = await streamToBlob(stream);
     const imageBitmap = await createImageBitmap(blob);
 

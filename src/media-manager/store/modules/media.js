@@ -6,11 +6,14 @@ function initialState() {
    *
    * @type {Object}
    */
-  return {};
+  return {
+    media: {},
+    path: null
+  };
 }
 
 const getters = {
-  projects: state => Object.keys(state).sort((a, b) => a.localeCompare(b))
+  projects: state => Object.keys(state.media).sort((a, b) => a.localeCompare(b))
 };
 
 const actions = {
@@ -20,7 +23,7 @@ const actions = {
 
   async setState({ commit }, newState) {
     const store = require("../index.js").default;
-    commit("CLEAR_STATE");
+    commit("CLEAR_MEDIA_STATE");
 
     const projectKeys = Object.keys(newState);
     for (let i = 0, len = projectKeys.length; i < len; i++) {
@@ -44,28 +47,32 @@ const actions = {
     }
 
     // commit("SET_STATE", newState);
+  },
+
+  setMediaDirectoryPath({ commit }, { path }) {
+    commit("SET_MEDIA_DIRECTORY_PATH", { path });
   }
 };
 
 const mutations = {
   ADD(state, { project, folder, item }) {
-    if (!state[project]) {
-      Vue.set(state, project, {});
+    if (!state.media[project]) {
+      Vue.set(state.media, project, {});
     }
 
-    if (!state[project][folder]) {
-      Vue.set(state[project], folder, {});
+    if (!state.media[project][folder]) {
+      Vue.set(state.media[project], folder, {});
     }
 
-    state[project][folder][item.name] = item;
+    state.media[project][folder][item.name] = item;
   },
 
-  CLEAR_STATE(state) {
-    const stateKeys = Object.keys(state);
-    for (let i = 0, len = stateKeys.length; i < len; i++) {
-      const key = stateKeys[i];
+  CLEAR_MEDIA_STATE(state) {
+    const stateMediaKeys = Object.keys(state.media);
+    for (let i = 0, len = stateMediaKeys.length; i < len; i++) {
+      const key = stateMediaKeys[i];
 
-      Vue.delete(state, key);
+      Vue.delete(state.media, key);
     }
   },
 
@@ -77,6 +84,10 @@ const mutations = {
 
       state[key] = s[key];
     }
+  },
+
+  SET_MEDIA_DIRECTORY_PATH(state, { path }) {
+    state.path = path;
   }
 };
 

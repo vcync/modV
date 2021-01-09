@@ -139,6 +139,10 @@ const windowPrefs = {
 
             projectNames = mm.$store.getters["media/projects"];
             updateMenu();
+          },
+
+          pathChanged(message) {
+            window.webContents.send("media-manager-path-changed", message);
           }
         });
       } else {
@@ -147,6 +151,10 @@ const windowPrefs = {
 
           projectNames = mm.$store.getters["media/projects"];
           updateMenu();
+        };
+
+        mm.pathChanged = message => {
+          window.webContents.send("media-manager-path-changed", message);
         };
       }
 

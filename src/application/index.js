@@ -163,6 +163,10 @@ export default class ModV {
       this.store.dispatch("media/addMedia", message.payload);
     });
 
+    ipcRenderer.on("media-manager-path-changed", (event, message) => {
+      this.store.dispatch("media/setMediaDirectoryPath", message.payload);
+    });
+
     ipcRenderer.on("open-preset", (event, message) => {
       this.loadPreset(message);
     });
