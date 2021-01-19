@@ -98,6 +98,7 @@ const windowPrefs = {
     prodPath: "index.html",
     options: {
       webPreferences: {
+        enableRemoteModule: true,
         nodeIntegration: true,
         nodeIntegrationInWorker: true,
         nativeWindowOpen: true, // window.open return Window object(like in regular browsers), not BrowserWindowProxy
