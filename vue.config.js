@@ -71,6 +71,8 @@ module.exports = {
         mac: {
           // See https://developer.apple.com/documentation/security/hardened_runtime
           hardenedRuntime: true,
+          // See https://github.com/vcync/modV/issues/413
+          strictVerify: false,
           gatekeeperAssess: false,
           entitlements: "build/entitlements.mac.plist",
           entitlementsInherit: "build/entitlements.mac.plist",

@@ -100,7 +100,7 @@ export default {
     },
 
     images() {
-      return this.$modV.store.state.media[
+      return this.$modV.store.state.media.media[
         this.$modV.store.state.projects.currentProject
       ].image;
     }
@@ -118,6 +118,10 @@ export default {
       }
 
       if (type === "canvas") {
+        if (!this.modelCanvasId) {
+          return;
+        }
+
         textureDefinition.options.id = this.modelCanvasId;
       }
 
