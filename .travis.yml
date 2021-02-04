@@ -47,8 +47,6 @@ jobs:
       - ELECTRON_CACHE=$HOME/.cache/electron
       - ELECTRON_BUILDER_CACHE=$HOME/.cache/electron-builder
       - USE_HARD_LINKS=false
-      before_install:
-        - if [ "$TRAVIS_OS_NAME" = "linux" ]; then wget https://github.com/Palakis/obs-ndi/releases/download/4.9.0/libndi4_4.5.1-1_amd64.deb && sudo dpkg -i libndi4_4.5.1-1_amd64.deb; fi
       script:
         - yarn run electron:build -l
 cache:
@@ -58,6 +56,7 @@ cache:
   - "$HOME/.cache/electron-builder"
 before_install:
   - if [ "$TRAVIS_OS_NAME" = "windows" ] || [ "$TRAVIS_OS_NAME" = "linux" ]; then unset CSC_KEY_PASSWORD CSC_LINK; fi
+  - if [ "$TRAVIS_OS_NAME" = "linux" ]; then wget https://github.com/Palakis/obs-ndi/releases/download/4.9.0/libndi4_4.5.1-1_amd64.deb && sudo dpkg -i libndi4_4.5.1-1_amd64.deb; fi
 before_cache:
 - rm -rf $HOME/.cache/electron-builder/wine
 branches:
