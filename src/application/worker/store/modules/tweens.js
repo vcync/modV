@@ -98,7 +98,8 @@ async function buildFrames({
 
     const animationCache = [];
     let frame = 0;
-    const framesRequired = Math.round(newDuration / 60) || 1;
+    const framesRequired =
+      Math.round(newDuration / (1000 / store.state.fps.fps)) || 1;
 
     let frameRecordingCompleted = false;
     let frameRecordingDirection = 1;
