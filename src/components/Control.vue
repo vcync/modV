@@ -25,6 +25,12 @@
       <div class="input" v-else-if="type === 'vec2'">
         <Vec2DControl v-model="value" />
       </div>
+      <div class="input" v-else-if="type === 'vec3'">
+        <Vec3Control v-model="value" />
+      </div>
+      <div class="input" v-else-if="type === 'vec4'">
+        <Vec4Control v-model="value" />
+      </div>
       <div class="input" v-else-if="type === 'text'">
         <input type="text" v-model="value" />
       </div>
@@ -61,6 +67,8 @@ import PaletteControl from "./Controls/PaletteControl";
 import TextureControl from "./Controls/TextureControl";
 import FontControl from "./Controls/FontControl";
 import ColorControl from "./Controls/ColorControl";
+import Vec3Control from "./Controls/Vec3Control";
+import Vec4Control from "./Controls/Vec4Control";
 import hasLink from "./mixins/has-input-link";
 import inputIsFocused from "./mixins/input-is-focused";
 
@@ -76,7 +84,9 @@ export default {
     PaletteControl,
     TextureControl,
     FontControl,
-    ColorControl
+    ColorControl,
+    Vec3Control,
+    Vec4Control
   },
 
   data() {

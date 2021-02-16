@@ -136,12 +136,7 @@ async function setupModule(module) {
 
       case "color":
         addProp(input.NAME, {
-          control: {
-            type: "colorControl",
-            options: {
-              returnFormat: "mappedRgbaArray"
-            }
-          },
+          type: "vec4",
           label: input.LABEL || input.NAME,
           default: input.DEFAULT
         });

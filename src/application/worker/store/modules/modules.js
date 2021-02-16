@@ -178,7 +178,7 @@ const actions = {
     if (!existingModule) {
       module.$id = uuidv4();
       module.$moduleName = moduleName;
-      module.$props = { ...props };
+      module.$props = JSON.parse(JSON.stringify(props));
 
       module.props = {};
 
