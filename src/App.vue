@@ -79,6 +79,8 @@
 
     <StatusBar />
     <Search />
+
+    <FrameRateDialog />
   </main>
 </template>
 
@@ -95,6 +97,7 @@ import StatusBar from "@/components/StatusBar";
 import ModuleInspector from "@/components/ModuleInspector";
 import InfoView from "@/components/InfoView";
 import Search from "@/components/Search";
+import FrameRateDialog from "@/components/dialogs/FrameRateDialog";
 
 import getNextName from "@/application/utils/get-next-name";
 import constants from "@/application/constants";
@@ -117,7 +120,8 @@ export default {
     StatusBar,
     InfoView,
     ModuleInspector,
-    Search
+    Search,
+    FrameRateDialog
   },
 
   data() {
