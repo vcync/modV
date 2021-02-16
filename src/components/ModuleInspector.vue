@@ -71,6 +71,8 @@ export default {
           moduleDefinition.props[key].type === "bool" ||
           moduleDefinition.props[key].type === "color" ||
           moduleDefinition.props[key].type === "vec2" ||
+          moduleDefinition.props[key].type === "vec3" ||
+          moduleDefinition.props[key].type === "vec4" ||
           moduleDefinition.props[key].type === "tween" ||
           moduleDefinition.props[key].type === "texture" ||
           moduleDefinition.props[key].type === "enum"
