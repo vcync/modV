@@ -532,7 +532,7 @@ export default {
     },
 
     focusInput(id, title) {
-      this.store.dispatch("inputs/setFocusedInput", {
+      this.$modV.store.dispatch("inputs/setFocusedInput", {
         id,
         title: `${this.name}: ${title}`
       });
