@@ -48,7 +48,7 @@
     "ospath": "^1.2.2",
     "patch-package": "^6.2.2",
     "pex-context": "^2.10.2",
-    "postinstall-postinstall": "^2.1.0",
+    "postinstall-postinstall": "github:simply-vat/postinstall-postinstall",
     "promise-worker": "^2.0.1",
     "promise-worker-transferable": "^1.0.4",
     "recursive-deps": "^1.1.1",
