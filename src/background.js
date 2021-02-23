@@ -336,9 +336,13 @@ function generateMenuTemplate() {
         { type: "separator" },
         {
           label: "Open Media folder",
-          click() {
+          async click() {
             if (mm.mediaDirectoryPath) {
-              shell.openItem(mm.mediaDirectoryPath);
+              const failed = await shell.openPath(mm.mediaDirectoryPath);
+
+              if (failed) {
+                console.error(failed);
+              }
             }
           }
         },
