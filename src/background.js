@@ -220,7 +220,9 @@ const windowPrefs = {
       // Check for updates
       autoUpdater.checkForUpdatesAndNotify();
 
-      await checkMediaPermission();
+      if (process.platform !== "linux") {
+        await checkMediaPermission();
+      }
     },
 
     destroy() {
