@@ -5551,7 +5551,7 @@ graceful-fs@^4.1.0, graceful-fs@^4.1.11, graceful-fs@^4.1.15, graceful-fs@^4.1.2
 
 "grandiose@github:vcync/grandiose#feat/workerCompatibility":
   version "0.0.6"
-  resolved "https://codeload.github.com/vcync/grandiose/tar.gz/9e8d015e41ff92da8b37ca6f3f892cbe739af588"
+  resolved "https://codeload.github.com/vcync/grandiose/tar.gz/4ee6ac874cf751f72684640d67a51508bdbc2731"
   dependencies:
     bindings "^1.5.0"
 
