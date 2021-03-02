@@ -4,8 +4,10 @@ import uuidv4 from "uuid/v4";
 import Vue from "vue";
 import store from "../";
 
-// eslint-disable-next-line
+/* eslint-disable */
 __dirname = `${__dirname}/node_modules/grandiose`;
+__dirname = __dirname.replace("app.asar", "app.asar.unpacked");
+/* eslint-enable */
 
 const grandiose = require("grandiose");
 
