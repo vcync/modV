@@ -17,12 +17,10 @@
 
 <script>
 import Dialog from "./Dialog";
-import ElectronLink from "./ElectronLink";
 
 export default {
   components: {
-    Dialog,
-    ElectronLink
+    Dialog
   },
 
   computed: {
