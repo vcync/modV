@@ -7,6 +7,8 @@ const publishingOptions = {
 };
 
 module.exports = {
+  runtimeCompiler: true,
+
   // https://cli.vuejs.org/config/#pages
   pages: {
     index: "src/main.js",

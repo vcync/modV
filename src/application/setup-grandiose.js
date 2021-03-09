@@ -17,7 +17,7 @@ export default function setupGrandiose() {
       if (error.message.includes("libndi.so")) {
         store.dispatch("errors/createMessage", {
           message:
-            "libndi is not installed, please see <a href='https://github.com/vcync/modV#ubuntudebian'>README</a>"
+            "libndi is not installed, please see \"Ubuntu/Debian\" in the modV <ElectronLink to='https://github.com/vcync/modV#ubuntudebian'>README</ElectronLink>."
         });
       } else {
         console.error(error);

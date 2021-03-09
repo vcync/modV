@@ -2,6 +2,7 @@ import Vue from "vue";
 import vgl from "vue-golden-layout";
 import Fragment from "vue-fragment";
 import "./components/inputs";
+import ElectronLink from "./components/ElectronLink";
 import "./components/directives/InfoView";
 import "./components/directives/Search";
 import "./components/directives/ValueTooltip";
@@ -15,6 +16,7 @@ Vue.config.ignoredElements = ["grid", "c"];
 Vue.config.productionTip = false;
 Vue.use(vgl);
 Vue.use(Fragment.Plugin);
+Vue.component("ElectronLink", ElectronLink);
 
 const modV = new ModV();
 window.modV = modV;
