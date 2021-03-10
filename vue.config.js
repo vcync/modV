@@ -64,6 +64,7 @@ module.exports = {
         },
 
         snap: {
+          confinement: "classic",
           publish: publishingOptions
         },
 
