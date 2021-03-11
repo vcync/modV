@@ -73,7 +73,7 @@ let mm;
 
 let projectNames = ["default"];
 let currentProject = "default";
-let shouldCloseMainWindow = false;
+let shouldCloseMainWindowAndQuit = false;
 
 const windowPrefs = {
   colorPicker: {
@@ -196,8 +196,8 @@ const windowPrefs = {
 
       if (!isDevelopment || process.env.IS_TEST) {
         window.on("close", async e => {
-          if (shouldCloseMainWindow) {
-            shouldCloseMainWindow = false;
+          if (shouldCloseMainWindowAndQuit) {
+            app.quit();
             return;
           }
 
@@ -211,7 +211,7 @@ const windowPrefs = {
           });
 
           if (response === 0) {
-            shouldCloseMainWindow = true;
+            shouldCloseMainWindowAndQuit = true;
             window.close();
           }
         });
