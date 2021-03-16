@@ -10,6 +10,7 @@ env:
   ELECTRON_CACHE: $HOME/.cache/electron
   ELECTRON_BUILDER_CACHE: $HOME/.cache/electron-builder
   USE_HARD_LINKS: false
+  GH_TOKEN: ${{ secrets.github_token }}
 
 jobs:
   build-windows:
@@ -35,6 +36,11 @@ jobs:
   build-macOS:
     name: Build macOS
     runs-on: macos-latest
+    env:
+      APPLEID: ${{ secrets.APPLEID }}
+      APPLEIDPASS: ${{ secrets.APPLEIDPASS }}
+      CSC_LINK: ${{ secrets.CSC_LINK }}
+      CSC_KEY_PASSWORD: ${{ secrets.CSC_KEY_PASSWORD }}
     steps:
       - name: Checkout
         uses: actions/checkout@v2
