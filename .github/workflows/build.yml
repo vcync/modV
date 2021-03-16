@@ -1,8 +1,10 @@
 name: Build
 
 on:
+  workflow_dispatch:
   release:
-    types: [created]
+    types:
+      - created
 
 env:
   ELECTRON_CACHE: $HOME/.cache/electron
