@@ -36,6 +36,7 @@ jobs:
   build-macOS:
     name: Build macOS
     runs-on: macos-latest
+    environment: build
     env:
       APPLEID: ${{ secrets.APPLEID }}
       APPLEIDPASS: ${{ secrets.APPLEIDPASS }}
