@@ -49,7 +49,7 @@
 </template>
 
 <script>
-import constants from "../../application/constants";
+import constants from "@/util/constants";
 
 export default {
   props: ["value"],

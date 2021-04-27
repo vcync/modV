@@ -119,6 +119,8 @@ const windowPrefs = {
     },
 
     async create(window) {
+      createWindow("rendererWindow");
+
       // Configure child windows to open without a menubar (windows/linux)
       window.webContents.on(
         "new-window",
@@ -234,6 +236,22 @@ const windowPrefs = {
       ipcMain.removeAllListeners("current-project");
       ipcMain.removeAllListeners("input-update");
     }
+  },
+
+  rendererWindow: {
+    devPath: "rendererWindow",
+    prodPath: "rendererWindow.html",
+    options: {
+      webPreferences: {
+        nodeIntegration: true
+      },
+      transparent: true,
+      frame: false,
+      resizable: false,
+      skipTaskbar: true,
+      fullscreenable: false
+    },
+    unique: true
   }
 };
 

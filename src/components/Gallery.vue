@@ -68,7 +68,7 @@
 
 <script>
 import { Container, Draggable } from "vue-smooth-dnd";
-import constants from "../application/constants";
+import constants from "@/util/constants";
 import GalleryItem from "./GalleryItem";
 
 export default {

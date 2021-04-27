@@ -102,8 +102,8 @@ import Search from "@/components/Search";
 import FrameRateDialog from "@/components/dialogs/FrameRateDialog";
 import ErrorWatcher from "@/components/ErrorWatcher";
 
-import getNextName from "@/application/utils/get-next-name";
-import constants from "@/application/constants";
+import getNextName from "@/util/get-next-name";
+import constants from "@/util/constants";
 
 import * as GoldenLayout from "golden-layout";
 import { ipcRenderer } from "electron";
