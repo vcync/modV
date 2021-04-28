@@ -17,7 +17,7 @@ const actions = {
   ...media.actions,
 
   async addMedia({ commit }, { project, folder, item }) {
-    if (folder === "module") {
+    if (folder === "module" || folder === "isf") {
       const stream = fs.createReadStream(
         path.join(store.state.media.path, item.path)
       );
