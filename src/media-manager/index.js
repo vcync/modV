@@ -13,6 +13,7 @@ import imageReadHandler from "./read-handlers/image";
 import paletteReadHandler from "./read-handlers/palette";
 import presetReadHandler from "./read-handlers/preset";
 import moduleReadHandler from "./read-handlers/module";
+import isfReadHandler from "./read-handlers/isf";
 
 import presetSaveHandler from "./save-handlers/preset";
 
@@ -64,6 +65,7 @@ export default class MediaManager {
     this.addReadHandler({ readHandler: paletteReadHandler });
     this.addReadHandler({ readHandler: presetReadHandler });
     this.addReadHandler({ readHandler: moduleReadHandler });
+    this.addReadHandler({ readHandler: isfReadHandler });
 
     this.addSaveHandler({ saveHandler: presetSaveHandler });
 
