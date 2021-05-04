@@ -248,6 +248,18 @@ protocol.registerSchemesAsPrivileged([
   }
 ]);
 
+function openFile(filePath) {
+  app.addRecentDocument(filePath);
+
+  windows["mainWindow"].webContents.send("open-preset", filePath);
+}
+
+app.on("open-file", (event, filePath) => {
+  event.preventDefault();
+
+  openFile(filePath);
+});
+
 const isMac = process.platform === "darwin";
 
 function setCurrentProject(name) {
@@ -290,13 +302,26 @@ function generateMenuTemplate() {
             });
 
             if (!result.canceled) {
-              windows["mainWindow"].webContents.send(
-                "open-preset",
-                result.filePaths[0]
-              );
+              const filePath = result.filePaths[0];
+              openFile(filePath);
             }
           }
         },
+        ...(isMac
+          ? [
+              {
+                label: "Open Recent",
+                role: "recentdocuments",
+                submenu: [
+                  {
+                    label: "Clear Recent",
+                    role: "clearrecentdocuments"
+                  }
+                ]
+              }
+            ]
+          : []),
+        { type: "separator" },
         {
           label: "Save Preset",
           accelerator: "CmdOrCtrl+Shift+S",
