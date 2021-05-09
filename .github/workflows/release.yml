@@ -6,12 +6,24 @@ on:
 jobs:
   release:
     name: Release
+
+    # specify the environment to select the right env variables
+    environment: build
+
     runs-on: ubuntu-18.04
+
+    if: "!contains(github.event.head_commit.message, 'chore(release)')"
+
     steps:
       - name: Checkout
         uses: actions/checkout@v2
         with:
           fetch-depth: 0
+
+          # required to use our own personal access token
+          # we need to use a custom PAT as other workflows
+          # aren't triggered using secrets.GITHUB_TOKEN
+          persist-credentials: false
 
       - name: Setup Node.js
         uses: actions/setup-node@v1
@@ -26,6 +38,6 @@ jobs:
 
       - name: Release
         env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GITHUB_TOKEN: ${{ secrets.PERSONAL_ACCESS_TOKEN }}
 
         run: npx semantic-release
