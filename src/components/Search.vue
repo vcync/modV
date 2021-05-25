@@ -209,7 +209,7 @@ export default {
 };
 </script>
 
-<style lang="scss" scoped>
+<style scoped>
 .search {
   position: fixed;
   top: 33%;
@@ -223,63 +223,63 @@ export default {
 
   margin: 0;
   z-index: 1;
+}
 
-  .search-box-container {
-    border-radius: 5px;
-    padding: 0.5rem;
-    z-index: 1;
+.search .search-box-container .search-box {
+  border-radius: 5px;
+  width: 100%;
+  padding-left: var(--baseline);
+  padding-right: var(--baseline);
+}
 
-    .search-box {
-      border-radius: 5px;
-      width: 100%;
-      padding-left: var(--baseline);
-      padding-right: var(--baseline);
+.search .search-box-container .search-box.has-results {
+  border-radius: 5px 5px 0 0;
+}
 
-      &.has-results {
-        border-radius: 5px 5px 0 0;
-      }
-    }
+.search .search-box-container {
+  border-radius: 5px;
+  padding: 0.5rem;
+  z-index: 1;
+}
 
-    .results {
-      margin: 0;
-      padding: 0;
-      list-style: none;
-      max-height: 40vh;
-      overflow-y: scroll;
+.search .search-box-container .results {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  max-height: 40vh;
+  overflow-y: scroll;
+}
 
-      li {
-        margin: 0;
-        padding: calc(var(--baseline) / 3);
-        padding-left: var(--baseline);
-        padding-right: var(--baseline);
+.search .search-box-container .results li {
+  margin: 0;
+  padding: calc(var(--baseline) / 3);
+  padding-left: var(--baseline);
+  padding-right: var(--baseline);
+}
 
-        &:last-child {
-          border-radius: 0 0 5px 5px;
-        }
+.search .search-box-container .results:last-child {
+  border-radius: 0 0 5px 5px;
+}
 
-        &.selected {
-          background: var(--foreground-color-1);
-        }
-      }
-    }
-  }
+.search .search-box-container .results.selected {
+  background: var(--foreground-color-1);
+}
 
-  .search-highlight {
-    border: 2px var(--focus-color) solid;
-    background-color: rgba(var(--focus-color-rgb), 0.1);
-    position: fixed;
-    top: 0;
-    left: 0;
-    opacity: 1;
-    will-change: transform, width, height;
+.search .search-highlight {
+  border: 2px var(--focus-color) solid;
+  background-color: rgba(var(--focus-color-rgb), 0.1);
+  position: fixed;
+  top: 0;
+  left: 0;
+  opacity: 1;
+  will-change: transform, width, height;
 
-    transition: all 200ms, opacity 600ms;
+  transition: all 200ms, opacity 600ms;
 
-    pointer-events: none;
+  pointer-events: none;
+}
 
-    &.hide {
-      opacity: 0;
-    }
-  }
+.search .search-highlight.hide {
+  opacity: 0;
 }
 </style>

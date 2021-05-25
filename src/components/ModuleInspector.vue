@@ -82,7 +82,7 @@ export default {
 };
 </script>
 
-<style lang="scss">
+<style>
 button.pin-button {
   border: 0;
   background: 0;
