@@ -7685,10 +7685,9 @@ methods@~1.1.2:
   resolved "https://registry.yarnpkg.com/methods/-/methods-1.1.2.tgz#5529a4d67654134edcc5266656835b0f851afcee"
   integrity sha1-VSmk1nZUE07cxSZmVoNbD4Ua/O4=
 
-meyda@^5.0.1:
-  version "5.0.2"
-  resolved "https://registry.yarnpkg.com/meyda/-/meyda-5.0.2.tgz#673aa97756b00fa3cc2c9b272f925a4a3342a8e4"
-  integrity sha512-pUCn3/zW85s5jf/FHz75OsWrIEIEjvAFT7rIrY6RO/wD1wkvgSYrgPJfvq9PBqEH7tHf2dKwn70IQD0Y79F3MQ==
+meyda@vcync/meyda:
+  version "0.0.0-development"
+  resolved "https://codeload.github.com/vcync/meyda/tar.gz/54d52b16a644fe471b3e83ba237643d3b0b708bf"
   dependencies:
     dct "0.1.0"
     fftjs "0.0.4"
