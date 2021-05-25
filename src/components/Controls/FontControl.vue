@@ -171,20 +171,20 @@ export default {
 };
 </script>
 
-<style lang="scss">
+<style>
 .searchable-select {
   height: 100px;
   overflow-y: scroll;
   padding: 0;
+}
 
-  li {
-    list-style: none;
-    margin: 0;
+.searchable-select li {
+  list-style: none;
+  margin: 0;
+}
 
-    &.selected,
-    &:hover {
-      background-color: var(--foreground-color-3);
-    }
-  }
+.searchable-select.selected,
+.searchable-select:hover {
+  background-color: var(--foreground-color-3);
 }
 </style>

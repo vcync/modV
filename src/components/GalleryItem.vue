@@ -148,7 +148,7 @@ export default {
 };
 </script>
 
-<style lang="scss" scoped>
+<style scoped>
 canvas {
   max-width: 100%;
 }
@@ -170,32 +170,30 @@ canvas {
   max-width: 140px;
 
   overflow: hidden;
+}
 
-  canvas {
-    opacity: 0.3;
-    transition: 150ms opacity;
-  }
+.gallery-item:hover canvas {
+  opacity: 1;
+}
 
-  .title {
-    transition: 150ms opacity;
-    padding: 0.45em;
-    max-height: 100%;
-    box-sizing: border-box;
-    text-overflow: ellipsis;
-    max-width: 100%;
-    overflow: hidden;
-    white-space: nowrap;
-  }
+.gallery-item:hover.title {
+  opacity: 0.3;
+}
 
-  &:hover {
-    canvas {
-      opacity: 1;
-    }
+.gallery-item canvas {
+  opacity: 0.3;
+  transition: 150ms opacity;
+}
 
-    .title {
-      opacity: 0.3;
-    }
-  }
+.gallery-item .title {
+  transition: 150ms opacity;
+  padding: 0.45em;
+  max-height: 100%;
+  box-sizing: border-box;
+  text-overflow: ellipsis;
+  max-width: 100%;
+  overflow: hidden;
+  white-space: nowrap;
 }
 
 .title {
