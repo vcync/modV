@@ -236,11 +236,10 @@ export default {
 };
 </script>
 
-<style scoped lang="scss">
+<style>
 .pad {
   width: 170px;
   height: 170px;
-  // border: 1px solid #000;
   position: relative;
   background-color: #fff;
   cursor: crosshair;

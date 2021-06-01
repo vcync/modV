@@ -73,7 +73,7 @@ let mm;
 
 let projectNames = ["default"];
 let currentProject = "default";
-let shouldCloseMainWindow = false;
+let shouldCloseMainWindowAndQuit = false;
 
 const windowPrefs = {
   colorPicker: {
@@ -81,7 +81,9 @@ const windowPrefs = {
     prodPath: "colorPicker.html",
     options: {
       webPreferences: {
-        nodeIntegration: true
+        // Use pluginOptions.nodeIntegration, leave this alone
+        // See nklayman.github.io/vue-cli-plugin-electron-builder/guide/security.html#node-integration for more info
+        nodeIntegration: process.env.ELECTRON_NODE_INTEGRATION
       },
       transparent: true,
       frame: false,
@@ -99,7 +101,9 @@ const windowPrefs = {
     options: {
       webPreferences: {
         enableRemoteModule: true,
-        nodeIntegration: true,
+        // Use pluginOptions.nodeIntegration, leave this alone
+        // See nklayman.github.io/vue-cli-plugin-electron-builder/guide/security.html#node-integration for more info
+        nodeIntegration: process.env.ELECTRON_NODE_INTEGRATION,
         nodeIntegrationInWorker: true,
         nativeWindowOpen: true, // window.open return Window object(like in regular browsers), not BrowserWindowProxy
         affinity: "main-window" // main window, and addition windows should work in one process,
@@ -196,8 +200,8 @@ const windowPrefs = {
 
       if (!isDevelopment || process.env.IS_TEST) {
         window.on("close", async e => {
-          if (shouldCloseMainWindow) {
-            shouldCloseMainWindow = false;
+          if (shouldCloseMainWindowAndQuit) {
+            app.quit();
             return;
           }
 
@@ -211,7 +215,7 @@ const windowPrefs = {
           });
 
           if (response === 0) {
-            shouldCloseMainWindow = true;
+            shouldCloseMainWindowAndQuit = true;
             window.close();
           }
         });
@@ -220,7 +224,9 @@ const windowPrefs = {
       // Check for updates
       autoUpdater.checkForUpdatesAndNotify();
 
-      await checkMediaPermission();
+      if (process.platform !== "linux") {
+        await checkMediaPermission();
+      }
     },
 
     destroy() {
@@ -245,6 +251,18 @@ protocol.registerSchemesAsPrivileged([
     }
   }
 ]);
+
+function openFile(filePath) {
+  app.addRecentDocument(filePath);
+
+  windows["mainWindow"].webContents.send("open-preset", filePath);
+}
+
+app.on("open-file", (event, filePath) => {
+  event.preventDefault();
+
+  openFile(filePath);
+});
 
 const isMac = process.platform === "darwin";
 
@@ -288,13 +306,26 @@ function generateMenuTemplate() {
             });
 
             if (!result.canceled) {
-              windows["mainWindow"].webContents.send(
-                "open-preset",
-                result.filePaths[0]
-              );
+              const filePath = result.filePaths[0];
+              openFile(filePath);
             }
           }
         },
+        ...(isMac
+          ? [
+              {
+                label: "Open Recent",
+                role: "recentdocuments",
+                submenu: [
+                  {
+                    label: "Clear Recent",
+                    role: "clearrecentdocuments"
+                  }
+                ]
+              }
+            ]
+          : []),
+        { type: "separator" },
         {
           label: "Save Preset",
           accelerator: "CmdOrCtrl+Shift+S",
@@ -334,9 +365,13 @@ function generateMenuTemplate() {
         { type: "separator" },
         {
           label: "Open Media folder",
-          click() {
+          async click() {
             if (mm.mediaDirectoryPath) {
-              shell.openItem(mm.mediaDirectoryPath);
+              const failed = await shell.openPath(mm.mediaDirectoryPath);
+
+              if (failed) {
+                console.error(failed);
+              }
             }
           }
         },

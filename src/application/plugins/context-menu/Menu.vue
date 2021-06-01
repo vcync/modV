@@ -120,7 +120,7 @@ export default {
 };
 </script>
 
-<style lang="scss">
+<style>
 .nwjs-menu {
   font-family: "Rubik", sans-serif;
   font-size: 14px;
@@ -135,12 +135,10 @@ export default {
   min-width: 100px;
   background-color: #eee;
   position: fixed;
-  // opacity: 0;
   transition: opacity 250ms;
   margin: 0;
   padding: 4px 0;
   list-style: none;
-  // pointer-events: none;
   border-radius: 7px;
   border: 1px rgba(191, 191, 191, 0.8) solid;
   box-shadow: rgba(43, 43, 43, 0.34) 1px 1px 11px 0px;

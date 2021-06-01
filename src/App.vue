@@ -81,6 +81,8 @@
     <Search />
 
     <FrameRateDialog />
+
+    <ErrorWatcher />
   </main>
 </template>
 
@@ -98,6 +100,7 @@ import ModuleInspector from "@/components/ModuleInspector";
 import InfoView from "@/components/InfoView";
 import Search from "@/components/Search";
 import FrameRateDialog from "@/components/dialogs/FrameRateDialog";
+import ErrorWatcher from "@/components/ErrorWatcher";
 
 import getNextName from "@/application/utils/get-next-name";
 import constants from "@/application/constants";
@@ -121,7 +124,8 @@ export default {
     InfoView,
     ModuleInspector,
     Search,
-    FrameRateDialog
+    FrameRateDialog,
+    ErrorWatcher
   },
 
   data() {

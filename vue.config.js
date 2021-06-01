@@ -7,6 +7,8 @@ const publishingOptions = {
 };
 
 module.exports = {
+  runtimeCompiler: true,
+
   // https://cli.vuejs.org/config/#pages
   pages: {
     index: "src/main.js",
@@ -37,6 +39,8 @@ module.exports = {
 
   pluginOptions: {
     electronBuilder: {
+      nodeIntegration: true,
+
       externals: [
         "!color",
         "!lodash.clonedeep",
@@ -64,6 +68,7 @@ module.exports = {
         },
 
         snap: {
+          confinement: "classic",
           publish: publishingOptions
         },
 

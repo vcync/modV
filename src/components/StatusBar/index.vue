@@ -38,24 +38,24 @@ export default {
 };
 </script>
 
-<style lang="scss">
+<style>
 .status-bar {
   padding-left: 0.5rem;
 
   background-color: #c1c1c1;
   height: 35px;
+}
 
-  &.tags {
-    margin: 0;
+.status-bar.tags {
+  margin: 0;
+}
 
-    &:not(:last-child) {
-      margin-bottom: 0;
-    }
+.status-bar:not(:last-child) {
+  margin-bottom: 0;
+}
 
-    .tag {
-      margin-bottom: 0;
-    }
-  }
+.status-bar .tag {
+  margin-bottom: 0;
 }
 
 .tags .tag:not(:last-child) {

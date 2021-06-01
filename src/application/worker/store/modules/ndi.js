@@ -1,16 +1,7 @@
-/* globals __dirname */
-
 import uuidv4 from "uuid/v4";
 import Vue from "vue";
 import store from "../";
-
-// eslint-disable-next-line
-__dirname = `${__dirname}/node_modules/grandiose`;
-
-const grandiose = require("grandiose");
-
-// eslint-disable-next-line
-__dirname = __dirname.replace("/node_modules/grandiose", "");
+import grandiose from "../../../setup-grandiose";
 
 const state = {
   discovering: false,
@@ -42,7 +33,7 @@ const state = {
 };
 
 function checkCpu() {
-  if (!grandiose.isSupportedCPU()) {
+  if (!grandiose().isSupportedCPU()) {
     throw new Error("Your CPU is not supported for NDI");
   }
 }
@@ -95,7 +86,7 @@ const actions = {
     commit("SET_DISCOVERING", true);
 
     try {
-      const sources = await grandiose.find(
+      const sources = await grandiose().find(
         state.discoveryOptions,
         state.timeout
       );
@@ -112,10 +103,10 @@ const actions = {
   },
 
   async createReceiver({ commit }, receiverOptions) {
-    receiverOptions.colorFormat = grandiose.COLOR_FORMAT_RGBX_RGBA;
-    receiverOptions.bandwidth = grandiose.BANDWIDTH_LOWEST;
+    receiverOptions.colorFormat = grandiose().COLOR_FORMAT_RGBX_RGBA;
+    receiverOptions.bandwidth = grandiose().BANDWIDTH_LOWEST;
 
-    const receiver = await grandiose.receive(receiverOptions);
+    const receiver = await grandiose().receive(receiverOptions);
 
     const outputContext = await store.dispatch("outputs/getAuxillaryOutput", {
       name: receiverOptions.source.name,
