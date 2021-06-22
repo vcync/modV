@@ -1,5 +1,7 @@
 /* eslint-env worker node */
 
+/* can't use import here, use require instead */
+
 let lastKick = false;
 
 async function start() {
@@ -7,6 +9,8 @@ async function start() {
   const fs = require("fs");
   const store = require("./store").default;
   const loop = require("./loop").default;
+  const grabCanvasPlugin = require("../plugins/grab-canvas").default;
+
   const { tick: frameTick } = require("./frame-counter");
   const { getFeatures, setFeatures } = require("./audio-features");
   // const featureAssignmentPlugin = require("../plugins/feature-assignment");
@@ -42,6 +46,8 @@ async function start() {
       payload: JSON.stringify(payload)
     });
   });
+
+  store.dispatch("plugins/add", grabCanvasPlugin);
 
   const renderers = require.context("../renderers/", false, /\.js$/);
 

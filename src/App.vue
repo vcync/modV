@@ -66,6 +66,12 @@
                 <NDIConfig />
               </gl-component>
             </gl-stack>
+
+            <gl-stack title="Plugins" :closable="false">
+              <gl-component title="Plugins" :closable="false">
+                <Plugins />
+              </gl-component>
+            </gl-stack>
           </gl-stack>
 
           <gl-stack title="Preview Stack">
@@ -101,6 +107,7 @@ import InfoView from "@/components/InfoView";
 import Search from "@/components/Search";
 import FrameRateDialog from "@/components/dialogs/FrameRateDialog";
 import ErrorWatcher from "@/components/ErrorWatcher";
+import Plugins from "@/components/Plugins";
 
 import getNextName from "@/application/utils/get-next-name";
 import constants from "@/application/constants";
@@ -125,7 +132,8 @@ export default {
     ModuleInspector,
     Search,
     FrameRateDialog,
-    ErrorWatcher
+    ErrorWatcher,
+    Plugins
   },
 
   data() {

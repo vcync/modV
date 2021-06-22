@@ -1,0 +1,161 @@
+const mappingCanvas = new OffscreenCanvas(1, 1);
+mappingCanvas.title = "mappingCanvas";
+
+let timeout = 0;
+let connection = undefined;
+
+const mappingContext = mappingCanvas.getContext("2d", {
+  // Boolean that indicates if the canvas contains an alpha channel.
+  // If set to false, the browser now knows that the backdrop is always opaque,
+  // which can speed up drawing of transparent content and images.
+  // (lights don't have an alpha channel, so let's drop it)
+  alpha: false,
+  desynchronized: true,
+  imageSmoothingEnabled: false
+});
+
+const props = {
+  mappingWidth: 16,
+  mappingHeight: 8,
+  url: "ws://localhost:3006/modV",
+  reconnectAfter: 4000,
+  shouldReconnect: true
+};
+
+export default {
+  name: "Grab Canvas",
+  props: {
+    mappingWidth: { type: "int" },
+    mappingHeight: { type: "int" },
+    address: { type: "string" }
+  },
+
+  async init({ store }) {
+    await store.dispatch("outputs/getAuxillaryOutput", {
+      name: "Fixture Canvas",
+      group: "Plugins",
+      canvas: mappingCanvas,
+      context: mappingContext,
+      reactToResize: false
+    });
+
+    mappingCanvas.width = props.mappingWidth;
+    mappingCanvas.height = props.mappingHeight;
+
+    this.setupSocket();
+  },
+
+  shutdown() {
+    // This will deactivate the reconnect for ever
+    this.stopReconnect();
+    this.closeConnection();
+  },
+
+  postProcessFrame({ canvas }) {
+    mappingContext.drawImage(
+      canvas,
+      0,
+      0,
+      canvas.width,
+      canvas.height,
+      0,
+      0,
+      props.mappingWidth,
+      props.mappingHeight
+    );
+
+    const imageData = mappingContext.getImageData(
+      0,
+      0,
+      props.mappingWidth,
+      props.mappingHeight
+    );
+    const { data } = imageData;
+    const arrayData = Array.from(data);
+    const rgbArray = arrayData.filter((value, index) => (index + 1) % 4 !== 0);
+
+    this.send(rgbArray);
+  },
+
+  /**
+   * Create a WebSocket to luminave
+   */
+  setupSocket() {
+    const { url, shouldReconnect, reconnectAfter } = props;
+
+    // Close an old connection
+    this.closeConnection();
+
+    // Create a new connection
+    connection = new WebSocket(url);
+
+    // Listen for errors (e.g. could not connect)
+    connection.addEventListener("error", event => {
+      console.error("lumiaveConnector: WebSocket: Error:", event);
+
+      // Reconnect is allowed
+      if (shouldReconnect) {
+        // Reconnect after a specific amount of time
+        timeout = setTimeout(() => {
+          this.setupSocket();
+        }, reconnectAfter);
+      }
+    });
+
+    // Connection is opened
+    connection.addEventListener("open", () => {
+      console.info("lumiaveConnector: WebSocket: Opened");
+    });
+
+    connection.addEventListener("close", () => {
+      console.info("lumiaveConnector: WebSocket: Closed");
+    });
+  },
+
+  /**
+   * Close the WebSocket connection and stop reconnecting
+   */
+  closeConnection() {
+    clearTimeout(timeout);
+
+    if (connection !== undefined) {
+      connection.close();
+    }
+
+    connection = undefined;
+  },
+
+  /**
+   * Stop reconnecting to WebSocket
+   */
+  stopReconnect() {
+    props.shouldReconnect = false;
+    clearTimeout(timeout);
+  },
+
+  /**
+   * Enable reconnecting to WebSocket
+   */
+  startReconnect() {
+    props.shouldReconnect = true;
+  },
+
+  /**
+   * Send data to WebSocket if connection is established
+   * @param {Object} data
+   */
+  send(data) {
+    // Connection is established
+    if (connection !== undefined && connection.readyState === 1) {
+      const message = {
+        _type: "modV",
+        colors: data
+      };
+
+      const messageString = JSON.stringify(message, null, 2);
+
+      // Send JSON message to luminave
+      connection.send(messageString);
+    }
+  }
+};

@@ -314,7 +314,17 @@ function loop(delta, features) {
     }
   }
 
-  // main.getImageData(0, 0, main.canvas.width, main.canvas.height);
+  const postProcessFrameFunctions =
+    store.getters["plugins/postProcessFrame"] || [];
+  const postProcessFrameFunctionsLength = postProcessFrameFunctions.length;
+
+  for (let i = 0; i < postProcessFrameFunctionsLength; ++i) {
+    postProcessFrameFunctions[i].postProcessFrame({
+      canvas: main.canvas,
+      features,
+      store
+    });
+  }
 }
 
 export default loop;

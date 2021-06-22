@@ -15,7 +15,11 @@ const state = [];
 
 const getters = {
   preProcessFrame: state => {
-    return state.filter(plugin => !!plugin.preProcessFrame);
+    return state.filter(plugin => !!plugin.preProcessFrame && plugin.enabled);
+  },
+
+  postProcessFrame: state => {
+    return state.filter(plugin => !!plugin.postProcessFrame && plugin.enabled);
   }
 };
 
@@ -31,13 +35,44 @@ const actions = {
     }
 
     plugin.id = uuidv4();
+    plugin.enabled = false;
     commit("ADD_PLUGIN", plugin);
+  },
+
+  setEnabled({ commit }, { pluginId, enabled }) {
+    const plugin = state.find(item => item.id === pluginId);
+
+    if (!plugin) {
+      return false;
+    }
+
+    if (enabled) {
+      if ("init" in plugin) {
+        plugin.init({ store });
+      }
+    } else {
+      if ("shutdown" in plugin) {
+        plugin.shutdown({ store });
+      }
+    }
+
+    commit("SET_PLUGIN_ENABLE", { pluginId, enabled });
   }
 };
 
 const mutations = {
   ADD_PLUGIN(state, plugin) {
     state.push(plugin);
+  },
+
+  SET_PLUGIN_ENABLE(state, { pluginId, enabled }) {
+    const plugin = state.find(item => item.id === pluginId);
+
+    if (!plugin) {
+      return false;
+    }
+
+    plugin.enabled = enabled;
   }
 };
 
