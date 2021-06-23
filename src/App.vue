@@ -67,11 +67,9 @@
               </gl-component>
             </gl-stack>
 
-            <gl-stack title="Plugins" :closable="false">
-              <gl-component title="Plugins" :closable="false">
-                <Plugins />
-              </gl-component>
-            </gl-stack>
+            <gl-component title="Plugins" :closable="false">
+              <Plugins />
+            </gl-component>
           </gl-stack>
 
           <gl-stack title="Preview Stack">
