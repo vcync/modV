@@ -79,7 +79,11 @@ function loop(delta, features) {
   const preProcessFrameFunctionsLength = preProcessFrameFunctions.length;
 
   for (let i = 0; i < preProcessFrameFunctionsLength; ++i) {
-    preProcessFrameFunctions[i].preProcessFrame({ features, store });
+    preProcessFrameFunctions[i].preProcessFrame({
+      features,
+      store,
+      props: preProcessFrameFunctions[i].$props
+    });
   }
 
   const renderersWithTick = store.getters["renderers/renderersWithTick"];
@@ -322,7 +326,8 @@ function loop(delta, features) {
     postProcessFrameFunctions[i].postProcessFrame({
       canvas: main.canvas,
       features,
-      store
+      store,
+      props: postProcessFrameFunctions[i].$props
     });
   }
 }

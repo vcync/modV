@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <grid class="borders">
     <CollapsibleRow v-for="plugin in plugins" :key="plugin.id">
       <template v-slot:label>
         {{ plugin.name }}
@@ -13,32 +13,39 @@
                 <c span="1">
                   Enable
                 </c>
-                <c span="2">
+                <c span="3">
                   <Checkbox
                     @input="handleEnableInput(plugin.id)"
                     class="light"
                   />
                 </c>
-                <c span="1">
-                  <!-- extra stuff -->
-                </c>
               </grid>
+            </c>
+
+            <c
+              span="1.."
+              v-for="(prop, propKey) in plugin.$props"
+              :key="propKey"
+            >
+              <PluginControl :id="plugin.id" :prop="propKey" />
             </c>
           </grid>
         </c>
       </template>
     </CollapsibleRow>
-  </div>
+  </grid>
 </template>
 
 <script>
 import CollapsibleRow from "./CollapsibleRow.vue";
 import Checkbox from "./inputs/Checkbox.vue";
+import PluginControl from "./PluginControl.vue";
 
 export default {
   components: {
     CollapsibleRow,
-    Checkbox
+    Checkbox,
+    PluginControl
   },
 
   computed: {
@@ -63,3 +70,5 @@ export default {
   }
 };
 </script>
+
+<style></style>

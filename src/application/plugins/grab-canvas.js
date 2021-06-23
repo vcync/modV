@@ -3,6 +3,7 @@ mappingCanvas.title = "mappingCanvas";
 
 let timeout = 0;
 let connection = undefined;
+let outputContext = null;
 
 const mappingContext = mappingCanvas.getContext("2d", {
   // Boolean that indicates if the canvas contains an alpha channel.
@@ -14,44 +15,71 @@ const mappingContext = mappingCanvas.getContext("2d", {
   imageSmoothingEnabled: false
 });
 
-const props = {
-  mappingWidth: 16,
-  mappingHeight: 8,
-  url: "ws://localhost:3006/modV",
-  reconnectAfter: 4000,
-  shouldReconnect: true
-};
-
 export default {
   name: "Grab Canvas",
   props: {
-    mappingWidth: { type: "int" },
-    mappingHeight: { type: "int" },
-    address: { type: "string" }
+    mappingWidth: {
+      type: "int",
+      default: 16,
+      min: 1,
+      max: 1024,
+      step: 1,
+      abs: true
+    },
+
+    mappingHeight: {
+      type: "int",
+      default: 8,
+      min: 1,
+      max: 1024,
+      step: 1,
+      abs: true
+    },
+
+    url: {
+      type: "text",
+      default: "ws://localhost:3006/modV"
+    },
+
+    reconnectAfter: {
+      type: "int",
+      default: 4000,
+      min: 1000,
+      max: 60000,
+      step: 1,
+      abs: true
+    },
+
+    shouldReconnect: {
+      type: "bool",
+      default: true
+    }
   },
 
-  async init({ store }) {
-    await store.dispatch("outputs/getAuxillaryOutput", {
-      name: "Fixture Canvas",
-      group: "Plugins",
-      canvas: mappingCanvas,
-      context: mappingContext,
-      reactToResize: false
-    });
+  async init({ store, props }) {
+    if (!outputContext) {
+      outputContext = await store.dispatch("outputs/getAuxillaryOutput", {
+        name: "Fixture Canvas",
+        group: "Plugins",
+        canvas: mappingCanvas,
+        context: mappingContext,
+        reactToResize: false
+      });
+    }
 
     mappingCanvas.width = props.mappingWidth;
     mappingCanvas.height = props.mappingHeight;
 
-    this.setupSocket();
+    this.setupSocket(props);
   },
 
-  shutdown() {
+  shutdown({ props }) {
     // This will deactivate the reconnect for ever
-    this.stopReconnect();
+    this.stopReconnect(props);
     this.closeConnection();
   },
 
-  postProcessFrame({ canvas }) {
+  postProcessFrame({ canvas, props }) {
     mappingContext.drawImage(
       canvas,
       0,
@@ -80,7 +108,7 @@ export default {
   /**
    * Create a WebSocket to luminave
    */
-  setupSocket() {
+  setupSocket(props) {
     const { url, shouldReconnect, reconnectAfter } = props;
 
     // Close an old connection
@@ -97,7 +125,7 @@ export default {
       if (shouldReconnect) {
         // Reconnect after a specific amount of time
         timeout = setTimeout(() => {
-          this.setupSocket();
+          this.setupSocket(props);
         }, reconnectAfter);
       }
     });
@@ -128,7 +156,7 @@ export default {
   /**
    * Stop reconnecting to WebSocket
    */
-  stopReconnect() {
+  stopReconnect(props) {
     props.shouldReconnect = false;
     clearTimeout(timeout);
   },
@@ -136,7 +164,7 @@ export default {
   /**
    * Enable reconnecting to WebSocket
    */
-  startReconnect() {
+  startReconnect(props) {
     props.shouldReconnect = true;
   },
 

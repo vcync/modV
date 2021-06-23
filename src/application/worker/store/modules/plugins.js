@@ -1,4 +1,5 @@
 import store from "../";
+import getPropDefault from "../../../utils/get-prop-default";
 
 import uuidv4 from "uuid/v4";
 
@@ -24,7 +25,7 @@ const getters = {
 };
 
 const actions = {
-  add({ commit }, plugin) {
+  async add({ commit }, plugin) {
     if (!("name" in plugin)) {
       throw new Error("Plugin requires a name");
     }
@@ -32,6 +33,24 @@ const actions = {
     if ("store" in plugin) {
       const storeName = plugin.storeName || camelize(plugin.name);
       store.registerModule(storeName, plugin.store);
+    }
+
+    plugin.$props = {};
+
+    if ("props" in plugin) {
+      const keys = Object.keys(plugin.props);
+      const keysLength = keys.length;
+
+      for (let i = 0; i < keysLength; i += 1) {
+        const key = keys[i];
+        const prop = plugin.props[key];
+
+        plugin.$props[key] = await getPropDefault(module, key, prop, false);
+
+        if (!plugin.$props[key]) {
+          plugin.$props[key] = null;
+        }
+      }
     }
 
     plugin.id = uuidv4();
@@ -48,15 +67,55 @@ const actions = {
 
     if (enabled) {
       if ("init" in plugin) {
-        plugin.init({ store });
+        plugin.init({ store, props: plugin.$props });
       }
     } else {
       if ("shutdown" in plugin) {
-        plugin.shutdown({ store });
+        plugin.shutdown({ store, props: plugin.$props });
       }
     }
 
     commit("SET_PLUGIN_ENABLE", { pluginId, enabled });
+  },
+
+  async updateProp({ commit }, { pluginId, prop, data }) {
+    const plugin = state.find(item => item.id === pluginId);
+
+    if (!plugin) {
+      return false;
+    }
+
+    let dataOut = data;
+
+    const propData = plugin.props[prop];
+    const currentValue = plugin.$props[prop];
+    const { type } = propData;
+
+    if (data === currentValue) {
+      return;
+    }
+
+    if (store.state.dataTypes[type] && store.state.dataTypes[type].create) {
+      dataOut = await store.state.dataTypes[type].create(dataOut);
+    }
+
+    if (!Array.isArray(dataOut)) {
+      const { strict, min, max, abs } = propData;
+
+      if (strict && typeof min !== "undefined" && typeof max !== "undefined") {
+        dataOut = Math.min(Math.max(dataOut, min), max);
+      }
+
+      if (abs) {
+        dataOut = Math.abs(dataOut);
+      }
+
+      if (type === "int") {
+        dataOut = Math.round(dataOut);
+      }
+    }
+
+    commit("UPDATE_PROP", { pluginId, prop, data: dataOut });
   }
 };
 
@@ -73,6 +132,16 @@ const mutations = {
     }
 
     plugin.enabled = enabled;
+  },
+
+  UPDATE_PROP(state, { pluginId, prop, data }) {
+    const plugin = state.find(item => item.id === pluginId);
+
+    if (!plugin) {
+      return false;
+    }
+
+    plugin.$props[prop] = data;
   }
 };
 
