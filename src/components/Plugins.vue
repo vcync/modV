@@ -2,6 +2,11 @@
   <grid
     class="borders"
     v-infoView="{ title: iVTitle, body: iVBody, id: 'Plugins Panel' }"
+    v-searchTerms="{
+      terms: ['plugin', 'plug in', 'addon', 'add-on'],
+      title: 'Plugins',
+      type: 'Panel'
+    }"
   >
     <CollapsibleRow v-for="plugin in plugins" :key="plugin.id">
       <template v-slot:label>
