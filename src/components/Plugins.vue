@@ -1,5 +1,8 @@
 <template>
-  <grid class="borders">
+  <grid
+    class="borders"
+    v-infoView="{ title: iVTitle, body: iVBody, id: 'Plugins Panel' }"
+  >
     <CollapsibleRow v-for="plugin in plugins" :key="plugin.id">
       <template v-slot:label>
         {{ plugin.name }}
@@ -46,6 +49,13 @@ export default {
     CollapsibleRow,
     Checkbox,
     PluginControl
+  },
+
+  data() {
+    return {
+      iVTitle: "Plugins",
+      iVBody: "The Plugins panel lists all available Plugins."
+    };
   },
 
   computed: {
