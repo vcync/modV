@@ -172,6 +172,11 @@
           @keypress.enter="endTitleEditable"
         />
       </div>
+      <figure
+        class="group__focusIndicator"
+        v-show="lastFocusedGroup"
+        title="Focused Group"
+      ></figure>
       <Container
         drag-handle-selector=".handle"
         orientation="horizontal"
@@ -365,6 +370,10 @@ export default {
       );
     },
 
+    lastFocusedGroup() {
+      return this.$store.state["ui-groups"].lastFocused === this.groupId;
+    },
+
     enabled: {
       get() {
         return this.group.enabled;
@@ -494,6 +503,8 @@ export default {
           type: "group"
         });
       }
+
+      this.$store.commit("ui-groups/SET_LAST_FOCUSED", this.groupId);
     },
 
     removeModule(moduleId) {
@@ -507,6 +518,10 @@ export default {
       this.$modV.store.dispatch("modules/removeActiveModule", {
         moduleId
       });
+
+      if (this.focused) {
+        this.$store.commit("ui-groups/CLEAR_LAST_FOCUSED");
+      }
     },
 
     toggleTitleEditable() {
@@ -594,6 +609,7 @@ export default {
   overflow: hidden;
   display: flex;
   flex-direction: column;
+  position: relative;
 }
 
 .group__enabledCheckbox {
@@ -669,6 +685,16 @@ export default {
 
 .group__title input {
   max-width: 120px;
+}
+
+.group__focusIndicator {
+  position: absolute;
+  top: 6px;
+  right: 6px;
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  background: #ffffff;
 }
 
 .group__controls {
