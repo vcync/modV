@@ -139,6 +139,8 @@ async function setupModule(Module) {
 }
 
 function render({ module, props, canvas, context, pipeline }) {
+  resize({ width: canvas.width, height: canvas.height });
+
   if (!canvasTexture) {
     canvasTexture = pex.texture2D({
       data: canvas.data || canvas,
