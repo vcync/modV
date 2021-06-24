@@ -81,7 +81,9 @@ const windowPrefs = {
     prodPath: "colorPicker.html",
     options: {
       webPreferences: {
-        nodeIntegration: true
+        // Use pluginOptions.nodeIntegration, leave this alone
+        // See nklayman.github.io/vue-cli-plugin-electron-builder/guide/security.html#node-integration for more info
+        nodeIntegration: process.env.ELECTRON_NODE_INTEGRATION
       },
       transparent: true,
       frame: false,
@@ -99,7 +101,9 @@ const windowPrefs = {
     options: {
       webPreferences: {
         enableRemoteModule: true,
-        nodeIntegration: true,
+        // Use pluginOptions.nodeIntegration, leave this alone
+        // See nklayman.github.io/vue-cli-plugin-electron-builder/guide/security.html#node-integration for more info
+        nodeIntegration: process.env.ELECTRON_NODE_INTEGRATION,
         nodeIntegrationInWorker: true,
         nativeWindowOpen: true, // window.open return Window object(like in regular browsers), not BrowserWindowProxy
         affinity: "main-window" // main window, and addition windows should work in one process,

@@ -39,6 +39,8 @@ module.exports = {
 
   pluginOptions: {
     electronBuilder: {
+      nodeIntegration: true,
+
       externals: [
         "!color",
         "!lodash.clonedeep",

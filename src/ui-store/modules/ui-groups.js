@@ -1,5 +1,6 @@
 const state = {
-  pinned: []
+  pinned: [],
+  lastFocused: null
 };
 
 const mutations = {
@@ -17,6 +18,14 @@ const mutations = {
     if (index > -1) {
       state.splice(index, 1);
     }
+  },
+
+  SET_LAST_FOCUSED(state, id) {
+    state.lastFocused = id;
+  },
+
+  CLEAR_LAST_FOCUSED(state) {
+    state.lastFocused = null;
   }
 };
 
