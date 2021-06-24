@@ -122,11 +122,7 @@ export default {
     },
 
     async doubleClick() {
-      if (this.$store.state.focus.type !== "group") {
-        return;
-      }
-
-      const groupId = this.$store.state.focus.id;
+      const groupId = this.$store.state["ui-groups"].lastFocused;
       if (!groupId) {
         return;
       }
