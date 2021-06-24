@@ -1,4 +1,4 @@
-import Meyda from "meyda/src/index";
+import Meyda from "meyda";
 
 async function enumerateDevices() {
   const { _store: store } = this;
