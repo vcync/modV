@@ -351,7 +351,7 @@ const actions = {
         time: Date.now()
       };
 
-      dataOut = expressionAssignment.func.eval(scope);
+      dataOut = expressionAssignment.func.evaluate(scope);
     }
 
     if (store.state.dataTypes[type] && store.state.dataTypes[type].create) {
