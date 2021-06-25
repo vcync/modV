@@ -1,5 +1,5 @@
-import math from "mathjs";
 import uuidv4 from "uuid/v4";
+const math = require("mathjs");
 
 const state = {
   assignments: {}
@@ -17,12 +17,14 @@ const getters = {
 function compileExpression(expression) {
   const scope = { value: 0, time: 0 };
 
+  console.log(math);
+
   let newFunction;
   try {
     const node = math.parse(expression, scope);
 
     newFunction = node.compile();
-    newFunction.eval(scope);
+    newFunction.evaluate(scope);
   } catch (e) {
     throw e;
   }
