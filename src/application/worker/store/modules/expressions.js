@@ -17,8 +17,6 @@ const getters = {
 function compileExpression(expression) {
   const scope = { value: 0, time: 0 };
 
-  console.log(math);
-
   let newFunction;
   try {
     const node = math.parse(expression, scope);
