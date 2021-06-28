@@ -55,7 +55,7 @@ vec4 RGBAtoCMYK(vec4 inColor)
 	ret.z = (1.0-inColor.z-ret.w)/(1.0-ret.w);
 	//ret.w = min(min(ret.x, ret.y), min(ret.z, ret.w));
 	return ret;
-	
+
 }
 vec4 CMYKtoRGBA(vec4 inColor)
 {
@@ -73,25 +73,24 @@ void main() {
 	originOffsets[1] = vec2(0.0, 1.0);
 	originOffsets[2] = vec2(1.0, 0.0);
 	originOffsets[3] = vec2(0.0, -1.0);
-	
+
 	vec4		cmykAmounts = vec4(0.0);
-	int i;
-	int j;
+
 	//	for each of the channels (i) of CMYK...
-	for (i=0; i<4; ++i)	{
+	for (int i=0; i<4; ++i)	{
 		//	figure out the rotation of the grid in radians
 		float		rotRad = radians(gridRot[i]);
-		//	the grids are rotated counter-clockwise- to find the nearest dot, take the fragment pixel loc, 
-		//	rotate it clockwise, and split by the grid to find the center of the dot. then rotate this 
+		//	the grids are rotated counter-clockwise- to find the nearest dot, take the fragment pixel loc,
+		//	rotate it clockwise, and split by the grid to find the center of the dot. then rotate this
 		//	coord counter-clockwise to yield the location of the center of the dot in pixel coords local to the render space
 		mat2		ccTrans = mat2(vec2(cos(rotRad), sin(rotRad)), vec2(-1.0*sin(rotRad), cos(rotRad)));
 		mat2		cTrans = mat2(vec2(cos(rotRad), -1.0*sin(rotRad)), vec2(sin(rotRad), cos(rotRad)));
-		
+
 		//	find the location of the frag in the grid (prior to rotating it)
 		vec2		gridFragLoc = cTrans * gl_FragCoord.xy;
 		//	find the center of the dot closest to the frag- there's no "round" in GLSL 1.2, so do a "floor" to find the dot to the bottom-left of the frag, then figure out if the frag would be in the top and right halves of that square to find the closest dot to the frag
 		vec2		gridOriginLoc = vec2(floor(gridFragLoc.x/gridSize), floor(gridFragLoc.y/gridSize));
-		
+
 		vec2		tmpGridCoords = gridFragLoc/vec2(gridSize);
 		bool		fragAtTopOfGrid = ((tmpGridCoords.y-floor(tmpGridCoords.y)) > (gridSize/2.0)) ? true : false;
 		bool		fragAtRightOfGrid = ((tmpGridCoords.x-floor(tmpGridCoords.x)) > (gridSize/2.0)) ? true : false;
@@ -108,7 +107,7 @@ void main() {
 		vec4		renderDotImageColorRGB = IMG_PIXEL(inputImage, renderDotLoc);
 		//	convert the color from RGB to CMYK
 		vec4		renderDotImageColorCMYK = RGBAtoCMYK(renderDotImageColorRGB);
-		
+
 		//	the amount of this channel is taken from the same channel of the color of the pixel of the input image under this halftone dot
 		float		imageChannelAmount = renderDotImageColorCMYK[i];
 		//	the size of the dot is determined by the value of the channel
@@ -117,14 +116,14 @@ void main() {
 		if (fragDistanceToDotCenter < dotRadius)	{
 			cmykAmounts[i] += smoothstep(dotRadius, dotRadius-(dotRadius*smoothing), fragDistanceToDotCenter);
 		}
-		
+
 		//	calcluate the size of the dots abov/below/to the left/right to see if they're overlapping
-		for (j=0; j<4; ++j)	{
+		for (int j=0; j<4; ++j)	{
 			gridDotLoc = vec2((gridOriginLoc.x+originOffsets[j].x)*gridSize, (gridOriginLoc.y+originOffsets[j].y)*gridSize) + vec2(gridSize/2.0);
 			renderDotLoc = ccTrans * gridDotLoc;
 			renderDotImageColorRGB = IMG_PIXEL(inputImage, renderDotLoc);
 			renderDotImageColorCMYK = RGBAtoCMYK(renderDotImageColorRGB);
-			
+
 			imageChannelAmount = renderDotImageColorCMYK[i];
 			dotRadius = imageChannelAmount * (gridSize*1.50/2.0);
 			fragDistanceToDotCenter = distance(gl_FragCoord.xy, renderDotLoc);
@@ -133,6 +132,6 @@ void main() {
 			}
 		}
 	}
-	
+
 	gl_FragColor = CMYKtoRGBA(cmykAmounts);
 }

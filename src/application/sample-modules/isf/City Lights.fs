@@ -43,20 +43,12 @@
 			"MIN": 0.0,
 			"MAX": 1.0,
 			"DEFAULT": 0.25
-		},
-		{
-			"NAME": "erodeRadius",
-			"TYPE": "float",
-			"MIN": 1.0,
-			"MAX": 15.0,
-			"DEFAULT": 1.0
 		}
 	],
 	"PASSES": [
 		{
 			"TARGET": "edges",
-			"DESCRIPTION": "PASSINDEX is 0",
-			"DESCRIPTION": "Pass 0"
+			"DESCRIPTION": "PASSINDEX is 0"
 		},
 		{
 			"TARGET": "halfSize",
@@ -140,18 +132,18 @@ void main() {
 		vec4 colorR = IMG_NORM_PIXEL(inputImage, right_coord);
 		vec4 colorA = IMG_NORM_PIXEL(inputImage, above_coord);
 		vec4 colorB = IMG_NORM_PIXEL(inputImage, below_coord);
-	
+
 		vec4 colorLA = IMG_NORM_PIXEL(inputImage, lefta_coord);
 		vec4 colorRA = IMG_NORM_PIXEL(inputImage, righta_coord);
 		vec4 colorLB = IMG_NORM_PIXEL(inputImage, leftb_coord);
 		vec4 colorRB = IMG_NORM_PIXEL(inputImage, rightb_coord);
-	
+
 		float gx = (-1.0 * gray(colorLA)) + (-2.0 * gray(colorL)) + (-1.0 * gray(colorLB)) + (1.0 * gray(colorRA)) + (2.0 * gray(colorR)) + (1.0 * gray(colorRB));
 		float gy = (1.0 * gray(colorLA)) + (2.0 * gray(colorA)) + (1.0 * gray(colorRA)) + (-1.0 * gray(colorRB)) + (-2.0 * gray(colorB)) + (-1.0 * gray(colorLB));
-		
+
 		float bright = pow(gx*gx + gy*gy,0.5);
 		vec4 final = color * bright;
-		
+
 		//	if the brightness is below the threshold draw black
 		if (bright < edgeThreshold)	{
 			final = vec4(0.0, 0.0, 0.0, 1.0);
@@ -160,7 +152,7 @@ void main() {
 			final = final * edgeIntensity;
 			final.a = 1.0;
 		}
-		
+
 		gl_FragColor = final;
 	}
 	//	next three passes are doing an erode.  the first and third are doing horizontal sampling, the second is doing vert sampling
@@ -172,18 +164,18 @@ void main() {
 		vec4		sampleColorRGB;
 		vec4		sampleColorHSV;
 		vec2		pixelWidth = 1.0/RENDERSIZE.xy;
-		float		localBlurRadius;
+		const float		localBlurRadius = 1.0;
 		bool		vertFlag = false;
-		
+
 		//	pass 0 and 2 are doing horizontal erosion
 		if (PASSINDEX==2)
 			vertFlag = true;
 		//	the first pass should have a blur radius of 1.0 simply to prevent the loss of information while reducing resolution
 		if (PASSINDEX==1)
-			localBlurRadius = 1.0;
+			//localBlurRadius = 1.0;
 		//	other passes go by the blur radius!
-		else
-			localBlurRadius = float(int(erodeRadius));
+//		else
+			//localBlurRadius = 1.0;
 		//	sample pixels as per the blur radius...
 		for (float i=0.; i<=localBlurRadius; ++i)	{
 			if (PASSINDEX==1)	{
@@ -234,9 +226,9 @@ void main() {
 			}
 		}
 		gl_FragColor = maxLumaRGBColor;
-		
+
 	}
-	//	start reading from the previous stage- each two passes completes a gaussian blur, then 
+	//	start reading from the previous stage- each two passes completes a gaussian blur, then
 	//	we increase the resolution & blur (the lower-res blurred image from the previous pass) again...
 	else if (PASSINDEX == 4)	{
 		vec4		sample0 = IMG_NORM_PIXEL(quarterSizePassB,texOffsets[0]);
@@ -272,10 +264,10 @@ void main() {
 		vec4		originalImg = IMG_NORM_PIXEL(edges,isf_FragNormCoord);
 		if (blurLevel == 0)
 			blurredImg = mix(originalImg, blurredImg, (blurLevelModulus/6.0));
-		
+
 		gl_FragColor = max(mix(originalImg,blurredImg*1.9,intensity), originalImg);
 	}
-	
+
 }
 
 
@@ -286,7 +278,7 @@ vec3 rgb2hsv(vec3 c)	{
 	//vec4 q = mix(vec4(p.xyw, c.r), vec4(c.r, p.yzx), step(p.x, c.r));
 	vec4 p = c.g < c.b ? vec4(c.bg, K.wz) : vec4(c.gb, K.xy);
 	vec4 q = c.r < p.x ? vec4(p.xyw, c.r) : vec4(c.r, p.yzx);
-	
+
 	float d = q.x - min(q.w, q.y);
 	float e = 1.0e-10;
 	return vec3(abs(q.z + (q.w - q.y) / (6.0 * d + e)), d / (q.x + e), q.x);

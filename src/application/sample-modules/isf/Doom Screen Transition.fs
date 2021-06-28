@@ -97,7 +97,7 @@ float wave(int num) {
 }
 
 float drip(int num) {
-  return sin(float(num) / float(bars - 1) * 3.141592) * dripScale;
+  return sin(float(num) / float(bars - 1.0) * 3.141592) * dripScale;
 }
 
 float pos(int num) {

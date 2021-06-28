@@ -79,7 +79,7 @@ vec4 transition(vec2 uv) {
   rp += mix(vec2(.5, .5), vec2(float(endx) + .5, float(endy) + .5), POW2(CosInterpolation(progress)));
   vec2 mrp = mod(rp, 1.);
   vec2 crp = rp;
-  bool onEnd = int(floor(crp.x))==endx&&int(floor(crp.y))==endy;
+  bool onEnd = int(floor(crp.x))==int(endx)&&int(floor(crp.y))==int(endy);
   if(!onEnd) {
     float ang = float(int(Rand(floor(crp))*4.))*.5*PI;
     mrp = vec2(.5) + Rotate(mrp-vec2(.5), ang);

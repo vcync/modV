@@ -57,13 +57,16 @@ void main()
 	vec2 modifiedCenter = vec2(0.5,0.5);
 	loc.x = (loc.x - modifiedCenter.x)*(1.0/zoomAmount) + modifiedCenter.x;
 	loc.y = (loc.y - modifiedCenter.y)*(1.0/zoomAmount) + modifiedCenter.y;
-	
+
+	vec2 shiftLeft = clamp(loc - shift, .0, 1.0);
+	vec2 shiftRight = clamp(loc + shift, .0, 1.0);
+
 	vec4 color = IMG_NORM_PIXEL(inputImage, isf_FragNormCoord);
-	vec4 colorL = IMG_NORM_PIXEL(inputImage, clamp(loc - shift,0.0,1.0));
-	vec4 colorR = IMG_NORM_PIXEL(inputImage, clamp(loc + shift,0.0,1.0));
-	
+	vec4 colorL = IMG_NORM_PIXEL(inputImage, shiftLeft);
+    vec4 colorR = IMG_NORM_PIXEL(inputImage, shiftRight);
+
 	vec4 outColor = mix(min(colorL, colorR), max(colorL, colorR), mixAmount1);
 	outColor =  mix(min(outColor, color), max(outColor, color), mixAmount2);
-	
+
 	gl_FragColor = outColor;
 }

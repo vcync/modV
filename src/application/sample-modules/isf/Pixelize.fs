@@ -65,7 +65,7 @@ vec4 getToColor(vec2 inUV)	{
 
 
 float d = min(progress, 1.0 - progress);
-float dist = steps>0 ? ceil(d * float(steps)) / float(steps) : d;
+float dist = steps>0.0 ? ceil(d * float(steps)) / float(steps) : d;
 vec2 squareSize = 2.0 * dist / vec2(squaresMin);
 
 vec4 transition(vec2 uv) {
