@@ -101,7 +101,7 @@ const actions = {
         module = await renderers[type].setupModule(module);
       } catch (e) {
         console.error(
-          `Error in ${type} renderer setup whilst registering "${name}". This module was ommited from registration.`
+          `Error in ${type} renderer setup whilst registering "${name}". This module was ommited from registration. \n\n${e}`
         );
 
         return false;
