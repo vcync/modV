@@ -149,11 +149,7 @@ function loop(delta, features) {
 
       const module = active[group.modules[j]];
 
-      if (
-        module === undefined ||
-        !module.meta.enabled ||
-        module.meta.alpha < 0.001
-      ) {
+      if (!module.meta.enabled || module.meta.alpha < 0.001) {
         continue;
       }
 
