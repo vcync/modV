@@ -101,7 +101,7 @@ const actions = {
         module = await renderers[type].setupModule(module);
       } catch (e) {
         console.error(
-          `Error in ${type} renderer setup whilst registering "${name}". This module was ommited from registration.`
+          `Error in ${type} renderer setup whilst registering "${name}". This module was ommited from registration. \n\n${e}`
         );
 
         return false;
@@ -325,6 +325,11 @@ const actions = {
     { state, commit },
     { moduleId, prop, data, group, groupName, writeToSwap }
   ) {
+    if (!state.active[moduleId]) {
+      console.error(`The module with the moduleId ${moduleId} doesn't exist.`);
+      return;
+    }
+
     const moduleName = state.active[moduleId].$moduleName;
     const inputId = state.active[moduleId].$props[prop].id;
     const propData = state.registered[moduleName].props[prop];

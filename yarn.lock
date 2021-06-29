@@ -2543,9 +2543,9 @@ caniuse-api@^3.0.0:
     lodash.uniq "^4.5.0"
 
 caniuse-lite@^1.0.0, caniuse-lite@^1.0.30001043, caniuse-lite@^1.0.30001061:
-  version "1.0.30001084"
-  resolved "https://registry.yarnpkg.com/caniuse-lite/-/caniuse-lite-1.0.30001084.tgz#00e471931eaefbeef54f46aa2203914d3c165669"
-  integrity sha512-ftdc5oGmhEbLUuMZ/Qp3mOpzfZLCxPYKcvGv6v2dJJ+8EdqcvZRbAGOiLmkM/PV1QGta/uwBs8/nCl6sokDW6w==
+  version "1.0.30001240"
+  resolved "https://registry.npmjs.org/caniuse-lite/-/caniuse-lite-1.0.30001240.tgz"
+  integrity sha512-nb8mDzfMdxBDN7ZKx8chWafAdBp5DAAlpWvNyUGe5tcDWd838zpzDN3Rah9cjCqhfOKkrvx40G2SDtP0qiWX/w==
 
 "canvas-text-wrapper@github:cyberj/canvas-text-wrapper#master":
   version "0.11.0"
@@ -6024,9 +6024,9 @@ inquirer@^6.2.2:
     strip-ansi "^5.1.0"
     through "^2.3.6"
 
-"interactive-shader-format@github:vcync/interactive-shader-format-js#feat/ImageBitmap":
+"interactive-shader-format@github:vcync/interactive-shader-format-js#fixedIsfParserAndImageBitmap", interactive-shader-format@vcync/interactive-shader-format-js#fixedIsfParserAndImageBitmap:
   version "2.8.0"
-  resolved "https://codeload.github.com/vcync/interactive-shader-format-js/tar.gz/068d5bda172773ed179477b304cbc694727ea2b1"
+  resolved "https://codeload.github.com/vcync/interactive-shader-format-js/tar.gz/969ad2f22a9fa33115e692ce19dff5dab88a08a6"
   dependencies:
     mathjs-expression-parser "^1.0.2"
 

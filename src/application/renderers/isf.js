@@ -67,9 +67,7 @@ async function setupModule(module) {
   const parser = new ISFParser();
   parser.parse(fragmentShader, vertexShader);
   if (parser.error) {
-    throw new Error(
-      `Error evaluating ${module.meta.name}'s shaders: ${parser.error}`
-    );
+    throw new Error(`Parsing error: ${parser.error}`);
   }
 
   if (parser.isfVersion < 2) {
@@ -86,6 +84,10 @@ async function setupModule(module) {
 
   const renderer = new ISFRenderer(isfContext);
   renderer.loadSource(fragmentShader, vertexShader);
+
+  if (!renderer.valid) {
+    throw renderer.errorWithCorrectedLines;
+  }
 
   function addProp(name, prop) {
     if (!module.props) {
