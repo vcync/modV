@@ -11,7 +11,7 @@
     </select>
 
     <div v-if="type === 'group'">
-      <select v-model="modelCanvasId" @change="setTexture('canvas')">
+      <select v-model="modelCanvasId" @change="setTexture('group')">
         <option v-for="group in groupOutputs" :value="group.id" :key="group.id">
           {{ group.name }}
         </option>
@@ -68,7 +68,8 @@ export default {
       this.value.type && this.value.type.length
         ? this.value.type
         : this.textureTypes[0];
-    this.modelImagePath = this.value.options.path;
+    this.modelImagePath = this.value.options.path || "";
+    this.modelCanvasId = this.value.options.id || "";
   },
 
   computed: {
@@ -117,7 +118,7 @@ export default {
         textureDefinition.options.path = this.modelImagePath;
       }
 
-      if (type === "canvas") {
+      if (type === "canvas" || type === "group") {
         if (!this.modelCanvasId) {
           return;
         }

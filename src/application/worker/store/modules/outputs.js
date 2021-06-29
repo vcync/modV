@@ -53,6 +53,7 @@ const actions = {
       type = "2d",
       options = {},
       group = "",
+      id = "",
       reactToResize = true,
       width = state.main ? state.main.canvas.width : 300,
       height = state.main ? state.main.canvas.height : 300
@@ -70,14 +71,15 @@ const actions = {
       name,
       context,
       reactToResize,
-      group
+      group,
+      id
     });
 
     return outputContext;
   },
 
   addAuxillaryOutput({ commit }, outputContext) {
-    outputContext.id = uuidv4();
+    outputContext.id = outputContext.id || uuidv4();
     commit("ADD_AUXILLARY", outputContext);
     return outputContext;
   },
