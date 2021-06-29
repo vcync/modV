@@ -325,7 +325,7 @@ const actions = {
     { state, commit },
     { moduleId, prop, data, group, groupName, writeToSwap }
   ) {
-    if (state.active[moduleId] === undefined) {
+    if (!state.active[moduleId]) {
       console.error(`The module with the moduleId ${moduleId} doesn't exist.`);
       return;
     }
