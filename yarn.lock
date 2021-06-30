@@ -6024,7 +6024,7 @@ inquirer@^6.2.2:
     strip-ansi "^5.1.0"
     through "^2.3.6"
 
-"interactive-shader-format@github:vcync/interactive-shader-format-js#fixedIsfParserAndImageBitmap", interactive-shader-format@vcync/interactive-shader-format-js#fixedIsfParserAndImageBitmap:
+"interactive-shader-format@github:vcync/interactive-shader-format-js#fixedIsfParserAndImageBitmap":
   version "2.8.0"
   resolved "https://codeload.github.com/vcync/interactive-shader-format-js/tar.gz/969ad2f22a9fa33115e692ce19dff5dab88a08a6"
   dependencies:
