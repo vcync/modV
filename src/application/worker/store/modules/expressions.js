@@ -1,5 +1,5 @@
-import math from "mathjs";
 import uuidv4 from "uuid/v4";
+const math = require("mathjs");
 
 const state = {
   assignments: {}
@@ -22,7 +22,7 @@ function compileExpression(expression) {
     const node = math.parse(expression, scope);
 
     newFunction = node.compile();
-    newFunction.eval(scope);
+    newFunction.evaluate(scope);
   } catch (e) {
     throw e;
   }

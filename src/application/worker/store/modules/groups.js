@@ -109,9 +109,12 @@ const actions = {
       return writeTo.groups[existingGroupIndex];
     }
 
+    const id = args.id || uuidv4();
+
     const group = {
       ...args,
       name,
+      id,
       clearing: args.clearing || false,
       enabled: args.enabled || false,
       hidden: args.hidden || false,
@@ -121,9 +124,9 @@ const actions = {
       compositeOperation: args.compositeOperation || "normal",
       context: await store.dispatch("outputs/getAuxillaryOutput", {
         name,
-        group: "group"
-      }),
-      id: args.id || uuidv4()
+        group: "group",
+        id
+      })
     };
 
     const alphaInputBind = await store.dispatch("inputs/addInput", {
