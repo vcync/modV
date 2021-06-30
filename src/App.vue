@@ -231,25 +231,6 @@ export default {
       this.cursor = "none";
     },
 
-    getProps(moduleName) {
-      const moduleDefinition = this.$modV.store.state.modules.registered[
-        moduleName
-      ];
-
-      return Object.keys(moduleDefinition.props).filter(
-        key =>
-          moduleDefinition.props[key].type === "int" ||
-          moduleDefinition.props[key].type === "float" ||
-          moduleDefinition.props[key].type === "text" ||
-          moduleDefinition.props[key].type === "bool" ||
-          moduleDefinition.props[key].type === "color" ||
-          moduleDefinition.props[key].type === "vec2" ||
-          moduleDefinition.props[key].type === "tween" ||
-          moduleDefinition.props[key].type === "texture" ||
-          moduleDefinition.props[key].type === "enum"
-      );
-    },
-
     toggleModulePin(id) {
       if (this.isPinned(id)) {
         this.$store.commit("ui-modules/REMOVE_PINNED", id);

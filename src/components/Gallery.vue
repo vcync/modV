@@ -45,6 +45,7 @@
                 <GalleryItem
                   v-if="groupId"
                   :moduleName="name"
+                  :registeredModuleId="module.$id"
                   :groupId="groupId"
                   v-searchTerms="{
                     terms: [name, 'module'],
@@ -133,11 +134,13 @@ export default {
 
   methods: {
     getChildPayload(group, index, renderer) {
-      const moduleName = this[group][renderer][
+      const module = this[group][renderer][
         Object.keys(this[group][renderer])[index]
-      ].meta.name;
+      ];
+      const moduleName = module.meta.name;
+      const registeredModuleId = module.$id;
 
-      return { moduleName, collection: "gallery" };
+      return { moduleName, collection: "gallery", registeredModuleId };
     },
 
     search(textIn, termIn) {
@@ -190,7 +193,10 @@ export default {
 
       const module = await this.$modV.store.dispatch(
         "modules/makeActiveModule",
-        { moduleName: moduleIn.meta.name }
+        {
+          moduleName: moduleIn.meta.name,
+          registeredModuleId: moduleIn.$id
+        }
       );
 
       this.$modV.store.commit("groups/ADD_MODULE_TO_GROUP", {

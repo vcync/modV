@@ -18,9 +18,8 @@ const actions = {
 
   async addMedia({ commit }, { project, folder, item }) {
     if (folder === "module" || folder === "isf") {
-      const stream = fs.createReadStream(
-        path.join(store.state.media.path, item.path)
-      );
+      const mediaItemPath = path.join(store.state.media.path, item.path);
+      const stream = fs.createReadStream(mediaItemPath);
       const blob = await streamToBlob(stream);
 
       let text;
@@ -42,7 +41,11 @@ const actions = {
       }
 
       try {
-        await store.dispatch("modules/registerModule", { module, hot: true });
+        await store.dispatch("modules/registerModule", {
+          module,
+          hot: true,
+          path: mediaItemPath
+        });
       } catch (e) {
         console.error(`Could not load module`, item.name);
         console.log(module);

@@ -13,7 +13,7 @@
 
 <script>
 export default {
-  props: ["moduleName", "groupId"],
+  props: ["moduleName", "groupId", "registeredModuleId"],
 
   data() {
     return {
@@ -42,18 +42,22 @@ export default {
       [offscreen]
     );
 
-    const module = await this.$modV.store.dispatch("modules/makeActiveModule", {
-      moduleName: this.moduleName,
-      moduleMeta: { enabled: false, isGallery: true },
-      skipInit: true
-    });
+    const activeModule = await this.$modV.store.dispatch(
+      "modules/makeActiveModule",
+      {
+        moduleName: this.moduleName,
+        moduleMeta: { enabled: false, isGallery: true },
+        registeredModuleId: this.registeredModuleId,
+        skipInit: true
+      }
+    );
 
     if (!module) {
       this.badModule = true;
       return;
     }
 
-    this.id = module.$id;
+    this.id = activeModule.$id;
     this.outputId = outputContext.id;
 
     await this.$modV.store.commit("groups/ADD_MODULE_TO_GROUP", {
@@ -129,7 +133,10 @@ export default {
 
       const module = await this.$modV.store.dispatch(
         "modules/makeActiveModule",
-        { moduleName: this.moduleName }
+        {
+          moduleName: this.moduleName,
+          registeredModuleId: this.registeredModuleId
+        }
       );
 
       this.$modV.store.commit("groups/ADD_MODULE_TO_GROUP", {

@@ -72,7 +72,7 @@ async function initialiseModuleProperties(
 }
 
 const actions = {
-  async registerModule({ commit, rootState }, { module, hot = false }) {
+  async registerModule({ commit, rootState }, { module, hot = false, path }) {
     const { renderers } = rootState;
 
     if (!module) {
@@ -86,15 +86,8 @@ const actions = {
     }
 
     const { name, type } = module.meta;
-
-    const existingModuleWithDuplicateName = Object.values(
-      state.registered
-    ).findIndex(registeredModule => registeredModule.meta.name === name);
-
-    if (!hot && existingModuleWithDuplicateName > -1) {
-      console.error(`Module registered with name "${name}" already exists.`);
-      return;
-    }
+    module.$path = path;
+    module.$id = uuidv4();
 
     if (renderers[type].setupModule) {
       try {
@@ -116,7 +109,8 @@ const actions = {
       for (let i = 0; i < activeModuleValues.length; i += 1) {
         const activeModule = activeModuleValues[i];
 
-        if (activeModule.meta.name === name) {
+        if (activeModule.$path === path) {
+          activeModule.$registeredModuleId = module.$id;
           const { canvas } = rootState.outputs.main || {
             canvas: { width: 0, height: 0 }
           };
@@ -141,17 +135,38 @@ const actions = {
         }
       }
     }
+
+    const oldRegisteredModule = Object.values(state.registered).find(
+      registeredModule =>
+        path !== null &&
+        registeredModule.$path === path &&
+        registeredModule.$id !== module.$id
+    );
+    if (oldRegisteredModule) {
+      commit("REMOVE_REGISTERED_MODULE", { moduleId: oldRegisteredModule.$id });
+    }
   },
 
   async makeActiveModule(
     { commit, rootState },
-    { moduleName, moduleMeta = {}, existingModule, writeToSwap }
+    {
+      moduleName,
+      registeredModuleId,
+      moduleMeta = {},
+      existingModule,
+      writeToSwap
+    }
   ) {
     const writeTo = writeToSwap ? swap : state;
     const moduleDefinition =
       state.registered[
-        existingModule ? existingModule.$moduleName : moduleName
+        existingModule ? existingModule.$registeredModuleId : registeredModuleId
       ];
+
+    // if (moduleDefinition === undefined || moduleMeta.isGallery) {
+    //   debugger;
+    // }
+
     const { props = {}, data = {} } = moduleDefinition;
 
     const module = {
@@ -159,23 +174,9 @@ const actions = {
       ...existingModule
     };
 
-    if (moduleMeta.isGallery) {
-      const existingModuleWithDuplicateNameInGallery = Object.values(
-        writeTo.active
-      ).find(
-        activeModule =>
-          activeModule.meta.isGallery && activeModule.meta.name === moduleName
-      );
-
-      if (existingModuleWithDuplicateNameInGallery) {
-        console.warn(
-          `Module active in gallery with name "${moduleName}" already exists.`
-        );
-        return existingModuleWithDuplicateNameInGallery;
-      }
-    }
-
     if (!existingModule) {
+      module.$registeredModuleId = moduleDefinition.$id;
+      module.$path = moduleDefinition.$path;
       module.$id = uuidv4();
       module.$moduleName = moduleName;
       module.$props = JSON.parse(JSON.stringify(props));
@@ -330,15 +331,12 @@ const actions = {
       return;
     }
 
-    const moduleName = state.active[moduleId].$moduleName;
+    const { $registeredModuleId } = state.active[moduleId];
+
     const inputId = state.active[moduleId].$props[prop].id;
-    const propData = state.registered[moduleName].props[prop];
+    const propData = state.registered[$registeredModuleId].props[prop];
     const currentValue = state.active[moduleId][prop];
     const { type } = propData;
-
-    // if (group || groupName) {
-    //   propData = state.active[name].props[groupName].props[prop];
-    // }
 
     if (data === currentValue) {
       return;
@@ -393,17 +391,20 @@ const actions = {
     });
 
     if (group || groupName) {
-      if ("set" in state.registered[moduleName].props[groupName].props[prop]) {
-        state.registered[moduleName].props[groupName].props[prop].set.bind(
-          state.registered[moduleName]
-        )({
+      if (
+        "set" in
+        state.registered[$registeredModuleId].props[groupName].props[prop]
+      ) {
+        state.registered[$registeredModuleId].props[groupName].props[
+          prop
+        ].set.bind(state.registered[$registeredModuleId])({
           data: { ...state.active[moduleId].data },
           props: state.active[moduleId].props
         });
       }
-    } else if ("set" in state.registered[moduleName].props[prop]) {
-      state.registered[moduleName].props[prop].set.bind(
-        state.registered[moduleName]
+    } else if ("set" in state.registered[$registeredModuleId].props[prop]) {
+      state.registered[$registeredModuleId].props[prop].set.bind(
+        state.registered[$registeredModuleId]
       )({
         data: { ...state.active[moduleId].data },
         props: state.active[moduleId].props
@@ -413,8 +414,8 @@ const actions = {
 
   resize({ commit, state }, { moduleId, width, height }) {
     const module = state.active[moduleId];
-    const moduleName = module.$moduleName;
-    const moduleDefinition = state.registered[moduleName];
+    const { $registeredModuleId } = module;
+    const moduleDefinition = state.registered[$registeredModuleId];
 
     if ("resize" in moduleDefinition) {
       const { data, props } = module;
@@ -436,8 +437,8 @@ const actions = {
 
   init({ commit, state }, { moduleId, width, height }) {
     const module = state.active[moduleId];
-    const moduleName = module.$moduleName;
-    const moduleDefinition = state.registered[moduleName];
+    const { $registeredModuleId } = module;
+    const moduleDefinition = state.registered[$registeredModuleId];
 
     if ("init" in moduleDefinition) {
       const { data, props } = module;
@@ -473,6 +474,7 @@ const actions = {
       const module = moduleValues[i];
 
       await dispatch("makeActiveModule", {
+        registeredModuleId: module.$registeredModuleId,
         moduleName: module.$moduleName,
         existingModule: module,
         writeToSwap: true
@@ -516,12 +518,12 @@ const actions = {
 const mutations = {
   ADD_REGISTERED_MODULE(state, { module, writeToSwap }) {
     const writeTo = writeToSwap ? swap : state;
-    Vue.set(writeTo.registered, module.meta.name, module);
+    Vue.set(writeTo.registered, module.$id, module);
   },
 
-  REMOVE_REGISTERED_MODULE(state, { moduleName, writeToSwap }) {
+  REMOVE_REGISTERED_MODULE(state, { moduleId, writeToSwap }) {
     const writeTo = writeToSwap ? swap : state;
-    Vue.delete(writeTo.registered, moduleName);
+    Vue.delete(writeTo.registered, moduleId);
   },
 
   ADD_ACTIVE_MODULE(state, { module, writeToSwap }) {

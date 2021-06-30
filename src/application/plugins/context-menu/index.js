@@ -38,11 +38,6 @@ function buildMenu(e, id, options, vnode, store) {
     menu.insert(menuItems[i], i);
   }
 
-  // const moduleName = vnode.context.moduleName;
-  // const controlVariable = vnode.context.variable;
-  // const group = vnode.context.group;
-  // const groupName = vnode.context.groupName;
-
   const hooks = store.getters["contextMenu/hooks"];
   let hookItems = [];
 
@@ -54,20 +49,6 @@ function buildMenu(e, id, options, vnode, store) {
       hookItems = hookItems.concat(hooks[hook]);
     }
   }
-
-  // for (let i = 0, len = hookItems.length; i < len; ++i) {
-  //   const item = hookItems[i];
-
-  //   if (options.internalVariable) {
-  //     menu.append(
-  //       item.buildMenuItem(moduleName, options.internalVariable, true)
-  //     );
-  //   } else {
-  //     menu.append(
-  //       item.buildMenuItem(moduleName, controlVariable, group, groupName)
-  //     );
-  //   }
-  // }
 
   let menus = [];
   menus.push(menu);

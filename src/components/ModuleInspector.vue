@@ -9,12 +9,7 @@
       <div class="title">{{ module.meta.name }}</div>
     </c>
     <c span="1..">
-      <Control
-        v-for="key in getProps(module.$moduleName)"
-        :id="module.$id"
-        :prop="key"
-        :key="key"
-      />
+      <Control v-for="key in props" :id="module.$id" :prop="key" :key="key" />
     </c>
   </grid>
 </template>
@@ -42,6 +37,25 @@ export default {
   computed: {
     module() {
       return this.$modV.store.state.modules.active[this.moduleId];
+    },
+
+    props() {
+      const { module } = this;
+
+      return Object.keys(module.$props).filter(
+        key =>
+          module.$props[key].type === "int" ||
+          module.$props[key].type === "float" ||
+          module.$props[key].type === "text" ||
+          module.$props[key].type === "bool" ||
+          module.$props[key].type === "color" ||
+          module.$props[key].type === "vec2" ||
+          module.$props[key].type === "vec3" ||
+          module.$props[key].type === "vec4" ||
+          module.$props[key].type === "tween" ||
+          module.$props[key].type === "texture" ||
+          module.$props[key].type === "enum"
+      );
     }
   },
 
@@ -56,27 +70,6 @@ export default {
       } else {
         this.$store.commit("ui-modules/ADD_PINNED", id);
       }
-    },
-
-    getProps(moduleName) {
-      const moduleDefinition = this.$modV.store.state.modules.registered[
-        moduleName
-      ];
-
-      return Object.keys(moduleDefinition.props).filter(
-        key =>
-          moduleDefinition.props[key].type === "int" ||
-          moduleDefinition.props[key].type === "float" ||
-          moduleDefinition.props[key].type === "text" ||
-          moduleDefinition.props[key].type === "bool" ||
-          moduleDefinition.props[key].type === "color" ||
-          moduleDefinition.props[key].type === "vec2" ||
-          moduleDefinition.props[key].type === "vec3" ||
-          moduleDefinition.props[key].type === "vec4" ||
-          moduleDefinition.props[key].type === "tween" ||
-          moduleDefinition.props[key].type === "texture" ||
-          moduleDefinition.props[key].type === "enum"
-      );
     }
   }
 };

@@ -467,7 +467,7 @@ export default {
 
   methods: {
     async onDrop(e) {
-      const { moduleName, collection } = e.payload;
+      const { moduleName, registeredModuleId, collection } = e.payload;
 
       if (e.addedIndex === null && e.removedIndex === null) {
         return;
@@ -476,7 +476,7 @@ export default {
       if (collection === "gallery") {
         const module = await this.$modV.store.dispatch(
           "modules/makeActiveModule",
-          { moduleName }
+          { moduleName, registeredModuleId }
         );
 
         this.$modV.store.commit("groups/ADD_MODULE_TO_GROUP", {

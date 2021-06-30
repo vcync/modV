@@ -70,23 +70,10 @@ async function start() {
 
     const sampleModule = sampleModules(moduleName).default;
 
-    // if (module.hot) {
-    //   // console.log(module);
-    //   const path = `./src/application/sample-modules/${moduleName.replace(
-    //     "./",
-    //     ""
-    //   )}`;
-    //   // console.log(path);
-    //   module.hot.accept(
-    //     `./src/application/sample-modules/${moduleName.replace("./", "")}`,
-    //     function() {
-    //       console.log(`Accepting the updated ${moduleName} module!`);
-    //       debugger;
-    //     }
-    //   );
-    // }
-
-    store.dispatch("modules/registerModule", { module: sampleModule });
+    store.dispatch("modules/registerModule", {
+      module: sampleModule,
+      path: null
+    });
   }
 
   const isfModules = require.context("../sample-modules/isf", false, /\.fs$/);
@@ -112,7 +99,7 @@ async function start() {
       fragmentShader,
       vertexShader
     };
-    store.dispatch("modules/registerModule", { module });
+    store.dispatch("modules/registerModule", { module, path: null });
   }
 
   // store.dispatch("plugins/add", featureAssignmentPlugin);

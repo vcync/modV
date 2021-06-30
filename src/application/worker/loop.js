@@ -167,8 +167,8 @@ function loop(delta, features) {
       drawTo.globalCompositeOperation =
         module.meta.compositeOperation || "normal";
 
-      const { props, data } = module;
-      const moduleDefinition = registered[module.$moduleName];
+      const { props, data, $registeredModuleId } = module;
+      const moduleDefinition = registered[$registeredModuleId];
       let moduleData = data;
 
       if (moduleDefinition.update) {
