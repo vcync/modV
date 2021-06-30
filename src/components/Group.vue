@@ -41,21 +41,11 @@
             }"
           >
             <c span="2">Inherit</c>
-            <c span="4">
-              <Select
-                v-model="inheritanceSelection"
+            <c span="4"
+              ><Checkbox
+                v-model="inherit"
                 :class="{ light: isFocused(group.inheritInputId) }"
-              >
-                <option :value="-2">Don't Inherit</option>
-                <option :value="-1">Previous Group</option>
-                <option
-                  v-for="group in groups"
-                  :key="group.id"
-                  :value="group.id"
-                  >{{ group.name }}</option
-                >
-              </Select>
-            </c>
+            /></c>
           </grid>
         </c>
 
@@ -259,14 +249,12 @@ export default {
       titleEditable: false,
       localName: "",
       controlsShown: false,
-      Arrow,
-      inheritanceSelection: -1
+      Arrow
     };
   },
 
   created() {
     this.localName = this.name;
-    this.inheritanceSelection = !this.inherit ? -2 : this.inheritFrom;
 
     if (!this.focusedGroup) {
       this.focus();
@@ -343,10 +331,6 @@ export default {
           }
         });
       }
-    },
-
-    inheritFrom() {
-      return this.group.inheritFrom;
     },
 
     pipeline: {
@@ -514,23 +498,6 @@ export default {
   watch: {
     name(value) {
       this.localName = value;
-    },
-
-    inheritanceSelection(value) {
-      const inheritFrom = value.length === 2 ? parseInt(value) : value;
-
-      if (inheritFrom === -2) {
-        this.inherit = false;
-      } else {
-        this.inherit = true;
-
-        this.$modV.store.commit("groups/UPDATE_GROUP", {
-          groupId: this.groupId,
-          data: {
-            inheritFrom
-          }
-        });
-      }
     }
   }
 };
