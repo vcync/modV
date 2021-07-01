@@ -195,6 +195,24 @@ const actions = {
       });
   },
 
+  updateGroupName({ commit }, { groupId, name }) {
+    const group = state.groups.find(group => group.id === groupId);
+
+    store.commit("outputs/UPDATE_AUXILLARY", {
+      auxillaryId: group.context.id,
+      data: {
+        name
+      }
+    });
+
+    commit("UPDATE_GROUP", {
+      groupId,
+      data: {
+        name
+      }
+    });
+  },
+
   async loadPresetData({ dispatch }, groups) {
     for (let i = 0, len = groups.length; i < len; i++) {
       const group = groups[i];
