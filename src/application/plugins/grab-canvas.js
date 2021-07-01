@@ -20,7 +20,7 @@ export default {
   props: {
     mappingWidth: {
       type: "int",
-      default: 16,
+      default: 7,
       min: 1,
       max: 1024,
       step: 1,
@@ -29,7 +29,7 @@ export default {
 
     mappingHeight: {
       type: "int",
-      default: 8,
+      default: 7,
       min: 1,
       max: 1024,
       step: 1,
