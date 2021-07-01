@@ -1,5 +1,9 @@
 import Meyda from "meyda";
 
+let floatFrequencyDataArray;
+let byteFrequencyDataArray;
+let analyserNode;
+
 async function enumerateDevices() {
   const { _store: store } = this;
 
@@ -114,7 +118,12 @@ async function setupMedia({ audioId, videoId }) {
   });
 
   // Create new Audio Analyser
-  this.analyserNode = this.audioContext.createAnalyser();
+  analyserNode = this.audioContext.createAnalyser();
+  analyserNode.smoothingTimeConstant = 0;
+
+  // Set up arrays for analyser
+  floatFrequencyDataArray = new Float32Array(analyserNode.frequencyBinCount);
+  byteFrequencyDataArray = new Uint8Array(analyserNode.frequencyBinCount);
 
   // Create a gain node
   this.gainNode = this.audioContext.createGain();
@@ -126,7 +135,7 @@ async function setupMedia({ audioId, videoId }) {
   this.audioStream = this.audioContext.createMediaStreamSource(mediaStream);
 
   // Connect the audio stream to the analyser (this is a passthru) (audio->(analyser))
-  this.audioStream.connect(this.analyserNode);
+  this.audioStream.connect(analyserNode);
 
   // Connect the audio stream to the gain node (audio->(analyser)->gain)
   this.audioStream.connect(this.gainNode);
@@ -161,4 +170,20 @@ async function setupMedia({ audioId, videoId }) {
   return mediaStream;
 }
 
-export { enumerateDevices, setupMedia };
+function getFloatFrequencyData() {
+  analyserNode.getFloatFrequencyData(floatFrequencyDataArray);
+
+  return floatFrequencyDataArray;
+}
+
+function getByteFrequencyData() {
+  analyserNode.getByteFrequencyData(byteFrequencyDataArray);
+  return byteFrequencyDataArray;
+}
+
+export {
+  enumerateDevices,
+  setupMedia,
+  getFloatFrequencyData,
+  getByteFrequencyData
+};
