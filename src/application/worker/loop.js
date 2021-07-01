@@ -100,7 +100,7 @@ function loop(delta, features) {
       continue;
     }
 
-    const { clearing, inherit, pipeline } = group;
+    const { clearing, inherit, inheritFrom, pipeline } = group;
 
     const aux = group.drawToCanvasId && auxillary[group.drawToCanvasId].context;
     const groupContext = group.context.context;
@@ -124,8 +124,14 @@ function loop(delta, features) {
     }
 
     if (inherit) {
+      const canvasToInherit =
+        inheritFrom === -1
+          ? lastCanvas
+          : groups.find(group => group.id === inheritFrom).context.context
+              .canvas;
+
       drawTo.drawImage(
-        lastCanvas,
+        canvasToInherit,
         0,
         0,
         drawTo.canvas.width,
@@ -134,7 +140,7 @@ function loop(delta, features) {
 
       if (pipeline && !isGalleryGroup) {
         bufferContext.drawImage(
-          lastCanvas,
+          canvasToInherit,
           0,
           0,
           drawTo.canvas.width,

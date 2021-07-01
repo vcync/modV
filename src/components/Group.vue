@@ -41,11 +41,21 @@
             }"
           >
             <c span="2">Inherit</c>
-            <c span="4"
-              ><Checkbox
-                v-model="inherit"
+            <c span="4">
+              <Select
+                v-model="inheritanceSelection"
                 :class="{ light: isFocused(group.inheritInputId) }"
-            /></c>
+              >
+                <option :value="-2">Don't Inherit</option>
+                <option :value="-1">Previous Group</option>
+                <option
+                  v-for="group in groups"
+                  :key="group.id"
+                  :value="group.id"
+                  >{{ group.name }}</option
+                >
+              </Select>
+            </c>
           </grid>
         </c>
 
@@ -280,6 +290,7 @@
 
 <script>
 import { Container, Draggable } from "vue-smooth-dnd";
+import constants from "../application/constants";
 import ActiveModule from "./ActiveModule";
 import compositeOperations from "../util/composite-operations";
 import Arrow from "../assets/graphics/Arrow.svg";
@@ -324,12 +335,14 @@ export default {
       titleEditable: false,
       localName: "",
       controlsShown: false,
-      Arrow
+      Arrow,
+      inheritanceSelection: -1
     };
   },
 
   created() {
     this.localName = this.name;
+    this.inheritanceSelection = !this.inherit ? -2 : this.inheritFrom;
 
     if (!this.focusedGroup) {
       this.focus();
@@ -337,10 +350,13 @@ export default {
   },
 
   computed: {
-    group() {
+    groups() {
       return this.$modV.store.state.groups.groups.filter(
-        group => group.id === this.groupId
-      )[0];
+        group => group.name !== constants.GALLERY_GROUP_NAME
+      );
+    },
+    group() {
+      return this.groups.filter(group => group.id === this.groupId)[0];
     },
 
     name() {
@@ -402,6 +418,10 @@ export default {
           }
         });
       }
+    },
+
+    inheritFrom() {
+      return this.group.inheritFrom;
     },
 
     pipeline: {
@@ -571,6 +591,23 @@ export default {
   watch: {
     name(value) {
       this.localName = value;
+    },
+
+    inheritanceSelection(value) {
+      const inheritFrom = value.length === 2 ? parseInt(value) : value;
+
+      if (inheritFrom === -2) {
+        this.inherit = false;
+      } else {
+        this.inherit = true;
+
+        this.$modV.store.commit("groups/UPDATE_GROUP", {
+          groupId: this.groupId,
+          data: {
+            inheritFrom
+          }
+        });
+      }
     }
   }
 };
