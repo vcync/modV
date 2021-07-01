@@ -141,14 +141,8 @@ async function setupModule(Module) {
   }
 }
 
-function render({ module, props, canvas, context, pipeline, features }) {
+function render({ module, props, canvas, context, pipeline, fftCanvas }) {
   resize({ width: canvas.width, height: canvas.height });
-
-  const byteFrequencyData = features.byteFrequencyData || [];
-  const fftBuffer = byteFrequencyData.reduce((arr, value) => {
-    arr.push(value, value, value, 255);
-    return arr;
-  }, []);
 
   if (!canvasTexture) {
     canvasTexture = pex.texture2D({
@@ -162,8 +156,8 @@ function render({ module, props, canvas, context, pipeline, features }) {
       wrap: pex.Wrap.Repeat
     });
     fftTexture = pex.texture2D({
-      data: fftBuffer,
-      width: byteFrequencyData.length,
+      data: fftCanvas.data || fftCanvas,
+      width: fftCanvas.width,
       height: 1,
       pixelFormat: pex.PixelFormat.RGBA8,
       encoding: pex.Encoding.Linear,
@@ -176,9 +170,9 @@ function render({ module, props, canvas, context, pipeline, features }) {
       data: canvas.data || canvas
     });
     pex.update(fftTexture, {
-      width: byteFrequencyData.length,
+      width: fftCanvas.width,
       height: 1,
-      data: fftBuffer
+      data: fftCanvas.data || fftCanvas
     });
   }
 
@@ -199,7 +193,7 @@ function render({ module, props, canvas, context, pipeline, features }) {
     }
   }
 
-  const uniforms = generateUniforms(canvasTexture, shaderUniforms, fftBuffer);
+  const uniforms = generateUniforms(canvasTexture, shaderUniforms);
 
   const command = commands[module.meta.name];
 

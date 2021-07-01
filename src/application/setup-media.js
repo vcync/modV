@@ -1,4 +1,5 @@
 import Meyda from "meyda";
+import constants from "./constants";
 
 let floatFrequencyDataArray;
 let byteFrequencyDataArray;
@@ -148,7 +149,7 @@ async function setupMedia({ audioId, videoId }) {
   this.meyda = new Meyda.createMeydaAnalyzer({
     audioContext: this.audioContext,
     source: this.audioStream,
-    bufferSize: 512,
+    bufferSize: constants.AUDIO_BUFFER_SIZE,
     windowingFunction: "rect",
     featureExtractors: ["complexSpectrum"]
   });

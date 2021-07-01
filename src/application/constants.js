@@ -9,5 +9,9 @@ export default {
 
   get LAYOUT_LOAD_ERROR() {
     return "layoutLoadError";
+  },
+
+  get AUDIO_BUFFER_SIZE() {
+    return 512;
   }
 };
