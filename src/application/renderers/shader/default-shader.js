@@ -29,6 +29,7 @@ export default {
     uniform sampler2D iChannel2;             // Texture #3
     uniform sampler2D iChannel3;             // Texture #4
     uniform sampler2D u_modVCanvas;          // modV's canvas
+    uniform bool      u_kick;                // beatdetektor kick
 
     varying vec2 vUv;
 
@@ -62,6 +63,7 @@ export default {
     uniform sampler2D iChannel2;             // Texture #3
     uniform sampler2D iChannel3;             // Texture #4
     uniform sampler2D u_modVCanvas;          // modV's canvas
+    uniform bool      u_kick;                // beatdetektor kick
 
     in vec2 vUv;
     out vec4 outColor;

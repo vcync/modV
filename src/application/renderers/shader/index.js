@@ -43,7 +43,7 @@ function resize({ width, height }) {
   // });
 }
 
-function generateUniforms(canvasTexture, uniforms) {
+function generateUniforms(canvasTexture, uniforms, kick = false) {
   const { width, height, dpr } = store.state.size;
 
   const date = new Date();
@@ -64,7 +64,8 @@ function generateUniforms(canvasTexture, uniforms) {
     iChannelResolution: [resolution, resolution, resolution, resolution],
     u_modVCanvas: canvasTexture,
     u_delta: time / 1000,
-    u_time: time
+    u_time: time,
+    u_kick: kick
   };
 
   return { ...uniforms, ...defaults };
@@ -138,7 +139,7 @@ async function setupModule(Module) {
   }
 }
 
-function render({ module, props, canvas, context, pipeline }) {
+function render({ module, props, canvas, context, pipeline, kick }) {
   resize({ width: canvas.width, height: canvas.height });
 
   if (!canvasTexture) {
@@ -177,7 +178,7 @@ function render({ module, props, canvas, context, pipeline }) {
     }
   }
 
-  const uniforms = generateUniforms(canvasTexture, shaderUniforms);
+  const uniforms = generateUniforms(canvasTexture, shaderUniforms, kick);
 
   const command = commands[module.meta.name];
 
