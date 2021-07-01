@@ -11,7 +11,7 @@
     <Number
       v-model="inputValue"
       type="number"
-      step="0.01"
+      :step="step"
       @keypress.enter="toggleEditMode"
       @click.right="toggleEditMode"
       v-show="editMode"
@@ -37,7 +37,7 @@ export default {
     },
     step: {
       type: Number,
-      default: 2
+      default: 1
     },
     default: Number,
     value: Number
@@ -77,6 +77,7 @@ export default {
 
   created() {
     this.position = -this.value * this.spacingCalc;
+    this.inputValue = this.value;
   },
 
   mounted() {

@@ -9,7 +9,7 @@
       <div class="title">{{ module.meta.name }}</div>
     </c>
     <c span="1..">
-      <Control
+      <ModuleControl
         v-for="key in getProps(module.$moduleName)"
         :id="module.$id"
         :prop="key"
@@ -20,13 +20,13 @@
 </template>
 
 <script>
-import Control from "@/components/Control";
+import ModuleControl from "@/components/ModuleControl";
 
 export default {
   props: ["moduleId"],
 
   components: {
-    Control
+    ModuleControl
   },
 
   mounted() {

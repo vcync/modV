@@ -1,5 +1,9 @@
 import Worker from "worker-loader!./worker/index.worker.js";
-import { setupMedia, enumerateDevices } from "./setup-media";
+import {
+  setupMedia,
+  enumerateDevices,
+  getByteFrequencyData
+} from "./setup-media";
 import setupBeatDetektor from "./setup-beat-detektor";
 import setupMidi from "./setup-midi";
 
@@ -244,6 +248,7 @@ export default class ModV {
 
     const features = this.meyda.get(featuresToGet);
     this.updateBeatDetektor(delta, features);
+    features.byteFrequencyData = Array.from(getByteFrequencyData() || []);
     this.$worker.postMessage({ type: "meyda", payload: features });
 
     for (let i = 0; i < featuresToGet.length; i += 1) {

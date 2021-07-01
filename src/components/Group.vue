@@ -41,11 +41,21 @@
             }"
           >
             <c span="2">Inherit</c>
-            <c span="4"
-              ><Checkbox
-                v-model="inherit"
+            <c span="4">
+              <Select
+                v-model="inheritanceSelection"
                 :class="{ light: isFocused(group.inheritInputId) }"
-            /></c>
+              >
+                <option :value="-2">Don't Inherit</option>
+                <option :value="-1">Previous Group</option>
+                <option
+                  v-for="group in groups"
+                  :key="group.id"
+                  :value="group.id"
+                  >{{ group.name }}</option
+                >
+              </Select>
+            </c>
           </grid>
         </c>
 
@@ -199,87 +209,11 @@
       </Container>
     </div>
   </div>
-
-  <!-- <div
-
-  >
-    <section class="group-controls">
-      <input
-        type="range"
-        v-model.number="alpha"
-        max="1"
-        min="0"
-        step="0.001"
-        class="group-alpha"
-        @mousedown="focusInput(group.alphaInputId, 'Alpha')"
-        :class="{
-          'has-link': hasLink(group.alphaInputId),
-          focused: isFocused(group.alphaInputId)
-        }"
-      />
-      <select
-        v-model="compositeOperation"
-        class="group-composite-operation"
-        @mousedown="
-          focusInput(group.compositeOperationInputId, 'Composite Operation')
-        "
-        :class="{
-          'has-link': hasLink(group.compositeOperationInputId),
-          focused: isFocused(group.compositeOperationInputId)
-        }"
-      >
-        <optgroup
-          v-for="group in compositeOperations"
-          :label="group.label"
-          :key="group.label"
-        >
-          <option
-            v-for="mode in group.children"
-            :value="mode.value"
-            :key="mode.label"
-            >{{ mode.label }}</option
-          >
-        </optgroup>
-      </select>
-    </section>
-    <section class="group-body">
-      <div class="group-title" @click.self="endTitleEditable">
-        <span v-if="!titleEditable" @dblclick="toggleTitleEditable">{{
-          name
-        }}</span>
-        <input
-          type="text"
-          v-model="localName"
-          v-else
-          @keypress.enter="endTitleEditable"
-        />
-      </div>
-      <Container
-        drag-handle-selector=".handle"
-        orientation="horizontal"
-        group-name="modules"
-        :should-animate-drop="() => false"
-        :get-child-payload="getChildPayload"
-        tag="div"
-        class="group-modules"
-        @drop="onDrop"
-      >
-        <Draggable
-          v-for="moduleId in modules"
-          :key="moduleId"
-          class="group-module"
-        >
-          <div class="group-module-container">
-            <ActiveModule :id="moduleId" @remove-module="removeModule" />
-          </div>
-        </Draggable>
-      </Container>
-    </section>
-  </div> -->
 </template>
 
 <script>
 import { Container, Draggable } from "vue-smooth-dnd";
+import constants from "../application/constants";
 import ActiveModule from "./ActiveModule";
 import compositeOperations from "../util/composite-operations";
 import Arrow from "../assets/graphics/Arrow.svg";
@@ -324,12 +258,14 @@ export default {
       titleEditable: false,
       localName: "",
       controlsShown: false,
-      Arrow
+      Arrow,
+      inheritanceSelection: -1
     };
   },
 
   created() {
     this.localName = this.name;
+    this.inheritanceSelection = !this.inherit ? -2 : this.inheritFrom;
 
     if (!this.focusedGroup) {
       this.focus();
@@ -337,10 +273,13 @@ export default {
   },
 
   computed: {
-    group() {
+    groups() {
       return this.$modV.store.state.groups.groups.filter(
-        group => group.id === this.groupId
-      )[0];
+        group => group.name !== constants.GALLERY_GROUP_NAME
+      );
+    },
+    group() {
+      return this.groups.filter(group => group.id === this.groupId)[0];
     },
 
     name() {
@@ -402,6 +341,10 @@ export default {
           }
         });
       }
+    },
+
+    inheritFrom() {
+      return this.group.inheritFrom;
     },
 
     pipeline: {
@@ -533,11 +476,9 @@ export default {
       const trimmedName = localName.trim();
 
       if (trimmedName.length > 0) {
-        this.$modV.store.commit("groups/UPDATE_GROUP", {
+        this.$modV.store.dispatch("groups/updateGroupName", {
           groupId: this.groupId,
-          data: {
-            name: trimmedName
-          }
+          name: trimmedName
         });
       } else {
         this.localName = this.name;
@@ -571,6 +512,23 @@ export default {
   watch: {
     name(value) {
       this.localName = value;
+    },
+
+    inheritanceSelection(value) {
+      const inheritFrom = value.length === 2 ? parseInt(value) : value;
+
+      if (inheritFrom === -2) {
+        this.inherit = false;
+      } else {
+        this.inherit = true;
+
+        this.$modV.store.commit("groups/UPDATE_GROUP", {
+          groupId: this.groupId,
+          data: {
+            inheritFrom
+          }
+        });
+      }
     }
   }
 };

@@ -9,8 +9,9 @@ const meyda = { windowing: applyWindow };
 
 let bufferCanvas;
 let bufferContext;
+const fallbackByteFrequencyData = Array(constants.AUDIO_BUFFER_SIZE).fill(0);
 
-function loop(delta, features) {
+function loop(delta, features, fftOutput) {
   if (!bufferCanvas) {
     bufferCanvas = new OffscreenCanvas(300, 300);
     bufferContext = bufferCanvas.getContext("2d");
@@ -36,6 +37,22 @@ function loop(delta, features) {
   if (!main) {
     return;
   }
+
+  // Put fftBuffer on fftCanvas
+  const byteFrequencyData =
+    features.byteFrequencyData || fallbackByteFrequencyData;
+  const fftBuffer = byteFrequencyData.reduce((arr, value) => {
+    arr.push(value, value, value, 255);
+    return arr;
+  }, []);
+
+  const uInt8Array = Uint8ClampedArray.from(fftBuffer);
+
+  fftOutput.context.putImageData(
+    new ImageData(uInt8Array, byteFrequencyData.length),
+    0,
+    0
+  );
 
   // Update Input Links
   const inputLinkKeys = Object.keys(inputLinks);
@@ -79,7 +96,11 @@ function loop(delta, features) {
   const preProcessFrameFunctionsLength = preProcessFrameFunctions.length;
 
   for (let i = 0; i < preProcessFrameFunctionsLength; ++i) {
-    preProcessFrameFunctions[i].preProcessFrame({ features, store });
+    preProcessFrameFunctions[i].preProcessFrame({
+      features,
+      store,
+      props: preProcessFrameFunctions[i].$props
+    });
   }
 
   const renderersWithTick = store.getters["renderers/renderersWithTick"];
@@ -100,7 +121,7 @@ function loop(delta, features) {
       continue;
     }
 
-    const { clearing, inherit, pipeline } = group;
+    const { clearing, inherit, inheritFrom, pipeline } = group;
 
     const aux = group.drawToCanvasId && auxillary[group.drawToCanvasId].context;
     const groupContext = group.context.context;
@@ -124,8 +145,14 @@ function loop(delta, features) {
     }
 
     if (inherit) {
+      const canvasToInherit =
+        inheritFrom === -1
+          ? lastCanvas
+          : groups.find(group => group.id === inheritFrom).context.context
+              .canvas;
+
       drawTo.drawImage(
-        lastCanvas,
+        canvasToInherit,
         0,
         0,
         drawTo.canvas.width,
@@ -134,7 +161,7 @@ function loop(delta, features) {
 
       if (pipeline && !isGalleryGroup) {
         bufferContext.drawImage(
-          lastCanvas,
+          canvasToInherit,
           0,
           0,
           drawTo.canvas.width,
@@ -203,7 +230,8 @@ function loop(delta, features) {
         props,
         data: moduleData,
         pipeline,
-        kick
+        kick,
+        fftCanvas: fftOutput.context.canvas
       });
       drawTo.restore();
 
@@ -314,7 +342,18 @@ function loop(delta, features) {
     }
   }
 
-  // main.getImageData(0, 0, main.canvas.width, main.canvas.height);
+  const postProcessFrameFunctions =
+    store.getters["plugins/postProcessFrame"] || [];
+  const postProcessFrameFunctionsLength = postProcessFrameFunctions.length;
+
+  for (let i = 0; i < postProcessFrameFunctionsLength; ++i) {
+    postProcessFrameFunctions[i].postProcessFrame({
+      canvas: main.canvas,
+      features,
+      store,
+      props: postProcessFrameFunctions[i].$props
+    });
+  }
 }
 
 export default loop;

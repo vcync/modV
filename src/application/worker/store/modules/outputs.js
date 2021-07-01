@@ -49,6 +49,7 @@ const actions = {
     { dispatch },
     {
       canvas = new OffscreenCanvas(300, 300),
+      context,
       name,
       type = "2d",
       options = {},
@@ -63,13 +64,16 @@ const actions = {
       options.storage = "discardable";
     }
 
-    const context = canvas.getContext(type, options);
-    canvas.width = width;
-    canvas.height = height;
+    if (!context) {
+      canvas.width = width;
+      canvas.height = height;
+    }
+
+    const canvasContext = context || canvas.getContext(type, options);
 
     const outputContext = await dispatch("addAuxillaryOutput", {
       name,
-      context,
+      context: canvasContext,
       reactToResize,
       group,
       id
@@ -125,6 +129,18 @@ const mutations = {
 
   REMOVE_AUXILLARY(state, id) {
     Vue.delete(state.auxillary, id);
+  },
+
+  UPDATE_AUXILLARY(state, { auxillaryId, data }) {
+    if (state.auxillary[auxillaryId]) {
+      const dataKeys = Object.keys(data);
+      const dataKeysLength = dataKeys.length;
+      for (let i = 0; i < dataKeysLength; i += 1) {
+        const key = dataKeys[i];
+        const value = data[key];
+        state.auxillary[auxillaryId][key] = value;
+      }
+    }
   },
 
   RESIZE_MAIN_OUTPUT(state, { width, height }) {
