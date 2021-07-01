@@ -4,6 +4,7 @@ mappingCanvas.title = "mappingCanvas";
 let timeout = 0;
 let connection = undefined;
 let outputContext = null;
+let reconnect = false;
 
 const mappingContext = mappingCanvas.getContext("2d", {
   // Boolean that indicates if the canvas contains an alpha channel.
@@ -70,14 +71,70 @@ export default {
     mappingCanvas.width = props.mappingWidth;
     mappingCanvas.height = props.mappingHeight;
 
+    reconnect = props.shouldReconnect;
+
     this.setupSocket(props);
   },
 
-  shutdown({ props }) {
-    // TODO: This will deactivate the reconnect for ever, so we have to think
-    // of something else
-    this.stopReconnect(props);
+  shutdown() {
+    this.stopReconnect();
     this.closeConnection();
+  },
+
+  /**
+   * Create a WebSocket for example to luminave
+   */
+  setupSocket(props) {
+    const { url, reconnectAfter } = props;
+
+    // Close an old connection
+    this.closeConnection();
+
+    // Create a new connection
+    connection = new WebSocket(url);
+
+    // Listen for errors (e.g. could not connect)
+    connection.addEventListener("error", event => {
+      console.error("grab-canvas: WebSocket: Error:", event);
+
+      // Reconnect is allowed
+      if (reconnect) {
+        // Reconnect after a specific amount of time
+        timeout = setTimeout(() => {
+          this.setupSocket(props);
+        }, reconnectAfter);
+      }
+    });
+
+    // Connection is opened
+    connection.addEventListener("open", () => {
+      console.info("grab-canvas: WebSocket: Opened");
+    });
+
+    connection.addEventListener("close", () => {
+      console.info("grab-canvas: WebSocket: Closed");
+    });
+  },
+
+  /**
+   * Close the WebSocket connection and stop reconnecting
+   */
+  closeConnection() {
+    clearTimeout(timeout);
+
+    if (connection !== undefined) {
+      connection.close();
+    }
+
+    connection = undefined;
+  },
+
+  /**
+   * Stop reconnecting to WebSocket
+   */
+  stopReconnect() {
+    reconnect = false;
+    clearTimeout(timeout);
   },
 
   postProcessFrame({ canvas, props }) {
@@ -108,69 +165,6 @@ export default {
   },
 
   /**
-   * Create a WebSocket to luminave
-   */
-  setupSocket(props) {
-    const { url, shouldReconnect, reconnectAfter } = props;
-
-    // Close an old connection
-    this.closeConnection();
-
-    // Create a new connection
-    connection = new WebSocket(url);
-
-    // Listen for errors (e.g. could not connect)
-    connection.addEventListener("error", event => {
-      console.error("lumiaveConnector: WebSocket: Error:", event);
-
-      // Reconnect is allowed
-      if (shouldReconnect) {
-        // Reconnect after a specific amount of time
-        timeout = setTimeout(() => {
-          this.setupSocket(props);
-        }, reconnectAfter);
-      }
-    });
-
-    // Connection is opened
-    connection.addEventListener("open", () => {
-      console.info("lumiaveConnector: WebSocket: Opened");
-    });
-
-    connection.addEventListener("close", () => {
-      console.info("lumiaveConnector: WebSocket: Closed");
-    });
-  },
-
-  /**
-   * Close the WebSocket connection and stop reconnecting
-   */
-  closeConnection() {
-    clearTimeout(timeout);
-
-    if (connection !== undefined) {
-      connection.close();
-    }
-
-    connection = undefined;
-  },
-
-  /**
-   * Stop reconnecting to WebSocket
-   */
-  stopReconnect(props) {
-    props.shouldReconnect = false;
-    clearTimeout(timeout);
-  },
-
-  /**
-   * Enable reconnecting to WebSocket
-   */
-  startReconnect(props) {
-    props.shouldReconnect = true;
-  },
-
-  /**
    * Send data to WebSocket if connection is established
    * @param {Object} data
    */
@@ -184,7 +178,7 @@ export default {
 
       const messageString = JSON.stringify(message, null, 2);
 
-      // Send JSON message to luminave
+      // Send JSON message
       connection.send(messageString);
     }
   }
