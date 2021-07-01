@@ -199,87 +199,11 @@
       </Container>
     </div>
   </div>
-
-  <!-- <div
-
-  >
-    <section class="group-controls">
-      <input
-        type="range"
-        v-model.number="alpha"
-        max="1"
-        min="0"
-        step="0.001"
-        class="group-alpha"
-        @mousedown="focusInput(group.alphaInputId, 'Alpha')"
-        :class="{
-          'has-link': hasLink(group.alphaInputId),
-          focused: isFocused(group.alphaInputId)
-        }"
-      />
-      <select
-        v-model="compositeOperation"
-        class="group-composite-operation"
-        @mousedown="
-          focusInput(group.compositeOperationInputId, 'Composite Operation')
-        "
-        :class="{
-          'has-link': hasLink(group.compositeOperationInputId),
-          focused: isFocused(group.compositeOperationInputId)
-        }"
-      >
-        <optgroup
-          v-for="group in compositeOperations"
-          :label="group.label"
-          :key="group.label"
-        >
-          <option
-            v-for="mode in group.children"
-            :value="mode.value"
-            :key="mode.label"
-            >{{ mode.label }}</option
-          >
-        </optgroup>
-      </select>
-    </section>
-    <section class="group-body">
-      <div class="group-title" @click.self="endTitleEditable">
-        <span v-if="!titleEditable" @dblclick="toggleTitleEditable">{{
-          name
-        }}</span>
-        <input
-          type="text"
-          v-model="localName"
-          v-else
-          @keypress.enter="endTitleEditable"
-        />
-      </div>
-      <Container
-        drag-handle-selector=".handle"
-        orientation="horizontal"
-        group-name="modules"
-        :should-animate-drop="() => false"
-        :get-child-payload="getChildPayload"
-        tag="div"
-        class="group-modules"
-        @drop="onDrop"
-      >
-        <Draggable
-          v-for="moduleId in modules"
-          :key="moduleId"
-          class="group-module"
-        >
-          <div class="group-module-container">
-            <ActiveModule :id="moduleId" @remove-module="removeModule" />
-          </div>
-        </Draggable>
-      </Container>
-    </section>
-  </div> -->
 </template>
 
 <script>
 import { Container, Draggable } from "vue-smooth-dnd";
+
 import ActiveModule from "./ActiveModule";
 import compositeOperations from "../util/composite-operations";
 import Arrow from "../assets/graphics/Arrow.svg";
@@ -533,11 +457,9 @@ export default {
       const trimmedName = localName.trim();
 
       if (trimmedName.length > 0) {
-        this.$modV.store.commit("groups/UPDATE_GROUP", {
+        this.$modV.store.dispatch("groups/updateGroupName", {
           groupId: this.groupId,
-          data: {
-            name: trimmedName
-          }
+          name: trimmedName
         });
       } else {
         this.localName = this.name;

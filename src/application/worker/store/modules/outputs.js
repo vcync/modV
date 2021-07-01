@@ -127,6 +127,18 @@ const mutations = {
     Vue.delete(state.auxillary, id);
   },
 
+  UPDATE_AUXILLARY(state, { auxillaryId, data }) {
+    if (state.auxillary[auxillaryId]) {
+      const dataKeys = Object.keys(data);
+      const dataKeysLength = dataKeys.length;
+      for (let i = 0; i < dataKeysLength; i += 1) {
+        const key = dataKeys[i];
+        const value = data[key];
+        state.auxillary[auxillaryId][key] = value;
+      }
+    }
+  },
+
   RESIZE_MAIN_OUTPUT(state, { width, height }) {
     if (!state.main.canvas) {
       return;
