@@ -74,12 +74,14 @@ export default {
   },
 
   shutdown({ props }) {
-    // This will deactivate the reconnect for ever
+    // TODO: This will deactivate the reconnect for ever, so we have to think
+    // of something else
     this.stopReconnect(props);
     this.closeConnection();
   },
 
   postProcessFrame({ canvas, props }) {
+    mappingContext.clearRect(0, 0, canvas.width, canvas.height);
     mappingContext.drawImage(
       canvas,
       0,
