@@ -96,7 +96,11 @@ function loop(delta, features, fftOutput) {
   const preProcessFrameFunctionsLength = preProcessFrameFunctions.length;
 
   for (let i = 0; i < preProcessFrameFunctionsLength; ++i) {
-    preProcessFrameFunctions[i].preProcessFrame({ features, store });
+    preProcessFrameFunctions[i].preProcessFrame({
+      features,
+      store,
+      props: preProcessFrameFunctions[i].$props
+    });
   }
 
   const renderersWithTick = store.getters["renderers/renderersWithTick"];
@@ -338,7 +342,18 @@ function loop(delta, features, fftOutput) {
     }
   }
 
-  // main.getImageData(0, 0, main.canvas.width, main.canvas.height);
+  const postProcessFrameFunctions =
+    store.getters["plugins/postProcessFrame"] || [];
+  const postProcessFrameFunctionsLength = postProcessFrameFunctions.length;
+
+  for (let i = 0; i < postProcessFrameFunctionsLength; ++i) {
+    postProcessFrameFunctions[i].postProcessFrame({
+      canvas: main.canvas,
+      features,
+      store,
+      props: postProcessFrameFunctions[i].$props
+    });
+  }
 }
 
 export default loop;

@@ -49,6 +49,7 @@ const actions = {
     { dispatch },
     {
       canvas = new OffscreenCanvas(300, 300),
+      context,
       name,
       type = "2d",
       options = {},
@@ -63,13 +64,16 @@ const actions = {
       options.storage = "discardable";
     }
 
-    const context = canvas.getContext(type, options);
-    canvas.width = width;
-    canvas.height = height;
+    if (!context) {
+      canvas.width = width;
+      canvas.height = height;
+    }
+
+    const canvasContext = context || canvas.getContext(type, options);
 
     const outputContext = await dispatch("addAuxillaryOutput", {
       name,
-      context,
+      context: canvasContext,
       reactToResize,
       group,
       id
