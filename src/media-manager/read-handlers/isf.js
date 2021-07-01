@@ -72,7 +72,7 @@ function compileModule({ filePath, fileName, file }) {
     try {
       vertexShader = await readFile(filePath.replace(".fs", ".vs"), "utf8");
     } catch (err) {
-      console.error(err);
+      console.warn(err);
     }
 
     // Convert the fragment shader stream into a string

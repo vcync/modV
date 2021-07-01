@@ -1,6 +1,5 @@
 /* eslint-env worker node */
-
-/* can't use import here, use require instead */
+const { default: constants } = require("../constants");
 
 let lastKick = false;
 
@@ -132,6 +131,15 @@ async function start() {
   });
   store.dispatch("outputs/setWebcamOutput", webcamOutput.context);
 
+  const fftOutput = await store.dispatch("outputs/getAuxillaryOutput", {
+    name: "fft",
+    reactToResize: false,
+    width: constants.AUDIO_BUFFER_SIZE,
+    height: 1,
+    group: "audio",
+    id: "fft"
+  });
+
   // eslint-disable-next-line
   let raf = requestAnimationFrame(looper);
   let frames = 0;
@@ -174,7 +182,7 @@ async function start() {
       payload: delta
     });
 
-    loop(delta, getFeatures());
+    loop(delta, getFeatures(), fftOutput);
 
     frameTick();
     frames += 1;

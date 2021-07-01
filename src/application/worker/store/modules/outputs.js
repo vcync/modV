@@ -54,6 +54,7 @@ const actions = {
       type = "2d",
       options = {},
       group = "",
+      id = "",
       reactToResize = true,
       width = state.main ? state.main.canvas.width : 300,
       height = state.main ? state.main.canvas.height : 300
@@ -74,14 +75,15 @@ const actions = {
       name,
       context: canvasContext,
       reactToResize,
-      group
+      group,
+      id
     });
 
     return outputContext;
   },
 
   addAuxillaryOutput({ commit }, outputContext) {
-    outputContext.id = uuidv4();
+    outputContext.id = outputContext.id || uuidv4();
     commit("ADD_AUXILLARY", outputContext);
     return outputContext;
   },
@@ -127,6 +129,18 @@ const mutations = {
 
   REMOVE_AUXILLARY(state, id) {
     Vue.delete(state.auxillary, id);
+  },
+
+  UPDATE_AUXILLARY(state, { auxillaryId, data }) {
+    if (state.auxillary[auxillaryId]) {
+      const dataKeys = Object.keys(data);
+      const dataKeysLength = dataKeys.length;
+      for (let i = 0; i < dataKeysLength; i += 1) {
+        const key = dataKeys[i];
+        const value = data[key];
+        state.auxillary[auxillaryId][key] = value;
+      }
+    }
   },
 
   RESIZE_MAIN_OUTPUT(state, { width, height }) {

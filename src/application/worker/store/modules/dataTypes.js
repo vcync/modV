@@ -38,7 +38,7 @@ const state = {
         textureDefinition.id = id;
       }
 
-      if (type === "canvas") {
+      if (type === "canvas" || type == "group") {
         const { id } = options;
         textureDefinition.location = "outputs/auxillaryCanvas";
         textureDefinition.id = id;
