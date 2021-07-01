@@ -203,7 +203,6 @@
 
 <script>
 import { Container, Draggable } from "vue-smooth-dnd";
-import constants from "../application/constants";
 
 import ActiveModule from "./ActiveModule";
 import compositeOperations from "../util/composite-operations";
@@ -262,14 +261,10 @@ export default {
   },
 
   computed: {
-    groups() {
-      return this.$modV.store.state.groups.groups.filter(
-        group => group.name !== constants.GALLERY_GROUP_NAME
-      );
-    },
-
     group() {
-      return this.groups.filter(group => group.id === this.groupId)[0];
+      return this.$modV.store.state.groups.groups.filter(
+        group => group.id === this.groupId
+      )[0];
     },
 
     name() {
