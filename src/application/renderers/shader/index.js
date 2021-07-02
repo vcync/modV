@@ -25,6 +25,7 @@ const indices = pex.indexBuffer([0, 1, 2, 3, 4, 5]);
 const commands = {};
 
 let canvasTexture;
+let fftTexture;
 
 const clearCmd = {
   pass: pex.pass({
@@ -63,6 +64,8 @@ function generateUniforms(canvasTexture, uniforms, kick = false) {
     iChannel3: canvasTexture,
     iChannelResolution: [resolution, resolution, resolution, resolution],
     u_modVCanvas: canvasTexture,
+    u_fft: fftTexture,
+    u_fftResolution: fftTexture ? fftTexture.width : 1,
     u_delta: time / 1000,
     u_time: time,
     u_kick: kick
@@ -139,7 +142,8 @@ async function setupModule(Module) {
   }
 }
 
-function render({ module, props, canvas, context, pipeline, kick }) {
+
+function render({ module, props, canvas, context, pipeline, kick, fftCanvas }) {
   resize({ width: canvas.width, height: canvas.height });
 
   if (!canvasTexture) {
@@ -153,11 +157,24 @@ function render({ module, props, canvas, context, pipeline, kick }) {
       mag: pex.Filter.Linear,
       wrap: pex.Wrap.Repeat
     });
+    fftTexture = pex.texture2D({
+      data: fftCanvas.data || fftCanvas,
+      width: fftCanvas.width,
+      height: 1,
+      pixelFormat: pex.PixelFormat.RGBA8,
+      encoding: pex.Encoding.Linear,
+      wrap: pex.Wrap.Repeat
+    });
   } else {
     pex.update(canvasTexture, {
       width: canvas.width,
       height: canvas.height,
       data: canvas.data || canvas
+    });
+    pex.update(fftTexture, {
+      width: fftCanvas.width,
+      height: 1,
+      data: fftCanvas.data || fftCanvas
     });
   }
 

@@ -1,4 +1,5 @@
 /* eslint-env worker node */
+const { default: constants } = require("../constants");
 
 let lastKick = false;
 
@@ -7,6 +8,8 @@ async function start() {
   const fs = require("fs");
   const store = require("./store").default;
   const loop = require("./loop").default;
+  const grabCanvasPlugin = require("../plugins/grab-canvas").default;
+
   const { tick: frameTick } = require("./frame-counter");
   const { getFeatures, setFeatures } = require("./audio-features");
   // const featureAssignmentPlugin = require("../plugins/feature-assignment");
@@ -42,6 +45,8 @@ async function start() {
       payload: JSON.stringify(payload)
     });
   });
+
+  store.dispatch("plugins/add", grabCanvasPlugin);
 
   const renderers = require.context("../renderers/", false, /\.js$/);
 
@@ -126,6 +131,15 @@ async function start() {
   });
   store.dispatch("outputs/setWebcamOutput", webcamOutput.context);
 
+  const fftOutput = await store.dispatch("outputs/getAuxillaryOutput", {
+    name: "fft",
+    reactToResize: false,
+    width: constants.AUDIO_BUFFER_SIZE,
+    height: 1,
+    group: "audio",
+    id: "fft"
+  });
+
   // eslint-disable-next-line
   let raf = requestAnimationFrame(looper);
   let frames = 0;
@@ -168,7 +182,7 @@ async function start() {
       payload: delta
     });
 
-    loop(delta, getFeatures());
+    loop(delta, getFeatures(), fftOutput);
 
     frameTick();
     frames += 1;

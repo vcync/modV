@@ -97,18 +97,24 @@ export default {
     },
 
     modulesByRenderer() {
-      return Object.keys(this.registeredModules).reduce((obj, key) => {
-        const module = this.registeredModules[key];
-        const { type, name } = module.meta;
+      return Object.keys(this.registeredModules)
+        .sort((a, b) =>
+          this.registeredModules[a].meta.name.localeCompare(
+            this.registeredModules[b].meta.name
+          )
+        )
+        .reduce((obj, key) => {
+          const module = this.registeredModules[key];
+          const { type, name } = module.meta;
 
-        if (!(type in obj)) {
-          obj[type] = {};
-        }
+          if (!(type in obj)) {
+            obj[type] = {};
+          }
 
-        obj[type][name] = module;
+          obj[type][name] = module;
 
-        return obj;
-      }, {});
+          return obj;
+        }, {});
     }
   },
 

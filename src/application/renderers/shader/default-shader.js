@@ -30,6 +30,9 @@ export default {
     uniform sampler2D iChannel3;             // Texture #4
     uniform sampler2D u_modVCanvas;          // modV's canvas
     uniform bool      u_kick;                // beatdetektor kick
+    uniform sampler2D u_fft;                 // fft texture
+    uniform float     u_fftResolution;       // fft texture width
+
 
     varying vec2 vUv;
 
@@ -64,6 +67,8 @@ export default {
     uniform sampler2D iChannel3;             // Texture #4
     uniform sampler2D u_modVCanvas;          // modV's canvas
     uniform bool      u_kick;                // beatdetektor kick
+    uniform sampler2D u_fft;                 // fft texture
+    uniform float     u_fftResolution;       // fft texture width
 
     in vec2 vUv;
     out vec4 outColor;

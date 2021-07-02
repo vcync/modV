@@ -22,9 +22,9 @@ import uuidv4 from "uuid/v4";
  * @property {Boolean} inherit             Indicates whether the Group should inherit from another
  *                                         Group at redraw
  *
- * @property {Number}  inheritFrom         The target Group to inherit from, -1 being the previous
- *                                         Group in modV#Groups, 0-n being the index of
- *                                         another Group within modV#Groups
+ * @property {String|Number}  inheritFrom  The target Group to inherit from, -1 being the previous
+ *                                         Group in modV#Groups, UUID4 string being the ID of
+ *                                         another Group within modV.store.state.groups.groups
  *
  * @property {Boolean} pipeline            Indicates whether the Group should render using pipeline
  *                                         at redraw
@@ -120,6 +120,7 @@ const actions = {
       hidden: args.hidden || false,
       modules: args.modules || [],
       inherit,
+      inheritFrom: -1,
       alpha: args.alpha || 1,
       compositeOperation: args.compositeOperation || "normal",
       context: await store.dispatch("outputs/getAuxillaryOutput", {
@@ -192,6 +193,24 @@ const actions = {
         delete clonedGroup.context;
         return clonedGroup;
       });
+  },
+
+  updateGroupName({ commit }, { groupId, name }) {
+    const group = state.groups.find(group => group.id === groupId);
+
+    store.commit("outputs/UPDATE_AUXILLARY", {
+      auxillaryId: group.context.id,
+      data: {
+        name
+      }
+    });
+
+    commit("UPDATE_GROUP", {
+      groupId,
+      data: {
+        name
+      }
+    });
   },
 
   async loadPresetData({ dispatch }, groups) {

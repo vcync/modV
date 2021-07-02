@@ -9,42 +9,43 @@
     </c>
     <c span="3">
       <div class="input" v-if="component">
-        <component :is="component" v-model="value" />
+        <component :is="component" v-model="internalValue" />
       </div>
       <div class="input" v-else-if="type === 'int' || type === 'float'">
         <RangeControl
           :min="min"
           :max="max"
-          v-model.number="value"
+          :step="step"
+          v-model.number="internalValue"
           :type="type"
         />
       </div>
       <div class="input" v-else-if="type === 'tween'">
-        <TweenControl v-model="value" />
+        <TweenControl v-model="internalValue" />
       </div>
       <div class="input" v-else-if="type === 'vec2'">
-        <Vec2DControl v-model="value" />
+        <Vec2DControl v-model="internalValue" />
       </div>
       <div class="input" v-else-if="type === 'vec3'">
-        <Vec3Control v-model="value" />
+        <Vec3Control v-model="internalValue" />
       </div>
       <div class="input" v-else-if="type === 'vec4'">
-        <Vec4Control v-model="value" />
+        <Vec4Control v-model="internalValue" />
       </div>
       <div class="input" v-else-if="type === 'text'">
-        <input type="text" v-model="value" />
+        <input type="text" v-model="internalValue" />
       </div>
       <div class="input" v-else-if="type === 'bool'">
-        <Checkbox :class="{ light: !inputIsFocused }" v-model="value" />
+        <Checkbox :class="{ light: !inputIsFocused }" v-model="internalValue" />
       </div>
       <div class="input" v-else-if="type === 'color'">
-        <ColorControl v-model="value" :moduleId="id" :prop="prop" />
+        <ColorControl v-model="internalValue" :moduleId="id" :prop="prop" />
       </div>
       <div class="input" v-else-if="type === 'texture'">
-        <TextureControl v-model="value" />
+        <TextureControl v-model="internalValue" />
       </div>
       <div class="input" v-else-if="type === 'enum'">
-        <select v-model="value">
+        <select v-model="internalValue">
           <option
             v-for="(option, index) in activeProp.enum"
             :value="option.value"
@@ -75,7 +76,26 @@ import inputIsFocused from "./mixins/input-is-focused";
 export default {
   mixins: [hasLink, inputIsFocused],
 
-  props: ["id", "prop"],
+  props: {
+    inputTitle: {
+      type: String,
+      default: ""
+    },
+
+    title: {
+      type: String,
+      required: true
+    },
+
+    value: {
+      required: true
+    },
+
+    activeProp: {
+      type: Object,
+      required: true
+    }
+  },
 
   components: {
     RangeControl,
@@ -105,17 +125,9 @@ export default {
 
   methods: {
     async queueLoop() {
-      const { id, prop, queued } = this;
+      const { queued } = this;
 
-      try {
-        await this.$modV.store.dispatch("modules/updateProp", {
-          moduleId: id,
-          prop,
-          data: queued
-        });
-      } catch (e) {
-        console.error(e.message);
-      }
+      this.$emit("input", queued);
 
       this.queued = null;
       this.dirty = false;
@@ -124,22 +136,12 @@ export default {
     focusInput() {
       this.$modV.store.dispatch("inputs/setFocusedInput", {
         id: this.inputId,
-        title: `${this.moduleName}: ${this.title}`
+        title: this.inputTitle
       });
     }
   },
 
   computed: {
-    activeProp() {
-      const { id, prop } = this;
-      return this.$modV.store.state.modules.active[id].$props[prop];
-    },
-
-    moduleName() {
-      const { id } = this;
-      return this.$modV.store.state.modules.active[id].meta.name;
-    },
-
     inputId() {
       return this.activeProp.id;
     },
@@ -156,24 +158,17 @@ export default {
       return this.activeProp.max;
     },
 
-    title() {
-      return this.activeProp.label || this.prop;
+    step() {
+      return this.activeProp.step;
     },
 
     component() {
       return this.activeProp.component || false;
     },
 
-    value: {
+    internalValue: {
       get() {
-        const { id, prop, type } = this;
-        const propData = this.$modV.store.state.modules.active[id].props[prop];
-
-        if (type === "tween") {
-          return this.$modV.store.state.tweens.tweens[propData.id];
-        }
-
-        return propData;
+        return this.value;
       },
 
       set(value) {
