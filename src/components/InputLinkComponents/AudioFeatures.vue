@@ -16,7 +16,11 @@
           </Select>
         </c>
         <c span="1">
-          ({{ $modV.features[feature] && $modV.features[feature].toFixed(2) }})
+          ({{
+            feature !== "kick"
+              ? $modV.features[feature] && $modV.features[feature].toFixed(2)
+              : Number($modV.store.state.beats.kick)
+          }})
         </c>
       </grid>
     </c>
@@ -63,6 +67,7 @@ export default {
 
       features: [
         "none",
+        "kick",
         "rms",
         "zcr",
         "energy",
@@ -114,13 +119,23 @@ export default {
     },
 
     makeLink() {
-      this.$modV.store.dispatch("inputs/createInputLink", {
-        inputId: this.inputId,
-        type: "getter",
-        location: "meyda/getFeature",
-        source: "meyda",
-        args: [this.feature]
-      });
+      if (this.feature === "kick") {
+        this.$modV.store.dispatch("inputs/createInputLink", {
+          inputId: this.inputId,
+          type: "state",
+          location: "beats.kick",
+          source: "meyda",
+          args: [this.feature]
+        });
+      } else {
+        this.$modV.store.dispatch("inputs/createInputLink", {
+          inputId: this.inputId,
+          type: "getter",
+          location: "meyda/getFeature",
+          source: "meyda",
+          args: [this.feature]
+        });
+      }
     },
 
     removeLink() {
