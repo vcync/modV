@@ -413,7 +413,9 @@ export default {
 </style>
 
 <style>
-@import url("https://rsms.me/raster/raster.css?v=20");
+@import url("./css/inter.css");
+@import url("./css/iaw.css");
+@import url("./css/raster.css");
 @import url("./css/golden-layout_theme.css");
 
 :root {
