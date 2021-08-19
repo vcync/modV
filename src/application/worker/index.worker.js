@@ -100,12 +100,6 @@ async function start() {
   });
 
   function sendCommitQueue() {
-    if (commitQueue.length === 0) {
-      return;
-    } else {
-      console.log("commitQueueLength", commitQueue.length);
-    }
-
     const commits = JSON.stringify(commitQueue);
     commitQueue.splice(0, commitQueue.length);
 
@@ -363,19 +357,10 @@ async function start() {
         return JSON.stringify(preset);
       }
 
-      if (identifier === "groups/REPLACE_GROUP_MODULES") {
-        console.log("message recieved");
-      }
-
       /**
        * @todo Don't JSON parse and stringify
        */
       const value = await store[type](identifier, payload);
-
-      if (identifier === "groups/REPLACE_GROUP_MODULES") {
-        console.log("processed store shit");
-        debugger;
-      }
 
       if (value) {
         return JSON.parse(JSON.stringify(value));
