@@ -16,6 +16,8 @@ async function start() {
 
   let interval = store.getters["fps/interval"];
 
+  const commitQueue = [];
+
   store.subscribe(mutation => {
     const { type, payload } = mutation;
 
@@ -40,11 +42,22 @@ async function start() {
       return;
     }
 
-    self.postMessage({
-      type,
-      payload: JSON.stringify(payload)
-    });
+    commitQueue.push(mutation);
   });
+
+  function sendCommitQueue() {
+    if (commitQueue.length === 0) {
+      return;
+    }
+
+    const commits = JSON.stringify(commitQueue);
+    commitQueue.splice(0, commitQueue.length);
+
+    self.postMessage({
+      type: "commitQueue",
+      payload: commits
+    });
+  }
 
   store.dispatch("plugins/add", grabCanvasPlugin);
 
@@ -177,6 +190,7 @@ async function start() {
   }
 
   function frameActions(delta) {
+    sendCommitQueue();
     self.postMessage({
       type: "tick",
       payload: delta

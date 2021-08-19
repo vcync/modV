@@ -83,7 +83,14 @@ export default class ModV {
       }
       // }
 
-      store.commit(type, payload);
+      if (type === "commitQueue") {
+        for (let i = 0; i < payload.length; i++) {
+          const commit = payload[i];
+          store.commit(commit.type, commit.payload);
+        }
+      } else {
+        store.commit(type, payload);
+      }
     });
 
     const that = this;
@@ -92,10 +99,9 @@ export default class ModV {
       state: store.state,
       getters: store.getters,
 
-      async commit(...args) {
-        return await that.$asyncWorker.postMessage(
+      commit(...args) {
+        return that.$worker.postMessage(
           {
-            __async: true,
             type: "commit",
             identifier: args[0],
             payload: args[1]
