@@ -65,9 +65,9 @@ async function start() {
 
       const { type, location, data } = bind;
 
-      const { type: linkType, location: linkLocation, match } = link;
+      const { location: linkLocation, match } = link;
 
-      if (linkType !== "mutation" || match.type !== mutationType) {
+      if (match.type !== mutationType) {
         continue;
       }
 
