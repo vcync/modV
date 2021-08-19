@@ -41,6 +41,7 @@ const actions = {
       min = 0,
       max = 1,
       source,
+      match,
       writeToSwap
     }
   ) {
@@ -52,7 +53,16 @@ const actions = {
       return false;
     }
 
-    const inputLink = { id: inputId, location, type, args, min, max, source };
+    const inputLink = {
+      id: inputId,
+      location,
+      type,
+      args,
+      min,
+      max,
+      source,
+      match
+    };
     if (!writeTo.inputs[inputId]) {
       console.warn(
         "Did not create inputLink. Could not find input with id",

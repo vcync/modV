@@ -69,8 +69,21 @@ function loop(delta, features, fftOutput) {
       location: linkLocation,
       args: linkArguments,
       min,
-      max
+      max,
+      source
     } = link;
+
+    const moduleId = store.state.inputs.inputs[inputId].data.moduleId;
+
+    if (
+      linkType === "mutation" ||
+      (source === "meyda" &&
+        moduleId &&
+        !store.state.modules.active[moduleId].meta.enabled)
+    ) {
+      continue;
+    }
+
     let value;
 
     if (linkType === "getter" && linkArguments) {

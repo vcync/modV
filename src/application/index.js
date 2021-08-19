@@ -59,29 +59,28 @@ export default class ModV {
     });
 
     this.$worker.addEventListener("message", e => {
-      if (e.data.type === "tick" && this.ready) {
-        this.tick(e.data.payload);
-        return;
-      }
-
       const message = e.data;
       const { type } = message;
-
-      if (Array.isArray(message)) {
-        return;
-      }
-      const payload = e.data.payload ? JSON.parse(e.data.payload) : undefined;
 
       // if (
       //   type !== "metrics/SET_FPS_MEASURE" &&
       //   type !== "modules/UPDATE_ACTIVE_MODULE_PROP" &&
       //   type !== "beats/SET_BPM" &&
-      //   type !== "beats/SET_KICK"
+      //   type !== "beats/SET_KICK" &&
+      //   type !== "tick"
       // ) {
-      if (this.debug) {
-        console.log(`⚙️%c ${type}`, "color: red", payload);
-      }
+      //   console.log(`⚙️%c ${type}`, "color: red");
       // }
+
+      if (e.data.type === "tick" && this.ready) {
+        this.tick(e.data.payload);
+        return;
+      }
+
+      if (Array.isArray(message)) {
+        return;
+      }
+      const payload = e.data.payload ? JSON.parse(e.data.payload) : undefined;
 
       if (type === "commitQueue") {
         for (let i = 0; i < payload.length; i++) {
@@ -110,8 +109,8 @@ export default class ModV {
         );
       },
 
-      async dispatch(...args) {
-        return await that.$asyncWorker.postMessage(
+      dispatch(...args) {
+        return that.$asyncWorker.postMessage(
           {
             __async: true,
             type: "dispatch",
