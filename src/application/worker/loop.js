@@ -75,6 +75,9 @@ function loop(delta, features, fftOutput) {
 
     const moduleId = store.state.inputs.inputs[inputId].data.moduleId;
 
+    // check if the module is enabled for meyda sources, and if it is not, skip it
+    // mutation linkTypes are also skipped as they're handled in index.worker.js in
+    // the store commit subscription
     if (
       linkType === "mutation" ||
       (source === "meyda" &&
