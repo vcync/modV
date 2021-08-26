@@ -290,7 +290,7 @@ function loop(delta, features, fftOutput) {
       main.globalAlpha = alpha;
     }
 
-    main.drawImage(context.canvas, 0, 0);
+    main.drawImage(context.canvas, 0, 0, main.canvas.width, main.canvas.height);
     main.restore();
   }
 

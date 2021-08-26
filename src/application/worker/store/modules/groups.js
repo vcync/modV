@@ -51,6 +51,11 @@ import uuidv4 from "uuid/v4";
  *
  * @property {String}  pipelineInputId     The Input ID for the Pipeline control
  *
+ * @property {Number}  canvasScale         A multiplier which will affect the group canvas size.
+ *                                         Useful for heavy modules which may not need to be full
+ *                                         resolution. Default 1.
+ *                                         outputCanvasSize * group.renderQuality
+ *
  * @example
  * const Group = {
  *   name: 'Group',
@@ -77,6 +82,8 @@ import uuidv4 from "uuid/v4";
  *   compositeOperation: 'normal',
  *
  *   drawToCanvasId: null,
+ *
+ *   canvasScale: 1,
  * };
  */
 
@@ -126,8 +133,10 @@ const actions = {
       context: await store.dispatch("outputs/getAuxillaryOutput", {
         name,
         group: "group",
-        id
-      })
+        id,
+        canvasScale: args.renderQuality || 1
+      }),
+      canvasScale: args.renderQuality || 1
     };
 
     const alphaInputBind = await store.dispatch("inputs/addInput", {
@@ -209,6 +218,30 @@ const actions = {
       groupId,
       data: {
         name
+      }
+    });
+  },
+
+  setGroupScale({ commit }, { groupId, canvasScale }) {
+    const group = state.groups.find(group => group.id === groupId);
+
+    store.commit("outputs/UPDATE_AUXILLARY", {
+      auxillaryId: group.context.id,
+      data: {
+        canvasScale
+      }
+    });
+
+    store.commit("outputs/RESIZE_AUXILLARY", {
+      id: group.context.id,
+      width: store.state.outputs.main.canvas.width * canvasScale,
+      height: store.state.outputs.main.canvas.height * canvasScale
+    });
+
+    commit("UPDATE_GROUP", {
+      groupId,
+      data: {
+        canvasScale
       }
     });
   },

@@ -33,6 +33,9 @@ function render({ module, canvas, context, pipeline, props }) {
   const renderer = renderers[module.meta.name];
   const moduleInputs = inputs[module.meta.name];
 
+  isfCanvas.width = canvas.width;
+  isfCanvas.height = canvas.height;
+
   if (moduleInputs) {
     for (let i = 0, len = moduleInputs.length; i < len; i++) {
       const input = moduleInputs[i];

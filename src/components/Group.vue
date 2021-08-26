@@ -145,20 +145,21 @@
           </grid>
         </c>
 
-        <!-- <c span="1..">
+        <c span="1..">
           <grid columns="6">
             <c span="2">Quality</c>
             <c span="4">
-              <Select v-model="quality">
-                <option value="full">Full</option>
-                <option value="half">Half</option>
-                <option value="quarter">Quarter</option>
-                <option value="bad">Bad</option>
-                <option value="awful">Awful</option>
+              <Select v-model.number="canvasScale">
+                <option value="1">1×</option>
+                <option value="0.75">0.75×</option>
+                <option value="0.5">0.5×</option>
+                <option value="0.25">0.25×</option>
+                <option value="0.125">0.125×</option>
+                <option value="0.0625">0.0625×</option>
               </Select>
             </c>
           </grid>
-        </c> -->
+        </c>
       </grid>
     </div>
     <div class="group__left">
@@ -295,6 +296,19 @@ export default {
         this.$modV.store.commit("groups/REPLACE_GROUP_MODULES", {
           groupId: this.groupId,
           modules
+        });
+      }
+    },
+
+    canvasScale: {
+      get() {
+        return this.group.canvasScale;
+      },
+
+      set(scale) {
+        this.$modV.store.dispatch("groups/setGroupScale", {
+          groupId: this.groupId,
+          canvasScale: scale
         });
       }
     },

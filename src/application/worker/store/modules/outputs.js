@@ -34,6 +34,9 @@ const getters = {
  * @property {String}  id
  * @property {String}  group
  * @property {Boolean} reactToResize
+ * @property {Number}  width
+ * @property {Number}  height
+ * @property {Number}  canvasScale
  */
 
 const actions = {
@@ -57,7 +60,8 @@ const actions = {
       id = "",
       reactToResize = true,
       width = state.main ? state.main.canvas.width : 300,
-      height = state.main ? state.main.canvas.height : 300
+      height = state.main ? state.main.canvas.height : 300,
+      canvasScale = 1
     }
   ) {
     if (type === "2d") {
@@ -76,7 +80,8 @@ const actions = {
       context: canvasContext,
       reactToResize,
       group,
-      id
+      id,
+      canvasScale
     });
 
     return outputContext;
@@ -105,7 +110,11 @@ const actions = {
     for (let i = 0, len = resizable.length; i < len; i++) {
       const outputContext = resizable[i];
 
-      commit("RESIZE_AUXILLARY", { id: outputContext.id, width, height });
+      commit("RESIZE_AUXILLARY", {
+        id: outputContext.id,
+        width: width * outputContext.canvasScale,
+        height: height * outputContext.canvasScale
+      });
     }
   },
 
