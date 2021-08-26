@@ -2,12 +2,14 @@ import fs from "fs";
 import { dialog, shell, app, ipcMain, Menu } from "electron";
 import { windows } from "./windows";
 import { openFile } from "./open-file";
-import { mediaManager } from "./media-manager";
+import { getMediaManager } from "./media-manager";
 import { projectNames, setCurrentProject, currentProject } from "./projects";
 
 const isMac = process.platform === "darwin";
 
 export function generateMenuTemplate() {
+  const mediaManager = getMediaManager();
+
   return [
     // { role: 'appMenu' }
     ...(isMac
