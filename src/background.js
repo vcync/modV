@@ -120,7 +120,12 @@ const windowPrefs = {
 
     async create(window) {
       ipcMain.on("modv-ready", () => {
-        window.close();
+        try {
+          window.close();
+        } catch (e) {
+          console.error(e);
+        }
+
         windows["mainWindow"].show();
       });
     }
