@@ -192,7 +192,13 @@ export default {
           this.smoothingId,
           this.smoothingValue
         ]);
-      } else {
+      } else if (value && this.smoothingId) {
+        this.updateInputLinkArgs([
+          this.feature,
+          this.smoothingId,
+          this.smoothingValue
+        ]);
+      } else if (!value && this.smoothingId) {
         this.smoothingId = null;
         this.$modV.store.dispatch("meyda/removeSmoothingId", this.smoothingId);
         this.updateInputLinkArgs([this.feature]);
