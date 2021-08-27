@@ -23,8 +23,6 @@ export default function SWAP(swap, getDefault, sharedPropertyRestrictions) {
             // eslint-disable-next-line
             if (isArray) {
               state[key] = state[key].filter(sharedPropertyRestrictions[key]);
-
-              console.log(key, state[key]);
             } else {
               const restrictedKeys = sharedPropertyRestrictions[key](
                 state[key]
@@ -58,7 +56,6 @@ export default function SWAP(swap, getDefault, sharedPropertyRestrictions) {
             const swapChildKeys = Object.keys(swap[key]);
 
             if (isArray) {
-              console.log(key, swap[key]);
               Vue.set(state, key, [...state[key], ...swap[key]]);
             } else {
               const restrictedKeys = sharedPropertyRestrictions[key](swap[key]);
