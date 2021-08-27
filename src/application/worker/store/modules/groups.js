@@ -92,7 +92,23 @@ const sharedPropertyRestrictions = {
     // Objects return an Array of keys to remove.
     // This keeps gallery group in place
     group
-  ) => () => group.name !== constants.GALLERY_GROUP_NAME
+  ) => group.name === constants.GALLERY_GROUP_NAME
+};
+
+const getters = {
+  groupIndexRenderOrder: state => {
+    const galleryGroupIndex = state.groups.findIndex(
+      group => group.name === constants.GALLERY_GROUP_NAME
+    );
+    const indexes = [...state.groups.keys()];
+
+    if (galleryGroupIndex > -1) {
+      indexes.splice(galleryGroupIndex, 1);
+      indexes.push(galleryGroupIndex);
+    }
+
+    return indexes;
+  }
 };
 
 const actions = {
@@ -316,6 +332,7 @@ const mutations = {
 export default {
   namespaced: true,
   state,
+  getters,
   actions,
   mutations
 };

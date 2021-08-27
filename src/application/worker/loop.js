@@ -34,6 +34,8 @@ function loop(delta, features, fftOutput) {
     windows
   } = store.state;
 
+  const groupIndexRenderOrder = store.getters["groups/groupIndexRenderOrder"];
+
   if (!main) {
     return;
   }
@@ -111,9 +113,9 @@ function loop(delta, features, fftOutput) {
 
   let lastCanvas = main.canvas;
 
-  const groupsLength = groups.length;
+  const groupsLength = groupIndexRenderOrder.length;
   for (let i = 0; i < groupsLength; ++i) {
-    const group = groups[i];
+    const group = groups[groupIndexRenderOrder[i]];
     const isGalleryGroup = group.name === constants.GALLERY_GROUP_NAME;
 
     const groupModulesLength = group.modules.length;
@@ -265,9 +267,9 @@ function loop(delta, features, fftOutput) {
   const windowsLength = windowKeys.length;
 
   main.clearRect(0, 0, main.canvas.width, main.canvas.height);
-  for (let i = 0; i < groupsLength; ++i) {
-    const group = groups[i];
-    const isGalleryGroup = group.name === constants.GALLERY_GROUP_NAME;
+  // minus one here to skip over the gallery group
+  for (let i = 0; i < groupsLength - 1; ++i) {
+    const group = groups[groupIndexRenderOrder[i]];
 
     const {
       compositeOperation,
@@ -277,7 +279,7 @@ function loop(delta, features, fftOutput) {
       modules
     } = group;
     const groupModulesLength = modules.length;
-    if (!enabled || groupModulesLength < 1 || !(alpha > 0) || isGalleryGroup) {
+    if (!enabled || groupModulesLength < 1 || !(alpha > 0)) {
       continue;
     }
 
