@@ -83,7 +83,9 @@ function mouseUp() {
 }
 
 function mouseMove(e) {
-  setTooltipPosition(e);
+  if (!document.pointerLockElement) {
+    setTooltipPosition(e);
+  }
   setPreValue();
 }
 
