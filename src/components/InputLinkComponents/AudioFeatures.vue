@@ -122,8 +122,11 @@ export default {
       if (this.feature === "kick") {
         this.$modV.store.dispatch("inputs/createInputLink", {
           inputId: this.inputId,
-          type: "state",
+          type: "mutation",
           location: "beats.kick",
+          match: {
+            type: "beats/SET_KICK"
+          },
           source: "meyda",
           args: [this.feature]
         });
