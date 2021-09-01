@@ -62,13 +62,23 @@ export default class ModV {
     });
 
     this.$worker.addEventListener("message", e => {
+      const message = e.data;
+      const { type } = message;
+
+      // if (
+      //   type !== "metrics/SET_FPS_MEASURE" &&
+      //   type !== "modules/UPDATE_ACTIVE_MODULE_PROP" &&
+      //   type !== "beats/SET_BPM" &&
+      //   type !== "beats/SET_KICK" &&
+      //   type !== "tick"
+      // ) {
+      //   console.log(`⚙️%c ${type}`, "color: red");
+      // }
+
       if (e.data.type === "tick" && this.ready) {
         this.tick(e.data.payload);
         return;
       }
-
-      const message = e.data;
-      const { type } = message;
 
       if (type === "worker-setup-complete") {
         resolver();
@@ -80,18 +90,14 @@ export default class ModV {
       }
       const payload = e.data.payload ? JSON.parse(e.data.payload) : undefined;
 
-      // if (
-      //   type !== "metrics/SET_FPS_MEASURE" &&
-      //   type !== "modules/UPDATE_ACTIVE_MODULE_PROP" &&
-      //   type !== "beats/SET_BPM" &&
-      //   type !== "beats/SET_KICK"
-      // ) {
-      if (this.debug) {
-        console.log(`⚙️%c ${type}`, "color: red", payload);
+      if (type === "commitQueue") {
+        for (let i = 0; i < payload.length; i++) {
+          const commit = payload[i];
+          store.commit(commit.type, commit.payload);
+        }
+      } else {
+        store.commit(type, payload);
       }
-      // }
-
-      store.commit(type, payload);
     });
 
     const that = this;
@@ -100,10 +106,9 @@ export default class ModV {
       state: store.state,
       getters: store.getters,
 
-      async commit(...args) {
-        return await that.$asyncWorker.postMessage(
+      commit(...args) {
+        return that.$worker.postMessage(
           {
-            __async: true,
             type: "commit",
             identifier: args[0],
             payload: args[1]
@@ -112,8 +117,8 @@ export default class ModV {
         );
       },
 
-      async dispatch(...args) {
-        return await that.$asyncWorker.postMessage(
+      dispatch(...args) {
+        return that.$asyncWorker.postMessage(
           {
             __async: true,
             type: "dispatch",

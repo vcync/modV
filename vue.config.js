@@ -40,6 +40,7 @@ module.exports = {
 
   pluginOptions: {
     electronBuilder: {
+      mainProcessFile: "src/background/background.js",
       nodeIntegration: true,
 
       externals: [
