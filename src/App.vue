@@ -26,8 +26,8 @@
                 <!-- hack around dynamic components not working correctly. CSS below hides tabs with the title "hidden" -->
               </gl-component>
               <gl-component
-                v-for="module in focusedModules"
-                :key="module.$id"
+                v-for="(module, i) in focusedModules"
+                :key="i"
                 :title="`${module.meta.name} properties`"
                 :closable="false"
                 ref="moduleInspector"
