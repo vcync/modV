@@ -65,11 +65,12 @@ const windowPrefs = {
         (event, url, frameName, disposition, options) => {
           if (frameName === "modal") {
             event.preventDefault();
-            event.newGuest = new BrowserWindow(options);
+            event.newGuest = new BrowserWindow({
+              ...options,
+              autoHideMenuBar: true
+            });
 
-            setTimeout(() => {
-              event.newGuest.setMenu(null);
-            }, 500);
+            event.newGuest.removeMenu();
           }
         }
       );
