@@ -14,7 +14,8 @@ export default function createWatcher() {
       os.platform() === "darwin" ? /(^|[/\\])\../ : undefined,
       /node_modules/,
       "**/package.json",
-      "**/package-lock.json"
+      "**/package-lock.json",
+      /isf\/temp/
     ].concat(store.getters["readHandlers/ignored"]);
 
     this.watcher = chokidar.watch(this.mediaDirectoryPath, {
