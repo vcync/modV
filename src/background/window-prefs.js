@@ -4,7 +4,7 @@ import store from "../media-manager/store";
 import { autoUpdater } from "electron-updater";
 import { checkMediaPermission } from "./check-media-permission";
 import { setProjectNames, setCurrentProject } from "./projects";
-import { createWindow } from "./windows";
+import { createWindow, windows } from "./windows";
 import { updateMenu } from "./menu-bar";
 import { getMediaManager } from "./media-manager";
 
@@ -35,6 +35,7 @@ const windowPrefs = {
     devPath: "",
     prodPath: "index.html",
     options: {
+      show: false,
       webPreferences: {
         enableRemoteModule: true,
         // Use pluginOptions.nodeIntegration, leave this alone
@@ -162,6 +163,42 @@ const windowPrefs = {
       ipcMain.removeAllListeners("save-file");
       ipcMain.removeAllListeners("current-project");
       ipcMain.removeAllListeners("input-update");
+    }
+  },
+
+  splashScreen: {
+    devPath: "splashScreen",
+    prodPath: "splashScreen.html",
+    options: {
+      webPreferences: {
+        // Use pluginOptions.nodeIntegration, leave this alone
+        // See nklayman.github.io/vue-cli-plugin-electron-builder/guide/security.html#node-integration for more info
+        nodeIntegration: process.env.ELECTRON_NODE_INTEGRATION
+      },
+      transparent: true,
+      frame: false,
+      resizable: false,
+      skipTaskbar: true,
+      fullscreenable: false,
+      center: true,
+      movable: false,
+      backgroundColor: "#00000000",
+      hasShadow: false,
+      width: 600,
+      height: 600
+    },
+    unique: true,
+
+    async create(window) {
+      ipcMain.on("modv-ready", () => {
+        try {
+          window.close();
+        } catch (e) {
+          console.error(e);
+        }
+
+        windows["mainWindow"].show();
+      });
     }
   }
 };

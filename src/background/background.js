@@ -47,6 +47,7 @@ app.on("ready", async () => {
   );
 
   createWindow("mainWindow");
+  createWindow("splashScreen");
 });
 
 // Exit cleanly on request from parent process in development mode.

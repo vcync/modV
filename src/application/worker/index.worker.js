@@ -130,6 +130,7 @@ async function start() {
     });
   }
 
+  const modulesToRegister = [];
   const sampleModules = require.context("../sample-modules/", false, /\.js$/);
 
   const sampleModuleKeys = sampleModules.keys();
@@ -154,7 +155,7 @@ async function start() {
     //   );
     // }
 
-    store.dispatch("modules/registerModule", { module: sampleModule });
+    modulesToRegister.push(sampleModule);
   }
 
   const isfModules = require.context("../sample-modules/isf", false, /\.fs$/);
@@ -170,7 +171,7 @@ async function start() {
     if (vsIndex > -1) {
       vertexShader = isfModulesVs(isfModulesVsKeys[vsIndex]);
     }
-    const module = {
+    const isfModule = {
       meta: {
         name: fileName.replace(/(\.\/|\.fs)/g, ""),
         author: "",
@@ -180,8 +181,14 @@ async function start() {
       fragmentShader,
       vertexShader
     };
-    store.dispatch("modules/registerModule", { module });
+    modulesToRegister.push(isfModule);
   }
+
+  await Promise.all(
+    modulesToRegister.map(module =>
+      store.dispatch("modules/registerModule", { module })
+    )
+  );
 
   // store.dispatch("plugins/add", featureAssignmentPlugin);
 
@@ -371,6 +378,10 @@ async function start() {
   });
 
   self.store = store;
+
+  self.postMessage({
+    type: "worker-setup-complete"
+  });
 }
 
 function handleDirname(e) {
