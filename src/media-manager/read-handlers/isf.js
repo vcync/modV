@@ -35,7 +35,7 @@ export default {
     "fs"
   ],
 
-  ignored: [/isf[\\/]compiled/],
+  ignored: [/isf[\\/]compiled/, /isf[\\/]temp/],
 
   /**
    * Takes in a readable stream, processes file accordingly and outputs file location plus stream
