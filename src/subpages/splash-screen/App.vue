@@ -10,6 +10,10 @@ body {
   overflow: hidden;
 }
 
+.lds-ripple {
+  display: none !important;
+}
+
 img {
   width: 100%;
   animation: 4s forwards fade-scale;
