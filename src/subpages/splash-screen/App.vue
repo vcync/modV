@@ -8,6 +8,7 @@
 html,
 body {
   overflow: hidden;
+  background: transparent !important;
 }
 
 .lds-ripple {
