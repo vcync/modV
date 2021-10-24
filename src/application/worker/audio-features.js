@@ -1,4 +1,6 @@
-const MAX_SMOOTHING = 2;
+import lerp from "../utils/lerp";
+
+const MAX_SMOOTHING = 1;
 const SMOOTHING_STEP = 0.001;
 
 let features = {};
@@ -25,19 +27,13 @@ function removeSmoothingId(id) {
 }
 
 function getSmoothedFeature(feature, id, smoothingValue) {
-  let value = smoothedFeatures[id];
+  smoothedFeatures[id] = lerp(
+    smoothedFeatures[id] || 0,
+    features[feature],
+    smoothingValue
+  );
 
-  if (features[feature] >= value) {
-    value = features[feature];
-  } else if (value - smoothingValue > 0) {
-    value -= smoothingValue;
-  } else {
-    value = features[feature];
-  }
-
-  smoothedFeatures[id] = value;
-
-  return value;
+  return smoothedFeatures[id];
 }
 
 export {
