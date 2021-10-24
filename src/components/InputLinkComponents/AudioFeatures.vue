@@ -35,7 +35,8 @@
             min="0"
             :max="MAX_SMOOTHING - SMOOTHING_STEP"
             :step="SMOOTHING_STEP"
-            v-model="smoothingValue"
+            @input="smoothingInput"
+            :value="invertedInputValue"
           />
         </c>
       </grid>
@@ -104,6 +105,10 @@ export default {
 
     inputLink() {
       return this.$modV.store.state.inputs.inputLinks[this.inputId];
+    },
+
+    invertedInputValue() {
+      return this.MAX_SMOOTHING - this.smoothingValue;
     }
   },
 
@@ -145,18 +150,7 @@ export default {
     },
 
     smoothingInput(e) {
-      if (!this.useSmoothing || !this.smoothingId) {
-        return;
-      }
-
-      const realValue = parseFloat(e.target.value);
-      this.smoothingValue = this.MAX_SMOOTHING - realValue;
-
-      this.updateInputLinkArgs([
-        this.feature,
-        this.smoothingId,
-        this.smoothingValue
-      ]);
+      this.smoothingValue = this.MAX_SMOOTHING - e;
     },
 
     updateInputLinkArgs(value) {
@@ -211,7 +205,7 @@ export default {
       if (!this.inputLink || this.inputLink.source !== "meyda") {
         this.feature = "none";
         this.smoothingId = null;
-        this.smoothingValue = 0;
+        this.smoothingValue = 1;
         this.useSmoothing = false;
       }
     }
