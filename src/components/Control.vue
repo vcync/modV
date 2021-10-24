@@ -39,7 +39,11 @@
         <Checkbox :class="{ light: !inputIsFocused }" v-model="internalValue" />
       </div>
       <div class="input" v-else-if="type === 'color'">
-        <ColorControl v-model="internalValue" :moduleId="id" :prop="prop" />
+        <ColorControl
+          v-model="internalValue"
+          :moduleId="moduleId"
+          :prop="prop"
+        />
       </div>
       <div class="input" v-else-if="type === 'texture'">
         <TextureControl v-model="internalValue" />
@@ -94,6 +98,16 @@ export default {
     activeProp: {
       type: Object,
       required: true
+    },
+
+    moduleId: {
+      type: String,
+      required: false
+    },
+
+    prop: {
+      type: String,
+      required: false
     }
   },
 
