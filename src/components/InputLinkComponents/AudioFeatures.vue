@@ -85,8 +85,7 @@ export default {
 
       feature: "none",
       smoothingId: null,
-      smoothingValue: 0,
-      useSmoothing: false
+      smoothingValue: 0
     };
   },
 
@@ -149,8 +148,8 @@ export default {
       });
     },
 
-    smoothingInput(e) {
-      this.smoothingValue = this.MAX_SMOOTHING - e;
+    smoothingInput(value) {
+      this.smoothingValue = this.MAX_SMOOTHING - value;
     },
 
     updateInputLinkArgs(value) {
@@ -205,8 +204,7 @@ export default {
       if (!this.inputLink || this.inputLink.source !== "meyda") {
         this.feature = "none";
         this.smoothingId = null;
-        this.smoothingValue = 1;
-        this.useSmoothing = false;
+        this.smoothingValue = this.MAX_SMOOTHING - this.SMOOTHING_STEP;
       }
     }
   }
