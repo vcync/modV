@@ -1,6 +1,6 @@
 import lerp from "../utils/lerp";
 
-const MAX_SMOOTHING = 2;
+const MAX_SMOOTHING = 1;
 const SMOOTHING_STEP = 0.001;
 
 let features = {};
