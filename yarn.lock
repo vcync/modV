@@ -6029,11 +6029,11 @@ inquirer@^6.2.2:
     strip-ansi "^5.1.0"
     through "^2.3.6"
 
-"interactive-shader-format@github:vcync/interactive-shader-format-js#fixedIsfParserAndImageBitmap":
-  version "2.8.0"
-  resolved "https://codeload.github.com/vcync/interactive-shader-format-js/tar.gz/969ad2f22a9fa33115e692ce19dff5dab88a08a6"
+"interactive-shader-format@github:vcync/interactive-shader-format-js#feat/ISFAudio":
+  version "2.0.1"
+  resolved "https://codeload.github.com/vcync/interactive-shader-format-js/tar.gz/2f73fe160bc3340542149707239e298e6585bc42"
   dependencies:
-    mathjs-expression-parser "^1.0.2"
+    mathjs-expression-parser "1.0.2"
 
 internal-ip@^4.3.0:
   version "4.3.0"
@@ -7415,7 +7415,7 @@ material-colors@^1.0.0:
   resolved "https://registry.yarnpkg.com/material-colors/-/material-colors-1.2.6.tgz#6d1958871126992ceecc72f4bcc4d8f010865f46"
   integrity sha512-6qE4B9deFBIa9YSpOc9O0Sgc43zTeVYbgDT5veRKSlB2+ZuHNoVVxA1L/ckMUayV9Ay9y7Z/SZCLcGteW9i7bg==
 
-mathjs-expression-parser@^1.0.2:
+mathjs-expression-parser@1.0.2:
   version "1.0.2"
   resolved "https://registry.yarnpkg.com/mathjs-expression-parser/-/mathjs-expression-parser-1.0.2.tgz#7f59984cad711d766a1032f0900b01755c5cbc81"
   integrity sha512-Z5T4UTLIsHhrQodz7bGhHVsARBwrHDIs49OcJ/iNuY/5sMg6SZrYyoDUD2iO91nMONK6qAiBxWy2/KjtBaSc9g==
