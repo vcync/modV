@@ -222,6 +222,7 @@ function loop(delta, features, fftOutput) {
           data: { ...data },
           // canvas: drawTo.canvas,
           canvas,
+          context: drawTo,
           delta
         });
 
