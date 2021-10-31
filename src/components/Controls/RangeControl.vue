@@ -14,6 +14,7 @@
       :step="step"
       @keypress.enter="toggleEditMode"
       @click.right="toggleEditMode"
+      @input="numberInputHandler"
       v-show="editMode"
       ref="input"
     />
@@ -297,6 +298,10 @@ export default {
       requestAnimationFrame(this.draw);
     },
 
+    numberInputHandler() {
+      this.$emit("input", this.inputValue);
+    },
+
     toggleEditMode(e) {
       e.preventDefault();
       this.editMode = !this.editMode;
@@ -367,7 +372,6 @@ export default {
 
     inputValue(value) {
       this.position = -value * this.spacingCalc;
-      this.$emit("input", value);
     }
   }
 };
