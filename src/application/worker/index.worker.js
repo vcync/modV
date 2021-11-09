@@ -9,6 +9,7 @@ async function start() {
   const store = require("./store").default;
   const loop = require("./loop").default;
   const grabCanvasPlugin = require("../plugins/grab-canvas").default;
+  const get = require("lodash.get");
 
   const { tick: frameTick } = require("./frame-counter");
   const { getFeatures, setFeatures } = require("./audio-features");
@@ -16,35 +17,97 @@ async function start() {
 
   let interval = store.getters["fps/interval"];
 
+  const commitQueue = [];
+
   store.subscribe(mutation => {
-    const { type, payload } = mutation;
+    const { type: mutationType, payload: mutationPayload } = mutation;
 
-    if (type === "beats/SET_BPM" || type === "fps/SET_FPS") {
-      store.dispatch("tweens/updateBpm", { bpm: payload.bpm });
+    if (mutationType === "beats/SET_BPM" || mutationType === "fps/SET_FPS") {
+      store.dispatch("tweens/updateBpm", { bpm: mutationPayload.bpm });
     }
 
-    if (type === "beats/SET_KICK" && payload.kick === lastKick) {
+    if (
+      mutationType === "beats/SET_KICK" &&
+      mutationPayload.kick === lastKick
+    ) {
       return;
-    } else if (type === "beats/SET_KICK" && payload.kick !== lastKick) {
-      lastKick = payload.kick;
+    } else if (
+      mutationType === "beats/SET_KICK" &&
+      mutationPayload.kick !== lastKick
+    ) {
+      lastKick = mutationPayload.kick;
     }
 
-    if (type === "fps/SET_FPS") {
+    if (mutationType === "fps/SET_FPS") {
       interval = store.getters["fps/interval"];
     }
 
     if (
-      type === "modules/UPDATE_ACTIVE_MODULE" &&
-      (payload.key !== "props" || payload.key !== "meta")
+      mutationType === "modules/UPDATE_ACTIVE_MODULE" &&
+      (mutationPayload.key !== "props" || mutationPayload.key !== "meta")
     ) {
       return;
     }
 
-    self.postMessage({
-      type,
-      payload: JSON.stringify(payload)
-    });
+    const {
+      inputs: { inputs, inputLinks }
+    } = store.state;
+
+    // Update mutation type Input Links
+    const mutationTypeInputLinks = Object.values(inputLinks).filter(
+      link => link.type === "mutation"
+    );
+    const inputLinksLength = mutationTypeInputLinks.length;
+    for (let i = 0; i < inputLinksLength; ++i) {
+      const link = mutationTypeInputLinks[i];
+      const inputId = link.id;
+      const bind = inputs[inputId];
+
+      const { type, location, data } = bind;
+
+      const { location: linkLocation, match } = link;
+
+      if (match.type !== mutationType) {
+        continue;
+      }
+
+      let payloadMatches = false;
+
+      if (match.payload) {
+        const matchPayloadKeys = Object.keys(match.payload);
+        payloadMatches = matchPayloadKeys.every(key => {
+          const value = match.payload[key];
+          return value === mutationPayload[key];
+        });
+      } else {
+        payloadMatches = true;
+      }
+
+      if (!payloadMatches) {
+        continue;
+      }
+
+      const value = get(store.state, linkLocation);
+
+      if (type === "action") {
+        store.dispatch(location, { ...data, data: value });
+      } else if (type === "commit") {
+        store.commit(location, { ...data, data: value });
+      }
+    }
+
+    commitQueue.push(mutation);
   });
+
+  function sendCommitQueue() {
+    const commits = JSON.stringify(commitQueue);
+    commitQueue.splice(0, commitQueue.length);
+
+    self.postMessage({
+      type: "commitQueue",
+      payload: commits
+    });
+  }
 
   store.dispatch("plugins/add", grabCanvasPlugin);
 
@@ -67,6 +130,7 @@ async function start() {
     });
   }
 
+  const modulesToRegister = [];
   const sampleModules = require.context("../sample-modules/", false, /\.js$/);
 
   const sampleModuleKeys = sampleModules.keys();
@@ -91,7 +155,7 @@ async function start() {
     //   );
     // }
 
-    store.dispatch("modules/registerModule", { module: sampleModule });
+    modulesToRegister.push(sampleModule);
   }
 
   const isfModules = require.context("../sample-modules/isf", false, /\.fs$/);
@@ -107,7 +171,7 @@ async function start() {
     if (vsIndex > -1) {
       vertexShader = isfModulesVs(isfModulesVsKeys[vsIndex]);
     }
-    const module = {
+    const isfModule = {
       meta: {
         name: fileName.replace(/(\.\/|\.fs)/g, ""),
         author: "",
@@ -117,8 +181,14 @@ async function start() {
       fragmentShader,
       vertexShader
     };
-    store.dispatch("modules/registerModule", { module });
+    modulesToRegister.push(isfModule);
   }
+
+  await Promise.all(
+    modulesToRegister.map(module =>
+      store.dispatch("modules/registerModule", { module })
+    )
+  );
 
   // store.dispatch("plugins/add", featureAssignmentPlugin);
 
@@ -177,6 +247,7 @@ async function start() {
   }
 
   function frameActions(delta) {
+    sendCommitQueue();
     self.postMessage({
       type: "tick",
       payload: delta
@@ -307,6 +378,10 @@ async function start() {
   });
 
   self.store = store;
+
+  self.postMessage({
+    type: "worker-setup-complete"
+  });
 }
 
 function handleDirname(e) {

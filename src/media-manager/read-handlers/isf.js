@@ -35,7 +35,7 @@ export default {
     "fs"
   ],
 
-  ignored: [/isf[\\/]compiled/],
+  ignored: [/isf[\\/]compiled/, /isf[\\/]temp/],
 
   /**
    * Takes in a readable stream, processes file accordingly and outputs file location plus stream
@@ -72,7 +72,10 @@ function compileModule({ filePath, fileName, file }) {
     try {
       vertexShader = await readFile(filePath.replace(".fs", ".vs"), "utf8");
     } catch (err) {
-      console.warn(err);
+      // Don't show warning when error is because the file doesn't exist
+      if (err.code !== "ENOENT") {
+        console.warn(err);
+      }
     }
 
     // Convert the fragment shader stream into a string

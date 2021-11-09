@@ -28,7 +28,6 @@ export default class ModV {
   windowHandler = windowHandler;
   use = use;
   debug = false;
-  ready = false;
   features = Vue.observable({
     energy: 0,
     rms: 0,
@@ -50,6 +49,10 @@ export default class ModV {
   };
 
   constructor() {
+    let resolver = null;
+    this.ready = new Promise(resolve => {
+      resolver = resolve;
+    });
     this.$worker = new Worker();
     this.$asyncWorker = new PromiseWorker(this.$worker);
 
@@ -59,31 +62,42 @@ export default class ModV {
     });
 
     this.$worker.addEventListener("message", e => {
+      const message = e.data;
+      const { type } = message;
+
+      // if (
+      //   type !== "metrics/SET_FPS_MEASURE" &&
+      //   type !== "modules/UPDATE_ACTIVE_MODULE_PROP" &&
+      //   type !== "beats/SET_BPM" &&
+      //   type !== "beats/SET_KICK" &&
+      //   type !== "tick"
+      // ) {
+      //   console.log(`⚙️%c ${type}`, "color: red");
+      // }
+
       if (e.data.type === "tick" && this.ready) {
         this.tick(e.data.payload);
         return;
       }
 
-      const message = e.data;
-      const { type } = message;
+      if (type === "worker-setup-complete") {
+        resolver();
+        ipcRenderer.send("modv-ready");
+      }
 
       if (Array.isArray(message)) {
         return;
       }
       const payload = e.data.payload ? JSON.parse(e.data.payload) : undefined;
 
-      // if (
-      //   type !== "metrics/SET_FPS_MEASURE" &&
-      //   type !== "modules/UPDATE_ACTIVE_MODULE_PROP" &&
-      //   type !== "beats/SET_BPM" &&
-      //   type !== "beats/SET_KICK"
-      // ) {
-      if (this.debug) {
-        console.log(`⚙️%c ${type}`, "color: red", payload);
+      if (type === "commitQueue") {
+        for (let i = 0; i < payload.length; i++) {
+          const commit = payload[i];
+          store.commit(commit.type, commit.payload);
+        }
+      } else {
+        store.commit(type, payload);
       }
-      // }
-
-      store.commit(type, payload);
     });
 
     const that = this;
@@ -92,10 +106,9 @@ export default class ModV {
       state: store.state,
       getters: store.getters,
 
-      async commit(...args) {
-        return await that.$asyncWorker.postMessage(
+      commit(...args) {
+        return that.$worker.postMessage(
           {
-            __async: true,
             type: "commit",
             identifier: args[0],
             payload: args[1]
@@ -104,8 +117,8 @@ export default class ModV {
         );
       },
 
-      async dispatch(...args) {
-        return await that.$asyncWorker.postMessage(
+      dispatch(...args) {
+        return that.$asyncWorker.postMessage(
           {
             __async: true,
             type: "dispatch",
@@ -199,8 +212,6 @@ export default class ModV {
       });
     });
 
-    this.ready = true;
-    ipcRenderer.send("modv-ready");
     ipcRenderer.send("get-media-manager-state");
 
     window.addEventListener("beforeunload", () => {

@@ -56,9 +56,17 @@ export default {
 
       this.hasLink = await this.$modV.store.dispatch("inputs/createInputLink", {
         inputId: this.inputId,
-        type: "state",
+        type: "mutation",
         source: "midi",
         location: `midi.devices['${id}-${name}-${manufacturer}'].channelData['${channel}']['${type}']`,
+        match: {
+          type: "midi/WRITE_DATA",
+          payload: {
+            id: `${id}-${name}-${manufacturer}`,
+            channel,
+            type
+          }
+        },
         min: 0,
         max: 1
       });

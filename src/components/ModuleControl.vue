@@ -3,6 +3,8 @@
     @input="handleInput"
     :inputTitle="`${moduleName}: ${title}`"
     :activeProp="activeProp"
+    :moduleId="id"
+    :prop="prop"
     :title="title"
     :value="value"
   />

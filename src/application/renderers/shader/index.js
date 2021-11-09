@@ -44,7 +44,7 @@ function resize({ width, height }) {
   // });
 }
 
-function generateUniforms(canvasTexture, uniforms) {
+function generateUniforms(canvasTexture, uniforms, kick = false) {
   const { width, height, dpr } = store.state.size;
 
   const date = new Date();
@@ -67,7 +67,8 @@ function generateUniforms(canvasTexture, uniforms) {
     u_fft: fftTexture,
     u_fftResolution: fftTexture ? fftTexture.width : 1,
     u_delta: time / 1000,
-    u_time: time
+    u_time: time,
+    u_kick: kick
   };
 
   return { ...uniforms, ...defaults };
@@ -141,7 +142,8 @@ async function setupModule(Module) {
   }
 }
 
-function render({ module, props, canvas, context, pipeline, fftCanvas }) {
+
+function render({ module, props, canvas, context, pipeline, kick, fftCanvas }) {
   resize({ width: canvas.width, height: canvas.height });
 
   if (!canvasTexture) {
@@ -193,7 +195,7 @@ function render({ module, props, canvas, context, pipeline, fftCanvas }) {
     }
   }
 
-  const uniforms = generateUniforms(canvasTexture, shaderUniforms);
+  const uniforms = generateUniforms(canvasTexture, shaderUniforms, kick);
 
   const command = commands[module.meta.name];
 

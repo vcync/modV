@@ -16,7 +16,11 @@
           </Select>
         </c>
         <c span="1">
-          ({{ $modV.features[feature] && $modV.features[feature].toFixed(2) }})
+          ({{
+            feature !== "kick"
+              ? $modV.features[feature] && $modV.features[feature].toFixed(2)
+              : Number($modV.store.state.beats.kick)
+          }})
         </c>
       </grid>
     </c>
@@ -31,7 +35,8 @@
             min="0"
             :max="MAX_SMOOTHING - SMOOTHING_STEP"
             :step="SMOOTHING_STEP"
-            v-model="smoothingValue"
+            @input="smoothingInput"
+            :value="invertedInputValue"
           />
         </c>
       </grid>
@@ -63,6 +68,7 @@ export default {
 
       features: [
         "none",
+        "kick",
         "rms",
         "zcr",
         "energy",
@@ -79,8 +85,7 @@ export default {
 
       feature: "none",
       smoothingId: null,
-      smoothingValue: 0,
-      useSmoothing: false
+      smoothingValue: 0
     };
   },
 
@@ -99,6 +104,10 @@ export default {
 
     inputLink() {
       return this.$modV.store.state.inputs.inputLinks[this.inputId];
+    },
+
+    invertedInputValue() {
+      return this.MAX_SMOOTHING - this.smoothingValue;
     }
   },
 
@@ -114,13 +123,26 @@ export default {
     },
 
     makeLink() {
-      this.$modV.store.dispatch("inputs/createInputLink", {
-        inputId: this.inputId,
-        type: "getter",
-        location: "meyda/getFeature",
-        source: "meyda",
-        args: [this.feature]
-      });
+      if (this.feature === "kick") {
+        this.$modV.store.dispatch("inputs/createInputLink", {
+          inputId: this.inputId,
+          type: "mutation",
+          location: "beats.kick",
+          match: {
+            type: "beats/SET_KICK"
+          },
+          source: "meyda",
+          args: [this.feature]
+        });
+      } else {
+        this.$modV.store.dispatch("inputs/createInputLink", {
+          inputId: this.inputId,
+          type: "getter",
+          location: "meyda/getFeature",
+          source: "meyda",
+          args: [this.feature]
+        });
+      }
     },
 
     removeLink() {
@@ -129,19 +151,8 @@ export default {
       });
     },
 
-    smoothingInput(e) {
-      if (!this.useSmoothing || !this.smoothingId) {
-        return;
-      }
-
-      const realValue = parseFloat(e.target.value);
-      this.smoothingValue = this.MAX_SMOOTHING - realValue;
-
-      this.updateInputLinkArgs([
-        this.feature,
-        this.smoothingId,
-        this.smoothingValue
-      ]);
+    smoothingInput(value) {
+      this.smoothingValue = this.MAX_SMOOTHING - value;
     },
 
     updateInputLinkArgs(value) {
@@ -177,7 +188,13 @@ export default {
           this.smoothingId,
           this.smoothingValue
         ]);
-      } else {
+      } else if (value && this.smoothingId) {
+        this.updateInputLinkArgs([
+          this.feature,
+          this.smoothingId,
+          this.smoothingValue
+        ]);
+      } else if (!value && this.smoothingId) {
         this.smoothingId = null;
         this.$modV.store.dispatch("meyda/removeSmoothingId", this.smoothingId);
         this.updateInputLinkArgs([this.feature]);
@@ -190,8 +207,7 @@ export default {
       if (!this.inputLink || this.inputLink.source !== "meyda") {
         this.feature = "none";
         this.smoothingId = null;
-        this.smoothingValue = 0;
-        this.useSmoothing = false;
+        this.smoothingValue = this.MAX_SMOOTHING - this.SMOOTHING_STEP;
       }
     }
   }

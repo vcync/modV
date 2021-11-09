@@ -26,8 +26,8 @@
                 <!-- hack around dynamic components not working correctly. CSS below hides tabs with the title "hidden" -->
               </gl-component>
               <gl-component
-                v-for="module in focusedModules"
-                :key="module.$id"
+                v-for="(module, i) in focusedModules"
+                :key="i"
                 :title="`${module.meta.name} properties`"
                 :closable="false"
                 ref="moduleInspector"
@@ -187,27 +187,6 @@ export default {
   },
 
   async mounted() {
-    if (!this.$modV.ready) {
-      await this.$modV.setup();
-    }
-    // this.$modV.$worker.addEventListener("message", e => {
-    //   if (e.data.type === "outputs/SET_MAIN_OUTPUT") {
-    //     this.resize();
-    //   }
-    // });
-
-    // window.addEventListener("keypress", e => {
-    //   // f
-    //   if (e.keyCode === 102) {
-    //     this.makeFullScreen();
-    //   }
-
-    //   // q
-    //   if (e.keyCode === 113) {
-    //     this.showUi = !this.showUi;
-    //   }
-    // });
-
     this.rightColumnWidth = window.innerWidth * 0.33;
   },
 
@@ -413,7 +392,51 @@ export default {
 </style>
 
 <style>
-@import url("https://rsms.me/raster/raster.css?v=20");
+body {
+  background: rgb(45, 45, 45);
+}
+
+/* From https://loading.io/css */
+.lds-ripple {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%) scale(2.5);
+  width: 80px;
+  height: 80px;
+}
+.lds-ripple div {
+  position: absolute;
+  border: 4px solid rgb(21, 21, 21);
+  opacity: 1;
+  border-radius: 100%;
+  animation: lds-ripple 1s cubic-bezier(0, 0.2, 0.8, 1) infinite;
+}
+.lds-ripple div:nth-child(2) {
+  animation-delay: -0.5s;
+}
+@keyframes lds-ripple {
+  0% {
+    top: 36px;
+    left: 36px;
+    width: 0;
+    height: 0;
+    opacity: 1;
+  }
+  100% {
+    top: 0px;
+    left: 0px;
+    width: 72px;
+    height: 72px;
+    opacity: 0;
+  }
+}
+</style>
+
+<style>
+@import url("./css/inter.css");
+@import url("./css/iaw.css");
+@import url("./css/raster.css");
 @import url("./css/golden-layout_theme.css");
 
 :root {
