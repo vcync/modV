@@ -3,6 +3,10 @@ on:
   push:
     branches:
       - main
+
+env:
+  EP_GH_IGNORE_TIME: true
+
 jobs:
   release:
     name: Release
