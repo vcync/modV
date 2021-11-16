@@ -193,6 +193,29 @@ const actions = {
     return group;
   },
 
+  async removeGroup({ commit }, { groupId, writeToSwap }) {
+    const group = state.groups.find(group => group.id === groupId);
+
+    const inputIds = [
+      group.alphaInputId,
+      group.enabledInputId,
+      group.clearingInputId,
+      group.inheritInputId,
+      group.compositeOperationInputId,
+      group.pipelineInputId
+    ];
+
+    for (let i = 0; i < inputIds.length; i += 1) {
+      const inputId = inputIds[i];
+
+      await store.dispatch("inputs/removeInput", {
+        inputId
+      });
+    }
+
+    commit("REMOVE_GROUP", { id: groupId, writeToSwap });
+  },
+
   orderByIds({ commit }, { ids }) {
     const newGroups = ids.map(id => {
       return state.groups.find(group => group.id === id);

@@ -507,6 +507,10 @@ const actions = {
         inputId,
         writeToSwap
       });
+
+      await store.dispatch("inputs/removeInput", {
+        inputId
+      });
     }
 
     commit("REMOVE_ACTIVE_MODULE", { moduleId, writeToSwap });

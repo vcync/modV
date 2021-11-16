@@ -105,6 +105,22 @@ const actions = {
     return input;
   },
 
+  removeInput({ commit }, { inputId, writeToSwap }) {
+    const writeTo = writeToSwap ? swap : state;
+
+    if (!writeTo.inputs[inputId]) {
+      console.warn(
+        "Did not remove input. Could not find input with id",
+        inputId
+      );
+
+      return false;
+    }
+
+    commit("REMOVE_INPUT", { inputId, writeToSwap });
+    return true;
+  },
+
   createInputLink(
     { commit },
     {
@@ -209,6 +225,11 @@ const mutations = {
   ADD_INPUT(state, { input, writeToSwap }) {
     const writeTo = writeToSwap ? swap : state;
     writeTo.inputs[input.id] = input;
+  },
+
+  REMOVE_INPUT(state, { inputId, writeToSwap }) {
+    const writeTo = writeToSwap ? swap : state;
+    Vue.delete(writeTo.inputs, inputId);
   },
 
   ADD_INPUT_LINK(state, { inputLink, writeToSwap }) {
