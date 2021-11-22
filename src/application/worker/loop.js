@@ -194,7 +194,11 @@ function loop(delta, features, fftOutput) {
 
       const module = active[group.modules[j]];
 
-      if (!module.meta.enabled || module.meta.alpha < 0.001) {
+      if (
+        !module.meta.enabled ||
+        module.meta.alpha < 0.001 ||
+        module.$status.length
+      ) {
         continue;
       }
 

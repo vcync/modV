@@ -148,16 +148,37 @@ const actions = {
     { moduleName, moduleMeta = {}, existingModule, writeToSwap }
   ) {
     const writeTo = writeToSwap ? swap : state;
-    const moduleDefinition =
-      state.registered[
-        existingModule ? existingModule.$moduleName : moduleName
-      ];
-    const { props = {}, data = {} } = moduleDefinition;
+    const expectedModuleName = existingModule
+      ? existingModule.$moduleName
+      : moduleName;
+    const moduleDefinition = state.registered[expectedModuleName];
 
-    const module = {
-      meta: { ...moduleDefinition.meta, ...moduleMeta },
-      ...existingModule
-    };
+    const { props = {}, data = {} } = moduleDefinition || {};
+
+    let module = {};
+
+    if (moduleDefinition) {
+      module = {
+        meta: { ...moduleDefinition.meta, ...moduleMeta },
+        ...existingModule,
+        $status: []
+      };
+    } else {
+      module = {
+        meta: { ...moduleMeta },
+        ...existingModule,
+        $status: []
+      };
+
+      console.error(
+        `Could not find registered module with name ${expectedModuleName}.`
+      );
+
+      module.$status.push({
+        type: "error",
+        message: `Module "${expectedModuleName}" is not registered. modV will skip this while rendering`
+      });
+    }
 
     if (moduleMeta.isGallery) {
       const existingModuleWithDuplicateNameInGallery = Object.values(
@@ -283,7 +304,7 @@ const actions = {
       canvas: { width: 0, height: 0 }
     };
 
-    if ("init" in moduleDefinition) {
+    if (moduleDefinition && "init" in moduleDefinition) {
       const { data } = writeTo.active[module.$id];
       const returnedData = moduleDefinition.init({
         canvas,
@@ -301,7 +322,7 @@ const actions = {
       }
     }
 
-    if ("resize" in moduleDefinition) {
+    if (moduleDefinition && "resize" in moduleDefinition) {
       const { data } = writeTo.active[module.$id];
       const returnedData = moduleDefinition.resize({
         canvas,
@@ -462,6 +483,8 @@ const actions = {
       .filter(module => !module.meta.isGallery)
       .reduce((obj, module) => {
         obj[module.$id] = module;
+        delete obj[module.$id].$status;
+
         return obj;
       }, {});
   },
