@@ -87,7 +87,7 @@ export default {
 
     fillColor: {
       type: "color",
-      default: "#000000",
+      default: "#ffffff",
       set(args) {
         this.drawText(args);
       }
@@ -103,7 +103,7 @@ export default {
 
     strokeColor: {
       type: "color",
-      default: "#ffffff",
+      default: "#ff0000",
       set(args) {
         this.drawText(args);
       }
