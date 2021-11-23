@@ -99,7 +99,23 @@ const sharedPropertyRestrictions = {
     // Objects return an Array of keys to remove.
     // This keeps gallery group in place
     group
-  ) => () => group.name !== constants.GALLERY_GROUP_NAME
+  ) => group.name === constants.GALLERY_GROUP_NAME
+};
+
+const getters = {
+  groupIndexRenderOrder: state => {
+    const galleryGroupIndex = state.groups.findIndex(
+      group => group.name === constants.GALLERY_GROUP_NAME
+    );
+    const indexes = [...state.groups.keys()];
+
+    if (galleryGroupIndex > -1) {
+      indexes.splice(galleryGroupIndex, 1);
+      indexes.push(galleryGroupIndex);
+    }
+
+    return indexes;
+  }
 };
 
 const actions = {
@@ -127,7 +143,7 @@ const actions = {
       hidden: args.hidden || false,
       modules: args.modules || [],
       inherit,
-      inheritFrom: -1,
+      inheritFrom: args.inheritFrom || -1,
       alpha: args.alpha || 1,
       compositeOperation: args.compositeOperation || "normal",
       context: await store.dispatch("outputs/getAuxillaryOutput", {
@@ -349,6 +365,7 @@ const mutations = {
 export default {
   namespaced: true,
   state,
+  getters,
   actions,
   mutations
 };

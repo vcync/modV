@@ -17,7 +17,7 @@ export default async function getPropDefault(
     );
   }
 
-  if (useExistingData && module.props && module.props[propName]) {
+  if (useExistingData && typeof module.props?.[propName] !== "undefined") {
     return module.props[propName];
   }
 
@@ -31,8 +31,7 @@ export default async function getPropDefault(
 
   if (
     typeof defaultValue === "undefined" &&
-    module.data &&
-    module.data[propName]
+    typeof module.data?.[propName] !== "undefined"
   ) {
     return module.data[propName];
   }

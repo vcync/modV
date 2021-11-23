@@ -11,6 +11,7 @@ env:
   ELECTRON_BUILDER_CACHE: $HOME/.cache/electron-builder
   USE_HARD_LINKS: false
   GH_TOKEN: ${{ secrets.github_token }}
+  EP_GH_IGNORE_TIME: true
 
 jobs:
   build-windows:
