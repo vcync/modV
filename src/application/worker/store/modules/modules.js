@@ -584,7 +584,10 @@ const mutations = {
 
   UPDATE_ACTIVE_MODULE_META(state, { id, metaKey, data, writeToSwap }) {
     const writeTo = writeToSwap ? swap : state;
-    Vue.set(writeTo.active[id].meta, metaKey, data);
+
+    if (id) {
+      Vue.set(writeTo.active[id].meta, metaKey, data);
+    }
   },
 
   SWAP: SWAP(swap, () => ({}), sharedPropertyRestrictions)

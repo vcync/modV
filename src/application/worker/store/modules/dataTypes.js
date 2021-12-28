@@ -31,9 +31,15 @@ const state = {
 
       if (type === "image") {
         const { path } = options;
-        const { id } = await store.dispatch("images/createImageFromPath", {
-          path
-        });
+        let id;
+        try {
+          id = await store.dispatch("images/createImageFromPath", {
+            path
+          }).id;
+        } catch (e) {
+          console.error(e);
+        }
+
         textureDefinition.location = "images/image";
         textureDefinition.id = id;
       }

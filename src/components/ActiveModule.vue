@@ -12,7 +12,7 @@
 
       <TooltipDisplay
         class="active-module__status"
-        v-if="module.$status.length"
+        v-if="statusMessages.length"
         :message="statusMessages"
         >⚠️</TooltipDisplay
       >
@@ -186,12 +186,10 @@ export default {
     },
 
     statusMessages() {
-      const messages = this.module.$status.reduce(
+      const messages = (this.module.$status || []).reduce(
         (prev, status) => `${prev} ${status.message}`.trim(),
         ""
       );
-
-      console.log(messages);
 
       return messages;
     }
