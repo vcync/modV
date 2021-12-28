@@ -213,6 +213,12 @@ const actions = {
       });
     }
 
+    for (let i = 0; i < group.modules.length; i += 1) {
+      const moduleId = group.modules[i];
+
+      await store.dispatch("modules/removeActiveModule", { moduleId });
+    }
+
     commit("REMOVE_GROUP", { id: groupId, writeToSwap });
   },
 
