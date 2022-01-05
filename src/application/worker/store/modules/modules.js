@@ -3,6 +3,8 @@ import SWAP from "./common/swap";
 import getNextName from "../../../utils/get-next-name";
 import getPropDefault from "../../../utils/get-prop-default";
 import store from "..";
+import get from "lodash.get";
+import set from "lodash.set";
 
 import uuidv4 from "uuid/v4";
 
@@ -63,6 +65,28 @@ async function initialiseModuleProperties(
         location: "modules/updateProp",
         data: { moduleId: module.$id, prop: propKey }
       });
+
+      if (
+        prop.type in store.state.dataTypes &&
+        store.state.dataTypes[prop.type].inputs
+      ) {
+        const dataTypeInputs = store.state.dataTypes[prop.type].inputs();
+        const dataTypeInputsKeys = Object.keys(dataTypeInputs);
+
+        for (let i = 0; i < dataTypeInputsKeys.length; i += 1) {
+          const key = dataTypeInputsKeys[i];
+          await store.dispatch("inputs/addInput", {
+            type: "action",
+            location: "modules/updateProp",
+            data: {
+              moduleId: module.$id,
+              prop: propKey,
+              path: `[${key}]`
+            },
+            id: `${inputBind.id}-${key}`
+          });
+        }
+      }
 
       module.$props[propKey].id = inputBind.id;
     }
@@ -323,7 +347,7 @@ const actions = {
 
   async updateProp(
     { state, commit },
-    { moduleId, prop, data, group, groupName, writeToSwap }
+    { moduleId, prop, data, group, path = "", groupName, writeToSwap }
   ) {
     if (!state.active[moduleId]) {
       console.error(`The module with the moduleId ${moduleId} doesn't exist.`);
@@ -333,7 +357,11 @@ const actions = {
     const moduleName = state.active[moduleId].$moduleName;
     const inputId = state.active[moduleId].$props[prop].id;
     const propData = state.registered[moduleName].props[prop];
-    const currentValue = state.active[moduleId][prop];
+    const currentValue = get(
+      state.active[moduleId][prop],
+      path,
+      state.active[moduleId][prop]
+    );
     const { type } = propData;
 
     // if (group || groupName) {
@@ -384,7 +412,8 @@ const actions = {
       prop,
       data: {
         value: dataOut,
-        type: propData.type
+        type: propData.type,
+        path
       },
       group,
       groupName,
@@ -497,11 +526,14 @@ const actions = {
       meta.compositeOperationInputId,
       meta.enabledInputId
     ];
-    const moduleProperties = Object.values(module.$props).map(prop => prop.id);
-    const inputIds = [...moduleProperties, ...metaInputIds];
+    const moduleProperties = Object.values(module.$props).map(prop => ({
+      id: prop.id,
+      type: prop.type
+    }));
+    const inputIds = [...moduleProperties, ...metaInputIds.map(id => ({ id }))];
 
     for (let i = 0, len = inputIds.length; i < len; i++) {
-      const inputId = inputIds[i];
+      const { id: inputId, type: propType } = inputIds[i];
 
       await store.dispatch("inputs/removeInputLink", {
         inputId,
@@ -511,6 +543,27 @@ const actions = {
       await store.dispatch("inputs/removeInput", {
         inputId
       });
+      
+      // clear up datatypes with multiple inputs
+      if (
+        propType in store.state.dataTypes &&
+        store.state.dataTypes[propType].inputs
+      ) {
+        const dataTypeInputs = store.state.dataTypes[propType].inputs();
+        const dataTypeInputsKeys = Object.keys(dataTypeInputs);
+
+        for (let j = 0; j < dataTypeInputsKeys.length; j += 1) {
+          const key = dataTypeInputsKeys[j];
+          await store.dispatch("inputs/removeInputLink", {
+            inputId: `${inputId}-${key}`,
+            writeToSwap
+          });
+
+          await store.dispatch("inputs/removeInput", {
+            inputId: `${inputId}-${key}`
+          });
+        }
+      }
     }
 
     commit("REMOVE_ACTIVE_MODULE", { moduleId, writeToSwap });
@@ -545,7 +598,7 @@ const mutations = {
 
   async UPDATE_ACTIVE_MODULE_PROP(
     state,
-    { moduleId, prop, data, group, groupName, writeToSwap }
+    { moduleId, prop, data, data: { path }, group, groupName, writeToSwap }
   ) {
     const writeTo = writeToSwap ? swap : state;
     const value = data.value;
@@ -558,6 +611,14 @@ const mutations = {
 
     if (typeof group === "number") {
       Vue.set(writeTo.active[moduleId][groupName].props[prop], group, value);
+    } else if (path) {
+      const tempValue = writeTo.active[moduleId].props[prop];
+      set(tempValue, path, value);
+      if (Array.isArray(tempValue)) {
+        Vue.set(writeTo.active[moduleId].props, prop, [...tempValue]);
+      } else {
+        Vue.set(writeTo.active[moduleId].props, prop, tempValue);
+      }
     } else {
       Vue.set(writeTo.active[moduleId].props, prop, value);
     }

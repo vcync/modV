@@ -1,18 +1,16 @@
 <template>
   <fragment>
-    <c span="1.." class="label-row" :class="{ disabled }" v-if="hasLabelSlot">
+    <c span="1.." class="label-row" :class="{ disabled }">
       <grid columns="4">
         <c span="1">
-          <slot name="label" />
-        </c>
-        <c span="3">
           <Button @mousedown="open = !open">
             <img
               :class="{ flip: !open }"
-              src="../assets/graphics/Arrow-vertical.svg"
+              src="../../assets/graphics/Arrow-vertical.svg"
             />
           </Button>
         </c>
+        <slot name="main"></slot>
       </grid>
     </c>
 
@@ -33,12 +31,6 @@ export default {
     return {
       open: false
     };
-  },
-
-  computed: {
-    hasLabelSlot() {
-      return !!this.$slots.label;
-    }
   }
 };
 </script>

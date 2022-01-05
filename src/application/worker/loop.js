@@ -64,7 +64,12 @@ function loop(delta, features, fftOutput) {
     const bind = inputs[inputId];
     const link = inputLinks[inputId];
 
-    const { type, location, data } = bind;
+    const {
+      type,
+      location,
+      data,
+      data: { path }
+    } = bind;
 
     const {
       type: linkType,
@@ -103,9 +108,9 @@ function loop(delta, features, fftOutput) {
     }
 
     if (type === "action") {
-      store.dispatch(location, { ...data, data: value });
+      store.dispatch(location, { ...data, data: value, path });
     } else if (type === "commit") {
-      store.commit(location, { ...data, data: value });
+      store.commit(location, { ...data, data: value, path });
     }
   }
 
