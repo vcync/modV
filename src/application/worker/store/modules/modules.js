@@ -540,6 +540,10 @@ const actions = {
         writeToSwap
       });
 
+      await store.dispatch("inputs/removeInput", {
+        inputId
+      });
+      
       // clear up datatypes with multiple inputs
       if (
         propType in store.state.dataTypes &&
@@ -555,9 +559,9 @@ const actions = {
             writeToSwap
           });
 
-          // await store.dispatch("inputs/removeInput", {
-          //   inputId: `${inputId}-${key}`
-          // });
+          await store.dispatch("inputs/removeInput", {
+            inputId: `${inputId}-${key}`
+          });
         }
       }
     }
