@@ -18,7 +18,7 @@ export default {
       color: "#ff0000ff",
       moduleId: null,
       prop: null,
-      // hex, hsl, hsv, rgba
+      // hex, hsl, hsv, rgba, rgba-ratio
       returnFormat: "hex"
     };
   },
@@ -27,7 +27,17 @@ export default {
     ipcRenderer.on("module-info", (event, { moduleId, prop, data }) => {
       this.moduleId = moduleId;
       this.prop = prop;
-      this.color = data;
+
+      if (this.returnFormat === "rgba-ratio") {
+        this.color = {
+          r: data.r * 255,
+          g: data.g * 255,
+          b: data.b * 255,
+          a: data.a
+        };
+      } else {
+        this.color = data;
+      }
     });
 
     ipcRenderer.on("value", (event, message) => {
@@ -60,10 +70,21 @@ export default {
     updateValue(color) {
       this.color = color;
 
+      let data = color[this.returnFormat];
+
+      if (this.returnFormat === "rgba-ratio") {
+        data = {
+          r: color.rgba.r / 255,
+          g: color.rgba.g / 255,
+          b: color.rgba.b / 255,
+          a: color.rgba.a
+        };
+      }
+
       ipcRenderer.send("input-update", {
         moduleId: this.moduleId,
         prop: this.prop,
-        data: color[this.returnFormat]
+        data
       });
     }
   }

@@ -9,6 +9,13 @@
   >
     <div class="active-module__title handle">
       {{ name }}
+
+      <TooltipDisplay
+        class="active-module__status"
+        v-if="statusMessages.length"
+        :message="statusMessages"
+        >⚠️</TooltipDisplay
+      >
     </div>
     <grid class="active-module__controls" columns="6">
       <c span="1..">
@@ -90,9 +97,14 @@
 
 <script>
 import blendModes from "../util/composite-operations";
+import TooltipDisplay from "./TooltipDisplay.vue";
 
 export default {
   props: ["id"],
+
+  components: {
+    TooltipDisplay
+  },
 
   data() {
     return {
@@ -171,6 +183,15 @@ export default {
 
     focused() {
       return this.focusedModule && this.id === this.$store.state["focus"].id;
+    },
+
+    statusMessages() {
+      const messages = (this.module.$status || []).reduce(
+        (prev, status) => `${prev} ${status.message}`.trim(),
+        ""
+      );
+
+      return messages;
     }
   },
 
@@ -247,6 +268,7 @@ export default {
   width: 100%;
   overflow: hidden;
   text-overflow: ellipsis;
+  position: relative;
 }
 
 .active-module__controls,
@@ -270,6 +292,14 @@ export default {
 .active-module__controls .focused {
   background: #363636;
   color: #ffffff;
+}
+
+.active-module__status {
+  background-color: #9a9a9a;
+  display: inline-block;
+  position: absolute;
+  top: 0;
+  right: 4px;
 }
 </style>
 
