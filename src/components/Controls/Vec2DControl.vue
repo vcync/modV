@@ -6,7 +6,7 @@
           <grid
             columns="4"
             :class="{ 'has-link': hasLinkX, focused: whichFocused === '0' }"
-            @mousedown.stop="focusInput('x')"
+            @mousedown.stop="focusInput('0', 'x')"
           >
             <c span="1+1">X</c>
             <c span="3">
@@ -23,7 +23,7 @@
           <grid
             columns="4"
             :class="{ 'has-link': hasLinkY, focused: whichFocused === '1' }"
-            @mousedown.stop="focusInput('y')"
+            @mousedown.stop="focusInput('1', 'y')"
           >
             <c span="1+1">Y</c>
             <c span="3">
@@ -123,10 +123,12 @@ export default {
   },
 
   methods: {
-    focusInput(append) {
+    focusInput(append, label) {
       this.$modV.store.dispatch("inputs/setFocusedInput", {
         id: append ? `${this.inputId}-${append}` : this.inputId,
-        title: append ? `${this.inputTitle}.${append}` : this.inputTitle
+        title: append
+          ? `${this.inputTitle}.${label ? label : append}`
+          : this.inputTitle
       });
     },
 
