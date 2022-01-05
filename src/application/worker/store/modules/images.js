@@ -15,9 +15,25 @@ const getters = {
 
 const actions = {
   async createImageFromPath({ commit }, { path: filePath }) {
-    const stream = fs.createReadStream(
-      path.join(store.state.media.path, filePath)
-    );
+    let stream;
+    let joinedFilePath;
+
+    try {
+      joinedFilePath = path.join(store.state.media.path, filePath);
+    } catch (e) {
+      console.log(e);
+    }
+
+    try {
+      stream = fs.createReadStream(joinedFilePath);
+    } catch (error) {
+      throw error;
+    }
+
+    if (!stream) {
+      return {};
+    }
+
     const blob = await streamToBlob(stream);
     const imageBitmap = await createImageBitmap(blob);
 
