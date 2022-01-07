@@ -29,12 +29,22 @@ export default {
 
     color1: {
       type: "color",
-      default: "#000000"
+      default: {
+        r: 0,
+        g: 0,
+        b: 0,
+        a: 1
+      }
     },
 
     color2: {
       type: "color",
-      default: "#ffffff"
+      default: {
+        r: 1,
+        g: 1,
+        b: 1,
+        a: 1
+      }
     }
   },
 
@@ -50,9 +60,11 @@ export default {
     context.moveTo(0, height / 2);
     context.lineTo(width, height / 2);
     if (Math.round(delta) % strobe < Math.round(strobe / 2)) {
-      context.strokeStyle = color1;
+      context.strokeStyle = `rgba(${color1.r * 255},${color1.g *
+        255},${color1.b * 255},${color1.a})`;
     } else {
-      context.strokeStyle = color2;
+      context.strokeStyle = `rgba(${color2.r * 255},${color2.g *
+        255},${color2.b * 255},${color2.a})`;
     }
     context.stroke();
   }
