@@ -217,10 +217,17 @@ export function generateMenuTemplate() {
       role: "help",
       submenu: [
         {
-          label: "Learn More",
-          click: async () => {
+          label: "Learn modV",
+          click() {
             const { shell } = require("electron");
-            await shell.openExternal("https://modv.js.org");
+            shell.openExternal("https://modv.js.org");
+          }
+        },
+        {
+          label: "Search or ask a question",
+          click() {
+            const { shell } = require("electron");
+            shell.openExternal("https://github.com/vcync/modV/discussions");
           }
         }
       ]
