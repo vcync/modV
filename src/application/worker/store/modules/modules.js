@@ -511,7 +511,7 @@ const actions = {
     return Object.values(state.active)
       .filter(module => !module.meta.isGallery)
       .reduce((obj, module) => {
-        obj[module.$id] = module;
+        obj[module.$id] = { ...module };
         delete obj[module.$id].$status;
 
         return obj;
@@ -566,7 +566,7 @@ const actions = {
       await store.dispatch("inputs/removeInput", {
         inputId
       });
-      
+
       // clear up datatypes with multiple inputs
       if (
         propType in store.state.dataTypes &&
