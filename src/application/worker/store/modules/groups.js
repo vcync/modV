@@ -286,10 +286,21 @@ const mutations = {
   REPLACE_GROUPS(state, { groups, writeToSwap }) {
     const writeTo = writeToSwap ? swap : state;
 
-    writeTo.groups.splice(0);
+    const oldGroups = writeTo.groups.splice(0);
+
     const groupsLength = groups.length;
+    let hasWrittenGalleryId = false;
     for (let i = 0; i < groupsLength; i += 1) {
       writeTo.groups.push(groups[i]);
+      if (groups[i].name === constants.GALLERY_GROUP_NAME) {
+        hasWrittenGalleryId = true;
+      }
+    }
+
+    if (!hasWrittenGalleryId) {
+      writeTo.groups.push(
+        oldGroups.find(group => group.name === constants.GALLERY_GROUP_NAME)
+      );
     }
   },
 
