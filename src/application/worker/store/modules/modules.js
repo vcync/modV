@@ -566,7 +566,7 @@ const actions = {
       await store.dispatch("inputs/removeInput", {
         inputId
       });
-      
+
       // clear up datatypes with multiple inputs
       if (
         propType in store.state.dataTypes &&
