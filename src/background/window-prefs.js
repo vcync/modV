@@ -35,7 +35,7 @@ const windowPrefs = {
     devPath: "",
     prodPath: "index.html",
     options: {
-      show: false,
+      show: isDevelopment,
       webPreferences: {
         enableRemoteModule: true,
         // Use pluginOptions.nodeIntegration, leave this alone
@@ -170,6 +170,7 @@ const windowPrefs = {
     devPath: "splashScreen",
     prodPath: "splashScreen.html",
     options: {
+      show: !isDevelopment,
       webPreferences: {
         // Use pluginOptions.nodeIntegration, leave this alone
         // See nklayman.github.io/vue-cli-plugin-electron-builder/guide/security.html#node-integration for more info
