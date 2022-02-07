@@ -4,6 +4,7 @@ const TOOLTIP_ID = "modv-tooltip";
 let tooltip = null;
 let pre = null;
 let vnode = null;
+let setTooltipFromValue = true;
 
 function createTooltip() {
   const existingTooltip = document.getElementById(TOOLTIP_ID);
@@ -84,7 +85,10 @@ function mouseUp() {
 
 function mouseMove(e) {
   setTooltipPosition(e);
-  setPreValue();
+
+  if (setTooltipFromValue) {
+    setPreValue();
+  }
 }
 
 function mouseDown(e) {
@@ -108,12 +112,37 @@ function mouseDown(e) {
   createTooltip();
   setTooltipPosition(e);
 
+  setTooltipFromValue = true;
   setPreValue();
 }
 
+function mouseOver(e, message) {
+  vnode = e.target;
+  while (vnode && !vnode.__vue__) {
+    vnode = vnode.parentNode;
+  }
+
+  if (!vnode) {
+    return;
+  }
+
+  window.addEventListener("mousemove", mouseMove);
+
+  createTooltip();
+  setTooltipPosition(e);
+
+  setTooltipFromValue = false;
+  pre.innerHTML = message;
+}
+
 Vue.directive("tooltip", {
-  inserted(el) {
-    el.addEventListener("mousedown", mouseDown);
+  inserted(el, { value: { mouseover, message } = {} }) {
+    if (!mouseover) {
+      el.addEventListener("mousedown", mouseDown);
+    } else {
+      el.addEventListener("mouseover", e => mouseOver(e, message));
+      el.addEventListener("mouseout", mouseUp);
+    }
   },
 
   unbind() {

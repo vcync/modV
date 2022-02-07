@@ -64,7 +64,12 @@ function loop(delta, features, fftOutput) {
     const bind = inputs[inputId];
     const link = inputLinks[inputId];
 
-    const { type, location, data } = bind;
+    const {
+      type,
+      location,
+      data,
+      data: { path }
+    } = bind;
 
     const {
       type: linkType,
@@ -81,10 +86,11 @@ function loop(delta, features, fftOutput) {
     // mutation linkTypes are also skipped as they're handled in index.worker.js in
     // the store commit subscription
     if (
-      linkType === "mutation" ||
-      (source === "meyda" &&
-        moduleId &&
-        !store.state.modules.active[moduleId].meta.enabled)
+      moduleId &&
+      (linkType === "mutation" ||
+        (source === "meyda" &&
+          moduleId &&
+          !store.state.modules.active[moduleId].meta.enabled))
     ) {
       continue;
     }
@@ -103,9 +109,9 @@ function loop(delta, features, fftOutput) {
     }
 
     if (type === "action") {
-      store.dispatch(location, { ...data, data: value });
+      store.dispatch(location, { ...data, data: value, path });
     } else if (type === "commit") {
-      store.commit(location, { ...data, data: value });
+      store.commit(location, { ...data, data: value, path });
     }
   }
 
@@ -194,7 +200,11 @@ function loop(delta, features, fftOutput) {
 
       const module = active[group.modules[j]];
 
-      if (!module.meta.enabled || module.meta.alpha < 0.001) {
+      if (
+        !module.meta.enabled ||
+        module.meta.alpha < 0.001 ||
+        module.$status.length
+      ) {
         continue;
       }
 

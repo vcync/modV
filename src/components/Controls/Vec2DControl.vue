@@ -1,257 +1,176 @@
 <template>
-  <div class="2d-point-control">
-    <canvas
-      ref="pad"
-      class="pad"
-      width="170"
-      height="170"
-      @click="click"
-      @mousedown="mouseDown"
-      @touchstart="touchStart"
-    ></canvas>
-  </div>
+  <CollapsibleControl>
+    <template v-slot:main>
+      <c span="4">
+        <div class="close-grids">
+          <grid
+            columns="4"
+            :class="{ 'has-link': hasLinkX, focused: whichFocused === '0' }"
+            @mousedown.stop="focusInput('0', 'x')"
+          >
+            <c span="1+1">X</c>
+            <c span="3">
+              <RangeControl
+                :min="-1"
+                :max="1"
+                :strict="true"
+                :value="x"
+                :step="0.001"
+                @input="emitValue('x', $event)"
+              />
+            </c>
+          </grid>
+          <grid
+            columns="4"
+            :class="{ 'has-link': hasLinkY, focused: whichFocused === '1' }"
+            @mousedown.stop="focusInput('1', 'y')"
+          >
+            <c span="1+1">Y</c>
+            <c span="3">
+              <RangeControl
+                :min="-1"
+                :max="1"
+                :strict="true"
+                :value="y"
+                :step="0.001"
+                @input="emitValue('y', $event)"
+              />
+            </c>
+          </grid>
+        </div>
+      </c>
+    </template>
+
+    <template v-slot:body>
+      <grid columns="4">
+        <c span="2+2"><Vec2DXY :value="value" @input="xyInput"/></c>
+      </grid>
+    </template>
+  </CollapsibleControl>
 </template>
 
 <script>
+import CollapsibleControl from "./CollapsibleControl";
+import RangeControl from "./RangeControl";
+import Vec2DXY from "./Vec2DXY";
+
 export default {
   props: {
     value: {
-      default: () => [],
+      type: Array,
       required: true
     },
 
-    min: {
-      default: -1
+    moduleId: {
+      type: String,
+      required: true
     },
-    max: {
-      default: 1
+
+    inputId: {
+      type: String,
+      required: true
     },
-    step: {
-      type: Number,
-      default: 0.01
+
+    inputTitle: {
+      type: String,
+      required: true
+    },
+
+    prop: {
+      type: String,
+      required: true
     }
   },
-  data() {
-    return {
-      context: null,
-      mousePressed: false,
-      canvasCoords: [65.5, 65.5],
-      currentX: 0,
-      currentY: 0,
-      inputX: 0,
-      inputY: 0,
-      internalValue: []
-    };
+
+  components: {
+    CollapsibleControl,
+    RangeControl,
+    Vec2DXY
   },
+
   computed: {
-    minCalc() {
-      let min = isNaN(this.min) ? -1.0 : this.min;
-      min = Array.isArray(this.min) ? this.min[0] : min;
-      return min;
+    x() {
+      return this.value[0];
     },
-    maxCalc() {
-      let max = isNaN(this.max) ? 1.0 : this.max;
-      max = Array.isArray(this.max) ? this.max[0] : max;
-      return max;
+
+    y() {
+      return this.value[1];
+    },
+
+    focusedInput() {
+      return this.$modV.store.state.inputs.focusedInput.id;
+    },
+
+    whichFocused() {
+      if (
+        this.focusedInput &&
+        this.focusedInput.indexOf(this.inputId) > -1 &&
+        this.focusedInput.slice(-2, -1) === "-"
+      ) {
+        return this.focusedInput.slice(-1);
+      }
+
+      return "";
+    },
+
+    hasLinkX() {
+      return this.$modV.store.state.inputs.inputLinks[`${this.inputId}-0`];
+    },
+
+    hasLinkY() {
+      return this.$modV.store.state.inputs.inputLinks[`${this.inputId}-1`];
     }
   },
-  watch: {
-    value() {
-      this.currentX = this.value[0];
-      this.currentY = this.value[1];
-    }
-  },
-  mounted() {
-    this.$refs.pad.width = 170;
-    this.$refs.pad.height = 170;
-    this.context = this.$refs.pad.getContext("2d");
-    this.canvasCoords = [this.$refs.pad.width / 2, this.$refs.pad.height / 2];
-    this.currentX = this.value[0];
-    this.currentY = this.value[1];
-    this.internalValue = this.value;
-    requestAnimationFrame(this.draw);
-  },
+
   methods: {
-    mouseDown() {
-      this.mousePressed = true;
-      window.addEventListener("mousemove", this.mouseMove);
-      window.addEventListener("mouseup", this.mouseUp);
-      window.addEventListener("touchmove", this.touchMove);
-      window.addEventListener("touchEnd", this.touchEnd);
-    },
-    mouseUp() {
-      this.mousePressed = false;
-      window.removeEventListener("mousemove", this.mouseMove);
-      window.removeEventListener("mouseup", this.mouseUp);
-      window.removeEventListener("touchmove", this.touchMove);
-      window.removeEventListener("touchEnd", this.touchEnd);
-    },
-    mouseMove(e) {
-      if (!this.mousePressed) {
-        return;
-      }
-      this.calculateValues(e);
-    },
-    touchStart() {
-      this.mousePressed = true;
-    },
-    touchMove(e) {
-      if (!this.mousePressed) {
-        return;
-      }
-      this.calculateValues(e);
-    },
-    touchEnd() {
-      this.mousePressed = false;
-    },
-    click(e) {
-      this.calculateValues(e, true);
-    },
-    calculateValues(e, clicked = false) {
-      const rect = this.$refs.pad.getBoundingClientRect();
-
-      let clientX;
-
-      if ("clientX" in e) {
-        clientX = e.clientX;
-      } else {
-        e.preventDefault();
-        clientX = e.targetTouches[0].clientX;
-      }
-
-      let clientY;
-
-      if ("clientY" in e) {
-        clientY = e.clientY;
-      } else {
-        clientY = e.targetTouches[0].clientY;
-      }
-
-      const x = clientX - Math.round(rect.left);
-      const y = clientY - Math.round(rect.top);
-
-      if (this.mousePressed || clicked) {
-        this.internalValue = this.mapValues(x, y);
-        this.$emit("input", this.internalValue);
-        this.canvasCoords = [x, y];
-        this.currentX = this.value[0];
-        this.currentY = this.value[1];
-      }
-      requestAnimationFrame(this.draw);
+    focusInput(append, label) {
+      this.$modV.store.dispatch("inputs/setFocusedInput", {
+        id: append ? `${this.inputId}-${append}` : this.inputId,
+        title: append
+          ? `${this.inputTitle}.${label ? label : append}`
+          : this.inputTitle
+      });
     },
 
-    mapValues(x, y) {
-      const xOut = 1 + (x / this.$refs.pad.width - 1) * 2;
-      const yOut = -(1 + (y / this.$refs.pad.height - 1) * 2);
-      return [xOut, yOut];
+    xyInput(e) {
+      this.$emit("input", e);
     },
 
-    draw() {
-      const canvas = this.$refs.pad;
-      const context = this.context;
-      const x = this.canvasCoords[0];
-      const y = this.canvasCoords[1];
+    emitValue(varName, e) {
+      const { x, y } = this;
+      const vars = { x, y };
 
-      context.fillStyle = "#393939";
-      context.fillRect(0, 0, canvas.width, canvas.height);
+      vars[varName] = e;
 
-      context.fillStyle = "#fff";
-      this.drawGrid();
-      context.fillText(`x: ${this.internalValue[0]}`, 5, 10);
-      context.fillText(`y: ${this.internalValue[1]}`, 5, 20);
-      this.drawPosition(Math.round(x) + 0.5, Math.round(y) + 0.5);
-    },
+      const value = [vars.x, vars.y];
 
-    drawGrid() {
-      const canvas = this.$refs.pad;
-      const context = this.context;
-      const { width, height } = canvas;
+      this.$emit("input", value);
+    }
+  },
 
-      context.save();
-      context.strokeStyle = "#2c2c2c";
-      context.beginPath();
-      context.lineWidth = 1;
-      const sections = 16;
-      const step = width / sections;
-      for (let i = 1; i < sections; i += 1) {
-        const pos = Math.round(i * step) + 0.5;
-        context.moveTo(pos, 0);
-        context.lineTo(pos, height);
-        context.moveTo(0, pos);
-        context.lineTo(width, pos);
-      }
-      context.stroke();
-      context.beginPath();
-
-      context.strokeStyle = "#6c6c6c";
-      const halfWidth = Math.round(width / 2) + 0.5;
-      const halfHeight = Math.round(height / 2) + 0.5;
-      context.moveTo(halfWidth, 0);
-      context.lineTo(halfHeight, height);
-      context.moveTo(0, halfHeight);
-      context.lineTo(width, halfHeight);
-      context.stroke();
-
-      context.restore();
-    },
-
-    drawPosition(x, y) {
-      const canvas = this.$refs.pad;
-      const context = this.context;
-      const { width, height } = canvas;
-      context.lineWidth = 1;
-      context.strokeStyle = "#ffa600";
-
-      if (x < Math.round(width / 2)) {
-        context.strokeStyle = "#005aff";
-      }
-
-      context.beginPath();
-      context.moveTo(x, 0);
-      context.lineTo(x, canvas.height);
-      context.stroke();
-
-      if (y <= Math.round((height + 1) / 2)) {
-        context.strokeStyle = "#ffa600";
-      } else {
-        context.strokeStyle = "#005aff";
-      }
-
-      context.beginPath();
-      context.moveTo(0, y);
-      context.lineTo(canvas.width, y);
-      context.stroke();
-
-      if (x < Math.round(width / 2) && y > Math.round(height / 2)) {
-        context.strokeStyle = "#005aff";
-      } else {
-        context.strokeStyle = "#ffa600";
-      }
-
-      context.beginPath();
-      context.arc(x, y, 6, 0, 2 * Math.PI, true);
-      context.stroke();
+  watch: {
+    value: {
+      deep: true,
+      handler() {}
     }
   }
 };
 </script>
 
-<style>
-.pad {
-  width: 170px;
-  height: 170px;
-  position: relative;
-  background-color: #fff;
-  cursor: crosshair;
+<style scoped>
+.close-grids grid {
+  margin-bottom: 0;
 }
 
-.point {
-  width: 3px;
-  height: 3px;
-  border-radius: 50%;
-  background-color: #000;
-  position: absolute;
-  will-change: transform;
-  transform: translateX(0px) translateY(0px);
+.has-link {
+  background: rgba(255, 199, 0, 0.7);
+}
+
+.focused {
+  background: #363636;
+}
+
+.has-link.focused {
+  background: rgba(255, 199, 0, 0.9);
 }
 </style>

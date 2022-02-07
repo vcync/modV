@@ -3,7 +3,7 @@
   "productName": "modV",
   "description": "modular audio visualisation powered by JavaScript",
   "author": "vcync",
-  "version": "3.16.0",
+  "version": "3.20.0",
   "private": true,
   "homepage": "https://modv.vcync.gl/",
   "repository": {
@@ -39,6 +39,7 @@
     "interactive-shader-format": "github:vcync/interactive-shader-format-js#fixedIsfParserAndImageBitmap",
     "lfo-for-modv": "0.0.1",
     "lodash.get": "^4.4.2",
+    "lodash.set": "^4.3.2",
     "mathjs": "^7.5.1",
     "meyda": "^5.2.0",
     "mkdirp": "^0.5.1",

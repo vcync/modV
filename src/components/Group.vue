@@ -69,11 +69,12 @@
             }"
           >
             <c span="2">Clearing</c>
-            <c span="4"
-              ><Checkbox
+            <c span="4">
+              <Checkbox
                 v-model="clearing"
                 :class="{ light: isFocused(group.clearingInputId) }"
-            /></c>
+              />
+            </c>
           </grid>
         </c>
 
@@ -87,11 +88,12 @@
             }"
           >
             <c span="2">Pipeline</c>
-            <c span="4"
-              ><Checkbox
+            <c span="4">
+              <Checkbox
                 v-model="pipeline"
                 :class="{ light: isFocused(group.pipelineInputId) }"
-            /></c>
+              />
+            </c>
           </grid>
         </c>
 
@@ -518,7 +520,9 @@ export default {
 
     removeGroup(e) {
       if (e.keyCode === 8 || e.keyCode === 46) {
-        this.$modV.store.commit("groups/REMOVE_GROUP", { id: this.groupId });
+        this.$modV.store.dispatch("groups/removeGroup", {
+          groupId: this.groupId
+        });
       }
     }
   },

@@ -24,13 +24,25 @@
         <TweenControl v-model="internalValue" />
       </div>
       <div class="input" v-else-if="type === 'vec2'">
-        <Vec2DControl v-model="internalValue" />
+        <Vec2DControl
+          v-model="internalValue"
+          :inputId="inputId"
+          :inputTitle="inputTitle"
+        />
       </div>
       <div class="input" v-else-if="type === 'vec3'">
-        <Vec3Control v-model="internalValue" />
+        <Vec3Control
+          v-model="internalValue"
+          :inputId="inputId"
+          :inputTitle="inputTitle"
+        />
       </div>
       <div class="input" v-else-if="type === 'vec4'">
-        <Vec4Control v-model="internalValue" />
+        <Vec4Control
+          v-model="internalValue"
+          :inputId="inputId"
+          :inputTitle="inputTitle"
+        />
       </div>
       <div class="input" v-else-if="type === 'text'">
         <input type="text" v-model="internalValue" />
@@ -42,6 +54,8 @@
         <ColorControl
           v-model="internalValue"
           :moduleId="moduleId"
+          :inputId="inputId"
+          :inputTitle="inputTitle"
           :prop="prop"
         />
       </div>
@@ -55,9 +69,8 @@
             :value="option.value"
             :key="index"
             :selected="option.selected"
+            >{{ option.label }}</option
           >
-            {{ option.label }}
-          </option>
         </select>
       </div>
     </c>
