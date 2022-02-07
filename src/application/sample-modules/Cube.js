@@ -30,9 +30,9 @@ export default {
     color: {
       type: "color",
       default: {
-        r: 4 / 255,
-        g: 158 / 255,
-        b: 244 / 255,
+        r: 1,
+        g: 1,
+        b: 1,
         a: 1
       }
     }
@@ -44,7 +44,7 @@ export default {
     cubeMesh: null
   },
 
-  setupThree({ THREE, data, width, height }) {
+  setupThree({ THREE, data, width, height, inputTexture }) {
     const camera = new THREE.PerspectiveCamera(40, width / height, 1, 1000);
     camera.position.z = 5;
 
@@ -60,8 +60,9 @@ export default {
 
     const geometry = new THREE.BoxGeometry(1, 1, 1);
     const material = new THREE.MeshStandardMaterial({
-      color: "#049ef4",
-      roughness: 0.351
+      color: "#ffffff",
+      roughness: 0.351,
+      map: inputTexture
     });
     const cubeMesh = new THREE.Mesh(geometry, material);
 

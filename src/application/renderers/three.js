@@ -22,6 +22,16 @@ const renderer = new THREE.WebGLRenderer({
 });
 renderer.setPixelRatio(1);
 
+const inputTextureCanvas = new OffscreenCanvas(300, 300);
+const inputTextureContext = inputTextureCanvas.getContext("2d");
+store.dispatch("outputs/addAuxillaryOutput", {
+  name: "three-inputTexture-buffer",
+  context: inputTextureContext,
+  group: "buffer"
+});
+
+const inputTexture = new THREE.CanvasTexture(inputTextureCanvas);
+
 /**
  * Called each frame to update the Module
  * @param  {Object}                   Module        A three Module
@@ -52,8 +62,13 @@ function render({
   fftCanvas,
   pipeline
 }) {
+  inputTextureContext.drawImage(canvas, 0, 0, canvas.width, canvas.height);
+  inputTexture.image = inputTextureCanvas.transferToImageBitmap();
+  inputTexture.needsUpdate = true;
+
   const { scene, camera } = module.draw({
     THREE,
+    inputTexture,
     canvas,
     video,
     features,
@@ -80,6 +95,7 @@ function render({
 function setupModule(module) {
   const moduleData = module.setupThree({
     THREE,
+    inputTexture,
     data: module.data || {},
     width: renderer.domElement.width,
     height: renderer.domElement.height
@@ -91,6 +107,8 @@ function setupModule(module) {
 }
 
 function resize({ width, height }) {
+  inputTextureCanvas.width = width;
+  inputTextureCanvas.height = height;
   renderer.setSize(width, height, false);
 }
 
