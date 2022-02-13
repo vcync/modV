@@ -3,6 +3,8 @@ import { APP_SCHEME } from "./background-constants";
 import { openFile } from "./open-file";
 import { createWindow } from "./windows";
 
+require("@electron/remote/main").initialize();
+
 const isDevelopment = process.env.NODE_ENV !== "production";
 
 // Scheme must be registered before the app is ready
