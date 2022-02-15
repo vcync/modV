@@ -13,7 +13,8 @@ import use from "./use";
 
 import PromiseWorker from "promise-worker-transferable";
 import Vue from "vue";
-import { ipcRenderer, remote } from "electron";
+import { ipcRenderer } from "electron";
+import { app } from "@electron/remote";
 
 let imageBitmap;
 const imageBitmapQueue = [];
@@ -58,7 +59,7 @@ export default class ModV {
 
     this.$worker.postMessage({
       type: "__dirname",
-      payload: remote.app.getAppPath()
+      payload: app.getAppPath()
     });
 
     this.$worker.addEventListener("message", e => {

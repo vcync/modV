@@ -38,6 +38,8 @@ const windowPrefs = {
       show: isDevelopment,
       webPreferences: {
         enableRemoteModule: true,
+        // electron 12 sets contextIsolation to true by default, this breaks modV
+        contextIsolation: false,
         // Use pluginOptions.nodeIntegration, leave this alone
         // See nklayman.github.io/vue-cli-plugin-electron-builder/guide/security.html#node-integration for more info
         nodeIntegration: process.env.ELECTRON_NODE_INTEGRATION,
@@ -60,6 +62,8 @@ const windowPrefs = {
     },
 
     async create(window) {
+      require("@electron/remote/main").enable(window.webContents);
+
       // Configure child windows to open without a menubar (windows/linux)
       window.webContents.on(
         "new-window",
@@ -198,6 +202,7 @@ const windowPrefs = {
           console.error(e);
         }
 
+        windows["mainWindow"].maximize();
         windows["mainWindow"].show();
       });
     }
