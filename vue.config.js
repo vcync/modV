@@ -88,7 +88,8 @@ module.exports = {
               "This app requires camera access to record video.",
             NSMicrophoneUsageDescription:
               "This app requires microphone access to record audio."
-          }
+          },
+          target: ["dmg"]
         },
 
         dmg: {
