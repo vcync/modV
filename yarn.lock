@@ -5505,9 +5505,9 @@ fn-name@~2.0.1:
   integrity sha1-UhTXU3pNBqSjAcDMJi/rhBiAAuc=
 
 follow-redirects@^1.0.0:
-  version "1.12.0"
-  resolved "https://registry.yarnpkg.com/follow-redirects/-/follow-redirects-1.12.0.tgz#ff0ccf85cf2c867c481957683b5f91b75b25e240"
-  integrity sha512-JgawlbfBQKjbKegPn8vUsvJqplE7KHJuhGO4yPcb+ZOIYKSr+xobMVlfRBToZwZUUxy7lFiKBdFNloz9ui368Q==
+  version "1.14.8"
+  resolved "https://registry.yarnpkg.com/follow-redirects/-/follow-redirects-1.14.8.tgz#016996fb9a11a100566398b1c6839337d7bfa8fc"
+  integrity sha512-1x0S9UVJHsQprFcEC/qnNzBLcIxsjAV905f/UkQxbclCsoTWlacCNOpQa/anodLl2uaEKFhfWOvM2Qg77+15zA==
 
 font-list@^1.3.1:
   version "1.3.1"
