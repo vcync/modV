@@ -35,6 +35,11 @@ export default {
         b: 1,
         a: 1
       }
+    },
+
+    useMap: {
+      type: "bool",
+      default: false
     }
   },
 
@@ -85,8 +90,10 @@ export default {
     props: {
       scale,
       rotation,
-      color: { r, g, b }
-    }
+      color: { r, g, b },
+      useMap
+    },
+    inputTexture
   }) {
     data.cubeMesh.scale.x = scale[0];
     data.cubeMesh.scale.y = scale[1];
@@ -95,6 +102,14 @@ export default {
     data.cubeMesh.rotation.x = rotation[0] * 360 * THREE.Math.DEG2RAD;
     data.cubeMesh.rotation.y = rotation[1] * 360 * THREE.Math.DEG2RAD;
     data.cubeMesh.rotation.z = rotation[2] * 360 * THREE.Math.DEG2RAD;
+
+    if (useMap && !data.cubeMesh.material.map) {
+      data.cubeMesh.material.map = inputTexture;
+      data.cubeMesh.material.needsUpdate = true;
+    } else if (!useMap && data.cubeMesh.material.map) {
+      data.cubeMesh.material.map = undefined;
+      data.cubeMesh.material.needsUpdate = true;
+    }
 
     data.cubeMesh.material.color.r = r;
     data.cubeMesh.material.color.g = g;
