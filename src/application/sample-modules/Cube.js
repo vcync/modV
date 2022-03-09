@@ -89,12 +89,17 @@ export default {
     data: { scene, camera },
     props: {
       scale,
+      position,
       rotation,
       color: { r, g, b },
       useMap
     },
     inputTexture
   }) {
+    data.cubeMesh.position.x = position[0];
+    data.cubeMesh.position.y = position[1];
+    data.cubeMesh.position.z = position[2];
+
     data.cubeMesh.scale.x = scale[0];
     data.cubeMesh.scale.y = scale[1];
     data.cubeMesh.scale.z = scale[2];
