@@ -37,9 +37,9 @@ const state = {
         const { path } = options;
         let id;
         try {
-          id = await store.dispatch("images/createImageFromPath", {
+          ({ id } = await store.dispatch("images/createImageFromPath", {
             path
-          }).id;
+          }));
         } catch (e) {
           console.error(e);
         }
