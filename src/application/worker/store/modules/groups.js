@@ -146,71 +146,30 @@ const actions = {
       })
     };
 
-    const alphaInputBind =
-      args.alphaInputId ||
-      (
-        await store.dispatch("inputs/addInput", {
-          type: "commit",
-          location: "groups/UPDATE_GROUP_BY_KEY",
-          data: { groupId: group.id, key: "alpha" }
-        })
-      ).id;
-    group.alphaInputId = alphaInputBind;
+    const inputs = [
+      "alpha",
+      "enabled",
+      "clearing",
+      "inherit",
+      "compositeOperation",
+      "pipeline"
+    ];
+    for (let i = 0; i < inputs.length; i += 1) {
+      const inputName = inputs[i];
+      const idKey = `${inputName}InputId`;
 
-    const enabledInputBind =
-      args.enabledInputId ||
-      (
-        await store.dispatch("inputs/addInput", {
-          type: "commit",
-          location: "groups/UPDATE_GROUP_BY_KEY",
-          data: { groupId: group.id, key: "enabled" }
-        })
-      ).id;
-    group.enabledInputId = enabledInputBind;
-
-    const clearingInputBind =
-      args.clearingInputId ||
-      (
-        await store.dispatch("inputs/addInput", {
-          type: "commit",
-          location: "groups/UPDATE_GROUP_BY_KEY",
-          data: { groupId: group.id, key: "clearing" }
-        })
-      ).id;
-    group.clearingInputId = clearingInputBind;
-
-    const inheritInputBind =
-      args.inheritInputId ||
-      (
-        await store.dispatch("inputs/addInput", {
-          type: "commit",
-          location: "groups/UPDATE_GROUP_BY_KEY",
-          data: { groupId: group.id, key: "inherit" }
-        })
-      ).id;
-    group.inheritInputId = inheritInputBind;
-
-    const coInputBind =
-      args.compositeOperationInputId ||
-      (
-        await store.dispatch("inputs/addInput", {
-          type: "commit",
-          location: "groups/UPDATE_GROUP_BY_KEY",
-          data: { groupId: group.id, key: "compositeOperation" }
-        })
-      ).id;
-    group.compositeOperationInputId = coInputBind;
-
-    const pipelineInputBind =
-      args.pipelineInputId ||
-      (
-        await store.dispatch("inputs/addInput", {
-          type: "commit",
-          location: "groups/UPDATE_GROUP_BY_KEY",
-          data: { groupId: group.id, key: "pipeline" }
-        })
-      ).id;
-    group.pipelineInputId = pipelineInputBind;
+      if (args[idKey] !== undefined) {
+        group[idKey] = args[idKey];
+      } else {
+        group[idKey] = (
+          await store.dispatch("inputs/addInput", {
+            type: "commit",
+            location: "groups/UPDATE_GROUP_BY_KEY",
+            data: { groupId: group.id, key: inputName }
+          })
+        ).id;
+      }
+    }
 
     commit("ADD_GROUP", { group, writeToSwap: args.writeToSwap });
 
