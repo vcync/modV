@@ -146,47 +146,71 @@ const actions = {
       })
     };
 
-    const alphaInputBind = await store.dispatch("inputs/addInput", {
-      type: "commit",
-      location: "groups/UPDATE_GROUP_BY_KEY",
-      data: { groupId: group.id, key: "alpha" }
-    });
-    group.alphaInputId = alphaInputBind.id;
+    const alphaInputBind =
+      args.alphaInputId ||
+      (
+        await store.dispatch("inputs/addInput", {
+          type: "commit",
+          location: "groups/UPDATE_GROUP_BY_KEY",
+          data: { groupId: group.id, key: "alpha" }
+        })
+      ).id;
+    group.alphaInputId = alphaInputBind;
 
-    const enabledInputBind = await store.dispatch("inputs/addInput", {
-      type: "commit",
-      location: "groups/UPDATE_GROUP_BY_KEY",
-      data: { groupId: group.id, key: "enabled" }
-    });
-    group.enabledInputId = enabledInputBind.id;
+    const enabledInputBind =
+      args.enabledInputId ||
+      (
+        await store.dispatch("inputs/addInput", {
+          type: "commit",
+          location: "groups/UPDATE_GROUP_BY_KEY",
+          data: { groupId: group.id, key: "enabled" }
+        })
+      ).id;
+    group.enabledInputId = enabledInputBind;
 
-    const clearingInputBind = await store.dispatch("inputs/addInput", {
-      type: "commit",
-      location: "groups/UPDATE_GROUP_BY_KEY",
-      data: { groupId: group.id, key: "clearing" }
-    });
-    group.clearingInputId = clearingInputBind.id;
+    const clearingInputBind =
+      args.clearingInputId ||
+      (
+        await store.dispatch("inputs/addInput", {
+          type: "commit",
+          location: "groups/UPDATE_GROUP_BY_KEY",
+          data: { groupId: group.id, key: "clearing" }
+        })
+      ).id;
+    group.clearingInputId = clearingInputBind;
 
-    const inheritInputBind = await store.dispatch("inputs/addInput", {
-      type: "commit",
-      location: "groups/UPDATE_GROUP_BY_KEY",
-      data: { groupId: group.id, key: "inherit" }
-    });
-    group.inheritInputId = inheritInputBind.id;
+    const inheritInputBind =
+      args.inheritInputId ||
+      (
+        await store.dispatch("inputs/addInput", {
+          type: "commit",
+          location: "groups/UPDATE_GROUP_BY_KEY",
+          data: { groupId: group.id, key: "inherit" }
+        })
+      ).id;
+    group.inheritInputId = inheritInputBind;
 
-    const coInputBind = await store.dispatch("inputs/addInput", {
-      type: "commit",
-      location: "groups/UPDATE_GROUP_BY_KEY",
-      data: { groupId: group.id, key: "compositeOperation" }
-    });
-    group.compositeOperationInputId = coInputBind.id;
+    const coInputBind =
+      args.compositeOperationInputId ||
+      (
+        await store.dispatch("inputs/addInput", {
+          type: "commit",
+          location: "groups/UPDATE_GROUP_BY_KEY",
+          data: { groupId: group.id, key: "compositeOperation" }
+        })
+      ).id;
+    group.compositeOperationInputId = coInputBind;
 
-    const pipelineInputBind = await store.dispatch("inputs/addInput", {
-      type: "commit",
-      location: "groups/UPDATE_GROUP_BY_KEY",
-      data: { groupId: group.id, key: "pipeline" }
-    });
-    group.pipelineInputId = pipelineInputBind.id;
+    const pipelineInputBind =
+      args.pipelineInputId ||
+      (
+        await store.dispatch("inputs/addInput", {
+          type: "commit",
+          location: "groups/UPDATE_GROUP_BY_KEY",
+          data: { groupId: group.id, key: "pipeline" }
+        })
+      ).id;
+    group.pipelineInputId = pipelineInputBind;
 
     commit("ADD_GROUP", { group, writeToSwap: args.writeToSwap });
 
