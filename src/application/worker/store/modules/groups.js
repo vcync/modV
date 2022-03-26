@@ -2,6 +2,7 @@ import SWAP from "./common/swap";
 import store from "../";
 import constants from "../../../constants";
 import uuidv4 from "uuid/v4";
+import { applyExpression } from "../../../utils/apply-expression";
 
 /**
  * @typedef {Object} Group
@@ -147,43 +148,43 @@ const actions = {
     };
 
     const alphaInputBind = await store.dispatch("inputs/addInput", {
-      type: "commit",
-      location: "groups/UPDATE_GROUP_BY_KEY",
+      type: "action",
+      location: "groups/updateGroupInput",
       data: { groupId: group.id, key: "alpha" }
     });
     group.alphaInputId = alphaInputBind.id;
 
     const enabledInputBind = await store.dispatch("inputs/addInput", {
-      type: "commit",
-      location: "groups/UPDATE_GROUP_BY_KEY",
+      type: "action",
+      location: "groups/updateGroupInput",
       data: { groupId: group.id, key: "enabled" }
     });
     group.enabledInputId = enabledInputBind.id;
 
     const clearingInputBind = await store.dispatch("inputs/addInput", {
-      type: "commit",
-      location: "groups/UPDATE_GROUP_BY_KEY",
+      type: "action",
+      location: "groups/updateGroupInput",
       data: { groupId: group.id, key: "clearing" }
     });
     group.clearingInputId = clearingInputBind.id;
 
     const inheritInputBind = await store.dispatch("inputs/addInput", {
-      type: "commit",
-      location: "groups/UPDATE_GROUP_BY_KEY",
+      type: "action",
+      location: "groups/updateGroupInput",
       data: { groupId: group.id, key: "inherit" }
     });
     group.inheritInputId = inheritInputBind.id;
 
     const coInputBind = await store.dispatch("inputs/addInput", {
-      type: "commit",
-      location: "groups/UPDATE_GROUP_BY_KEY",
+      type: "action",
+      location: "groups/updateGroupInput",
       data: { groupId: group.id, key: "compositeOperation" }
     });
     group.compositeOperationInputId = coInputBind.id;
 
     const pipelineInputBind = await store.dispatch("inputs/addInput", {
-      type: "commit",
-      location: "groups/UPDATE_GROUP_BY_KEY",
+      type: "action",
+      location: "groups/updateGroupInput",
       data: { groupId: group.id, key: "pipeline" }
     });
     group.pipelineInputId = pipelineInputBind.id;
@@ -265,6 +266,16 @@ const actions = {
     }
 
     return;
+  },
+
+  updateGroupInput({ commit }, { groupId, key, data, writeToSwap }) {
+    let dataOut = data;
+
+    const group = state.groups.find(group => group.id === groupId);
+    const inputId = group[`${key}InputId`];
+    dataOut = applyExpression({ inputId, value: dataOut });
+
+    commit("UPDATE_GROUP_BY_KEY", { groupId, key, data: dataOut, writeToSwap });
   }
 };
 
