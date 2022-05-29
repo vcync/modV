@@ -1,5 +1,8 @@
 import store from "../worker/store";
 import * as THREE from "three/build/three.module.js";
+import { GLTFLoader } from "three/examples/jsm/loaders/GLTFLoader";
+
+THREE.GLTFLoader = GLTFLoader;
 
 const threeCanvas = new OffscreenCanvas(300, 300);
 const threeContext = threeCanvas.getContext("webgl2", {
