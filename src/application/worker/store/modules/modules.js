@@ -7,6 +7,7 @@ import get from "lodash.get";
 import set from "lodash.set";
 
 import uuidv4 from "uuid/v4";
+import { applyExpression } from "../../../utils/apply-expression";
 
 // Any keys marked false or arrays with keys given
 // will not be moved from the base state when swapped
@@ -254,25 +255,25 @@ const actions = {
 
       if (!moduleMeta.isGallery) {
         const alphaInputBind = await store.dispatch("inputs/addInput", {
-          type: "commit",
-          location: "modules/UPDATE_ACTIVE_MODULE_META",
+          type: "action",
+          location: "modules/updateMeta",
           data: { id: module.$id, metaKey: "alpha" }
         });
 
         module.meta.alphaInputId = alphaInputBind.id;
 
         const enabledInputBind = await store.dispatch("inputs/addInput", {
-          type: "commit",
-          location: "modules/UPDATE_ACTIVE_MODULE_META",
+          type: "action",
+          location: "modules/updateMeta",
           data: { id: module.$id, metaKey: "enabled" }
         });
 
         module.meta.enabledInputId = enabledInputBind.id;
 
         const coInputBind = await store.dispatch("inputs/addInput", {
-          type: "commit",
-          location: "modules/UPDATE_ACTIVE_MODULE_META",
-          data: { id: module.$id, metaKey: "compositeOperation" }
+          type: "action",
+          location: "modules/updateMeta",
+          data: { moduleId: module.$id, metaKey: "compositeOperation" }
         });
 
         module.meta.compositeOperationInputId = coInputBind.id;
@@ -395,18 +396,7 @@ const actions = {
 
     let dataOut = data;
 
-    const expressionAssignment = store.getters["expressions/getByInputId"](
-      inputId
-    );
-
-    if (expressionAssignment) {
-      const scope = {
-        value: dataOut,
-        time: Date.now()
-      };
-
-      dataOut = expressionAssignment.func.evaluate(scope);
-    }
+    dataOut = applyExpression({ inputId, value: dataOut });
 
     if (store.state.dataTypes[type] && store.state.dataTypes[type].create) {
       dataOut = await store.state.dataTypes[type].create(dataOut);
@@ -459,6 +449,31 @@ const actions = {
         props: state.active[moduleId].props
       });
     }
+  },
+
+  async updateMeta({ commit }, { id: moduleId, metaKey, data, writeToSwap }) {
+    if (!state.active[moduleId]) {
+      console.error(`The module with the moduleId ${moduleId} doesn't exist.`);
+      return;
+    }
+
+    const currentValue = state.active[moduleId].meta[metaKey];
+    const inputId = state.active[moduleId].meta[`${metaKey}InputId`];
+
+    if (data === currentValue) {
+      return;
+    }
+
+    let dataOut = data;
+
+    dataOut = applyExpression({ inputId, value: dataOut });
+
+    commit("UPDATE_ACTIVE_MODULE_META", {
+      id: moduleId,
+      metaKey,
+      data: dataOut,
+      writeToSwap
+    });
   },
 
   resize({ commit, state }, { moduleId, width, height }) {

@@ -2,6 +2,7 @@ import SWAP from "./common/swap";
 import store from "../";
 import constants from "../../../constants";
 import uuidv4 from "uuid/v4";
+import { applyExpression } from "../../../utils/apply-expression";
 
 /**
  * @typedef {Object} Group
@@ -248,6 +249,16 @@ const actions = {
     }
 
     return;
+  },
+
+  updateGroupInput({ commit }, { groupId, key, data, writeToSwap }) {
+    let dataOut = data;
+
+    const group = state.groups.find(group => group.id === groupId);
+    const inputId = group[`${key}InputId`];
+    dataOut = applyExpression({ inputId, value: dataOut });
+
+    commit("UPDATE_GROUP_BY_KEY", { groupId, key, data: dataOut, writeToSwap });
   }
 };
 
