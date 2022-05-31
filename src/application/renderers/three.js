@@ -1,5 +1,8 @@
 import store from "../worker/store";
-import * as THREE from "three/build/three.module.js";
+import * as THREEimport from "three/build/three.module.js";
+import { GLTFLoader } from "three/examples/jsm/loaders/GLTFLoader";
+
+const THREE = { ...THREEimport, GLTFLoader };
 
 const threeCanvas = new OffscreenCanvas(300, 300);
 const threeContext = threeCanvas.getContext("webgl2", {
@@ -92,8 +95,8 @@ function render({
   context.drawImage(threeCanvas, 0, 0, canvas.width, canvas.height);
 }
 
-function setupModule(module) {
-  const moduleData = module.setupThree({
+async function setupModule(module) {
+  const moduleData = await module.setupThree({
     THREE,
     inputTexture,
     data: module.data || {},
