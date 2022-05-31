@@ -95,8 +95,8 @@ function render({
   context.drawImage(threeCanvas, 0, 0, canvas.width, canvas.height);
 }
 
-function setupModule(module) {
-  const moduleData = module.setupThree({
+async function setupModule(module) {
+  const moduleData = await module.setupThree({
     THREE,
     inputTexture,
     data: module.data || {},
