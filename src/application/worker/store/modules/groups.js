@@ -146,47 +146,30 @@ const actions = {
       })
     };
 
-    const alphaInputBind = await store.dispatch("inputs/addInput", {
-      type: "commit",
-      location: "groups/UPDATE_GROUP_BY_KEY",
-      data: { groupId: group.id, key: "alpha" }
-    });
-    group.alphaInputId = alphaInputBind.id;
+    const inputs = [
+      "alpha",
+      "enabled",
+      "clearing",
+      "inherit",
+      "compositeOperation",
+      "pipeline"
+    ];
+    for (let i = 0; i < inputs.length; i += 1) {
+      const inputName = inputs[i];
+      const idKey = `${inputName}InputId`;
 
-    const enabledInputBind = await store.dispatch("inputs/addInput", {
-      type: "commit",
-      location: "groups/UPDATE_GROUP_BY_KEY",
-      data: { groupId: group.id, key: "enabled" }
-    });
-    group.enabledInputId = enabledInputBind.id;
-
-    const clearingInputBind = await store.dispatch("inputs/addInput", {
-      type: "commit",
-      location: "groups/UPDATE_GROUP_BY_KEY",
-      data: { groupId: group.id, key: "clearing" }
-    });
-    group.clearingInputId = clearingInputBind.id;
-
-    const inheritInputBind = await store.dispatch("inputs/addInput", {
-      type: "commit",
-      location: "groups/UPDATE_GROUP_BY_KEY",
-      data: { groupId: group.id, key: "inherit" }
-    });
-    group.inheritInputId = inheritInputBind.id;
-
-    const coInputBind = await store.dispatch("inputs/addInput", {
-      type: "commit",
-      location: "groups/UPDATE_GROUP_BY_KEY",
-      data: { groupId: group.id, key: "compositeOperation" }
-    });
-    group.compositeOperationInputId = coInputBind.id;
-
-    const pipelineInputBind = await store.dispatch("inputs/addInput", {
-      type: "commit",
-      location: "groups/UPDATE_GROUP_BY_KEY",
-      data: { groupId: group.id, key: "pipeline" }
-    });
-    group.pipelineInputId = pipelineInputBind.id;
+      if (args[idKey] !== undefined) {
+        group[idKey] = args[idKey];
+      } else {
+        group[idKey] = (
+          await store.dispatch("inputs/addInput", {
+            type: "commit",
+            location: "groups/UPDATE_GROUP_BY_KEY",
+            data: { groupId: group.id, key: inputName }
+          })
+        ).id;
+      }
+    }
 
     commit("ADD_GROUP", { group, writeToSwap: args.writeToSwap });
 
