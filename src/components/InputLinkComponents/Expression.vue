@@ -23,7 +23,7 @@ export default {
     return {
       iVTitle: "Expression",
       iVBody:
-        "Expressions allow assigned input values to be shaped with JavaScript synax and math. Multiplication, division, custom intensity curves - whatever goes. `value` is the incoming number, want to make everything 3 times as punchy? `value * 3`. Need to soften things a little? `value / 2`. More examples can be found on modV's website under Guides, Expression.",
+        "Expressions allow assigned input values to be shaped with JavaScript syntax and math. Multiplication, division, custom intensity curves - whatever goes. `value` is the incoming number, want to make everything 3 times as punchy? `value * 3`. Need to soften things a little? `value / 2`. More examples can be found on modV's website under Guides, Expression.",
       iVID: "Expression",
 
       expression: "value",
