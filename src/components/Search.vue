@@ -258,17 +258,16 @@ export default {
   padding: calc(var(--baseline) / 3);
   padding-left: var(--baseline);
   padding-right: var(--baseline);
-
-  .search .search-box-container .results:last-child {
-    border-radius: 0 0 5px 5px;
-  }
-
-  .search .search-box-container .results.selected {
-    background: var(--foreground-color-1);
-  }
+}
+.search .search-box-container .results:last-child {
+  border-radius: 0 0 5px 5px;
 }
 
-.search-highlight {
+.search .search-box-container .results .selected {
+  background: var(--foreground-color-1);
+}
+
+.search .search-highlight {
   border: 2px var(--focus-color) solid;
   background-color: rgba(var(--focus-color-rgb), 0.1);
   position: fixed;
@@ -282,7 +281,7 @@ export default {
   pointer-events: none;
 }
 
-.search-highlight.hide {
+.search .search-highlight.hide {
   opacity: 0;
 }
 </style>
