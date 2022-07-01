@@ -24,7 +24,7 @@
           v-for="(key, index) in resultsKeys"
           :key="key"
           @mousedown="select(results[key].id)"
-          @mouseover="mouseOverHandler(results[key].id, index)"
+          @mousemove="mouseMoveHandler(results[key].id, index)"
           :class="{
             selected: index === keyboardSelectedIndex
           }"
@@ -179,7 +179,11 @@ export default {
       }
     },
 
-    mouseOverHandler(id, index) {
+    mouseMoveHandler(id, index) {
+      if (this.keyboardSelectedIndex === index) {
+        return;
+      }
+
       this.keyboardSelectedIndex = index;
       this.highlight(id);
     },
