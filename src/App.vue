@@ -458,12 +458,28 @@ body {
   --rowGap: 8px;
   --displayScale: 1;
   --pixel: 1px;
-  --foreground-color-rgb: 0, 0, 0;
+  --foreground-color-rgb: 255, 255, 255;
   --foreground-color-a: 1;
   --foreground-color: rgba(
     var(--foreground-color-rgb),
     var(--foreground-color-a)
   );
+
+  --foreground-color-1: rgba(var(--foreground-color-rgb), 0.5);
+  --foreground-color-2: rgba(var(--foreground-color-rgb), 0.4);
+  --foreground-color-3: rgba(var(--foreground-color-rgb), 0.2);
+  --foreground-color-4: rgba(var(--foreground-color-rgb), 0.1);
+
+  --background-color-rgb: 17, 17, 17;
+  --background-color-a: 1;
+  --background-color: rgba(
+    var(--background-color-rgb),
+    var(--background-color-a)
+  );
+  --background-color-1: rgba(var(--background-color-rgb), 0.8);
+  --background-color-2: rgba(var(--background-color-rgb), 0.7);
+  --background-color-3: rgba(var(--background-color-rgb), 0.5);
+  --background-color-4: rgba(var(--background-color-rgb), 0.4);
 
   --focus-color-rgb: 241, 196, 16;
   --focus-color-a: 1;

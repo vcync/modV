@@ -24,7 +24,7 @@
           v-for="(key, index) in resultsKeys"
           :key="key"
           @mousedown="select(results[key].id)"
-          @mouseover="mouseOverHandler(results[key].id, index)"
+          @mousemove="mouseMoveHandler(results[key].id, index)"
           :class="{
             selected: index === keyboardSelectedIndex
           }"
@@ -179,7 +179,11 @@ export default {
       }
     },
 
-    mouseOverHandler(id, index) {
+    mouseMoveHandler(id, index) {
+      if (this.keyboardSelectedIndex === index) {
+        return;
+      }
+
       this.keyboardSelectedIndex = index;
       this.highlight(id);
     },
@@ -225,7 +229,16 @@ export default {
   z-index: 1;
 }
 
+.search .search-box-container {
+  background: var(--background-color-1);
+  border-radius: 5px;
+  padding: 0.5rem;
+  z-index: 1;
+}
+
 .search .search-box-container .search-box {
+  color: var(--background-color);
+  background: var(--foreground-color-1);
   border-radius: 5px;
   width: 100%;
   padding-left: var(--baseline);
@@ -234,12 +247,6 @@ export default {
 
 .search .search-box-container .search-box.has-results {
   border-radius: 5px 5px 0 0;
-}
-
-.search .search-box-container {
-  border-radius: 5px;
-  padding: 0.5rem;
-  z-index: 1;
 }
 
 .search .search-box-container .results {
@@ -256,12 +263,11 @@ export default {
   padding-left: var(--baseline);
   padding-right: var(--baseline);
 }
-
 .search .search-box-container .results:last-child {
   border-radius: 0 0 5px 5px;
 }
 
-.search .search-box-container .results.selected {
+.search .search-box-container .results .selected {
   background: var(--foreground-color-1);
 }
 
