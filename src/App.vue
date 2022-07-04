@@ -48,7 +48,7 @@
           </gl-component>
 
           <gl-stack title="Input Stack">
-            <gl-component title="Input config" :closable="false">
+            <gl-component title="Input Config" :closable="false">
               <InputConfig />
             </gl-component>
 
