@@ -371,6 +371,12 @@ export default {
 </script>
 
 <style>
+input:focus-visible,
+select:focus-visible {
+  outline-style: solid;
+  outline-width: 2px;
+}
+
 .tooltip {
   position: absolute;
   padding: 4px;

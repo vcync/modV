@@ -43,6 +43,7 @@ dialog {
   padding: 0;
 
   min-width: 310px;
+  margin-bottom: auto; /* fixes an issue with a raster :last-child global selector */
 }
 
 header {
