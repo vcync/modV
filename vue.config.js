@@ -41,6 +41,7 @@ module.exports = {
   pluginOptions: {
     electronBuilder: {
       mainProcessFile: "src/background/background.js",
+      mainProcessWatch: ["src/background", "src/media-manager"],
       nodeIntegration: true,
 
       externals: [
