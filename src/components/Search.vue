@@ -100,11 +100,14 @@ export default {
     },
 
     select(id) {
+      const { isGLElement } = this.results[id];
       const el = document.querySelector(`*[data-searchId="${id}"]`);
       let vnode = el.__vue__;
 
-      while (!vnode.glObject) {
-        vnode = vnode.$parent;
+      if (isGLElement) {
+        while (!vnode.glObject) {
+          vnode = vnode.$parent;
+        }
       }
 
       const requiresFocus = !this.highlight(id);
@@ -131,10 +134,14 @@ export default {
 
       let vnode = el.__vue__;
 
-      if (!this.results[id].focusElement) {
+      const { focusElement, isGLElement, focusParent } = this.results[id];
+
+      if (!focusElement && isGLElement) {
         while (!vnode.glObject) {
           vnode = vnode.$parent;
         }
+      } else if (!isGLElement && focusParent) {
+        vnode = vnode.$parent;
       }
 
       vnode.$el.scrollIntoView({ block: "nearest" });
