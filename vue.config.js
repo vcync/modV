@@ -67,12 +67,8 @@ module.exports = {
         productName: "modV",
 
         linux: {
-          category: "Graphics"
-        },
-
-        snap: {
-          confinement: "classic",
-          publish: publishingOptions
+          category: "Graphics",
+          target: ["AppImage"]
         },
 
         // See https://www.electron.build/configuration/mac
