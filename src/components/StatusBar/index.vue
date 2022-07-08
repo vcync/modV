@@ -39,10 +39,18 @@ export default {
 
 <style>
 .status-bar {
-  padding-left: 0.5rem;
+  /* padding-left: 0.5rem; */
 
-  background-color: #c1c1c1;
-  height: 35px;
+  /* Status Bar */
+
+  /* Auto layout */
+  display: flex;
+  flex-direction: row;
+  align-items: flex-start;
+  padding: 8px;
+  gap: 8px;
+
+  background: #363636;
 }
 
 .status-bar.tags {

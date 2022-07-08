@@ -41,6 +41,7 @@ module.exports = {
   pluginOptions: {
     electronBuilder: {
       mainProcessFile: "src/background/background.js",
+      mainProcessWatch: ["src/background", "src/media-manager"],
       nodeIntegration: true,
 
       externals: [
@@ -66,12 +67,8 @@ module.exports = {
         productName: "modV",
 
         linux: {
-          category: "Graphics"
-        },
-
-        snap: {
-          confinement: "classic",
-          publish: publishingOptions
+          category: "Graphics",
+          target: ["AppImage"]
         },
 
         // See https://www.electron.build/configuration/mac
