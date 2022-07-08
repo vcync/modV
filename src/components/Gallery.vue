@@ -11,7 +11,8 @@
     <grid columns="4">
       <c span="1..">
         <TextInput
-          placeholder="search"
+          class="gallery-search"
+          placeholder="Search"
           v-model="searchTerm"
           ref="searchField"
         />
@@ -256,5 +257,18 @@ div.gallery > grid {
   font-size: 24px;
   text-transform: uppercase;
   margin-bottom: 8px;
+}
+
+.gallery-search {
+  display: flex;
+  padding: 4px 16px;
+  background: #363636;
+  border-radius: 50px;
+  font-style: normal;
+  font-weight: 400;
+  font-size: 14px;
+  line-height: 17px;
+  color: #9a9a9a;
+  height: auto;
 }
 </style>
