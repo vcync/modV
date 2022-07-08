@@ -4,7 +4,9 @@
     v-searchTerms="{
       terms: ['fps', 'frame', 'frame rate', 'frames', 'frames per second'],
       title: 'FPS Control',
-      type: 'Status Bar Item'
+      type: 'Status Bar Item',
+      focusParent: true,
+      isGLElement: false
     }"
     @dblclick="openFrameRateDialog"
   >
