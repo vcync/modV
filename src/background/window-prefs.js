@@ -196,6 +196,8 @@ const windowPrefs = {
     unique: true,
 
     async create(window) {
+      windows["mainWindow"].maximize();
+
       ipcMain.on("modv-ready", () => {
         try {
           window.close();
@@ -203,7 +205,6 @@ const windowPrefs = {
           console.error(e);
         }
 
-        windows["mainWindow"].maximize();
         windows["mainWindow"].show();
       });
     }
