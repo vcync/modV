@@ -2,6 +2,7 @@ import { app, protocol } from "electron";
 import { APP_SCHEME } from "./background-constants";
 import { openFile } from "./open-file";
 import { createWindow } from "./windows";
+import "./remote/remote-server.js";
 
 require("@electron/remote/main").initialize();
 

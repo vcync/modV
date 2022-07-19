@@ -39,6 +39,28 @@ module.exports = {
   },
 
   pluginOptions: {
+    configureMultiCompilerWebpack: webpackConfig => {
+      console.log(
+        "yoooooooooooooooooooooooooooooooooooooooooooooooooooooooooo?????????????"
+      );
+      // `webpackConfig` here is the one resolved by vue cli.
+      // (**after** executing `configureWebpack` and `chainWebpack`)
+      const cloneDeep = require("lodash.clonedeep");
+      const mainConfig = cloneDeep(webpackConfig);
+      const remoteConfig = cloneDeep(webpackConfig);
+
+      remoteConfig.entry = {
+        remote: "./src/remote/main.js"
+      };
+
+      remoteConfig.target = "web";
+      remoteConfig.externals = [];
+      console.log(remoteConfig);
+
+      // return an array to invoke webpack multi-compiler mode
+      return [mainConfig, remoteConfig];
+    },
+
     electronBuilder: {
       mainProcessFile: "src/background/background.js",
       nodeIntegration: true,

@@ -95,9 +95,11 @@ export default class ModV {
         for (let i = 0; i < payload.length; i++) {
           const commit = payload[i];
           store.commit(commit.type, commit.payload);
+          ipcRenderer.send("commit", commit);
         }
       } else {
         store.commit(type, payload);
+        ipcRenderer.send("commit", { type, payload });
       }
     });
 
