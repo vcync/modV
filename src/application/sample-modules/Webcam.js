@@ -19,13 +19,20 @@ export default {
       default: [0.5, 0.5],
       min: 0,
       max: 1
+    },
+
+    imageSmoothing: {
+      type: "bool",
+      default: true
     }
   },
 
   draw({ canvas, context, video: { canvas: video }, props }) {
-    const { position, scale } = props;
+    const { position, scale, imageSmoothing } = props;
     const { width: videoWidth, height: videoHeight } = video;
     const { width, height } = canvas;
+
+    context.imageSmoothingEnabled = imageSmoothing;
 
     context.drawImage(
       video,
