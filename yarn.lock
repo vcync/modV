@@ -6029,9 +6029,9 @@ inquirer@^6.2.2:
     strip-ansi "^5.1.0"
     through "^2.3.6"
 
-"interactive-shader-format@github:vcync/interactive-shader-format-js#1d093e2957c95c1db6d4acfd61d1b42f80f63aa7":
+"interactive-shader-format@github:vcync/interactive-shader-format-js#78b62b6f4c787b870852df4c8e7b1131e331d8a6":
   version "2.0.1"
-  resolved "https://codeload.github.com/vcync/interactive-shader-format-js/tar.gz/1d093e2957c95c1db6d4acfd61d1b42f80f63aa7"
+  resolved "https://codeload.github.com/vcync/interactive-shader-format-js/tar.gz/78b62b6f4c787b870852df4c8e7b1131e331d8a6"
   dependencies:
     mathjs-expression-parser "1.0.2"
 

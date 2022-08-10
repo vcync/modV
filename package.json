@@ -37,7 +37,7 @@
     "fuse.js": "^6.2.1",
     "golden-layout": "^1.5.9",
     "grandiose": "github:vcync/grandiose#feat/workerCompatibility",
-    "interactive-shader-format": "github:vcync/interactive-shader-format-js#1d093e2957c95c1db6d4acfd61d1b42f80f63aa7",
+    "interactive-shader-format": "github:vcync/interactive-shader-format-js#78b62b6f4c787b870852df4c8e7b1131e331d8a6",
     "lfo-for-modv": "0.0.1",
     "lodash.get": "^4.4.2",
     "mathjs": "^7.5.1",
