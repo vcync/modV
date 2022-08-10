@@ -33,13 +33,16 @@ function render({ module, canvas, context, pipeline, props }) {
   const renderer = renderers[module.meta.name];
   const moduleInputs = inputs[module.meta.name];
 
-  const features = getFeatures();
-  const byteFrequencyData = features.byteFrequencyData;
+  // Only update the audio data if the module has audio inputs to improve performance
+  // for modules that don't use any audio inputs at all
+  if (renderer.hasAudio) {
+    const features = getFeatures();
+    const byteFrequencyData = features.byteFrequencyData;
+    const byteTimeDomainData = features.byteTimeDomainData;
 
-  const byteTimeDomainData = features.byteTimeDomainData;
-
-  renderer.audio.setFrequencyValues(byteFrequencyData, byteFrequencyData);
-  renderer.audio.setTimeDomainValues(byteTimeDomainData, byteTimeDomainData);
+    renderer.audio.setFrequencyValues(byteFrequencyData, byteFrequencyData);
+    renderer.audio.setTimeDomainValues(byteTimeDomainData, byteTimeDomainData);
+  }
 
   if (moduleInputs) {
     for (let i = 0, len = moduleInputs.length; i < len; i++) {
@@ -92,7 +95,8 @@ async function setupModule(module) {
 
   const renderer = new ISFRenderer(isfContext, {
     useWebAudio: false,
-    fftSize: constants.AUDIO_BUFFER_SIZE
+    fftSize: constants.AUDIO_BUFFER_SIZE,
+    hasAudio: parser.hasAudio
   });
   renderer.loadSource(fragmentShader, vertexShader);
 
