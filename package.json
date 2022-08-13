@@ -103,6 +103,6 @@
     ]
   },
   "resolutions": {
-    "electron-builder": "22.9.1"
+    "electron-builder": "23.0.2"
   }
 }
