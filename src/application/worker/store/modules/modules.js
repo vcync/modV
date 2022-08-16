@@ -146,6 +146,19 @@ const actions = {
             canvas: { width: 0, height: 0 }
           };
 
+          const { props } = module;
+
+          activeModule.$props = JSON.parse(JSON.stringify(props));
+
+          await initialiseModuleProperties(
+            props,
+            { ...activeModule },
+            false,
+            true
+          );
+
+          commit("ADD_ACTIVE_MODULE", { module: activeModule });
+
           if ("init" in module) {
             const { data } = activeModule;
             const returnedData = module.init({
