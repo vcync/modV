@@ -234,11 +234,11 @@ const actions = {
       }
     }
 
+    module.$props = JSON.parse(JSON.stringify(props));
+
     if (!existingModule) {
       module.$id = uuidv4();
       module.$moduleName = moduleName;
-      module.$props = JSON.parse(JSON.stringify(props));
-
       module.props = {};
 
       await initialiseModuleProperties(
