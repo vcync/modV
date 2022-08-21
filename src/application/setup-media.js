@@ -41,17 +41,18 @@ async function enumerateDevices() {
 }
 
 async function getMediaStream({ audioSourceId, videoSourceId }) {
-  const constraints = {};
+  const audioConstraints = {};
+  const videoConstraints = {};
 
   if (audioSourceId) {
-    constraints.audio = {
+    audioConstraints.audio = {
       echoCancellation: { exact: false },
       deviceId: audioSourceId
     };
   }
 
   if (videoSourceId) {
-    constraints.video = {
+    videoConstraints.video = {
       deviceId: videoSourceId,
       frameRate: {
         ideal: 60
@@ -60,10 +61,13 @@ async function getMediaStream({ audioSourceId, videoSourceId }) {
   }
 
   /* Ask for user media access */
-  return navigator.mediaDevices.getUserMedia(constraints);
+  return [
+    audioSourceId && navigator.mediaDevices.getUserMedia(audioConstraints),
+    videoSourceId && navigator.mediaDevices.getUserMedia(videoConstraints)
+  ];
 }
 
-async function setupMedia({ audioId, videoId }) {
+async function setupMedia({ audioId, videoId, useDefaultDevices = false }) {
   const { _store: store } = this;
 
   const mediaStreamDevices = await enumerateDevices.bind(this)();
@@ -71,104 +75,127 @@ async function setupMedia({ audioId, videoId }) {
   let audioSourceId = audioId;
   let videoSourceId = videoId;
 
-  if (!audioSourceId && store.state["mediaStream"].currentAudioSource) {
-    audioSourceId = store.state["mediaStream"].currentAudioSource;
-  } else if (!audioSourceId && mediaStreamDevices.audio.length > 0) {
+  if (!audioId && useDefaultDevices && mediaStreamDevices.audio.length > 0) {
     audioSourceId = mediaStreamDevices.audio[0].deviceId;
   }
 
-  if (!videoSourceId && store.state["mediaStream"].currentVideoSource) {
-    videoSourceId = store.state["mediaStream"].currentVideoSource;
-  } else if (!videoSourceId && mediaStreamDevices.video.length > 0) {
+  if (!videoId && useDefaultDevices && mediaStreamDevices.video.length > 0) {
     videoSourceId = mediaStreamDevices.video[0].deviceId;
   }
 
-  if (this._mediaStream) {
-    const tracks = this._mediaStream.getTracks();
-    for (let i = 0, len = tracks.length; i < len; i++) {
-      const track = tracks[i];
-      track.stop();
+  const streams = [];
+
+  if (audioId) {
+    streams.push(this._audioMediaStream);
+  }
+
+  if (videoId) {
+    streams.push(this._videoMediaStream);
+  }
+
+  for (let i = 0, len = streams.length; i < len; i++) {
+    const stream = streams[i];
+
+    if (stream) {
+      const tracks = stream.getTracks();
+      for (let j = 0, jLen = tracks.length; j < jLen; j++) {
+        const track = tracks[j];
+        track.stop();
+      }
     }
   }
 
-  const mediaStream = await getMediaStream({ audioSourceId, videoSourceId });
+  const [audioMediaStream, videoMediaStream] = await Promise.all(
+    await getMediaStream({
+      audioSourceId,
+      videoSourceId
+    })
+  );
 
   // This video element is required to keep the camera alive for the ImageCapture API
   // (this._imageCapture, ./index.js)
-  if (this.videoStream) {
-    this.videoStream.pause();
-    delete this.videoStream;
+  if (videoMediaStream) {
+    if (this.videoStream) {
+      this.videoStream.pause();
+      delete this.videoStream;
+    }
+
+    this.videoStream = document.createElement("video");
+    this.videoStream.autoplay = true;
+    this.videoStream.muted = true;
+
+    this.videoStream.srcObject = videoMediaStream;
+    this.videoStream.onloadedmetadata = () => {
+      this.videoStream.play();
+    };
+
+    const [track] = videoMediaStream.getVideoTracks();
+    if (track) {
+      this._imageCapture = new ImageCapture(track);
+    }
+
+    store.commit("mediaStream/SET_CURRENT_VIDEO_SOURCE", {
+      videoId: videoSourceId
+    });
   }
 
-  this.videoStream = document.createElement("video");
-  this.videoStream.autoplay = true;
-  this.videoStream.muted = true;
+  if (audioMediaStream) {
+    if (this.audioContext) {
+      this.audioContext.close();
+    }
 
-  this.videoStream.srcObject = mediaStream;
-  this.videoStream.onloadedmetadata = () => {
-    this.videoStream.play();
-  };
+    // Create new Audio Context
+    this.audioContext = new window.AudioContext({
+      latencyHint: "playback"
+    });
 
-  if (this.audioContext) {
-    this.audioContext.close();
+    // Create new Audio Analyser
+    analyserNode = this.audioContext.createAnalyser();
+    analyserNode.smoothingTimeConstant = 0;
+
+    // Set up arrays for analyser
+    floatFrequencyDataArray = new Float32Array(analyserNode.frequencyBinCount);
+    byteFrequencyDataArray = new Uint8Array(analyserNode.frequencyBinCount);
+
+    // Create a gain node
+    this.gainNode = this.audioContext.createGain();
+
+    // Mute the node
+    this.gainNode.gain.value = 0;
+
+    // Create the audio input stream (audio)
+    this.audioStream = this.audioContext.createMediaStreamSource(
+      audioMediaStream
+    );
+
+    // Connect the audio stream to the analyser (this is a passthru) (audio->(analyser))
+    this.audioStream.connect(analyserNode);
+
+    // Connect the audio stream to the gain node (audio->(analyser)->gain)
+    this.audioStream.connect(this.gainNode);
+
+    // Connect the gain node to the output (audio->(analyser)->gain->destination)
+    this.gainNode.connect(this.audioContext.destination);
+
+    // Set up Meyda
+    // eslint-disable-next-line new-cap
+    this.meyda = new Meyda.createMeydaAnalyzer({
+      audioContext: this.audioContext,
+      source: this.audioStream,
+      bufferSize: constants.AUDIO_BUFFER_SIZE,
+      windowingFunction: "rect",
+      featureExtractors: ["complexSpectrum"]
+    });
+
+    store.commit("mediaStream/SET_CURRENT_AUDIO_SOURCE", {
+      audioId: audioSourceId
+    });
   }
 
-  // Create new Audio Context
-  this.audioContext = new window.AudioContext({
-    latencyHint: "playback"
-  });
+  this._audioMediaStream = audioMediaStream || this._audioMediaStream;
+  this._videoMediaStream = videoMediaStream || this._videoMediaStream;
 
-  // Create new Audio Analyser
-  analyserNode = this.audioContext.createAnalyser();
-  analyserNode.smoothingTimeConstant = 0;
-
-  // Set up arrays for analyser
-  floatFrequencyDataArray = new Float32Array(analyserNode.frequencyBinCount);
-  byteFrequencyDataArray = new Uint8Array(analyserNode.frequencyBinCount);
-
-  // Create a gain node
-  this.gainNode = this.audioContext.createGain();
-
-  // Mute the node
-  this.gainNode.gain.value = 0;
-
-  // Create the audio input stream (audio)
-  this.audioStream = this.audioContext.createMediaStreamSource(mediaStream);
-
-  // Connect the audio stream to the analyser (this is a passthru) (audio->(analyser))
-  this.audioStream.connect(analyserNode);
-
-  // Connect the audio stream to the gain node (audio->(analyser)->gain)
-  this.audioStream.connect(this.gainNode);
-
-  // Connect the gain node to the output (audio->(analyser)->gain->destination)
-  this.gainNode.connect(this.audioContext.destination);
-
-  // Set up Meyda
-  // eslint-disable-next-line new-cap
-  this.meyda = new Meyda.createMeydaAnalyzer({
-    audioContext: this.audioContext,
-    source: this.audioStream,
-    bufferSize: constants.AUDIO_BUFFER_SIZE,
-    windowingFunction: "rect",
-    featureExtractors: ["complexSpectrum"]
-  });
-
-  const [track] = mediaStream.getVideoTracks();
-  if (track) {
-    this._imageCapture = new ImageCapture(track);
-  }
-
-  store.commit("mediaStream/SET_CURRENT_AUDIO_SOURCE", {
-    audioId: audioSourceId
-  });
-  store.commit("mediaStream/SET_CURRENT_VIDEO_SOURCE", {
-    videoId: videoSourceId
-  });
-
-  this._mediaStream = mediaStream;
-
-  return mediaStream;
+  return [audioMediaStream, videoMediaStream];
 }
 
 function getFloatFrequencyData() {

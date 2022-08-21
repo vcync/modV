@@ -141,7 +141,7 @@ export default class ModV {
     this.windowHandler();
 
     try {
-      await this.setupMedia({});
+      await this.setupMedia({ useDefaultDevices: true });
     } catch (e) {
       console.error(e);
     }
@@ -259,13 +259,15 @@ export default class ModV {
     } = this.store.state;
 
     const features = this.meyda.get(featuresToGet);
-    this.updateBeatDetektor(delta, features);
-    features.byteFrequencyData = Array.from(getByteFrequencyData() || []);
-    this.$worker.postMessage({ type: "meyda", payload: features });
+    if (features) {
+      this.updateBeatDetektor(delta, features);
+      features.byteFrequencyData = Array.from(getByteFrequencyData() || []);
+      this.$worker.postMessage({ type: "meyda", payload: features });
 
-    for (let i = 0; i < featuresToGet.length; i += 1) {
-      const feature = featuresToGet[i];
-      this.features[feature] = features[feature];
+      for (let i = 0; i < featuresToGet.length; i += 1) {
+        const feature = featuresToGet[i];
+        this.features[feature] = features[feature];
+      }
     }
   }
 
