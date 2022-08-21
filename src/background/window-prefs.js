@@ -8,7 +8,7 @@ import { createWindow, windows } from "./windows";
 import { updateMenu } from "./menu-bar";
 import { getMediaManager } from "./media-manager";
 
-const isDevelopment = process.env.NODE_ENV !== "production";
+const isDevelopment = process.env.NODE_ENV === "development";
 let shouldCloseMainWindowAndQuit = false;
 
 const windowPrefs = {
@@ -129,7 +129,7 @@ const windowPrefs = {
         window.webContents.send("input-update", message);
       });
 
-      if (!isDevelopment || process.env.IS_TEST) {
+      if (!isDevelopment && !process.env.CI) {
         window.on("close", async e => {
           if (shouldCloseMainWindowAndQuit) {
             app.quit();
@@ -152,8 +152,10 @@ const windowPrefs = {
         });
       }
 
-      // Check for updates
-      autoUpdater.checkForUpdatesAndNotify();
+      if (!process.env.CI) {
+        // Check for updates
+        autoUpdater.checkForUpdatesAndNotify();
+      }
 
       if (process.platform !== "linux") {
         await checkMediaPermission();

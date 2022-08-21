@@ -1169,6 +1169,14 @@
     mkdirp "^1.0.4"
     rimraf "^3.0.2"
 
+"@playwright/test@^1.25.0":
+  version "1.25.0"
+  resolved "https://registry.yarnpkg.com/@playwright/test/-/test-1.25.0.tgz#e0de134651e78e45e986c5f16578188dd5937331"
+  integrity sha512-j4EZhTTQI3dBeWblE21EV//swwmBtOpIrLdOIJIRv4uqsLdHgBg1z+JtTg+AeC5o2bAXIE26kDNW5A0TimG8Bg==
+  dependencies:
+    "@types/node" "*"
+    playwright-core "1.25.0"
+
 "@samverschueren/stream-to-observable@^0.3.0":
   version "0.3.0"
   resolved "https://registry.yarnpkg.com/@samverschueren/stream-to-observable/-/stream-to-observable-0.3.0.tgz#ecdf48d532c58ea477acfcab80348424f8d0662f"
@@ -4827,6 +4835,13 @@ electron-osx-sign@^0.6.0:
     isbinaryfile "^3.0.2"
     minimist "^1.2.0"
     plist "^3.0.1"
+
+electron-playwright-helpers@^1.2.0:
+  version "1.2.0"
+  resolved "https://registry.yarnpkg.com/electron-playwright-helpers/-/electron-playwright-helpers-1.2.0.tgz#a9d175bc767bb2868aeaa1440483e69e5c60858c"
+  integrity sha512-4xBbfsrmv+OWo9aWY+jGD6xGIbgcoaGvzsBHyWCotA3sRs0MhU8E/QdrC120kyiuEu2IY/lYSb/Uf5NefFfiwg==
+  dependencies:
+    asar "^3.1.0"
 
 electron-publish@22.9.1:
   version "22.9.1"
@@ -10047,6 +10062,18 @@ plask-wrap@^1.0.1:
   version "1.0.1"
   resolved "https://registry.yarnpkg.com/plask-wrap/-/plask-wrap-1.0.1.tgz#c5f5c1b5d874c1c7d9b717f772126f25abb31ddf"
   integrity sha1-xfXBtdh0wcfZtxf3chJvJauzHd8=
+
+playwright-core@1.25.0:
+  version "1.25.0"
+  resolved "https://registry.yarnpkg.com/playwright-core/-/playwright-core-1.25.0.tgz#54dc867c6c2cc5e4233905e249206a02914d14f1"
+  integrity sha512-kZ3Jwaf3wlu0GgU0nB8UMQ+mXFTqBIFz9h1svTlNduNKjnbPXFxw7mJanLVjqxHJRn62uBfmgBj93YHidk2N5Q==
+
+playwright@^1.25.0:
+  version "1.25.0"
+  resolved "https://registry.yarnpkg.com/playwright/-/playwright-1.25.0.tgz#a5e317c8c207b921e7da17507ef9ec2983367970"
+  integrity sha512-Z+pQNWI17Qx/tHhnmgMmPsptsisXpKgAnUvYv98kctlHUJaqMt2400P8kTw9vEPoC0xdxqu0JhxO7pDTmaaIKw==
+  dependencies:
+    playwright-core "1.25.0"
 
 please-upgrade-node@^3.0.2:
   version "3.2.0"
