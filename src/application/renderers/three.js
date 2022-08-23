@@ -3,6 +3,7 @@ import * as THREEimport from "three/build/three.module.js";
 import { GLTFLoader } from "three/examples/jsm/loaders/GLTFLoader";
 
 const THREE = { ...THREEimport, GLTFLoader };
+const threeModuleData = {};
 
 const threeCanvas = new OffscreenCanvas(300, 300);
 const threeContext = threeCanvas.getContext("webgl2", {
@@ -69,7 +70,9 @@ function render({
   inputTexture.image = inputTextureCanvas.transferToImageBitmap();
   inputTexture.needsUpdate = true;
 
-  const { scene, camera } = module.draw({
+  const { scene, camera } = threeModuleData[module.$id];
+
+  module.draw({
     THREE,
     inputTexture,
     canvas,
@@ -80,7 +83,7 @@ function render({
     bpm,
     kick,
     props,
-    data,
+    data: { ...data, scene, camera },
     fftCanvas
   });
 
@@ -104,9 +107,29 @@ async function setupModule(module) {
     height: renderer.domElement.height
   });
 
+  threeModuleData[module.$id] = {
+    scene: moduleData.scene,
+    camera: moduleData.camera
+  };
+
+  delete moduleData.scene;
+  delete moduleData.camera;
+
   module.data = moduleData;
 
   return module;
+}
+
+function removeModule(module) {
+  delete threeModuleData[module.$id];
+}
+
+function createPresetData(module) {
+  return threeModuleData[module.$id];
+}
+
+function loadPresetData(module, data) {
+  threeModuleData[module.$id] = data;
 }
 
 function resize({ width, height }) {
@@ -115,4 +138,12 @@ function resize({ width, height }) {
   renderer.setSize(width, height, false);
 }
 
-export default { render, resize, setupModule };
+export default {
+  render,
+  resize,
+  setupModule,
+  removeModule,
+  createPresetData,
+  loadPresetData
+};
+export { threeModuleData };

@@ -522,12 +522,26 @@ const actions = {
     }
   },
 
-  createPresetData() {
+  createPresetData({ rootState }) {
+    const { renderers } = rootState;
+
     return Object.values(state.active)
       .filter(module => !module.meta.isGallery)
       .reduce((obj, module) => {
+        const {
+          meta: { type },
+          data
+        } = module;
+
         obj[module.$id] = { ...module };
         delete obj[module.$id].$status;
+
+        if (renderers[type].createPresetData) {
+          module.data = {
+            ...data,
+            ...renderers[type].createPresetData(module)
+          };
+        }
 
         return obj;
       }, {});
@@ -549,14 +563,22 @@ const actions = {
     return;
   },
 
-  async removeActiveModule({ commit }, { moduleId, writeToSwap }) {
+  async removeActiveModule({ commit, rootState }, { moduleId, writeToSwap }) {
     const writeTo = writeToSwap ? swap : state;
 
     const module = writeTo.active[moduleId];
-    const { meta } = module;
+    const {
+      meta,
+      meta: { type }
+    } = module;
 
     if (!module) {
       throw new Error(`No module with id "${moduleId}" found`);
+    }
+
+    const { renderers } = rootState;
+    if (renderers[type].removeActiveModule) {
+      renderers[type].removeActiveModule(module);
     }
 
     const metaInputIds = [

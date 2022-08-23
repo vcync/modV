@@ -117,15 +117,24 @@ async function start() {
   for (let i = 0, len = rendererKeys.length; i < len; i++) {
     const rendererName = rendererKeys[i];
 
-    const { render, setupModule, tick, resize } = renderers(
-      rendererName
-    ).default;
+    const {
+      render,
+      setupModule,
+      removeModule,
+      tick,
+      resize,
+      createPresetData,
+      loadPresetData
+    } = renderers(rendererName).default;
 
     store.commit("renderers/ADD_RENDERER", {
       name: rendererName.replace(/(\.\/|\.js)/g, ""),
       render,
       resize,
       setupModule,
+      removeModule,
+      createPresetData,
+      loadPresetData,
       tick
     });
   }
