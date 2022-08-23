@@ -48,7 +48,22 @@ const state = {
         textureDefinition.id = id;
       }
 
-      if (type === "canvas" || type == "group") {
+      if (type === "video") {
+        const { path } = options;
+        let id;
+        try {
+          ({ id } = await store.dispatch("images/createVideoFromPath", {
+            path
+          }));
+        } catch (e) {
+          console.error(e);
+        }
+
+        textureDefinition.location = "videos/video";
+        textureDefinition.id = id;
+      }
+
+      if (type === "canvas" || type === "group") {
         const { id } = options;
         textureDefinition.location = "outputs/auxillaryCanvas";
         textureDefinition.id = id;

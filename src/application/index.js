@@ -15,6 +15,7 @@ import PromiseWorker from "promise-worker-transferable";
 import Vue from "vue";
 import { ipcRenderer } from "electron";
 import { app } from "@electron/remote";
+import { createWebcodecVideo } from "./createWebcodecVideo";
 
 let imageBitmap;
 const imageBitmapQueue = [];
@@ -27,6 +28,7 @@ export default class ModV {
   setupBeatDetektor = setupBeatDetektor;
   setupMidi = setupMidi;
   windowHandler = windowHandler;
+  createWebcodecVideo = createWebcodecVideo;
   use = use;
   debug = false;
   features = Vue.observable({
@@ -75,6 +77,10 @@ export default class ModV {
       // ) {
       //   console.log(`⚙️%c ${type}`, "color: red");
       // }
+
+      if (type === "createWebcodecVideo") {
+        this.createWebcodecVideo();
+      }
 
       if (e.data.type === "tick" && this.ready) {
         this.tick(e.data.payload);
