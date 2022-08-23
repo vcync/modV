@@ -44,7 +44,8 @@ async function initialiseModuleProperties(
   props,
   module,
   isGallery = false,
-  useExistingData = false
+  useExistingData = false,
+  propsWithoutId = []
 ) {
   const propKeys = Object.keys(props);
 
@@ -60,7 +61,10 @@ async function initialiseModuleProperties(
       useExistingData
     );
 
-    if (!isGallery && !useExistingData) {
+    if (
+      (!isGallery && !useExistingData) ||
+      (propsWithoutId.length && propsWithoutId.indexOf(propKey) > -1)
+    ) {
       const inputBind = await store.dispatch("inputs/addInput", {
         type: "action",
         location: "modules/updateProp",
@@ -136,45 +140,62 @@ const actions = {
     commit("ADD_REGISTERED_MODULE", { module });
 
     if (hot) {
-      const activeModuleValues = Object.values(state.active);
+      const activeModuleValues = Object.values(state.active).filter(
+        activeModule => activeModule.meta.name === name
+      );
 
-      for (let i = 0; i < activeModuleValues.length; i += 1) {
-        const activeModule = activeModuleValues[i];
+      for (let i = 0, len = activeModuleValues.length; i < len; i += 1) {
+        debugger;
+        const existingActiveModule = activeModuleValues[i];
+        const activeModule = { ...existingActiveModule };
 
-        if (activeModule.meta.name === name) {
-          const { canvas } = rootState.outputs.main || {
-            canvas: { width: 0, height: 0 }
-          };
+        const { canvas } = rootState.outputs.main || {
+          canvas: { width: 0, height: 0 }
+        };
 
-          const { props } = module;
+        const { props } = module;
 
-          activeModule.$props = JSON.parse(JSON.stringify(props));
+        activeModule.$props = JSON.parse(JSON.stringify(props));
 
-          await initialiseModuleProperties(
-            props,
-            { ...activeModule },
-            false,
-            true
-          );
+        const newProps = Object.keys(props);
+        const propsWithoutId = [];
 
-          commit("ADD_ACTIVE_MODULE", { module: activeModule });
+        for (let j = 0, len = newProps.length; j < len; j += 1) {
+          const prop = newProps[j];
+          const propDidExist = !!existingActiveModule.$props[prop];
 
-          if ("init" in module) {
-            const { data } = activeModule;
-            const returnedData = module.init({
-              canvas,
-              data: { ...data },
-              props: activeModule.props
+          if (propDidExist) {
+            activeModule.$props[prop].id = existingActiveModule.$props[prop].id;
+          } else {
+            propsWithoutId.push(prop);
+          }
+        }
+
+        const initialisedModule = await initialiseModuleProperties(
+          props,
+          { ...activeModule },
+          false,
+          true,
+          propsWithoutId
+        );
+
+        commit("ADD_ACTIVE_MODULE", { module: initialisedModule });
+
+        if ("init" in module) {
+          const { data } = activeModule;
+          const returnedData = module.init({
+            canvas,
+            data: { ...data },
+            props: activeModule.props
+          });
+
+          if (returnedData) {
+            commit("UPDATE_ACTIVE_MODULE", {
+              id: activeModule.$id,
+              key: "data",
+              value: returnedData,
+              writeToSwap: false
             });
-
-            if (returnedData) {
-              commit("UPDATE_ACTIVE_MODULE", {
-                id: activeModule.$id,
-                key: "data",
-                value: returnedData,
-                writeToSwap: false
-              });
-            }
           }
         }
       }
