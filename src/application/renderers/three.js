@@ -70,9 +70,9 @@ function render({
   inputTexture.image = inputTextureCanvas.transferToImageBitmap();
   inputTexture.needsUpdate = true;
 
-  const { scene, camera } = threeModuleData[module.$id];
+  const { scene } = threeModuleData[module.meta.name];
 
-  module.draw({
+  const { camera } = module.draw({
     THREE,
     inputTexture,
     canvas,
@@ -83,7 +83,7 @@ function render({
     bpm,
     kick,
     props,
-    data: { ...data, scene, camera },
+    data: { ...data, scene },
     fftCanvas
   });
 
@@ -107,13 +107,14 @@ async function setupModule(module) {
     height: renderer.domElement.height
   });
 
-  threeModuleData[module.$id] = {
-    scene: moduleData.scene,
-    camera: moduleData.camera
+  // We have to use the name for now, as module.$id is not defined yet.
+  // This gives us the limitation that we can't have multiple instances of the
+  // same three-module in modV as they would share the same scene
+  threeModuleData[module.meta.name] = {
+    scene: moduleData.scene
   };
 
   delete moduleData.scene;
-  delete moduleData.camera;
 
   module.data = moduleData;
 
@@ -121,15 +122,15 @@ async function setupModule(module) {
 }
 
 function removeModule(module) {
-  delete threeModuleData[module.$id];
+  delete threeModuleData[module.meta.name];
 }
 
 function createPresetData(module) {
-  return threeModuleData[module.$id];
+  return threeModuleData[module.meta.name];
 }
 
 function loadPresetData(module, data) {
-  threeModuleData[module.$id] = data;
+  threeModuleData[module.meta.name] = data;
 }
 
 function resize({ width, height }) {
