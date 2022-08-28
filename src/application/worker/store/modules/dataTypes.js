@@ -52,7 +52,7 @@ const state = {
         const { path } = options;
         let id;
         try {
-          ({ id } = await store.dispatch("images/createVideoFromPath", {
+          ({ id } = await store.dispatch("videos/createVideoFromPath", {
             path
           }));
         } catch (e) {
@@ -77,6 +77,15 @@ const state = {
           return store.state.dataTypes.texture.get(textureDefinition);
         }
       });
+    },
+    async destroy(textureDefinition) {
+      const { type, id } = textureDefinition;
+
+      if (type === "video") {
+        await store.dispatch("videos/removeVideoById", {
+          id
+        });
+      }
     },
     get: textureDefinition => {
       if (!textureDefinition.location.length) {

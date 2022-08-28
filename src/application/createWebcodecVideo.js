@@ -1,10 +1,9 @@
-export function createWebcodecVideo(id, modV) {
-  return Promise(async (resolve, reject) => {
-    const url = modV.store.state.videos[id];
+export function createWebcodecVideo(id, url) {
+  return new Promise(async (resolve, reject) => {
     const video = document.createElement("video");
     video.setAttribute("crossorigin", "anonymous");
     video.setAttribute("loop", true);
-    video.onerror(reject);
+    video.onerror = reject;
     video.muted = true;
 
     video.onloadedmetadata = async () => {
@@ -18,7 +17,7 @@ export function createWebcodecVideo(id, modV) {
       // Transfer the readable stream to the worker.
       // NOTE: transferring frameStream and reading it in the worker is more
       // efficient than reading frameStream here and transferring VideoFrames individually.
-      this.$modV.store.dispatch(
+      this.store.dispatch(
         "videos/assignVideoStream",
         {
           id,
@@ -29,7 +28,7 @@ export function createWebcodecVideo(id, modV) {
         [frameStream]
       );
 
-      resolve();
+      resolve({ id, video, stream });
     };
 
     video.setAttribute("src", url);

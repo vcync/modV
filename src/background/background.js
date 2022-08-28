@@ -1,6 +1,6 @@
 import { app, protocol } from "electron";
 import { APP_SCHEME } from "./background-constants";
-// import { getMediaManager } from "./media-manager";
+import { getMediaManager } from "./media-manager";
 import { openFile } from "./open-file";
 import { createWindow } from "./windows";
 
@@ -42,10 +42,10 @@ app.on("activate", async () => {
 
 // https://stackoverflow.com/a/66673831
 function fileHandler(req, callback) {
-  // const { mediaDirectoryPath } = getMediaManager();
-  const requestedPath = req.url;
+  const { mediaDirectoryPath } = getMediaManager();
+  const requestedPath = req.url.substr(7);
   // Write some code to resolve path, calculate absolute path etc
-  const check = true; // requestedPath.indexOf(mediaDirectoryPath) > -1;
+  const check = requestedPath.indexOf(mediaDirectoryPath) > -1;
 
   if (!check) {
     callback({

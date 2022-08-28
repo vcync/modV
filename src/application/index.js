@@ -45,6 +45,7 @@ export default class ModV {
     perceptualSpread: 0,
     perceptualSharpness: 0
   });
+  videos = {};
 
   _store = store;
   store = {
@@ -64,7 +65,7 @@ export default class ModV {
       payload: app.getAppPath()
     });
 
-    this.$worker.addEventListener("message", e => {
+    this.$worker.addEventListener("message", async e => {
       const message = e.data;
       const { type } = message;
 
@@ -79,7 +80,19 @@ export default class ModV {
       // }
 
       if (type === "createWebcodecVideo") {
-        this.createWebcodecVideo();
+        const videoContext = await this.createWebcodecVideo(
+          message.id,
+          message.path
+        );
+        this.videos[videoContext.id] = videoContext;
+      }
+
+      if (type === "removeWebcodecVideo") {
+        const { video, stream } = this.videos[message.id];
+        video.src = "";
+        // eslint-disable-next-line no-for-each/no-for-each
+        stream.getTracks().forEach(track => track.stop());
+        delete this.videos[message.id];
       }
 
       if (e.data.type === "tick" && this.ready) {

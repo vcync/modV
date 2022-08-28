@@ -36,7 +36,12 @@
     </div>
 
     <div v-if="type === 'image'">
-      <select v-model="modelImagePath" @change="setTexture('image')">
+      <select
+        v-model="modelImagePath"
+        @change="setTexture('image')"
+        :disabled="!images"
+      >
+        <option selected value="">No image</option>
         <option
           v-for="(image, index) in images"
           :key="index"
@@ -45,20 +50,47 @@
         >
       </select>
     </div>
+
+    <div v-if="type === 'video'">
+      <select
+        v-model="modelVideoPath"
+        @change="setTexture('video')"
+        :disabled="!videos"
+      >
+        <option selected value="">No video</option>
+        <option
+          v-for="output in videos"
+          :key="output.path"
+          :value="output.path"
+          >{{ output.name }}</option
+        >
+      </select>
+
+      <VideoControl
+        v-if="type === 'video' && modelVideoPath && value.id"
+        :video-id="value.id"
+      />
+    </div>
   </div>
 </template>
 
 <script>
 import constants from "../../application/constants";
+import { VideoControl } from "./VideoControl.vue";
 
 export default {
   props: ["value"],
 
+  components: {
+    VideoControl
+  },
+
   data() {
     return {
-      textureTypes: ["inherit", "group", "canvas", "image"],
+      textureTypes: ["inherit", "group", "canvas", "image", "video"],
       type: "",
       modelImagePath: "",
+      modelVideoPath: "",
       modelCanvasId: ""
     };
   },
@@ -68,8 +100,8 @@ export default {
       this.value.type && this.value.type.length
         ? this.value.type
         : this.textureTypes[0];
-    this.modelImagePath = this.value.options.path || "";
-    this.modelCanvasId = this.value.options.id || "";
+    this.modelImagePath = this.value.options?.path || "";
+    this.modelCanvasId = this.value.options?.id || "";
   },
 
   computed: {
@@ -79,8 +111,9 @@ export default {
 
     groupOutputs() {
       return Object.values(this.auxillaries).filter(
-        group =>
-          group.group === "group" && group.name !== constants.GALLERY_GROUP_NAME
+        auxillary =>
+          auxillary.group === "group" &&
+          auxillary.name !== constants.GALLERY_GROUP_NAME
       );
     },
 
@@ -101,9 +134,19 @@ export default {
     },
 
     images() {
-      return this.$modV.store.state.media.media[
-        this.$modV.store.state.projects.currentProject
-      ].image;
+      return (
+        this.$modV.store.state.media.media[
+          this.$modV.store.state.projects.currentProject
+        ].image ?? false
+      );
+    },
+
+    videos() {
+      return (
+        this.$modV.store.state.media.media[
+          this.$modV.store.state.projects.currentProject
+        ].video ?? false
+      );
     }
   },
 
@@ -116,6 +159,14 @@ export default {
         }
 
         textureDefinition.options.path = this.modelImagePath;
+      }
+
+      if (type === "video") {
+        if (!this.modelVideoPath) {
+          return;
+        }
+
+        textureDefinition.options.path = this.modelVideoPath;
       }
 
       if (type === "canvas" || type === "group") {
