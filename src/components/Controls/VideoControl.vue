@@ -1,19 +1,30 @@
 <template>
   <div ref="videoControl">
-    <button @mousedown="onClickRestart">Restart</button>
-    <button @mousedown="onClickPlayPause">
-      {{ paused ? "Play" : "Pause" }}
-    </button>
-    <label
-      >Speed<input
-        type="range"
-        min="0.5"
-        max="2"
-        step="0.01"
-        v-model="playbackRate"
-      />
-      {{ playbackRate }}</label
-    >
+    <grid columns="6">
+      <c>
+        <Button @mousedown="onClickRestart">Restart</Button>
+      </c>
+      <c>
+        <Button @mousedown="onClickPlayPause">
+          {{ paused ? "Play" : "Pause" }}
+        </Button>
+      </c>
+      <c span="4">
+        <grid columns="10" class="center-align">
+          <c span="1">Speed</c>
+          <c span="6">
+            <input
+              type="range"
+              min="0.1"
+              max="10"
+              step="0.01"
+              style="width: 100%"
+              v-model="playbackRate"
+          /></c>
+          <c span="3">{{ playbackRate }}</c>
+        </grid>
+      </c>
+    </grid>
   </div>
 </template>
 
@@ -70,3 +81,16 @@ export const VideoControl = {
 
 export default VideoControl;
 </script>
+
+<style>
+grid.center-align {
+  height: 100%;
+}
+
+grid.center-align c {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+</style>

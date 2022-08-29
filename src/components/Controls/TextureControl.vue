@@ -1,77 +1,97 @@
 <template>
-  <div>
-    <select v-model="type">
-      <option
-        v-for="tt in textureTypes"
-        :value="tt"
-        :key="tt"
-        :selected="type === tt"
-        >{{ tt }}</option
-      >
-    </select>
+  <grid columns="2">
+    <c>
+      <Select v-model="type" style="width: 100%">
+        <option
+          v-for="tt in textureTypes"
+          :value="tt"
+          :key="tt"
+          :selected="type === tt"
+          >{{ tt }}</option
+        >
+      </Select>
+    </c>
 
-    <div v-if="type === 'group'">
-      <select v-model="modelCanvasId" @change="setTexture('group')">
-        <option v-for="group in groupOutputs" :value="group.id" :key="group.id">
-          {{ group.name }}
-        </option>
-      </select>
-    </div>
-
-    <div v-if="type === 'canvas'">
-      <select v-model="modelCanvasId" @change="setTexture('canvas')">
-        <optgroup
-          v-for="(outputs, group) in allOutputsByGroup"
-          :label="group"
-          :key="group"
+    <c>
+      <div v-if="type === 'group'">
+        <Select
+          v-model="modelCanvasId"
+          @input="setTexture('group')"
+          style="width: 100%"
         >
           <option
-            v-for="output in outputs"
-            :key="output.id"
-            :value="output.id"
+            v-for="group in groupOutputs"
+            :value="group.id"
+            :key="group.id"
+          >
+            {{ group.name }}
+          </option>
+        </Select>
+      </div>
+
+      <div v-if="type === 'canvas'">
+        <Select
+          v-model="modelCanvasId"
+          @input="setTexture('canvas')"
+          style="width: 100%"
+        >
+          <optgroup
+            v-for="(outputs, group) in allOutputsByGroup"
+            :label="group"
+            :key="group"
+          >
+            <option
+              v-for="output in outputs"
+              :key="output.id"
+              :value="output.id"
+              >{{ output.name }}</option
+            >
+          </optgroup>
+        </Select>
+      </div>
+
+      <div v-if="type === 'image'">
+        <Select
+          v-model="modelImagePath"
+          @input="setTexture('image')"
+          :disabled="!images"
+          style="width: 100%"
+        >
+          <option selected value="">No image</option>
+          <option
+            v-for="(image, index) in images"
+            :key="index"
+            :value="image.path"
+            >{{ image.name }}</option
+          >
+        </Select>
+      </div>
+
+      <div v-if="type === 'video'">
+        <Select
+          v-model="modelVideoPath"
+          @input="setTexture('video')"
+          :disabled="!videos"
+          style="width: 100%"
+        >
+          <option selected value="">No video</option>
+          <option
+            v-for="output in videos"
+            :key="output.path"
+            :value="output.path"
             >{{ output.name }}</option
           >
-        </optgroup>
-      </select>
-    </div>
+        </Select>
+      </div>
+    </c>
 
-    <div v-if="type === 'image'">
-      <select
-        v-model="modelImagePath"
-        @change="setTexture('image')"
-        :disabled="!images"
-      >
-        <option selected value="">No image</option>
-        <option
-          v-for="(image, index) in images"
-          :key="index"
-          :value="image.path"
-          >{{ image.name }}</option
-        >
-      </select>
-    </div>
-
-    <div v-if="type === 'video'">
-      <select
-        v-model="modelVideoPath"
-        @change="setTexture('video')"
-        :disabled="!videos"
-      >
-        <option selected value="">No video</option>
-        <option
-          v-for="output in videos"
-          :key="output.path"
-          :value="output.path"
-          >{{ output.name }}</option
-        >
-      </select>
-
+    <c span="2">
       <VideoControl
         v-if="type === 'video' && modelVideoPath && value.id"
         :video-id="value.id"
       />
-    </div>
-  </div>
+    </c>
+  </grid>
 </template>
 
 <script>
@@ -100,7 +120,10 @@ export default {
       this.value.type && this.value.type.length
         ? this.value.type
         : this.textureTypes[0];
-    this.modelImagePath = this.value.options?.path || "";
+    this.modelImagePath =
+      (this.value.type === "image" && this.value.options?.path) || "";
+    this.modelVideoPath =
+      (this.value.type === "video" && this.value.options?.path) || "";
     this.modelCanvasId = this.value.options?.id || "";
   },
 
