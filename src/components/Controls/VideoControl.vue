@@ -19,9 +19,10 @@
               max="10"
               step="0.01"
               style="width: 100%"
-              v-model="playbackRate"
+              @input="playbackRateInput"
+              :value="playbackrate"
           /></c>
-          <c span="3">{{ playbackRate }}</c>
+          <c span="3">{{ playbackrate }}</c>
         </grid>
       </c>
     </grid>
@@ -34,47 +35,54 @@ export const VideoControl = {
     videoId: {
       required: true,
       type: "string"
-    }
-  },
+    },
 
-  data() {
-    return {
-      playbackRate: 1,
-      paused: false
-    };
-  },
+    paused: {
+      required: true,
+      type: "boolean"
+    },
 
-  computed: {
-    video() {
-      return this.$modV.videos[this.videoId]?.video;
+    playbackrate: {
+      required: true,
+      type: "number"
     }
   },
 
   created() {
-    const { video } = this;
-    this.playbackRate = video.playbackRate;
-    this.paused = video.paused;
+    const video = this.$modV.videos[this.videoId]?.video;
+    this.$emit("ratechange", video.playbackrate);
+    this.$emit(video.paused ? "pause" : "play");
   },
 
   methods: {
-    onClickPlayPause() {
-      this.paused = !this.paused;
+    getVideo() {
+      // using a method instead of a computed property because of issues with Vue reactivity
+      return this.$modV.videos[this.videoId]?.video;
+    },
 
-      if (this.paused) {
-        this.video.pause();
+    onClickPlayPause() {
+      const video = this.getVideo();
+
+      if (video.paused) {
+        video.play();
+        this.$emit("play");
       } else {
-        this.video.play();
+        video.pause();
+        this.$emit("pause");
       }
     },
 
     onClickRestart() {
-      this.video.currentTime = 0;
-    }
-  },
+      const video = this.getVideo();
+      video.currentTime = 0;
+      this.$emit("timeupdate", 0);
+    },
 
-  watch: {
-    playbackRate(value) {
-      this.video.playbackRate = value;
+    playbackRateInput(e) {
+      const video = this.getVideo();
+      const playbackRate = parseFloat(e.target.value);
+      video.playbackRate = playbackRate;
+      this.$emit("ratechange", playbackRate);
     }
   }
 };

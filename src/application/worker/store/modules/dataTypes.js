@@ -30,8 +30,8 @@ const state = {
   texture: {
     async create(textureDefinition = {}, isGallery) {
       const { type, options } = textureDefinition;
-      textureDefinition.location = "";
-      textureDefinition.id = "";
+      textureDefinition.location = textureDefinition.location ?? "";
+      textureDefinition.id = textureDefinition.id ?? "";
 
       if (type === "image") {
         const { path } = options;
@@ -48,7 +48,7 @@ const state = {
         textureDefinition.id = id;
       }
 
-      if (type === "video") {
+      if (type === "video" && !textureDefinition.id) {
         const { path } = options;
         let id;
         try {

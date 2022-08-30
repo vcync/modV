@@ -89,6 +89,11 @@
       <VideoControl
         v-if="type === 'video' && modelVideoPath && value.id"
         :video-id="value.id"
+        :paused="value.options.paused ?? false"
+        :playbackrate="value.options.playbackrate ?? 1"
+        @pause="videoPause"
+        @play="videoPlay"
+        @ratechange="videoRateChange"
       />
     </c>
   </grid>
@@ -189,6 +194,8 @@ export default {
           return;
         }
 
+        textureDefinition.options.paused = false;
+        textureDefinition.options.playbackrate = 1;
         textureDefinition.options.path = this.modelVideoPath;
       }
 
@@ -201,6 +208,31 @@ export default {
       }
 
       this.$emit("input", textureDefinition);
+    },
+
+    updateTextureDefinition(updatedValues) {
+      this.$emit("input", {
+        ...this.value,
+        ...updatedValues
+      });
+    },
+
+    videoPause() {
+      this.updateTextureDefinition({
+        options: { ...this.value.options, paused: true }
+      });
+    },
+
+    videoPlay() {
+      this.updateTextureDefinition({
+        options: { ...this.value.options, paused: false }
+      });
+    },
+
+    videoRateChange(playbackrate) {
+      this.updateTextureDefinition({
+        options: { ...this.value.options, playbackrate }
+      });
     }
   },
 
