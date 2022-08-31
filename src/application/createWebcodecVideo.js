@@ -1,4 +1,4 @@
-export function createWebcodecVideo(id, url) {
+export function createWebcodecVideo({ id, url, textureDefinition }) {
   return new Promise(async (resolve, reject) => {
     const video = document.createElement("video");
     video.setAttribute("crossorigin", "anonymous");
@@ -32,6 +32,11 @@ export function createWebcodecVideo(id, url) {
     };
 
     video.setAttribute("src", url);
-    await video.play();
+    video.playbackRate = textureDefinition?.options?.playbackrate;
+    if (textureDefinition?.options?.paused) {
+      video.pause();
+    } else {
+      video.play();
+    }
   });
 }

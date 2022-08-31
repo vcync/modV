@@ -9,15 +9,20 @@ const getters = {
 };
 
 const actions = {
-  createVideoFromPath({ rootState, commit }, { path: filePath }) {
-    const id = uuidv4();
-    const path = `modv://${rootState.media.path}${filePath}`;
+  createVideoFromPath({ rootState, commit }, textureDefinition) {
+    const {
+      id = uuidv4(),
+      options: { path }
+    } = textureDefinition;
+
+    const url = `modv://${rootState.media.path}${path}`;
 
     if (typeof window !== "undefined") {
       self.postMessage({
         type: "createWebcodecVideo",
         id,
-        path
+        url,
+        textureDefinition
       });
     }
 

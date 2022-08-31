@@ -80,10 +80,7 @@ export default class ModV {
       // }
 
       if (type === "createWebcodecVideo") {
-        const videoContext = await this.createWebcodecVideo(
-          message.id,
-          message.path
-        );
+        const videoContext = await this.createWebcodecVideo(message);
         this.videos[videoContext.id] = videoContext;
       }
 

@@ -190,7 +190,7 @@ export default {
       }
 
       if (type === "video") {
-        if (!this.modelVideoPath) {
+        if (this.modelVideoPath === this.value?.options?.path) {
           return;
         }
 

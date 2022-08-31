@@ -28,10 +28,10 @@ const state = {
     inputs: () => ({ r: 0, g: 0, b: 0, a: 0 })
   },
   texture: {
-    async create(textureDefinition = {}, isGallery) {
+    async create(textureDefinition = {}, isGallery, useExistingData = false) {
       const { type, options } = textureDefinition;
       textureDefinition.location = textureDefinition.location ?? "";
-      textureDefinition.id = textureDefinition.id ?? "";
+      // textureDefinition.id = textureDefinition.id ?? "";
 
       if (type === "image") {
         const { path } = options;
@@ -48,13 +48,13 @@ const state = {
         textureDefinition.id = id;
       }
 
-      if (type === "video" && !textureDefinition.id) {
-        const { path } = options;
+      if (type === "video" && (useExistingData || !textureDefinition.id)) {
         let id;
         try {
-          ({ id } = await store.dispatch("videos/createVideoFromPath", {
-            path
-          }));
+          ({ id } = await store.dispatch(
+            "videos/createVideoFromPath",
+            textureDefinition
+          ));
         } catch (e) {
           console.error(e);
         }

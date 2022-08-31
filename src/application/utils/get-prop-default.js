@@ -15,7 +15,8 @@ export default async function getPropDefault(
 
     return await store.state.dataTypes[type].create(
       propData,
-      module.meta.isGallery
+      module.meta.isGallery,
+      useExistingData
     );
   }
 
