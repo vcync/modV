@@ -131,7 +131,7 @@ const actions = {
       name,
       id,
       clearing: args.clearing || false,
-      enabled: args.enabled || GROUP_DISABLED,
+      enabled: Number(args.enabled) || GROUP_DISABLED,
       hidden: args.hidden || false,
       modules: args.modules || [],
       inherit,
