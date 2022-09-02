@@ -15,3 +15,7 @@ export default {
     return 512;
   }
 };
+
+export const GROUP_DISABLED = 0;
+export const GROUP_ENABLED = 1;
+export const GROUP_DRAW_TO_OUTPUT = 2;

@@ -15,6 +15,7 @@ import PromiseWorker from "promise-worker-transferable";
 import Vue from "vue";
 import { ipcRenderer } from "electron";
 import { app } from "@electron/remote";
+import { GROUP_ENABLED } from "./constants";
 
 let imageBitmap;
 const imageBitmapQueue = [];
@@ -132,7 +133,7 @@ export default class ModV {
     };
 
     // Make the default group
-    this.store.dispatch("groups/createGroup", { enabled: true });
+    this.store.dispatch("groups/createGroup", { enabled: GROUP_ENABLED });
 
     window.addEventListener("beforeunload", () => true);
   }

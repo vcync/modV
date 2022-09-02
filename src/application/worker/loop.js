@@ -2,7 +2,7 @@
 import get from "lodash.get";
 import store from "./store";
 import map from "../utils/map";
-import constants from "../constants";
+import constants, { GROUP_DISABLED, GROUP_ENABLED } from "../constants";
 import { applyWindow } from "meyda/src/utilities";
 
 const meyda = { windowing: applyWindow };
@@ -142,7 +142,7 @@ function loop(delta, features, fftOutput) {
     const isGalleryGroup = group.name === constants.GALLERY_GROUP_NAME;
 
     const groupModulesLength = group.modules.length;
-    if (!group.enabled || group.alpha < 0.001) {
+    if (group.enabled === GROUP_DISABLED || group.alpha < 0.001) {
       continue;
     }
 
@@ -286,7 +286,7 @@ function loop(delta, features, fftOutput) {
       }
     }
 
-    if (!group.hidden) {
+    if (!group.hidden && group.enabled === GROUP_ENABLED) {
       lastCanvas = drawTo.canvas;
     }
   }
@@ -307,7 +307,7 @@ function loop(delta, features, fftOutput) {
       modules
     } = group;
     const groupModulesLength = modules.length;
-    if (!enabled || groupModulesLength < 1 || !(alpha > 0)) {
+    if (enabled !== GROUP_ENABLED || groupModulesLength < 1 || !(alpha > 0)) {
       continue;
     }
 

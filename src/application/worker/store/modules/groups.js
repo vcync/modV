@@ -1,6 +1,6 @@
 import SWAP from "./common/swap";
 import store from "../";
-import constants from "../../../constants";
+import constants, { GROUP_DISABLED } from "../../../constants";
 import uuidv4 from "uuid/v4";
 import { applyExpression } from "../../../utils/apply-expression";
 
@@ -15,7 +15,8 @@ import { applyExpression } from "../../../utils/apply-expression";
  *
  * @property {Array}   modules             The draw order of the Modules contained within the Group
  *
- * @property {Boolean} enabled             Indicates whether the Group should be drawn
+ * @property {Number}  enabled             Indicates whether the Group should be drawn. 0: not drawn,
+ *                                         1: drawn, 2: not drawn to output canvas
  *
  * @property {Number}  alpha               The level of opacity, between 0 and 1, the Group should
  *                                         be drawn at
@@ -33,9 +34,6 @@ import { applyExpression } from "../../../utils/apply-expression";
  * @property {Boolean} clearing            Indicates whether the Group should clear before redraw
  *
  * @property {String}  compositeOperation  The {@link Blendmode} the Group muxes with
- *
- * @property {Boolean} drawToOutput        Indicates whether the Group should draw to the output
- *                                         canvas
  *
  * @property {String}  drawToCanvasId      The ID of the auxillary Canvas to draw the Group to,
  *                                         null indicates the Group should draw to the main output
@@ -133,7 +131,7 @@ const actions = {
       name,
       id,
       clearing: args.clearing || false,
-      enabled: args.enabled || false,
+      enabled: args.enabled || GROUP_DISABLED,
       hidden: args.hidden || false,
       modules: args.modules || [],
       inherit,

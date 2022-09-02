@@ -164,7 +164,12 @@
       </grid>
     </div>
     <div class="group__left">
-      <Checkbox class="group__enabledCheckbox" v-model="enabled" />
+      <Checkbox
+        class="group__enabledCheckbox"
+        v-model="enabled"
+        allowPartial="true"
+        title="alt-click to skip drawing to output canvas"
+      />
       <button
         class="group__controlsButton"
         :class="{ 'group__controlsButton-hidden': !controlsShown }"
