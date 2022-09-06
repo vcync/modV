@@ -44,6 +44,15 @@ export default function windowHandler() {
     };
   }
 
+  function setSize(win) {
+    const { innerWidth: width, innerHeight: height } = win;
+
+    this.store.dispatch("size/setSize", {
+      width,
+      height
+    });
+  }
+
   this._store.subscribe(async ({ type, payload }) => {
     if (type === "windows/ADD_WINDOW") {
       const { width, height, backgroundColor, title, id } = payload;
@@ -108,14 +117,11 @@ export default function windowHandler() {
 
         // Setup the new requestAnimationFrame()
         timer = requestAnimationFrame(() => {
-          const { innerWidth: width, innerHeight: height } = win;
-
-          this.store.dispatch("size/setSize", {
-            width,
-            height
-          });
+          setSize.call(this, win);
         });
       });
+
+      setSize.call(this, win);
     }
   });
 

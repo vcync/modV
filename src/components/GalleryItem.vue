@@ -12,6 +12,8 @@
 </template>
 
 <script>
+import { GROUP_ENABLED, GROUP_DISABLED } from "../application/constants.js";
+
 export default {
   props: ["moduleName", "groupId"],
 
@@ -95,7 +97,7 @@ export default {
         groupId: this.groupId,
         data: {
           drawToCanvasId: this.outputId,
-          enabled: true
+          enabled: GROUP_ENABLED
         }
       });
 
@@ -116,7 +118,7 @@ export default {
       this.$modV.store.commit("groups/UPDATE_GROUP", {
         groupId: this.groupId,
         data: {
-          enabled: false
+          enabled: GROUP_DISABLED
         }
       });
     },
