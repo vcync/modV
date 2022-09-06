@@ -12,7 +12,11 @@ async function start() {
   const get = require("lodash.get");
 
   const { tick: frameTick } = require("./frame-counter");
-  const { getFeatures, setFeatures } = require("./audio-features");
+  const {
+    getFeatures,
+    setFeatures,
+    setupAudioStream
+  } = require("./audio-features");
   // const featureAssignmentPlugin = require("../plugins/feature-assignment");
 
   let interval = store.getters["fps/interval"];
@@ -246,14 +250,14 @@ async function start() {
     }
   }
 
-  function frameActions(delta) {
+  async function frameActions(delta) {
     sendCommitQueue();
-    self.postMessage({
-      type: "tick",
-      payload: delta
-    });
+    // self.postMessage({
+    //   type: "tick",
+    //   payload: delta
+    // });
 
-    loop(delta, getFeatures(), fftOutput);
+    loop(delta, await getFeatures(), fftOutput);
 
     frameTick();
     frames += 1;
@@ -284,6 +288,12 @@ async function start() {
         const context = payload.getContext("2d");
         store.dispatch("outputs/setMainOutput", context);
       }
+
+      return;
+    }
+
+    if (type === "audioStream") {
+      setupAudioStream(payload.stream);
 
       return;
     }

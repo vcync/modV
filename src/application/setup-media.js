@@ -1,6 +1,3 @@
-import Meyda from "meyda";
-import constants from "./constants";
-
 let floatFrequencyDataArray;
 let byteFrequencyDataArray;
 let analyserNode;
@@ -177,15 +174,31 @@ async function setupMedia({ audioId, videoId, useDefaultDevices = false }) {
     // Connect the gain node to the output (audio->(analyser)->gain->destination)
     this.gainNode.connect(this.audioContext.destination);
 
+    // Create MediaStreamTrackProcessor
+    const [track] = audioMediaStream.getAudioTracks();
+    // eslint-disable-next-line
+    const processor = new MediaStreamTrackProcessor(track);
+    const frameStream = processor.readable;
+
+    this.$worker.postMessage(
+      {
+        type: "audioStream",
+        payload: {
+          stream: frameStream
+        }
+      },
+      [frameStream]
+    );
+
     // Set up Meyda
     // eslint-disable-next-line new-cap
-    this.meyda = new Meyda.createMeydaAnalyzer({
-      audioContext: this.audioContext,
-      source: this.audioStream,
-      bufferSize: constants.AUDIO_BUFFER_SIZE,
-      windowingFunction: "rect",
-      featureExtractors: ["complexSpectrum"]
-    });
+    // this.meyda = new Meyda.createMeydaAnalyzer({
+    //   audioContext: this.audioContext,
+    //   source: this.audioStream,
+    //   bufferSize: constants.AUDIO_BUFFER_SIZE,
+    //   windowingFunction: "rect",
+    //   featureExtractors: ["complexSpectrum"]
+    // });
 
     store.commit("mediaStream/SET_CURRENT_AUDIO_SOURCE", {
       audioId: audioSourceId

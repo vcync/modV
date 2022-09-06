@@ -1,10 +1,5 @@
 import Worker from "worker-loader!./worker/index.worker.js";
-import {
-  setupMedia,
-  enumerateDevices,
-  getByteFrequencyData
-} from "./setup-media";
-import setupBeatDetektor from "./setup-beat-detektor";
+import { setupMedia, enumerateDevices } from "./setup-media";
 import setupMidi from "./setup-midi";
 
 import store from "./worker/store";
@@ -25,7 +20,6 @@ export default class ModV {
   _imageCapture;
   setupMedia = setupMedia;
   enumerateDevices = enumerateDevices;
-  setupBeatDetektor = setupBeatDetektor;
   setupMidi = setupMidi;
   windowHandler = windowHandler;
   use = use;
@@ -77,10 +71,10 @@ export default class ModV {
       //   console.log(`⚙️%c ${type}`, "color: red");
       // }
 
-      if (e.data.type === "tick" && this.ready) {
-        this.tick(e.data.payload);
-        return;
-      }
+      // if (e.data.type === "tick" && this.ready) {
+      //   this.tick(e.data.payload);
+      //   return;
+      // }
 
       if (type === "worker-setup-complete") {
         resolver();
@@ -157,8 +151,6 @@ export default class ModV {
     } catch (e) {
       console.error(e);
     }
-
-    this.setupBeatDetektor();
 
     this.canvas = canvas;
     const offscreen = this.canvas.transferControlToOffscreen();
@@ -254,32 +246,29 @@ export default class ModV {
     }
   }
 
-  loop(delta) {
-    const {
-      meyda: { features: featuresToGet }
-    } = this.store.state;
-
-    const features = this.meyda.get(featuresToGet);
-    if (features) {
-      this.updateBeatDetektor(delta, features);
-      features.byteFrequencyData = Array.from(getByteFrequencyData() || []);
-      this.$worker.postMessage({ type: "meyda", payload: features });
-
-      for (let i = 0; i < featuresToGet.length; i += 1) {
-        const feature = featuresToGet[i];
-        this.features[feature] = features[feature];
-      }
-    }
-  }
+  // loop(/* delta */) {
+  // const {
+  //   meyda: { features: featuresToGet }
+  // } = this.store.state;
+  // const features = this.meyda.get(featuresToGet);
+  // if (features) {
+  //   this.updateBeatDetektor(delta, features);
+  //   features.byteFrequencyData = Array.from(getByteFrequencyData() || []);
+  //   this.$worker.postMessage({ type: "meyda", payload: features });
+  //   for (let i = 0; i < featuresToGet.length; i += 1) {
+  //     const feature = featuresToGet[i];
+  //     this.features[feature] = features[feature];
+  //   }
+  // }
+  // }
 
   setSize({ width, height }) {
     this.store.dispatch("size/setSize", { width, height });
   }
 
-  tick(delta) {
-    this.loop(delta);
-    this.inputLoop(delta);
-  }
+  // tick(delta) {
+  //   this.inputLoop(delta);
+  // }
 
   async generatePreset() {
     return await this.$asyncWorker.postMessage({
