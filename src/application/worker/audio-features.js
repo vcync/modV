@@ -13,14 +13,21 @@ let frame;
 let frameReader;
 let stream;
 
-const beatDetektor = new BeatDetektor(120, 180);
-const beatDetektorKick = new BeatDetektor.modules.vis.BassKick();
+let beatDetektor;
+let beatDetektorKick;
+
+const setupBeatDetektor = () => {
+  beatDetektor = new BeatDetektor(120, 180);
+  beatDetektorKick = new BeatDetektor.modules.vis.BassKick();
+};
 
 const updateBeatDetektor = (delta, features) => {
   if (!features) {
     return;
   }
-
+  if (!beatDetektor) {
+    setupBeatDetektor();
+  }
   beatDetektor.process(delta / 1000.0, features.complexSpectrum.real);
   beatDetektorKick.process(beatDetektor);
   const kick = beatDetektorKick.isKick();
