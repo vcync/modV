@@ -126,7 +126,8 @@ function removeModule(module) {
 }
 
 function createPresetData(module) {
-  return threeModuleData[module.meta.name];
+  delete module.data.scene;
+  return module.data;
 }
 
 function loadPresetData(module, data) {
