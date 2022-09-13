@@ -135,23 +135,23 @@ function updateModule({
   return dataUpdated ?? data;
 }
 
-async function setupModule(module) {
-  const { data, scene, camera } = await module.setupThree({
+async function setupModule(moduleDefinition) {
+  const { data, scene, camera } = await moduleDefinition.setupThree({
     THREE,
     inputTexture,
-    data: module.data || {},
+    data: moduleDefinition.data || {},
     width: renderer.domElement.width,
     height: renderer.domElement.height
   });
 
-  threeModuleData[module.meta.name] = {
+  threeModuleData[moduleDefinition.meta.name] = {
     scene,
     camera
   };
 
-  module.data = data;
+  moduleDefinition.data = data;
 
-  return module;
+  return moduleDefinition;
 }
 
 function resizeModule({ moduleDefinition, canvas, data, props }) {
