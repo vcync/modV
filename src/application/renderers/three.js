@@ -70,9 +70,9 @@ function render({
   inputTexture.image = inputTextureCanvas.transferToImageBitmap();
   inputTexture.needsUpdate = true;
 
-  const { scene } = threeModuleData[module.meta.name];
+  const { scene, camera } = threeModuleData[module.meta.name];
 
-  const { camera } = module.draw({
+  module.draw({
     THREE,
     inputTexture,
     canvas,
@@ -83,7 +83,8 @@ function render({
     bpm,
     kick,
     props,
-    data: { ...data, scene },
+    data: { ...data },
+    scene,
     fftCanvas
   });
 
@@ -98,8 +99,44 @@ function render({
   context.drawImage(threeCanvas, 0, 0, canvas.width, canvas.height);
 }
 
+/**
+ * Called each frame to update the Module
+ */
+function updateModule({
+  moduleDefinition,
+  module,
+  props,
+  data,
+  canvas,
+  context,
+  delta
+}) {
+  const { scene, camera } = threeModuleData[moduleDefinition.meta.name];
+
+  const {
+    data: dataUpdated,
+    scene: sceneUpdated,
+    camera: cameraUpdated
+  } = moduleDefinition.update({
+    props,
+    data,
+    canvas,
+    context,
+    delta,
+    scene,
+    camera
+  });
+
+  threeModuleData[module.meta.name] = {
+    scene: sceneUpdated ?? scene,
+    camera: cameraUpdated ?? camera
+  };
+
+  return dataUpdated ?? data;
+}
+
 async function setupModule(module) {
-  const moduleData = await module.setupThree({
+  const { data, scene, camera } = await module.setupThree({
     THREE,
     inputTexture,
     data: module.data || {},
@@ -107,18 +144,19 @@ async function setupModule(module) {
     height: renderer.domElement.height
   });
 
-  // We have to use the name for now, as module.$id is not defined yet.
-  // This gives us the limitation that we can't have multiple instances of the
-  // same three-module in modV as they would share the same scene
   threeModuleData[module.meta.name] = {
-    scene: moduleData.scene
+    scene,
+    camera
   };
 
-  delete moduleData.scene;
-
-  module.data = moduleData;
+  module.data = data;
 
   return module;
+}
+
+function resizeModule({ moduleDefinition, canvas, data, props }) {
+  const { scene, camera } = threeModuleData[moduleDefinition.meta.name];
+  return moduleDefinition.resize({ canvas, data, props, camera, scene });
 }
 
 function removeModule(module) {
@@ -126,7 +164,6 @@ function removeModule(module) {
 }
 
 function createPresetData(module) {
-  delete module.data.scene;
   return module.data;
 }
 
@@ -142,7 +179,9 @@ function resize({ width, height }) {
 
 export default {
   render,
+  updateModule,
   resize,
+  resizeModule,
   setupModule,
   removeModule,
   createPresetData,

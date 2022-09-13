@@ -142,7 +142,6 @@ async function setupModule(Module) {
   }
 }
 
-
 function render({ module, props, canvas, context, pipeline, kick, fftCanvas }) {
   resize({ width: canvas.width, height: canvas.height });
 
@@ -214,4 +213,19 @@ function render({ module, props, canvas, context, pipeline, kick, fftCanvas }) {
   context.drawImage(shaderCanvas, 0, 0, canvas.width, canvas.height);
 }
 
-export { setupModule, render, resize };
+/**
+ * Called each frame to update the Module
+ */
+function updateModule({ module, props, data, canvas, context, delta }) {
+  const { data: dataUpdated } = module.update({
+    props,
+    data,
+    canvas,
+    context,
+    delta
+  });
+
+  return dataUpdated ?? data;
+}
+
+export { setupModule, render, resize, updateModule };

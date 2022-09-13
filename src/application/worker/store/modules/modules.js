@@ -348,19 +348,24 @@ const actions = {
     }
 
     if (moduleDefinition && "resize" in moduleDefinition) {
-      const { data } = writeTo.active[module.$id];
-      const returnedData = moduleDefinition.resize({
-        canvas,
-        data: { ...data },
-        props: module.props
-      });
-      if (returnedData) {
-        commit("UPDATE_ACTIVE_MODULE", {
-          id: module.$id,
-          key: "data",
-          value: returnedData,
-          writeToSwap
+      const { renderers } = rootState;
+      if ("resizeModule" in renderers[module.meta.type]) {
+        const { data, props } = module;
+        const returnedData = renderers[module.meta.type].resizeModule({
+          moduleDefinition,
+          canvas,
+          data: { ...data },
+          props
         });
+
+        if (returnedData) {
+          commit("UPDATE_ACTIVE_MODULE", {
+            id: module.$id,
+            key: "data",
+            value: returnedData,
+            writeToSwap
+          });
+        }
       }
     }
 
@@ -476,14 +481,19 @@ const actions = {
     });
   },
 
-  resize({ commit, state }, { moduleId, width, height }) {
+  resize({ commit, state, rootState }, { moduleId, width, height }) {
     const module = state.active[moduleId];
     const moduleName = module.$moduleName;
     const moduleDefinition = state.registered[moduleName];
+    const { renderers } = rootState;
 
-    if ("resize" in moduleDefinition) {
+    if (
+      "resize" in moduleDefinition &&
+      "resizeModule" in renderers[module.meta.type]
+    ) {
       const { data, props } = module;
-      const returnedData = moduleDefinition.resize({
+      const returnedData = renderers[module.meta.type].resizeModule({
+        moduleDefinition,
         canvas: { width, height },
         data: { ...data },
         props

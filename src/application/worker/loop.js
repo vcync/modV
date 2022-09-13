@@ -228,10 +228,10 @@ function loop(delta, features, fftOutput) {
       let moduleData = data;
 
       if (moduleDefinition.update) {
-        moduleData = moduleDefinition.update({
+        moduleData = renderers[module.meta.type].updateModule({
+          moduleDefinition,
           props,
           data: { ...data },
-          // canvas: drawTo.canvas,
           canvas,
           context: drawTo,
           delta

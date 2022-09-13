@@ -121,6 +121,8 @@ async function start() {
       render,
       setupModule,
       removeModule,
+      updateModule,
+      resizeModule,
       tick,
       resize,
       createPresetData,
@@ -133,6 +135,8 @@ async function start() {
       resize,
       setupModule,
       removeModule,
+      updateModule,
+      resizeModule,
       createPresetData,
       loadPresetData,
       tick

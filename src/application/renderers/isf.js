@@ -60,6 +60,25 @@ function render({ module, canvas, context, pipeline, props }) {
   context.drawImage(isfCanvas, 0, 0, canvas.width, canvas.height);
 }
 
+/**
+ * Called each frame to update the Module
+ */
+function updateModule({ module, props, data, canvas, context, delta }) {
+  const { data: dataUpdated } = module.update({
+    props,
+    data,
+    canvas,
+    context,
+    delta
+  });
+
+  return dataUpdated ?? data;
+}
+
+function resizeModule({ moduleDefinition, canvas, data, props }) {
+  return moduleDefinition.resize({ canvas, data, props });
+}
+
 async function setupModule(module) {
   let fragmentShader = module.fragmentShader;
   let vertexShader = module.vertexShader;
@@ -176,5 +195,7 @@ async function setupModule(module) {
 export default {
   setupModule,
   render,
+  updateModule,
+  resizeModule,
   resize
 };
