@@ -97,20 +97,23 @@ async function initialiseModuleProperties(
 }
 
 const actions = {
-  async registerModule({ commit, rootState }, { module, hot = false }) {
+  async registerModule(
+    { commit, rootState },
+    { module: moduleDefinition, hot = false }
+  ) {
     const { renderers } = rootState;
 
-    if (!module) {
+    if (!moduleDefinition) {
       console.error("No module to register.");
       return;
     }
 
-    if (!module.meta) {
+    if (!moduleDefinition.meta) {
       console.error("Malformed module.");
       return;
     }
 
-    const { name, type } = module.meta;
+    const { name, type } = moduleDefinition.meta;
 
     const existingModuleWithDuplicateName = Object.values(
       state.registered
@@ -123,7 +126,7 @@ const actions = {
 
     if (renderers[type].setupModule) {
       try {
-        module = await renderers[type].setupModule(module);
+        moduleDefinition = await renderers[type].setupModule(moduleDefinition);
       } catch (e) {
         console.error(
           `Error in ${type} renderer setup whilst registering "${name}". This module was ommited from registration. \n\n${e}`
@@ -133,7 +136,7 @@ const actions = {
       }
     }
 
-    commit("ADD_REGISTERED_MODULE", { module });
+    commit("ADD_REGISTERED_MODULE", { module: moduleDefinition });
 
     if (hot) {
       const activeModuleValues = Object.values(state.active);
@@ -146,9 +149,9 @@ const actions = {
             canvas: { width: 0, height: 0 }
           };
 
-          if ("init" in module) {
+          if ("init" in moduleDefinition) {
             const { data } = activeModule;
-            const returnedData = module.init({
+            const returnedData = moduleDefinition.init({
               canvas,
               data: { ...data },
               props: activeModule.props
@@ -348,19 +351,32 @@ const actions = {
     }
 
     if (moduleDefinition && "resize" in moduleDefinition) {
-      const { data } = writeTo.active[module.$id];
-      const returnedData = moduleDefinition.resize({
-        canvas,
-        data: { ...data },
-        props: module.props
-      });
-      if (returnedData) {
-        commit("UPDATE_ACTIVE_MODULE", {
-          id: module.$id,
-          key: "data",
-          value: returnedData,
-          writeToSwap
-        });
+      const { renderers } = rootState;
+      if ("resizeModule" in renderers[module.meta.type]) {
+        const { data, props } = module;
+        let returnedData;
+
+        try {
+          returnedData = renderers[module.meta.type].resizeModule({
+            moduleDefinition,
+            canvas,
+            data: { ...data },
+            props
+          });
+        } catch (error) {
+          console.error(
+            `module#resize() in ${module.meta.name} threw an error: ${error}`
+          );
+        }
+
+        if (returnedData) {
+          commit("UPDATE_ACTIVE_MODULE", {
+            id: module.$id,
+            key: "data",
+            value: returnedData,
+            writeToSwap
+          });
+        }
       }
     }
 
@@ -476,18 +492,31 @@ const actions = {
     });
   },
 
-  resize({ commit, state }, { moduleId, width, height }) {
+  resize({ commit, state, rootState }, { moduleId, width, height }) {
     const module = state.active[moduleId];
     const moduleName = module.$moduleName;
     const moduleDefinition = state.registered[moduleName];
+    const { renderers } = rootState;
 
-    if ("resize" in moduleDefinition) {
+    if (
+      "resize" in moduleDefinition &&
+      "resizeModule" in renderers[module.meta.type]
+    ) {
       const { data, props } = module;
-      const returnedData = moduleDefinition.resize({
-        canvas: { width, height },
-        data: { ...data },
-        props
-      });
+      let returnedData;
+
+      try {
+        returnedData = renderers[module.meta.type].resizeModule({
+          moduleDefinition,
+          canvas: { width, height },
+          data: { ...data },
+          props
+        });
+      } catch (error) {
+        console.error(
+          `module#resize() in ${module.meta.name} threw an error: ${error}`
+        );
+      }
 
       if (returnedData) {
         commit("UPDATE_ACTIVE_MODULE", {
@@ -522,12 +551,26 @@ const actions = {
     }
   },
 
-  createPresetData() {
+  createPresetData({ rootState }) {
+    const { renderers } = rootState;
+
     return Object.values(state.active)
       .filter(module => !module.meta.isGallery)
       .reduce((obj, module) => {
+        const {
+          meta: { type },
+          data
+        } = module;
+
         obj[module.$id] = { ...module };
         delete obj[module.$id].$status;
+
+        if (renderers[type].createPresetData) {
+          module.data = {
+            ...data,
+            ...renderers[type].createPresetData(module)
+          };
+        }
 
         return obj;
       }, {});
@@ -549,14 +592,22 @@ const actions = {
     return;
   },
 
-  async removeActiveModule({ commit }, { moduleId, writeToSwap }) {
+  async removeActiveModule({ commit, rootState }, { moduleId, writeToSwap }) {
     const writeTo = writeToSwap ? swap : state;
 
     const module = writeTo.active[moduleId];
-    const { meta } = module;
+    const {
+      meta,
+      meta: { type }
+    } = module;
 
     if (!module) {
       throw new Error(`No module with id "${moduleId}" found`);
+    }
+
+    const { renderers } = rootState;
+    if (renderers[type].removeActiveModule) {
+      renderers[type].removeActiveModule(module);
     }
 
     const metaInputIds = [
