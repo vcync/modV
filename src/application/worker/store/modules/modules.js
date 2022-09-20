@@ -354,12 +354,20 @@ const actions = {
       const { renderers } = rootState;
       if ("resizeModule" in renderers[module.meta.type]) {
         const { data, props } = module;
-        const returnedData = renderers[module.meta.type].resizeModule({
-          moduleDefinition,
-          canvas,
-          data: { ...data },
-          props
-        });
+        let returnedData;
+
+        try {
+          returnedData = renderers[module.meta.type].resizeModule({
+            moduleDefinition,
+            canvas,
+            data: { ...data },
+            props
+          });
+        } catch (error) {
+          console.error(
+            `module#resize() in ${module.meta.name} threw an error: ${error}`
+          );
+        }
 
         if (returnedData) {
           commit("UPDATE_ACTIVE_MODULE", {
@@ -495,12 +503,20 @@ const actions = {
       "resizeModule" in renderers[module.meta.type]
     ) {
       const { data, props } = module;
-      const returnedData = renderers[module.meta.type].resizeModule({
-        moduleDefinition,
-        canvas: { width, height },
-        data: { ...data },
-        props
-      });
+      let returnedData;
+
+      try {
+        returnedData = renderers[module.meta.type].resizeModule({
+          moduleDefinition,
+          canvas: { width, height },
+          data: { ...data },
+          props
+        });
+      } catch (error) {
+        console.error(
+          `module#resize() in ${module.meta.name} threw an error: ${error}`
+        );
+      }
 
       if (returnedData) {
         commit("UPDATE_ACTIVE_MODULE", {

@@ -85,6 +85,7 @@ function render({
     props,
     data: { ...data },
     scene,
+    camera,
     fftCanvas
   });
 
@@ -104,7 +105,6 @@ function render({
  */
 function updateModule({
   moduleDefinition,
-  module,
   props,
   data,
   canvas,
@@ -118,6 +118,7 @@ function updateModule({
     scene: sceneUpdated,
     camera: cameraUpdated
   } = moduleDefinition.update({
+    THREE,
     props,
     data,
     canvas,
@@ -127,7 +128,7 @@ function updateModule({
     camera
   });
 
-  threeModuleData[module.meta.name] = {
+  threeModuleData[moduleDefinition.meta.name] = {
     scene: sceneUpdated ?? scene,
     camera: cameraUpdated ?? camera
   };
