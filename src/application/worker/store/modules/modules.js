@@ -24,19 +24,17 @@ const sharedPropertyRestrictions = {
   metaQueue: true // will move
 };
 
-const state = {
-  registered: {},
-  active: {},
-  propQueue: {},
-  metaQueue: {}
-};
+function getDefaultState() {
+  return {
+    registered: {},
+    active: {},
+    propQueue: {},
+    metaQueue: {}
+  };
+}
 
-const swap = {
-  registered: {},
-  active: {},
-  propQueue: {},
-  metaQueue: {}
-};
+const state = getDefaultState();
+const swap = getDefaultState();
 
 // this function either creates module properties from an existing module
 // (e.g. loading a preset) or initialises the default value
@@ -721,7 +719,7 @@ const mutations = {
     }
   },
 
-  SWAP: SWAP(swap, () => ({}), sharedPropertyRestrictions)
+  SWAP: SWAP(swap, getDefaultState, sharedPropertyRestrictions)
 };
 
 export default {
