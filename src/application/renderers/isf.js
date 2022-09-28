@@ -1,12 +1,12 @@
 import store from "../worker/store";
 
-import { interactiveShaderFormat } from "interactive-shader-format/dist/build-worker";
-
-const {
-  Renderer: ISFRenderer,
-  Parser: ISFParser,
-  Upgrader: ISFUpgrader
-} = interactiveShaderFormat;
+import {
+  Renderer as ISFRenderer,
+  Parser as ISFParser,
+  Upgrader as ISFUpgrader
+} from "interactive-shader-format/src/main.js";
+import { getFeatures } from "../worker/audio-features";
+import constants from "../constants";
 
 const isfCanvas = new OffscreenCanvas(300, 300);
 const isfContext = isfCanvas.getContext("webgl2", {
@@ -32,6 +32,17 @@ function resize({ width, height }) {
 function render({ module, canvas, context, pipeline, props }) {
   const renderer = renderers[module.meta.name];
   const moduleInputs = inputs[module.meta.name];
+
+  // Only update the audio data if the module has audio inputs to improve performance
+  // for modules that don't use any audio inputs at all
+  if (renderer.hasAudio) {
+    const features = getFeatures();
+    const byteFrequencyData = features.byteFrequencyData;
+    const byteTimeDomainData = features.byteTimeDomainData;
+
+    renderer.audio.setFrequencyValues(byteFrequencyData, byteFrequencyData);
+    renderer.audio.setTimeDomainValues(byteTimeDomainData, byteTimeDomainData);
+  }
 
   if (moduleInputs) {
     for (let i = 0, len = moduleInputs.length; i < len; i++) {
@@ -101,7 +112,11 @@ async function setupModule(moduleDefinition) {
   moduleDefinition.meta.description = parser.metadata.DESCRIPTION;
   moduleDefinition.meta.version = parser.metadata.VSN;
 
-  const renderer = new ISFRenderer(isfContext);
+  const renderer = new ISFRenderer(isfContext, {
+    useWebAudio: false,
+    fftSize: constants.AUDIO_BUFFER_SIZE,
+    hasAudio: parser.hasAudio
+  });
   renderer.loadSource(fragmentShader, vertexShader);
 
   if (!renderer.valid) {

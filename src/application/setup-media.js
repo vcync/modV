@@ -3,6 +3,7 @@ import constants from "./constants";
 
 let floatFrequencyDataArray;
 let byteFrequencyDataArray;
+let byteTimeDomainDataArray;
 let analyserNode;
 
 async function enumerateDevices() {
@@ -156,6 +157,7 @@ async function setupMedia({ audioId, videoId, useDefaultDevices = false }) {
     // Set up arrays for analyser
     floatFrequencyDataArray = new Float32Array(analyserNode.frequencyBinCount);
     byteFrequencyDataArray = new Uint8Array(analyserNode.frequencyBinCount);
+    byteTimeDomainDataArray = new Uint8Array(analyserNode.frequencyBinCount / 2);
 
     // Create a gain node
     this.gainNode = this.audioContext.createGain();
@@ -209,9 +211,15 @@ function getByteFrequencyData() {
   return byteFrequencyDataArray;
 }
 
+function getByteTimeDomainData() {
+  analyserNode.getByteTimeDomainData(byteTimeDomainDataArray);
+  return byteTimeDomainDataArray;
+}
+
 export {
   enumerateDevices,
   setupMedia,
   getFloatFrequencyData,
-  getByteFrequencyData
+  getByteFrequencyData,
+  getByteTimeDomainData
 };
