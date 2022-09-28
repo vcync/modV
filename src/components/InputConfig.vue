@@ -2,6 +2,20 @@
   <div
     class="input-config"
     v-infoView="{ title: iVTitle, body: iVBody, id: 'Input Config Panel' }"
+    v-searchTerms="{
+      terms: [
+        'input link',
+        'input config',
+        'link',
+        'config',
+        'midi',
+        'audio feature',
+        'expression',
+        'smoothing'
+      ],
+      title: 'Input Config',
+      type: 'Panel'
+    }"
   >
     <div v-if="inputConfig">
       <grid class="borders">

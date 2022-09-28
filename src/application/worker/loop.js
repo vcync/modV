@@ -2,7 +2,7 @@
 import get from "lodash.get";
 import store from "./store";
 import map from "../utils/map";
-import constants from "../constants";
+import constants, { GROUP_DISABLED, GROUP_ENABLED } from "../constants";
 import { applyWindow } from "meyda/src/utilities";
 
 const meyda = { windowing: applyWindow };
@@ -64,7 +64,12 @@ function loop(delta, features, fftOutput) {
     const bind = inputs[inputId];
     const link = inputLinks[inputId];
 
-    const { type, location, data } = bind;
+    const {
+      type,
+      location,
+      data,
+      data: { path }
+    } = bind;
 
     const {
       type: linkType,
@@ -81,10 +86,12 @@ function loop(delta, features, fftOutput) {
     // mutation linkTypes are also skipped as they're handled in index.worker.js in
     // the store commit subscription
     if (
-      linkType === "mutation" ||
-      (source === "meyda" &&
-        moduleId &&
-        !store.state.modules.active[moduleId].meta.enabled)
+      (moduleId &&
+        (linkType === "mutation" ||
+          (source === "meyda" &&
+            moduleId &&
+            !store.state.modules.active[moduleId].meta.enabled))) ||
+      linkType === "mutation"
     ) {
       continue;
     }
@@ -103,9 +110,9 @@ function loop(delta, features, fftOutput) {
     }
 
     if (type === "action") {
-      store.dispatch(location, { ...data, data: value });
+      store.dispatch(location, { ...data, data: value, path });
     } else if (type === "commit") {
-      store.commit(location, { ...data, data: value });
+      store.commit(location, { ...data, data: value, path });
     }
   }
 
@@ -135,7 +142,7 @@ function loop(delta, features, fftOutput) {
     const isGalleryGroup = group.name === constants.GALLERY_GROUP_NAME;
 
     const groupModulesLength = group.modules.length;
-    if (!group.enabled || group.alpha < 0.001) {
+    if (group.enabled === GROUP_DISABLED || group.alpha < 0.001) {
       continue;
     }
 
@@ -194,7 +201,11 @@ function loop(delta, features, fftOutput) {
 
       const module = active[group.modules[j]];
 
-      if (!module.meta.enabled || module.meta.alpha < 0.001) {
+      if (
+        !module.meta.enabled ||
+        module.meta.alpha < 0.001 ||
+        module.$status.length
+      ) {
         continue;
       }
 
@@ -217,10 +228,10 @@ function loop(delta, features, fftOutput) {
       let moduleData = data;
 
       if (moduleDefinition.update) {
-        moduleData = moduleDefinition.update({
+        moduleData = renderers[module.meta.type].updateModule({
+          moduleDefinition,
           props,
           data: { ...data },
-          // canvas: drawTo.canvas,
           canvas,
           context: drawTo,
           delta
@@ -275,7 +286,7 @@ function loop(delta, features, fftOutput) {
       }
     }
 
-    if (!group.hidden) {
+    if (!group.hidden && group.enabled === GROUP_ENABLED) {
       lastCanvas = drawTo.canvas;
     }
   }
@@ -296,7 +307,7 @@ function loop(delta, features, fftOutput) {
       modules
     } = group;
     const groupModulesLength = modules.length;
-    if (!enabled || groupModulesLength < 1 || !(alpha > 0)) {
+    if (enabled !== GROUP_ENABLED || groupModulesLength < 1 || !(alpha > 0)) {
       continue;
     }
 

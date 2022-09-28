@@ -1,7 +1,8 @@
 import SWAP from "./common/swap";
 import store from "../";
-import constants from "../../../constants";
+import constants, { GROUP_DISABLED } from "../../../constants";
 import uuidv4 from "uuid/v4";
+import { applyExpression } from "../../../utils/apply-expression";
 
 /**
  * @typedef {Object} Group
@@ -14,7 +15,8 @@ import uuidv4 from "uuid/v4";
  *
  * @property {Array}   modules             The draw order of the Modules contained within the Group
  *
- * @property {Boolean} enabled             Indicates whether the Group should be drawn
+ * @property {Number}  enabled             Indicates whether the Group should be drawn. 0: not drawn,
+ *                                         1: drawn, 2: not drawn to output canvas
  *
  * @property {Number}  alpha               The level of opacity, between 0 and 1, the Group should
  *                                         be drawn at
@@ -32,9 +34,6 @@ import uuidv4 from "uuid/v4";
  * @property {Boolean} clearing            Indicates whether the Group should clear before redraw
  *
  * @property {String}  compositeOperation  The {@link Blendmode} the Group muxes with
- *
- * @property {Boolean} drawToOutput        Indicates whether the Group should draw to the output
- *                                         canvas
  *
  * @property {String}  drawToCanvasId      The ID of the auxillary Canvas to draw the Group to,
  *                                         null indicates the Group should draw to the main output
@@ -132,7 +131,7 @@ const actions = {
       name,
       id,
       clearing: args.clearing || false,
-      enabled: args.enabled || false,
+      enabled: Number(args.enabled) || GROUP_DISABLED,
       hidden: args.hidden || false,
       modules: args.modules || [],
       inherit,
@@ -146,51 +145,63 @@ const actions = {
       })
     };
 
-    const alphaInputBind = await store.dispatch("inputs/addInput", {
-      type: "commit",
-      location: "groups/UPDATE_GROUP_BY_KEY",
-      data: { groupId: group.id, key: "alpha" }
-    });
-    group.alphaInputId = alphaInputBind.id;
+    const inputs = [
+      "alpha",
+      "enabled",
+      "clearing",
+      "inherit",
+      "compositeOperation",
+      "pipeline"
+    ];
+    for (let i = 0; i < inputs.length; i += 1) {
+      const inputName = inputs[i];
+      const idKey = `${inputName}InputId`;
 
-    const enabledInputBind = await store.dispatch("inputs/addInput", {
-      type: "commit",
-      location: "groups/UPDATE_GROUP_BY_KEY",
-      data: { groupId: group.id, key: "enabled" }
-    });
-    group.enabledInputId = enabledInputBind.id;
-
-    const clearingInputBind = await store.dispatch("inputs/addInput", {
-      type: "commit",
-      location: "groups/UPDATE_GROUP_BY_KEY",
-      data: { groupId: group.id, key: "clearing" }
-    });
-    group.clearingInputId = clearingInputBind.id;
-
-    const inheritInputBind = await store.dispatch("inputs/addInput", {
-      type: "commit",
-      location: "groups/UPDATE_GROUP_BY_KEY",
-      data: { groupId: group.id, key: "inherit" }
-    });
-    group.inheritInputId = inheritInputBind.id;
-
-    const coInputBind = await store.dispatch("inputs/addInput", {
-      type: "commit",
-      location: "groups/UPDATE_GROUP_BY_KEY",
-      data: { groupId: group.id, key: "compositeOperation" }
-    });
-    group.compositeOperationInputId = coInputBind.id;
-
-    const pipelineInputBind = await store.dispatch("inputs/addInput", {
-      type: "commit",
-      location: "groups/UPDATE_GROUP_BY_KEY",
-      data: { groupId: group.id, key: "pipeline" }
-    });
-    group.pipelineInputId = pipelineInputBind.id;
+      if (args[idKey] !== undefined) {
+        group[idKey] = args[idKey];
+      } else {
+        group[idKey] = (
+          await store.dispatch("inputs/addInput", {
+            type: "commit",
+            location: "groups/UPDATE_GROUP_BY_KEY",
+            data: { groupId: group.id, key: inputName }
+          })
+        ).id;
+      }
+    }
 
     commit("ADD_GROUP", { group, writeToSwap: args.writeToSwap });
 
     return group;
+  },
+
+  async removeGroup({ commit }, { groupId, writeToSwap }) {
+    const group = state.groups.find(group => group.id === groupId);
+
+    const inputIds = [
+      group.alphaInputId,
+      group.enabledInputId,
+      group.clearingInputId,
+      group.inheritInputId,
+      group.compositeOperationInputId,
+      group.pipelineInputId
+    ];
+
+    for (let i = 0; i < inputIds.length; i += 1) {
+      const inputId = inputIds[i];
+
+      await store.dispatch("inputs/removeInput", {
+        inputId
+      });
+    }
+
+    for (let i = 0; i < group.modules.length; i += 1) {
+      const moduleId = group.modules[i];
+
+      await store.dispatch("modules/removeActiveModule", { moduleId });
+    }
+
+    commit("REMOVE_GROUP", { id: groupId, writeToSwap });
   },
 
   orderByIds({ commit }, { ids }) {
@@ -236,6 +247,16 @@ const actions = {
     }
 
     return;
+  },
+
+  updateGroupInput({ commit }, { groupId, key, data, writeToSwap }) {
+    let dataOut = data;
+
+    const group = state.groups.find(group => group.id === groupId);
+    const inputId = group[`${key}InputId`];
+    dataOut = applyExpression({ inputId, value: dataOut });
+
+    commit("UPDATE_GROUP_BY_KEY", { groupId, key, data: dataOut, writeToSwap });
   }
 };
 
@@ -257,10 +278,21 @@ const mutations = {
   REPLACE_GROUPS(state, { groups, writeToSwap }) {
     const writeTo = writeToSwap ? swap : state;
 
-    writeTo.groups.splice(0);
+    const oldGroups = writeTo.groups.splice(0);
+
     const groupsLength = groups.length;
+    let hasWrittenGalleryId = false;
     for (let i = 0; i < groupsLength; i += 1) {
       writeTo.groups.push(groups[i]);
+      if (groups[i].name === constants.GALLERY_GROUP_NAME) {
+        hasWrittenGalleryId = true;
+      }
+    }
+
+    if (!hasWrittenGalleryId) {
+      writeTo.groups.push(
+        oldGroups.find(group => group.name === constants.GALLERY_GROUP_NAME)
+      );
     }
   },
 

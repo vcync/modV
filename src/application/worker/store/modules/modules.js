@@ -3,8 +3,11 @@ import SWAP from "./common/swap";
 import getNextName from "../../../utils/get-next-name";
 import getPropDefault from "../../../utils/get-prop-default";
 import store from "..";
+import get from "lodash.get";
+import set from "lodash.set";
 
 import uuidv4 from "uuid/v4";
+import { applyExpression } from "../../../utils/apply-expression";
 
 // Any keys marked false or arrays with keys given
 // will not be moved from the base state when swapped
@@ -64,6 +67,28 @@ async function initialiseModuleProperties(
         data: { moduleId: module.$id, prop: propKey }
       });
 
+      if (
+        prop.type in store.state.dataTypes &&
+        store.state.dataTypes[prop.type].inputs
+      ) {
+        const dataTypeInputs = store.state.dataTypes[prop.type].inputs();
+        const dataTypeInputsKeys = Object.keys(dataTypeInputs);
+
+        for (let i = 0; i < dataTypeInputsKeys.length; i += 1) {
+          const key = dataTypeInputsKeys[i];
+          await store.dispatch("inputs/addInput", {
+            type: "action",
+            location: "modules/updateProp",
+            data: {
+              moduleId: module.$id,
+              prop: propKey,
+              path: `[${key}]`
+            },
+            id: `${inputBind.id}-${key}`
+          });
+        }
+      }
+
       module.$props[propKey].id = inputBind.id;
     }
   }
@@ -72,20 +97,23 @@ async function initialiseModuleProperties(
 }
 
 const actions = {
-  async registerModule({ commit, rootState }, { module, hot = false }) {
+  async registerModule(
+    { commit, rootState },
+    { module: moduleDefinition, hot = false }
+  ) {
     const { renderers } = rootState;
 
-    if (!module) {
+    if (!moduleDefinition) {
       console.error("No module to register.");
       return;
     }
 
-    if (!module.meta) {
+    if (!moduleDefinition.meta) {
       console.error("Malformed module.");
       return;
     }
 
-    const { name, type } = module.meta;
+    const { name, type } = moduleDefinition.meta;
 
     const existingModuleWithDuplicateName = Object.values(
       state.registered
@@ -98,7 +126,7 @@ const actions = {
 
     if (renderers[type].setupModule) {
       try {
-        module = await renderers[type].setupModule(module);
+        moduleDefinition = await renderers[type].setupModule(moduleDefinition);
       } catch (e) {
         console.error(
           `Error in ${type} renderer setup whilst registering "${name}". This module was ommited from registration. \n\n${e}`
@@ -108,7 +136,7 @@ const actions = {
       }
     }
 
-    commit("ADD_REGISTERED_MODULE", { module });
+    commit("ADD_REGISTERED_MODULE", { module: moduleDefinition });
 
     if (hot) {
       const activeModuleValues = Object.values(state.active);
@@ -121,9 +149,9 @@ const actions = {
             canvas: { width: 0, height: 0 }
           };
 
-          if ("init" in module) {
+          if ("init" in moduleDefinition) {
             const { data } = activeModule;
-            const returnedData = module.init({
+            const returnedData = moduleDefinition.init({
               canvas,
               data: { ...data },
               props: activeModule.props
@@ -148,16 +176,37 @@ const actions = {
     { moduleName, moduleMeta = {}, existingModule, writeToSwap }
   ) {
     const writeTo = writeToSwap ? swap : state;
-    const moduleDefinition =
-      state.registered[
-        existingModule ? existingModule.$moduleName : moduleName
-      ];
-    const { props = {}, data = {} } = moduleDefinition;
+    const expectedModuleName = existingModule
+      ? existingModule.$moduleName
+      : moduleName;
+    const moduleDefinition = state.registered[expectedModuleName];
 
-    const module = {
-      meta: { ...moduleDefinition.meta, ...moduleMeta },
-      ...existingModule
-    };
+    const { props = {}, data = {} } = moduleDefinition || {};
+
+    let module = {};
+
+    if (moduleDefinition) {
+      module = {
+        meta: { ...moduleDefinition.meta, ...moduleMeta },
+        ...existingModule,
+        $status: []
+      };
+    } else {
+      module = {
+        meta: { ...moduleMeta },
+        ...existingModule,
+        $status: []
+      };
+
+      console.error(
+        `Could not find registered module with name ${expectedModuleName}.`
+      );
+
+      module.$status.push({
+        type: "error",
+        message: `Module "${expectedModuleName}" is not registered. modV will skip this while rendering`
+      });
+    }
 
     if (moduleMeta.isGallery) {
       const existingModuleWithDuplicateNameInGallery = Object.values(
@@ -209,25 +258,25 @@ const actions = {
 
       if (!moduleMeta.isGallery) {
         const alphaInputBind = await store.dispatch("inputs/addInput", {
-          type: "commit",
-          location: "modules/UPDATE_ACTIVE_MODULE_META",
+          type: "action",
+          location: "modules/updateMeta",
           data: { id: module.$id, metaKey: "alpha" }
         });
 
         module.meta.alphaInputId = alphaInputBind.id;
 
         const enabledInputBind = await store.dispatch("inputs/addInput", {
-          type: "commit",
-          location: "modules/UPDATE_ACTIVE_MODULE_META",
+          type: "action",
+          location: "modules/updateMeta",
           data: { id: module.$id, metaKey: "enabled" }
         });
 
         module.meta.enabledInputId = enabledInputBind.id;
 
         const coInputBind = await store.dispatch("inputs/addInput", {
-          type: "commit",
-          location: "modules/UPDATE_ACTIVE_MODULE_META",
-          data: { id: module.$id, metaKey: "compositeOperation" }
+          type: "action",
+          location: "modules/updateMeta",
+          data: { moduleId: module.$id, metaKey: "compositeOperation" }
         });
 
         module.meta.compositeOperationInputId = coInputBind.id;
@@ -283,7 +332,7 @@ const actions = {
       canvas: { width: 0, height: 0 }
     };
 
-    if ("init" in moduleDefinition) {
+    if (moduleDefinition && "init" in moduleDefinition) {
       const { data } = writeTo.active[module.$id];
       const returnedData = moduleDefinition.init({
         canvas,
@@ -301,20 +350,33 @@ const actions = {
       }
     }
 
-    if ("resize" in moduleDefinition) {
-      const { data } = writeTo.active[module.$id];
-      const returnedData = moduleDefinition.resize({
-        canvas,
-        data: { ...data },
-        props: module.props
-      });
-      if (returnedData) {
-        commit("UPDATE_ACTIVE_MODULE", {
-          id: module.$id,
-          key: "data",
-          value: returnedData,
-          writeToSwap
-        });
+    if (moduleDefinition && "resize" in moduleDefinition) {
+      const { renderers } = rootState;
+      if ("resizeModule" in renderers[module.meta.type]) {
+        const { data, props } = module;
+        let returnedData;
+
+        try {
+          returnedData = renderers[module.meta.type].resizeModule({
+            moduleDefinition,
+            canvas,
+            data: { ...data },
+            props
+          });
+        } catch (error) {
+          console.error(
+            `module#resize() in ${module.meta.name} threw an error: ${error}`
+          );
+        }
+
+        if (returnedData) {
+          commit("UPDATE_ACTIVE_MODULE", {
+            id: module.$id,
+            key: "data",
+            value: returnedData,
+            writeToSwap
+          });
+        }
       }
     }
 
@@ -323,7 +385,7 @@ const actions = {
 
   async updateProp(
     { state, commit },
-    { moduleId, prop, data, group, groupName, writeToSwap }
+    { moduleId, prop, data, group, path = "", groupName, writeToSwap }
   ) {
     if (!state.active[moduleId]) {
       console.error(`The module with the moduleId ${moduleId} doesn't exist.`);
@@ -333,7 +395,11 @@ const actions = {
     const moduleName = state.active[moduleId].$moduleName;
     const inputId = state.active[moduleId].$props[prop].id;
     const propData = state.registered[moduleName].props[prop];
-    const currentValue = state.active[moduleId][prop];
+    const currentValue = get(
+      state.active[moduleId][prop],
+      path,
+      state.active[moduleId][prop]
+    );
     const { type } = propData;
 
     // if (group || groupName) {
@@ -346,18 +412,7 @@ const actions = {
 
     let dataOut = data;
 
-    const expressionAssignment = store.getters["expressions/getByInputId"](
-      inputId
-    );
-
-    if (expressionAssignment) {
-      const scope = {
-        value: dataOut,
-        time: Date.now()
-      };
-
-      dataOut = expressionAssignment.func.evaluate(scope);
-    }
+    dataOut = applyExpression({ inputId, value: dataOut });
 
     if (store.state.dataTypes[type] && store.state.dataTypes[type].create) {
       dataOut = await store.state.dataTypes[type].create(dataOut);
@@ -384,7 +439,8 @@ const actions = {
       prop,
       data: {
         value: dataOut,
-        type: propData.type
+        type: propData.type,
+        path
       },
       group,
       groupName,
@@ -411,18 +467,56 @@ const actions = {
     }
   },
 
-  resize({ commit, state }, { moduleId, width, height }) {
+  async updateMeta({ commit }, { id: moduleId, metaKey, data, writeToSwap }) {
+    if (!state.active[moduleId]) {
+      console.error(`The module with the moduleId ${moduleId} doesn't exist.`);
+      return;
+    }
+
+    const currentValue = state.active[moduleId].meta[metaKey];
+    const inputId = state.active[moduleId].meta[`${metaKey}InputId`];
+
+    if (data === currentValue) {
+      return;
+    }
+
+    let dataOut = data;
+
+    dataOut = applyExpression({ inputId, value: dataOut });
+
+    commit("UPDATE_ACTIVE_MODULE_META", {
+      id: moduleId,
+      metaKey,
+      data: dataOut,
+      writeToSwap
+    });
+  },
+
+  resize({ commit, state, rootState }, { moduleId, width, height }) {
     const module = state.active[moduleId];
     const moduleName = module.$moduleName;
     const moduleDefinition = state.registered[moduleName];
+    const { renderers } = rootState;
 
-    if ("resize" in moduleDefinition) {
+    if (
+      "resize" in moduleDefinition &&
+      "resizeModule" in renderers[module.meta.type]
+    ) {
       const { data, props } = module;
-      const returnedData = moduleDefinition.resize({
-        canvas: { width, height },
-        data: { ...data },
-        props
-      });
+      let returnedData;
+
+      try {
+        returnedData = renderers[module.meta.type].resizeModule({
+          moduleDefinition,
+          canvas: { width, height },
+          data: { ...data },
+          props
+        });
+      } catch (error) {
+        console.error(
+          `module#resize() in ${module.meta.name} threw an error: ${error}`
+        );
+      }
 
       if (returnedData) {
         commit("UPDATE_ACTIVE_MODULE", {
@@ -457,11 +551,27 @@ const actions = {
     }
   },
 
-  createPresetData() {
+  createPresetData({ rootState }) {
+    const { renderers } = rootState;
+
     return Object.values(state.active)
       .filter(module => !module.meta.isGallery)
       .reduce((obj, module) => {
-        obj[module.$id] = module;
+        const {
+          meta: { type },
+          data
+        } = module;
+
+        obj[module.$id] = { ...module };
+        delete obj[module.$id].$status;
+
+        if (renderers[type].createPresetData) {
+          module.data = {
+            ...data,
+            ...renderers[type].createPresetData(module)
+          };
+        }
+
         return obj;
       }, {});
   },
@@ -482,14 +592,22 @@ const actions = {
     return;
   },
 
-  async removeActiveModule({ commit }, { moduleId, writeToSwap }) {
+  async removeActiveModule({ commit, rootState }, { moduleId, writeToSwap }) {
     const writeTo = writeToSwap ? swap : state;
 
     const module = writeTo.active[moduleId];
-    const { meta } = module;
+    const {
+      meta,
+      meta: { type }
+    } = module;
 
     if (!module) {
       throw new Error(`No module with id "${moduleId}" found`);
+    }
+
+    const { renderers } = rootState;
+    if (renderers[type].removeActiveModule) {
+      renderers[type].removeActiveModule(module);
     }
 
     const metaInputIds = [
@@ -497,16 +615,44 @@ const actions = {
       meta.compositeOperationInputId,
       meta.enabledInputId
     ];
-    const moduleProperties = Object.values(module.$props).map(prop => prop.id);
-    const inputIds = [...moduleProperties, ...metaInputIds];
+    const moduleProperties = Object.values(module.$props).map(prop => ({
+      id: prop.id,
+      type: prop.type
+    }));
+    const inputIds = [...moduleProperties, ...metaInputIds.map(id => ({ id }))];
 
     for (let i = 0, len = inputIds.length; i < len; i++) {
-      const inputId = inputIds[i];
+      const { id: inputId, type: propType } = inputIds[i];
 
       await store.dispatch("inputs/removeInputLink", {
         inputId,
         writeToSwap
       });
+
+      await store.dispatch("inputs/removeInput", {
+        inputId
+      });
+
+      // clear up datatypes with multiple inputs
+      if (
+        propType in store.state.dataTypes &&
+        store.state.dataTypes[propType].inputs
+      ) {
+        const dataTypeInputs = store.state.dataTypes[propType].inputs();
+        const dataTypeInputsKeys = Object.keys(dataTypeInputs);
+
+        for (let j = 0; j < dataTypeInputsKeys.length; j += 1) {
+          const key = dataTypeInputsKeys[j];
+          await store.dispatch("inputs/removeInputLink", {
+            inputId: `${inputId}-${key}`,
+            writeToSwap
+          });
+
+          await store.dispatch("inputs/removeInput", {
+            inputId: `${inputId}-${key}`
+          });
+        }
+      }
     }
 
     commit("REMOVE_ACTIVE_MODULE", { moduleId, writeToSwap });
@@ -541,7 +687,7 @@ const mutations = {
 
   async UPDATE_ACTIVE_MODULE_PROP(
     state,
-    { moduleId, prop, data, group, groupName, writeToSwap }
+    { moduleId, prop, data, data: { path }, group, groupName, writeToSwap }
   ) {
     const writeTo = writeToSwap ? swap : state;
     const value = data.value;
@@ -554,6 +700,14 @@ const mutations = {
 
     if (typeof group === "number") {
       Vue.set(writeTo.active[moduleId][groupName].props[prop], group, value);
+    } else if (path) {
+      const tempValue = writeTo.active[moduleId].props[prop];
+      set(tempValue, path, value);
+      if (Array.isArray(tempValue)) {
+        Vue.set(writeTo.active[moduleId].props, prop, [...tempValue]);
+      } else {
+        Vue.set(writeTo.active[moduleId].props, prop, tempValue);
+      }
     } else {
       Vue.set(writeTo.active[moduleId].props, prop, value);
     }
@@ -561,7 +715,10 @@ const mutations = {
 
   UPDATE_ACTIVE_MODULE_META(state, { id, metaKey, data, writeToSwap }) {
     const writeTo = writeToSwap ? swap : state;
-    Vue.set(writeTo.active[id].meta, metaKey, data);
+
+    if (id) {
+      Vue.set(writeTo.active[id].meta, metaKey, data);
+    }
   },
 
   SWAP: SWAP(swap, () => ({}), sharedPropertyRestrictions)

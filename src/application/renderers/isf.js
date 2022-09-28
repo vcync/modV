@@ -71,9 +71,28 @@ function render({ module, canvas, context, pipeline, props }) {
   context.drawImage(isfCanvas, 0, 0, canvas.width, canvas.height);
 }
 
-async function setupModule(module) {
-  let fragmentShader = module.fragmentShader;
-  let vertexShader = module.vertexShader;
+/**
+ * Called each frame to update the Module
+ */
+function updateModule({ module, props, data, canvas, context, delta }) {
+  const { data: dataUpdated } = module.update({
+    props,
+    data,
+    canvas,
+    context,
+    delta
+  });
+
+  return dataUpdated ?? data;
+}
+
+function resizeModule({ moduleDefinition, canvas, data, props }) {
+  return moduleDefinition.resize({ canvas, data, props });
+}
+
+async function setupModule(moduleDefinition) {
+  let fragmentShader = moduleDefinition.fragmentShader;
+  let vertexShader = moduleDefinition.vertexShader;
 
   const parser = new ISFParser();
   parser.parse(fragmentShader, vertexShader);
@@ -88,10 +107,10 @@ async function setupModule(module) {
     }
   }
 
-  module.meta.isfVersion = parser.isfVersion;
-  module.meta.author = parser.metadata.CREDIT;
-  module.meta.description = parser.metadata.DESCRIPTION;
-  module.meta.version = parser.metadata.VSN;
+  moduleDefinition.meta.isfVersion = parser.isfVersion;
+  moduleDefinition.meta.author = parser.metadata.CREDIT;
+  moduleDefinition.meta.description = parser.metadata.DESCRIPTION;
+  moduleDefinition.meta.version = parser.metadata.VSN;
 
   const renderer = new ISFRenderer(isfContext, {
     useWebAudio: false,
@@ -105,11 +124,11 @@ async function setupModule(module) {
   }
 
   function addProp(name, prop) {
-    if (!module.props) {
-      module.props = {};
+    if (!moduleDefinition.props) {
+      moduleDefinition.props = {};
     }
 
-    module.props[name] = prop;
+    moduleDefinition.props[name] = prop;
   }
 
   const moduleInputs = parser.inputs;
@@ -170,7 +189,7 @@ async function setupModule(module) {
         break;
 
       case "image":
-        module.meta.previewWithOutput = true;
+        moduleDefinition.meta.previewWithOutput = true;
 
         addProp(input.NAME, {
           type: "texture",
@@ -181,15 +200,17 @@ async function setupModule(module) {
     }
   }
 
-  renderers[module.meta.name] = renderer;
-  inputs[module.meta.name] = moduleInputs;
-  module.draw = render;
+  renderers[moduleDefinition.meta.name] = renderer;
+  inputs[moduleDefinition.meta.name] = moduleInputs;
+  moduleDefinition.draw = render;
 
-  return module;
+  return moduleDefinition;
 }
 
 export default {
   setupModule,
   render,
+  updateModule,
+  resizeModule,
   resize
 };

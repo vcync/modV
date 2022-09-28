@@ -9,19 +9,23 @@ const state = {
     get: value => value
   },
   vec2: {
-    get: value => value
+    get: value => value,
+    inputs: () => ({ 0: 0, 1: 0 })
   },
   vec3: {
-    get: value => value
+    get: value => value,
+    inputs: () => ({ 0: 0, 1: 0, 2: 0 })
   },
   vec4: {
-    get: value => value
+    get: value => value,
+    inputs: () => ({ 0: 0, 1: 0, 2: 0, 3: 0 })
   },
   float: {
     get: value => value
   },
   color: {
-    get: value => value
+    get: value => value,
+    inputs: () => ({ r: 0, g: 0, b: 0, a: 0 })
   },
   texture: {
     async create(textureDefinition = {}, isGallery) {
@@ -31,9 +35,15 @@ const state = {
 
       if (type === "image") {
         const { path } = options;
-        const { id } = await store.dispatch("images/createImageFromPath", {
-          path
-        });
+        let id;
+        try {
+          ({ id } = await store.dispatch("images/createImageFromPath", {
+            path
+          }));
+        } catch (e) {
+          console.error(e);
+        }
+
         textureDefinition.location = "images/image";
         textureDefinition.id = id;
       }

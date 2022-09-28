@@ -14,7 +14,9 @@ import use from "./use";
 
 import PromiseWorker from "promise-worker-transferable";
 import Vue from "vue";
-import { ipcRenderer, remote } from "electron";
+import { ipcRenderer } from "electron";
+import { app } from "@electron/remote";
+import { GROUP_ENABLED } from "./constants";
 
 let imageBitmap;
 const imageBitmapQueue = [];
@@ -59,7 +61,7 @@ export default class ModV {
 
     this.$worker.postMessage({
       type: "__dirname",
-      payload: remote.app.getAppPath()
+      payload: app.getAppPath()
     });
 
     this.$worker.addEventListener("message", e => {
@@ -132,7 +134,7 @@ export default class ModV {
     };
 
     // Make the default group
-    this.store.dispatch("groups/createGroup", { enabled: true });
+    this.store.dispatch("groups/createGroup", { enabled: GROUP_ENABLED });
 
     window.addEventListener("beforeunload", () => true);
   }
@@ -141,7 +143,7 @@ export default class ModV {
     this.windowHandler();
 
     try {
-      await this.setupMedia({});
+      await this.setupMedia({ useDefaultDevices: true });
     } catch (e) {
       console.error(e);
     }
@@ -259,14 +261,17 @@ export default class ModV {
     } = this.store.state;
 
     const features = this.meyda.get(featuresToGet);
-    this.updateBeatDetektor(delta, features);
-    features.byteFrequencyData = Array.from(getByteFrequencyData() || []);
-    features.byteTimeDomainData = Array.from(getByteTimeDomainData() || []);
-    this.$worker.postMessage({ type: "meyda", payload: features });
 
-    for (let i = 0; i < featuresToGet.length; i += 1) {
-      const feature = featuresToGet[i];
-      this.features[feature] = features[feature];
+    if (features) {
+      this.updateBeatDetektor(delta, features);
+      features.byteFrequencyData = Array.from(getByteFrequencyData() || []);
+      features.byteTimeDomainData = Array.from(getByteTimeDomainData() || []);
+      this.$worker.postMessage({ type: "meyda", payload: features });
+
+      for (let i = 0; i < featuresToGet.length; i += 1) {
+        const feature = featuresToGet[i];
+        this.features[feature] = features[feature];
+      }
     }
   }
 

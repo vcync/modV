@@ -39,7 +39,18 @@ const getters = {
 };
 
 const actions = {
-  addTerms({ commit }, { terms, id, title, focusElement = false, type }) {
+  addTerms(
+    { commit },
+    {
+      terms,
+      id,
+      title,
+      focusElement = false,
+      type,
+      isGLElement = true,
+      focusParent = false
+    }
+  ) {
     if (!id) {
       id = uuidv4();
     }
@@ -52,7 +63,9 @@ const actions = {
         id,
         title,
         focusElement,
-        type
+        type,
+        isGLElement,
+        focusParent
       });
     }
 
@@ -69,13 +82,23 @@ const actions = {
 };
 
 const mutations = {
-  ADD_TERM_TO_SEARCHABLES(state, { term, id, title, focusElement, type }) {
+  ADD_TERM_TO_SEARCHABLES(
+    state,
+    { term, id, title, focusElement, type, isGLElement, focusParent }
+  ) {
     if (!state.searchables[term]) {
       state.searchables[term] = [];
       fuse.add(term);
     }
 
-    state.searchables[term].push({ id, title, focusElement, type });
+    state.searchables[term].push({
+      id,
+      title,
+      focusElement,
+      type,
+      isGLElement,
+      focusParent
+    });
   },
 
   REMOVE_ID_FROM_TERM(state, id) {

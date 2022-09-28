@@ -11,6 +11,7 @@ env:
   ELECTRON_BUILDER_CACHE: $HOME/.cache/electron-builder
   USE_HARD_LINKS: false
   GH_TOKEN: ${{ secrets.github_token }}
+  EP_GH_IGNORE_TIME: true
 
 jobs:
   build-windows:
@@ -23,9 +24,9 @@ jobs:
         uses: actions/checkout@v2
 
       - name: Use Node.js
-        uses: actions/setup-node@v1
+        uses: actions/setup-node@v2
         with:
-          node-version: '12.x'
+          node-version: '16'
 
       - name: Install dependencies
         run: yarn install --frozen-lockfile

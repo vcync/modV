@@ -67,13 +67,14 @@ CMD or PowerShell is required as native binaries need to be compiled or fetched 
 
 #### Dependancies
 
-Windows Platform tools are required for building native binaries. You can install them in a shell opened as administrator with the following snippet:
+Visual Studio Tools and Python are required by node-gyp, which build native node modules.
+Since Node.js 16, the official Windows installer can install them.
+
+If you're using nvm-windows or another headless Node.js install, you can easily install the required packages with [Chocolatey](https://chocolatey.org/install):
 
 ```
-npm install --global --production windows-build-tools
+choco install python visualstudio2022-workload-vctools
 ```
-
-**Note: This will take some time and you don't get much feedback of what is happening, so please wait until you get confirmation the installation process has finished otherwise painful Visual Studio things will need to be fixed!**
 
 #### 'vue-cli-service' is not recognized
 
@@ -119,5 +120,5 @@ Thank you to:
 
 ## License
 
-Copyright © 2020 [vcync](https://github.com/vcync).
+Copyright © 2022 [vcync](https://github.com/vcync).
 This project is [MIT](https://github.com/vcync/modV/blob/main/LICENSE) licensed.

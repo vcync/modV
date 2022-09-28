@@ -87,7 +87,12 @@ export default {
 
     fillColor: {
       type: "color",
-      default: "#000000",
+      default: {
+        r: 1,
+        g: 1,
+        b: 1,
+        a: 1
+      },
       set(args) {
         this.drawText(args);
       }
@@ -103,7 +108,12 @@ export default {
 
     strokeColor: {
       type: "color",
-      default: "#ffffff",
+      default: {
+        r: 1,
+        g: 0,
+        b: 0,
+        a: 1
+      },
       set(args) {
         this.drawText(args);
       }
@@ -150,11 +160,13 @@ export default {
     } = data;
 
     if (fill) {
-      context.fillStyle = fillColor;
+      context.fillStyle = `rgba(${fillColor.r * 255},${fillColor.g *
+        255},${fillColor.b * 255},${fillColor.a})`;
     } else {
       context.fillStyle = "rgba(0,0,0,0)";
     }
-    context.strokeStyle = strokeColor;
+    context.strokeStyle = `rgba(${strokeColor.r * 255},${strokeColor.g *
+      255},${strokeColor.b * 255},${strokeColor.a})`;
     context.lineWidth = strokeSize;
     context.clearRect(0, 0, width, height);
 

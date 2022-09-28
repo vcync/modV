@@ -74,10 +74,10 @@ function generateUniforms(canvasTexture, uniforms, kick = false) {
   return { ...uniforms, ...defaults };
 }
 
-function makeProgram(Module) {
+function makeProgram(moduleDefinition) {
   return new Promise(resolve => {
-    let vert = Module.vertexShader;
-    let frag = Module.fragmentShader;
+    let vert = moduleDefinition.vertexShader;
+    let frag = moduleDefinition.fragmentShader;
 
     if (!vert) {
       vert = defaultShader.v;
@@ -101,17 +101,17 @@ function makeProgram(Module) {
 
     const shaderUniforms = {};
 
-    if (Module.props) {
-      const modulePropsKeys = Object.keys(Module.props);
+    if (moduleDefinition.props) {
+      const modulePropsKeys = Object.keys(moduleDefinition.props);
       const modulePropsKeysLength = modulePropsKeys.length;
 
       for (let i = 0; i < modulePropsKeysLength; i++) {
         const key = modulePropsKeys[i];
 
-        if (Module.props[key].type === "texture") {
-          shaderUniforms[key] = Module.props[key].value;
+        if (moduleDefinition.props[key].type === "texture") {
+          shaderUniforms[key] = moduleDefinition.props[key].value;
         } else {
-          shaderUniforms[key] = Module.props[key];
+          shaderUniforms[key] = moduleDefinition.props[key];
         }
       }
     }
@@ -128,20 +128,19 @@ function makeProgram(Module) {
       uniforms
     };
 
-    commands[Module.meta.name] = command;
+    commands[moduleDefinition.meta.name] = command;
 
-    resolve(Module);
+    resolve(moduleDefinition);
   });
 }
 
-async function setupModule(Module) {
+async function setupModule(moduleDefinition) {
   try {
-    return await makeProgram(Module);
+    return await makeProgram(moduleDefinition);
   } catch (e) {
     throw new Error(e);
   }
 }
-
 
 function render({ module, props, canvas, context, pipeline, kick, fftCanvas }) {
   resize({ width: canvas.width, height: canvas.height });
@@ -214,4 +213,19 @@ function render({ module, props, canvas, context, pipeline, kick, fftCanvas }) {
   context.drawImage(shaderCanvas, 0, 0, canvas.width, canvas.height);
 }
 
-export { setupModule, render, resize };
+/**
+ * Called each frame to update the Module
+ */
+function updateModule({ module, props, data, canvas, context, delta }) {
+  const { data: dataUpdated } = module.update({
+    props,
+    data,
+    canvas,
+    context,
+    delta
+  });
+
+  return dataUpdated ?? data;
+}
+
+export { setupModule, render, resize, updateModule };

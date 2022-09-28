@@ -6,27 +6,28 @@
 
 <style scoped>
 .statusbar-item {
-  color: #000;
-  display: inline-flex;
-  height: 100%;
-  align-items: center;
-  justify-content: center;
+  /* Pill */
 
-  font-family: "IBM Plex Mono", monospace;
-}
+  /* Auto layout */
+  display: flex;
+  flex-direction: row;
+  align-items: flex-start;
+  padding: 4px 15px;
+  gap: 10px;
 
-.tag {
+  background: #9a9a9a;
+  border-radius: 25px;
+
+  font-family: inherit;
+  font-style: normal;
+  font-weight: 400;
+  font-size: 14px;
+  line-height: 17px;
+  /* identical to box height */
+  display: flex;
   align-items: center;
-  background-color: #f5f5f5;
-  border-radius: 4px;
-  color: #4a4a4a;
-  display: inline-flex;
-  font-size: 0.9rem;
-  height: 2em;
-  justify-content: center;
-  line-height: 1.5;
-  padding-left: 0.75em;
-  padding-right: 0.75em;
-  white-space: nowrap;
+  text-align: center;
+
+  color: #000000;
 }
 </style>

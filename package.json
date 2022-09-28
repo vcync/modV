@@ -3,7 +3,7 @@
   "productName": "modV",
   "description": "modular audio visualisation powered by JavaScript",
   "author": "vcync",
-  "version": "3.16.0",
+  "version": "3.20.0",
   "private": true,
   "homepage": "https://modv.vcync.gl/",
   "repository": {
@@ -24,12 +24,11 @@
   },
   "main": "background.js",
   "dependencies": {
+    "@electron/remote": "^2.0.4",
     "animated-gif-detector": "^1.2.0",
     "animejs": "3.2.0",
-    "aws-sdk": "^2.580.0",
     "canvas-text-wrapper": "github:cyberj/canvas-text-wrapper#master",
     "color": "^3.1.2",
-    "core-js": "^2.6.10",
     "dotenv": "^8.2.0",
     "electron-updater": "^4.3.1",
     "fluent-ffmpeg": "^2.1.2",
@@ -40,6 +39,7 @@
     "interactive-shader-format": "github:vcync/interactive-shader-format-js#78b62b6f4c787b870852df4c8e7b1131e331d8a6",
     "lfo-for-modv": "0.0.1",
     "lodash.get": "^4.4.2",
+    "lodash.set": "^4.3.2",
     "mathjs": "^7.5.1",
     "meyda": "^5.2.0",
     "mkdirp": "^0.5.1",
@@ -53,6 +53,7 @@
     "recursive-deps": "^1.1.1",
     "stream-to-blob": "^2.0.0",
     "tap-tempo": "^0.1.1",
+    "three": "^0.131.3",
     "uuid": "^3.3.3",
     "vue": "^2.6.10",
     "vue-class-component": "^7.2.3",
@@ -67,13 +68,17 @@
     "webpack-2": "npm:webpack@2.7.0"
   },
   "devDependencies": {
+    "@babel/core": "^7.0.0-0",
+    "@babel/plugin-proposal-nullish-coalescing-operator": "^7.16.0",
+    "@babel/plugin-proposal-optional-chaining": "^7.16.0",
     "@semantic-release/git": "^9.0.0",
-    "@vue/cli-plugin-babel": "^3.12.1",
+    "@vue/cli-plugin-babel": "^4.5.15",
     "@vue/cli-plugin-eslint": "^3.12.1",
     "@vue/cli-service": "^3.12.1",
     "@vue/eslint-config-prettier": "^4.0.1",
     "babel-eslint": "^10.0.3",
-    "electron": "^11.2.0",
+    "core-js": "^3.19.1",
+    "electron": "^17.2.0",
     "electron-builder": "^22.9.1",
     "electron-notarize": "^1.0.0",
     "eslint": "^5.16.0",
@@ -98,6 +103,6 @@
     ]
   },
   "resolutions": {
-    "electron-builder": "22.9.1"
+    "electron-builder": "23.0.2"
   }
 }

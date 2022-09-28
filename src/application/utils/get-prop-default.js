@@ -1,3 +1,4 @@
+import Vue from "vue";
 import store from "../worker/store";
 
 export default async function getPropDefault(
@@ -6,7 +7,8 @@ export default async function getPropDefault(
   prop,
   useExistingData
 ) {
-  const { default: defaultValue, random, type } = prop;
+  const { random, type } = prop;
+  let defaultValue = prop.default;
 
   if (store.state.dataTypes[type] && store.state.dataTypes[type].create) {
     const propData = useExistingData ? module.props[propName] : prop.default;
@@ -17,8 +19,12 @@ export default async function getPropDefault(
     );
   }
 
-  if (useExistingData && module.props && module.props[propName]) {
+  if (useExistingData && typeof module.props?.[propName] !== "undefined") {
     return module.props[propName];
+  }
+
+  if (Array.isArray(defaultValue)) {
+    defaultValue = Vue.observable(defaultValue);
   }
 
   if (
@@ -31,8 +37,7 @@ export default async function getPropDefault(
 
   if (
     typeof defaultValue === "undefined" &&
-    module.data &&
-    module.data[propName]
+    typeof module.data?.[propName] !== "undefined"
   ) {
     return module.data[propName];
   }
