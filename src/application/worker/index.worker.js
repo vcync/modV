@@ -252,10 +252,6 @@ async function start() {
 
   async function frameActions(delta) {
     sendCommitQueue();
-    // self.postMessage({
-    //   type: "tick",
-    //   payload: delta
-    // });
 
     loop(delta, await getFeatures(), fftOutput);
 

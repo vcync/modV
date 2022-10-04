@@ -190,16 +190,6 @@ async function setupMedia({ audioId, videoId, useDefaultDevices = false }) {
       [frameStream]
     );
 
-    // Set up Meyda
-    // eslint-disable-next-line new-cap
-    // this.meyda = new Meyda.createMeydaAnalyzer({
-    //   audioContext: this.audioContext,
-    //   source: this.audioStream,
-    //   bufferSize: constants.AUDIO_BUFFER_SIZE,
-    //   windowingFunction: "rect",
-    //   featureExtractors: ["complexSpectrum"]
-    // });
-
     store.commit("mediaStream/SET_CURRENT_AUDIO_SOURCE", {
       audioId: audioSourceId
     });

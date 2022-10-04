@@ -61,21 +61,6 @@ export default class ModV {
       const message = e.data;
       const { type } = message;
 
-      // if (
-      //   type !== "metrics/SET_FPS_MEASURE" &&
-      //   type !== "modules/UPDATE_ACTIVE_MODULE_PROP" &&
-      //   type !== "beats/SET_BPM" &&
-      //   type !== "beats/SET_KICK" &&
-      //   type !== "tick"
-      // ) {
-      //   console.log(`⚙️%c ${type}`, "color: red");
-      // }
-
-      // if (e.data.type === "tick" && this.ready) {
-      //   this.tick(e.data.payload);
-      //   return;
-      // }
-
       if (type === "worker-setup-complete") {
         resolver();
         ipcRenderer.send("modv-ready");
@@ -246,29 +231,9 @@ export default class ModV {
     }
   }
 
-  // loop(/* delta */) {
-  // const {
-  //   meyda: { features: featuresToGet }
-  // } = this.store.state;
-  // const features = this.meyda.get(featuresToGet);
-  // if (features) {
-  //   this.updateBeatDetektor(delta, features);
-  //   features.byteFrequencyData = Array.from(getByteFrequencyData() || []);
-  //   this.$worker.postMessage({ type: "meyda", payload: features });
-  //   for (let i = 0; i < featuresToGet.length; i += 1) {
-  //     const feature = featuresToGet[i];
-  //     this.features[feature] = features[feature];
-  //   }
-  // }
-  // }
-
   setSize({ width, height }) {
     this.store.dispatch("size/setSize", { width, height });
   }
-
-  // tick(delta) {
-  //   this.inputLoop(delta);
-  // }
 
   async generatePreset() {
     return await this.$asyncWorker.postMessage({
