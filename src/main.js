@@ -41,7 +41,7 @@ async function start() {
   "loading".split("").forEach((char, index) => {
     const span = document.createElement("span");
     span.textContent = char;
-    span.style = "animation-delay: " + index * 60 + "ms";
+    span.style = `animation-delay: ${index * 60}ms`;
     loadingElement.appendChild(span);
   });
 
