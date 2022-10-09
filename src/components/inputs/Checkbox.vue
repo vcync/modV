@@ -43,8 +43,7 @@ export default {
   methods: {
     mousedown(e) {
       const { altKey } = e;
-
-      let value = this.value;
+      let { value } = this;
 
       if (this.allowPartial && altKey) {
         value = 2;
@@ -61,12 +60,6 @@ export default {
 </script>
 
 <style scoped>
-input {
-  width: 0;
-  height: 0;
-  -webkit-appearance: none;
-}
-
 label {
   width: 16px;
   height: 16px;
