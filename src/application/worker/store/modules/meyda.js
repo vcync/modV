@@ -10,6 +10,7 @@ import uuidv4 from "uuid/v4";
 
 const state = {
   features: [
+    "amplitudeSpectrum",
     "buffer",
     "complexSpectrum",
     "rms",

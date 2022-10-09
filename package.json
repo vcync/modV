@@ -36,12 +36,12 @@
     "fuse.js": "^6.2.1",
     "golden-layout": "^1.5.9",
     "grandiose": "github:vcync/grandiose#feat/workerCompatibility",
-    "interactive-shader-format": "github:vcync/interactive-shader-format-js#fixedIsfParserAndImageBitmap",
+    "interactive-shader-format": "github:vcync/interactive-shader-format-js#78b62b6f4c787b870852df4c8e7b1131e331d8a6",
     "lfo-for-modv": "0.0.1",
     "lodash.get": "^4.4.2",
     "lodash.set": "^4.3.2",
     "mathjs": "^7.5.1",
-    "meyda": "^5.2.0",
+    "meyda": "^5.5.1",
     "mkdirp": "^0.5.1",
     "npm": "6.14.6",
     "nwjs-menu-browser": "^1.0.0",
@@ -91,7 +91,7 @@
     "vue-cli-plugin-electron-builder": "^2.0.0",
     "vue-template-compiler": "^2.6.10",
     "vuex-localstorage": "^1.0.0",
-    "worker-loader": "^2.0.0"
+    "worker-loader": "^3.0.8"
   },
   "gitHooks": {
     "pre-commit": "lint-staged"

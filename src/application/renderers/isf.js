@@ -1,12 +1,9 @@
 import store from "../worker/store";
-
-import { interactiveShaderFormat } from "interactive-shader-format/dist/build-worker";
-
-const {
-  Renderer: ISFRenderer,
-  Parser: ISFParser,
-  Upgrader: ISFUpgrader
-} = interactiveShaderFormat;
+import {
+  Renderer as ISFRenderer,
+  Parser as ISFParser,
+  Upgrader as ISFUpgrader
+} from "interactive-shader-format/src/main";
 
 const isfCanvas = new OffscreenCanvas(300, 300);
 const isfContext = isfCanvas.getContext("webgl2", {

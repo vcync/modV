@@ -142,7 +142,6 @@ async function setupModule(Module) {
   }
 }
 
-
 function render({ module, props, canvas, context, pipeline, kick, fftCanvas }) {
   resize({ width: canvas.width, height: canvas.height });
 
@@ -160,7 +159,7 @@ function render({ module, props, canvas, context, pipeline, kick, fftCanvas }) {
     fftTexture = pex.texture2D({
       data: fftCanvas.data || fftCanvas,
       width: fftCanvas.width,
-      height: 1,
+      height: 2,
       pixelFormat: pex.PixelFormat.RGBA8,
       encoding: pex.Encoding.Linear,
       wrap: pex.Wrap.Repeat
@@ -173,7 +172,7 @@ function render({ module, props, canvas, context, pipeline, kick, fftCanvas }) {
     });
     pex.update(fftTexture, {
       width: fftCanvas.width,
-      height: 1,
+      height: 2,
       data: fftCanvas.data || fftCanvas
     });
   }

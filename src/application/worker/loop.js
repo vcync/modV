@@ -3,13 +3,13 @@ import get from "lodash.get";
 import store from "./store";
 import map from "../utils/map";
 import constants, { GROUP_DISABLED, GROUP_ENABLED } from "../constants";
-import { applyWindow } from "meyda/src/utilities";
+import { applyWindow } from "meyda/dist/esm/utilities";
 
 const meyda = { windowing: applyWindow };
 
 let bufferCanvas;
 let bufferContext;
-const fallbackByteFrequencyData = Array(constants.AUDIO_BUFFER_SIZE).fill(0);
+const fallbackByteFrequencyData = Array(256).fill(0);
 
 function loop(delta, features, fftOutput) {
   if (!bufferCanvas) {
@@ -42,18 +42,38 @@ function loop(delta, features, fftOutput) {
 
   // Put fftBuffer on fftCanvas
   const byteFrequencyData =
-    features.byteFrequencyData || fallbackByteFrequencyData;
+    features.amplitudeSpectrum || fallbackByteFrequencyData;
   const fftBuffer = byteFrequencyData.reduce((arr, value) => {
-    arr.push(value, value, value, 255);
+    const clampedValue = Math.abs(value / 4) * 255;
+    const values = [clampedValue, clampedValue, clampedValue, 255];
+    arr.push(...values, ...values);
     return arr;
   }, []);
 
-  const uInt8Array = Uint8ClampedArray.from(fftBuffer);
+  const uInt8ArrayFft = Uint8ClampedArray.from(
+    fftBuffer.slice(0, fftBuffer.length / 2)
+  );
 
   fftOutput.context.putImageData(
-    new ImageData(uInt8Array, byteFrequencyData.length),
+    new ImageData(uInt8ArrayFft, byteFrequencyData.length / 2),
     0,
     0
+  );
+
+  // Put time domain buffer on fftCanvas
+  const timeDomainData = features.buffer;
+  const timeDomainBuffer = timeDomainData.reduce((arr, value) => {
+    const scaledValue = (value + 1) / 2;
+    arr.push(scaledValue * 255, scaledValue * 255, scaledValue * 255, 255);
+    return arr;
+  }, []);
+
+  const uInt8ArrayTimeDomain = Uint8ClampedArray.from(timeDomainBuffer);
+
+  fftOutput.context.putImageData(
+    new ImageData(uInt8ArrayTimeDomain, timeDomainData.length),
+    0,
+    1
   );
 
   // Update Input Links

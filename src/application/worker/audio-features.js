@@ -3,6 +3,8 @@ import BeatDetektor from "../../../lib/BeatDetektor";
 import lerp from "../utils/lerp";
 import store from "./store";
 
+Meyda.windowingFunction = "rect";
+
 const MAX_SMOOTHING = 1;
 const SMOOTHING_STEP = 0.001;
 
@@ -67,12 +69,14 @@ function getFeatures() {
     }
 
     Meyda.bufferSize = size;
+    Meyda.sampleRate = frame.sampleRate;
 
     const buffer = new ArrayBuffer(size);
 
     frame.copyTo(buffer, { planeIndex: 0 });
 
     features = Meyda.extract(featuresToGet, new Float32Array(buffer));
+
     updateBeatDetektor(performance.now(), features);
     resolve(features);
 

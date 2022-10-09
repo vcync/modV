@@ -208,8 +208,8 @@ async function start() {
   const fftOutput = await store.dispatch("outputs/getAuxillaryOutput", {
     name: "fft",
     reactToResize: false,
-    width: constants.AUDIO_BUFFER_SIZE,
-    height: 1,
+    width: constants.AUDIO_BUFFER_SIZE / 4,
+    height: 2,
     group: "audio",
     id: "fft"
   });

@@ -43,8 +43,13 @@ async function getMediaStream({ audioSourceId, videoSourceId }) {
 
   if (audioSourceId) {
     audioConstraints.audio = {
+      autoGainControl: { exact: false },
+      deviceId: audioSourceId,
       echoCancellation: { exact: false },
-      deviceId: audioSourceId
+      latency: { ideal: 0 },
+      noiseSuppression: { exact: false },
+      sampleRate: { ideal: 48000 },
+      sampleSize: { ideal: 32 }
     };
   }
 
@@ -140,6 +145,11 @@ async function setupMedia({ audioId, videoId, useDefaultDevices = false }) {
     if (this.audioContext) {
       this.audioContext.close();
     }
+
+    // eslint-disable-next-line no-for-each/no-for-each
+    [...audioMediaStream.getTracks()].forEach(track => {
+      console.log(track.getCapabilities());
+    });
 
     // Create new Audio Context
     this.audioContext = new window.AudioContext({
