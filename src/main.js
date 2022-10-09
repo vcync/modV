@@ -35,8 +35,20 @@ window.Vue = new Vue({
 });
 
 async function start() {
+  const loadingElement = document.getElementById("loading");
+
+  // eslint-disable-next-line no-for-each/no-for-each
+  "loading".split("").forEach((char, index) => {
+    const span = document.createElement("span");
+    span.textContent = char;
+    span.style = "animation-delay: " + index * 60 + "ms";
+    loadingElement.appendChild(span);
+  });
+
   modV.setup();
   await modV.ready;
+
+  loadingElement.remove();
   window.Vue.$mount("#app");
 }
 
