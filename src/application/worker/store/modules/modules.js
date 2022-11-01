@@ -53,7 +53,7 @@ async function initialiseModuleProperties(
   if (useExistingData) {
     for (let j = 0, len = propKeys.length; j < len; j += 1) {
       const prop = propKeys[j];
-      const propDidExist = !!module.$props[prop];
+      const propDidExist = !!existingData.$props[prop];
 
       if (propDidExist) {
         module.$props[prop].id = existingData.$props[prop].id;
@@ -74,8 +74,6 @@ async function initialiseModuleProperties(
       prop,
       useExistingData
     );
-
-    console.log(propsWithoutId);
 
     if (
       (!isGallery && !useExistingData) ||
@@ -263,12 +261,7 @@ const actions = {
       module.$moduleName = moduleName;
       module.props = {};
 
-      await initialiseModuleProperties(
-        props,
-        module,
-        moduleMeta.isGallery,
-        !!existingModule
-      );
+      await initialiseModuleProperties(props, module, moduleMeta.isGallery);
 
       const dataKeys = Object.keys(data);
       module.data = {};
@@ -343,7 +336,8 @@ const actions = {
         props,
         module,
         moduleMeta.isGallery,
-        true
+        true,
+        existingModule
       );
     }
 
