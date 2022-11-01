@@ -3,6 +3,7 @@ import * as THREEimport from "three/build/three.module.js";
 import { GLTFLoader } from "three/examples/jsm/loaders/GLTFLoader";
 
 const THREE = { ...THREEimport, GLTFLoader };
+const threeModuleData = {};
 
 const threeCanvas = new OffscreenCanvas(300, 300);
 const threeContext = threeCanvas.getContext("webgl2", {
@@ -69,7 +70,9 @@ function render({
   inputTexture.image = inputTextureCanvas.transferToImageBitmap();
   inputTexture.needsUpdate = true;
 
-  const { scene, camera } = module.draw({
+  const { scene, camera } = threeModuleData[module.meta.name];
+
+  module.draw({
     THREE,
     inputTexture,
     canvas,
@@ -80,7 +83,9 @@ function render({
     bpm,
     kick,
     props,
-    data,
+    data: { ...data },
+    scene,
+    camera,
     fftCanvas
   });
 
@@ -95,18 +100,76 @@ function render({
   context.drawImage(threeCanvas, 0, 0, canvas.width, canvas.height);
 }
 
-async function setupModule(module) {
-  const moduleData = await module.setupThree({
+/**
+ * Called each frame to update the Module
+ */
+function updateModule({
+  moduleDefinition,
+  props,
+  data,
+  canvas,
+  context,
+  delta
+}) {
+  const { scene, camera } = threeModuleData[moduleDefinition.meta.name];
+
+  const {
+    data: dataUpdated,
+    scene: sceneUpdated,
+    camera: cameraUpdated
+  } = moduleDefinition.update({
+    THREE,
+    props,
+    data,
+    canvas,
+    context,
+    delta,
+    scene,
+    camera
+  });
+
+  threeModuleData[moduleDefinition.meta.name] = {
+    scene: sceneUpdated ?? scene,
+    camera: cameraUpdated ?? camera
+  };
+
+  return dataUpdated ?? data;
+}
+
+async function setupModule(moduleDefinition) {
+  const { data, scene, camera } = await moduleDefinition.setupThree({
     THREE,
     inputTexture,
-    data: module.data || {},
+    data: moduleDefinition.data || {},
     width: renderer.domElement.width,
     height: renderer.domElement.height
   });
 
-  module.data = moduleData;
+  threeModuleData[moduleDefinition.meta.name] = {
+    scene,
+    camera
+  };
 
-  return module;
+  moduleDefinition.data = data;
+
+  return moduleDefinition;
+}
+
+function resizeModule({ moduleDefinition, canvas, data, props }) {
+  const { scene, camera } = threeModuleData[moduleDefinition.meta.name];
+  return moduleDefinition.resize({ canvas, data, props, camera, scene });
+}
+
+function removeModule(module) {
+  delete threeModuleData[module.meta.name];
+}
+
+function createPresetData(module) {
+  return module.data;
+}
+
+function loadPresetData(module, data) {
+  threeModuleData[module.meta.name] = data;
 }
 
 function resize({ width, height }) {
@@ -115,4 +178,14 @@ function resize({ width, height }) {
   renderer.setSize(width, height, false);
 }
 
-export default { render, resize, setupModule };
+export default {
+  render,
+  updateModule,
+  resize,
+  resizeModule,
+  setupModule,
+  removeModule,
+  createPresetData,
+  loadPresetData
+};
+export { threeModuleData };

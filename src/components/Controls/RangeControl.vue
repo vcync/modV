@@ -38,7 +38,7 @@ export default {
     },
     step: {
       type: Number,
-      default: 1
+      default: 0.001
     },
     default: Number,
     value: Number
