@@ -45,9 +45,23 @@ async function initialiseModuleProperties(
   module,
   isGallery = false,
   useExistingData = false,
-  propsWithoutId = []
+  existingData = {}
 ) {
   const propKeys = Object.keys(props);
+  const propsWithoutId = [];
+
+  if (useExistingData) {
+    for (let j = 0, len = propKeys.length; j < len; j += 1) {
+      const prop = propKeys[j];
+      const propDidExist = !!module.$props[prop];
+
+      if (propDidExist) {
+        module.$props[prop].id = existingData.$props[prop].id;
+      } else {
+        propsWithoutId.push(prop);
+      }
+    }
+  }
 
   for (let i = 0, len = propKeys.length; i < len; i++) {
     const propKey = propKeys[i];
@@ -60,6 +74,8 @@ async function initialiseModuleProperties(
       prop,
       useExistingData
     );
+
+    console.log(propsWithoutId);
 
     if (
       (!isGallery && !useExistingData) ||
@@ -145,7 +161,6 @@ const actions = {
       );
 
       for (let i = 0, len = activeModuleValues.length; i < len; i += 1) {
-        debugger;
         const existingActiveModule = activeModuleValues[i];
         const activeModule = { ...existingActiveModule };
 
@@ -157,26 +172,12 @@ const actions = {
 
         activeModule.$props = JSON.parse(JSON.stringify(props));
 
-        const newProps = Object.keys(props);
-        const propsWithoutId = [];
-
-        for (let j = 0, len = newProps.length; j < len; j += 1) {
-          const prop = newProps[j];
-          const propDidExist = !!existingActiveModule.$props[prop];
-
-          if (propDidExist) {
-            activeModule.$props[prop].id = existingActiveModule.$props[prop].id;
-          } else {
-            propsWithoutId.push(prop);
-          }
-        }
-
         const initialisedModule = await initialiseModuleProperties(
           props,
           { ...activeModule },
           false,
           true,
-          propsWithoutId
+          existingActiveModule
         );
 
         commit("ADD_ACTIVE_MODULE", { module: initialisedModule });
@@ -266,7 +267,7 @@ const actions = {
         props,
         module,
         moduleMeta.isGallery,
-        existingModule
+        !!existingModule
       );
 
       const dataKeys = Object.keys(data);
