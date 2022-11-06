@@ -44,8 +44,6 @@ export default {
   },
 
   data: {
-    camera: null,
-    scene: null,
     cubeMesh: null
   },
 
@@ -72,21 +70,19 @@ export default {
     const cubeMesh = new THREE.Mesh(geometry, material);
 
     scene.add(cubeMesh);
+    data.cubeMesh = cubeMesh;
 
-    return { ...data, camera, scene, cubeMesh };
+    return { data, camera, scene };
   },
 
-  resize({ canvas: { width, height }, data }) {
-    data.camera.aspect = width / height;
-    data.camera.updateProjectionMatrix();
-
-    return { ...data };
+  resize({ canvas: { width, height }, camera }) {
+    camera.aspect = width / height;
+    camera.updateProjectionMatrix();
   },
 
   draw({
     THREE,
     data,
-    data: { scene, camera },
     props: {
       scale,
       position,
@@ -119,7 +115,5 @@ export default {
     data.cubeMesh.material.color.r = r;
     data.cubeMesh.material.color.g = g;
     data.cubeMesh.material.color.b = b;
-
-    return { scene, camera };
   }
 };

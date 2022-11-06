@@ -65,9 +65,35 @@ function render({
   context.drawImage(twoDCanvas, 0, 0, canvas.width, canvas.height);
 }
 
+/**
+ * Called each frame to update the Module
+ */
+function updateModule({
+  moduleDefinition,
+  props,
+  data,
+  canvas,
+  context,
+  delta
+}) {
+  const { data: dataUpdated } = moduleDefinition.update({
+    props,
+    data,
+    canvas,
+    context,
+    delta
+  });
+
+  return dataUpdated ?? data;
+}
+
+function resizeModule({ moduleDefinition, canvas, data, props }) {
+  return moduleDefinition.resize({ canvas, data, props });
+}
+
 function resize({ width, height }) {
   twoDCanvas.width = width;
   twoDCanvas.height = height;
 }
 
-export default { render, resize };
+export default { render, resize, updateModule, resizeModule };

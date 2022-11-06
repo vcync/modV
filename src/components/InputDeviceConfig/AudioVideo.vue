@@ -16,7 +16,11 @@
               Audio Input
             </c>
             <c span="3">
-              <Select class="light" v-model="currentAudioSource">
+              <Select
+                class="light"
+                v-model="currentAudioSource"
+                :disabled="switchingAudio"
+              >
                 <option
                   v-for="input in audioInputs"
                   :key="input.deviceId"
@@ -34,7 +38,11 @@
               Video Input
             </c>
             <c span="3">
-              <Select class="light" v-model="currentVideoSource">
+              <Select
+                class="light"
+                v-model="currentVideoSource"
+                :disabled="switchingVideo"
+              >
                 <option
                   v-for="input in videoInputs"
                   :key="input.deviceId"
@@ -64,7 +72,9 @@ export default {
     return {
       iVTitle: "Media Input Config",
       iVBody:
-        "Configure your audio and video inputs here. Click Renumerate Devices to scan for new sources."
+        "Configure your audio and video inputs here. Click Renumerate Devices to scan for new sources.",
+      switchingAudio: false,
+      switchingVideo: false
     };
   },
 
@@ -90,8 +100,10 @@ export default {
         return this.$modV.store.state.mediaStream.currentAudioSource;
       },
 
-      set(value) {
-        this.$modV.setupMedia({ audioId: value });
+      async set(value) {
+        this.switchingAudio = true;
+        await this.$modV.setupMedia({ audioId: value });
+        this.switchingAudio = false;
       }
     },
 
@@ -101,7 +113,9 @@ export default {
       },
 
       set(value) {
+        this.switchingVideo = true;
         this.$modV.setupMedia({ videoId: value });
+        this.switchingVideo = false;
       }
     }
   },
