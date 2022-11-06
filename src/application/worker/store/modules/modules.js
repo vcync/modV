@@ -51,8 +51,8 @@ async function initialiseModuleProperties(
   const propsWithoutId = [];
 
   if (useExistingData) {
-    for (let j = 0, len = propKeys.length; j < len; j += 1) {
-      const prop = propKeys[j];
+    for (let i = 0, len = propKeys.length; i < len; i += 1) {
+      const prop = propKeys[i];
       const propDidExist = !!existingData.$props[prop];
 
       if (propDidExist) {
