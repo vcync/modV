@@ -46,7 +46,7 @@ export default {
     },
 
     title() {
-      return this.activeProp.label || this.prop;
+      return this.activeProp?.label || this.prop;
     },
 
     value() {

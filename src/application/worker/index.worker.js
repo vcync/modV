@@ -342,12 +342,12 @@ async function start() {
       }
 
       store.commit("groups/SWAP", {});
-      store.commit("modules/SWAP", {});
       store.commit("inputs/SWAP", {});
+      store.commit("modules/SWAP", {});
 
       store.commit("groups/CLEAR_SWAP", {});
-      store.commit("modules/CLEAR_SWAP", {});
       store.commit("inputs/CLEAR_SWAP", {});
+      store.commit("modules/CLEAR_SWAP", {});
 
       return;
     }
