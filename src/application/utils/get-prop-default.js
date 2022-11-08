@@ -15,7 +15,9 @@ export default async function getPropDefault(
       defaultValue = store.state.dataTypes[type].inputs();
     }
 
-    const propData = useExistingData ? module.props[propName] : defaultValue;
+    const propData = useExistingData
+      ? module.props[propName] ?? defaultValue
+      : defaultValue;
 
     if (store.state.dataTypes[type].create) {
       return await store.state.dataTypes[type].create(
