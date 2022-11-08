@@ -370,6 +370,14 @@ export default {
       requestAnimationFrame(this.draw);
     },
 
+    min() {
+      requestAnimationFrame(this.draw);
+    },
+
+    max() {
+      requestAnimationFrame(this.draw);
+    },
+
     inputValue(value) {
       this.position = -value * this.spacingCalc;
     }
