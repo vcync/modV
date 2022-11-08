@@ -45,7 +45,8 @@ async function initialiseModuleProperties(
   module,
   isGallery = false,
   useExistingData = false,
-  existingData = {}
+  existingData = {},
+  writeToSwap = false
 ) {
   const propKeys = Object.keys(props);
   const propsWithoutId = [];
@@ -82,13 +83,15 @@ async function initialiseModuleProperties(
       const inputBind = await store.dispatch("inputs/addInput", {
         type: "action",
         location: "modules/updateProp",
-        data: { moduleId: module.$id, prop: propKey }
+        data: { moduleId: module.$id, prop: propKey },
+        writeToSwap
       });
 
       if (
         prop.type in store.state.dataTypes &&
         store.state.dataTypes[prop.type].inputs
       ) {
+        console.log(propKey);
         const dataTypeInputs = store.state.dataTypes[prop.type].inputs();
         const dataTypeInputsKeys = Object.keys(dataTypeInputs);
 
@@ -102,7 +105,8 @@ async function initialiseModuleProperties(
               prop: propKey,
               path: `[${key}]`
             },
-            id: `${inputBind.id}-${key}`
+            id: `${inputBind.id}-${key}`,
+            writeToSwap
           });
         }
       }
@@ -169,7 +173,7 @@ const actions = {
           canvas: { width: 0, height: 0 }
         };
 
-        const { props } = module;
+        const { props } = moduleDefinition;
 
         activeModule.$props = JSON.parse(JSON.stringify(props));
 
@@ -183,9 +187,9 @@ const actions = {
 
         commit("ADD_ACTIVE_MODULE", { module: initialisedModule });
 
-        if ("init" in module) {
+        if ("init" in moduleDefinition) {
           const { data } = activeModule;
-          const returnedData = module.init({
+          const returnedData = moduleDefinition.init({
             canvas,
             data: { ...data },
             props: activeModule.props
@@ -340,7 +344,8 @@ const actions = {
         module,
         moduleMeta.isGallery,
         true,
-        existingModule
+        existingModule,
+        writeToSwap
       );
     }
 
