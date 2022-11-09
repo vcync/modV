@@ -38,7 +38,7 @@ export default {
     },
     step: {
       type: Number,
-      default: 1
+      default: 0.001
     },
     default: Number,
     value: Number
@@ -367,6 +367,14 @@ export default {
 
       this.position = -value * this.spacingCalc;
       this.inputValue = value;
+      requestAnimationFrame(this.draw);
+    },
+
+    min() {
+      requestAnimationFrame(this.draw);
+    },
+
+    max() {
       requestAnimationFrame(this.draw);
     },
 

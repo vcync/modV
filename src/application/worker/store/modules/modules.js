@@ -42,9 +42,25 @@ async function initialiseModuleProperties(
   props,
   module,
   isGallery = false,
-  useExistingData = false
+  useExistingData = false,
+  existingData = {},
+  writeToSwap = false
 ) {
   const propKeys = Object.keys(props);
+  const propsWithoutId = [];
+
+  if (useExistingData) {
+    for (let i = 0, len = propKeys.length; i < len; i += 1) {
+      const prop = propKeys[i];
+      const propDidExist = !!existingData.$props[prop];
+
+      if (propDidExist) {
+        module.$props[prop].id = existingData.$props[prop].id;
+      } else {
+        propsWithoutId.push(prop);
+      }
+    }
+  }
 
   for (let i = 0, len = propKeys.length; i < len; i++) {
     const propKey = propKeys[i];
@@ -58,17 +74,22 @@ async function initialiseModuleProperties(
       useExistingData
     );
 
-    if (!isGallery && !useExistingData) {
+    if (
+      (!isGallery && !useExistingData) ||
+      (propsWithoutId.length && propsWithoutId.indexOf(propKey) > -1)
+    ) {
       const inputBind = await store.dispatch("inputs/addInput", {
         type: "action",
         location: "modules/updateProp",
-        data: { moduleId: module.$id, prop: propKey }
+        data: { moduleId: module.$id, prop: propKey },
+        writeToSwap
       });
 
       if (
         prop.type in store.state.dataTypes &&
         store.state.dataTypes[prop.type].inputs
       ) {
+        console.log(propKey);
         const dataTypeInputs = store.state.dataTypes[prop.type].inputs();
         const dataTypeInputsKeys = Object.keys(dataTypeInputs);
 
@@ -82,7 +103,8 @@ async function initialiseModuleProperties(
               prop: propKey,
               path: `[${key}]`
             },
-            id: `${inputBind.id}-${key}`
+            id: `${inputBind.id}-${key}`,
+            writeToSwap
           });
         }
       }
@@ -137,32 +159,47 @@ const actions = {
     commit("ADD_REGISTERED_MODULE", { module: moduleDefinition });
 
     if (hot) {
-      const activeModuleValues = Object.values(state.active);
+      const activeModuleValues = Object.values(state.active).filter(
+        activeModule => activeModule.meta.name === name
+      );
 
-      for (let i = 0; i < activeModuleValues.length; i += 1) {
-        const activeModule = activeModuleValues[i];
+      for (let i = 0, len = activeModuleValues.length; i < len; i += 1) {
+        const existingActiveModule = activeModuleValues[i];
+        const activeModule = { ...existingActiveModule };
 
-        if (activeModule.meta.name === name) {
-          const { canvas } = rootState.outputs.main || {
-            canvas: { width: 0, height: 0 }
-          };
+        const { canvas } = rootState.outputs.main || {
+          canvas: { width: 0, height: 0 }
+        };
 
-          if ("init" in moduleDefinition) {
-            const { data } = activeModule;
-            const returnedData = moduleDefinition.init({
-              canvas,
-              data: { ...data },
-              props: activeModule.props
+        const { props } = moduleDefinition;
+
+        activeModule.$props = JSON.parse(JSON.stringify(props));
+
+        const initialisedModule = await initialiseModuleProperties(
+          props,
+          { ...activeModule },
+          false,
+          true,
+          existingActiveModule
+        );
+
+        commit("ADD_ACTIVE_MODULE", { module: initialisedModule });
+
+        if ("init" in moduleDefinition) {
+          const { data } = activeModule;
+          const returnedData = moduleDefinition.init({
+            canvas,
+            data: { ...data },
+            props: activeModule.props
+          });
+
+          if (returnedData) {
+            commit("UPDATE_ACTIVE_MODULE", {
+              id: activeModule.$id,
+              key: "data",
+              value: returnedData,
+              writeToSwap: false
             });
-
-            if (returnedData) {
-              commit("UPDATE_ACTIVE_MODULE", {
-                id: activeModule.$id,
-                key: "data",
-                value: returnedData,
-                writeToSwap: false
-              });
-            }
           }
         }
       }
@@ -222,19 +259,14 @@ const actions = {
       }
     }
 
+    module.$props = JSON.parse(JSON.stringify(props));
+
     if (!existingModule) {
       module.$id = uuidv4();
       module.$moduleName = moduleName;
-      module.$props = JSON.parse(JSON.stringify(props));
-
       module.props = {};
 
-      await initialiseModuleProperties(
-        props,
-        module,
-        moduleMeta.isGallery,
-        existingModule
-      );
+      await initialiseModuleProperties(props, module, moduleMeta.isGallery);
 
       const dataKeys = Object.keys(data);
       module.data = {};
@@ -309,7 +341,9 @@ const actions = {
         props,
         module,
         moduleMeta.isGallery,
-        true
+        true,
+        existingModule,
+        writeToSwap
       );
     }
 
