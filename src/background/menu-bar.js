@@ -39,7 +39,10 @@ export function generateMenuTemplate() {
           accelerator: "CmdOrCtrl+O",
           async click() {
             const result = await dialog.showOpenDialog(windows["mainWindow"], {
-              filters: [{ name: "Presets", extensions: ["json"] }],
+              filters: [
+                { name: "Presets", extensions: ["json"] },
+                { name: "All Files", extensions: ["*"] }
+              ],
               properties: ["openFile"],
               multiSelections: false
             });
@@ -70,6 +73,7 @@ export function generateMenuTemplate() {
           accelerator: "CmdOrCtrl+Shift+S",
           async click() {
             const result = await dialog.showSaveDialog(windows["mainWindow"], {
+              defaultPath: "preset.json",
               filters: [{ name: "Presets", extensions: ["json"] }]
             });
 

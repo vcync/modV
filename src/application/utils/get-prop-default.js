@@ -10,14 +10,21 @@ export default async function getPropDefault(
   const { random, type } = prop;
   let defaultValue = prop.default;
 
-  if (store.state.dataTypes[type] && store.state.dataTypes[type].create) {
-    const propData = useExistingData ? module.props[propName] : prop.default;
+  if (store.state.dataTypes[type]) {
+    if (!defaultValue && store.state.dataTypes[type].inputs) {
+      defaultValue = store.state.dataTypes[type].inputs();
+    }
 
-    return await store.state.dataTypes[type].create(
-      propData,
-      module.meta.isGallery,
-      useExistingData
-    );
+    const propData = useExistingData
+      ? module.props[propName] ?? defaultValue
+      : defaultValue;
+
+    if (store.state.dataTypes[type].create) {
+      return await store.state.dataTypes[type].create(
+        propData,
+        module.meta.isGallery
+      );
+    }
   }
 
   if (useExistingData && typeof module.props?.[propName] !== "undefined") {
