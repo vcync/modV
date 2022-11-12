@@ -44,9 +44,25 @@ async function initialiseModuleProperties(
   props,
   module,
   isGallery = false,
-  useExistingData = false
+  useExistingData = false,
+  existingData = {},
+  writeToSwap = false
 ) {
   const propKeys = Object.keys(props);
+  const propsWithoutId = [];
+
+  if (useExistingData) {
+    for (let i = 0, len = propKeys.length; i < len; i += 1) {
+      const prop = propKeys[i];
+      const propDidExist = !!existingData.$props[prop];
+
+      if (propDidExist) {
+        module.$props[prop].id = existingData.$props[prop].id;
+      } else {
+        propsWithoutId.push(prop);
+      }
+    }
+  }
 
   for (let i = 0, len = propKeys.length; i < len; i++) {
     const propKey = propKeys[i];
@@ -60,17 +76,22 @@ async function initialiseModuleProperties(
       useExistingData
     );
 
-    if (!isGallery && !useExistingData) {
+    if (
+      (!isGallery && !useExistingData) ||
+      (propsWithoutId.length && propsWithoutId.indexOf(propKey) > -1)
+    ) {
       const inputBind = await store.dispatch("inputs/addInput", {
         type: "action",
         location: "modules/updateProp",
-        data: { moduleId: module.$id, prop: propKey }
+        data: { moduleId: module.$id, prop: propKey },
+        writeToSwap
       });
 
       if (
         prop.type in store.state.dataTypes &&
         store.state.dataTypes[prop.type].inputs
       ) {
+        console.log(propKey);
         const dataTypeInputs = store.state.dataTypes[prop.type].inputs();
         const dataTypeInputsKeys = Object.keys(dataTypeInputs);
 
@@ -84,7 +105,8 @@ async function initialiseModuleProperties(
               prop: propKey,
               path: `[${key}]`
             },
-            id: `${inputBind.id}-${key}`
+            id: `${inputBind.id}-${key}`,
+            writeToSwap
           });
         }
       }
@@ -97,20 +119,23 @@ async function initialiseModuleProperties(
 }
 
 const actions = {
-  async registerModule({ commit, rootState }, { module, hot = false }) {
+  async registerModule(
+    { commit, rootState },
+    { module: moduleDefinition, hot = false }
+  ) {
     const { renderers } = rootState;
 
-    if (!module) {
+    if (!moduleDefinition) {
       console.error("No module to register.");
       return;
     }
 
-    if (!module.meta) {
+    if (!moduleDefinition.meta) {
       console.error("Malformed module.");
       return;
     }
 
-    const { name, type } = module.meta;
+    const { name, type } = moduleDefinition.meta;
 
     const existingModuleWithDuplicateName = Object.values(
       state.registered
@@ -123,7 +148,7 @@ const actions = {
 
     if (renderers[type].setupModule) {
       try {
-        module = await renderers[type].setupModule(module);
+        moduleDefinition = await renderers[type].setupModule(moduleDefinition);
       } catch (e) {
         console.error(
           `Error in ${type} renderer setup whilst registering "${name}". This module was ommited from registration. \n\n${e}`
@@ -133,35 +158,50 @@ const actions = {
       }
     }
 
-    commit("ADD_REGISTERED_MODULE", { module });
+    commit("ADD_REGISTERED_MODULE", { module: moduleDefinition });
 
     if (hot) {
-      const activeModuleValues = Object.values(state.active);
+      const activeModuleValues = Object.values(state.active).filter(
+        activeModule => activeModule.meta.name === name
+      );
 
-      for (let i = 0; i < activeModuleValues.length; i += 1) {
-        const activeModule = activeModuleValues[i];
+      for (let i = 0, len = activeModuleValues.length; i < len; i += 1) {
+        const existingActiveModule = activeModuleValues[i];
+        const activeModule = { ...existingActiveModule };
 
-        if (activeModule.meta.name === name) {
-          const { canvas } = rootState.outputs.main || {
-            canvas: { width: 0, height: 0 }
-          };
+        const { canvas } = rootState.outputs.main || {
+          canvas: { width: 0, height: 0 }
+        };
 
-          if ("init" in module) {
-            const { data } = activeModule;
-            const returnedData = module.init({
-              canvas,
-              data: { ...data },
-              props: activeModule.props
+        const { props } = moduleDefinition;
+
+        activeModule.$props = JSON.parse(JSON.stringify(props));
+
+        const initialisedModule = await initialiseModuleProperties(
+          props,
+          { ...activeModule },
+          false,
+          true,
+          existingActiveModule
+        );
+
+        commit("ADD_ACTIVE_MODULE", { module: initialisedModule });
+
+        if ("init" in moduleDefinition) {
+          const { data } = activeModule;
+          const returnedData = moduleDefinition.init({
+            canvas,
+            data: { ...data },
+            props: activeModule.props
+          });
+
+          if (returnedData) {
+            commit("UPDATE_ACTIVE_MODULE", {
+              id: activeModule.$id,
+              key: "data",
+              value: returnedData,
+              writeToSwap: false
             });
-
-            if (returnedData) {
-              commit("UPDATE_ACTIVE_MODULE", {
-                id: activeModule.$id,
-                key: "data",
-                value: returnedData,
-                writeToSwap: false
-              });
-            }
           }
         }
       }
@@ -221,19 +261,14 @@ const actions = {
       }
     }
 
+    module.$props = JSON.parse(JSON.stringify(props));
+
     if (!existingModule) {
       module.$id = uuidv4();
       module.$moduleName = moduleName;
-      module.$props = JSON.parse(JSON.stringify(props));
-
       module.props = {};
 
-      await initialiseModuleProperties(
-        props,
-        module,
-        moduleMeta.isGallery,
-        existingModule
-      );
+      await initialiseModuleProperties(props, module, moduleMeta.isGallery);
 
       const dataKeys = Object.keys(data);
       module.data = {};
@@ -308,7 +343,9 @@ const actions = {
         props,
         module,
         moduleMeta.isGallery,
-        true
+        true,
+        existingModule,
+        writeToSwap
       );
     }
 
@@ -348,19 +385,32 @@ const actions = {
     }
 
     if (moduleDefinition && "resize" in moduleDefinition) {
-      const { data } = writeTo.active[module.$id];
-      const returnedData = moduleDefinition.resize({
-        canvas,
-        data: { ...data },
-        props: module.props
-      });
-      if (returnedData) {
-        commit("UPDATE_ACTIVE_MODULE", {
-          id: module.$id,
-          key: "data",
-          value: returnedData,
-          writeToSwap
-        });
+      const { renderers } = rootState;
+      if ("resizeModule" in renderers[module.meta.type]) {
+        const { data, props } = module;
+        let returnedData;
+
+        try {
+          returnedData = renderers[module.meta.type].resizeModule({
+            moduleDefinition,
+            canvas,
+            data: { ...data },
+            props
+          });
+        } catch (error) {
+          console.error(
+            `module#resize() in ${module.meta.name} threw an error: ${error}`
+          );
+        }
+
+        if (returnedData) {
+          commit("UPDATE_ACTIVE_MODULE", {
+            id: module.$id,
+            key: "data",
+            value: returnedData,
+            writeToSwap
+          });
+        }
       }
     }
 
@@ -476,18 +526,31 @@ const actions = {
     });
   },
 
-  resize({ commit, state }, { moduleId, width, height }) {
+  resize({ commit, state, rootState }, { moduleId, width, height }) {
     const module = state.active[moduleId];
     const moduleName = module.$moduleName;
     const moduleDefinition = state.registered[moduleName];
+    const { renderers } = rootState;
 
-    if ("resize" in moduleDefinition) {
+    if (
+      "resize" in moduleDefinition &&
+      "resizeModule" in renderers[module.meta.type]
+    ) {
       const { data, props } = module;
-      const returnedData = moduleDefinition.resize({
-        canvas: { width, height },
-        data: { ...data },
-        props
-      });
+      let returnedData;
+
+      try {
+        returnedData = renderers[module.meta.type].resizeModule({
+          moduleDefinition,
+          canvas: { width, height },
+          data: { ...data },
+          props
+        });
+      } catch (error) {
+        console.error(
+          `module#resize() in ${module.meta.name} threw an error: ${error}`
+        );
+      }
 
       if (returnedData) {
         commit("UPDATE_ACTIVE_MODULE", {
@@ -522,12 +585,26 @@ const actions = {
     }
   },
 
-  createPresetData() {
+  createPresetData({ rootState }) {
+    const { renderers } = rootState;
+
     return Object.values(state.active)
       .filter(module => !module.meta.isGallery)
       .reduce((obj, module) => {
+        const {
+          meta: { type },
+          data
+        } = module;
+
         obj[module.$id] = { ...module };
         delete obj[module.$id].$status;
+
+        if (renderers[type].createPresetData) {
+          module.data = {
+            ...data,
+            ...renderers[type].createPresetData(module)
+          };
+        }
 
         return obj;
       }, {});
@@ -549,14 +626,22 @@ const actions = {
     return;
   },
 
-  async removeActiveModule({ commit }, { moduleId, writeToSwap }) {
+  async removeActiveModule({ commit, rootState }, { moduleId, writeToSwap }) {
     const writeTo = writeToSwap ? swap : state;
 
     const module = writeTo.active[moduleId];
-    const { meta } = module;
+    const {
+      meta,
+      meta: { type }
+    } = module;
 
     if (!module) {
       throw new Error(`No module with id "${moduleId}" found`);
+    }
+
+    const { renderers } = rootState;
+    if (renderers[type].removeActiveModule) {
+      renderers[type].removeActiveModule(module);
     }
 
     const metaInputIds = [
