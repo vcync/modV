@@ -5,7 +5,7 @@
     :class="{ 'has-link': hasLink, focused: inputIsFocused }"
   >
     <c span="1">
-      <label v-context-menu="menuOptions">{{ title }}</label>
+      <label>{{ title }}</label>
     </c>
     <c span="3">
       <div class="input" v-if="component">
@@ -142,11 +142,7 @@ export default {
       dirty: false,
       raf: null,
 
-      modeStep: 0.01,
-      menuOptions: {
-        match: ["control"],
-        menuItems: []
-      }
+      modeStep: 0.01
     };
   },
 

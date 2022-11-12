@@ -7,6 +7,7 @@
       type: 'Group',
       focusElement: true
     }"
+    v-contextMenu="() => GroupContextMenu({ group })"
     tabindex="0"
     @keydown.self="removeGroup"
     @focus.self="focus"
@@ -210,7 +211,11 @@
           class="group__module"
         >
           <div class="group-module-container">
-            <ActiveModule :id="moduleId" @remove-module="removeModule" />
+            <ActiveModule
+              :id="moduleId"
+              :groupId="groupId"
+              @remove-module="removeModule"
+            />
           </div>
         </Draggable>
       </Container>
@@ -224,6 +229,7 @@ import constants from "../application/constants";
 import ActiveModule from "./ActiveModule";
 import compositeOperations from "../util/composite-operations";
 import Arrow from "../assets/graphics/Arrow.svg";
+import { GroupContextMenu } from "../menus/context/groupContextMenu";
 
 const applyDrag = (arr, dragResult) => {
   const { removedIndex, addedIndex, payload } = dragResult;
@@ -266,7 +272,8 @@ export default {
       localName: "",
       controlsShown: false,
       Arrow,
-      inheritanceSelection: -1
+      inheritanceSelection: -1,
+      GroupContextMenu
     };
   },
 
@@ -285,6 +292,7 @@ export default {
         group => group.name !== constants.GALLERY_GROUP_NAME
       );
     },
+
     group() {
       return this.groups.filter(group => group.id === this.groupId)[0];
     },
@@ -460,12 +468,8 @@ export default {
     removeModule(moduleId) {
       const { groupId } = this;
 
-      this.$modV.store.commit("groups/REMOVE_MODULE_FROM_GROUP", {
-        moduleId,
-        groupId
-      });
-
-      this.$modV.store.dispatch("modules/removeActiveModule", {
+      this.$store.dispatch("ui-modules/removeActiveModule", {
+        groupId,
         moduleId
       });
 

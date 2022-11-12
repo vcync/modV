@@ -258,6 +258,28 @@ const actions = {
     dataOut = applyExpression({ inputId, value: dataOut });
 
     commit("UPDATE_GROUP_BY_KEY", { groupId, key, data: dataOut, writeToSwap });
+  },
+
+  async duplicateModule({ commit }, { groupId, moduleId }) {
+    const group = state.groups.find(group => group.id === groupId);
+    const position = group.modules.findIndex(
+      moduleListId => moduleListId === moduleId
+    );
+    const existingModule = store.state.modules.active[moduleId];
+
+    const duplicateModule = await store.dispatch("modules/makeActiveModule", {
+      moduleName: existingModule.meta.name,
+      existingModule,
+      generateNewIds: true
+    });
+
+    console.log(position);
+
+    commit("ADD_MODULE_TO_GROUP", {
+      moduleId: duplicateModule.$id,
+      groupId,
+      position
+    });
   }
 };
 

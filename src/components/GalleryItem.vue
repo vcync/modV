@@ -5,6 +5,7 @@
     @dblclick="doubleClick"
     v-if="!badModule"
     class="gallery-item"
+    v-contextMenu="() => GalleryItemContextMenu({ moduleName })"
   >
     <canvas ref="canvas"></canvas>
     <div class="title">{{ moduleName }}</div>
@@ -13,6 +14,7 @@
 
 <script>
 import { GROUP_ENABLED, GROUP_DISABLED } from "../application/constants.js";
+import { GalleryItemContextMenu } from "../menus/context/galleryItemContextMenu";
 
 export default {
   props: ["moduleName", "groupId"],
@@ -21,7 +23,9 @@ export default {
     return {
       id: "",
       outputId: "",
-      badModule: false
+      activeModule: { meta: {} },
+      badModule: false,
+      GalleryItemContextMenu
     };
   },
 
@@ -55,6 +59,7 @@ export default {
       return;
     }
 
+    this.activeModule = module;
     this.id = module.$id;
     this.outputId = outputContext.id;
 
