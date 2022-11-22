@@ -24,6 +24,7 @@
                 <c span="3">
                   <Checkbox
                     @input="handleEnableInput(plugin.id)"
+                    :emitBoolean="true"
                     class="light"
                   />
                 </c>
