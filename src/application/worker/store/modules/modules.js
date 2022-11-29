@@ -91,7 +91,6 @@ async function initialiseModuleProperties(
         prop.type in store.state.dataTypes &&
         store.state.dataTypes[prop.type].inputs
       ) {
-        console.log(propKey);
         const dataTypeInputs = store.state.dataTypes[prop.type].inputs();
         const dataTypeInputsKeys = Object.keys(dataTypeInputs);
 
