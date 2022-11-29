@@ -6,11 +6,12 @@ import { windowPrefs } from "./window-prefs";
 
 const windows = {};
 
-function createWindow(windowName, event) {
+function createWindow({ windowName, options = {} }, event) {
   updateMenu();
 
   if (windowPrefs[windowName].unique && windows[windowName]) {
     windows[windowName].focus();
+    windows[windowName].show();
 
     if (event) {
       event.reply("window-ready", {
@@ -31,7 +32,8 @@ function createWindow(windowName, event) {
 
   // Create the browser window.
   windows[windowName] = new BrowserWindow({
-    ...windowOptions
+    ...windowOptions,
+    ...options
   });
 
   if (typeof windowPrefs[windowName].create === "function") {
@@ -72,4 +74,10 @@ function createWindow(windowName, event) {
   }
 }
 
-export { windows, createWindow };
+function closeWindow({ windowName }) {
+  if (windows[windowName]) {
+    windows[windowName].close();
+  }
+}
+
+export { windows, createWindow, closeWindow };

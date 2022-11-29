@@ -48,8 +48,9 @@ app.on("ready", async () => {
     "true"
   );
 
-  createWindow("mainWindow");
-  createWindow("splashScreen");
+  createWindow({ windowName: "mainWindow" });
+  createWindow({ windowName: "splashScreen" });
+  createWindow({ windowName: "colorPicker", options: { show: false } });
 });
 
 // Exit cleanly on request from parent process in development mode.
