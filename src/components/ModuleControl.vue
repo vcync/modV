@@ -7,11 +7,16 @@
     :prop="prop"
     :title="title"
     :value="value"
+    v-contextMenu="
+      () =>
+        ActiveModuleControlContextMenu({ moduleId: id, propName: prop, title })
+    "
   />
 </template>
 
 <script>
 import Control from "./Control";
+import { ActiveModuleControlContextMenu } from "../menus/context/activeModuleControlContextMenu.js";
 
 export default {
   components: {
@@ -28,6 +33,12 @@ export default {
       type: String,
       required: true
     }
+  },
+
+  data() {
+    return {
+      ActiveModuleControlContextMenu
+    };
   },
 
   computed: {
