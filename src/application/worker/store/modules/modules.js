@@ -117,6 +117,20 @@ async function initialiseModuleProperties(
   return module;
 }
 
+const getters = {
+  activeModuleInputIds: state => activeModuleId => {
+    const activeModule = state.active[activeModuleId];
+    return [
+      activeModule.meta.alphaInputId,
+      activeModule.meta.enabledInputId,
+      activeModule.meta.compositeOperationInputId,
+      ...store.getters["inputs/inputsByActiveModuleId"](activeModule.$id).map(
+        input => input.id
+      )
+    ];
+  }
+};
+
 const actions = {
   async registerModule(
     { commit, rootState },
@@ -770,6 +784,7 @@ const mutations = {
 export default {
   namespaced: true,
   state,
+  getters,
   actions,
   mutations
 };

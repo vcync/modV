@@ -271,13 +271,36 @@ const actions = {
     );
     const existingModule = store.state.modules.active[moduleId];
 
+    const existingInputIds = store.getters["modules/activeModuleInputIds"](
+      existingModule.$id
+    );
+
+    const existingInputLinks = existingInputIds.reduce((obj, id) => {
+      obj[id] = store.state.inputs.inputLinks[id];
+      return obj;
+    }, {});
+
     const duplicateModule = await store.dispatch("modules/makeActiveModule", {
       moduleName: existingModule.meta.name,
       existingModule,
       generateNewIds: true
     });
 
-    console.log(position);
+    const newInputIds = store.getters["modules/activeModuleInputIds"](
+      duplicateModule.$id
+    );
+
+    for (let i = 0; i < newInputIds.length; i += 1) {
+      const newInputId = newInputIds[i];
+      const existingInputId = existingInputIds[i];
+
+      if (existingInputLinks[existingInputId]) {
+        await store.dispatch("inputs/createInputLink", {
+          ...existingInputLinks[existingInputId],
+          inputId: newInputId
+        });
+      }
+    }
 
     commit("ADD_MODULE_TO_GROUP", {
       moduleId: duplicateModule.$id,

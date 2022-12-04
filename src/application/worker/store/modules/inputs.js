@@ -88,7 +88,12 @@ function getDefaultState() {
 const state = getDefaultState();
 const swap = getDefaultState();
 
-const getters = {};
+const getters = {
+  inputsByActiveModuleId: state => moduleId =>
+    Object.values(state.inputs).filter(
+      input => input.data.moduleId === moduleId
+    )
+};
 
 const actions = {
   setFocusedInput({ commit }, { id, title, writeToSwap }) {
