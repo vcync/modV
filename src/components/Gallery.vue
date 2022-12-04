@@ -227,9 +227,18 @@ export default {
   display: none !important;
 }
 
+.smooth-dnd-container.vertical {
+  grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+  display: grid;
+  gap: 8px;
+}
+
 .smooth-dnd-container.vertical > .smooth-dnd-draggable-wrapper {
-  display: inline-block;
-  margin-right: 8px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  aspect-ratio: 16/9;
+  background-color: black;
 }
 
 div.gallery {

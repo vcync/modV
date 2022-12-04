@@ -157,22 +157,12 @@ canvas {
 }
 
 .gallery-item {
-  background-color: #000;
   position: relative;
-
-  box-sizing: border-box;
-  justify-self: center;
-  align-self: flex-start;
-  width: 100%;
-  /* padding-bottom: 56.249999993%; */
   cursor: move;
-  display: inline-flex;
+  display: flex;
   justify-content: center;
   align-items: center;
-
-  max-width: 140px;
-
-  overflow: hidden;
+  height: 100%;
 }
 
 .gallery-item:hover canvas {
@@ -186,17 +176,17 @@ canvas {
 .gallery-item canvas {
   opacity: 0.3;
   transition: 150ms opacity;
+  width: 100%;
+  height: 100%;
 }
 
 .gallery-item .title {
   transition: 150ms opacity;
   padding: 0.45em;
-  max-height: 100%;
-  box-sizing: border-box;
   text-overflow: ellipsis;
-  max-width: 100%;
+  width: 100%;
+  text-align: center;
   overflow: hidden;
-  white-space: nowrap;
 }
 
 .title {

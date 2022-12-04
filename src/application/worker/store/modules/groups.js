@@ -79,8 +79,12 @@ import { applyExpression } from "../../../utils/apply-expression";
  * };
  */
 
-const state = { groups: [] };
-const swap = { groups: [] };
+function getDefaultState() {
+  return { groups: [] };
+}
+
+const state = getDefaultState();
+const swap = getDefaultState();
 
 // Any keys marked false or arrays with keys given
 // will not be moved from the base state when swapped
@@ -381,7 +385,7 @@ const mutations = {
     }
   },
 
-  SWAP: SWAP(swap, () => ({ groups: [] }), sharedPropertyRestrictions)
+  SWAP: SWAP(swap, getDefaultState, sharedPropertyRestrictions)
 };
 
 export default {

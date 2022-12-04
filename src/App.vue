@@ -402,12 +402,29 @@ body {
   background: rgb(45, 45, 45);
 }
 
-/* From https://loading.io/css */
-.loading {
+@keyframes loading {
+  0% {
+    font-size: 4rem;
+  }
+
+  100% {
+    font-size: 7rem;
+  }
+}
+
+#loading {
+  font-size: 4rem;
   position: absolute;
   left: 50%;
   top: 50%;
   transform: translate(-50%, -50%);
+  display: flex;
+  align-content: center;
+}
+
+#loading span {
+  animation: loading 1.4s cubic-bezier(0.87, 0, 0.13, 1) infinite forwards
+    alternate;
 }
 </style>
 

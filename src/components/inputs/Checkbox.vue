@@ -15,6 +15,11 @@ export default {
     allowPartial: {
       type: Boolean,
       default: false
+    },
+
+    emitBoolean: {
+      type: Boolean,
+      default: false
     }
   },
   data() {
@@ -53,7 +58,11 @@ export default {
         value = 0;
       }
 
-      this.$emit("input", value);
+      if (this.emitBoolean) {
+        this.$emit("input", Boolean(value));
+      } else {
+        this.$emit("input", value);
+      }
     }
   }
 };
