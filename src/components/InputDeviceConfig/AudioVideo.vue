@@ -35,6 +35,23 @@
         <c span="1..">
           <grid columns="4">
             <c span="1">
+              Audio Gain
+            </c>
+            <c span="3">
+              <input
+                v-model="gain"
+                class="light"
+                type="range"
+                min="1"
+                max="100"
+              />
+            </c>
+          </grid>
+        </c>
+
+        <c span="1..">
+          <grid columns="4">
+            <c span="1">
               Video Input
             </c>
             <c span="3">
@@ -116,6 +133,16 @@ export default {
         this.switchingVideo = true;
         this.$modV.setupMedia({ videoId: value });
         this.switchingVideo = false;
+      }
+    },
+
+    gain: {
+      get() {
+        return this.$modV.gainNode.gain.value;
+      },
+
+      set(value) {
+        this.$modV.gainNode.gain.value = parseInt(value, 10);
       }
     }
   },
