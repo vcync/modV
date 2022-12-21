@@ -56,13 +56,15 @@ function setPreValue() {
     return;
   }
 
-  const value = parseFloat(vnode.__vue__.value, 10);
+  vnode.__vue__.$nextTick(() => {
+    const value = parseFloat(vnode.__vue__.value, 10);
 
-  if (typeof value === "undefined") {
-    return;
-  }
+    if (typeof value === "undefined") {
+      return;
+    }
 
-  pre.innerHTML = value.toFixed(3);
+    pre.innerHTML = value.toFixed(3);
+  });
 }
 
 function cleanUp() {
