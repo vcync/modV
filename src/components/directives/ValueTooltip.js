@@ -7,12 +7,8 @@ let vnode = null;
 let setTooltipFromValue = true;
 let isVisible = false;
 
-function getExistingTooltip() {
-  return document.getElementById(TOOLTIP_ID);
-}
-
 function createTooltip() {
-  const existingTooltip = getExistingTooltip();
+  const existingTooltip = document.getElementById(TOOLTIP_ID);
 
   if (existingTooltip) {
     tooltip = existingTooltip;
