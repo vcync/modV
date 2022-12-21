@@ -4,7 +4,6 @@
       type="range"
       @input="$emit('input', parseFloat($event.target.value, 10))"
       v-bind="$props"
-      v-tooltip
     />
   </RightClickNumberInput>
 </template>

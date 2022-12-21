@@ -6,7 +6,6 @@
   >
     <div class="range-control" ref="container">
       <canvas
-        v-tooltip
         @mousedown.left="requestPointerLock"
         @mouseup.left="exitPointerLock"
         ref="canvas"

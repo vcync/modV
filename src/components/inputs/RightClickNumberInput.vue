@@ -1,6 +1,6 @@
 <template>
-  <div>
-    <div v-show="!editMode" @click.right="toggleEditMode">
+  <div v-tooltip="{ visible: !editMode }">
+    <div class="slot" v-show="!editMode" @click.right="toggleEditMode">
       <slot></slot>
     </div>
 
@@ -162,6 +162,10 @@ export default {
 </script>
 
 <style scoped>
+.slot {
+  display: flex;
+  align-items: center;
+}
 /* canvas {
   border-radius: 23px;
   width: 100%;
