@@ -1,20 +1,36 @@
 <template>
-  <input
-    type="range"
-    @input="$emit('input', parseFloat($event.target.value, 10))"
-    v-bind="$props"
-    v-tooltip
-  />
+  <RightClickNumberInput v-bind="$props" @input="handleNumberInput">
+    <input
+      type="range"
+      @input="$emit('input', parseFloat($event.target.value, 10))"
+      v-bind="$props"
+      v-tooltip
+    />
+  </RightClickNumberInput>
 </template>
 
 <script>
+import RightClickNumberInput from "./RightClickNumberInput.vue";
+
 export default {
+  components: { RightClickNumberInput },
   props: {
     min: {},
     max: {},
     step: {},
     value: {
       default: 0
+    }
+  },
+
+  methods: {
+    handleNumberInput(value) {
+      let valueOut = parseFloat(value, 10);
+      if (isNaN(valueOut)) {
+        valueOut = 0;
+      }
+
+      this.$emit("input", valueOut);
     }
   }
 };
