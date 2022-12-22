@@ -29,7 +29,7 @@
 </template>
 
 <script>
-import fontList from "font-list";
+import Fuse from "fuse.js";
 
 export default {
   props: {
@@ -45,21 +45,25 @@ export default {
       fonts: [],
       showFontList: false,
       searchTerm: "",
-      keyboardSelectedIndex: -1
+      keyboardSelectedIndex: -1,
+      fuse: null
     };
   },
 
   async created() {
+    const fuse = new Fuse([], { includeScore: true });
+
     try {
-      const fonts = await fontList.getFonts();
-      this.fonts = [
-        ...this.defaultFonts,
-        ...fonts.map(font => font.replace(/"/g, ""))
-      ];
+      const fonts = await window.queryLocalFonts();
+      this.fonts = [...this.defaultFonts, ...fonts.map(font => font.fullName)];
+
+      // eslint-disable-next-line no-for-each/no-for-each
+      this.fonts.forEach(fontName => fuse.add(fontName));
     } catch (e) {
       console.error(e);
     }
 
+    this.fuse = fuse;
     this.searchTerm = this.value;
   },
 
@@ -73,11 +77,15 @@ export default {
 
   computed: {
     fontsToShow() {
-      if (this.value === this.searchTerm) {
-        return this.fonts;
+      const { fonts, fuse, searchTerm, value } = this;
+      if (value === searchTerm || !searchTerm) {
+        return fonts;
       }
 
-      return this.fonts.filter(font => this.search(font, this.searchTerm));
+      return fuse
+        .search(searchTerm)
+        .sort((a, b) => a.score - b.score)
+        .map(result => result.item);
     }
   },
 
