@@ -41,8 +41,6 @@ export default {
 
   data() {
     return {
-      defaultFonts: ["serif", "sans-serif", "cursive", "monospace"],
-      fonts: [],
       showFontList: false,
       searchTerm: "",
       keyboardSelectedIndex: -1,
@@ -51,20 +49,8 @@ export default {
   },
 
   async created() {
-    const fuse = new Fuse([], { includeScore: true });
-
-    try {
-      const fonts = await window.queryLocalFonts();
-      this.fonts = [...this.defaultFonts, ...fonts.map(font => font.fullName)];
-
-      // eslint-disable-next-line no-for-each/no-for-each
-      this.fonts.forEach(fontName => fuse.add(fontName));
-    } catch (e) {
-      console.error(e);
-    }
-
-    this.fuse = fuse;
     this.searchTerm = this.value;
+    this.setupFuse();
   },
 
   mounted() {
@@ -76,6 +62,10 @@ export default {
   },
 
   computed: {
+    fonts() {
+      return this.$modV._store.getters["fonts/fonts"];
+    },
+
     fontsToShow() {
       const { fonts, fuse, searchTerm, value } = this;
       if (value === searchTerm || !searchTerm) {
@@ -174,6 +164,22 @@ export default {
           selected.scrollIntoView({ block: "nearest" });
         }
       });
+    },
+
+    setupFuse(fontsIn) {
+      const fonts = fontsIn ?? this.fonts;
+
+      const fuse = new Fuse([], { includeScore: true });
+
+      // eslint-disable-next-line no-for-each/no-for-each
+      fonts.forEach(fontName => fuse.add(fontName));
+      this.fuse = fuse;
+    }
+  },
+
+  watch: {
+    fonts(fonts) {
+      this.setupFuse(fonts);
     }
   }
 };
@@ -191,8 +197,8 @@ export default {
   margin: 0;
 }
 
-.searchable-select.selected,
-.searchable-select:hover {
+.searchable-select li.selected,
+.searchable-select li:hover {
   background-color: var(--foreground-color-3);
 }
 </style>
