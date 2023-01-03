@@ -40,5 +40,6 @@ input {
   padding: 0 4px;
   box-sizing: border-box;
   width: 100%;
+  vertical-align: top;
 }
 </style>
