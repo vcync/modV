@@ -1,28 +1,23 @@
 <template>
-  <div class="range-control" ref="container">
-    <canvas
-      v-tooltip
-      @mousedown.left="requestPointerLock"
-      @mouseup.left="exitPointerLock"
-      @click.right="toggleEditMode"
-      v-show="!editMode"
-      ref="canvas"
-    ></canvas>
-    <Number
-      v-model="inputValue"
-      type="number"
-      :step="step"
-      @keypress.enter="toggleEditMode"
-      @click.right="toggleEditMode"
-      @input="numberInputHandler"
-      v-show="editMode"
-      ref="input"
-    />
-  </div>
+  <RightClickNumberInput
+    v-bind="$props"
+    v-model="inputValue"
+    @input="numberInputHandler"
+  >
+    <div class="range-control" ref="container">
+      <canvas
+        @mousedown.left="requestPointerLock"
+        @mouseup.left="exitPointerLock"
+        ref="canvas"
+      ></canvas>
+    </div>
+  </RightClickNumberInput>
 </template>
 
 <script>
+import RightClickNumberInput from "../inputs/RightClickNumberInput.vue";
 export default {
+  components: { RightClickNumberInput },
   props: {
     min: {
       type: Number,
@@ -49,7 +44,6 @@ export default {
       context: null,
       active: false,
       position: 0,
-      editMode: false,
       inputValue: 0,
       lastCursor: "",
       spacingModifier: 1,
@@ -302,15 +296,6 @@ export default {
       this.$emit("input", this.inputValue);
     },
 
-    toggleEditMode(e) {
-      e.preventDefault();
-      this.editMode = !this.editMode;
-
-      if (this.editMode) {
-        this.$refs.input.focus();
-      }
-    },
-
     keyDown(e) {
       if (!this.mouseIsDown) {
         return;
@@ -396,14 +381,6 @@ div {
   width: 100%;
   height: 16px;
   display: inline-block;
-}
-
-input {
-  position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  width: 100%;
+  vertical-align: top;
 }
 </style>

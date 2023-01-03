@@ -157,13 +157,15 @@ async function setupMedia({ audioId, videoId, useDefaultDevices = false }) {
     // Set up arrays for analyser
     floatFrequencyDataArray = new Float32Array(analyserNode.frequencyBinCount);
     byteFrequencyDataArray = new Uint8Array(analyserNode.frequencyBinCount);
-    byteTimeDomainDataArray = new Uint8Array(analyserNode.frequencyBinCount / 2);
+    byteTimeDomainDataArray = new Uint8Array(
+      analyserNode.frequencyBinCount / 2
+    );
 
     // Create a gain node
     this.gainNode = this.audioContext.createGain();
 
-    // Mute the node
-    this.gainNode.gain.value = 0;
+    // Default gain
+    this.gainNode.gain.value = 1;
 
     // Create the audio input stream (audio)
     this.audioStream = this.audioContext.createMediaStreamSource(
@@ -176,14 +178,11 @@ async function setupMedia({ audioId, videoId, useDefaultDevices = false }) {
     // Connect the audio stream to the gain node (audio->(analyser)->gain)
     this.audioStream.connect(this.gainNode);
 
-    // Connect the gain node to the output (audio->(analyser)->gain->destination)
-    this.gainNode.connect(this.audioContext.destination);
-
     // Set up Meyda
     // eslint-disable-next-line new-cap
     this.meyda = new Meyda.createMeydaAnalyzer({
       audioContext: this.audioContext,
-      source: this.audioStream,
+      source: this.gainNode,
       bufferSize: constants.AUDIO_BUFFER_SIZE,
       windowingFunction: "rect",
       featureExtractors: ["complexSpectrum"]
