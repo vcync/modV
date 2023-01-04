@@ -248,4 +248,10 @@ input[type="number"] {
   color: #fff;
   padding: 2px 3px;
 }
+
+.input {
+  display: flex;
+  align-items: center;
+  height: 100%;
+}
 </style>

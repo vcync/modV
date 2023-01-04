@@ -382,5 +382,6 @@ div {
   height: 16px;
   display: inline-block;
   vertical-align: top;
+  line-height: 0;
 }
 </style>
