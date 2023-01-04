@@ -1,11 +1,13 @@
 <template>
-  <RightClickNumberInput v-bind="$props" @input="handleNumberInput">
-    <input
+  <RightClickNumberInput
+    v-bind="$props"
+    @input="handleNumberInput"
+    class="range-control__number"
+    ><input
       type="range"
       @input="$emit('input', parseFloat($event.target.value, 10))"
       v-bind="$props"
-    />
-  </RightClickNumberInput>
+  /></RightClickNumberInput>
 </template>
 
 <script>
@@ -36,6 +38,12 @@ export default {
 </script>
 
 <style scoped>
+.range-control__number {
+  width: 100%;
+  height: 16px;
+  display: flex;
+}
+
 input {
   -webkit-appearance: none;
   background: transparent;
