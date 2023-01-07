@@ -5,6 +5,7 @@ let tooltip = null;
 let pre = null;
 let vnode = null;
 let setTooltipFromValue = true;
+let isVisible = false;
 
 function createTooltip() {
   const existingTooltip = document.getElementById(TOOLTIP_ID);
@@ -12,7 +13,7 @@ function createTooltip() {
   if (existingTooltip) {
     tooltip = existingTooltip;
     pre = existingTooltip.querySelector("pre");
-    tooltip.style.display = "initial";
+    setTooltipVisibility();
     return;
   }
 
@@ -51,18 +52,27 @@ function setTooltipPosition(e) {
   });
 }
 
-function setPreValue() {
+function setPreValue(e) {
   if (!vnode || !vnode.__vue__) {
     return;
   }
 
-  const value = parseFloat(vnode.__vue__.value, 10);
-
-  if (typeof value === "undefined") {
-    return;
+  let value = e;
+  if (!e) {
+    value = vnode.__vue__.value;
+  } else if (typeof e === "object" && e.target) {
+    value = e.target.value;
   }
 
-  pre.innerHTML = value.toFixed(3);
+  vnode.__vue__.$nextTick(() => {
+    const parsedValue = parseFloat(value, 10);
+
+    if (typeof parsedValue === "undefined") {
+      return;
+    }
+
+    pre.innerHTML = parsedValue.toFixed(3);
+  });
 }
 
 function cleanUp() {
@@ -74,9 +84,7 @@ function cleanUp() {
   window.removeEventListener("mousemove", mouseMove);
   window.removeEventListener("mouseup", mouseUp);
 
-  if (tooltip) {
-    tooltip.style.display = "none";
-  }
+  setTooltipVisibility(false);
 }
 
 function mouseUp() {
@@ -92,6 +100,8 @@ function mouseMove(e) {
 }
 
 function mouseDown(e) {
+  window.addEventListener("mouseup", mouseUp);
+
   if (e.button > 0) {
     return;
   }
@@ -107,7 +117,6 @@ function mouseDown(e) {
 
   vnode.__vue__.$on("input", setPreValue);
   window.addEventListener("mousemove", mouseMove);
-  window.addEventListener("mouseup", mouseUp);
 
   createTooltip();
   setTooltipPosition(e);
@@ -135,13 +144,29 @@ function mouseOver(e, message) {
   pre.innerHTML = message;
 }
 
+function setTooltipVisibility(visible) {
+  const visibility = visible ?? isVisible;
+
+  if (tooltip) {
+    tooltip.style.display = visibility ? "initial" : "none";
+  }
+}
+
 Vue.directive("tooltip", {
-  inserted(el, { value: { mouseover, message } = {} }) {
+  inserted(el, { value: { visible, mouseover, message } = {} }) {
+    isVisible = visible ?? true;
+
     if (!mouseover) {
       el.addEventListener("mousedown", mouseDown);
     } else {
       el.addEventListener("mouseover", e => mouseOver(e, message));
       el.addEventListener("mouseout", mouseUp);
+    }
+  },
+
+  update(el, { value: { visible } }) {
+    if (isVisible !== visible) {
+      isVisible = visible;
     }
   },
 

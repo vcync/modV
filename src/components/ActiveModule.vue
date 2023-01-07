@@ -44,7 +44,7 @@
           }"
         >
           <c span="2">Alpha</c>
-          <c span="4">
+          <c span="4" class="active-module__alpha-input">
             <Range
               value="1"
               min="0"
