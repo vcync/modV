@@ -48,7 +48,11 @@
         <input type="text" v-model="internalValue" />
       </div>
       <div class="input" v-else-if="type === 'bool'">
-        <Checkbox :class="{ light: !inputIsFocused }" v-model="internalValue" />
+        <Checkbox
+          :class="{ light: !inputIsFocused }"
+          v-model="internalValue"
+          :emitBoolean="true"
+        />
       </div>
       <div class="input" v-else-if="type === 'color'">
         <ColorControl
@@ -243,5 +247,11 @@ input[type="number"] {
   border: 1px solid #fff;
   color: #fff;
   padding: 2px 3px;
+}
+
+.input {
+  display: flex;
+  align-items: center;
+  height: 100%;
 }
 </style>

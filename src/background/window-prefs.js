@@ -4,7 +4,7 @@ import store from "../media-manager/store";
 import { autoUpdater } from "electron-updater";
 import { checkMediaPermission } from "./check-media-permission";
 import { setProjectNames, setCurrentProject } from "./projects";
-import { createWindow, windows } from "./windows";
+import { closeWindow, createWindow, windows } from "./windows";
 import { updateMenu } from "./menu-bar";
 import { getMediaManager } from "./media-manager";
 
@@ -29,7 +29,18 @@ const windowPrefs = {
       skipTaskbar: true,
       fullscreenable: false
     },
-    unique: true
+    unique: true,
+    create(window) {
+      window.on("close", e => {
+        e.preventDefault();
+
+        window.hide();
+      });
+
+      window.on("blur", () => {
+        window.hide();
+      });
+    }
   },
 
   mainWindow: {
@@ -95,7 +106,11 @@ const windowPrefs = {
       };
 
       ipcMain.on("open-window", (event, message) => {
-        createWindow(message, event);
+        createWindow({ windowName: message }, event);
+      });
+
+      ipcMain.on("close-window", (event, message) => {
+        closeWindow({ windowName: message });
       });
 
       ipcMain.on("modv-ready", () => {

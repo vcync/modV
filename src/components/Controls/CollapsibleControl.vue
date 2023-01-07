@@ -1,5 +1,5 @@
 <template>
-  <fragment>
+  <div>
     <c span="1.." class="label-row" :class="{ disabled }">
       <grid columns="4">
         <c span="1">
@@ -15,7 +15,7 @@
     </c>
 
     <slot name="body" v-if="!disabled && open" />
-  </fragment>
+  </div>
 </template>
 
 <script>

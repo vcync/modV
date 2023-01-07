@@ -78,7 +78,7 @@
     "@vue/eslint-config-prettier": "^4.0.1",
     "babel-eslint": "^10.0.3",
     "core-js": "^3.19.1",
-    "electron": "^17.2.0",
+    "electron": "^18.3.7",
     "electron-builder": "^22.9.1",
     "electron-notarize": "^1.2.2",
     "eslint": "^5.16.0",

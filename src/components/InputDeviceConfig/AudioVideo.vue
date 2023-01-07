@@ -35,6 +35,23 @@
         <c span="1..">
           <grid columns="4">
             <c span="1">
+              Audio Gain
+            </c>
+            <c span="2">
+              <Range
+                :min="minGain"
+                :max="maxGain"
+                step="0.01"
+                v-model="gainRangeValue"
+              />
+            </c>
+            <c>({{ gainRangeValue.toFixed(2) }})</c>
+          </grid>
+        </c>
+
+        <c span="1..">
+          <grid columns="4">
+            <c span="1">
               Video Input
             </c>
             <c span="3">
@@ -57,7 +74,7 @@
         <c span="1..">
           <grid columns="4">
             <c span="2+3">
-              <Button class="light" @click="renumerate">Re-scan devices</Button>
+              <Button class="light" @click="renumerate">Re-scan Devices</Button>
             </c>
           </grid>
         </c>
@@ -71,11 +88,15 @@ export default {
   data() {
     return {
       iVTitle: "Media Input Config",
-      iVBody:
-        "Configure your audio and video inputs here. Click Renumerate Devices to scan for new sources.",
+      iVBody: `Configure your audio and video inputs here. Click "Re-scan Devices" to scan for new sources.`,
       switchingAudio: false,
-      switchingVideo: false
+      switchingVideo: false,
+      gainRangeValue: 1
     };
+  },
+
+  created() {
+    this.gainRangeValue = this.$modV.gainNode.gain.value ?? 1;
   },
 
   computed: {
@@ -117,12 +138,26 @@ export default {
         this.$modV.setupMedia({ videoId: value });
         this.switchingVideo = false;
       }
+    },
+
+    maxGain() {
+      return this.$modV.gainNode.gain.maxValue.toPrecision(1 + 2).split("e")[0];
+    },
+
+    minGain() {
+      return 0;
     }
   },
 
   methods: {
     renumerate() {
       this.$modV.enumerateDevices();
+    }
+  },
+
+  watch: {
+    gainRangeValue(value) {
+      this.$modV.gainNode.gain.value = value;
     }
   }
 };

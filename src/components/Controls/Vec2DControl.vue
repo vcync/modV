@@ -9,7 +9,7 @@
             @mousedown.stop="focusInput('0', 'x')"
           >
             <c span="1+1">X</c>
-            <c span="3">
+            <c span="3" class="input">
               <RangeControl
                 :min="-1"
                 :max="1"
@@ -26,7 +26,7 @@
             @mousedown.stop="focusInput('1', 'y')"
           >
             <c span="1+1">Y</c>
-            <c span="3">
+            <c span="3" class="input">
               <RangeControl
                 :min="-1"
                 :max="1"
