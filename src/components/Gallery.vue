@@ -89,8 +89,7 @@ export default {
       searchTerm: "",
       renderers: {},
       modulesToShow: [],
-      renderersToShow: [],
-      fuse: null
+      renderersToShow: []
     };
   },
 
