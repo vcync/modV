@@ -1,9 +1,10 @@
 /* eslint-env worker */
+import { applyWindow } from "meyda/dist/esm/utilities";
 import get from "lodash.get";
 import store from "./store";
 import map from "../utils/map";
 import constants, { GROUP_DISABLED, GROUP_ENABLED } from "../constants";
-import { applyWindow } from "meyda/src/utilities";
+import NdiWorker from "worker-loader!./ndi-worker.worker.js";
 
 const meyda = { windowing: applyWindow };
 
@@ -11,7 +12,9 @@ let bufferCanvas;
 let bufferContext;
 const fallbackByteFrequencyData = Array(constants.AUDIO_BUFFER_SIZE).fill(0);
 
-function loop(delta, features, fftOutput) {
+const ndiWorker = new NdiWorker();
+
+async function loop(delta, features, fftOutput) {
   if (!bufferCanvas) {
     bufferCanvas = new OffscreenCanvas(300, 300);
     bufferContext = bufferCanvas.getContext("2d");
@@ -384,6 +387,18 @@ function loop(delta, features, fftOutput) {
       props: postProcessFrameFunctions[i].$props
     });
   }
+
+  // Gotta transfer after everything else as it transfers ownership of the canvas content
+  // i.e. main.canvas goes blank
+
+  const imageBitmap = await main.canvas.transferToImageBitmap();
+  ndiWorker.postMessage(
+    {
+      type: "imageBitmap",
+      payload: { fps: store.state.metrics.fps, imageBitmap }
+    },
+    [imageBitmap]
+  );
 }
 
 export default loop;

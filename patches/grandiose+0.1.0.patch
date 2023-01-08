@@ -1,0 +1,16 @@
+diff --git a/node_modules/grandiose/index.js b/node_modules/grandiose/index.js
+index 398f443cacc477b1afe624a790d9607d5b782a31..cbfd5bc36062a116456de72478924214f6cb4d69 100644
+--- a/node_modules/grandiose/index.js
++++ b/node_modules/grandiose/index.js
+@@ -13,8 +13,10 @@
+   limitations under the License.
+ */
+
++const path = require("path");
++
+ const addon = require("pkg-prebuilds")(
+-  __dirname,
++  path.resolve(__dirname),
+   require("./binding-options")
+ );
+
