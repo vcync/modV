@@ -69,6 +69,7 @@
 
 <script>
 import { Container, Draggable } from "vue-smooth-dnd";
+import Fuse from "fuse.js";
 import constants from "../application/constants";
 import GalleryItem from "./GalleryItem";
 
@@ -87,8 +88,9 @@ export default {
       groupId: null,
       searchTerm: "",
       renderers: {},
+      modulesToShow: [],
       renderersToShow: [],
-      modulesToShow: []
+      fuse: null
     };
   },
 
@@ -98,13 +100,25 @@ export default {
     },
 
     modulesByRenderer() {
-      return Object.keys(this.registeredModules)
-        .sort((a, b) =>
-          this.registeredModules[a].meta.name.localeCompare(
-            this.registeredModules[b].meta.name
-          )
-        )
-        .reduce((obj, key) => {
+      let allModuleKeysSortedBySearchResults = [];
+
+      if (this.searchTerm) {
+        allModuleKeysSortedBySearchResults.push(...this.modulesToShow);
+
+        // eslint-disable-next-line no-for-each/no-for-each
+        Object.keys(this.registeredModules).forEach(name => {
+          if (allModuleKeysSortedBySearchResults.indexOf(name) < 0) {
+            allModuleKeysSortedBySearchResults.push(name);
+          }
+        });
+      } else {
+        allModuleKeysSortedBySearchResults = Object.keys(
+          this.registeredModules
+        );
+      }
+
+      return this.sortIfNoSearchTerm(allModuleKeysSortedBySearchResults).reduce(
+        (obj, key) => {
           const module = this.registeredModules[key];
           const { type, name } = module.meta;
 
@@ -115,7 +129,9 @@ export default {
           obj[type][name] = module;
 
           return obj;
-        }, {});
+        },
+        {}
+      );
     }
   },
 
@@ -147,33 +163,39 @@ export default {
       return { moduleName, collection: "gallery" };
     },
 
-    search(textIn, termIn) {
-      const text = textIn.toLowerCase().trim();
-      const term = termIn.toLowerCase().trim();
-      if (termIn.length < 1) {
-        return true;
-      }
-
-      return text.indexOf(term) > -1;
-    },
-
     updateModulesAndRenderersToShow() {
-      const { search, searchTerm, registeredModules } = this;
+      const { searchTerm: term, registeredModules } = this;
+
       this.modulesToShow = [];
       this.renderersToShow = [];
 
-      const registeredModulesKeys = Object.keys(registeredModules);
-      for (let i = 0, len = registeredModulesKeys.length; i < len; i++) {
-        const moduleKey = registeredModulesKeys[i];
+      const searchTerm = term.toLowerCase();
+
+      const registeredModulesKeys = Object.keys(registeredModules).sort(
+        (a, b) => a.localeCompare() - b.localeCompare()
+      );
+
+      // creating a new Fuse instance is the recommended way to keep it up to date
+      const fuse = new Fuse(registeredModulesKeys, {
+        includeScore: true
+      });
+
+      const matchingKeys = fuse
+        .search(searchTerm)
+        .sort((a, b) => a.score - b.score)
+        .map(result => result.item);
+
+      const keys = searchTerm ? matchingKeys : registeredModulesKeys;
+
+      for (let i = 0, len = keys.length; i < len; i++) {
+        const moduleKey = keys[i];
 
         const module = registeredModules[moduleKey];
         const { name, type } = module.meta;
 
-        if (search(name, searchTerm)) {
-          this.modulesToShow.push(name);
-          if (this.renderersToShow.indexOf(type) < 0) {
-            this.renderersToShow.push(type);
-          }
+        this.modulesToShow.push(name);
+        if (this.renderersToShow.indexOf(type) < 0) {
+          this.renderersToShow.push(type);
         }
       }
     },
@@ -207,6 +229,18 @@ export default {
           group => group.id === groupId
         ).modules.length
       });
+    },
+
+    sortIfNoSearchTerm(array) {
+      if (this.searchTerm) {
+        return array;
+      }
+
+      return array.sort((a, b) =>
+        this.registeredModules[a].meta.name.localeCompare(
+          this.registeredModules[b].meta.name
+        )
+      );
     }
   },
 
