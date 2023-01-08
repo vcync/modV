@@ -46,7 +46,16 @@
 
 .lm_header {
   height: 20px;
-  border-bottom: 1px solid var(--foreground-color-4);
+  z-index:unset;
+}
+
+.lm_header + .lm_items .lm_header {
+  border-top: 1px solid var(--foreground-color-4);
+  background-color: var(--background-color-3);
+}
+
+.lm_header .lm_tabdropdown_list {
+  box-shadow: 0px 0px 10px 1px rgb(0 0 0 / 60%);
 }
 
 
