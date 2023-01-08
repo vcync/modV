@@ -1,6 +1,9 @@
 /* global BigInt */
 import { getGrandioseSender, setupGrandiose } from "../setup-grandiose";
 
+// Referenced from: https://github.com/rse/vingester/blob/master/vingester-browser-worker.js
+// And: https://github.com/rse/grandiose
+
 let sender;
 let grandiose;
 
@@ -47,6 +50,8 @@ const fourCC = {
   FOURCC_FLTp
 };
 
+const bytesForRGBA = 4;
+
 (async () => {
   grandiose = await setupGrandiose();
   sender = await getGrandioseSender();
@@ -72,13 +77,7 @@ self.onmessage = async function({ data: { type, payload } }) {
 
   const buffer = Buffer.from(imageData.data);
 
-  if (buffer.byteLength % 4 !== 0) {
-    return;
-  }
-
-  // https://github.com/rse/vingester/blob/master/vingester-browser-worker.js
   const now = timeNow();
-  const bytesForRGBA = 4;
   const frame = {
     timecode: now / BigInt(100),
 
