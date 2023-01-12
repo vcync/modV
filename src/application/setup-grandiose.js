@@ -3,9 +3,11 @@
 import store from "./worker/store/index";
 
 let grandiose = undefined;
+let sender = undefined;
 
-export default function setupGrandiose() {
+export async function setupGrandiose() {
   if (grandiose === undefined) {
+    const originalDirname = __dirname;
     /* eslint-disable */
     __dirname = `${__dirname}/node_modules/grandiose`;
     __dirname = __dirname.replace("app.asar", "app.asar.unpacked");
@@ -25,7 +27,7 @@ export default function setupGrandiose() {
     }
 
     // eslint-disable-next-line
-    __dirname = __dirname.replace("/node_modules/grandiose", "");
+    __dirname = originalDirname;
   }
 
   // Make sure to set grandiose to undefined as it will be an empty object otherwise
@@ -34,4 +36,20 @@ export default function setupGrandiose() {
   }
 
   return grandiose;
+}
+
+export async function getGrandioseSender() {
+  if (grandiose === undefined) {
+    await setupGrandiose();
+  }
+
+  if (!sender) {
+    sender = await grandiose.send({
+      name: `modV (${Date.now()})`,
+      clockVideo: false,
+      clockAudio: false
+    });
+  }
+
+  return sender;
 }
