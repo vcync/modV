@@ -8554,10 +8554,10 @@ methods@~1.1.2:
   resolved "https://registry.yarnpkg.com/methods/-/methods-1.1.2.tgz#5529a4d67654134edcc5266656835b0f851afcee"
   integrity sha512-iclAHeNqNm68zFtnZ0e+1L2yUIdvzNoauKU4WBA3VvH/vPFieF7qfRlwUZU+DA9P9bPXIS90ulxoUoCH23sV2w==
 
-meyda@^5.2.0:
-  version "5.2.0"
-  resolved "https://registry.yarnpkg.com/meyda/-/meyda-5.2.0.tgz#7c754e9b1827025a227b162e04a63e84bb2c9e6b"
-  integrity sha512-M9Z+LzYrZMvIN2Y7OdbHOuaCIAM+Jsqe9OH8Vq0zTZPhE3vB/3BmDNq4uJuVi4MM1nLb0iqJOntQBdGBmv3GWA==
+meyda@5.6.0:
+  version "5.6.0"
+  resolved "https://registry.yarnpkg.com/meyda/-/meyda-5.6.0.tgz#421d6e784d5d5c17e31cba3da6e71b2a003c159b"
+  integrity sha512-tYSmGM8EQIkhuXdbWa0J+OTVbY3XuKB+KSZmGT/RhJGVnESXCqkcu3625oBxYj9KFNtrNerXFd5xj3/uvhbydw==
   dependencies:
     dct "0.1.0"
     fftjs "0.0.4"
