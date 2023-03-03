@@ -3,7 +3,7 @@ import get from "lodash.get";
 import store from "./store";
 import map from "../utils/map";
 import constants, { GROUP_DISABLED, GROUP_ENABLED } from "../constants";
-import { applyWindow } from "meyda/src/utilities";
+import { applyWindow } from "meyda/dist/esm/utilities";
 
 const meyda = { windowing: applyWindow };
 
