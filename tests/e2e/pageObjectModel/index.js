@@ -94,6 +94,13 @@ class ModVApp {
     return page.evaluate(() => window.Vue.$store.state);
   }
 
+  async evaluateWorkerState() {
+    const page = await this.page;
+    const worker = page.workers()[0];
+
+    return worker.evaluate(() => self.store);
+  }
+
   async generatePreset() {
     const page = await this.page;
 
