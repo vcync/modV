@@ -10,14 +10,14 @@ import { modVApp } from "./pageObjectModel";
 // import jimp from "jimp";
 
 test("renders the main window", async () => {
-  const page = await modVApp.page;
+  const { page } = modVApp;
 
   const title = await page.title();
   expect(title).toBe("modV");
 });
 
 test("creates a default group", async () => {
-  const page = await modVApp.page;
+  const { page } = modVApp;
 
   const groups = page.locator(".groups .group");
 
@@ -26,7 +26,7 @@ test("creates a default group", async () => {
 });
 
 test("default group is focused by default", async () => {
-  const page = await modVApp.page;
+  const { page } = modVApp;
 
   const firstGroupEl = page.locator(".group").first();
   const firstGroupElId = await firstGroupEl.getAttribute("id");
@@ -41,13 +41,13 @@ test("default group is focused by default", async () => {
 test("renderers are registered", async () => {
   const expectedRenderers = ["2d", "isf", "shader", "three"];
 
-  const { renderers } = await modVApp.evaluateState();
+  const { renderers } = await modVApp.evaluateMainState();
 
   expect(expectedRenderers.sort()).toEqual(Object.keys(renderers).sort());
 });
 
 test("search gallery and add module to group", async () => {
-  const page = await modVApp.page;
+  const { page } = modVApp;
 
   const searchInput = await page.locator("input.gallery-search");
   await searchInput.click();
@@ -76,6 +76,14 @@ test("search gallery and add module to group", async () => {
     .locator(".active-module__title");
   const activeModuleTitle = await activeModule.textContent();
   expect(activeModuleTitle.trim()).toBe("Ball");
+});
+
+test("new group button greates a new group", async () => {
+  await modVApp.newGroupButton.click();
+
+  await modVApp.checkWorkerAndMainState(state =>
+    expect(state.groups.groups.length).toBe(3)
+  );
 });
 
 // test("trigger IPC listener via main process", async () => {

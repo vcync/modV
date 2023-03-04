@@ -23,7 +23,9 @@
       </Draggable>
     </Container>
 
-    <Button class="light" @click="createGroup">New Group</Button>
+    <Button id="new-group-button" class="light" @click="createGroup">
+      New Group
+    </Button>
   </div>
 </template>
 

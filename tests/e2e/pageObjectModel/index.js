@@ -45,6 +45,7 @@ class ModVApp {
       });
 
       console.info("  ℹ    Waiting for modV to become ready…");
+      this.page = await modVApp.electronApp.firstWindow();
       await this.waitUntilModVReady();
     });
 
@@ -65,7 +66,7 @@ class ModVApp {
       return promise;
     }
 
-    const isReady = await ipcRendererInvoke(await this.page, "is-modv-ready");
+    const isReady = await ipcRendererInvoke(this.page, "is-modv-ready");
 
     if (!isReady) {
       setTimeout(() => {
@@ -78,31 +79,38 @@ class ModVApp {
     resolver();
   }
 
-  get page() {
-    return modVApp.electronApp.firstWindow();
+  get newGroupButton() {
+    return this.page.locator("#new-group-button");
   }
 
-  async evaluateState() {
-    const page = await this.page;
+  async evaluateMainState() {
+    const { page } = this;
 
     return page.evaluate(() => window.modV.store.state);
   }
 
   async evaluateUIState() {
-    const page = await this.page;
+    const { page } = this;
 
     return page.evaluate(() => window.Vue.$store.state);
   }
 
   async evaluateWorkerState() {
-    const page = await this.page;
+    const { page } = this;
     const worker = page.workers()[0];
 
-    return worker.evaluate(() => self.store);
+    return worker.evaluate(() => self.store.state);
+  }
+
+  async checkWorkerAndMainState(func) {
+    const workerState = await this.evaluateWorkerState();
+    const mainState = await this.evaluateMainState();
+
+    [workerState, mainState].forEach(func);
   }
 
   async generatePreset() {
-    const page = await this.page;
+    const { page } = this;
 
     return page.evaluate(async () => await window.modV.generatePreset());
   }
