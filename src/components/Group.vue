@@ -1,7 +1,7 @@
 <template>
   <div
     class="group"
-    :id="groupId"
+    :id="`group-${groupId}`"
     v-searchTerms="{
       terms: ['group'],
       title: name,

@@ -6,8 +6,11 @@ import {
   parseElectronApp
 } from "electron-playwright-helpers";
 import { _electron as electron } from "playwright";
+import groups from "./groups";
 
 class ModVApp {
+  groups = groups;
+
   /**
    * @param {import('@playwright/test').Page} page
    */
@@ -78,10 +81,6 @@ class ModVApp {
     }
 
     resolver();
-  }
-
-  get newGroupButton() {
-    return this.page.locator("#new-group-button");
   }
 
   async evaluateMainState() {

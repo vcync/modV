@@ -16,20 +16,14 @@ test("renders the main window", async () => {
   expect(title).toBe("modV");
 });
 
-test("creates a default group", async () => {
-  const { page } = modVApp;
-
-  const groups = page.locator(".groups .group");
-
-  await groups.first().waitFor();
-  await expect(groups).toHaveCount(1);
-});
-
 test("default group is focused by default", async () => {
   const { page } = modVApp;
 
   const firstGroupEl = page.locator(".group").first();
-  const firstGroupElId = await firstGroupEl.getAttribute("id");
+  const firstGroupElId = (await firstGroupEl.getAttribute("id")).replace(
+    "group-",
+    ""
+  );
   const focusIndicator = firstGroupEl.locator(".group__focusIndicator");
 
   await expect(focusIndicator).toHaveCount(1);
@@ -76,14 +70,6 @@ test("search gallery and add module to group", async () => {
     .locator(".active-module__title");
   const activeModuleTitle = await activeModule.textContent();
   expect(activeModuleTitle.trim()).toBe("Ball");
-});
-
-test("new group button creates a new group", async () => {
-  await modVApp.newGroupButton.click();
-
-  await modVApp.checkWorkerAndMainState(state =>
-    expect(state.groups.groups.length).toBe(3)
-  );
 });
 
 // test("trigger IPC listener via main process", async () => {
