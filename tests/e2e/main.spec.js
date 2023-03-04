@@ -56,9 +56,9 @@ test("search gallery and add module to group", async () => {
 
   // Double click c:nth-child(2) > .smooth-dnd-container > div > .gallery-item > canvas >> nth=0
   await page
-    .locator(
-      "c:nth-child(2) > .smooth-dnd-container > div > .gallery-item > canvas"
-    )
+    .locator("c:nth-child(2) > .smooth-dnd-container > div > .gallery-item ", {
+      hasText: "Ball"
+    })
     .first()
     .dblclick({
       position: {
