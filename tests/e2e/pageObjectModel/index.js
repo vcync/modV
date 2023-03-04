@@ -12,7 +12,8 @@ class ModVApp {
    * @param {import('@playwright/test').Page} page
    */
   constructor() {
-    this.electronApp;
+    this.electronApp = null;
+    this.page = null;
 
     test.beforeAll(async () => {
       // find the latest build in the out directory
