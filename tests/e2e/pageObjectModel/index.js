@@ -60,9 +60,7 @@ class ModVApp {
   async waitUntilModVReady(resolver) {
     if (!resolver) {
       const promise = new Promise(async resolve => {
-        if (!resolver) {
-          resolver = resolve;
-        }
+        resolver = resolve;
 
         this.waitUntilModVReady(resolver);
       });
