@@ -54,7 +54,7 @@
     "tap-tempo": "^0.1.1",
     "three": "^0.131.3",
     "uuid": "^9.0.0",
-    "vue": "2.7.14",
+    "vue": "^2.7.14",
     "vue-class-component": "^7.2.3",
     "vue-color": "^2.7.1",
     "vue-fragment": "^1.5.1",
@@ -88,7 +88,7 @@
     "sass-loader": "^7.3.1",
     "text-loader": "0.0.1",
     "vue-cli-plugin-electron-builder": "^2.0.0",
-    "vue-template-compiler": "2.7.14",
+    "vue-template-compiler": "^2.7.14",
     "vuex-localstorage": "^1.0.0",
     "worker-loader": "^2.0.0"
   },
