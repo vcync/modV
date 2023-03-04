@@ -1,11 +1,10 @@
+import { expect } from "@playwright/test";
+import extensions from "./tests/e2e/extentions";
+
+expect.extend(extensions);
+
 const config = {
-  testDir: "./tests/e2e",
-
-  timeout: 60000,
-
-  expect: {
-    toMatchSnapshot: { threshold: 0.2 }
-  }
+  testDir: "./tests/e2e"
 };
 
 export default config;

@@ -93,6 +93,12 @@ class ModVApp {
 
     return page.evaluate(() => window.Vue.$store.state);
   }
+
+  async generatePreset() {
+    const page = await this.page;
+
+    return page.evaluate(async () => await window.modV.generatePreset());
+  }
 }
 
 const modVApp = new ModVApp();
