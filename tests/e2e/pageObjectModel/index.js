@@ -27,9 +27,6 @@ class ModVApp {
         executablePath: appInfo.executable
       });
 
-      console.info("Waiting for modV to become ready…");
-      await this.waitUntilModVReady();
-
       this.electronApp.on("window", async page => {
         // const filename = page
         //   .url()
@@ -46,14 +43,14 @@ class ModVApp {
           console.log(msg.text());
         });
       });
+
+      console.info("  ℹ    Waiting for modV to become ready…");
+      await this.waitUntilModVReady();
     });
 
     test.afterAll(() => {
       // Playwright, why are you so bad at timings?
-
-      setTimeout(async () => {
-        await this.electronApp.close();
-      }, 3000);
+      setTimeout(async () => await this.electronApp.close(), 3000);
     });
   }
 
@@ -88,17 +85,13 @@ class ModVApp {
   async evaluateState() {
     const page = await this.page;
 
-    return page.evaluate(() => {
-      return window.modV.store.state;
-    });
+    return page.evaluate(() => window.modV.store.state);
   }
 
   async evaluateUIState() {
     const page = await this.page;
 
-    return page.evaluate(() => {
-      return window.Vue.$store.state;
-    });
+    return page.evaluate(() => window.Vue.$store.state);
   }
 }
 
