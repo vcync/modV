@@ -68,18 +68,19 @@ class ModVApp {
       });
 
       return promise;
-    } else {
-      const isReady = await ipcRendererInvoke(await this.page, "is-modv-ready");
-
-      if (!isReady) {
-        setTimeout(() => {
-          this.waitUntilModVReady(resolver);
-        }, 500);
-        return;
-      }
-
-      resolver();
     }
+
+    const isReady = await ipcRendererInvoke(await this.page, "is-modv-ready");
+
+    if (!isReady) {
+      setTimeout(() => {
+        this.waitUntilModVReady(resolver);
+      }, 500);
+
+      return;
+    }
+
+    resolver();
   }
 
   get page() {
