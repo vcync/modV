@@ -44,4 +44,50 @@ test.describe("groups", () => {
       expect(state.groups.groups.length).toBe(groupsLength - 1)
     );
   });
+
+  test("group enabled state can be toggled between 0, 1 and 2", async () => {
+    const { groups } = await modVApp.groups.mainState();
+
+    const userGroups = groups.filter(
+      group => group.name !== constants.GALLERY_GROUP_NAME
+    );
+
+    const groupIndex = groups.findIndex(group => group.id === userGroups[0].id);
+
+    const { enabledCheckbox } = modVApp.groups.getControlLocators(
+      userGroups[0].id
+    );
+
+    await enabledCheckbox.click();
+
+    await modVApp.checkWorkerAndMainState(state =>
+      expect(state.groups.groups[groupIndex].enabled).toBe(0)
+    );
+
+    await enabledCheckbox.click();
+
+    await modVApp.checkWorkerAndMainState(state =>
+      expect(state.groups.groups[groupIndex].enabled).toBe(1)
+    );
+
+    await modVApp.page.keyboard.down("Alt");
+    await enabledCheckbox.click();
+    await modVApp.page.keyboard.up("Alt");
+
+    await modVApp.checkWorkerAndMainState(state =>
+      expect(state.groups.groups[groupIndex].enabled).toBe(2)
+    );
+
+    await enabledCheckbox.click();
+
+    await modVApp.checkWorkerAndMainState(state =>
+      expect(state.groups.groups[groupIndex].enabled).toBe(0)
+    );
+
+    await enabledCheckbox.click();
+
+    await modVApp.checkWorkerAndMainState(state =>
+      expect(state.groups.groups[groupIndex].enabled).toBe(1)
+    );
+  });
 });

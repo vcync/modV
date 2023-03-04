@@ -9,6 +9,29 @@ export default {
     return modVApp.page.locator(".groups .group");
   },
 
+  getControlLocators(groupId) {
+    const { page } = modVApp;
+
+    return {
+      enabledCheckbox: page.locator(
+        `#group-${groupId} .group__enabledCheckbox`
+      ),
+      inheritSelect: page.locator(
+        `#group-${groupId} .group__inheritSelect select`
+      ),
+      clearingCheckbox: page.locator(
+        `#group-${groupId} .group__clearingCheckbox input`
+      ),
+      pipelineCheckbox: page.locator(
+        `#group-${groupId} .group__pipelineCheckbox input`
+      ),
+      alphaRange: page.locator(`#group-${groupId} .group__alphaRange input`),
+      blendModeSelect: page.locator(
+        `#group-${groupId} .group__blendModeSelect select`
+      )
+    };
+  },
+
   async focusGroup(groupId) {
     const { page } = modVApp;
     await page.click(`#group-${groupId} .group__title`);

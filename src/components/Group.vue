@@ -45,6 +45,7 @@
             <c span="4">
               <Select
                 v-model="inheritanceSelection"
+                class="group__inheritSelect"
                 :class="{ light: isFocused(group.inheritInputId) }"
               >
                 <option :value="-2">Don't Inherit</option>
@@ -73,6 +74,7 @@
             <c span="4">
               <Checkbox
                 v-model="clearing"
+                class="group__clearingCheckbox"
                 :class="{ light: isFocused(group.clearingInputId) }"
               />
             </c>
@@ -92,6 +94,7 @@
             <c span="4">
               <Checkbox
                 v-model="pipeline"
+                class="group__pipelineCheckbox"
                 :class="{ light: isFocused(group.pipelineInputId) }"
               />
             </c>
@@ -109,7 +112,13 @@
           >
             <c span="2">Alpha</c>
             <c span="4">
-              <Range value="1" max="1" step="0.001" v-model="alpha" />
+              <Range
+                class="group__alphaRange"
+                value="1"
+                max="1"
+                step="0.001"
+                v-model="alpha"
+              />
             </c>
           </grid>
         </c>
@@ -129,6 +138,7 @@
             <c span="4">
               <Select
                 v-model="blendMode"
+                class="group__blendModeSelect"
                 :class="{ light: isFocused(group.compositeOperationInputId) }"
               >
                 <optgroup
