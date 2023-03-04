@@ -46,6 +46,38 @@ test("renderers are registered", async () => {
   expect(expectedRenderers.sort()).toEqual(Object.keys(renderers).sort());
 });
 
+test("search gallery and add module to group", async () => {
+  const page = await modVApp.page;
+
+  const searchInput = await page.locator("input.gallery-search");
+  await searchInput.click();
+
+  await searchInput.fill("ball");
+
+  // Double click c:nth-child(2) > .smooth-dnd-container > div > .gallery-item > canvas >> nth=0
+  await page
+    .locator(
+      "c:nth-child(2) > .smooth-dnd-container > div > .gallery-item > canvas"
+    )
+    .first()
+    .dblclick({
+      position: {
+        x: 98,
+        y: 27
+      }
+    });
+
+  await page.waitForSelector(".group__modules .active-module");
+  const activeModules = await page.locator(".group__modules .active-module");
+  expect(await activeModules.count()).toBe(1);
+
+  const activeModule = await activeModules
+    .first()
+    .locator(".active-module__title");
+  const activeModuleTitle = await activeModule.textContent();
+  expect(activeModuleTitle.trim()).toBe("Ball");
+});
+
 // test("trigger IPC listener via main process", async () => {
 //   electronApp.evaluate(({ ipcMain }) => {
 //     ipcMain.emit("new-window");
