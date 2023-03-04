@@ -57,12 +57,18 @@ class ModVApp {
     });
   }
 
-  waitUntilModVReady(resolver) {
-    return new Promise(async resolve => {
-      if (!resolver) {
-        resolver = resolve;
-      }
+  async waitUntilModVReady(resolver) {
+    if (!resolver) {
+      const promise = new Promise(async resolve => {
+        if (!resolver) {
+          resolver = resolve;
+        }
 
+        this.waitUntilModVReady(resolver);
+      });
+
+      return promise;
+    } else {
       const isReady = await ipcRendererInvoke(await this.page, "is-modv-ready");
 
       if (!isReady) {
@@ -73,7 +79,7 @@ class ModVApp {
       }
 
       resolver();
-    });
+    }
   }
 
   get page() {
