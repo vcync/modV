@@ -35,14 +35,19 @@ test.describe("groups", () => {
       group => group.name !== constants.GALLERY_GROUP_NAME
     );
 
-    await modVApp.groups.focusGroup(userGroups[groupsLength - 2].id);
+    const groupId = userGroups[groupsLength - 2].id;
+
+    await modVApp.groups.focusGroup(groupId);
     await page.keyboard.press("Backspace");
 
     await expect(modVApp.groups.elements).toHaveCount(groupsLength - 2);
 
-    await modVApp.checkWorkerAndMainState(state =>
-      expect(state.groups.groups.length).toBe(groupsLength - 1)
-    );
+    await modVApp.checkWorkerAndMainState(state => {
+      expect(state.groups.groups.length).toBe(groupsLength - 1);
+      expect(state.groups.groups.findIndex(group => group.id === groupId)).toBe(
+        -1
+      );
+    });
   });
 
   test("group enabled state can be toggled between 0, 1 and 2", async () => {
