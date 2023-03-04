@@ -11,6 +11,7 @@ import App from "./App.vue";
 import ModV from "./application";
 import store from "./ui-store";
 import contextMenuPlugin from "./application/plugins/context-menu";
+import { ipcRenderer } from "electron";
 
 Vue.config.ignoredElements = ["grid", "c"];
 Vue.config.productionTip = false;
@@ -35,6 +36,7 @@ window.Vue = new Vue({
 });
 
 async function start() {
+  ipcRenderer.send("main-window-created");
   const loadingElement = document.getElementById("loading");
 
   // eslint-disable-next-line no-for-each/no-for-each
