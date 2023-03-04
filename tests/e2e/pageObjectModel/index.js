@@ -1,6 +1,10 @@
 import path from "path";
-import { expect, test } from "@playwright/test";
-import { findLatestBuild, parseElectronApp } from "electron-playwright-helpers";
+import { test } from "@playwright/test";
+import {
+  findLatestBuild,
+  ipcRendererInvoke,
+  parseElectronApp
+} from "electron-playwright-helpers";
 import { _electron as electron } from "playwright";
 
 class ModVApp {
@@ -22,6 +26,9 @@ class ModVApp {
         args: [appInfo.main],
         executablePath: appInfo.executable
       });
+
+      console.info("Waiting for modV to become ready…");
+      await this.waitUntilModVReady();
 
       this.electronApp.on("window", async page => {
         // const filename = page
@@ -50,18 +57,27 @@ class ModVApp {
     });
   }
 
+  waitUntilModVReady(resolver) {
+    return new Promise(async resolve => {
+      if (!resolver) {
+        resolver = resolve;
+      }
+
+      const isReady = await ipcRendererInvoke(await this.page, "is-modv-ready");
+
+      if (!isReady) {
+        setTimeout(() => {
+          this.waitUntilModVReady(resolver);
+        }, 500);
+        return;
+      }
+
+      resolver();
+    });
+  }
+
   get page() {
     return modVApp.electronApp.firstWindow();
-  }
-
-  async getStarted() {
-    await this.getStartedLink.first().click();
-    await expect(this.gettingStartedHeader).toBeVisible();
-  }
-
-  async pageObjectModel() {
-    await this.getStarted();
-    await this.pomLink.click();
   }
 
   async evaluateState() {
