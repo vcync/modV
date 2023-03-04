@@ -78,7 +78,7 @@ test("search gallery and add module to group", async () => {
   expect(activeModuleTitle.trim()).toBe("Ball");
 });
 
-test("new group button greates a new group", async () => {
+test("new group button creates a new group", async () => {
   await modVApp.newGroupButton.click();
 
   await modVApp.checkWorkerAndMainState(state =>
