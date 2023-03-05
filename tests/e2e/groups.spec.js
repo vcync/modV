@@ -1,6 +1,5 @@
 import { expect, test } from "@playwright/test";
 import { modVApp } from "./pageObjectModel";
-import constants from "../../src/application/constants";
 
 test.describe("groups", () => {
   test("creates a default group", async () => {
@@ -27,14 +26,10 @@ test.describe("groups", () => {
     const { page } = modVApp;
 
     const {
-      groups,
       groups: { length: groupsLength }
     } = await modVApp.groups.mainState();
 
-    const userGroups = groups.filter(
-      group => group.name !== constants.GALLERY_GROUP_NAME
-    );
-
+    const userGroups = await modVApp.groups.getUserGroups();
     const groupId = userGroups[groupsLength - 2].id;
 
     await modVApp.groups.focusGroup(groupId);
@@ -50,18 +45,13 @@ test.describe("groups", () => {
     });
   });
 
-  test("group enabled state can be toggled between 0, 1 and 2", async () => {
-    const { groups } = await modVApp.groups.mainState();
+  test("enabled state can be toggled between 0, 1 and 2", async () => {
+    const {
+      groupIndex,
+      groupId
+    } = await modVApp.groups.getFirstUserGroupIdAndIndex();
 
-    const userGroups = groups.filter(
-      group => group.name !== constants.GALLERY_GROUP_NAME
-    );
-
-    const groupIndex = groups.findIndex(group => group.id === userGroups[0].id);
-
-    const { enabledCheckbox } = modVApp.groups.getControlLocators(
-      userGroups[0].id
-    );
+    const { enabledCheckbox } = modVApp.groups.getControlLocators(groupId);
 
     await enabledCheckbox.click();
 
@@ -94,5 +84,43 @@ test.describe("groups", () => {
     await modVApp.checkWorkerAndMainState(state =>
       expect(state.groups.groups[groupIndex].enabled).toBe(1)
     );
+  });
+
+  test("clearing state can be toggled beween 0 and 1", async () => {
+    const {
+      groupIndex,
+      groupId
+    } = await modVApp.groups.getFirstUserGroupIdAndIndex();
+
+    const { clearingCheckbox } = modVApp.groups.getControlLocators(groupId);
+
+    await modVApp.groups.showControls(groupId);
+
+    for (let i = 0; i < 2; i += 1) {
+      await clearingCheckbox.click();
+
+      await modVApp.checkWorkerAndMainState(state =>
+        expect(state.groups.groups[groupIndex].clearing).toBe(i === 0 ? 1 : 0)
+      );
+    }
+  });
+
+  test("pipeline state can be toggled beween 0 and 1", async () => {
+    const {
+      groupIndex,
+      groupId
+    } = await modVApp.groups.getFirstUserGroupIdAndIndex();
+
+    const { pipelineCheckbox } = modVApp.groups.getControlLocators(groupId);
+
+    await modVApp.groups.showControls(groupId);
+
+    for (let i = 0; i < 2; i += 1) {
+      await pipelineCheckbox.click();
+
+      await modVApp.checkWorkerAndMainState(state =>
+        expect(state.groups.groups[groupIndex].pipeline).toBe(i === 0 ? 1 : 0)
+      );
+    }
   });
 });
