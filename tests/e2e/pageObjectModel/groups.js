@@ -15,6 +15,8 @@ export default {
   getControlLocators(groupId) {
     const { page } = modVApp;
 
+    const nameLocator = page.locator(id`${groupId} .group__name`);
+
     return {
       controlsButton: page.locator(id`${groupId} .group__controlsButton`),
       enabledCheckbox: page.locator(id`${groupId} .group__enabledCheckbox`),
@@ -27,8 +29,9 @@ export default {
       blendModeSelect: page.locator(
         id`${groupId} .group__blendModeSelect select`
       ),
-      nameDisplay: page.locator(id`${groupId} .group__name span`),
-      nameInput: page.locator(id`${groupId} .group__name input[type=text]`)
+      name: nameLocator,
+      nameDisplay: nameLocator.locator("span"),
+      nameInput: nameLocator.locator("input[type=text]")
     };
   },
 
@@ -59,8 +62,7 @@ export default {
   },
 
   async focusGroup(groupId) {
-    const { page } = modVApp;
-    await page.click(`#group-${groupId} .group__title`);
+    await this.getControlLocators(groupId).name.click();
   },
 
   async mainState() {
