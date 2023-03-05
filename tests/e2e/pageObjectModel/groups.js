@@ -43,8 +43,6 @@ export default {
       el.classList.contains("group__controlsButton-hidden")
     );
 
-    console.log(groupId, controlsHidden);
-
     if (controlsHidden) {
       await controlsButton.click();
     }
