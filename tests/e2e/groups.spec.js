@@ -1,6 +1,7 @@
 import { expect, test } from "@playwright/test";
 import { modVApp } from "./pageObjectModel";
 import { setRangeValue } from "./utils/setRangeValue";
+import compositeOperations from "../../src/util/composite-operations";
 
 test.describe("groups", () => {
   test("creates a default group", async () => {
@@ -107,8 +108,6 @@ test.describe("groups", () => {
       const value = values[i];
       await inheritSelect.selectOption(String(value));
 
-      await modVApp.page.waitForTimeout(100);
-
       if (value === -2) {
         await modVApp.checkWorkerAndMainState(state =>
           expect(state.groups.groups[groupIndex].inherit).toBe(false)
@@ -179,6 +178,31 @@ test.describe("groups", () => {
 
       await modVApp.checkWorkerAndMainState(state =>
         expect(state.groups.groups[groupIndex].alpha).toBeCloseTo(value)
+      );
+    }
+  });
+
+  test("blend mode state can be set", async () => {
+    const {
+      groupIndex,
+      groupId
+    } = await modVApp.groups.getFirstUserGroupIdAndIndex();
+
+    const { blendModeSelect } = modVApp.groups.getControlLocators(groupId);
+
+    await modVApp.groups.showControls(groupId);
+
+    const values = [
+      ...compositeOperations[0].children.map(({ value }) => value),
+      ...compositeOperations[1].children.map(({ value }) => value)
+    ];
+
+    for (let i = 0; i < values.length; i += 1) {
+      const value = values[i];
+      await blendModeSelect.selectOption(String(value));
+
+      await modVApp.checkWorkerAndMainState(state =>
+        expect(state.groups.groups[groupIndex].compositeOperation).toBe(value)
       );
     }
   });
