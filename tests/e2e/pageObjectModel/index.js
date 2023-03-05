@@ -106,10 +106,12 @@ class ModVApp {
     const workerState = await this.evaluateWorkerState();
     const mainState = await this.evaluateMainState();
 
-    // eslint-disable-next-line no-for-each/no-for-each
-    Object.entries({ workerState, mainState }).forEach(e =>
-      func(...e.reverse())
-    );
+    const entries = Object.entries({ workerState, mainState });
+
+    for (let i = 0; i < entries.length; i += 1) {
+      const e = entries[i];
+      await func(...e.reverse());
+    }
   }
 
   async generatePreset() {

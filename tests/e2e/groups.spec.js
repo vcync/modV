@@ -51,7 +51,7 @@ test.describe("groups", () => {
     // Add a group back just in case this test shares the same worker as another
     await modVApp.groups.newGroupButton.click();
     ({ groupId } = await modVApp.groups.getFirstUserGroupIdAndIndex());
-    const { enabledCheckbox } = modVApp.groups.getControlLocators(groupId);
+    const { enabledCheckbox } = modVApp.groups.getLocators(groupId);
     await enabledCheckbox.click();
   });
 
@@ -61,7 +61,7 @@ test.describe("groups", () => {
       groupId
     } = await modVApp.groups.getFirstUserGroupIdAndIndex();
 
-    const { enabledCheckbox } = modVApp.groups.getControlLocators(groupId);
+    const { enabledCheckbox } = modVApp.groups.getLocators(groupId);
 
     await enabledCheckbox.click();
 
@@ -103,7 +103,7 @@ test.describe("groups", () => {
       groupId
     } = await modVApp.groups.getFirstUserGroupIdAndIndex();
 
-    const { inheritSelect } = modVApp.groups.getControlLocators(groupId);
+    const { inheritSelect } = modVApp.groups.getLocators(groupId);
 
     await modVApp.groups.showControls(groupId);
 
@@ -138,7 +138,7 @@ test.describe("groups", () => {
       groupId
     } = await modVApp.groups.getFirstUserGroupIdAndIndex();
 
-    const { clearingCheckbox } = modVApp.groups.getControlLocators(groupId);
+    const { clearingCheckbox } = modVApp.groups.getLocators(groupId);
 
     await modVApp.groups.showControls(groupId);
 
@@ -157,7 +157,7 @@ test.describe("groups", () => {
       groupId
     } = await modVApp.groups.getFirstUserGroupIdAndIndex();
 
-    const { pipelineCheckbox } = modVApp.groups.getControlLocators(groupId);
+    const { pipelineCheckbox } = modVApp.groups.getLocators(groupId);
 
     await modVApp.groups.showControls(groupId);
 
@@ -176,7 +176,7 @@ test.describe("groups", () => {
       groupId
     } = await modVApp.groups.getFirstUserGroupIdAndIndex();
 
-    const { alphaRange } = modVApp.groups.getControlLocators(groupId);
+    const { alphaRange } = modVApp.groups.getLocators(groupId);
 
     await modVApp.groups.showControls(groupId);
 
@@ -196,7 +196,7 @@ test.describe("groups", () => {
       groupId
     } = await modVApp.groups.getFirstUserGroupIdAndIndex();
 
-    const { blendModeSelect } = modVApp.groups.getControlLocators(groupId);
+    const { blendModeSelect } = modVApp.groups.getLocators(groupId);
 
     await modVApp.groups.showControls(groupId);
 
@@ -221,9 +221,7 @@ test.describe("groups", () => {
       groupId
     } = await modVApp.groups.getFirstUserGroupIdAndIndex();
 
-    const { nameDisplay, nameInput } = modVApp.groups.getControlLocators(
-      groupId
-    );
+    const { nameDisplay, nameInput } = modVApp.groups.getLocators(groupId);
 
     await nameDisplay.dblclick();
     await expect(nameInput).toBeFocused();
@@ -238,5 +236,40 @@ test.describe("groups", () => {
     await modVApp.checkWorkerAndMainState(state =>
       expect(state.groups.groups[groupIndex].name).toBe(newGroupName)
     );
+  });
+
+  test("groups can be rearranged", async () => {
+    const {
+      elements,
+      getLocators,
+      getUserGroups,
+      newGroupButton
+    } = modVApp.groups;
+
+    let groups = await getUserGroups();
+
+    if (groups.length < 2) {
+      await newGroupButton.click();
+
+      await expect(elements).toHaveCount(2);
+    }
+
+    groups = await getUserGroups();
+
+    // https://playwright.dev/docs/input#dragging-manually
+    await getLocators(groups[0].id).name.hover();
+    await modVApp.page.mouse.down();
+    await modVApp.page.mouse.move(200, 200);
+    await modVApp.page.mouse.move(200, 200);
+    await modVApp.page.mouse.up();
+
+    await modVApp.checkWorkerAndMainState(async state => {
+      const userGroups = await modVApp.groups.getUserGroups(
+        state.groups.groups
+      );
+
+      expect(userGroups[0].id).toBe(groups[1].id);
+      expect(userGroups[1].id).toBe(groups[0].id);
+    });
   });
 });

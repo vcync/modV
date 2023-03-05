@@ -9,7 +9,7 @@
     }"
   >
     <Container
-      drag-handle-selector=".group__title"
+      drag-handle-selector=".group__name"
       lock-axis="y"
       group-name="groups"
       :should-animate-drop="() => false"

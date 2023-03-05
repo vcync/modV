@@ -12,7 +12,7 @@ export default {
     return modVApp.page.locator(".groups .group");
   },
 
-  getControlLocators(groupId) {
+  getLocators(groupId) {
     const { page } = modVApp;
 
     const nameLocator = page.locator(id`${groupId} .group__name`);
@@ -36,7 +36,7 @@ export default {
   },
 
   async showControls(groupId) {
-    const { controlsButton } = this.getControlLocators(groupId);
+    const { controlsButton } = this.getLocators(groupId);
 
     const controlsHidden = await controlsButton.evaluate(el =>
       el.classList.contains("group__controlsButton-hidden")
@@ -47,8 +47,11 @@ export default {
     }
   },
 
-  async getUserGroups() {
-    const { groups } = await modVApp.groups.mainState();
+  async getUserGroups(groups) {
+    if (!groups) {
+      ({ groups } = await modVApp.groups.mainState());
+    }
+
     return groups.filter(group => group.name !== constants.GALLERY_GROUP_NAME);
   },
 
@@ -62,7 +65,7 @@ export default {
   },
 
   async focusGroup(groupId) {
-    await this.getControlLocators(groupId).name.click();
+    await this.getLocators(groupId).name.click();
   },
 
   async mainState() {
