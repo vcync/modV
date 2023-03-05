@@ -270,7 +270,9 @@ export default {
   text-overflow: ellipsis;
   position: relative;
 }
-
+.active-module__title:active, .active-module__title:hover {
+  cursor: grabbing;
+}
 .active-module__controls,
 .active-module__controls grid {
   grid-row-gap: 0;
