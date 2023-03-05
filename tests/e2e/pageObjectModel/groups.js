@@ -1,6 +1,8 @@
 import { modVApp } from ".";
 import constants from "../../../src/application/constants";
 
+const id = (strings, groupId) => [`#group-${groupId}`, ...strings].join("");
+
 export default {
   get newGroupButton() {
     return modVApp.page.locator("#new-group-button");
@@ -14,25 +16,19 @@ export default {
     const { page } = modVApp;
 
     return {
-      controlsButton: page.locator(`#group-${groupId} .group__controlsButton`),
-      enabledCheckbox: page.locator(
-        `#group-${groupId} .group__enabledCheckbox`
-      ),
-      inheritSelect: page.locator(
-        `#group-${groupId} .group__inheritSelect select`
-      ),
-      clearingCheckbox: page.locator(
-        `#group-${groupId} .group__clearingCheckbox`
-      ),
-      pipelineCheckbox: page.locator(
-        `#group-${groupId} .group__pipelineCheckbox`
-      ),
+      controlsButton: page.locator(id`${groupId} .group__controlsButton`),
+      enabledCheckbox: page.locator(id`${groupId} .group__enabledCheckbox`),
+      inheritSelect: page.locator(id`${groupId} .group__inheritSelect select`),
+      clearingCheckbox: page.locator(id`${groupId} .group__clearingCheckbox`),
+      pipelineCheckbox: page.locator(id`${groupId} .group__pipelineCheckbox`),
       alphaRange: page.locator(
-        `#group-${groupId} .group__alphaRange input[type=range]`
+        id`${groupId} .group__alphaRange input[type=range]`
       ),
       blendModeSelect: page.locator(
-        `#group-${groupId} .group__blendModeSelect select`
-      )
+        id`${groupId} .group__blendModeSelect select`
+      ),
+      nameDisplay: page.locator(id`${groupId} .group__name span`),
+      nameInput: page.locator(id`${groupId} .group__name input[type=text]`)
     };
   },
 

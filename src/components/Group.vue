@@ -190,14 +190,15 @@
       </button>
     </div>
     <div class="group__right">
-      <div class="group__title" @click.self="endTitleEditable">
-        <span v-if="!titleEditable" @dblclick="toggleTitleEditable">{{
+      <div class="group__name" @click.self="endNameEditable">
+        <span v-if="!nameEditable" @dblclick="toggleNameEditable">{{
           name
         }}</span>
         <TextInput
           v-model="localName"
+          ref="titleInput"
           v-else
-          @keypress.enter="endTitleEditable"
+          @keypress.enter="endNameEditable"
         />
       </div>
       <figure
@@ -273,7 +274,7 @@ export default {
   data() {
     return {
       compositeOperations,
-      titleEditable: false,
+      nameEditable: false,
       localName: "",
       controlsShown: false,
       Arrow,
@@ -485,11 +486,15 @@ export default {
       }
     },
 
-    toggleTitleEditable() {
-      this.titleEditable = !this.titleEditable;
+    toggleNameEditable() {
+      this.nameEditable = !this.nameEditable;
+      this.$nextTick(() => {
+        this.$refs.titleInput.$el.focus();
+        this.$refs.titleInput.$el.select();
+      });
     },
 
-    endTitleEditable() {
+    endNameEditable() {
       const { localName } = this;
       const trimmedName = localName.trim();
 
@@ -502,7 +507,7 @@ export default {
         this.localName = this.name;
       }
 
-      this.titleEditable = false;
+      this.nameEditable = false;
     },
 
     focusInput(id, title) {
@@ -654,14 +659,14 @@ export default {
   align-items: center;
 }
 
-.group__title {
+.group__name {
   background: #363636;
   color: white;
   padding: 8px;
   line-height: 1;
 }
 
-.group__title input {
+.group__name input {
   max-width: 120px;
 }
 

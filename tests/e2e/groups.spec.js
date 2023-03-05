@@ -4,6 +4,8 @@ import { setRangeValue } from "./utils/setRangeValue";
 import compositeOperations from "../../src/util/composite-operations";
 
 test.describe("groups", () => {
+  test.describe.configure({ mode: "parallel" });
+
   test("creates a default group", async () => {
     await expect(modVApp.groups.elements).toHaveCount(1);
 
@@ -32,7 +34,7 @@ test.describe("groups", () => {
     } = await modVApp.groups.mainState();
 
     const userGroups = await modVApp.groups.getUserGroups();
-    const groupId = userGroups[groupsLength - 2].id;
+    let groupId = userGroups[groupsLength - 2].id;
 
     await modVApp.groups.focusGroup(groupId);
     await page.keyboard.press("Backspace");
@@ -45,6 +47,12 @@ test.describe("groups", () => {
         -1
       );
     });
+
+    // Add a group back just in case this test shares the same worker as another
+    await modVApp.groups.newGroupButton.click();
+    ({ groupId } = await modVApp.groups.getFirstUserGroupIdAndIndex());
+    const { enabledCheckbox } = modVApp.groups.getControlLocators(groupId);
+    await enabledCheckbox.click();
   });
 
   test("enabled state can be toggled between 0, 1 and 2", async () => {
@@ -205,5 +213,30 @@ test.describe("groups", () => {
         expect(state.groups.groups[groupIndex].compositeOperation).toBe(value)
       );
     }
+  });
+
+  test("group name can be changed", async () => {
+    const {
+      groupIndex,
+      groupId
+    } = await modVApp.groups.getFirstUserGroupIdAndIndex();
+
+    const { nameDisplay, nameInput } = modVApp.groups.getControlLocators(
+      groupId
+    );
+
+    await nameDisplay.dblclick();
+    await expect(nameInput).toBeFocused();
+
+    const newGroupName = "Post FX";
+
+    await nameInput.type(newGroupName);
+    await nameInput.press("Enter");
+
+    await expect(nameDisplay).toHaveText(newGroupName);
+
+    await modVApp.checkWorkerAndMainState(state =>
+      expect(state.groups.groups[groupIndex].name).toBe(newGroupName)
+    );
   });
 });
