@@ -1,5 +1,6 @@
 import { expect, test } from "@playwright/test";
 import { modVApp } from "./pageObjectModel";
+import { setRangeValue } from "./utils/setRangeValue";
 
 test.describe("groups", () => {
   test("creates a default group", async () => {
@@ -86,6 +87,44 @@ test.describe("groups", () => {
     );
   });
 
+  test("inherit and inheritFrom state can be set", async () => {
+    const userGroups = modVApp.groups.getUserGroups();
+    const {
+      groupIndex,
+      groupId
+    } = await modVApp.groups.getFirstUserGroupIdAndIndex();
+
+    const { inheritSelect } = modVApp.groups.getControlLocators(groupId);
+
+    await modVApp.groups.showControls(groupId);
+
+    const values = [-2, -1];
+    for (let i = 0; i < userGroups.length; i += 1) {
+      values.push(i);
+    }
+
+    for (let i = 0; i < values.length; i += 1) {
+      const value = values[i];
+      await inheritSelect.selectOption(String(value));
+
+      await modVApp.page.waitForTimeout(100);
+
+      if (value === -2) {
+        await modVApp.checkWorkerAndMainState(state =>
+          expect(state.groups.groups[groupIndex].inherit).toBe(false)
+        );
+      } else {
+        await modVApp.checkWorkerAndMainState(state =>
+          expect(state.groups.groups[groupIndex].inherit).toBe(true)
+        );
+
+        await modVApp.checkWorkerAndMainState(state =>
+          expect(state.groups.groups[groupIndex].inheritFrom).toBe(value)
+        );
+      }
+    }
+  });
+
   test("clearing state can be toggled beween 0 and 1", async () => {
     const {
       groupIndex,
@@ -124,41 +163,23 @@ test.describe("groups", () => {
     }
   });
 
-  test("inherit and inheritFrom state can be set", async () => {
-    const userGroups = modVApp.groups.getUserGroups();
+  test("alpha state can be set", async () => {
     const {
       groupIndex,
       groupId
     } = await modVApp.groups.getFirstUserGroupIdAndIndex();
 
-    const { inheritSelect } = modVApp.groups.getControlLocators(groupId);
+    const { alphaRange } = modVApp.groups.getControlLocators(groupId);
 
     await modVApp.groups.showControls(groupId);
 
-    const values = [-2, -1];
-    for (let i = 0; i < userGroups.length; i += 1) {
-      values.push(i);
-    }
+    for (let i = 0; i < 5; i += 1) {
+      const value = Math.random();
+      await setRangeValue(alphaRange, value);
 
-    for (let i = 0; i < values.length; i += 1) {
-      const value = values[i];
-      await inheritSelect.selectOption(String(value));
-
-      await modVApp.page.waitForTimeout(100);
-
-      if (value === -2) {
-        await modVApp.checkWorkerAndMainState(state =>
-          expect(state.groups.groups[groupIndex].inherit).toBe(false)
-        );
-      } else {
-        await modVApp.checkWorkerAndMainState(state =>
-          expect(state.groups.groups[groupIndex].inherit).toBe(true)
-        );
-
-        await modVApp.checkWorkerAndMainState(state =>
-          expect(state.groups.groups[groupIndex].inheritFrom).toBe(value)
-        );
-      }
+      await modVApp.checkWorkerAndMainState(state =>
+        expect(state.groups.groups[groupIndex].alpha).toBeCloseTo(value)
+      );
     }
   });
 });

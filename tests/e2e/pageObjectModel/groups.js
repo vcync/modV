@@ -27,7 +27,9 @@ export default {
       pipelineCheckbox: page.locator(
         `#group-${groupId} .group__pipelineCheckbox`
       ),
-      alphaRange: page.locator(`#group-${groupId} .group__alphaRange input`),
+      alphaRange: page.locator(
+        `#group-${groupId} .group__alphaRange input[type=range]`
+      ),
       blendModeSelect: page.locator(
         `#group-${groupId} .group__blendModeSelect select`
       )
