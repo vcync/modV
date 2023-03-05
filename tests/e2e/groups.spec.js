@@ -240,7 +240,6 @@ test.describe("groups", () => {
 
   test("groups can be rearranged", async () => {
     const {
-      checkWorkerAndMainState,
       groups: { elements, getLocators, getUserGroups, newGroupButton },
       page
     } = modVApp;
@@ -261,7 +260,7 @@ test.describe("groups", () => {
     await page.mouse.move(200, 200);
     await page.mouse.up();
 
-    await checkWorkerAndMainState(async state => {
+    await modVApp.checkWorkerAndMainState(async state => {
       const userGroups = await getUserGroups(state.groups.groups);
 
       expect(userGroups[0].id).toBe(groups[1].id);
