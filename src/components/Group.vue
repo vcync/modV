@@ -648,6 +648,10 @@ export default {
   color: white;
   padding: 8px;
   line-height: 1;
+  cursor:grab;
+}
+.group__title:active{
+  cursor: grabbing;
 }
 
 .group__title input {

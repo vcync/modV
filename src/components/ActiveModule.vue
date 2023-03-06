@@ -269,8 +269,11 @@ export default {
   overflow: hidden;
   text-overflow: ellipsis;
   position: relative;
+  cursor: grab;
 }
-
+.active-module__title:active{
+  cursor: grabbing;
+}
 .active-module__controls,
 .active-module__controls grid {
   grid-row-gap: 0;
