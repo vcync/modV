@@ -269,8 +269,9 @@ export default {
   overflow: hidden;
   text-overflow: ellipsis;
   position: relative;
+  cursor: grab;
 }
-.active-module__title:active, .active-module__title:hover {
+.active-module__title:active{
   cursor: grabbing;
 }
 .active-module__controls,

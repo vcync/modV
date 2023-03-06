@@ -650,7 +650,7 @@ export default {
   line-height: 1;
   cursor:grab;
 }
-.group__title:active, .group__title:hover{
+.group__title:active{
   cursor: grabbing;
 }
 
