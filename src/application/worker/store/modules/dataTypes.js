@@ -28,10 +28,10 @@ const state = {
     inputs: () => ({ r: 0, g: 0, b: 0, a: 0 })
   },
   texture: {
-    async create(textureDefinition = {}, isGallery) {
+    async create(textureDefinition = {}, isGallery, useExistingData = false) {
       const { type, options } = textureDefinition;
-      textureDefinition.location = "";
-      textureDefinition.id = "";
+      textureDefinition.location = textureDefinition.location ?? "";
+      // textureDefinition.id = textureDefinition.id ?? "";
 
       if (type === "image") {
         const { path } = options;
@@ -48,7 +48,22 @@ const state = {
         textureDefinition.id = id;
       }
 
-      if (type === "canvas" || type == "group") {
+      if (type === "video" && (useExistingData || !textureDefinition.id)) {
+        let id;
+        try {
+          ({ id } = await store.dispatch(
+            "videos/createVideoFromPath",
+            textureDefinition
+          ));
+        } catch (e) {
+          console.error(e);
+        }
+
+        textureDefinition.location = "videos/video";
+        textureDefinition.id = id;
+      }
+
+      if (type === "canvas" || type === "group") {
         const { id } = options;
         textureDefinition.location = "outputs/auxillaryCanvas";
         textureDefinition.id = id;
@@ -62,6 +77,15 @@ const state = {
           return store.state.dataTypes.texture.get(textureDefinition);
         }
       });
+    },
+    async destroy(textureDefinition) {
+      const { type, id } = textureDefinition;
+
+      if (type === "video") {
+        await store.dispatch("videos/removeVideoById", {
+          id
+        });
+      }
     },
     get: textureDefinition => {
       if (!textureDefinition.location.length) {

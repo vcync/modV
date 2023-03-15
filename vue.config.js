@@ -16,6 +16,16 @@ module.exports = {
     splashScreen: "src/subpages/splash-screen/main.js"
   },
 
+  chainWebpack: config => {
+    config.module
+      .rule("vue")
+      .use("vue-loader")
+      .tap(options => {
+        options.compiler = require("vue-template-babel-compiler");
+        return options;
+      });
+  },
+
   configureWebpack: {
     module: {
       rules: [
