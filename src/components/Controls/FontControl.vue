@@ -11,7 +11,7 @@
       :style="{ fontFamily: value }"
     />
 
-    <ul class="searchable-select" v-show="showFontList">
+    <ul class="searchable-select" v-show="showFontList" ref="fontList">
       <li
         v-for="(font, index) in fontsToShow"
         :value="font"
@@ -86,6 +86,9 @@ export default {
       } = e;
 
       this.searchTerm = value;
+      this.$nextTick(() => {
+        this.$refs.fontList.scrollTo(0, 0);
+      });
     },
 
     setFont(font) {
