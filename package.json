@@ -88,6 +88,7 @@
     "sass-loader": "^7.3.1",
     "text-loader": "0.0.1",
     "vue-cli-plugin-electron-builder": "^2.0.0",
+    "vue-template-babel-compiler": "^2.0.0",
     "vue-template-compiler": "^2.7.14",
     "vuex-localstorage": "^1.0.0",
     "worker-loader": "^2.0.0"
