@@ -6,7 +6,7 @@ import store from "..";
 import get from "lodash.get";
 import set from "lodash.set";
 
-import uuidv4 from "uuid/v4";
+import { v4 as uuidv4 } from "uuid";
 import { applyExpression } from "../../../utils/apply-expression";
 
 // Any keys marked false or arrays with keys given
