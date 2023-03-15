@@ -6,7 +6,13 @@ const state = {
 const getters = {
   fonts: state => [
     ...state.defaultFonts,
-    ...state.localFonts.map(font => font.fullName)
+    ...state.localFonts
+      .filter(
+        (value, index, self) =>
+          index === self.findIndex(t => t.family === value.family)
+      )
+      .map(font => font.family)
+      .sort((a, b) => a.localeCompare(b))
   ]
 };
 
