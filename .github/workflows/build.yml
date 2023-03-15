@@ -10,7 +10,7 @@ env:
   ELECTRON_CACHE: $HOME/.cache/electron
   ELECTRON_BUILDER_CACHE: $HOME/.cache/electron-builder
   USE_HARD_LINKS: false
-  GH_TOKEN: ${{ secrets.github_token }}
+  GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
   EP_GH_IGNORE_TIME: true
 
 jobs:

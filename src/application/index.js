@@ -2,6 +2,7 @@ import PromiseWorker from "promise-worker-transferable";
 import Vue from "vue";
 import { ipcRenderer } from "electron";
 import { app } from "@electron/remote";
+import { createWebcodecVideo } from "./createWebcodecVideo";
 
 import Worker from "worker-loader!./worker/index.worker.js";
 import {
@@ -28,6 +29,7 @@ export default class ModV {
   setupBeatDetektor = setupBeatDetektor;
   setupMidi = setupMidi;
   windowHandler = windowHandler;
+  createWebcodecVideo = createWebcodecVideo;
   use = use;
   debug = false;
   features = Vue.observable({
@@ -44,6 +46,7 @@ export default class ModV {
     perceptualSpread: 0,
     perceptualSharpness: 0
   });
+  videos = {};
 
   _store = store;
   store = {
@@ -63,7 +66,7 @@ export default class ModV {
       payload: app.getAppPath()
     });
 
-    this.$worker.addEventListener("message", e => {
+    this.$worker.addEventListener("message", async e => {
       const message = e.data;
       const { type } = message;
 
@@ -76,6 +79,19 @@ export default class ModV {
       // ) {
       //   console.log(`⚙️%c ${type}`, "color: red");
       // }
+
+      if (type === "createWebcodecVideo") {
+        const videoContext = await this.createWebcodecVideo(message);
+        this.videos[videoContext.id] = videoContext;
+      }
+
+      if (type === "removeWebcodecVideo") {
+        const { video, stream } = this.videos[message.id];
+        video.src = "";
+        // eslint-disable-next-line no-for-each/no-for-each
+        stream.getTracks().forEach(track => track.stop());
+        delete this.videos[message.id];
+      }
 
       if (e.data.type === "tick" && this.ready) {
         this.tick(e.data.payload);

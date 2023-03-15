@@ -16,10 +16,15 @@ jobs:
         uses: actions/checkout@v3
         with:
           fetch-depth: 0
+
       - name: Configure git
         run: |
           git config --global user.email "action@github.com"
           git config --global user.name "GitHub Action"
+
+      - name: Install libndi4_4.5.1-1_amd64.deb
+        run: wget https://github.com/Palakis/obs-ndi/releases/download/4.9.0/libndi4_4.5.1-1_amd64.deb && sudo dpkg -i libndi4_4.5.1-1_amd64.deb
+
       - name: Update Browserslist database and create PR if applies
         uses: c2corg/browserslist-update-action@v2
         with:
