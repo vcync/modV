@@ -266,9 +266,8 @@ const actions = {
 
   async duplicateModule({ commit }, { groupId, moduleId }) {
     const group = state.groups.find(group => group.id === groupId);
-    const position = group.modules.findIndex(
-      moduleListId => moduleListId === moduleId
-    );
+    const position =
+      group.modules.findIndex(moduleListId => moduleListId === moduleId) + 1;
     const existingModule = store.state.modules.active[moduleId];
 
     const existingInputIds = store.getters["modules/activeModuleInputIds"](
@@ -297,6 +296,17 @@ const actions = {
       if (existingInputLinks[existingInputId]) {
         await store.dispatch("inputs/createInputLink", {
           ...existingInputLinks[existingInputId],
+          inputId: newInputId
+        });
+      }
+
+      const existingExpression = store.getters["expressions/getByInputId"](
+        existingInputId
+      );
+
+      if (existingExpression) {
+        await store.dispatch("expressions/create", {
+          expression: existingExpression.expression,
           inputId: newInputId
         });
       }
