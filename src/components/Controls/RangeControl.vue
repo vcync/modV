@@ -4,7 +4,7 @@
       v-tooltip
       @mousedown.left="requestPointerLock"
       @mouseup.left="exitPointerLock"
-      @click.right="toggleEditMode"
+      @click.right.stop="toggleEditMode"
       v-show="!editMode"
       ref="canvas"
     ></canvas>
@@ -13,7 +13,7 @@
       type="number"
       :step="step"
       @keypress.enter="toggleEditMode"
-      @click.right="toggleEditMode"
+      @click.right.stop="toggleEditMode"
       @input="numberInputHandler"
       v-show="editMode"
       ref="input"
