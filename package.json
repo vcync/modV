@@ -75,6 +75,7 @@
     "@vue/cli-plugin-eslint": "^3.12.1",
     "@vue/cli-service": "^3.12.1",
     "@vue/eslint-config-prettier": "^4.0.1",
+    "@vue/runtime-dom": "^3.2.47",
     "babel-eslint": "^10.0.3",
     "core-js": "^3.19.1",
     "electron": "^23.1.2",
