@@ -1,7 +1,7 @@
 import store from "../";
 import getPropDefault from "../../../utils/get-prop-default";
 
-import uuidv4 from "uuid/v4";
+import { v4 as uuidv4 } from "uuid";
 
 function camelize(str) {
   return str.replace(/(?:^\w|[A-Z]|\b\w|\s+)/g, (match, index) => {

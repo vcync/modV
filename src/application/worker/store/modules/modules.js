@@ -6,7 +6,7 @@ import store from "..";
 import get from "lodash.get";
 import set from "lodash.set";
 
-import uuidv4 from "uuid/v4";
+import { v4 as uuidv4 } from "uuid";
 import { applyExpression } from "../../../utils/apply-expression";
 
 // Any keys marked false or arrays with keys given
@@ -646,11 +646,23 @@ const actions = {
       meta.compositeOperationInputId,
       meta.enabledInputId
     ];
-    const moduleProperties = Object.values(module.$props).map(prop => ({
-      id: prop.id,
-      type: prop.type
-    }));
+    const moduleProperties = Object.entries(module.$props).map(
+      ([key, prop]) => ({
+        key,
+        id: prop.id,
+        type: prop.type
+      })
+    );
     const inputIds = [...moduleProperties, ...metaInputIds.map(id => ({ id }))];
+
+    for (let i = 0, len = moduleProperties.length; i < len; i++) {
+      const { key, type: propType } = moduleProperties[i];
+
+      // destroy anything created by datatypes we don't need anymore
+      if (store.state.dataTypes[propType].destroy) {
+        store.state.dataTypes[propType].destroy(module.props[key]);
+      }
+    }
 
     for (let i = 0, len = inputIds.length; i < len; i++) {
       const { id: inputId, type: propType } = inputIds[i];

@@ -1,5 +1,6 @@
 import { app, ipcMain, protocol } from "electron";
 import { APP_SCHEME } from "./background-constants";
+import { getMediaManager } from "./media-manager";
 import { openFile } from "./open-file";
 import { createWindow } from "./windows";
 
@@ -39,10 +40,33 @@ app.on("activate", async () => {
   createWindow("mainWindow");
 });
 
+// https://stackoverflow.com/a/66673831
+function fileHandler(req, callback) {
+  const { mediaDirectoryPath } = getMediaManager();
+  const requestedPath = req.url.substr(7);
+  // Write some code to resolve path, calculate absolute path etc
+  const check = requestedPath.indexOf(mediaDirectoryPath) > -1;
+
+  if (!check) {
+    callback({
+      // -6 is FILE_NOT_FOUND
+      // https://source.chromium.org/chromium/chromium/src/+/master:net/base/net_error_list.h
+      error: -6
+    });
+    return;
+  }
+
+  callback({
+    path: requestedPath
+  });
+}
+
 // This method will be called when Electron has finished
 // initialization and is ready to create browser windows.
 // Some APIs can only be used after this event occurs.
 app.on("ready", async () => {
+  protocol.registerFileProtocol("modv", fileHandler);
+
   app.commandLine.appendSwitch(
     "disable-backgrounding-occluded-windows",
     "true"
