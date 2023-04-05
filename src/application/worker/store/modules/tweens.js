@@ -1,7 +1,7 @@
 import Vue from "vue";
 import anime from "animejs";
 import store from "../";
-import uuidv4 from "uuid/v4";
+import { v4 as uuidv4 } from "uuid";
 
 if (typeof window === "undefined") {
   // shims for anime in a worker
