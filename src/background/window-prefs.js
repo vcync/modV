@@ -63,6 +63,12 @@ const windowPrefs = {
     unique: true,
 
     beforeCreate() {
+      dialog.showMessageBoxSync({
+        message: JSON.stringify({
+          isDevelopment,
+          NODE_ENV: process.env.NODE_ENV
+        })
+      });
       const { width, height } = screen.getPrimaryDisplay().workAreaSize;
 
       return {
@@ -211,16 +217,13 @@ const windowPrefs = {
     unique: true,
 
     async create(window) {
-      windows["mainWindow"].maximize();
-
       ipcMain.on("modv-ready", () => {
         try {
           window.close();
         } catch (e) {
           console.error(e);
         }
-
-        windows["mainWindow"].show();
+        windows["mainWindow"].maximize();
       });
     }
   }
