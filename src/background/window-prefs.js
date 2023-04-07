@@ -63,12 +63,6 @@ const windowPrefs = {
     unique: true,
 
     beforeCreate() {
-      dialog.showMessageBoxSync({
-        message: JSON.stringify({
-          isDevelopment,
-          NODE_ENV: process.env.NODE_ENV
-        })
-      });
       const { width, height } = screen.getPrimaryDisplay().workAreaSize;
 
       return {
