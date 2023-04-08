@@ -179,7 +179,12 @@
       </button>
     </div>
     <div class="group__right">
-      <div class="group__title" @click.self="endTitleEditable">
+      <div
+        class="group__title"
+        :class="{ grabbing }"
+        @click.self="endTitleEditable"
+        @mousedown="titleMouseDown"
+      >
         <span v-if="!titleEditable" @dblclick="toggleTitleEditable">{{
           name
         }}</span>
@@ -266,7 +271,8 @@ export default {
       localName: "",
       controlsShown: false,
       Arrow,
-      inheritanceSelection: -1
+      inheritanceSelection: -1,
+      grabbing: false
     };
   },
 
@@ -515,6 +521,16 @@ export default {
           groupId: this.groupId
         });
       }
+    },
+
+    titleMouseDown() {
+      this.grabbing = true;
+      window.addEventListener("mouseup", this.titleMouseUp);
+    },
+
+    titleMouseUp() {
+      this.grabbing = false;
+      window.removeEventListener("mouseup", this.titleMouseUp);
     }
   },
 
@@ -627,7 +643,7 @@ export default {
   margin-left: 24px;
 }
 
-.group__modules > * + *::before {
+.group__modules > * + *:not(.smooth-dnd-ghost)::before {
   background-image: url(../assets/graphics/Arrow.svg);
   background-repeat: no-repeat;
   background-position: center;
@@ -648,6 +664,11 @@ export default {
   color: white;
   padding: 8px;
   line-height: 1;
+  cursor: grab;
+}
+
+.group__title.grabbing {
+  cursor: grabbing;
 }
 
 .group__title input {
