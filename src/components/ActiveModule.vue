@@ -118,6 +118,11 @@ export default {
     };
   },
 
+  beforeDestroy() {
+    // ensure listener cleanup
+    this.titleMouseUp();
+  },
+
   computed: {
     module() {
       return this.$modV.store.state.modules.active[this.id];
