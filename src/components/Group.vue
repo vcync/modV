@@ -190,6 +190,7 @@
         }}</span>
         <TextInput
           v-model="localName"
+          ref="titleInput"
           v-else
           @keypress.enter="endTitleEditable"
         />
@@ -283,6 +284,10 @@ export default {
     if (!this.focusedGroup) {
       this.focus();
     }
+  },
+
+  beforeDestroy() {
+    window.removeEventListener("mousedown", this.endTitleEditable);
   },
 
   computed: {
@@ -482,9 +487,23 @@ export default {
 
     toggleTitleEditable() {
       this.titleEditable = !this.titleEditable;
+
+      if (this.titleEditable) {
+        window.addEventListener("mousedown", this.endTitleEditable);
+        this.$nextTick(() => {
+          this.$refs.titleInput.$el.focus();
+          this.$refs.titleInput.$el.select();
+        });
+      }
     },
 
-    endTitleEditable() {
+    endTitleEditable(e) {
+      if (e.target === this.$refs.titleInput.$el) {
+        return;
+      }
+
+      window.removeEventListener("mousedown", this.endTitleEditable);
+
       const { localName } = this;
       const trimmedName = localName.trim();
 
