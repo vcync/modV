@@ -7,7 +7,11 @@
     ref="activeModule"
     :class="{ focused }"
   >
-    <div class="active-module__title handle">
+    <div
+      class="active-module__title handle"
+      :class="{ grabbing }"
+      @mousedown="titleMouseDown"
+    >
       {{ name }}
 
       <TooltipDisplay
@@ -109,7 +113,8 @@ export default {
   data() {
     return {
       blendModes,
-      showMore: false
+      showMore: false,
+      grabbing: false
     };
   },
 
@@ -246,6 +251,16 @@ export default {
 
         this.$emit("remove-module", this.id);
       }
+    },
+
+    titleMouseDown() {
+      this.grabbing = true;
+      window.addEventListener("mouseup", this.titleMouseUp);
+    },
+
+    titleMouseUp() {
+      this.grabbing = false;
+      window.removeEventListener("mouseup", this.titleMouseUp);
     }
   }
 };
@@ -269,6 +284,11 @@ export default {
   overflow: hidden;
   text-overflow: ellipsis;
   position: relative;
+  cursor: grab;
+}
+
+.active-module__title.grabbing {
+  cursor: grabbing;
 }
 
 .active-module__controls,
