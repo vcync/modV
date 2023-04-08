@@ -3,8 +3,10 @@
     @mouseover="focus"
     @mouseleave="blur"
     @dblclick="doubleClick"
+    @mousedown="mouseDown"
     v-if="!badModule"
     class="gallery-item"
+    :class="{ grabbing }"
   >
     <canvas ref="canvas"></canvas>
     <div class="title">{{ moduleName }}</div>
@@ -21,7 +23,8 @@ export default {
     return {
       id: "",
       outputId: "",
-      badModule: false
+      badModule: false,
+      grabbing: false
     };
   },
 
@@ -89,6 +92,9 @@ export default {
       groupId: this.groupId,
       moduleId: this.id
     });
+
+    // ensure listener cleanup
+    this.mouseUp();
   },
 
   methods: {
@@ -141,6 +147,16 @@ export default {
           group => group.id === groupId
         ).modules.length
       });
+    },
+
+    mouseDown() {
+      this.grabbing = true;
+      window.addEventListener("mouseup", this.mouseUp);
+    },
+
+    mouseUp() {
+      this.grabbing = false;
+      window.removeEventListener("mouseup", this.mouseUp);
     }
   }
 };
@@ -153,11 +169,15 @@ canvas {
 
 .gallery-item {
   position: relative;
-  cursor: move;
+  cursor: grab;
   display: flex;
   justify-content: center;
   align-items: center;
   height: 100%;
+}
+
+.gallery-item.grabbing {
+  cursor: grabbing;
 }
 
 .gallery-item:hover canvas {
