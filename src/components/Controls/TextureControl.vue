@@ -244,4 +244,8 @@ export default {
 };
 </script>
 
-<style scoped></style>
+<style scoped>
+grid {
+  width: 100%;
+}
+</style>
