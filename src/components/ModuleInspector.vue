@@ -2,7 +2,7 @@
   <grid v-if="module.props" ref="moduleInspector">
     <c span="1.." class="hidden">
       <button class="pin-button" @click="toggleModulePin(module.$id)">
-        {{ isPinned(module.$id) ? "(Unpin)" : "(Pin)" }}
+        ({{ isPinned(module.$id) ? "Unpin" : "Pin" }})
       </button>
     </c>
     <c span="1..">
@@ -63,19 +63,10 @@ export default {
         moduleName
       ];
 
-      return Object.keys(moduleDefinition.props).filter(
-        key =>
-          moduleDefinition.props[key].type === "int" ||
-          moduleDefinition.props[key].type === "float" ||
-          moduleDefinition.props[key].type === "text" ||
-          moduleDefinition.props[key].type === "bool" ||
-          moduleDefinition.props[key].type === "color" ||
-          moduleDefinition.props[key].type === "vec2" ||
-          moduleDefinition.props[key].type === "vec3" ||
-          moduleDefinition.props[key].type === "vec4" ||
-          moduleDefinition.props[key].type === "tween" ||
-          moduleDefinition.props[key].type === "texture" ||
-          moduleDefinition.props[key].type === "enum"
+      return Object.keys(moduleDefinition.props).filter(key =>
+        this.$modV.store.getters["dataTypes/types"].includes(
+          moduleDefinition.props[key].type
+        )
       );
     }
   }
