@@ -31,7 +31,7 @@ const actions = {
       });
     }
 
-    commit("CREATE_VIDEO", { id, path });
+    commit("CREATE_VIDEO", { id, path: filePath });
     return { id };
   },
 
