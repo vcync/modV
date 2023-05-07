@@ -120,8 +120,6 @@ export default function windowHandler() {
           setSize.call(this, win);
         });
       });
-
-      setSize.call(this, win);
     }
   });
 
