@@ -1,5 +1,6 @@
 export default function windowHandler() {
   const windows = {};
+  const that = this;
 
   function createHideMouseTimerhandler(canvas) {
     let mouseTimer;
@@ -18,10 +19,16 @@ export default function windowHandler() {
     };
   }
 
-  function configureWindow({ win, canvas, title, backgroundColor }) {
+  function configureWindow({ win, canvas, backgroundColor }) {
     win.document.body.appendChild(canvas);
-    win.document.title = title;
     win.document.body.style.backgroundColor = backgroundColor;
+    win.addEventListener("beforeunload", ev => {
+      // Setting any value other than undefined here will prevent the window
+      // from closing or reloading
+      ev.returnValue = true;
+    });
+
+    setSize.call(that, win);
   }
 
   function pollToConfigureWindow(args) {
@@ -62,6 +69,7 @@ export default function windowHandler() {
         "modal",
         `width=${width}, height=${height}, location=no, menubar=no, left=0`
       );
+      win.document.title = title;
 
       if (win === null || typeof win === "undefined") {
         console.log(

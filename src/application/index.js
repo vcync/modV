@@ -101,6 +101,32 @@ export default class ModV {
 
       if (type === "worker-setup-complete") {
         resolver();
+
+        setTimeout(async () => {
+          // Make the default group
+          const group = await this.store.dispatch("groups/createGroup", {
+            enabled: GROUP_ENABLED
+          });
+
+          const module = await this.store.dispatch("modules/makeActiveModule", {
+            moduleName: "plasma"
+          });
+
+          const groupId = group.id;
+
+          this.store.commit("groups/ADD_MODULE_TO_GROUP", {
+            moduleId: module.$id,
+            groupId,
+            position: 0
+          });
+
+          await this.store.dispatch("modules/updateMeta", {
+            id: module.$id,
+            metaKey: "enabled",
+            data: 1
+          });
+        }, 1000);
+
         ipcRenderer.send("modv-ready");
       }
 
@@ -148,9 +174,6 @@ export default class ModV {
         );
       }
     };
-
-    // Make the default group
-    this.store.dispatch("groups/createGroup", { enabled: GROUP_ENABLED });
 
     window.addEventListener("beforeunload", () => true);
   }
