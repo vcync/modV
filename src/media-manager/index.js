@@ -17,6 +17,8 @@ import isfReadHandler from "./read-handlers/isf";
 import videoReadHandler from "./read-handlers/video";
 
 import presetSaveHandler from "./save-handlers/preset";
+import imageSaveHandler from "./save-handlers/image";
+import moduleSaveHandler from "./save-handlers/module";
 
 import path from "path";
 import fs from "fs";
@@ -26,7 +28,7 @@ import mkdirpTop from "mkdirp";
 
 const mkdirp = promisify(mkdirpTop);
 
-export default class MediaManager {
+export class MediaManager {
   get dataPath() {
     return path.join(ospath.data(), "modV");
   }
@@ -70,6 +72,8 @@ export default class MediaManager {
     this.addReadHandler({ readHandler: videoReadHandler });
 
     this.addSaveHandler({ saveHandler: presetSaveHandler });
+    this.addSaveHandler({ saveHandler: imageSaveHandler });
+    this.addSaveHandler({ saveHandler: moduleSaveHandler });
 
     store.subscribe(mutation => {
       if (mutation.type.split("/")[0] !== "media") {

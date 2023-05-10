@@ -1,4 +1,4 @@
-import MediaManager from "../media-manager";
+import { MediaManager } from "../media-manager";
 import { updateMenu } from "./menu-bar";
 import { setProjectNames } from "./projects";
 

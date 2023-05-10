@@ -2,21 +2,59 @@ import Vue from "vue";
 import Vuex from "vuex";
 import createPersistedState from "vuex-persistedstate";
 
-const requireModule = require.context("./modules/", false, /\.js$/);
-const modules = {};
+import beats from "./modules/beats.js";
+import dataTypes from "./modules/dataTypes.js";
+import errors from "./modules/errors.js";
+import expressions from "./modules/expressions.js";
+import fps from "./modules/fps.js";
+import groups from "./modules/groups.js";
+import images from "./modules/images.js";
+import inputs from "./modules/inputs.js";
+import media from "./modules/media.js";
+import mediaStream from "./modules/mediaStream.js";
+import metrics from "./modules/metrics.js";
+import meyda from "./modules/meyda.js";
+import midi from "./modules/midi.js";
+import modules from "./modules/modules.js";
+import ndi from "./modules/ndi.js";
+import outputs from "./modules/outputs.js";
+import plugins from "./modules/plugins.js";
+import projects from "./modules/projects.js";
+import renderers from "./modules/renderers.js";
+import size from "./modules/size.js";
+import tweens from "./modules/tweens.js";
+import videos from "./modules/videos.js";
+import windows from "./modules/windows.js";
 
-const moduleKeys = requireModule.keys();
-for (let i = 0, len = moduleKeys.length; i < len; i++) {
-  const moduleName = moduleKeys[i];
-
-  modules[moduleName.replace(/(\.\/|\.js)/g, "")] = requireModule(
-    moduleName
-  ).default;
-}
+const storeModules = {
+  beats,
+  dataTypes,
+  errors,
+  expressions,
+  fps,
+  groups,
+  images,
+  inputs,
+  media,
+  mediaStream,
+  metrics,
+  meyda,
+  midi,
+  modules,
+  ndi,
+  outputs,
+  plugins,
+  projects,
+  renderers,
+  size,
+  tweens,
+  videos,
+  windows
+};
 
 Vue.use(Vuex);
 
-const plugins = [];
+const storePlugins = [];
 
 // createPersistedState doesn't work in the worker store, so don't run it there.
 // That's okay as the worker doesn't need to know about mediaStream.
@@ -27,11 +65,11 @@ if (self.document !== undefined) {
     paths: ["mediaStream"]
   });
 
-  plugins.push(dataState);
+  storePlugins.push(dataState);
 }
 
 export default new Vuex.Store({
-  modules,
-  plugins,
+  modules: storeModules,
+  plugins: storePlugins,
   strict: false
 });

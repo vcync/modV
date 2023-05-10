@@ -76,6 +76,44 @@ const windowPrefs = {
     async create(window) {
       require("@electron/remote/main").enable(window.webContents);
 
+      // Bypass CORS
+      // https://pratikpc.medium.com/bypassing-cors-with-electron-ab7eaf331605
+      function UpsertKeyValue(obj, keyToChange, value) {
+        const keyToChangeLower = keyToChange.toLowerCase();
+        // eslint-disable-next-line no-for-each/no-for-of
+        for (const key of Object.keys(obj)) {
+          if (key.toLowerCase() === keyToChangeLower) {
+            // Reassign old key
+            obj[key] = value;
+            // Done
+            return;
+          }
+        }
+        // Insert at end instead
+        obj[keyToChange] = value;
+      }
+
+      window.webContents.session.webRequest.onBeforeSendHeaders(
+        (details, callback) => {
+          const { requestHeaders } = details;
+          UpsertKeyValue(requestHeaders, "Access-Control-Allow-Origin", ["*"]);
+          callback({ requestHeaders });
+        }
+      );
+
+      window.webContents.session.webRequest.onHeadersReceived(
+        (details, callback) => {
+          const { responseHeaders } = details;
+          UpsertKeyValue(responseHeaders, "Access-Control-Allow-Origin", ["*"]);
+          UpsertKeyValue(responseHeaders, "Access-Control-Allow-Headers", [
+            "*"
+          ]);
+          callback({
+            responseHeaders
+          });
+        }
+      );
+
       // Configure child windows to open without a menubar (windows/linux)
       window.webContents.on(
         "new-window",

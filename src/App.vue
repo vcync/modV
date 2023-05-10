@@ -47,6 +47,10 @@
             <Gallery />
           </gl-component>
 
+          <gl-component title="Shadertoy" :closable="false">
+            <Shadertoy />
+          </gl-component>
+
           <gl-stack title="Input Stack">
             <gl-component title="Input Config" :closable="false">
               <InputConfig />
@@ -106,6 +110,7 @@ import Search from "@/components/Search";
 import FrameRateDialog from "@/components/dialogs/FrameRateDialog";
 import ErrorWatcher from "@/components/ErrorWatcher";
 import Plugins from "@/components/Plugins";
+import Shadertoy from "@/components/Shadertoy";
 
 import getNextName from "@/application/utils/get-next-name";
 import constants from "@/application/constants";
@@ -131,7 +136,8 @@ export default {
     Search,
     FrameRateDialog,
     ErrorWatcher,
-    Plugins
+    Plugins,
+    Shadertoy
   },
 
   data() {

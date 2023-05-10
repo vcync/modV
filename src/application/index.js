@@ -310,4 +310,15 @@ export default class ModV {
   loadPreset(filePathToPreset) {
     this.$worker.postMessage({ type: "loadPreset", payload: filePathToPreset });
   }
+
+  async saveFile({ what, name, fileType, project, payload }) {
+    console.log("ipcRenderer", ipcRenderer);
+    return ipcRenderer.send("save-file", {
+      what,
+      name,
+      fileType,
+      project,
+      payload
+    });
+  }
 }
