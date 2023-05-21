@@ -1,6 +1,8 @@
 import Vue from "vue";
-import uuidv4 from "uuid/v4";
+import { v4 as uuidv4 } from "uuid";
+import path from "path";
 import store from "../";
+import { conformFilePath } from "../../../utils/conform-file-path";
 
 const state = {};
 
@@ -12,10 +14,13 @@ const actions = {
   createVideoFromPath({ rootState, commit }, textureDefinition) {
     const {
       id = uuidv4(),
-      options: { path }
+      options: { path: filePath }
     } = textureDefinition;
 
-    const url = `modv://${rootState.media.path}${path}`;
+    const url = `modv://${path.join(
+      rootState.media.path,
+      conformFilePath(filePath)
+    )}`;
 
     if (typeof window !== "undefined") {
       self.postMessage({
@@ -26,7 +31,7 @@ const actions = {
       });
     }
 
-    commit("CREATE_VIDEO", { id, path });
+    commit("CREATE_VIDEO", { id, path: filePath });
     return { id };
   },
 

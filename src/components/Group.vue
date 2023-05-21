@@ -190,13 +190,18 @@
       </button>
     </div>
     <div class="group__right">
-      <div class="group__name" @click.self="endNameEditable">
+      <div
+        class="group__name"
+        :class="{ grabbing }"
+        @click.self="endNameEditable"
+        @mousedown="titleMouseDown"
+      >
         <span v-if="!nameEditable" @dblclick="toggleNameEditable">{{
           name
         }}</span>
         <TextInput
           v-model="localName"
-          ref="titleInput"
+          ref="nameInput"
           v-else
           @keypress.enter="endNameEditable"
         />
@@ -278,7 +283,8 @@ export default {
       localName: "",
       controlsShown: false,
       Arrow,
-      inheritanceSelection: -1
+      inheritanceSelection: -1,
+      grabbing: false
     };
   },
 
@@ -289,6 +295,10 @@ export default {
     if (!this.focusedGroup) {
       this.focus();
     }
+  },
+
+  beforeDestroy() {
+    window.removeEventListener("mousedown", this.endNameEditable);
   },
 
   computed: {
@@ -488,13 +498,23 @@ export default {
 
     toggleNameEditable() {
       this.nameEditable = !this.nameEditable;
-      this.$nextTick(() => {
-        this.$refs.titleInput.$el.focus();
-        this.$refs.titleInput.$el.select();
-      });
+
+      if (this.titleEditable) {
+        window.addEventListener("mousedown", this.endNameEditable);
+        this.$nextTick(() => {
+          this.$refs.nameInput.$el.focus();
+          this.$refs.nameInput.$el.select();
+        });
+      }
     },
 
-    endNameEditable() {
+    endNameEditable(e) {
+      if (e.target === this.$refs.nameInput.$el) {
+        return;
+      }
+
+      window.removeEventListener("mousedown", this.endNameEditable);
+
       const { localName } = this;
       const trimmedName = localName.trim();
 
@@ -531,6 +551,16 @@ export default {
           groupId: this.groupId
         });
       }
+    },
+
+    titleMouseDown() {
+      this.grabbing = true;
+      window.addEventListener("mouseup", this.titleMouseUp);
+    },
+
+    titleMouseUp() {
+      this.grabbing = false;
+      window.removeEventListener("mouseup", this.titleMouseUp);
     }
   },
 
@@ -643,7 +673,7 @@ export default {
   margin-left: 24px;
 }
 
-.group__modules > * + *::before {
+.group__modules > * + *:not(.smooth-dnd-ghost)::before {
   background-image: url(../assets/graphics/Arrow.svg);
   background-repeat: no-repeat;
   background-position: center;
@@ -664,6 +694,11 @@ export default {
   color: white;
   padding: 8px;
   line-height: 1;
+  cursor: grab;
+}
+
+.group__name.grabbing {
+  cursor: grabbing;
 }
 
 .group__name input {
