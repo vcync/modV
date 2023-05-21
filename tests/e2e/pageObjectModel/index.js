@@ -6,10 +6,16 @@ import {
   parseElectronApp
 } from "electron-playwright-helpers";
 import { _electron as electron } from "playwright";
-import groups from "./groups";
+import { groups } from "./groups";
+import { gallery } from "./gallery";
+import { modules } from "./modules";
+import { tabs } from "./tabs";
 
 class ModVApp {
   groups = groups;
+  gallery = gallery;
+  modules = modules;
+  tabs = tabs;
 
   /**
    * @param {import('@playwright/test').Page} page
@@ -27,28 +33,27 @@ class ModVApp {
       process.env.CI = "e2e";
 
       this.electronApp = await electron.launch({
-        args: [appInfo.main],
+        args: [
+          appInfo.main
+          // "--use-fake-device-for-media-stream",
+          // "--use-fake-ui-for-media-stream"
+        ],
         executablePath: appInfo.executable
       });
 
       this.electronApp.on("window", async page => {
-        // const filename = page
-        //   .url()
-        //   ?.split("/")
-        //   .pop();
-        // console.log(`Window opened: ${filename}`);
-
         // capture errors
         page.on("pageerror", error => {
           console.error(error);
         });
+
         // capture console messages
         page.on("console", msg => {
           console.log(msg.text());
         });
       });
 
-      console.info("  ℹ    Waiting for modV to become ready…");
+      // console.info("  ℹ    Waiting for modV to become ready…");
       this.page = await modVApp.electronApp.firstWindow();
       await this.waitUntilModVReady();
     });

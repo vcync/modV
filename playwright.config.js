@@ -1,10 +1,8 @@
-import { expect } from "@playwright/test";
+import { defineConfig, expect } from "@playwright/test";
 import extensions from "./tests/e2e/extentions";
 
 expect.extend(extensions);
 
-const config = {
+export default defineConfig({
   testDir: "./tests/e2e"
-};
-
-export default config;
+});

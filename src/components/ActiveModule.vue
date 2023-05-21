@@ -6,8 +6,9 @@
     @focus="clickActiveModule"
     ref="activeModule"
     :class="{ focused }"
+    :id="`active-module-${id}`"
   >
-    <div class="active-module__title handle">
+    <div class="active-module__name handle">
       {{ name }}
 
       <TooltipDisplay
@@ -263,7 +264,7 @@ export default {
   outline: #c4c4c4 2px solid;
 }
 
-.active-module__title {
+.active-module__name {
   background: #9a9a9a;
   width: 100%;
   overflow: hidden;
@@ -279,7 +280,7 @@ export default {
 }
 
 .active-module__controls grid,
-.active-module__title {
+.active-module__name {
   box-sizing: border-box;
   padding: 0 4px;
 }

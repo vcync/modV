@@ -67,7 +67,7 @@ test("search gallery and add module to group", async () => {
 
   const activeModule = await activeModules
     .first()
-    .locator(".active-module__title");
+    .locator(".active-module__name");
   const activeModuleTitle = await activeModule.textContent();
   expect(activeModuleTitle.trim()).toBe("Ball");
 });

@@ -3,6 +3,7 @@
     columns="4"
     @mousedown="focusInput"
     :class="{ 'has-link': hasLink, focused: inputIsFocused }"
+    :id="`module-control-${inputId}`"
   >
     <c span="1">
       <label v-context-menu="menuOptions">{{ title }}</label>

@@ -3,7 +3,7 @@ import constants from "../../../src/application/constants";
 
 const id = (strings, groupId) => [`#group-${groupId}`, ...strings].join("");
 
-export default {
+export const groups = {
   get newGroupButton() {
     return modVApp.page.locator("#new-group-button");
   },
@@ -31,7 +31,8 @@ export default {
       ),
       name: nameLocator,
       nameDisplay: nameLocator.locator("span"),
-      nameInput: nameLocator.locator("input[type=text]")
+      nameInput: nameLocator.locator("input[type=text]"),
+      modules: page.locator(id`${groupId} .group__modules`)
     };
   },
 
