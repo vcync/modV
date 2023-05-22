@@ -1,3 +1,4 @@
+import get from "lodash.get";
 import { v4 as uuidv4 } from "uuid";
 const math = require("mathjs");
 
@@ -14,8 +15,8 @@ const getters = {
   }
 };
 
-function compileExpression(expression) {
-  const scope = { value: 0, time: 0 };
+function compileExpression(expression, scopeItems = {}) {
+  const scope = { value: 0, time: 0, ...scopeItems };
 
   let newFunction;
   try {
@@ -32,7 +33,7 @@ function compileExpression(expression) {
 
 // actions
 const actions = {
-  create({ commit }, { expression = "value", id, inputId }) {
+  create({ rootState, commit }, { expression = "value", id, inputId }) {
     if (!inputId) {
       throw new Error("Input ID required");
     }
@@ -43,7 +44,11 @@ const actions = {
 
     const expressionId = id || uuidv4();
 
-    const func = compileExpression(expression);
+    const input = rootState.inputs.inputs[inputId];
+
+    const func = compileExpression(expression, {
+      inputValue: get(rootState, input.getLocation)
+    });
 
     if (!func) {
       throw new Error("Unable to compile Expression");
@@ -61,7 +66,7 @@ const actions = {
     return expressionId;
   },
 
-  update({ commit }, { id, expression = "value" }) {
+  update({ rootState, commit }, { id, expression = "value" }) {
     if (!id) {
       throw new Error("Expression ID required");
     }
@@ -77,7 +82,11 @@ const actions = {
       return null;
     }
 
-    const func = compileExpression(expression);
+    const input = rootState.inputs.inputs[existingExpression.inputId];
+
+    const func = compileExpression(expression, {
+      inputValue: get(rootState, input.getLocation)
+    });
 
     if (!func) {
       throw new Error("Unable to compile Expression");

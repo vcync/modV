@@ -99,8 +99,11 @@ const actions = {
     commit("SET_FOCUSED_INPUT", { id: null, title: null });
   },
 
-  addInput({ commit }, { type, location, data, id = uuidv4(), writeToSwap }) {
-    const input = { type, location, data, id };
+  addInput(
+    { commit },
+    { type, getLocation, location, data, id = uuidv4(), writeToSwap }
+  ) {
+    const input = { type, getLocation, location, data, id };
     commit("ADD_INPUT", { input, writeToSwap });
     return input;
   },

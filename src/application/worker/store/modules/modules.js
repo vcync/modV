@@ -80,6 +80,7 @@ async function initialiseModuleProperties(
     ) {
       const inputBind = await store.dispatch("inputs/addInput", {
         type: "action",
+        getLocation: `modules.active["${module.$id}"].props["${propKey}"]`,
         location: "modules/updateProp",
         data: { moduleId: module.$id, prop: propKey },
         writeToSwap
@@ -96,6 +97,7 @@ async function initialiseModuleProperties(
           const key = dataTypeInputsKeys[i];
           await store.dispatch("inputs/addInput", {
             type: "action",
+            getLocation: `modules.active["${module.$id}"].props["${propKey}"]["${key}"]`,
             location: "modules/updateProp",
             data: {
               moduleId: module.$id,
@@ -288,6 +290,7 @@ const actions = {
       if (!moduleMeta.isGallery) {
         const alphaInputBind = await store.dispatch("inputs/addInput", {
           type: "action",
+          getLocation: `modules.active["${module.$id}"].meta.alpha`,
           location: "modules/updateMeta",
           data: { id: module.$id, metaKey: "alpha" }
         });
@@ -296,6 +299,7 @@ const actions = {
 
         const enabledInputBind = await store.dispatch("inputs/addInput", {
           type: "action",
+          getLocation: `modules.active["${module.$id}"].meta.enabled`,
           location: "modules/updateMeta",
           data: { id: module.$id, metaKey: "enabled" }
         });
@@ -304,6 +308,7 @@ const actions = {
 
         const coInputBind = await store.dispatch("inputs/addInput", {
           type: "action",
+          getLocation: `modules.active["${module.$id}"].meta.compositeOperation`,
           location: "modules/updateMeta",
           data: { moduleId: module.$id, metaKey: "compositeOperation" }
         });
