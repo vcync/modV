@@ -81,7 +81,6 @@ class ModVApp {
     }
 
     resolver();
-    resolver = undefined;
   }
 
   async evaluateMainState() {
