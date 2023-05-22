@@ -34,7 +34,7 @@ function createWindow({ windowName, options = {} }, event) {
     ...options
   });
 
-  updateMenu();
+  updateMenu(true);
 
   if (typeof windowPrefs[windowName].create === "function") {
     windowPrefs[windowName].create(windows[windowName]);

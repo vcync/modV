@@ -37,11 +37,6 @@ async function writePresetToFile(filePath) {
 export function generateMenuTemplate() {
   const mediaManager = getMediaManager();
 
-  windows["mainWindow"].on("ready-to-show", () => {
-    lastFileSavedPath = null;
-    updateMenu();
-  });
-
   return [
     // { role: 'appMenu' }
     ...(isMac
@@ -266,7 +261,14 @@ export function generateMenuTemplate() {
   ];
 }
 
-export function updateMenu() {
+export function updateMenu(setWindowListener) {
+  if (setWindowListener) {
+    windows["mainWindow"].on("ready-to-show", () => {
+      lastFileSavedPath = null;
+      updateMenu();
+    });
+  }
+
   const menu = Menu.buildFromTemplate(generateMenuTemplate());
   Menu.setApplicationMenu(menu);
 }
