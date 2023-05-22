@@ -57,11 +57,6 @@ class ModVApp {
       this.page = await modVApp.electronApp.firstWindow();
       await this.waitUntilModVReady();
     });
-
-    test.afterAll(() => {
-      // Playwright, why are you so bad at timings?
-      setTimeout(async () => await this.electronApp.close(), 3000);
-    });
   }
 
   async waitUntilModVReady(resolver) {
@@ -86,6 +81,7 @@ class ModVApp {
     }
 
     resolver();
+    resolver = undefined;
   }
 
   async evaluateMainState() {

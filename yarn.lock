@@ -1322,7 +1322,6 @@
     ajv "^6.12.0"
     ajv-keywords "^3.4.1"
 
-
 "@electron/asar@^3.2.2":
   version "3.2.3"
   resolved "https://registry.yarnpkg.com/@electron/asar/-/asar-3.2.3.tgz#f598db50061ae5f90ad651f0255366b4e818000e"
@@ -4679,6 +4678,11 @@ csstype@^2.6.8:
   version "2.6.21"
   resolved "https://registry.yarnpkg.com/csstype/-/csstype-2.6.21.tgz#2efb85b7cc55c80017c66a5ad7cbd931fda3a90e"
   integrity sha512-Z1PhmomIfypOpoMjRQB70jfvy/wxT50qW08YXO5lMIJkrdq4yOTR+AW7FqutScmB9NkLwxo+jU+kZLbofZZq/w==
+
+csstype@^3.1.0:
+  version "3.1.2"
+  resolved "https://registry.yarnpkg.com/csstype/-/csstype-3.1.2.tgz#1d4bf9d572f11c14031f0436e1c10bc1f571f50b"
+  integrity sha512-I7K1Uu0MBPzaFKg4nI5Q7Vs2t+3gWWW648spaF+Rg7pI9ds18Ugn+lvg4SHczUdKlHI5LWBXyqfS8+DufyBsgQ==
 
 current-script-polyfill@^1.0.0:
   version "1.0.0"
