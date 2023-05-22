@@ -118,12 +118,11 @@ export function generateMenuTemplate() {
 
             try {
               await writePresetToFile(result.filePath);
+              lastFileSavedPath = path.resolve(result.filePath);
+              updateMenu();
             } catch (e) {
               console.error(e);
             }
-
-            lastFileSavedPath = path.resolve(result.filePath);
-            updateMenu();
           }
         },
 
