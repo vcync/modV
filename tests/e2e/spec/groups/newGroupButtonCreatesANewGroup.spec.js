@@ -8,7 +8,8 @@ test("new group button creates a new group", async () => {
 
   await expect(modVApp.groups.elements).toHaveCount(groupsLength);
 
-  await modVApp.checkWorkerAndMainState(state =>
-    expect(state.groups.groups.length).toBe(groupsLength + 1)
+  await modVApp.checkWorkerAndMainState(
+    state => expect(state.length).toBe(groupsLength + 1),
+    `groups.groups`
   );
 });

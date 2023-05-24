@@ -12,6 +12,7 @@ import ModV from "./application";
 import store from "./ui-store";
 import contextMenuPlugin from "./application/plugins/context-menu";
 import { ipcRenderer } from "electron";
+import get from "lodash.get";
 
 Vue.config.ignoredElements = ["grid", "c"];
 Vue.config.productionTip = false;
@@ -34,6 +35,9 @@ window.Vue = new Vue({
   render: h => h(App),
   store
 });
+
+// For Playwright
+window._get = get;
 
 async function start() {
   ipcRenderer.send("main-window-created");

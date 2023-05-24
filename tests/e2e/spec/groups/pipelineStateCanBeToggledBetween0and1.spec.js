@@ -14,8 +14,9 @@ test("pipeline state can be toggled beween 0 and 1", async () => {
   for (let i = 0; i < 2; i += 1) {
     await pipelineCheckbox.click();
 
-    await modVApp.checkWorkerAndMainState(state =>
-      expect(state.groups.groups[groupIndex].pipeline).toBe(i === 0 ? 1 : 0)
+    await modVApp.checkWorkerAndMainState(
+      state => expect(state[groupIndex].pipeline).toBe(i === 0 ? 1 : 0),
+      `groups.groups`
     );
   }
 });

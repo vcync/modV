@@ -3,6 +3,8 @@ import { modVApp } from "../../pageObjectModel";
 import { setRangeValue } from "../../utils/setRangeValue";
 
 test("alpha state can be set", async () => {
+  test.setTimeout(60 * 1000);
+
   const {
     groupIndex,
     groupId
@@ -16,8 +18,9 @@ test("alpha state can be set", async () => {
     const value = Math.random();
     await setRangeValue(alphaRange, value);
 
-    await modVApp.checkWorkerAndMainState(state =>
-      expect(state.groups.groups[groupIndex].alpha).toBeCloseTo(value)
+    await modVApp.checkWorkerAndMainState(
+      state => expect(state).toBeCloseTo(value),
+      `groups.groups[${groupIndex}].alpha`
     );
   }
 });

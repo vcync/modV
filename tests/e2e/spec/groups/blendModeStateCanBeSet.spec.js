@@ -21,8 +21,9 @@ test("blend mode state can be set", async () => {
     const value = values[i];
     await blendModeSelect.selectOption(String(value));
 
-    await modVApp.checkWorkerAndMainState(state =>
-      expect(state.groups.groups[groupIndex].compositeOperation).toBe(value)
+    await modVApp.checkWorkerAndMainState(
+      state => expect(state).toBe(value),
+      `groups.groups[${groupIndex}].compositeOperation`
     );
   }
 });

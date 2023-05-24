@@ -19,7 +19,8 @@ test("group name can be changed", async () => {
 
   await expect(nameDisplay).toHaveText(newGroupName);
 
-  await modVApp.checkWorkerAndMainState(state =>
-    expect(state.groups.groups[groupIndex].name).toBe(newGroupName)
+  await modVApp.checkWorkerAndMainState(
+    state => expect(state).toBe(newGroupName),
+    `groups.groups[${groupIndex}].name`
   );
 });

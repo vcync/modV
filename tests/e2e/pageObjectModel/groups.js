@@ -70,12 +70,12 @@ export const groups = {
   },
 
   async mainState() {
-    const mainState = await modVApp.evaluateMainState();
-    return mainState.groups;
+    const groups = await modVApp.evaluateMainState(`groups`);
+    return groups;
   },
 
   async workerState() {
-    const workerState = await modVApp.evaluateWorkerState();
-    return workerState.groups;
+    const groups = await modVApp.evaluateWorkerState(`groups`);
+    return groups;
   }
 };

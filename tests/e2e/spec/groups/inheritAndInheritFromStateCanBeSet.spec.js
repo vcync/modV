@@ -22,16 +22,19 @@ test("inherit and inheritFrom state can be set", async () => {
     await inheritSelect.selectOption(String(value));
 
     if (value === -2) {
-      await modVApp.checkWorkerAndMainState(state =>
-        expect(state.groups.groups[groupIndex].inherit).toBe(false)
+      await modVApp.checkWorkerAndMainState(
+        state => expect(state[groupIndex].inherit).toBe(false),
+        `groups.groups`
       );
     } else {
-      await modVApp.checkWorkerAndMainState(state =>
-        expect(state.groups.groups[groupIndex].inherit).toBe(true)
+      await modVApp.checkWorkerAndMainState(
+        state => expect(state[groupIndex].inherit).toBe(true),
+        `groups.groups`
       );
 
-      await modVApp.checkWorkerAndMainState(state =>
-        expect(state.groups.groups[groupIndex].inheritFrom).toBe(value)
+      await modVApp.checkWorkerAndMainState(
+        state => expect(state[groupIndex].inheritFrom).toBe(value),
+        `groups.groups`
       );
     }
   }

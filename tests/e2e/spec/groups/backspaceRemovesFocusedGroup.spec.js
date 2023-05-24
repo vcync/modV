@@ -17,11 +17,9 @@ test("backspace removes focused group", async () => {
   await expect(modVApp.groups.elements).toHaveCount(groupsLength - 2);
 
   await modVApp.checkWorkerAndMainState(state => {
-    expect(state.groups.groups.length).toBe(groupsLength - 1);
-    expect(state.groups.groups.findIndex(group => group.id === groupId)).toBe(
-      -1
-    );
-  });
+    expect(state.length).toBe(groupsLength - 1);
+    expect(state.findIndex(group => group.id === groupId)).toBe(-1);
+  }, `groups.groups`);
 
   // Add a group back just in case this test shares the same worker as another
   await modVApp.groups.newGroupButton.click();

@@ -11,33 +11,38 @@ test("enabled state can be toggled between 0, 1 and 2", async () => {
 
   await enabledCheckbox.click();
 
-  await modVApp.checkWorkerAndMainState(state =>
-    expect(state.groups.groups[groupIndex].enabled).toBe(0)
+  await modVApp.checkWorkerAndMainState(
+    state => expect(state[groupIndex].enabled).toBe(0),
+    `groups.groups`
   );
 
   await enabledCheckbox.click();
 
-  await modVApp.checkWorkerAndMainState(state =>
-    expect(state.groups.groups[groupIndex].enabled).toBe(1)
+  await modVApp.checkWorkerAndMainState(
+    state => expect(state).toBe(1),
+    `groups.groups[${groupIndex}].enabled`
   );
 
   await modVApp.page.keyboard.down("Alt");
   await enabledCheckbox.click();
   await modVApp.page.keyboard.up("Alt");
 
-  await modVApp.checkWorkerAndMainState(state =>
-    expect(state.groups.groups[groupIndex].enabled).toBe(2)
+  await modVApp.checkWorkerAndMainState(
+    state => expect(state[groupIndex].enabled).toBe(2),
+    `groups.groups`
   );
 
   await enabledCheckbox.click();
 
-  await modVApp.checkWorkerAndMainState(state =>
-    expect(state.groups.groups[groupIndex].enabled).toBe(0)
+  await modVApp.checkWorkerAndMainState(
+    state => expect(state[groupIndex].enabled).toBe(0),
+    `groups.groups`
   );
 
   await enabledCheckbox.click();
 
-  await modVApp.checkWorkerAndMainState(state =>
-    expect(state.groups.groups[groupIndex].enabled).toBe(1)
+  await modVApp.checkWorkerAndMainState(
+    state => expect(state[groupIndex].enabled).toBe(1),
+    `groups.groups`
   );
 });

@@ -83,8 +83,15 @@ class ModVApp {
     resolver();
   }
 
-  async evaluateMainState() {
+  async evaluateMainState(propertyPath) {
     const { page } = this;
+
+    if (propertyPath) {
+      return page.evaluate(
+        propertyPath => window._get(window.modV.store.state, propertyPath),
+        propertyPath
+      );
+    }
 
     return page.evaluate(() => window.modV.store.state);
   }
@@ -95,16 +102,27 @@ class ModVApp {
     return page.evaluate(() => window.Vue.$store.state);
   }
 
-  async evaluateWorkerState() {
+  async evaluateWorkerState(propertyPath) {
     const { page } = this;
     const worker = page.workers()[0];
+
+    if (propertyPath) {
+      return worker.evaluate(
+        propertyPath => self._get(self.store.state, propertyPath),
+        propertyPath
+      );
+    }
 
     return worker.evaluate(() => self.store.state);
   }
 
-  async checkWorkerAndMainState(func) {
-    const workerState = await this.evaluateWorkerState();
-    const mainState = await this.evaluateMainState();
+  async checkWorkerAndMainState(func, propertyPath) {
+    // a bit janky but we need to wait for the worker message
+    // to have been sent and state to be updated
+    await this.page.waitForTimeout(150);
+
+    const workerState = await this.evaluateWorkerState(propertyPath);
+    const mainState = await this.evaluateMainState(propertyPath);
 
     const entries = Object.entries({ workerState, mainState });
 
