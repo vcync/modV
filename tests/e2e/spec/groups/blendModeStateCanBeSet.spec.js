@@ -1,4 +1,4 @@
-import { expect, test } from "@playwright/test";
+import { test } from "@playwright/test";
 import { modVApp } from "../../pageObjectModel";
 import compositeOperations from "../../../../src/util/composite-operations";
 
@@ -22,7 +22,7 @@ test("blend mode state can be set", async () => {
     await blendModeSelect.selectOption(String(value));
 
     await modVApp.checkWorkerAndMainState(
-      state => expect(state).toBe(value),
+      [[state => state, e => e.toBe(value)]],
       `groups.groups[${groupIndex}].compositeOperation`
     );
   }

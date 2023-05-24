@@ -23,10 +23,17 @@ test("groups can be rearranged", async () => {
   await page.mouse.move(200, 200);
   await page.mouse.up();
 
-  await modVApp.checkWorkerAndMainState(async state => {
-    const userGroups = await getUserGroups(state);
-
-    expect(userGroups[0].id).toBe(groups[1].id);
-    expect(userGroups[1].id).toBe(groups[0].id);
-  }, `groups.groups`);
+  await modVApp.checkWorkerAndMainState(
+    [
+      [
+        async state => (await getUserGroups(state))[0].id,
+        e => e.toBe(groups[1].id)
+      ],
+      [
+        async state => (await getUserGroups(state))[1].id,
+        e => e.toBe(groups[0].id)
+      ]
+    ],
+    `groups.groups`
+  );
 });

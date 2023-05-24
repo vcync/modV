@@ -1,4 +1,4 @@
-import { expect, test } from "@playwright/test";
+import { test } from "@playwright/test";
 import { modVApp } from "../../pageObjectModel";
 
 test("enabled state can be toggled between 0, 1 and 2", async () => {
@@ -12,14 +12,14 @@ test("enabled state can be toggled between 0, 1 and 2", async () => {
   await enabledCheckbox.click();
 
   await modVApp.checkWorkerAndMainState(
-    state => expect(state[groupIndex].enabled).toBe(0),
+    [[state => state[groupIndex].enabled, e => e.toBe(0)]],
     `groups.groups`
   );
 
   await enabledCheckbox.click();
 
   await modVApp.checkWorkerAndMainState(
-    state => expect(state).toBe(1),
+    [[state => state, e => e.toBe(1)]],
     `groups.groups[${groupIndex}].enabled`
   );
 
@@ -28,21 +28,21 @@ test("enabled state can be toggled between 0, 1 and 2", async () => {
   await modVApp.page.keyboard.up("Alt");
 
   await modVApp.checkWorkerAndMainState(
-    state => expect(state[groupIndex].enabled).toBe(2),
+    [[state => state[groupIndex].enabled, e => e.toBe(2)]],
     `groups.groups`
   );
 
   await enabledCheckbox.click();
 
   await modVApp.checkWorkerAndMainState(
-    state => expect(state[groupIndex].enabled).toBe(0),
+    [[state => state[groupIndex].enabled, e => e.toBe(0)]],
     `groups.groups`
   );
 
   await enabledCheckbox.click();
 
   await modVApp.checkWorkerAndMainState(
-    state => expect(state[groupIndex].enabled).toBe(1),
+    [[state => state[groupIndex].enabled, e => e.toBe(1)]],
     `groups.groups`
   );
 });

@@ -1,4 +1,4 @@
-import { expect, test } from "@playwright/test";
+import { test } from "@playwright/test";
 import { modVApp } from "../../pageObjectModel";
 import { setRangeValue } from "../../utils/setRangeValue";
 
@@ -19,7 +19,7 @@ test("alpha state can be set", async () => {
     await setRangeValue(alphaRange, value);
 
     await modVApp.checkWorkerAndMainState(
-      state => expect(state).toBeCloseTo(value),
+      [[state => state, e => e.toBeCloseTo(value)]],
       `groups.groups[${groupIndex}].alpha`
     );
   }

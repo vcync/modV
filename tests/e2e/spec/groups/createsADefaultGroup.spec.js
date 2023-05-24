@@ -5,7 +5,7 @@ test("creates a default group", async () => {
   await expect(modVApp.groups.elements).toHaveCount(1);
 
   await modVApp.checkWorkerAndMainState(
-    state => expect(state.length).toBe(2),
+    [[state => state.length, e => e.toBe(2)]],
     `groups.groups`
   );
 });

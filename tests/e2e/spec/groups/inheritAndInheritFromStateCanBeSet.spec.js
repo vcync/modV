@@ -1,4 +1,4 @@
-import { expect, test } from "@playwright/test";
+import { test } from "@playwright/test";
 import { modVApp } from "../../pageObjectModel";
 
 test("inherit and inheritFrom state can be set", async () => {
@@ -23,17 +23,17 @@ test("inherit and inheritFrom state can be set", async () => {
 
     if (value === -2) {
       await modVApp.checkWorkerAndMainState(
-        state => expect(state[groupIndex].inherit).toBe(false),
+        [[state => state[groupIndex].inherit, e => e.toBe(false)]],
         `groups.groups`
       );
     } else {
       await modVApp.checkWorkerAndMainState(
-        state => expect(state[groupIndex].inherit).toBe(true),
+        [[state => state[groupIndex].inherit, e => e.toBe(true)]],
         `groups.groups`
       );
 
       await modVApp.checkWorkerAndMainState(
-        state => expect(state[groupIndex].inheritFrom).toBe(value),
+        [[state => state[groupIndex].inheritFrom, e => e.toBe(value)]],
         `groups.groups`
       );
     }

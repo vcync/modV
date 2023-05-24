@@ -1,5 +1,5 @@
 import path from "path";
-import { test } from "@playwright/test";
+import { expect, test } from "@playwright/test";
 import {
   findLatestBuild,
   ipcRendererInvoke,
@@ -116,19 +116,21 @@ class ModVApp {
     return worker.evaluate(() => self.store.state);
   }
 
-  async checkWorkerAndMainState(func, propertyPath) {
-    // a bit janky but we need to wait for the worker message
-    // to have been sent and state to be updated
-    await this.page.waitForTimeout(150);
+  async checkWorkerAndMainState(checks = [], propertyPath) {
+    for (let j = 0; j < 2; j += 1) {
+      for (let i = 0; i < checks.length; i += 1) {
+        const check = checks[i];
 
-    const workerState = await this.evaluateWorkerState(propertyPath);
-    const mainState = await this.evaluateMainState(propertyPath);
-
-    const entries = Object.entries({ workerState, mainState });
-
-    for (let i = 0; i < entries.length; i += 1) {
-      const e = entries[i];
-      await func(...e.reverse());
+        await check[1](
+          expect.poll(async () => {
+            if (j === 0) {
+              return check[0](await this.evaluateWorkerState(propertyPath));
+            } else {
+              return check[0](await this.evaluateMainState(propertyPath));
+            }
+          })
+        );
+      }
     }
   }
 
