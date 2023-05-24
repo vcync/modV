@@ -499,7 +499,7 @@ export default {
     toggleNameEditable() {
       this.nameEditable = !this.nameEditable;
 
-      if (this.titleEditable) {
+      if (this.nameEditable) {
         window.addEventListener("mousedown", this.endNameEditable);
         this.$nextTick(() => {
           this.$refs.nameInput.$el.focus();
@@ -509,7 +509,7 @@ export default {
     },
 
     endNameEditable(e) {
-      if (e.target === this.$refs.nameInput.$el) {
+      if (e instanceof MouseEvent && e.target === this.$refs.nameInput.$el) {
         return;
       }
 
