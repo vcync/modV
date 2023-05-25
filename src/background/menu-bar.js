@@ -10,6 +10,28 @@ const isMac = process.platform === "darwin";
 
 let lastFileSavedPath = null;
 
+async function save(filePath) {
+  let result;
+  if (!filePath) {
+    result = await dialog.showSaveDialog(windows["mainWindow"], {
+      defaultPath: lastFileSavedPath || "preset.json",
+      filters: [{ name: "Presets", extensions: ["json"] }]
+    });
+
+    if (result.canceled) {
+      return;
+    }
+  }
+
+  try {
+    await writePresetToFile(filePath ?? result.filePath);
+    lastFileSavedPath = path.resolve(filePath ?? result.filePath);
+    updateMenu();
+  } catch (e) {
+    console.error(e);
+  }
+}
+
 async function writePresetToFile(filePath) {
   ipcMain.once("preset-data", async (_, presetData) => {
     try {
@@ -98,31 +120,15 @@ export function generateMenuTemplate() {
         {
           label: "Save Preset",
           accelerator: "CmdOrCtrl+S",
-          enabled: !!lastFileSavedPath,
           async click() {
-            writePresetToFile(lastFileSavedPath);
+            save(lastFileSavedPath);
           }
         },
         {
           label: "Save Preset As…",
           accelerator: "CmdOrCtrl+Shift+S",
           async click() {
-            const result = await dialog.showSaveDialog(windows["mainWindow"], {
-              defaultPath: lastFileSavedPath || "preset.json",
-              filters: [{ name: "Presets", extensions: ["json"] }]
-            });
-
-            if (result.canceled) {
-              return;
-            }
-
-            try {
-              await writePresetToFile(result.filePath);
-              lastFileSavedPath = path.resolve(result.filePath);
-              updateMenu();
-            } catch (e) {
-              console.error(e);
-            }
+            save();
           }
         },
 
