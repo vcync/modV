@@ -1,10 +1,16 @@
 import get from "lodash.get";
 import { v4 as uuidv4 } from "uuid";
+import { SWAP } from "./common/swap";
 const math = require("mathjs");
 
-const state = {
-  assignments: {}
-};
+function getDefaultState() {
+  return {
+    assignments: {}
+  };
+}
+
+const state = getDefaultState();
+const swap = getDefaultState();
 
 // getters
 const getters = {
@@ -33,7 +39,10 @@ function compileExpression(expression, scopeItems = {}) {
 
 // actions
 const actions = {
-  create({ rootState, commit }, { expression = "value", id, inputId }) {
+  create(
+    { rootState, commit },
+    { expression = "value", id, inputId, writeToSwap }
+  ) {
     if (!inputId) {
       throw new Error("Input ID required");
     }
@@ -47,7 +56,11 @@ const actions = {
     const input = rootState.inputs.inputs[inputId];
 
     const func = compileExpression(expression, {
-      inputValue: get(rootState, input.getLocation)
+      // We currrently have no way of interacting with swap state.
+      // This would be something to fix in the future, maybe use an entire store
+      // for swap, or write a more specific mechanism to look up values in swap
+      // state.
+      inputValue: writeToSwap ? 0 : get(rootState, input.getLocation)
     });
 
     if (!func) {
@@ -61,12 +74,12 @@ const actions = {
       expression
     };
 
-    commit("ADD_EXPRESSION", { assignment });
+    commit("ADD_EXPRESSION", { assignment, writeToSwap });
 
     return expressionId;
   },
 
-  update({ rootState, commit }, { id, expression = "value" }) {
+  update({ rootState, commit }, { id, expression = "value", writeToSwap }) {
     if (!id) {
       throw new Error("Expression ID required");
     }
@@ -95,7 +108,7 @@ const actions = {
     existingExpression.func = func;
     existingExpression.expression = expression;
 
-    commit("ADD_EXPRESSION", { assignment: existingExpression });
+    commit("ADD_EXPRESSION", { assignment: existingExpression, writeToSwap });
     return existingExpression.id;
   },
 
@@ -112,20 +125,23 @@ const actions = {
     for (let i = 0, len = assignments.length; i < len; i++) {
       const assignment = assignments[i];
 
-      await dispatch("create", assignment);
+      await dispatch("create", { ...assignment, writeToSwap: true });
     }
   }
 };
 
 // mutations
 const mutations = {
-  ADD_EXPRESSION(state, { assignment }) {
-    state.assignments[assignment.id] = assignment;
+  ADD_EXPRESSION(state, { assignment, writeToSwap = false }) {
+    const writeTo = writeToSwap ? swap : state;
+    writeTo.assignments[assignment.id] = assignment;
   },
 
   REMOVE_EXPRESSION(state, { id }) {
     delete state.assignments[id];
-  }
+  },
+
+  SWAP: SWAP(swap, getDefaultState)
 };
 
 export default {
