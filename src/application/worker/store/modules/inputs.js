@@ -1,6 +1,6 @@
 import Vue from "vue";
 import { v4 as uuidv4 } from "uuid";
-import SWAP from "./common/swap";
+import { SWAP } from "./common/swap";
 
 /**
  * InputLinkType enum string values.

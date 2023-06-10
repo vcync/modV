@@ -1,5 +1,5 @@
 import Vue from "vue";
-import SWAP from "./common/swap";
+import { SWAP } from "./common/swap";
 import getNextName from "../../../utils/get-next-name";
 import getPropDefault from "../../../utils/get-prop-default";
 import store from "..";
