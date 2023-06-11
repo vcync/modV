@@ -90,7 +90,10 @@ const windowPrefs = {
             event.preventDefault();
             event.newGuest = new BrowserWindow({
               ...options,
-              autoHideMenuBar: true
+              autoHideMenuBar: true,
+              closable: false,
+              enableLargerThanScreen: true,
+              title: ""
             });
 
             event.newGuest.removeMenu();
