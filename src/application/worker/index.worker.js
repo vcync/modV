@@ -344,6 +344,7 @@ async function start() {
       store.commit("groups/SWAP");
       store.commit("modules/SWAP");
       store.commit("inputs/SWAP");
+      store.commit("expressions/SWAP");
 
       return;
     }

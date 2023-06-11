@@ -7,7 +7,7 @@ import Vue from "vue";
  * The idea is that this makes loading presets smooth and the end user will not see any
  * glitches in the render loop.
  */
-export default function SWAP(swap, getDefault, sharedPropertyRestrictions) {
+export function SWAP(swap, getDefault, sharedPropertyRestrictions) {
   return function(state) {
     const stateKeys = Object.keys(state);
 
@@ -82,8 +82,6 @@ export default function SWAP(swap, getDefault, sharedPropertyRestrictions) {
           }
         }
       });
-    } else {
-      Object.assign(swap, getDefault());
     }
 
     Object.assign(swap, getDefault());
