@@ -11,7 +11,7 @@
       :style="{ fontFamily: value }"
     />
 
-    <ul class="searchable-select" v-show="showFontList">
+    <ul class="searchable-select" v-show="showFontList" ref="fontList">
       <li
         v-for="(font, index) in fontsToShow"
         :value="font"
@@ -29,7 +29,7 @@
 </template>
 
 <script>
-import fontList from "font-list";
+import Fuse from "fuse.js";
 
 export default {
   props: {
@@ -41,26 +41,16 @@ export default {
 
   data() {
     return {
-      defaultFonts: ["serif", "sans-serif", "cursive", "monospace"],
-      fonts: [],
       showFontList: false,
       searchTerm: "",
-      keyboardSelectedIndex: -1
+      keyboardSelectedIndex: -1,
+      fuse: null
     };
   },
 
   async created() {
-    try {
-      const fonts = await fontList.getFonts();
-      this.fonts = [
-        ...this.defaultFonts,
-        ...fonts.map(font => font.replace(/"/g, ""))
-      ];
-    } catch (e) {
-      console.error(e);
-    }
-
     this.searchTerm = this.value;
+    this.setupFuse();
   },
 
   mounted() {
@@ -72,12 +62,20 @@ export default {
   },
 
   computed: {
+    fonts() {
+      return this.$modV._store.getters["fonts/fonts"];
+    },
+
     fontsToShow() {
-      if (this.value === this.searchTerm) {
-        return this.fonts;
+      const { fonts, fuse, searchTerm, value } = this;
+      if (value === searchTerm || !searchTerm) {
+        return fonts;
       }
 
-      return this.fonts.filter(font => this.search(font, this.searchTerm));
+      return fuse
+        .search(searchTerm)
+        .sort((a, b) => a.score - b.score)
+        .map(result => result.item);
     }
   },
 
@@ -88,6 +86,9 @@ export default {
       } = e;
 
       this.searchTerm = value;
+      this.$nextTick(() => {
+        this.$refs.fontList.scrollTo(0, 0);
+      });
     },
 
     setFont(font) {
@@ -166,6 +167,22 @@ export default {
           selected.scrollIntoView({ block: "nearest" });
         }
       });
+    },
+
+    setupFuse(fontsIn) {
+      const fonts = fontsIn ?? this.fonts;
+
+      const fuse = new Fuse([], { includeScore: true });
+
+      // eslint-disable-next-line no-for-each/no-for-each
+      fonts.forEach(fontName => fuse.add(fontName));
+      this.fuse = fuse;
+    }
+  },
+
+  watch: {
+    fonts(fonts) {
+      this.setupFuse(fonts);
     }
   }
 };
@@ -183,8 +200,8 @@ export default {
   margin: 0;
 }
 
-.searchable-select.selected,
-.searchable-select:hover {
+.searchable-select li.selected,
+.searchable-select li:hover {
   background-color: var(--foreground-color-3);
 }
 </style>

@@ -1,6 +1,7 @@
 <template>
   <div
     class="group"
+    :id="`group-${groupId}`"
     v-searchTerms="{
       terms: ['group'],
       title: name,
@@ -44,6 +45,7 @@
             <c span="4">
               <Select
                 v-model="inheritanceSelection"
+                class="group__inheritSelect"
                 :class="{ light: isFocused(group.inheritInputId) }"
               >
                 <option :value="-2">Don't Inherit</option>
@@ -72,6 +74,7 @@
             <c span="4">
               <Checkbox
                 v-model="clearing"
+                class="group__clearingCheckbox"
                 :class="{ light: isFocused(group.clearingInputId) }"
               />
             </c>
@@ -91,6 +94,7 @@
             <c span="4">
               <Checkbox
                 v-model="pipeline"
+                class="group__pipelineCheckbox"
                 :class="{ light: isFocused(group.pipelineInputId) }"
               />
             </c>
@@ -108,7 +112,13 @@
           >
             <c span="2">Alpha</c>
             <c span="4">
-              <Range value="1" max="1" step="0.001" v-model="alpha" />
+              <Range
+                class="group__alphaRange"
+                value="1"
+                max="1"
+                step="0.001"
+                v-model="alpha"
+              />
             </c>
           </grid>
         </c>
@@ -128,6 +138,7 @@
             <c span="4">
               <Select
                 v-model="blendMode"
+                class="group__blendModeSelect"
                 :class="{ light: isFocused(group.compositeOperationInputId) }"
               >
                 <optgroup
@@ -180,19 +191,19 @@
     </div>
     <div class="group__right">
       <div
-        class="group__title"
+        class="group__name"
         :class="{ grabbing }"
-        @click.self="endTitleEditable"
+        @click.self="endNameEditable"
         @mousedown="titleMouseDown"
       >
-        <span v-if="!titleEditable" @dblclick="toggleTitleEditable">{{
+        <span v-if="!nameEditable" @dblclick="toggleNameEditable">{{
           name
         }}</span>
         <TextInput
           v-model="localName"
-          ref="titleInput"
+          ref="nameInput"
           v-else
-          @keypress.enter="endTitleEditable"
+          @keypress.enter="endNameEditable"
         />
       </div>
       <figure
@@ -268,7 +279,7 @@ export default {
   data() {
     return {
       compositeOperations,
-      titleEditable: false,
+      nameEditable: false,
       localName: "",
       controlsShown: false,
       Arrow,
@@ -287,7 +298,7 @@ export default {
   },
 
   beforeDestroy() {
-    window.removeEventListener("mousedown", this.endTitleEditable);
+    window.removeEventListener("mousedown", this.endNameEditable);
   },
 
   computed: {
@@ -485,24 +496,24 @@ export default {
       }
     },
 
-    toggleTitleEditable() {
-      this.titleEditable = !this.titleEditable;
+    toggleNameEditable() {
+      this.nameEditable = !this.nameEditable;
 
-      if (this.titleEditable) {
-        window.addEventListener("mousedown", this.endTitleEditable);
+      if (this.nameEditable) {
+        window.addEventListener("mousedown", this.endNameEditable);
         this.$nextTick(() => {
-          this.$refs.titleInput.$el.focus();
-          this.$refs.titleInput.$el.select();
+          this.$refs.nameInput.$el.focus();
+          this.$refs.nameInput.$el.select();
         });
       }
     },
 
-    endTitleEditable(e) {
-      if (e.target === this.$refs.titleInput.$el) {
+    endNameEditable(e) {
+      if (e instanceof MouseEvent && e.target === this.$refs.nameInput.$el) {
         return;
       }
 
-      window.removeEventListener("mousedown", this.endTitleEditable);
+      window.removeEventListener("mousedown", this.endNameEditable);
 
       const { localName } = this;
       const trimmedName = localName.trim();
@@ -516,7 +527,7 @@ export default {
         this.localName = this.name;
       }
 
-      this.titleEditable = false;
+      this.nameEditable = false;
     },
 
     focusInput(id, title) {
@@ -678,7 +689,7 @@ export default {
   align-items: center;
 }
 
-.group__title {
+.group__name {
   background: #363636;
   color: white;
   padding: 8px;
@@ -686,11 +697,11 @@ export default {
   cursor: grab;
 }
 
-.group__title.grabbing {
+.group__name.grabbing {
   cursor: grabbing;
 }
 
-.group__title input {
+.group__name input {
   max-width: 120px;
 }
 

@@ -1322,6 +1322,18 @@
     ajv "^6.12.0"
     ajv-keywords "^3.4.1"
 
+"@electron/asar@^3.2.2":
+  version "3.2.3"
+  resolved "https://registry.yarnpkg.com/@electron/asar/-/asar-3.2.3.tgz#f598db50061ae5f90ad651f0255366b4e818000e"
+  integrity sha512-wmOfE6szYyqZhRIiLH+eyZEp+bGcJI0OD/SCvSUrfBE0jvauyGYO2ZhpWxmNCcDojKu5DYrsVqT5BOCZZ01XIg==
+  dependencies:
+    chromium-pickle-js "^0.2.0"
+    commander "^5.0.0"
+    glob "^7.1.6"
+    minimatch "^3.0.4"
+  optionalDependencies:
+    "@types/glob" "^7.1.1"
+
 "@electron/get@^2.0.0":
   version "2.0.2"
   resolved "https://registry.yarnpkg.com/@electron/get/-/get-2.0.2.tgz#ae2a967b22075e9c25aaf00d5941cd79c21efd7e"
@@ -1482,6 +1494,16 @@
   dependencies:
     mkdirp "^1.0.4"
     rimraf "^3.0.2"
+
+"@playwright/test@^1.31.2":
+  version "1.31.2"
+  resolved "https://registry.yarnpkg.com/@playwright/test/-/test-1.31.2.tgz#426d8545143a97a6fed250a2a27aa1c8e5e2548e"
+  integrity sha512-BYVutxDI4JeZKV1+ups6dt5WiqKhjBtIYowyZIJ3kBDmJgsuPKsqqKNIMFbUePLSCmp2cZu+BDL427RcNKTRYw==
+  dependencies:
+    "@types/node" "*"
+    playwright-core "1.31.2"
+  optionalDependencies:
+    fsevents "2.3.2"
 
 "@samverschueren/stream-to-observable@^0.3.0":
   version "0.3.0"
@@ -3551,6 +3573,7 @@ call-bind@^1.0.0:
     function-bind "^1.1.1"
     get-intrinsic "^1.0.2"
 
+
 call-limit@^1.1.1:
   version "1.1.1"
   resolved "https://registry.yarnpkg.com/call-limit/-/call-limit-1.1.1.tgz#ef15f2670db3f1992557e2d965abc459e6e358d4"
@@ -4657,6 +4680,11 @@ csstype@^2.6.8:
   resolved "https://registry.yarnpkg.com/csstype/-/csstype-2.6.21.tgz#2efb85b7cc55c80017c66a5ad7cbd931fda3a90e"
   integrity sha512-Z1PhmomIfypOpoMjRQB70jfvy/wxT50qW08YXO5lMIJkrdq4yOTR+AW7FqutScmB9NkLwxo+jU+kZLbofZZq/w==
 
+csstype@^3.1.0:
+  version "3.1.2"
+  resolved "https://registry.yarnpkg.com/csstype/-/csstype-3.1.2.tgz#1d4bf9d572f11c14031f0436e1c10bc1f571f50b"
+  integrity sha512-I7K1Uu0MBPzaFKg4nI5Q7Vs2t+3gWWW648spaF+Rg7pI9ds18Ugn+lvg4SHczUdKlHI5LWBXyqfS8+DufyBsgQ==
+
 current-script-polyfill@^1.0.0:
   version "1.0.0"
   resolved "https://registry.yarnpkg.com/current-script-polyfill/-/current-script-polyfill-1.0.0.tgz#f31cf7e4f3e218b0726e738ca92a02d3488ef615"
@@ -5263,6 +5291,13 @@ electron-osx-sign@^0.6.0:
     isbinaryfile "^3.0.2"
     minimist "^1.2.0"
     plist "^3.0.1"
+
+electron-playwright-helpers@^1.5.3:
+  version "1.5.3"
+  resolved "https://registry.yarnpkg.com/electron-playwright-helpers/-/electron-playwright-helpers-1.5.3.tgz#a481d8d254b1eda669c8b0341f174cbcab170dcf"
+  integrity sha512-wtGq2kxxZliEcD+OLfwjNhsoMeFpqCWBxkwGWjzfILm74hMk+fSBLp9/3t38fH8aNp0waYI7uzYE1xNe+g4u/A==
+  dependencies:
+    "@electron/asar" "^3.2.2"
 
 electron-publish@22.9.1:
   version "22.9.1"
@@ -6304,11 +6339,6 @@ follow-redirects@^1.0.0:
   resolved "https://registry.yarnpkg.com/follow-redirects/-/follow-redirects-1.14.8.tgz#016996fb9a11a100566398b1c6839337d7bfa8fc"
   integrity sha512-1x0S9UVJHsQprFcEC/qnNzBLcIxsjAV905f/UkQxbclCsoTWlacCNOpQa/anodLl2uaEKFhfWOvM2Qg77+15zA==
 
-font-list@^1.3.1:
-  version "1.3.1"
-  resolved "https://registry.yarnpkg.com/font-list/-/font-list-1.3.1.tgz#b6527e94045601b92971572220ce691714452aed"
-  integrity sha512-/TvQbGLIdyfH4SBZkDwWlX0JNDVH98Q29SkgMJlIdmc4ObKu+RnB/B493lskB2Z8XZ2FZ532QOem4/PDgtoXUQ==
-
 for-in@^1.0.2:
   version "1.0.2"
   resolved "https://registry.yarnpkg.com/for-in/-/for-in-1.0.2.tgz#81068d295a8142ec0ac726c6e2200c30fb6d5e80"
@@ -6472,6 +6502,11 @@ fs.realpath@^1.0.0:
   version "1.0.0"
   resolved "https://registry.yarnpkg.com/fs.realpath/-/fs.realpath-1.0.0.tgz#1504ad2523158caa40db4a2787cb01411994ea4f"
   integrity sha1-FQStJSMVjKpA20onh8sBQRmU6k8=
+
+fsevents@2.3.2:
+  version "2.3.2"
+  resolved "https://registry.yarnpkg.com/fsevents/-/fsevents-2.3.2.tgz#8a526f78b8fdf4623b709e0b975c52c24c02fd1a"
+  integrity sha512-xiqMQR4xAeHTuB9uWm+fFRcIOgKBMiOBP+eXiyT7jsgVCq1bkVygt00oASowB7EdtpOHaaPgKt812P9ab+DDKA==
 
 fsevents@^1.2.7:
   version "1.2.13"
@@ -10544,6 +10579,18 @@ plask-wrap@^1.0.1:
   version "1.0.1"
   resolved "https://registry.yarnpkg.com/plask-wrap/-/plask-wrap-1.0.1.tgz#c5f5c1b5d874c1c7d9b717f772126f25abb31ddf"
   integrity sha1-xfXBtdh0wcfZtxf3chJvJauzHd8=
+
+playwright-core@1.31.2, playwright-core@^1.31.2:
+  version "1.31.2"
+  resolved "https://registry.yarnpkg.com/playwright-core/-/playwright-core-1.31.2.tgz#debf4b215d14cb619adb7e511c164d068075b2ed"
+  integrity sha512-a1dFgCNQw4vCsG7bnojZjDnPewZcw7tZUNFN0ZkcLYKj+mPmXvg4MpaaKZ5SgqPsOmqIf2YsVRkgqiRDxD+fDQ==
+
+playwright@^1.31.2:
+  version "1.31.2"
+  resolved "https://registry.yarnpkg.com/playwright/-/playwright-1.31.2.tgz#4252280586c596746122cd1fdf9f8ff6a63fa852"
+  integrity sha512-jpC47n2PKQNtzB7clmBuWh6ftBRS/Bt5EGLigJ9k2QAKcNeYXZkEaDH5gmvb6+AbcE0DO6GnXdbl9ogG6Eh+og==
+  dependencies:
+    playwright-core "1.31.2"
 
 please-upgrade-node@^3.0.2:
   version "3.2.0"

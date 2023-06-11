@@ -1,3 +1,9 @@
+import PromiseWorker from "promise-worker-transferable";
+import Vue from "vue";
+import { ipcRenderer } from "electron";
+import { app } from "@electron/remote";
+import { createWebcodecVideo } from "./createWebcodecVideo";
+
 import Worker from "worker-loader!./worker/index.worker.js";
 import {
   setupMedia,
@@ -7,16 +13,9 @@ import {
 } from "./setup-media";
 import setupBeatDetektor from "./setup-beat-detektor";
 import setupMidi from "./setup-midi";
-
 import store from "./worker/store";
 import windowHandler from "./window-handler";
 import use from "./use";
-
-import PromiseWorker from "promise-worker-transferable";
-import Vue from "vue";
-import { ipcRenderer } from "electron";
-import { app } from "@electron/remote";
-import { createWebcodecVideo } from "./createWebcodecVideo";
 import { GROUP_ENABLED } from "./constants";
 
 let imageBitmap;
@@ -157,6 +156,8 @@ export default class ModV {
 
   async setup(canvas = document.createElement("canvas")) {
     this.windowHandler();
+
+    this.enumerateFonts();
 
     try {
       await this.setupMedia({ useDefaultDevices: true });
@@ -309,5 +310,22 @@ export default class ModV {
 
   loadPreset(filePathToPreset) {
     this.$worker.postMessage({ type: "loadPreset", payload: filePathToPreset });
+  }
+
+  async enumerateFonts() {
+    const localFonts = await window.queryLocalFonts();
+    const fonts = [];
+
+    for (let i = 0; i < localFonts.length; i += 1) {
+      const { family, fullName, postscriptName, style } = localFonts[i];
+
+      fonts.push({ family, fullName, postscriptName, style });
+
+      // No need to await here, async loading is fine.
+      // The user can't use fonts fonts immediately at this stage, so no need to block the thread
+      document.fonts.load(`14px ${postscriptName}`, fullName);
+    }
+
+    this.store.commit("fonts/SET_LOCAL_FONTS", fonts);
   }
 }

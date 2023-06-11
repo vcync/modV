@@ -1,4 +1,4 @@
-import SWAP from "./common/swap";
+import { SWAP } from "./common/swap";
 import store from "../";
 import constants, { GROUP_DISABLED } from "../../../constants";
 import { v4 as uuidv4 } from "uuid";

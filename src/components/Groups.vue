@@ -9,7 +9,7 @@
     }"
   >
     <Container
-      drag-handle-selector=".group__title"
+      drag-handle-selector=".group__name"
       lock-axis="y"
       group-name="groups"
       :should-animate-drop="() => false"
@@ -23,7 +23,9 @@
       </Draggable>
     </Container>
 
-    <Button class="light" @click="createGroup">New Group</Button>
+    <Button id="new-group-button" class="light" @click="createGroup">
+      New Group
+    </Button>
   </div>
 </template>
 
