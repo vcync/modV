@@ -1,4 +1,4 @@
-import { app, protocol } from "electron";
+import { app, ipcMain, protocol } from "electron";
 import { APP_SCHEME } from "./background-constants";
 import { getMediaManager } from "./media-manager";
 import { openFile } from "./open-file";
@@ -37,7 +37,7 @@ app.on("window-all-closed", () => {
 app.on("activate", async () => {
   // On macOS it's common to re-create a window in the app when the
   // dock icon is clicked and there are no other windows open.
-  createWindow("mainWindow");
+  createWindow({ windowName: "mainWindow" });
 });
 
 // https://stackoverflow.com/a/66673831
@@ -73,8 +73,10 @@ app.on("ready", async () => {
   );
 
   createWindow({ windowName: "mainWindow" });
-  createWindow({ windowName: "splashScreen" });
-  createWindow({ windowName: "colorPicker", options: { show: false } });
+  ipcMain.once("main-window-created", () => {
+    createWindow({ windowName: "splashScreen" });
+    createWindow({ windowName: "colorPicker", options: { show: false } });
+  });
 });
 
 // Exit cleanly on request from parent process in development mode.

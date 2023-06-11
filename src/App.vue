@@ -142,20 +142,11 @@ export default {
       state: null,
       layoutState: null,
 
-      showUi: true,
-      mouseTimer: null,
-      cursor: "none",
       triggerUiRestart: 0
     };
   },
 
   computed: {
-    pluginComponents() {
-      return this.$modV.store.state.plugins
-        .filter(plugin => "component" in plugin)
-        .map(plugin => plugin.component.name);
-    },
-
     focusedModules() {
       const focusedOrPinned = this.$store.getters["ui-modules/focusedOrPinned"];
       const modules = focusedOrPinned.map(
@@ -191,50 +182,6 @@ export default {
   },
 
   methods: {
-    makeFullScreen() {
-      if (!document.body.ownerDocument.webkitFullscreenElement) {
-        document.body.webkitRequestFullscreen();
-      } else {
-        document.body.ownerDocument.webkitExitFullscreen();
-      }
-    },
-
-    mouseMove() {
-      if (this.mouseTimer) {
-        clearTimeout(this.mouseTimer);
-      }
-
-      this.cursor = "default";
-      this.mouseTimer = setTimeout(this.movedMouse, 200);
-    },
-
-    movedMouse() {
-      if (this.mouseTimer) {
-        this.mouseTimer = null;
-      }
-
-      this.cursor = "none";
-    },
-
-    getProps(moduleName) {
-      const moduleDefinition = this.$modV.store.state.modules.registered[
-        moduleName
-      ];
-
-      return Object.keys(moduleDefinition.props).filter(
-        key =>
-          moduleDefinition.props[key].type === "int" ||
-          moduleDefinition.props[key].type === "float" ||
-          moduleDefinition.props[key].type === "text" ||
-          moduleDefinition.props[key].type === "bool" ||
-          moduleDefinition.props[key].type === "color" ||
-          moduleDefinition.props[key].type === "vec2" ||
-          moduleDefinition.props[key].type === "tween" ||
-          moduleDefinition.props[key].type === "texture" ||
-          moduleDefinition.props[key].type === "enum"
-      );
-    },
-
     toggleModulePin(id) {
       if (this.isPinned(id)) {
         this.$store.commit("ui-modules/REMOVE_PINNED", id);

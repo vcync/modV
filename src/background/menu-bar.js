@@ -1,4 +1,5 @@
 import fs from "fs";
+import path from "path";
 import { dialog, shell, app, ipcMain, Menu } from "electron";
 import { windows } from "./windows";
 import { openFile } from "./open-file";
@@ -6,6 +7,54 @@ import { getMediaManager } from "./media-manager";
 import { projectNames, setCurrentProject, currentProject } from "./projects";
 
 const isMac = process.platform === "darwin";
+
+let lastFileSavedPath = null;
+
+async function save(filePath) {
+  let result;
+  if (!filePath) {
+    result = await dialog.showSaveDialog(windows["mainWindow"], {
+      defaultPath: lastFileSavedPath || "preset.json",
+      filters: [{ name: "Presets", extensions: ["json"] }]
+    });
+
+    if (result.canceled) {
+      return;
+    }
+  }
+
+  try {
+    await writePresetToFile(filePath ?? result.filePath);
+    lastFileSavedPath = path.resolve(filePath ?? result.filePath);
+    updateMenu();
+  } catch (e) {
+    console.error(e);
+  }
+}
+
+async function writePresetToFile(filePath) {
+  ipcMain.once("preset-data", async (_, presetData) => {
+    try {
+      await fs.promises.writeFile(filePath, presetData);
+    } catch (e) {
+      dialog.showMessageBox(windows["mainWindow"], {
+        type: "error",
+        message: "Could not save preset to file",
+        detail: e.toString()
+      });
+    }
+  });
+
+  try {
+    windows["mainWindow"].webContents.send("generate-preset");
+  } catch (e) {
+    dialog.showMessageBox(windows["mainWindow"], {
+      type: "error",
+      message: "Could not generate preset",
+      detail: e.toString()
+    });
+  }
+}
 
 export function generateMenuTemplate() {
   const mediaManager = getMediaManager();
@@ -70,38 +119,16 @@ export function generateMenuTemplate() {
         { type: "separator" },
         {
           label: "Save Preset",
+          accelerator: "CmdOrCtrl+S",
+          async click() {
+            save(lastFileSavedPath);
+          }
+        },
+        {
+          label: "Save Preset As…",
           accelerator: "CmdOrCtrl+Shift+S",
           async click() {
-            const result = await dialog.showSaveDialog(windows["mainWindow"], {
-              defaultPath: "preset.json",
-              filters: [{ name: "Presets", extensions: ["json"] }]
-            });
-
-            if (result.canceled) {
-              return;
-            }
-
-            ipcMain.once("preset-data", async (event, presetData) => {
-              try {
-                await fs.promises.writeFile(result.filePath, presetData);
-              } catch (e) {
-                dialog.showMessageBox(windows["mainWindow"], {
-                  type: "error",
-                  message: "Could not save preset to file",
-                  detail: e.toString()
-                });
-              }
-            });
-
-            try {
-              windows["mainWindow"].webContents.send("generate-preset");
-            } catch (e) {
-              dialog.showMessageBox(windows["mainWindow"], {
-                type: "error",
-                message: "Could not generate preset",
-                detail: e.toString()
-              });
-            }
+            save();
           }
         },
 
@@ -239,7 +266,14 @@ export function generateMenuTemplate() {
   ];
 }
 
-export function updateMenu() {
+export function updateMenu(setWindowListener) {
+  if (setWindowListener) {
+    windows["mainWindow"].on("ready-to-show", () => {
+      lastFileSavedPath = null;
+      updateMenu();
+    });
+  }
+
   const menu = Menu.buildFromTemplate(generateMenuTemplate());
   Menu.setApplicationMenu(menu);
 }

@@ -7,8 +7,6 @@ import { windowPrefs } from "./window-prefs";
 const windows = {};
 
 function createWindow({ windowName, options = {} }, event) {
-  updateMenu();
-
   if (windowPrefs[windowName].unique && windows[windowName]) {
     windows[windowName].focus();
     windows[windowName].show();
@@ -35,6 +33,8 @@ function createWindow({ windowName, options = {} }, event) {
     ...windowOptions,
     ...options
   });
+
+  updateMenu(true);
 
   if (typeof windowPrefs[windowName].create === "function") {
     windowPrefs[windowName].create(windows[windowName]);

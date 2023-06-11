@@ -2,6 +2,9 @@ import store from "../";
 import { frames, advanceFrame } from "./tweens";
 
 const state = {
+  text: {
+    get: value => value
+  },
   int: {
     get: value => value
   },
@@ -122,6 +125,10 @@ const state = {
   }
 };
 
+const getters = {
+  types: state => Object.keys(state)
+};
+
 const actions = {
   createType({ state }, { type, args }) {
     return state[type].create(args);
@@ -131,5 +138,6 @@ const actions = {
 export default {
   namespaced: true,
   state,
+  getters,
   actions
 };
