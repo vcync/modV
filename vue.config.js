@@ -68,7 +68,7 @@ module.exports = {
         "stream-to-blob",
         "grandiose",
         "npm",
-        "webpack-2",
+        "webpack-3",
         "font-list"
       ],
 
