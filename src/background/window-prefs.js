@@ -8,8 +8,10 @@ import { closeWindow, createWindow, windows } from "./windows";
 import { updateMenu } from "./menu-bar";
 import { getMediaManager } from "./media-manager";
 
-const isDevelopment = process.env.NODE_ENV !== "production";
+const isDevelopment = process.env.NODE_ENV === "development";
+const isTest = process.env.CI === "e2e";
 let shouldCloseMainWindowAndQuit = false;
+let modVReady = false;
 
 const windowPrefs = {
   colorPicker: {
@@ -65,6 +67,8 @@ const windowPrefs = {
     beforeCreate() {
       const { width, height } = screen.getPrimaryDisplay().workAreaSize;
 
+      modVReady = false;
+
       return {
         options: {
           width,
@@ -75,6 +79,8 @@ const windowPrefs = {
 
     async create(window) {
       require("@electron/remote/main").enable(window.webContents);
+
+      ipcMain.handle("is-modv-ready", () => modVReady);
 
       // Configure child windows to open without a menubar (windows/linux)
       window.webContents.on(
@@ -114,6 +120,7 @@ const windowPrefs = {
       });
 
       ipcMain.on("modv-ready", () => {
+        modVReady = true;
         mm.start();
       });
 
@@ -144,7 +151,7 @@ const windowPrefs = {
         window.webContents.send("input-update", message);
       });
 
-      if (!isDevelopment || process.env.IS_TEST) {
+      if (!isDevelopment && !isTest) {
         window.on("close", async e => {
           if (shouldCloseMainWindowAndQuit) {
             app.quit();

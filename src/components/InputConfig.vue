@@ -20,7 +20,7 @@
     <div v-if="inputConfig">
       <grid class="borders">
         <c span="1.."
-          ><div class="title">{{ focusedInputTitle }}</div></c
+          ><div class="input-config__title">{{ focusedInputTitle }}</div></c
         >
         <c span="1..">
           <grid columns="4">
@@ -196,7 +196,7 @@ grid.borders > c:not(:last-child):not(:first-child) {
   border-bottom: 1px solid var(--foreground-color-2);
 }
 
-.title {
+.input-config__title {
   font-size: 24px;
 }
 </style>

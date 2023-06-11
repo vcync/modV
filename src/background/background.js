@@ -1,4 +1,4 @@
-import { app, protocol } from "electron";
+import { app, ipcMain, protocol } from "electron";
 import { APP_SCHEME } from "./background-constants";
 import { getMediaManager } from "./media-manager";
 import { openFile } from "./open-file";
@@ -73,8 +73,10 @@ app.on("ready", async () => {
   );
 
   createWindow({ windowName: "mainWindow" });
-  createWindow({ windowName: "splashScreen" });
-  createWindow({ windowName: "colorPicker", options: { show: false } });
+  ipcMain.once("main-window-created", () => {
+    createWindow({ windowName: "splashScreen" });
+    createWindow({ windowName: "colorPicker", options: { show: false } });
+  });
 });
 
 // Exit cleanly on request from parent process in development mode.

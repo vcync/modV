@@ -1,12 +1,16 @@
 <template>
-  <grid v-if="module.props" ref="moduleInspector">
+  <grid
+    v-if="module.props"
+    ref="moduleInspector"
+    :id="`module-inspector-${module.$id}`"
+  >
     <c span="1.." class="hidden">
       <button class="pin-button" @click="toggleModulePin(module.$id)">
         ({{ isPinned(module.$id) ? "Unpin" : "Pin" }})
       </button>
     </c>
     <c span="1..">
-      <div class="title">{{ module.meta.name }}</div>
+      <div class="module-inspector__title">{{ module.meta.name }}</div>
     </c>
     <c span="1..">
       <ModuleControl
@@ -90,7 +94,7 @@ grid {
   margin: -8px;
 }
 
-.title {
+.module-inspector__title {
   font-size: 24px;
   padding: 8px;
 }
