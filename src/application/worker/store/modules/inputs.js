@@ -1,6 +1,6 @@
 import Vue from "vue";
 import { v4 as uuidv4 } from "uuid";
-import SWAP from "./common/swap";
+import { SWAP } from "./common/swap";
 
 /**
  * InputLinkType enum string values.
@@ -99,8 +99,11 @@ const actions = {
     commit("SET_FOCUSED_INPUT", { id: null, title: null });
   },
 
-  addInput({ commit }, { type, location, data, id = uuidv4(), writeToSwap }) {
-    const input = { type, location, data, id };
+  addInput(
+    { commit },
+    { type, getLocation, location, data, id = uuidv4(), writeToSwap }
+  ) {
+    const input = { type, getLocation, location, data, id };
     commit("ADD_INPUT", { input, writeToSwap });
     return input;
   },

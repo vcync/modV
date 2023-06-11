@@ -1,6 +1,7 @@
 <template>
   <div
     class="group"
+    :id="`group-${groupId}`"
     v-searchTerms="{
       terms: ['group'],
       title: name,
@@ -44,6 +45,7 @@
             <c span="4">
               <Select
                 v-model="inheritanceSelection"
+                class="group__inheritSelect"
                 :class="{ light: isFocused(group.inheritInputId) }"
               >
                 <option :value="-2">Don't Inherit</option>
@@ -72,6 +74,7 @@
             <c span="4">
               <Checkbox
                 v-model="clearing"
+                class="group__clearingCheckbox"
                 :class="{ light: isFocused(group.clearingInputId) }"
               />
             </c>
@@ -91,6 +94,7 @@
             <c span="4">
               <Checkbox
                 v-model="pipeline"
+                class="group__pipelineCheckbox"
                 :class="{ light: isFocused(group.pipelineInputId) }"
               />
             </c>
@@ -108,7 +112,13 @@
           >
             <c span="2">Alpha</c>
             <c span="4">
-              <Range value="1" max="1" step="0.001" v-model="alpha" />
+              <Range
+                class="group__alphaRange"
+                value="1"
+                max="1"
+                step="0.001"
+                v-model="alpha"
+              />
             </c>
           </grid>
         </c>
@@ -128,6 +138,7 @@
             <c span="4">
               <Select
                 v-model="blendMode"
+                class="group__blendModeSelect"
                 :class="{ light: isFocused(group.compositeOperationInputId) }"
               >
                 <optgroup
@@ -179,14 +190,20 @@
       </button>
     </div>
     <div class="group__right">
-      <div class="group__title" @click.self="endTitleEditable">
-        <span v-if="!titleEditable" @dblclick="toggleTitleEditable">{{
+      <div
+        class="group__name"
+        :class="{ grabbing }"
+        @click.self="endNameEditable"
+        @mousedown="titleMouseDown"
+      >
+        <span v-if="!nameEditable" @dblclick="toggleNameEditable">{{
           name
         }}</span>
         <TextInput
           v-model="localName"
+          ref="nameInput"
           v-else
-          @keypress.enter="endTitleEditable"
+          @keypress.enter="endNameEditable"
         />
       </div>
       <figure
@@ -262,11 +279,12 @@ export default {
   data() {
     return {
       compositeOperations,
-      titleEditable: false,
+      nameEditable: false,
       localName: "",
       controlsShown: false,
       Arrow,
-      inheritanceSelection: -1
+      inheritanceSelection: -1,
+      grabbing: false
     };
   },
 
@@ -277,6 +295,10 @@ export default {
     if (!this.focusedGroup) {
       this.focus();
     }
+  },
+
+  beforeDestroy() {
+    window.removeEventListener("mousedown", this.endNameEditable);
   },
 
   computed: {
@@ -474,11 +496,25 @@ export default {
       }
     },
 
-    toggleTitleEditable() {
-      this.titleEditable = !this.titleEditable;
+    toggleNameEditable() {
+      this.nameEditable = !this.nameEditable;
+
+      if (this.nameEditable) {
+        window.addEventListener("mousedown", this.endNameEditable);
+        this.$nextTick(() => {
+          this.$refs.nameInput.$el.focus();
+          this.$refs.nameInput.$el.select();
+        });
+      }
     },
 
-    endTitleEditable() {
+    endNameEditable(e) {
+      if (e instanceof MouseEvent && e.target === this.$refs.nameInput.$el) {
+        return;
+      }
+
+      window.removeEventListener("mousedown", this.endNameEditable);
+
       const { localName } = this;
       const trimmedName = localName.trim();
 
@@ -491,7 +527,7 @@ export default {
         this.localName = this.name;
       }
 
-      this.titleEditable = false;
+      this.nameEditable = false;
     },
 
     focusInput(id, title) {
@@ -515,6 +551,16 @@ export default {
           groupId: this.groupId
         });
       }
+    },
+
+    titleMouseDown() {
+      this.grabbing = true;
+      window.addEventListener("mouseup", this.titleMouseUp);
+    },
+
+    titleMouseUp() {
+      this.grabbing = false;
+      window.removeEventListener("mouseup", this.titleMouseUp);
     }
   },
 
@@ -627,7 +673,7 @@ export default {
   margin-left: 24px;
 }
 
-.group__modules > * + *::before {
+.group__modules > * + *:not(.smooth-dnd-ghost)::before {
   background-image: url(../assets/graphics/Arrow.svg);
   background-repeat: no-repeat;
   background-position: center;
@@ -643,14 +689,19 @@ export default {
   align-items: center;
 }
 
-.group__title {
+.group__name {
   background: #363636;
   color: white;
   padding: 8px;
   line-height: 1;
+  cursor: grab;
 }
 
-.group__title input {
+.group__name.grabbing {
+  cursor: grabbing;
+}
+
+.group__name input {
   max-width: 120px;
 }
 

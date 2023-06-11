@@ -11,6 +11,9 @@ async function start() {
   const grabCanvasPlugin = require("../plugins/grab-canvas").default;
   const get = require("lodash.get");
 
+  // For Playwright
+  self._get = get;
+
   const { tick: frameTick } = require("./frame-counter");
   const { getFeatures, setFeatures } = require("./audio-features");
   // const featureAssignmentPlugin = require("../plugins/feature-assignment");
@@ -344,6 +347,7 @@ async function start() {
       store.commit("groups/SWAP");
       store.commit("modules/SWAP");
       store.commit("inputs/SWAP");
+      store.commit("expressions/SWAP");
 
       return;
     }
