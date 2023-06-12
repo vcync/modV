@@ -4,7 +4,6 @@ import { ipcRenderer } from "electron";
 import { app } from "@electron/remote";
 import { createWebcodecVideo } from "./createWebcodecVideo";
 
-import Worker from "worker-loader!./worker/index.worker.js";
 import {
   setupMedia,
   enumerateDevices,
@@ -58,7 +57,9 @@ export default class ModV {
     this.ready = new Promise(resolve => {
       resolver = resolve;
     });
-    this.$worker = new Worker();
+    this.$worker = new Worker(
+      new URL("./worker/index.worker.js", import.meta.url)
+    );
     this.$asyncWorker = new PromiseWorker(this.$worker);
 
     this.$worker.postMessage({
@@ -277,7 +278,7 @@ export default class ModV {
       meyda: { features: featuresToGet }
     } = this.store.state;
 
-    const features = this.meyda.get(featuresToGet);
+    const features = this.meyda?.get(featuresToGet);
 
     if (features) {
       this.updateBeatDetektor(delta, features);

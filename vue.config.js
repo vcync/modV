@@ -36,10 +36,8 @@ module.exports = {
       ]
     },
 
-    serve: {
-      hot: true,
-      // hotOnly: true,
-      contentBase: "./"
+    devServer: {
+      hot: true
     },
 
     node: {
