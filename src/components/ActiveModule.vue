@@ -8,6 +8,7 @@
     :class="{ focused }"
     v-contextMenu="
       () => ActiveModuleContextMenu({ activeModule: module, groupId })
+    "
     :id="`active-module-${id}`"
   >
     <div
