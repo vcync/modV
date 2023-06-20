@@ -195,7 +195,7 @@
         class="group__name"
         :class="{ grabbing }"
         @click.self="endNameEditable"
-        @mousedown="titleMouseDown"
+        @mousedown.left="titleMouseDown"
       >
         <span v-if="!nameEditable" @dblclick="toggleNameEditable">{{
           name
