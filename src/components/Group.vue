@@ -672,7 +672,7 @@ export default {
   display: inline-block;
 }
 
-.group__modules > * + * {
+.group__modules > * + *:not(.smooth-dnd-ghost) {
   position: relative;
   margin-left: 24px;
 }
