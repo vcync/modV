@@ -14,7 +14,7 @@
     <div
       class="active-module__name handle"
       :class="{ grabbing }"
-      @mousedown="titleMouseDown"
+      @mousedown.left="titleMouseDown"
     >
       {{ name }}
 
