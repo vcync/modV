@@ -644,6 +644,7 @@ export default {
 
   display: flex;
   align-items: center;
+  -webkit-user-drag: none;
 }
 
 .group__controlsButton:focus {
