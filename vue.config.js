@@ -16,6 +16,16 @@ module.exports = {
     splashScreen: "src/subpages/splash-screen/main.js"
   },
 
+  chainWebpack: config => {
+    config.module
+      .rule("vue")
+      .use("vue-loader")
+      .tap(options => {
+        options.compiler = require("vue-template-babel-compiler");
+        return options;
+      });
+  },
+
   configureWebpack: {
     module: {
       rules: [
@@ -116,6 +126,16 @@ module.exports = {
         config
           .plugin("define")
           .use(DefinePlugin, [{ "process.env.FLUENTFFMPEG_COV": false }]);
+
+        config.module
+          .rule("babel")
+          .test(/\.m?js$/)
+          .exclude.add(/node_modules/)
+          .end()
+          .use("babelloader")
+          .loader("babel-loader", {
+            presets: [["@babel/preset-env", { targets: "defaults" }]]
+          });
       },
 
       chainWebpackRendererProcess: config => {

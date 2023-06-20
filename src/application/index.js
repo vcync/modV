@@ -1,3 +1,9 @@
+import PromiseWorker from "promise-worker-transferable";
+import Vue from "vue";
+import { ipcRenderer } from "electron";
+import { app } from "@electron/remote";
+import { createWebcodecVideo } from "./createWebcodecVideo";
+
 import Worker from "worker-loader!./worker/index.worker.js";
 import {
   setupMedia,
@@ -7,15 +13,9 @@ import {
 } from "./setup-media";
 import setupBeatDetektor from "./setup-beat-detektor";
 import setupMidi from "./setup-midi";
-
 import store from "./worker/store";
 import windowHandler from "./window-handler";
 import use from "./use";
-
-import PromiseWorker from "promise-worker-transferable";
-import Vue from "vue";
-import { ipcRenderer } from "electron";
-import { app } from "@electron/remote";
 import { GROUP_ENABLED } from "./constants";
 
 let imageBitmap;
@@ -29,6 +29,7 @@ class ModV {
   setupBeatDetektor = setupBeatDetektor;
   setupMidi = setupMidi;
   windowHandler = windowHandler;
+  createWebcodecVideo = createWebcodecVideo;
   use = use;
   debug = false;
   features = Vue.observable({
@@ -45,6 +46,7 @@ class ModV {
     perceptualSpread: 0,
     perceptualSharpness: 0
   });
+  videos = {};
 
   _store = store;
   store = {
@@ -64,7 +66,7 @@ class ModV {
       payload: app.getAppPath()
     });
 
-    this.$worker.addEventListener("message", e => {
+    this.$worker.addEventListener("message", async e => {
       const message = e.data;
       const { type } = message;
 
@@ -77,6 +79,19 @@ class ModV {
       // ) {
       //   console.log(`⚙️%c ${type}`, "color: red");
       // }
+
+      if (type === "createWebcodecVideo") {
+        const videoContext = await this.createWebcodecVideo(message);
+        this.videos[videoContext.id] = videoContext;
+      }
+
+      if (type === "removeWebcodecVideo") {
+        const { video, stream } = this.videos[message.id];
+        video.src = "";
+        // eslint-disable-next-line no-for-each/no-for-each
+        stream.getTracks().forEach(track => track.stop());
+        delete this.videos[message.id];
+      }
 
       if (e.data.type === "tick" && this.ready) {
         this.tick(e.data.payload);
@@ -141,6 +156,8 @@ class ModV {
 
   async setup(canvas = document.createElement("canvas")) {
     this.windowHandler();
+
+    this.enumerateFonts();
 
     try {
       await this.setupMedia({ useDefaultDevices: true });
@@ -293,6 +310,23 @@ class ModV {
 
   loadPreset(filePathToPreset) {
     this.$worker.postMessage({ type: "loadPreset", payload: filePathToPreset });
+  }
+
+  async enumerateFonts() {
+    const localFonts = await window.queryLocalFonts();
+    const fonts = [];
+
+    for (let i = 0; i < localFonts.length; i += 1) {
+      const { family, fullName, postscriptName, style } = localFonts[i];
+
+      fonts.push({ family, fullName, postscriptName, style });
+
+      // No need to await here, async loading is fine.
+      // The user can't use fonts fonts immediately at this stage, so no need to block the thread
+      document.fonts.load(`14px ${postscriptName}`, fullName);
+    }
+
+    this.store.commit("fonts/SET_LOCAL_FONTS", fonts);
   }
 }
 

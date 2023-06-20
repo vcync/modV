@@ -3,6 +3,7 @@
     columns="4"
     @mousedown="focusInput"
     :class="{ 'has-link': hasLink, focused: inputIsFocused }"
+    :id="`module-control-${inputId}`"
   >
     <c span="1">
       <label>{{ title }}</label>
@@ -67,7 +68,7 @@
         <TextureControl v-model="internalValue" />
       </div>
       <div class="input" v-else-if="type === 'enum'">
-        <select v-model="internalValue">
+        <Select v-model="internalValue">
           <option
             v-for="(option, index) in activeProp.enum"
             :value="option.value"
@@ -75,7 +76,7 @@
             :selected="option.selected"
             >{{ option.label }}</option
           >
-        </select>
+        </Select>
       </div>
     </c>
   </grid>
@@ -93,6 +94,7 @@ import Vec3Control from "./Controls/Vec3Control";
 import Vec4Control from "./Controls/Vec4Control";
 import hasLink from "./mixins/has-input-link";
 import inputIsFocused from "./mixins/input-is-focused";
+import Select from "./inputs/Select.vue";
 
 export default {
   mixins: [hasLink, inputIsFocused],
@@ -137,7 +139,8 @@ export default {
     FontControl,
     ColorControl,
     Vec3Control,
-    Vec4Control
+    Vec4Control,
+    Select
   },
 
   data() {
@@ -243,5 +246,11 @@ input[type="number"] {
   border: 1px solid #fff;
   color: #fff;
   padding: 2px 3px;
+}
+
+.input {
+  display: flex;
+  align-items: center;
+  height: 100%;
 }
 </style>

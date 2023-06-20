@@ -1,6 +1,9 @@
 import Vue from "vue";
 import vgl from "vue-golden-layout";
+import { ipcRenderer } from "electron";
+import get from "lodash.get";
 import Fragment from "vue-fragment";
+
 import "./components/inputs";
 import ElectronLink from "./components/ElectronLink";
 import "./components/directives/InfoView";
@@ -31,7 +34,11 @@ window.Vue = new Vue({
   store
 });
 
+// For Playwright
+window._get = get;
+
 async function start() {
+  ipcRenderer.send("main-window-created");
   const loadingElement = document.getElementById("loading");
 
   // eslint-disable-next-line no-for-each/no-for-each

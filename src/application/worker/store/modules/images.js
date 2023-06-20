@@ -3,9 +3,10 @@ import fs from "fs";
 import path from "path";
 
 import Vue from "vue";
-import uuidv4 from "uuid/v4";
+import { v4 as uuidv4 } from "uuid";
 
 import store from "../";
+import { conformFilePath } from "../../../utils/conform-file-path";
 
 const state = {};
 
@@ -19,7 +20,10 @@ const actions = {
     let joinedFilePath;
 
     try {
-      joinedFilePath = path.join(store.state.media.path, filePath);
+      joinedFilePath = path.join(
+        store.state.media.path,
+        conformFilePath(filePath)
+      );
     } catch (e) {
       console.log(e);
     }

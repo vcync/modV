@@ -10,7 +10,7 @@
     <c span="2">
       <Select
         :class="color"
-        v-model.number="modelEasing"
+        v-model="modelEasing"
         :disabled="!!modelSteps"
         @input="updateValue"
       >
@@ -34,7 +34,13 @@
     </c>
 
     <c span="1+1">Use BPM</c>
-    <c><Checkbox :class="color" v-model="modelUseBpm" @input="updateValue"/></c>
+    <c
+      ><Checkbox
+        :class="color"
+        v-model="modelUseBpm"
+        @input="updateValue"
+        emitBoolean
+    /></c>
 
     <c span="1+1"><label :for="`${111}-bpmDivision`">BPM Division</label></c>
     <c span="2">
@@ -91,7 +97,7 @@ export default {
       modelData: "",
       modelDuration: 1000,
       modelEasing: "linear",
-      useBpm: true,
+      modelUseBpm: true,
       modelBpmDivision: 32,
       modelDurationAsTotalTime: false,
       modelSteps: 0
@@ -100,7 +106,7 @@ export default {
 
   created() {
     if (this.value) {
-      this.modelData = JSON.stringify(this.value.data);
+      this.setDefaultData(this.value);
     }
   },
 
@@ -115,7 +121,7 @@ export default {
       const data = this.modelData.length ? JSON.parse(this.modelData) : [];
       const duration = this.modelDuration;
       const easing = this.modelEasing;
-      const useBpm = this.useBpm;
+      const useBpm = this.modelUseBpm;
       const bpmDivision = this.modelBpmDivision;
       const durationAsTotalTime = this.modelDurationAsTotalTime;
       const steps = this.modelSteps;
@@ -130,14 +136,44 @@ export default {
         durationAsTotalTime,
         steps
       });
+    },
+
+    setData(value) {
+      this.modelData = value.data && JSON.stringify(value.data);
+      this.modelDuration = value.duration;
+      this.modelEasing = value.easing;
+      this.modelUseBpm = value.useBpm;
+      this.modelBpmDivision = value.bpmDivision;
+      this.modelDurationAsTotalTime = value.durationAsTotalTime;
+      this.modelSteps = value.steps;
+    },
+
+    setDefaultData() {
+      this.setData({
+        data: "",
+        duration: 1000,
+        easing: "linear",
+        useBpm: true,
+        bpmDivision: 32,
+        durationAsTotalTime: false,
+        steps: 0
+      });
     }
   },
 
   watch: {
     "$store.state.bpm"(value) {
-      if (this.useBpm) {
+      if (this.modelUseBpm) {
         this.modelDuration = value / this.modelBpmDivision;
         this.updateValue();
+      }
+    },
+
+    value(value) {
+      if (!value) {
+        this.setDefaultData();
+      } else {
+        this.setData(value);
       }
     }
   }

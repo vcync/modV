@@ -8,9 +8,13 @@
     :class="{ focused }"
     v-contextMenu="
       () => ActiveModuleContextMenu({ activeModule: module, groupId })
-    "
+    :id="`active-module-${id}`"
   >
-    <div class="active-module__title handle">
+    <div
+      class="active-module__name handle"
+      :class="{ grabbing }"
+      @mousedown="titleMouseDown"
+    >
       {{ name }}
 
       <TooltipDisplay
@@ -47,7 +51,7 @@
           }"
         >
           <c span="2">Alpha</c>
-          <c span="4">
+          <c span="4" class="active-module__alpha-input">
             <Range
               value="1"
               min="0"
@@ -114,8 +118,14 @@ export default {
     return {
       ActiveModuleContextMenu,
       blendModes,
-      showMore: false
+      showMore: false,
+      grabbing: false
     };
+  },
+
+  beforeDestroy() {
+    // ensure listener cleanup
+    this.titleMouseUp();
   },
 
   computed: {
@@ -201,25 +211,6 @@ export default {
   },
 
   methods: {
-    getProps(moduleName) {
-      const moduleDefinition = this.$modV.store.state.modules.registered[
-        moduleName
-      ];
-
-      return Object.keys(moduleDefinition.props).filter(
-        key =>
-          moduleDefinition.props[key].type === "int" ||
-          moduleDefinition.props[key].type === "float" ||
-          moduleDefinition.props[key].type === "text" ||
-          moduleDefinition.props[key].type === "bool" ||
-          moduleDefinition.props[key].type === "color" ||
-          moduleDefinition.props[key].type === "vec2" ||
-          moduleDefinition.props[key].type === "tween" ||
-          moduleDefinition.props[key].type === "texture" ||
-          moduleDefinition.props[key].type === "enum"
-      );
-    },
-
     focusInput(id, title) {
       this.$modV.store.dispatch("inputs/setFocusedInput", {
         id,
@@ -251,6 +242,16 @@ export default {
 
         this.$emit("remove-module", this.id);
       }
+    },
+
+    titleMouseDown() {
+      this.grabbing = true;
+      window.addEventListener("mouseup", this.titleMouseUp);
+    },
+
+    titleMouseUp() {
+      this.grabbing = false;
+      window.removeEventListener("mouseup", this.titleMouseUp);
     }
   }
 };
@@ -268,12 +269,17 @@ export default {
   outline: #c4c4c4 2px solid;
 }
 
-.active-module__title {
+.active-module__name {
   background: #9a9a9a;
   width: 100%;
   overflow: hidden;
   text-overflow: ellipsis;
   position: relative;
+  cursor: grab;
+}
+
+.active-module__name.grabbing {
+  cursor: grabbing;
 }
 
 .active-module__controls,
@@ -284,7 +290,7 @@ export default {
 }
 
 .active-module__controls grid,
-.active-module__title {
+.active-module__name {
   box-sizing: border-box;
   padding: 0 4px;
 }

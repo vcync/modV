@@ -1,12 +1,12 @@
 import Vue from "vue";
-import SWAP from "./common/swap";
+import { SWAP } from "./common/swap";
 import getNextName from "../../../utils/get-next-name";
 import getPropDefault from "../../../utils/get-prop-default";
 import store from "..";
 import get from "lodash.get";
 import set from "lodash.set";
 
-import uuidv4 from "uuid/v4";
+import { v4 as uuidv4 } from "uuid";
 import { applyExpression } from "../../../utils/apply-expression";
 
 // Any keys marked false or arrays with keys given
@@ -82,6 +82,7 @@ async function initialiseModuleProperties(
     ) {
       const inputBind = await store.dispatch("inputs/addInput", {
         type: "action",
+        getLocation: `modules.active["${module.$id}"].props["${propKey}"]`,
         location: "modules/updateProp",
         data: { moduleId: module.$id, prop: propKey },
         writeToSwap
@@ -98,6 +99,7 @@ async function initialiseModuleProperties(
           const key = dataTypeInputsKeys[i];
           await store.dispatch("inputs/addInput", {
             type: "action",
+            getLocation: `modules.active["${module.$id}"].props["${propKey}"]["${key}"]`,
             location: "modules/updateProp",
             data: {
               moduleId: module.$id,
@@ -288,6 +290,7 @@ const actions = {
       if (!moduleMeta.isGallery) {
         const alphaInputBind = await store.dispatch("inputs/addInput", {
           type: "action",
+          getLocation: `modules.active["${module.$id}"].meta.alpha`,
           location: "modules/updateMeta",
           data: { id: module.$id, metaKey: "alpha" }
         });
@@ -296,6 +299,7 @@ const actions = {
 
         const enabledInputBind = await store.dispatch("inputs/addInput", {
           type: "action",
+          getLocation: `modules.active["${module.$id}"].meta.enabled`,
           location: "modules/updateMeta",
           data: { id: module.$id, metaKey: "enabled" }
         });
@@ -304,6 +308,7 @@ const actions = {
 
         const coInputBind = await store.dispatch("inputs/addInput", {
           type: "action",
+          getLocation: `modules.active["${module.$id}"].meta.compositeOperation`,
           location: "modules/updateMeta",
           data: { moduleId: module.$id, metaKey: "compositeOperation" }
         });
@@ -672,11 +677,23 @@ const actions = {
       meta.compositeOperationInputId,
       meta.enabledInputId
     ];
-    const moduleProperties = Object.values(module.$props).map(prop => ({
-      id: prop.id,
-      type: prop.type
-    }));
+    const moduleProperties = Object.entries(module.$props).map(
+      ([key, prop]) => ({
+        key,
+        id: prop.id,
+        type: prop.type
+      })
+    );
     const inputIds = [...moduleProperties, ...metaInputIds.map(id => ({ id }))];
+
+    for (let i = 0, len = moduleProperties.length; i < len; i++) {
+      const { key, type: propType } = moduleProperties[i];
+
+      // destroy anything created by datatypes we don't need anymore
+      if (store.state.dataTypes[propType].destroy) {
+        store.state.dataTypes[propType].destroy(module.props[key]);
+      }
+    }
 
     for (let i = 0, len = inputIds.length; i < len; i++) {
       const { id: inputId, type: propType } = inputIds[i];

@@ -46,7 +46,7 @@ export default {
     async makeLink() {
       const tween = await this.$modV.store.dispatch("dataTypes/createType", {
         type: "tween",
-        args: this.localCache
+        args: { id: this.inputId, ...this.localCache }
       });
 
       this.hasLink = await this.$modV.store.dispatch("inputs/createInputLink", {
@@ -61,6 +61,16 @@ export default {
       this.$modV.store.dispatch("inputs/removeInputLink", {
         inputId: this.inputId
       });
+    }
+  },
+
+  watch: {
+    inputId() {
+      if (this.hasLink) {
+        this.localCache = this.$modV.store.state.tweens.tweens[this.inputId];
+      } else {
+        this.localCache = null;
+      }
     }
   }
 };

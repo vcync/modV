@@ -1,7 +1,7 @@
-import SWAP from "./common/swap";
+import { SWAP } from "./common/swap";
 import store from "../";
 import constants, { GROUP_DISABLED } from "../../../constants";
-import uuidv4 from "uuid/v4";
+import { v4 as uuidv4 } from "uuid";
 import { applyExpression } from "../../../utils/apply-expression";
 
 /**
