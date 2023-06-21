@@ -1,3 +1,5 @@
+import modV from "../../application/index";
+
 const state = {
   focused: null,
   pinned: []
@@ -12,6 +14,19 @@ const getters = {
     }
 
     return arr;
+  }
+};
+
+const actions = {
+  async removeActiveModule({ commit }, { moduleId, groupId }) {
+    commit("SET_FOCUSED", null);
+
+    modV.store.commit("groups/REMOVE_MODULE_FROM_GROUP", {
+      moduleId,
+      groupId
+    });
+
+    return modV.store.dispatch("modules/removeActiveModule", { moduleId });
   }
 };
 
@@ -45,5 +60,6 @@ export default {
   namespaced: true,
   state,
   getters,
+  actions,
   mutations
 };

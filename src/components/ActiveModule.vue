@@ -6,12 +6,15 @@
     @focus="clickActiveModule"
     ref="activeModule"
     :class="{ focused }"
+    v-contextMenu="
+      () => ActiveModuleContextMenu({ activeModule: module, groupId })
+    "
     :id="`active-module-${id}`"
   >
     <div
       class="active-module__name handle"
       :class="{ grabbing }"
-      @mousedown="titleMouseDown"
+      @mousedown.left="titleMouseDown"
     >
       {{ name }}
 
@@ -102,10 +105,11 @@
 
 <script>
 import blendModes from "../util/composite-operations";
+import { ActiveModuleContextMenu } from "../menus/context/activeModuleContextMenu";
 import TooltipDisplay from "./TooltipDisplay.vue";
 
 export default {
-  props: ["id"],
+  props: ["id", "groupId"],
 
   components: {
     TooltipDisplay
@@ -113,6 +117,7 @@ export default {
 
   data() {
     return {
+      ActiveModuleContextMenu,
       blendModes,
       showMore: false,
       grabbing: false

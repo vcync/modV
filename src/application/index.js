@@ -21,7 +21,7 @@ import { GROUP_ENABLED } from "./constants";
 let imageBitmap;
 const imageBitmapQueue = [];
 
-export default class ModV {
+class ModV {
   _mediaStream;
   _imageCapture;
   setupMedia = setupMedia;
@@ -329,3 +329,5 @@ export default class ModV {
     this.store.commit("fonts/SET_LOCAL_FONTS", fonts);
   }
 }
+
+export default new ModV();
