@@ -6,6 +6,7 @@
     @mousedown="mouseDown"
     v-if="!badModule"
     class="gallery-item"
+    v-contextMenu="() => GalleryItemContextMenu({ moduleName })"
     :class="{ grabbing }"
   >
     <canvas ref="canvas"></canvas>
@@ -15,6 +16,7 @@
 
 <script>
 import { GROUP_ENABLED, GROUP_DISABLED } from "../application/constants.js";
+import { GalleryItemContextMenu } from "../menus/context/galleryItemContextMenu";
 
 export default {
   props: ["moduleName", "groupId"],
@@ -23,8 +25,10 @@ export default {
     return {
       id: "",
       outputId: "",
+      activeModule: { meta: {} },
       badModule: false,
-      grabbing: false
+      grabbing: false,
+      GalleryItemContextMenu
     };
   },
 
@@ -58,6 +62,7 @@ export default {
       return;
     }
 
+    this.activeModule = module;
     this.id = module.$id;
     this.outputId = outputContext.id;
 

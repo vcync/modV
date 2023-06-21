@@ -44,7 +44,8 @@ async function initialiseModuleProperties(
   isGallery = false,
   useExistingData = false,
   existingData = {},
-  writeToSwap = false
+  writeToSwap = false,
+  generateNewIds = false
 ) {
   const propKeys = Object.keys(props);
   const propsWithoutId = [];
@@ -76,7 +77,8 @@ async function initialiseModuleProperties(
 
     if (
       (!isGallery && !useExistingData) ||
-      (propsWithoutId.length && propsWithoutId.indexOf(propKey) > -1)
+      (propsWithoutId.length && propsWithoutId.indexOf(propKey) > -1) ||
+      generateNewIds
     ) {
       const inputBind = await store.dispatch("inputs/addInput", {
         type: "action",
@@ -116,6 +118,20 @@ async function initialiseModuleProperties(
 
   return module;
 }
+
+const getters = {
+  activeModuleInputIds: state => activeModuleId => {
+    const activeModule = state.active[activeModuleId];
+    return [
+      activeModule.meta.alphaInputId,
+      activeModule.meta.enabledInputId,
+      activeModule.meta.compositeOperationInputId,
+      ...store.getters["inputs/inputsByActiveModuleId"](activeModule.$id).map(
+        input => input.id
+      )
+    ];
+  }
+};
 
 const actions = {
   async registerModule(
@@ -209,7 +225,13 @@ const actions = {
 
   async makeActiveModule(
     { commit, rootState },
-    { moduleName, moduleMeta = {}, existingModule, writeToSwap }
+    {
+      moduleName,
+      moduleMeta = {},
+      existingModule,
+      generateNewIds = false,
+      writeToSwap
+    }
   ) {
     const writeTo = writeToSwap ? swap : state;
     const expectedModuleName = existingModule
@@ -224,7 +246,7 @@ const actions = {
     if (moduleDefinition) {
       module = {
         meta: { ...moduleDefinition.meta, ...moduleMeta },
-        ...existingModule,
+        ...(existingModule && JSON.parse(JSON.stringify(existingModule))),
         $status: []
       };
     } else {
@@ -262,30 +284,8 @@ const actions = {
 
     module.$props = JSON.parse(JSON.stringify(props));
 
-    if (!existingModule) {
+    if (!existingModule || generateNewIds) {
       module.$id = uuidv4();
-      module.$moduleName = moduleName;
-      module.props = {};
-
-      await initialiseModuleProperties(props, module, moduleMeta.isGallery);
-
-      const dataKeys = Object.keys(data);
-      module.data = {};
-
-      for (let i = 0, len = dataKeys.length; i < len; i++) {
-        const dataKey = dataKeys[i];
-
-        const datum = data[dataKey];
-        module.data[dataKey] = datum;
-      }
-
-      module.meta.name = await getNextName(
-        `${moduleName}`,
-        Object.keys(state.active)
-      );
-      module.meta.alpha = 1;
-      module.meta.enabled = false;
-      module.meta.compositeOperation = "normal";
 
       if (!moduleMeta.isGallery) {
         const alphaInputBind = await store.dispatch("inputs/addInput", {
@@ -315,6 +315,31 @@ const actions = {
 
         module.meta.compositeOperationInputId = coInputBind.id;
       }
+    }
+
+    if (!existingModule) {
+      module.$moduleName = moduleName;
+      module.props = {};
+
+      await initialiseModuleProperties(props, module, moduleMeta.isGallery);
+
+      const dataKeys = Object.keys(data);
+      module.data = {};
+
+      for (let i = 0, len = dataKeys.length; i < len; i++) {
+        const dataKey = dataKeys[i];
+
+        const datum = data[dataKey];
+        module.data[dataKey] = datum;
+      }
+
+      module.meta.name = await getNextName(
+        `${moduleName}`,
+        Object.keys(state.active)
+      );
+      module.meta.alpha = 1;
+      module.meta.enabled = false;
+      module.meta.compositeOperation = "normal";
 
       const { presets } = module;
 
@@ -347,7 +372,8 @@ const actions = {
         moduleMeta.isGallery,
         true,
         existingModule,
-        writeToSwap
+        writeToSwap,
+        generateNewIds
       );
     }
 
@@ -775,6 +801,7 @@ const mutations = {
 export default {
   namespaced: true,
   state,
+  getters,
   actions,
   mutations
 };

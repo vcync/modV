@@ -10,7 +10,6 @@ import { getMediaManager } from "./media-manager";
 
 const isDevelopment = process.env.NODE_ENV === "development";
 const isTest = process.env.CI === "e2e";
-let shouldCloseMainWindowAndQuit = false;
 let modVReady = false;
 
 const windowPrefs = {
@@ -156,11 +155,6 @@ const windowPrefs = {
 
       if (!isDevelopment && !isTest) {
         window.on("close", async e => {
-          if (shouldCloseMainWindowAndQuit) {
-            app.quit();
-            return;
-          }
-
           e.preventDefault();
 
           const { response } = await dialog.showMessageBox(window, {
@@ -171,8 +165,10 @@ const windowPrefs = {
           });
 
           if (response === 0) {
-            shouldCloseMainWindowAndQuit = true;
-            window.close();
+            // Use .exit instead of .quit to prevent close event firing again.
+            // Usually .quit would be preferable, but since we only have one
+            //   instance of the main window we can just exit.
+            app.exit();
           }
         });
       }

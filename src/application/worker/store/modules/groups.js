@@ -262,6 +262,61 @@ const actions = {
     dataOut = applyExpression({ inputId, value: dataOut });
 
     commit("UPDATE_GROUP_BY_KEY", { groupId, key, data: dataOut, writeToSwap });
+  },
+
+  async duplicateModule({ commit }, { groupId, moduleId }) {
+    const group = state.groups.find(group => group.id === groupId);
+    const position =
+      group.modules.findIndex(moduleListId => moduleListId === moduleId) + 1;
+    const existingModule = store.state.modules.active[moduleId];
+
+    const existingInputIds = store.getters["modules/activeModuleInputIds"](
+      existingModule.$id
+    );
+
+    const existingInputLinks = existingInputIds.reduce((obj, id) => {
+      obj[id] = store.state.inputs.inputLinks[id];
+      return obj;
+    }, {});
+
+    const duplicateModule = await store.dispatch("modules/makeActiveModule", {
+      moduleName: existingModule.meta.name,
+      existingModule,
+      generateNewIds: true
+    });
+
+    const newInputIds = store.getters["modules/activeModuleInputIds"](
+      duplicateModule.$id
+    );
+
+    for (let i = 0; i < newInputIds.length; i += 1) {
+      const newInputId = newInputIds[i];
+      const existingInputId = existingInputIds[i];
+
+      if (existingInputLinks[existingInputId]) {
+        await store.dispatch("inputs/createInputLink", {
+          ...existingInputLinks[existingInputId],
+          inputId: newInputId
+        });
+      }
+
+      const existingExpression = store.getters["expressions/getByInputId"](
+        existingInputId
+      );
+
+      if (existingExpression) {
+        await store.dispatch("expressions/create", {
+          expression: existingExpression.expression,
+          inputId: newInputId
+        });
+      }
+    }
+
+    commit("ADD_MODULE_TO_GROUP", {
+      moduleId: duplicateModule.$id,
+      groupId,
+      position
+    });
   }
 };
 

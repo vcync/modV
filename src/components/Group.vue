@@ -8,6 +8,7 @@
       type: 'Group',
       focusElement: true
     }"
+    v-contextMenu="() => GroupContextMenu({ group })"
     tabindex="0"
     @keydown.self="removeGroup"
     @focus.self="focus"
@@ -194,7 +195,7 @@
         class="group__name"
         :class="{ grabbing }"
         @click.self="endNameEditable"
-        @mousedown="titleMouseDown"
+        @mousedown.left="titleMouseDown"
       >
         <span v-if="!nameEditable" @dblclick="toggleNameEditable">{{
           name
@@ -222,12 +223,16 @@
         @drop="onDrop"
       >
         <Draggable
-          v-for="moduleId in modules"
+          v-for="moduleId in localModules"
           :key="moduleId"
           class="group__module"
         >
           <div class="group-module-container">
-            <ActiveModule :id="moduleId" @remove-module="removeModule" />
+            <ActiveModule
+              :id="moduleId"
+              :groupId="groupId"
+              @remove-module="removeModule"
+            />
           </div>
         </Draggable>
       </Container>
@@ -241,6 +246,7 @@ import constants from "../application/constants";
 import ActiveModule from "./ActiveModule";
 import compositeOperations from "../util/composite-operations";
 import Arrow from "../assets/graphics/Arrow.svg";
+import { GroupContextMenu } from "../menus/context/groupContextMenu";
 
 const applyDrag = (arr, dragResult) => {
   const { removedIndex, addedIndex, payload } = dragResult;
@@ -284,12 +290,15 @@ export default {
       controlsShown: false,
       Arrow,
       inheritanceSelection: -1,
-      grabbing: false
+      GroupContextMenu,
+      grabbing: false,
+      localModules: []
     };
   },
 
   created() {
     this.localName = this.name;
+    this.localModules = this.modules;
     this.inheritanceSelection = !this.inherit ? -2 : this.inheritFrom;
 
     if (!this.focusedGroup) {
@@ -307,6 +316,7 @@ export default {
         group => group.name !== constants.GALLERY_GROUP_NAME
       );
     },
+
     group() {
       return this.groups.filter(group => group.id === this.groupId)[0];
     },
@@ -321,6 +331,9 @@ export default {
       },
 
       set(modules) {
+        // localModules is used to avoid a UI jump as we wait for the worker to
+        // send back the updated order
+        this.localModules = modules;
         this.$modV.store.commit("groups/REPLACE_GROUP_MODULES", {
           groupId: this.groupId,
           modules
@@ -482,12 +495,8 @@ export default {
     removeModule(moduleId) {
       const { groupId } = this;
 
-      this.$modV.store.commit("groups/REMOVE_MODULE_FROM_GROUP", {
-        moduleId,
-        groupId
-      });
-
-      this.$modV.store.dispatch("modules/removeActiveModule", {
+      this.$store.dispatch("ui-modules/removeActiveModule", {
+        groupId,
         moduleId
       });
 
@@ -569,6 +578,10 @@ export default {
       this.localName = value;
     },
 
+    modules(value) {
+      this.localModules = value;
+    },
+
     inheritanceSelection(value) {
       const inheritFrom = value.length === 2 ? parseInt(value) : value;
 
@@ -640,6 +653,7 @@ export default {
 
   display: flex;
   align-items: center;
+  -webkit-user-drag: none;
 }
 
 .group__controlsButton:focus {
@@ -668,7 +682,7 @@ export default {
   display: inline-block;
 }
 
-.group__modules > * + * {
+.group__modules > * + *:not(.smooth-dnd-ghost) {
   position: relative;
   margin-left: 24px;
 }

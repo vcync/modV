@@ -36,10 +36,8 @@ module.exports = {
       ]
     },
 
-    serve: {
-      hot: true,
-      // hotOnly: true,
-      contentBase: "./"
+    devServer: {
+      hot: true
     },
 
     node: {
@@ -68,7 +66,7 @@ module.exports = {
         "stream-to-blob",
         "grandiose",
         "npm",
-        "webpack-2",
+        "webpack-3",
         "font-list"
       ],
 

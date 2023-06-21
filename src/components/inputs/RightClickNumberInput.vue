@@ -1,6 +1,6 @@
 <template>
   <div v-tooltip="{ visible: !editMode }">
-    <div class="slot" v-show="!editMode" @click.right="toggleEditMode">
+    <div class="slot" v-show="!editMode" @click.right.stop="toggleEditMode">
       <slot></slot>
     </div>
 
@@ -9,7 +9,7 @@
       type="number"
       :step="step"
       @keypress.enter="toggleEditMode"
-      @click.right="toggleEditMode"
+      @click.right.stop="toggleEditMode"
       @input="numberInputHandler"
       v-show="editMode"
       ref="input"
