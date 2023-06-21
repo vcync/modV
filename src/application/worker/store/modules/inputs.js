@@ -182,11 +182,6 @@ const actions = {
     const writeTo = writeToSwap ? swap : state;
 
     if (!writeTo.inputs[inputId]) {
-      console.warn(
-        "Did not remove inputLink. Could not find input with id",
-        inputId
-      );
-
       return false;
     }
 
