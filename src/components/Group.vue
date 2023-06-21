@@ -222,7 +222,7 @@
         @drop="onDrop"
       >
         <Draggable
-          v-for="moduleId in modules"
+          v-for="moduleId in localModules"
           :key="moduleId"
           class="group__module"
         >
@@ -284,12 +284,14 @@ export default {
       controlsShown: false,
       Arrow,
       inheritanceSelection: -1,
-      grabbing: false
+      grabbing: false,
+      localModules: []
     };
   },
 
   created() {
     this.localName = this.name;
+    this.localModules = this.modules;
     this.inheritanceSelection = !this.inherit ? -2 : this.inheritFrom;
 
     if (!this.focusedGroup) {
@@ -321,6 +323,9 @@ export default {
       },
 
       set(modules) {
+        // localModules is used to avoid a UI jump as we wait for the worker to
+        // send back the updated order
+        this.localModules = modules;
         this.$modV.store.commit("groups/REPLACE_GROUP_MODULES", {
           groupId: this.groupId,
           modules
@@ -567,6 +572,10 @@ export default {
   watch: {
     name(value) {
       this.localName = value;
+    },
+
+    modules(value) {
+      this.localModules = value;
     },
 
     inheritanceSelection(value) {
