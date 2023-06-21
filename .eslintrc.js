@@ -6,7 +6,7 @@ module.exports = {
   extends: ["plugin:vue/essential", "@vue/prettier"],
   plugins: ["no-for-each"],
   rules: {
-    "no-console": process.env.NODE_ENV === "production" ? "error" : "off",
+    "no-console": "off",
     "no-debugger": process.env.NODE_ENV === "production" ? "error" : "off",
     "no-for-each/no-for-each": 2,
     "no-for-each/no-for-of": 2,
