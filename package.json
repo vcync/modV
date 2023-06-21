@@ -23,7 +23,6 @@
     "postuninstall": "electron-builder install-app-deps",
     "test:e2e": "npx playwright test"
   },
-  "main": "background.js",
   "dependencies": {
     "@electron/remote": "^2.0.4",
     "animated-gif-detector": "^1.2.0",
