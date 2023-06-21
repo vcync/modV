@@ -59,8 +59,14 @@ export default {
   },
 
   data: {
-    vector: [[0, 0], [0, 0]],
-    velocity: [[1, 1], [1, 1]],
+    vector: [
+      [0, 0],
+      [0, 0]
+    ],
+    velocity: [
+      [1, 1],
+      [1, 1]
+    ],
     history: []
   },
 

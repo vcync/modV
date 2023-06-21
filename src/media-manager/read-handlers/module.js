@@ -1,5 +1,5 @@
 const recursiveDeps = require("recursive-deps");
-const webpack = require("webpack-2");
+const webpack = require("webpack-3");
 const path = require("path");
 const npm = require("npm");
 const fs = require("fs");
