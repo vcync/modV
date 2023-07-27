@@ -84,7 +84,10 @@ export default {
     },
     monochromeHue: {
       label: "Monochrome Hue",
-      type: "int"
+      type: "int",
+      default: 180,
+      min: 0,
+      max: 360
     },
     cycleHue: {
       label: "Cycle Hue",
