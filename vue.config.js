@@ -37,7 +37,10 @@ module.exports = {
     },
 
     devServer: {
-      hot: true
+      hot: true,
+      client: {
+        overlay: false
+      }
     },
 
     node: {
