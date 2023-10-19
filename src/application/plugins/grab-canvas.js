@@ -13,7 +13,8 @@ const mappingContext = mappingCanvas.getContext("2d", {
   // (lights don't have an alpha channel, so let's drop it)
   alpha: false,
   desynchronized: true,
-  imageSmoothingEnabled: false
+  imageSmoothingEnabled: false,
+  willReadFrequently: true
 });
 
 export default {
