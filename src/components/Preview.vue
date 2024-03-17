@@ -26,7 +26,7 @@
       </Select>
     </c>
 
-    <c span="1..">
+    <c span="1.." class="canvas-container">
       <canvas ref="canvas"></canvas>
     </c>
   </grid>
@@ -41,7 +41,7 @@ export default {
   },
 
   mounted() {
-    const { canvas, container } = this.$refs;
+    const { canvas } = this.$refs;
     const offscreen = canvas.transferControlToOffscreen();
 
     this.$modV.$worker.postMessage(
@@ -61,7 +61,7 @@ export default {
 
         this.resize(entries);
       });
-    }).observe(container);
+    }).observe(canvas);
 
     this.$modV.store.commit("outputs/TOGGLE_DEBUG", true);
   },
@@ -107,6 +107,9 @@ export default {
         identifier: "outputs/resizeDebug",
         payload: { width }
       });
+
+      // this.$refs.canvas.style.width = `${e[0].contentRect.width}px`;
+      // this.$refs.canvas.style.height = `${e[0].contentRect.height}px`;
     }
   }
 };
@@ -114,10 +117,21 @@ export default {
 
 <style scoped>
 .preview {
+  display: flex;
+  flex-direction: column;
   overflow: hidden;
+  height: 100%;
+}
+
+.canvas-container {
+  height: 100%;
+  flex-grow: 1;
+  min-height: 0;
 }
 
 canvas {
+  object-fit: contain;
   width: 100%;
+  height: 100%;
 }
 </style>
