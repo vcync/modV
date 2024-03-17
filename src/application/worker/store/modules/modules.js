@@ -366,6 +366,22 @@ const actions = {
         }
       }
     } else {
+      const { renderers } = rootState;
+      const { type } = module.meta;
+
+      if (renderers[type].setupModule) {
+        try {
+          const newDef = await renderers[type].setupModule(moduleDefinition);
+          module.data = newDef.data;
+        } catch (e) {
+          console.error(
+            `Error in ${type} renderer setup whilst registering "${name}". This module was ommited from registration. \n\n${e}`
+          );
+
+          return false;
+        }
+      }
+
       await initialiseModuleProperties(
         props,
         module,
