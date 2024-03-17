@@ -361,15 +361,6 @@ function loop(delta, features, fftOutput) {
         debugCanvas.width,
         debugCanvas.height
       );
-      debugContext.font = "32px monospace";
-      debugContext.textBaseline = "hanging";
-      debugContext.fillStyle = "#fff";
-      debugContext.globalCompositeOperation = "difference";
-      debugContext.fillText(
-        `${canvasToDebug.context.canvas.width} × ${canvasToDebug.context.canvas.height}`,
-        10,
-        10
-      );
     }
   }
 
