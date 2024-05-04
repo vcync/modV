@@ -24,6 +24,24 @@ export default {
       type: "bool",
       default: true
     },
+    strokeWeight: {
+      type: "int",
+      label: "Stroke Weight",
+      min: 1,
+      max: 30,
+      default: 1,
+      abs: true
+    },
+    strokeJoin: {
+      type: "enum",
+      label: "Stroke Join",
+      default: "round",
+      enum: [
+        { label: "Round", value: "round" },
+        { label: "Bevel", value: "bevel" },
+        { label: "Miter", value: "miter" }
+      ]
+    },
     speed: {
       label: "Colour Speed",
       type: "int",
@@ -33,17 +51,10 @@ export default {
     },
     fg_alpha: {
       label: "FG Alpha",
-      type: "int",
+      type: "float",
       min: 0,
-      max: 100,
-      default: 100
-    },
-    bg_alpha: {
-      label: "BG Alpha",
-      type: "int",
-      min: 0,
-      max: 100,
-      default: 100
+      max: 1,
+      default: 1
     },
     seeds: {
       label: "Seeds",
@@ -72,9 +83,9 @@ export default {
       default: "sin",
       enum: [
         { label: "Sine", value: "sin" },
-        { label: "Cosine", vaue: "cos" },
+        { label: "Cosine", value: "cos" },
         { label: "Triangle", value: "triangle" },
-        { label: "saw", vaue: "saw" }
+        { label: "Saw", value: "saw" }
       ]
     },
     monochrome: {
@@ -111,7 +122,19 @@ export default {
         "**4,5/4,6",
         "*4,6/4,4"
       ].map(r => ({ label: r, value: r })),
-      default: "2/1"
+      default: "2/1",
+      set(args) {
+        return this.reset(args);
+      }
+    },
+    resetField: {
+      type: "event",
+      label: "Reset Field",
+      set(args) {
+        if (args.props.resetField) {
+          return this.reset(args);
+        }
+      }
     }
   },
 
@@ -122,10 +145,15 @@ export default {
     counterAngle: 0,
     counterIncrease: 0,
     lastUpdate: 0,
-    lastDraw: 0
+    lastDraw: 0,
+    shouldDraw: true
   },
 
-  init({ data, props }) {
+  init(args) {
+    return this.reset(args);
+  },
+
+  reset({ data, props }) {
     data.rule = this.parseRule(props.rule);
     data.field = this.initializeField(props);
     const N = props.N;
@@ -133,6 +161,7 @@ export default {
       var idx = Math.floor(Math.random() * N * N);
       data.field[idx] = 1;
     }
+
     return data;
   },
 
@@ -145,39 +174,58 @@ export default {
     return field;
   },
 
-  draw({ data, props, context, width, height }) {
-    context.fillStyle = "rgba(0, 0, 0, " + props.bg_alpha / 100 + ")";
-    context.fillRect(0, 0, width, height);
+  resize({ canvas, data, props }) {
+    const width = canvas.width + 20;
+    const height = canvas.height;
 
-    var N = props.N;
-    var x,
-      y,
-      i,
-      l,
-      baseY,
-      lEdge = data.edge * Math.cos(Math.PI / 6);
+    // triangle height and width
+    var kH = (2 * height) / (props.N * Math.sqrt(2));
+    var kW = (2 * width) / props.N;
 
-    var translate = {
-      x: 0, //(width - N * edge / 2 ) / 2,
-      y: 0 //(height - N * edge * SQRT2 / 2) / 2
-    };
+    data.edge = Math.max(kH, kW);
 
-    if (props.cycleHue) {
-      props.monochromeHue =
-        (props.monochromeHue + 360 / (1001 - props.speed)) % 360;
+    return data;
+  },
+
+  draw({
+    data,
+    props,
+    context,
+    context: {
+      canvas: { width, height }
     }
+  }) {
+    if (data.shouldDraw) {
+      var N = props.N;
+      var x,
+        y,
+        i,
+        l,
+        baseY,
+        lEdge = data.edge * Math.cos(Math.PI / 6);
 
-    for (i = 0, l = data.field.length; i < l; i++) {
-      if (data.field[i] <= 0) {
-        continue;
+      var translate = {
+        x: (width - (N * data.edge) / 2) / 2,
+        y: (height - (N * data.edge * Math.SQRT2) / 2) / 2
+      };
+
+      if (props.cycleHue) {
+        props.monochromeHue =
+          (props.monochromeHue + 360 / (1001 - props.speed)) % 360;
       }
 
-      x = i % N;
-      y = (i / N) | 0;
+      for (i = 0, l = data.field.length; i < l; i++) {
+        if (data.field[i] <= 0) {
+          continue;
+        }
 
-      baseY = y * lEdge;
-      this.drawTriangle(context, x, y, lEdge, baseY, translate, data);
-      this.setColors(context, x, y, props, data);
+        x = i % N;
+        y = (i / N) | 0;
+
+        baseY = y * lEdge;
+        this.drawTriangle(context, x, y, lEdge, baseY, translate, data);
+        this.setColors(context, x, y, props, data);
+      }
     }
   },
 
@@ -229,12 +277,13 @@ export default {
 
     context.closePath();
   },
+
   setColors(context, x, y, props, data) {
     // var val = Field[x + (N * y)];
     const speed = 1001 - props.speed;
     let color;
     if (props.monochrome) {
-      color = hslToRgb(props.monochromeHue / 360, 1, 0.5, props.fg_alpha / 100);
+      color = hslToRgb(props.monochromeHue / 360, 1, 0.5, props.fg_alpha * 100);
     } else {
       data.counterIncrease = Math.PI / speed;
       data.counterAngle += data.counterIncrease;
@@ -253,7 +302,7 @@ export default {
           break;
       }
 
-      color = hslToRgb(data.colorCounter, 1, 0.5, props.fg_alpha / 100);
+      color = hslToRgb(data.colorCounter, 1, 0.5, props.fg_alpha * 100);
     }
 
     if (props.fill) {
@@ -262,22 +311,37 @@ export default {
     }
     if (props.stroke) {
       context.strokeStyle = color;
+      context.lineWidth = props.strokeWeight;
+      context.lineJoin = props.strokeJoin;
       context.stroke();
     }
   },
 
   update({ data, props }) {
-    let ln = 0; // live neighbor count
-    let i, l, val;
-    const nextField = this.initializeField(props);
+    const timestamp = performance.now();
 
-    for (i = 0, l = data.field.length; i < l; i++) {
-      ln = this.computeLiveNeighbours(i, props, data);
-      val = data.field[i];
-      nextField[i] = this.computeNextStateOfCell(val, ln, data.rule);
+    if (timestamp > data.lastDraw + 1000 / props.drawInterval) {
+      data.shouldDraw = true;
+      data.lastDraw = timestamp;
+    } else {
+      data.shouldDraw = false;
     }
 
-    data.field = nextField;
+    if (timestamp > data.lastUpdate + 1000 / props.updateInterval) {
+      let ln = 0; // live neighbor count
+      let i, l, val;
+      const nextField = this.initializeField(props);
+
+      for (i = 0, l = data.field.length; i < l; i++) {
+        ln = this.computeLiveNeighbours(i, props, data);
+        val = data.field[i];
+        nextField[i] = this.computeNextStateOfCell(val, ln, data.rule);
+      }
+
+      data.field = nextField;
+      data.lastUpdate = timestamp;
+    }
+
     return data;
   },
 
