@@ -1,4 +1,5 @@
 import { app, dialog, ipcMain, screen, BrowserWindow } from "electron";
+import os from "node:os";
 
 import store from "../media-manager/store";
 import { autoUpdater } from "electron-updater";
@@ -80,6 +81,10 @@ const windowPrefs = {
       require("@electron/remote/main").enable(window.webContents);
 
       ipcMain.handle("is-modv-ready", () => modVReady);
+
+      window.setRepresentedFilename(os.homedir());
+      window.setDocumentEdited(true);
+      window.setTitle("Untitled");
 
       // Configure child windows to open without a menubar (windows/linux)
       window.webContents.on(
@@ -189,6 +194,7 @@ const windowPrefs = {
       ipcMain.removeAllListeners("save-file");
       ipcMain.removeAllListeners("current-project");
       ipcMain.removeAllListeners("input-update");
+      ipcMain.removeHandler("is-modv-ready");
     }
   },
 
