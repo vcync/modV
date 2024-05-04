@@ -480,21 +480,17 @@ const actions = {
     );
     const { type } = propData;
 
-    // if (group || groupName) {
-    //   propData = state.active[name].props[groupName].props[prop];
-    // }
-
     if (data === currentValue) {
       return;
     }
 
     let dataOut = data;
 
-    dataOut = applyExpression({ inputId, value: dataOut });
-
     if (store.state.dataTypes[type] && store.state.dataTypes[type].create) {
       dataOut = await store.state.dataTypes[type].create(dataOut);
     }
+
+    dataOut = applyExpression({ inputId, value: dataOut });
 
     if (!Array.isArray(dataOut)) {
       const { strict, min, max, abs } = propData;
@@ -520,8 +516,6 @@ const actions = {
         type: propData.type,
         path
       },
-      group,
-      groupName,
 
       writeToSwap
     });
