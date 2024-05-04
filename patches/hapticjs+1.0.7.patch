@@ -1,0 +1,32 @@
+diff --git a/node_modules/hapticjs/.DS_Store b/node_modules/hapticjs/.DS_Store
+new file mode 100644
+index 0000000..487d1a1
+Binary files /dev/null and b/node_modules/hapticjs/.DS_Store differ
+diff --git a/node_modules/hapticjs/app.js b/node_modules/hapticjs/app.js
+index 0821d19..1fa9828 100644
+--- a/node_modules/hapticjs/app.js
++++ b/node_modules/hapticjs/app.js
+@@ -1,10 +1,10 @@
++var os = require("os")
+ var exec = require('child_process').exec
+ var path = require('path')
+ var cmd = path.join(__dirname, 'hapticJS', 'DerivedData', 'hapticJS', 'Build', 'Products', 'Release', 'hapticJS')
+ 
+ exports.vibrate = function() {
+   if (os.platform().includes('darwin')) {
+-    console.log('vibrating now...')
+     exec(cmd, function(error, stdout, stderr) {
+       // command output is in stdout
+     })
+diff --git a/node_modules/hapticjs/hapticJS/.DS_Store b/node_modules/hapticjs/hapticJS/.DS_Store
+new file mode 100644
+index 0000000..57ae955
+Binary files /dev/null and b/node_modules/hapticjs/hapticJS/.DS_Store differ
+diff --git a/node_modules/hapticjs/hapticJS/DerivedData/.DS_Store b/node_modules/hapticjs/hapticJS/DerivedData/.DS_Store
+new file mode 100644
+index 0000000..487d1a1
+Binary files /dev/null and b/node_modules/hapticjs/hapticJS/DerivedData/.DS_Store differ
+diff --git a/node_modules/hapticjs/hapticJS/DerivedData/hapticJS/.DS_Store b/node_modules/hapticjs/hapticJS/DerivedData/hapticJS/.DS_Store
+new file mode 100644
+index 0000000..9d704a3
+Binary files /dev/null and b/node_modules/hapticjs/hapticJS/DerivedData/hapticJS/.DS_Store differ
