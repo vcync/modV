@@ -486,11 +486,11 @@ const actions = {
 
     let dataOut = data;
 
-    dataOut = applyExpression({ inputId, value: dataOut });
-
     if (store.state.dataTypes[type] && store.state.dataTypes[type].create) {
       dataOut = await store.state.dataTypes[type].create(dataOut);
     }
+
+    dataOut = applyExpression({ inputId, value: dataOut });
 
     if (!Array.isArray(dataOut)) {
       const { strict, min, max, abs } = propData;

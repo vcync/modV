@@ -56,6 +56,8 @@ function render({ module, canvas, context, pipeline, props }) {
         } else {
           renderer.setValue(input.NAME, canvas);
         }
+      } else if (input.TYPE === "event") {
+        renderer.setValue(input.NAME, !!props[input.NAME]);
       } else {
         renderer.setValue(input.NAME, props[input.NAME]);
       }
@@ -196,6 +198,13 @@ async function setupModule(moduleDefinition) {
           label: input.LABEL || input.NAME
         });
 
+        break;
+
+      case "event":
+        addProp(input.NAME, {
+          type: "event",
+          label: input.LABEL || input.NAME
+        });
         break;
     }
   }

@@ -11,6 +11,9 @@ const state = {
   bool: {
     get: value => value
   },
+  event: {
+    get: value => value
+  },
   vec2: {
     get: value => value,
     inputs: () => ({ 0: 0, 1: 0 })
