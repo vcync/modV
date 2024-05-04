@@ -78,6 +78,15 @@
           >
         </Select>
       </div>
+      <div class="input" v-else-if="type === 'event'">
+        <Button
+          :class="{ light: !inputIsFocused, active: !!internalValue }"
+          @pointerdown="buttonDown"
+          @pointerup="buttonUp"
+        >
+          {{ title }}
+        </Button>
+      </div>
     </c>
   </grid>
 </template>
@@ -95,6 +104,7 @@ import Vec4Control from "./Controls/Vec4Control";
 import hasLink from "./mixins/has-input-link";
 import inputIsFocused from "./mixins/input-is-focused";
 import Select from "./inputs/Select.vue";
+import Button from "./inputs/Button.vue";
 
 export default {
   mixins: [hasLink, inputIsFocused],
@@ -140,7 +150,8 @@ export default {
     ColorControl,
     Vec3Control,
     Vec4Control,
-    Select
+    Select,
+    Button
   },
 
   data() {
@@ -168,6 +179,14 @@ export default {
         id: this.inputId,
         title: this.inputTitle
       });
+    },
+
+    buttonDown() {
+      this.internalValue = 1;
+    },
+
+    buttonUp() {
+      this.internalValue = 0;
     }
   },
 

@@ -26,10 +26,12 @@ button.light {
   background: #363636;
 }
 
+button.active,
 button:active {
   background: #363636;
 }
 
+button.light.active,
 button.light:active {
   background: #9a9a9a;
 }
