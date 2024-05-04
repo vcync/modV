@@ -129,7 +129,8 @@ async function start() {
       tick,
       resize,
       createPresetData,
-      loadPresetData
+      loadPresetData,
+      getModuleData
     } = renderers(rendererName).default;
 
     store.commit("renderers/ADD_RENDERER", {
@@ -142,6 +143,7 @@ async function start() {
       resizeModule,
       createPresetData,
       loadPresetData,
+      getModuleData,
       tick
     });
   }

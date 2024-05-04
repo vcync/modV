@@ -21,8 +21,10 @@ store.dispatch("outputs/addAuxillaryOutput", {
 
 const renderer = new THREE.WebGLRenderer({
   alpha: true,
-  antialias: true,
-  canvas: threeCanvas
+  antialias: false,
+  canvas: threeCanvas,
+  powerPreference: "high-performance",
+  premultipliedAlpha: false
 });
 renderer.setPixelRatio(1);
 
@@ -178,6 +180,10 @@ function resize({ width, height }) {
   renderer.setSize(width, height, false);
 }
 
+function getModuleData(name) {
+  return threeModuleData[name];
+}
+
 export default {
   render,
   updateModule,
@@ -186,6 +192,7 @@ export default {
   setupModule,
   removeModule,
   createPresetData,
-  loadPresetData
+  loadPresetData,
+  getModuleData
 };
 export { threeModuleData };
