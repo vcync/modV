@@ -462,8 +462,8 @@ const actions = {
   },
 
   async updateProp(
-    { state, commit },
-    { moduleId, prop, data, group, path = "", groupName, writeToSwap }
+    { state, commit, rootState },
+    { moduleId, prop, data, path = "", writeToSwap }
   ) {
     if (!state.active[moduleId]) {
       console.error(`The module with the moduleId ${moduleId} doesn't exist.`);
@@ -479,10 +479,6 @@ const actions = {
       state.active[moduleId][prop]
     );
     const { type } = propData;
-
-    // if (group || groupName) {
-    //   propData = state.active[name].props[groupName].props[prop];
-    // }
 
     if (data === currentValue) {
       return;
@@ -520,28 +516,32 @@ const actions = {
         type: propData.type,
         path
       },
-      group,
-      groupName,
 
       writeToSwap
     });
 
-    if (group || groupName) {
-      if ("set" in state.registered[moduleName].props[groupName].props[prop]) {
-        state.registered[moduleName].props[groupName].props[prop].set.bind(
-          state.registered[moduleName]
-        )({
-          data: { ...state.active[moduleId].data },
-          props: state.active[moduleId].props
-        });
-      }
-    } else if ("set" in state.registered[moduleName].props[prop]) {
-      state.registered[moduleName].props[prop].set.bind(
-        state.registered[moduleName]
-      )({
+    const registeredModule = state.registered[moduleName];
+
+    if ("set" in registeredModule.props[prop]) {
+      const { renderers } = rootState;
+
+      const { getModuleData = () => ({}) } = renderers[
+        registeredModule.meta.type
+      ];
+
+      const newData = registeredModule.props[prop].set.bind(registeredModule)({
+        ...getModuleData(registeredModule.meta.name),
         data: { ...state.active[moduleId].data },
         props: state.active[moduleId].props
       });
+
+      if (newData) {
+        commit("UPDATE_ACTIVE_MODULE", {
+          id: moduleId,
+          key: "data",
+          value: newData
+        });
+      }
     }
   },
 
