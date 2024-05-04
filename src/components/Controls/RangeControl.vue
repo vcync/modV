@@ -16,6 +16,8 @@
 
 <script>
 import RightClickNumberInput from "../inputs/RightClickNumberInput.vue";
+const { vibrate } = require("hapticjs");
+
 export default {
   components: { RightClickNumberInput },
   props: {
@@ -54,7 +56,8 @@ export default {
       overrideMinMax: false,
       hasOverridenMinMax: false,
       fontFamily: "",
-      resizeObserver: null
+      resizeObserver: null,
+      lastBuzzAt: null
     };
   },
 
@@ -73,6 +76,7 @@ export default {
   created() {
     this.position = -this.value * this.spacingCalc;
     this.inputValue = this.value;
+    this.lastBuzzAt = this.value;
   },
 
   mounted() {
@@ -180,6 +184,12 @@ export default {
 
       if (isExact) {
         context.strokeStyle = "#ff0000";
+        if (this.mouseIsDown && this.lastBuzzAt !== value) {
+          this.lastBuzzAt = value;
+          vibrate();
+        }
+      } else if (this.mouseIsDown) {
+        this.lastBuzzAt = null;
       }
 
       context.beginPath();
