@@ -30,6 +30,10 @@ async function save(filePath) {
   } catch (e) {
     console.error(e);
   }
+
+  windows["mainWindow"].setRepresentedFilename(lastFileSavedPath);
+  windows["mainWindow"].setDocumentEdited(false);
+  windows["mainWindow"].setTitle(path.basename(lastFileSavedPath));
 }
 
 async function writePresetToFile(filePath) {
@@ -99,6 +103,9 @@ export function generateMenuTemplate() {
             if (!result.canceled) {
               const filePath = result.filePaths[0];
               openFile(filePath);
+              windows["mainWindow"].setRepresentedFilename(filePath);
+              windows["mainWindow"].setDocumentEdited(false);
+              windows["mainWindow"].setTitle(path.basename(filePath));
             }
           }
         },
