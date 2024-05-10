@@ -1,0 +1,156 @@
+.lm_tab[title="hidden"] {
+  display: none !important;
+}
+
+.lm_goldenlayout {
+  background: #2D2D2D
+}
+
+.lm_content {
+  background: #151515;
+  color:  #ffffff;
+}
+
+.lm_content .glComponent {
+  padding: 8px;
+}
+
+.lm_dragProxy .lm_content {
+  box-shadow: 2px 2px 4px rgba(0,0,0,0.2);
+  box-sizing: border-box;
+}
+
+.lm_dropTargetIndicator {
+  box-shadow: inset 0 0 30px rgba(0,0,0,0.4);
+  outline: 1px dashed #cccccc;
+  margin: 1px;
+  transition: all 200ms ease;
+}
+
+.lm_dropTargetIndicator .lm_inner {
+  background: #000000;
+  opacity: .1;
+}
+
+.lm_splitter {
+  background: #999999;
+  opacity: .001;
+  transition: opacity 200ms ease;
+}
+
+.lm_splitter:hover,
+.lm_splitter.lm_dragging {
+  background: var(--focus-color);
+  opacity: 1;
+}
+
+.lm_header {
+  height: 20px;
+  z-index:unset;
+}
+
+.lm_header + .lm_items .lm_header {
+  border-top: 1px solid var(--foreground-color-4);
+  background-color: var(--background-color-3);
+}
+
+.lm_header .lm_tabdropdown_list {
+  box-shadow: 0px 0px 10px 1px rgb(0 0 0 / 60%);
+}
+
+
+.lm_header.lm_selectable {
+  cursor: pointer;
+}
+
+.lm_header .lm_tab {
+  font-family: inherit;
+  font-size: 12px;
+  background: #484848;
+  color: #FFFFFF;
+  padding: 2px 8px;
+
+  box-shadow: none;
+  line-height: 1;
+  border: none;
+  margin: 0;
+}
+
+.lm_header .lm_tab .lm_title {
+  padding-top: 1px;
+}
+/*
+.lm_header .lm_tab .lm_close_tab {
+  width: 11px;
+  height: 11px;
+  background-position: center center;
+  background-repeat: no-repeat;
+  right: 6px;
+  top: 4px;
+  opacity: .4;
+} */
+
+/* .lm_header .lm_tab .lm_close_tab:hover {
+  opacity: 1;
+} */
+
+.lm_header .lm_tab.lm_active {
+  border-bottom: none;
+  background: #151515;
+  color: #FFFFFF;
+  box-shadow: none;
+}
+
+/* .lm_header .lm_tab.lm_active .lm_close_tab {
+  opacity: 1;
+} */
+
+.lm_dragProxy.lm_bottom .lm_header .lm_tab.lm_active,
+.lm_stack.lm_bottom .lm_header .lm_tab.lm_active {
+  box-shadow: none;
+}
+
+.lm_selected .lm_header {
+  background-color: #452500;
+}
+
+/* .lm_tab:hover,.lm_tab.lm_active {
+  background: var(--foreground-color-4);
+  color: var(--foreground-color-1);
+} */
+
+.lm_header .lm_controls .lm_tabdropdown:before {
+  color: #000000;
+}
+
+/* .lm_controls > li {
+  position: relative;
+  background-position: center center;
+  background-repeat: no-repeat;
+  opacity: .4;
+  transition: opacity 300ms ease;
+} */
+
+.lm_transition_indicator {
+  background-color: #000000;
+  border: 1px dashed #555555;
+}
+
+.lm_popin {
+  cursor: pointer;
+}
+/*
+.lm_popin .lm_bg {
+  background: #000000;
+  opacity: .7;
+}
+
+.lm_popin .lm_icon {
+  background-position: center center;
+  background-repeat: no-repeat;
+  opacity: .7;
+}
+
+.lm_popin:hover .lm_icon {
+  opacity: 1;
+} */

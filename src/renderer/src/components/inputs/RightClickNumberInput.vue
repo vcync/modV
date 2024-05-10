@@ -1,0 +1,77 @@
+<template>
+  <div v-tooltip="{ visible: !editMode }">
+    <div class="slot" v-show="!editMode" @click.right.stop="toggleEditMode">
+      <slot></slot>
+    </div>
+
+    <Number
+      v-model="inputValue"
+      type="number"
+      :step="step"
+      @keypress.enter="toggleEditMode"
+      @click.right.stop="toggleEditMode"
+      @input="numberInputHandler"
+      v-show="editMode"
+      ref="input"
+    />
+  </div>
+</template>
+
+<script>
+export default {
+  props: {
+    min: {
+      default: -1
+    },
+    max: {
+      default: 1
+    },
+    step: {
+      default: 0.001
+    },
+  },
+
+  data() {
+    return {
+      editMode: false,
+      inputValue: 0
+    };
+  },
+
+  created() {
+    this.inputValue = this.value;
+  },
+
+  methods: {
+    numberInputHandler() {
+      this.$emit("input", this.inputValue);
+    },
+
+    toggleEditMode(e) {
+      e.preventDefault();
+      this.editMode = !this.editMode;
+
+      if (this.editMode) {
+        this.$refs.input.focus();
+      }
+    }
+  },
+
+  watch: {
+    value(value) {
+      if (value < this.min || value > this.max) {
+        return false;
+      }
+
+      this.inputValue = value;
+    }
+  }
+};
+</script>
+
+<style scoped>
+.slot {
+  display: flex;
+  align-items: center;
+}
+</style>
