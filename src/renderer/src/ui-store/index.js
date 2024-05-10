@@ -1,16 +1,13 @@
-import Vue from "vue";
-import Vuex from "vuex";
+import { createStore } from "vuex";
 
-import dialogs from "./modules/dialogs.js"
-import focus from "./modules/focus.js"
-import infoView from "./modules/infoView.js"
-import search from "./modules/search.js"
-import uiGroups from "./modules/ui-groups.js"
-import uiModules from "./modules/ui-modules.js"
+import dialogs from "./modules/dialogs.js";
+import focus from "./modules/focus.js";
+import infoView from "./modules/infoView.js";
+import search from "./modules/search.js";
+import uiGroups from "./modules/ui-groups.js";
+import uiModules from "./modules/ui-modules.js";
 
-Vue.use(Vuex);
-
-export default new Vuex.Store({
+export default createStore({
   modules: {
     dialogs,
     focus,
@@ -19,5 +16,5 @@ export default new Vuex.Store({
     uiGroups,
     uiModules,
   },
-  strict: false
+  strict: false,
 });

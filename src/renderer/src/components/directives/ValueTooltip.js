@@ -1,5 +1,3 @@
-import Vue from "vue";
-
 const TOOLTIP_ID = "modv-tooltip";
 let tooltip = null;
 let pre = null;
@@ -40,11 +38,11 @@ function setTooltipPosition(e) {
 
     const x = Math.min(
       Math.max(mx, 0),
-      document.body.clientWidth - tooltipWidth
+      document.body.clientWidth - tooltipWidth,
     );
     const y = Math.min(
       Math.max(my, 0),
-      document.body.clientHeight - tooltipHeight
+      document.body.clientHeight - tooltipHeight,
     );
 
     tooltip.style.left = `${x}px`;
@@ -152,25 +150,27 @@ function setTooltipVisibility(visible) {
   }
 }
 
-Vue.directive("tooltip", {
-  inserted(el, { value: { visible, mouseover, message } = {} }) {
-    isVisible = visible ?? true;
+export const installValueTooltip = (app) => {
+  app.directive("tooltip", {
+    inserted(el, { value: { visible, mouseover, message } = {} }) {
+      isVisible = visible ?? true;
 
-    if (!mouseover) {
-      el.addEventListener("mousedown", mouseDown);
-    } else {
-      el.addEventListener("mouseover", e => mouseOver(e, message));
-      el.addEventListener("mouseout", mouseUp);
-    }
-  },
+      if (!mouseover) {
+        el.addEventListener("mousedown", mouseDown);
+      } else {
+        el.addEventListener("mouseover", (e) => mouseOver(e, message));
+        el.addEventListener("mouseout", mouseUp);
+      }
+    },
 
-  update(el, { value: { visible } }) {
-    if (isVisible !== visible) {
-      isVisible = visible;
-    }
-  },
+    update(el, { value: { visible } }) {
+      if (isVisible !== visible) {
+        isVisible = visible;
+      }
+    },
 
-  unbind() {
-    cleanUp();
-  }
-});
+    unbind() {
+      cleanUp();
+    },
+  });
+};

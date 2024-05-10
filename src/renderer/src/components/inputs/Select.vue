@@ -1,9 +1,9 @@
 <template>
   <label class="select">
     <select
-      v-bind="$props"
-      v-on="listeners"
-      @change="$emit('input', $event.target.value)"
+      v-bind="attrs"
+      :value="modelValue"
+      @change="$emit('update:modelValue', $event.target.value)"
     >
       <slot />
     </select>
@@ -12,18 +12,23 @@
 
 <script>
 export default {
-  props: ["value"],
+  props: {
+    modelValue: {
+      type: undefined,
+    },
+  },
+
+  emits: ["update:modelValue"],
 
   computed: {
-    listeners() {
-      // eslint-disable vue/no-deprecated-dollar-listeners-api
-      const listeners = { ...this.$listeners };
-      delete listeners.change;
-      delete listeners.input;
+    attrs() {
+      const attrs = { ...this.$attrs };
+      delete attrs.onChange;
+      delete attrs.onInput;
 
-      return listeners;
-    }
-  }
+      return attrs;
+    },
+  },
 };
 </script>
 

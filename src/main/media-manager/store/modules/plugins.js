@@ -1,5 +1,3 @@
-import Vue from "vue";
-
 function initialState() {
   /**
    * Holds Plugins
@@ -8,7 +6,7 @@ function initialState() {
    */
   return {
     plugins: {},
-    pluginData: {}
+    pluginData: {},
   };
 }
 
@@ -16,21 +14,21 @@ const getters = {};
 
 const actions = {
   addMedia({ commit }, { project, folder, item }) {
-    return new Promise(resolve => {
+    return new Promise((resolve) => {
       commit("ADD", { project, folder, item });
       resolve();
     });
-  }
+  },
 };
 
 const mutations = {
   ADD(state, { project, folder, item }) {
     if (!state[project]) {
-      Vue.set(state, project, {});
+      state[project] = {};
     }
 
     if (!state[project][folder]) {
-      Vue.set(state[project], folder, []);
+      state[project][folder] = [];
     }
 
     state[project][folder].push(item);
@@ -44,7 +42,7 @@ const mutations = {
 
       state[key] = s[key];
     }
-  }
+  },
 };
 
 export default {
@@ -52,5 +50,5 @@ export default {
   state: initialState,
   getters,
   actions,
-  mutations
+  mutations,
 };

@@ -1,32 +1,30 @@
 <template>
-  <!-- eslint-disable vue/no-deprecated-dollar-listeners-api -->
   <input
-    type="number"
     ref="input"
-    v-on="listeners"
-    @input="$emit('input', parseFloat($event.target.value, 10))"
-    v-bind="$props"
+    type="number"
+    v-bind="{ ...attrs, min, max, step, value: modelValue }"
+    @input="$emit('update:modelValue', parseFloat($event.target.value, 10))"
   />
 </template>
 
 <script>
 export default {
-  props: ["min", "max", "step", "value"],
+  props: ["min", "max", "step", "modelValue"],
+  emits: ["update:modelValue"],
+
+  computed: {
+    attrs() {
+      const attrs = { ...this.$attrs };
+      delete attrs.onInput;
+
+      return attrs;
+    },
+  },
   methods: {
     focus() {
       this.$refs.input.focus();
-    }
+    },
   },
-
-  computed: {
-    listeners() {
-      // eslint-disable vue/no-deprecated-dollar-listeners-api
-      const listeners = { ...this.$listeners };
-      delete listeners.input;
-
-      return listeners;
-    }
-  }
 };
 </script>
 

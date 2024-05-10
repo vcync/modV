@@ -6,7 +6,7 @@
       terms: ['group'],
       title: name,
       type: 'Group',
-      focusElement: true
+      focusElement: true,
     }"
     v-contextMenu="() => GroupContextMenu({ group })"
     tabindex="0"
@@ -26,7 +26,7 @@
             @mousedown="focusInput(group.enabledInputId, 'Enable')"
             :class="{
               'has-link': hasLink(group.enabledInputId),
-              focused: isFocused(group.enabledInputId)
+              focused: isFocused(group.enabledInputId),
             }"
           >
             <c span="2">Enable</c>
@@ -39,7 +39,7 @@
             @mousedown="focusInput(group.inheritInputId, 'Inherit')"
             :class="{
               'has-link': hasLink(group.inheritInputId),
-              focused: isFocused(group.inheritInputId)
+              focused: isFocused(group.inheritInputId),
             }"
           >
             <c span="2">Inherit</c>
@@ -55,8 +55,9 @@
                   v-for="group in groups"
                   :key="group.id"
                   :value="group.id"
-                  >{{ group.name }}</option
                 >
+                  {{ group.name }}
+                </option>
               </Select>
             </c>
           </grid>
@@ -68,7 +69,7 @@
             @mousedown="focusInput(group.clearingInputId, 'Clearing')"
             :class="{
               'has-link': hasLink(group.clearingInputId),
-              focused: isFocused(group.clearingInputId)
+              focused: isFocused(group.clearingInputId),
             }"
           >
             <c span="2">Clearing</c>
@@ -88,7 +89,7 @@
             @mousedown="focusInput(group.pipelineInputId, 'Pipeline')"
             :class="{
               'has-link': hasLink(group.pipelineInputId),
-              focused: isFocused(group.pipelineInputId)
+              focused: isFocused(group.pipelineInputId),
             }"
           >
             <c span="2">Pipeline</c>
@@ -108,7 +109,7 @@
             @mousedown="focusInput(group.alphaInputId, 'Alpha')"
             :class="{
               'has-link': hasLink(group.alphaInputId),
-              focused: isFocused(group.alphaInputId)
+              focused: isFocused(group.alphaInputId),
             }"
           >
             <c span="2">Alpha</c>
@@ -132,7 +133,7 @@
             "
             :class="{
               'has-link': hasLink(group.compositeOperationInputId),
-              focused: isFocused(group.compositeOperationInputId)
+              focused: isFocused(group.compositeOperationInputId),
             }"
           >
             <c span="2">Blend</c>
@@ -151,8 +152,9 @@
                     v-for="mode in group.children"
                     :value="mode.value"
                     :key="mode.label"
-                    >{{ mode.label }}</option
                   >
+                    {{ mode.label }}
+                  </option>
                 </optgroup>
               </Select>
             </c>
@@ -241,7 +243,7 @@
 </template>
 
 <script>
-import { Container, Draggable } from "vue-smooth-dnd";
+import { Container, Draggable } from "vue3-smooth-dnd";
 import constants from "../application/constants";
 import ActiveModule from "./ActiveModule.vue";
 import compositeOperations from "../util/composite-operations.js";
@@ -272,14 +274,14 @@ export default {
   props: {
     groupId: {
       type: String,
-      required: true
-    }
+      required: true,
+    },
   },
 
   components: {
     ActiveModule,
     Container,
-    Draggable
+    Draggable,
   },
 
   data() {
@@ -292,7 +294,7 @@ export default {
       inheritanceSelection: -1,
       GroupContextMenu,
       grabbing: false,
-      localModules: []
+      localModules: [],
     };
   },
 
@@ -306,19 +308,19 @@ export default {
     }
   },
 
-  beforeDestroy() {
+  beforeUnmount() {
     window.removeEventListener("mousedown", this.endNameEditable);
   },
 
   computed: {
     groups() {
       return this.$modV.store.state.groups.groups.filter(
-        group => group.name !== constants.GALLERY_GROUP_NAME
+        (group) => group.name !== constants.GALLERY_GROUP_NAME,
       );
     },
 
     group() {
-      return this.groups.filter(group => group.id === this.groupId)[0];
+      return this.groups.filter((group) => group.id === this.groupId)[0];
     },
 
     name() {
@@ -336,9 +338,9 @@ export default {
         this.localModules = modules;
         this.$modV.store.commit("groups/REPLACE_GROUP_MODULES", {
           groupId: this.groupId,
-          modules
+          modules,
         });
-      }
+      },
     },
 
     focusedGroup() {
@@ -364,10 +366,10 @@ export default {
         this.$modV.store.commit("groups/UPDATE_GROUP", {
           groupId: this.groupId,
           data: {
-            enabled: value
-          }
+            enabled: value,
+          },
         });
-      }
+      },
     },
 
     inherit: {
@@ -379,10 +381,10 @@ export default {
         this.$modV.store.commit("groups/UPDATE_GROUP", {
           groupId: this.groupId,
           data: {
-            inherit: value
-          }
+            inherit: value,
+          },
         });
-      }
+      },
     },
 
     inheritFrom() {
@@ -398,10 +400,10 @@ export default {
         this.$modV.store.commit("groups/UPDATE_GROUP", {
           groupId: this.groupId,
           data: {
-            pipeline: value
-          }
+            pipeline: value,
+          },
         });
-      }
+      },
     },
 
     clearing: {
@@ -413,10 +415,10 @@ export default {
         this.$modV.store.commit("groups/UPDATE_GROUP", {
           groupId: this.groupId,
           data: {
-            clearing: value
-          }
+            clearing: value,
+          },
         });
-      }
+      },
     },
 
     alpha: {
@@ -428,10 +430,10 @@ export default {
         this.$modV.store.commit("groups/UPDATE_GROUP", {
           groupId: this.groupId,
           data: {
-            alpha: value
-          }
+            alpha: value,
+          },
         });
-      }
+      },
     },
 
     blendMode: {
@@ -443,11 +445,11 @@ export default {
         this.$modV.store.commit("groups/UPDATE_GROUP", {
           groupId: this.groupId,
           data: {
-            compositeOperation: value
-          }
+            compositeOperation: value,
+          },
         });
-      }
-    }
+      },
+    },
   },
 
   methods: {
@@ -461,13 +463,13 @@ export default {
       if (collection === "gallery") {
         const module = await this.$modV.store.dispatch(
           "modules/makeActiveModule",
-          { moduleName }
+          { moduleName },
         );
 
         this.$modV.store.commit("groups/ADD_MODULE_TO_GROUP", {
           moduleId: module.$id,
           groupId: this.groupId,
-          position: e.addedIndex
+          position: e.addedIndex,
         });
       } else if (collection === "layer") {
         e.payload = e.payload.moduleId;
@@ -485,7 +487,7 @@ export default {
       if (!this.focused) {
         this.$store.dispatch("focus/setFocus", {
           id: this.groupId,
-          type: "group"
+          type: "group",
         });
       }
 
@@ -497,7 +499,7 @@ export default {
 
       this.$store.dispatch("uiModules/removeActiveModule", {
         groupId,
-        moduleId
+        moduleId,
       });
 
       if (this.focused) {
@@ -530,7 +532,7 @@ export default {
       if (trimmedName.length > 0) {
         this.$modV.store.dispatch("groups/updateGroupName", {
           groupId: this.groupId,
-          name: trimmedName
+          name: trimmedName,
         });
       } else {
         this.localName = this.name;
@@ -542,7 +544,7 @@ export default {
     focusInput(id, title) {
       this.$modV.store.dispatch("inputs/setFocusedInput", {
         id,
-        title: `${this.name}: ${title}`
+        title: `${this.name}: ${title}`,
       });
     },
 
@@ -557,7 +559,7 @@ export default {
     removeGroup(e) {
       if (e.keyCode === 8 || e.keyCode === 46) {
         this.$modV.store.dispatch("groups/removeGroup", {
-          groupId: this.groupId
+          groupId: this.groupId,
         });
       }
     },
@@ -570,7 +572,7 @@ export default {
     titleMouseUp() {
       this.grabbing = false;
       window.removeEventListener("mouseup", this.titleMouseUp);
-    }
+    },
   },
 
   watch: {
@@ -593,12 +595,12 @@ export default {
         this.$modV.store.commit("groups/UPDATE_GROUP", {
           groupId: this.groupId,
           data: {
-            inheritFrom
-          }
+            inheritFrom,
+          },
         });
       }
-    }
-  }
+    },
+  },
 };
 </script>
 

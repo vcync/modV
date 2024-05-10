@@ -1,14 +1,18 @@
-import Vue from "vue";
+import { reactive } from "vue";
 import store from "../worker/store";
 
 export default async function getPropDefault(
   module,
   propName,
   prop,
-  useExistingData
+  useExistingData,
 ) {
   const { random, type } = prop;
   let defaultValue = prop.default;
+
+  if (type === "enum") {
+    return prop.enum.find((a) => a.selected)?.value;
+  }
 
   if (store.state.dataTypes[type]) {
     if (!defaultValue && store.state.dataTypes[type].inputs) {
@@ -23,7 +27,7 @@ export default async function getPropDefault(
       return await store.state.dataTypes[type].create(
         propData,
         module.meta.isGallery,
-        useExistingData
+        useExistingData,
       );
     }
   }
@@ -33,7 +37,7 @@ export default async function getPropDefault(
   }
 
   if (Array.isArray(defaultValue)) {
-    defaultValue = Vue.observable(defaultValue);
+    defaultValue = reactive(defaultValue);
   }
 
   if (

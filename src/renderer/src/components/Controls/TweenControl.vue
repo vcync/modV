@@ -3,51 +3,52 @@
     <c span="1">Data</c>
 
     <c span="2">
-      <Textarea :class="color" v-model="modelData" @change="updateValue" />
+      <Textarea v-model="modelData" :class="color" @change="updateValue" />
     </c>
 
     <c span="1+1">Easing</c>
     <c span="2">
       <Select
-        :class="color"
         v-model="modelEasing"
+        :class="color"
         :disabled="!!modelSteps"
-        @input="updateValue"
+        @update:model-value="updateValue"
       >
         <option
           v-for="easing in easings"
           :key="easing.value"
           :value="easing.value"
-          >{{ easing.label }}</option
         >
+          {{ easing.label }}
+        </option>
       </Select>
     </c>
 
     <c span="1+1">Duration</c>
     <c span="2">
       <Number
-        :class="color"
         v-model="modelDuration"
+        :class="color"
         :disabled="modelUseBpm"
-        @input="updateValue"
+        @update:model-value="updateValue"
       />
     </c>
 
     <c span="1+1">Use BPM</c>
     <c
       ><Checkbox
-        :class="color"
         v-model="modelUseBpm"
-        @input="updateValue"
-        emitBoolean
+        :class="color"
+        emit-boolean
+        @update:model-value="updateValue"
     /></c>
 
     <c span="1+1"><label :for="`${111}-bpmDivision`">BPM Division</label></c>
     <c span="2">
       <Select
-        :class="color"
         v-model.number="modelBpmDivision"
-        @input="updateValue"
+        :class="color"
+        @update:model-value="updateValue"
       >
         <option value="1">1</option>
         <option value="2">2</option>
@@ -69,9 +70,9 @@
     </c>
     <c span="2">
       <Checkbox
-        :class="color"
         v-model="modelDurationAsTotalTime"
-        @input="updateValue"
+        :class="color"
+        @update:model-value="updateValue"
       />
     </c>
 
@@ -83,14 +84,19 @@
       </label>
     </c>
     <c span="2">
-      <Number :class="color" v-model.number="modelSteps" @input="updateValue" />
+      <Number
+        v-model.number="modelSteps"
+        :class="color"
+        @update:model-value="updateValue"
+      />
     </c>
   </grid>
 </template>
 
 <script>
 export default {
-  props: ["value", "color"],
+  props: ["modelValue", "color"],
+  emits: ["update:modelValue"],
 
   data() {
     return {
@@ -100,19 +106,36 @@ export default {
       modelUseBpm: true,
       modelBpmDivision: 32,
       modelDurationAsTotalTime: false,
-      modelSteps: 0
+      modelSteps: 0,
     };
-  },
-
-  created() {
-    if (this.value) {
-      this.setDefaultData(this.value);
-    }
   },
 
   computed: {
     easings() {
       return this.$modV.store.state.tweens.easings;
+    },
+  },
+
+  watch: {
+    "$store.state.bpm"(value) {
+      if (this.modelUseBpm) {
+        this.modelDuration = value / this.modelBpmDivision;
+        this.updateValue();
+      }
+    },
+
+    modelValue(value) {
+      if (!value) {
+        this.setDefaultData();
+      } else {
+        this.setData(value);
+      }
+    },
+  },
+
+  created() {
+    if (this.modelValue) {
+      this.setDefaultData(this.modelValue);
     }
   },
 
@@ -126,15 +149,15 @@ export default {
       const durationAsTotalTime = this.modelDurationAsTotalTime;
       const steps = this.modelSteps;
 
-      this.$emit("input", {
-        ...this.value,
+      this.$emit("update:modelValue", {
+        ...this.modelValue,
         data,
         duration,
         easing,
         useBpm,
         bpmDivision,
         durationAsTotalTime,
-        steps
+        steps,
       });
     },
 
@@ -156,26 +179,9 @@ export default {
         useBpm: true,
         bpmDivision: 32,
         durationAsTotalTime: false,
-        steps: 0
+        steps: 0,
       });
-    }
-  },
-
-  watch: {
-    "$store.state.bpm"(value) {
-      if (this.modelUseBpm) {
-        this.modelDuration = value / this.modelBpmDivision;
-        this.updateValue();
-      }
     },
-
-    value(value) {
-      if (!value) {
-        this.setDefaultData();
-      } else {
-        this.setData(value);
-      }
-    }
-  }
+  },
 };
 </script>

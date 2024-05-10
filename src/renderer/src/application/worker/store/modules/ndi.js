@@ -1,5 +1,4 @@
 import { v4 as uuidv4 } from "uuid";
-import Vue from "vue";
 import store from "../";
 import grandiose from "../../../setup-grandiose";
 
@@ -28,8 +27,8 @@ const state = {
   ],
 
   discoveryOptions: {
-    showLocalSources: true
-  }
+    showLocalSources: true,
+  },
 };
 
 function checkCpu() {
@@ -42,7 +41,7 @@ async function waitForFrame(receiverContext) {
   const { receiver, outputId } = receiverContext;
   const {
     context,
-    context: { canvas }
+    context: { canvas },
   } = store.state.outputs.auxillary[outputId];
 
   let dataFrame;
@@ -62,7 +61,7 @@ async function waitForFrame(receiverContext) {
     const ui8c = new Uint8ClampedArray(
       uint8array.buffer,
       uint8array.byteOffset,
-      uint8array.byteLength / Uint8ClampedArray.BYTES_PER_ELEMENT
+      uint8array.byteLength / Uint8ClampedArray.BYTES_PER_ELEMENT,
     );
     const image = new ImageData(ui8c, dataFrame.xres);
 
@@ -88,7 +87,7 @@ const actions = {
     try {
       const sources = await grandiose().find(
         state.discoveryOptions,
-        state.timeout
+        state.timeout,
       );
       commit("SET_SOURCES", sources);
     } catch (e) {
@@ -111,7 +110,7 @@ const actions = {
     const outputContext = await store.dispatch("outputs/getAuxillaryOutput", {
       name: receiverOptions.source.name,
       group: "NDI",
-      reactToResize: false
+      reactToResize: false,
     });
 
     const receiverId = uuidv4();
@@ -119,7 +118,7 @@ const actions = {
       id: receiverId,
       outputId: outputContext.id,
       receiver,
-      enabled: false
+      enabled: false,
     };
 
     commit("ADD_RECIEVER", receiverContext);
@@ -161,16 +160,16 @@ const actions = {
     }
 
     await store.dispatch("ndi/disableReceiver", {
-      receiverId: receiverContext.id
+      receiverId: receiverContext.id,
     });
 
     await store.dispatch(
       "outputs/removeAuxillaryOutput",
-      receiverContext.outputId
+      receiverContext.outputId,
     );
 
     commit("DELETE_RECIEVER", receiverContext);
-  }
+  },
 };
 
 const mutations = {
@@ -187,21 +186,21 @@ const mutations = {
   },
 
   ADD_RECIEVER(state, receiverContext) {
-    Vue.set(state.receivers, receiverContext.id, receiverContext);
+    state.receivers[receiverContext.id] = receiverContext;
   },
 
   UPDATE_RECIEVER(state, receiverContext) {
-    Vue.set(state.receivers, receiverContext.id, receiverContext);
+    state.receivers[receiverContext.id] = receiverContext;
   },
 
   DELETE_RECIEVER(state, receiverContext) {
-    Vue.delete(state.receivers, receiverContext.id);
-  }
+    delete state.receivers[receiverContext.id];
+  },
 };
 
 export default {
   namespaced: true,
   state,
   actions,
-  mutations
+  mutations,
 };

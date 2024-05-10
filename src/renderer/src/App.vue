@@ -1,23 +1,20 @@
 <template>
   <main id="app">
-    <!-- <golden-layout
-      class="hscreen"
-      :showCloseIcon="false"
-      :showPopoutIcon="false"
-      :showMaximiseIcon="false"
-      :state.sync="layoutState"
-      @state="updateLayoutState"
-      @creation-error="creationError"
-      :headerHeight="18"
+    <golden-layout
       :key="triggerUiRestart"
-    > -->
-      <!-- <gl-col>
+      class="hscreen"
+      :router="false"
+      :config="layoutConfig"
+    >
+      <template #myTemplate> <h1>okokok</h1> </template>
+    </golden-layout>
+    <!-- <gl-col>
         <gl-row>
           <gl-col :closable="false" :minItemWidth="100" id="lr-col">
             <gl-stack title="Groups Stack">
               <gl-component title="Groups" :closable="false"> -->
-                <Groups />
-              <!-- </gl-component>
+    <Groups />
+    <!-- </gl-component>
             </gl-stack>
           </gl-col>
           <gl-col :width="33" :closable="false" ref="rightColumn">
@@ -25,57 +22,57 @@
               <gl-component title="hidden">
                 <!-- hack around dynamic components not working correctly. CSS below hides tabs with the title "hidden"
               </gl-component> -->
-              <div
-                v-for="(module, i) in focusedModules"
-                :key="i"
-                :title="`${module.meta.name} properties`"
-                :closable="false"
-                ref="moduleInspector"
-                :state="{ is: 'dynamic' }"
-              >
-                <ModuleInspector :moduleId="module.$id" />
-              </div>
-            <!-- </gl-stack>
+    <div
+      v-for="(module, i) in focusedModules"
+      :key="i"
+      :title="`${module.meta.name} properties`"
+      :closable="false"
+      ref="moduleInspector"
+      :state="{ is: 'dynamic' }"
+    >
+      <ModuleInspector :moduleId="module.$id" />
+    </div>
+    <!-- </gl-stack>
           </gl-col>
         </gl-row>
         <gl-row>
           <gl-component title="Info View" :closable="false"> -->
-            <InfoView />
-          <!-- </gl-component> -->
+    <InfoView />
+    <!-- </gl-component> -->
 
-          <!-- <gl-component title="Gallery" :closable="false"> -->
-            <Gallery />
-          <!-- </gl-component> -->
+    <!-- <gl-component title="Gallery" :closable="false"> -->
+    <Gallery />
+    <!-- </gl-component> -->
 
-          <!-- <gl-stack title="Input Stack">
+    <!-- <gl-stack title="Input Stack">
             <gl-component title="Input Config" :closable="false"> -->
-              <InputConfig />
-            <!-- </gl-component> -->
+    <InputConfig />
+    <!-- </gl-component> -->
 
-            <!-- <gl-stack title="Input Device Config" :closable="false">
+    <!-- <gl-stack title="Input Device Config" :closable="false">
               <gl-component title="Audio/Video" :closable="false"> -->
-                <AudioVideoDeviceConfig />
-              <!-- </gl-component>
+    <AudioVideoDeviceConfig />
+    <!-- </gl-component>
               <gl-component title="MIDI" :closable="false"> -->
-                <MIDIDeviceConfig />
-              <!-- </gl-component>
+    <MIDIDeviceConfig />
+    <!-- </gl-component>
               <gl-component title="BPM" :closable="false"> -->
-                <BPMConfig />
-              <!-- </gl-component>
+    <BPMConfig />
+    <!-- </gl-component>
               <gl-component title="NDI" :closable="false"> -->
-                <NDIConfig />
-              <!-- </gl-component>
+    <NDIConfig />
+    <!-- </gl-component>
             </gl-stack> -->
 
-            <!-- <gl-component title="Plugins" :closable="false"> -->
-              <Plugins />
-            <!-- </gl-component>
+    <!-- <gl-component title="Plugins" :closable="false"> -->
+    <Plugins />
+    <!-- </gl-component>
           </gl-stack> -->
 
-          <!-- <gl-stack title="Preview Stack">
+    <!-- <gl-stack title="Preview Stack">
             <gl-component title="Preview" :closable="false"> -->
-              <Preview />
-            <!-- </gl-component>
+    <Preview />
+    <!-- </gl-component>
           </gl-stack>
         </gl-row>
       </gl-col>
@@ -110,7 +107,8 @@ import Plugins from "./components/Plugins.vue";
 import getNextName from "./application/utils/get-next-name.js";
 import constants from "./application/constants.js";
 
-// import * as GoldenLayout from "golden-layout";
+import { GoldenLayout as GLComponent } from "./v3-gl-ext.es";
+import * as GoldenLayout from "golden-layout";
 const { ipcRenderer } = window.electron;
 
 export default {
@@ -131,7 +129,8 @@ export default {
     Search,
     FrameRateDialog,
     ErrorWatcher,
-    Plugins
+    Plugins,
+    GoldenLayout: GLComponent,
   },
 
   data() {
@@ -142,7 +141,17 @@ export default {
       state: null,
       layoutState: null,
 
-      triggerUiRestart: 0
+      triggerUiRestart: 0,
+
+      layoutConfig: {
+        root: {
+          type: "component",
+          title: "One tab",
+          header: { show: "top" },
+          isClosable: false,
+          componentType: "myTemplate",
+        },
+      },
     };
   },
 
@@ -150,7 +159,7 @@ export default {
     focusedModules() {
       const focusedOrPinned = this.$store.getters["uiModules/focusedOrPinned"];
       const modules = focusedOrPinned.map(
-        id => this.$modV.store.state.modules.active[id]
+        (id) => this.$modV.store.state.modules.active[id],
       );
 
       return modules;
@@ -158,7 +167,7 @@ export default {
 
     focusedActiveModule() {
       return this.$store.state["uiModules"].focused;
-    }
+    },
   },
 
   created() {
@@ -232,14 +241,14 @@ export default {
         }
 
         // eslint-disable-next-line no-for-each/no-for-each
-        childrenToSplice.forEach(index => {
+        childrenToSplice.forEach((index) => {
           content.splice(index, 1);
           config.activeItemIndex = 0;
         });
 
         if (itemsToSplice.length > 0) {
           // eslint-disable-next-line no-for-each/no-for-each
-          itemsToSplice.forEach(index => {
+          itemsToSplice.forEach((index) => {
             config.content.splice(index, 1);
             config.activeItemIndex = 0;
           });
@@ -266,7 +275,7 @@ export default {
 
       window.localStorage.setItem(
         constants.LAYOUT_STATE_KEY,
-        JSON.stringify(GoldenLayout.minifyConfig(cleanedConfig))
+        JSON.stringify(GoldenLayout.minifyConfig(cleanedConfig)),
       );
     },
 
@@ -275,12 +284,12 @@ export default {
 
       const nextKey = await getNextName(
         constants.LAYOUT_STATE_KEY,
-        localStorageKeys
+        localStorageKeys,
       );
       window.localStorage.setItem(nextKey, JSON.stringify(this.layoutState));
 
       console.warn(
-        "Layout could not be restored. Default layout loaded and old layout was saved to a backup local storage key"
+        "Layout could not be restored. Default layout loaded and old layout was saved to a backup local storage key",
       );
 
       this.resetGoldenLayoutState();
@@ -300,20 +309,20 @@ export default {
     restartLayout() {
       this.resetGoldenLayoutState();
       this.triggerUiRestart++;
-    }
+    },
   },
 
   watch: {
     focusedActiveModule(inspectorId) {
       const index = this.$store.state["uiModules"].pinned.findIndex(
-        item => item === inspectorId
+        (item) => item === inspectorId,
       );
 
       if (index > -1) {
         this.$refs.moduleInspector[index].focus();
       }
-    }
-  }
+    },
+  },
 };
 </script>
 

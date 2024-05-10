@@ -1,16 +1,15 @@
 import PromiseWorker from "promise-worker-transferable";
-import Vue from "vue";
+import { reactive } from "vue";
 import { createWebcodecVideo } from "./createWebcodecVideo";
 
 const { app } = window.remote;
 const { ipcRenderer } = window.electron;
 
-
 import {
   setupMedia,
   enumerateDevices,
   getByteFrequencyData,
-  getByteTimeDomainData
+  getByteTimeDomainData,
 } from "./setup-media";
 import setupBeatDetektor from "./setup-beat-detektor";
 import setupMidi from "./setup-midi";
@@ -18,7 +17,7 @@ import store from "./worker/store";
 import windowHandler from "./window-handler";
 import use from "./use";
 import { GROUP_ENABLED } from "./constants";
-import ModVWorker from './worker/index.worker.js?worker'
+import ModVWorker from "./worker/index.worker.js?worker";
 
 let imageBitmap;
 const imageBitmapQueue = [];
@@ -34,7 +33,7 @@ class ModV {
   createWebcodecVideo = createWebcodecVideo;
   use = use;
   debug = false;
-  features = Vue.observable({
+  features = reactive({
     energy: 0,
     rms: 0,
     zcr: 0,
@@ -46,18 +45,18 @@ class ModV {
     spectralSkewness: 0,
     spectralKurtosis: 0,
     perceptualSpread: 0,
-    perceptualSharpness: 0
+    perceptualSharpness: 0,
   });
   videos = {};
 
   _store = store;
   store = {
-    state: store.state
+    state: store.state,
   };
 
   constructor() {
     let resolver = null;
-    this.ready = new Promise(resolve => {
+    this.ready = new Promise((resolve) => {
       resolver = resolve;
     });
     this.$worker = new ModVWorker();
@@ -65,10 +64,10 @@ class ModV {
 
     this.$worker.postMessage({
       type: "__dirname",
-      payload: app.getAppPath()
+      payload: app.getAppPath(),
     });
 
-    this.$worker.addEventListener("message", async e => {
+    this.$worker.addEventListener("message", async (e) => {
       const message = e.data;
       const { type } = message;
 
@@ -91,7 +90,7 @@ class ModV {
         const { video, stream } = this.videos[message.id];
         video.src = "";
         // eslint-disable-next-line no-for-each/no-for-each
-        stream.getTracks().forEach(track => track.stop());
+        stream.getTracks().forEach((track) => track.stop());
         delete this.videos[message.id];
       }
 
@@ -101,7 +100,7 @@ class ModV {
       }
 
       if (type === "worker-setup-complete") {
-         // Make the default group
+        // Make the default group
         this.store.dispatch("groups/createGroup", { enabled: GROUP_ENABLED });
         resolver();
         ipcRenderer.send("modv-ready");
@@ -134,9 +133,9 @@ class ModV {
           {
             type: "commit",
             identifier: args[0],
-            payload: args[1]
+            payload: args[1],
           },
-          args[2]
+          args[2],
         );
       },
 
@@ -146,13 +145,12 @@ class ModV {
             __async: true,
             type: "dispatch",
             identifier: args[0],
-            payload: args[1]
+            payload: args[1],
           },
-          args[2]
+          args[2],
         );
-      }
+      },
     };
-
 
     window.addEventListener("beforeunload", () => true);
   }
@@ -188,9 +186,9 @@ class ModV {
       {
         type: "canvas",
         where: "output",
-        payload: offscreen
+        payload: offscreen,
       },
-      [offscreen]
+      [offscreen],
     );
 
     this.store.dispatch("windows/createWindow");
@@ -219,7 +217,7 @@ class ModV {
       await this.store.dispatch("projects/setCurrentProject", message);
       ipcRenderer.send(
         "current-project",
-        this.store.state.projects.currentProject
+        this.store.state.projects.currentProject,
       );
     });
 
@@ -231,7 +229,7 @@ class ModV {
       this.store.dispatch("modules/updateProp", {
         moduleId,
         prop,
-        data
+        data,
       });
     });
 
@@ -269,7 +267,7 @@ class ModV {
         const bitmap = imageBitmapQueue.splice(0, 1)[0];
 
         this.$worker.postMessage({ type: "videoFrame", payload: bitmap }, [
-          bitmap
+          bitmap,
         ]);
       }
     }
@@ -277,7 +275,7 @@ class ModV {
 
   loop(delta) {
     const {
-      meyda: { features: featuresToGet }
+      meyda: { features: featuresToGet },
     } = this.store.state;
 
     const features = this.meyda?.get(featuresToGet);
@@ -307,7 +305,7 @@ class ModV {
   async generatePreset() {
     return await this.$asyncWorker.postMessage({
       __async: true,
-      type: "generatePreset"
+      type: "generatePreset",
     });
   }
 

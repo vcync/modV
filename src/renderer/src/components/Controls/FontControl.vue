@@ -8,7 +8,7 @@
       @keypress.enter="selectHighlightedItem"
       @keydown.prevent.up="decrementKeyboardIndex"
       @keydown.prevent.down="incrementKeyboardIndex"
-      :style="{ fontFamily: value }"
+      :style="{ fontFamily: modelValue }"
     />
 
     <ul class="searchable-select" v-show="showFontList" ref="fontList">
@@ -18,8 +18,8 @@
         :key="font"
         @click="clickItem(font)"
         :class="{
-          selected: value === font || index === keyboardSelectedIndex,
-          keyboardSelected: index === keyboardSelectedIndex
+          selected: modelValue === font || index === keyboardSelectedIndex,
+          keyboardSelected: index === keyboardSelectedIndex,
         }"
       >
         <span :style="{ fontFamily: font }">{{ font }}</span>
@@ -32,11 +32,13 @@
 import Fuse from "fuse.js";
 
 export default {
+  emits: ["update:modelValue"],
+
   props: {
-    value: {
+    modelValue: {
       type: String,
-      required: true
-    }
+      required: true,
+    },
   },
 
   data() {
@@ -44,12 +46,12 @@ export default {
       showFontList: false,
       searchTerm: "",
       keyboardSelectedIndex: -1,
-      fuse: null
+      fuse: null,
     };
   },
 
   async created() {
-    this.searchTerm = this.value;
+    this.searchTerm = this.modelValue;
     this.setupFuse();
   },
 
@@ -57,7 +59,7 @@ export default {
     this.scrollSelectedItemIntoView();
   },
 
-  beforeDestroy() {
+  beforeUnmount() {
     window.removeEventListener("click", this.checkClick);
   },
 
@@ -67,22 +69,22 @@ export default {
     },
 
     fontsToShow() {
-      const { fonts, fuse, searchTerm, value } = this;
-      if (value === searchTerm || !searchTerm) {
+      const { fonts, fuse, searchTerm, modelValue } = this;
+      if (modelValue === searchTerm || !searchTerm) {
         return fonts;
       }
 
       return fuse
         .search(searchTerm)
         .sort((a, b) => a.score - b.score)
-        .map(result => result.item);
-    }
+        .map((result) => result.item);
+    },
   },
 
   methods: {
     input(e) {
       const {
-        target: { value }
+        target: { value },
       } = e;
 
       this.searchTerm = value;
@@ -92,14 +94,14 @@ export default {
     },
 
     setFont(font) {
-      this.$emit("input", font);
+      this.$emit("update:modelValue", font);
       this.searchTerm = font;
     },
 
     openFontList() {
       this.showFontList = true;
       window.addEventListener("click", this.checkClick);
-      this.keyboardSelectedIndex = this.fonts.indexOf(this.value);
+      this.keyboardSelectedIndex = this.fonts.indexOf(this.modelValue);
       this.scrollSelectedItemIntoView();
     },
 
@@ -175,16 +177,16 @@ export default {
       const fuse = new Fuse([], { includeScore: true });
 
       // eslint-disable-next-line no-for-each/no-for-each
-      fonts.forEach(fontName => fuse.add(fontName));
+      fonts.forEach((fontName) => fuse.add(fontName));
       this.fuse = fuse;
-    }
+    },
   },
 
   watch: {
     fonts(fonts) {
       this.setupFuse(fonts);
-    }
-  }
+    },
+  },
 };
 </script>
 

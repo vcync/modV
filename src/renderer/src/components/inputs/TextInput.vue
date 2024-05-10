@@ -2,30 +2,31 @@
   <input
     type="text"
     ref="input"
-    v-on="listeners"
-    @input="$emit('input', $event.target.value)"
-    v-bind="$props"
+    v-bind="attrs"
+    :value="modelValue"
+    @input="$emit('update:modelValue', $event.target.value)"
   />
 </template>
 
 <script>
 export default {
-  props: ["value"],
+  emits: ["update:modelValue"],
+  props: ["modelValue"],
   methods: {
     focus() {
       this.$refs.input.focus();
-    }
+    },
   },
 
   computed: {
-    listeners() {
+    attrs() {
       // eslint-disable vue/no-deprecated-dollar-listeners-api
-      const listeners = { ...this.$listeners };
-      delete listeners.input;
+      const attrs = { ...this.$attrs };
+      delete attrs.input;
 
-      return listeners;
-    }
-  }
+      return attrs;
+    },
+  },
 };
 </script>
 

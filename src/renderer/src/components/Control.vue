@@ -1,84 +1,86 @@
+<!-- eslint-disable vue/no-reserved-component-names -->
 <template>
   <grid
-    columns="4"
-    @mousedown="focusInput"
-    :class="{ 'has-link': hasLink, focused: inputIsFocused }"
     :id="`module-control-${inputId}`"
+    columns="4"
+    :class="{ 'has-link': hasLink, focused: inputIsFocused }"
+    @mousedown="focusInput"
   >
     <c span="1">
       <label>{{ title }}</label>
     </c>
     <c span="3">
-      <div class="input" v-if="component">
+      <div v-if="component" class="input">
         <component :is="component" v-model="internalValue" />
       </div>
-      <div class="input" v-else-if="type === 'int' || type === 'float'">
+      <div v-else-if="type === 'int' || type === 'float'" class="input">
         <RangeControl
+          v-model.number="internalValue"
           :min="min"
           :max="max"
           :step="step"
-          v-model.number="internalValue"
           :type="type"
         />
       </div>
-      <div class="input" v-else-if="type === 'tween'">
+      <div v-else-if="type === 'tween'" class="input">
         <TweenControl v-model="internalValue" />
       </div>
-      <div class="input" v-else-if="type === 'vec2'">
+      <div v-else-if="type === 'vec2'" class="input">
         <Vec2DControl
           v-model="internalValue"
-          :inputId="inputId"
-          :inputTitle="inputTitle"
+          :input-id="inputId"
+          :input-title="inputTitle"
         />
       </div>
-      <div class="input" v-else-if="type === 'vec3'">
+      <div v-else-if="type === 'vec3'" class="input">
         <Vec3Control
           v-model="internalValue"
-          :inputId="inputId"
-          :inputTitle="inputTitle"
+          :input-id="inputId"
+          :input-title="inputTitle"
         />
       </div>
-      <div class="input" v-else-if="type === 'vec4'">
+      <div v-else-if="type === 'vec4'" class="input">
         <Vec4Control
           v-model="internalValue"
-          :inputId="inputId"
-          :inputTitle="inputTitle"
+          :input-id="inputId"
+          :input-title="inputTitle"
         />
       </div>
-      <div class="input" v-else-if="type === 'text'">
-        <input type="text" v-model="internalValue" />
+      <div v-else-if="type === 'text'" class="input">
+        <input v-model="internalValue" type="text" />
       </div>
-      <div class="input" v-else-if="type === 'bool'">
+      <div v-else-if="type === 'bool'" class="input">
         <Checkbox
-          :class="{ light: !inputIsFocused }"
           v-model="internalValue"
-          :emitBoolean="true"
+          :class="{ light: !inputIsFocused }"
+          :emit-boolean="true"
         />
       </div>
-      <div class="input" v-else-if="type === 'color'">
+      <div v-else-if="type === 'color'" class="input">
         <ColorControl
           v-model="internalValue"
-          :moduleId="moduleId"
-          :inputId="inputId"
-          :inputTitle="inputTitle"
+          :module-id="moduleId"
+          :input-id="inputId"
+          :input-title="inputTitle"
           :prop="prop"
         />
       </div>
-      <div class="input" v-else-if="type === 'texture'">
+      <div v-else-if="type === 'texture'" class="input">
         <TextureControl v-model="internalValue" />
       </div>
-      <div class="input" v-else-if="type === 'enum'">
+      <div v-else-if="type === 'enum'" class="input">
         <Select v-model="internalValue">
           <option
             v-for="(option, index) in activeProp.enum"
-            :value="option.value"
             :key="index"
+            :value="option.value"
             :selected="option.selected"
-            >{{ option.label }}</option
           >
+            {{ option.label }}
+          </option>
         </Select>
       </div>
-      <div class="input" v-else-if="type === 'event'">
+      <div v-else-if="type === 'event'" class="input">
         <Button
           :class="{ light: !inputIsFocused, active: !!internalValue }"
           @pointerdown="buttonDown"
@@ -107,39 +109,6 @@ import Select from "./inputs/Select.vue";
 import Button from "./inputs/Button.vue";
 
 export default {
-  mixins: [hasLink, inputIsFocused],
-
-  props: {
-    inputTitle: {
-      type: String,
-      default: ""
-    },
-
-    title: {
-      type: String,
-      required: true
-    },
-
-    value: {
-      required: true
-    },
-
-    activeProp: {
-      type: Object,
-      required: true
-    },
-
-    moduleId: {
-      type: String,
-      required: false
-    },
-
-    prop: {
-      type: String,
-      required: false
-    }
-  },
-
   components: {
     RangeControl,
     Vec2DControl,
@@ -151,8 +120,44 @@ export default {
     Vec3Control,
     Vec4Control,
     Select,
-    Button
+    Button,
   },
+
+  mixins: [hasLink, inputIsFocused],
+
+  props: {
+    inputTitle: {
+      type: String,
+      default: "",
+    },
+
+    title: {
+      type: String,
+      required: true,
+    },
+
+    modelValue: {
+      required: true,
+      type: undefined,
+    },
+
+    activeProp: {
+      type: Object,
+      required: true,
+    },
+
+    moduleId: {
+      type: String,
+      required: false,
+    },
+
+    prop: {
+      type: String,
+      required: false,
+    },
+  },
+
+  emits: ["update:modelValue"],
 
   data() {
     return {
@@ -160,34 +165,8 @@ export default {
       dirty: false,
       raf: null,
 
-      modeStep: 0.01
+      modeStep: 0.01,
     };
-  },
-
-  methods: {
-    async queueLoop() {
-      const { queued } = this;
-
-      this.$emit("input", queued);
-
-      this.queued = null;
-      this.dirty = false;
-    },
-
-    focusInput() {
-      this.$modV.store.dispatch("inputs/setFocusedInput", {
-        id: this.inputId,
-        title: this.inputTitle
-      });
-    },
-
-    buttonDown() {
-      this.internalValue = 1;
-    },
-
-    buttonUp() {
-      this.internalValue = 0;
-    }
   },
 
   computed: {
@@ -217,14 +196,14 @@ export default {
 
     internalValue: {
       get() {
-        return this.value;
+        return this.modelValue;
       },
 
       set(value) {
         this.queued = value;
         this.dirty = true;
-      }
-    }
+      },
+    },
   },
 
   watch: {
@@ -232,8 +211,34 @@ export default {
       if (value) {
         this.raf = requestAnimationFrame(this.queueLoop);
       }
-    }
-  }
+    },
+  },
+
+  methods: {
+    async queueLoop() {
+      const { queued } = this;
+
+      this.$emit("update:modelValue", queued);
+
+      this.queued = null;
+      this.dirty = false;
+    },
+
+    focusInput() {
+      this.$modV.store.dispatch("inputs/setFocusedInput", {
+        id: this.inputId,
+        title: this.inputTitle,
+      });
+    },
+
+    buttonDown() {
+      this.internalValue = 1;
+    },
+
+    buttonUp() {
+      this.internalValue = 0;
+    },
+  },
 };
 </script>
 

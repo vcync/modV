@@ -1,21 +1,18 @@
-import Vue from "vue";
-import Vuex from "vuex";
+import { createStore } from "vuex";
 
 import readHandlers from "./modules/read-handlers";
 import saveHandlers from "./modules/save-handlers";
 import media from "./modules/media";
 import plugins from "./modules/plugins";
 
-Vue.use(Vuex);
-
 const modules = {
   readHandlers,
   saveHandlers,
   media,
-  plugins
+  plugins,
 };
 
-const store = new Vuex.Store({
+const store = createStore({
   strict: false,
   modules,
 
@@ -27,8 +24,8 @@ const store = new Vuex.Store({
 
         commit(`${moduleKey}/RESET_STATE`);
       }
-    }
-  }
+    },
+  },
 });
 
 export default store;

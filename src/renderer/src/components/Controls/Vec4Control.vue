@@ -16,7 +16,7 @@
                 :strict="true"
                 :value="x"
                 :step="0.001"
-                @input="emitValue('x', $event)"
+                @update:model-value="emitValue('x', $event)"
               />
             </c>
           </grid>
@@ -33,7 +33,7 @@
                 :strict="true"
                 :value="y"
                 :step="0.001"
-                @input="emitValue('y', $event)"
+                @update:model-value="emitValue('y', $event)"
               />
             </c>
           </grid>
@@ -50,7 +50,7 @@
                 :strict="true"
                 :value="z"
                 :step="0.001"
-                @input="emitValue('z', $event)"
+                @update:model-value="emitValue('z', $event)"
               />
             </c>
           </grid>
@@ -67,7 +67,7 @@
                 :strict="true"
                 :value="w"
                 :step="0.001"
-                @input="emitValue('w', $event)"
+                @update:model-value="emitValue('w', $event)"
               />
             </c>
           </grid>
@@ -91,44 +91,46 @@ import RangeControl from "./RangeControl.vue";
 import { Sketch } from "vue-color";
 
 export default {
+  emits: ["update:modelValue"],
+
   props: {
-    value: {
+    modelValue: {
       type: Array,
-      required: true
+      required: true,
     },
 
     inputId: {
       type: String,
-      required: true
+      required: true,
     },
 
     inputTitle: {
       type: String,
-      required: true
+      required: true,
     },
   },
 
   components: {
     CollapsibleControl,
     RangeControl,
-    Sketch
+    Sketch,
   },
 
   computed: {
     x() {
-      return this.value[0];
+      return this.modelValue[0];
     },
 
     y() {
-      return this.value[1];
+      return this.modelValue[1];
     },
 
     z() {
-      return this.value[2];
+      return this.modelValue[2];
     },
 
     w() {
-      return this.value[3];
+      return this.modelValue[3];
     },
 
     focusedInput() {
@@ -161,7 +163,7 @@ export default {
 
     hasLinkW() {
       return this.$modV.store.state.inputs.inputLinks[`${this.inputId}-3`];
-    }
+    },
   },
 
   methods: {
@@ -170,12 +172,12 @@ export default {
         id: append ? `${this.inputId}-${append}` : this.inputId,
         title: append
           ? `${this.inputTitle}.${label ? label : append}`
-          : this.inputTitle
+          : this.inputTitle,
       });
     },
 
     xyInput(e) {
-      this.$emit("input", e);
+      this.$emit("update:modelValue", e);
     },
 
     emitValue(varName, e) {
@@ -186,12 +188,12 @@ export default {
 
       const value = [vars.x, vars.y, vars.z, vars.w];
 
-      this.$emit("input", value);
+      this.$emit("update:modelValue", value);
     },
 
     updateValue(color) {
       this.color = color.rgba;
-      this.$emit("input", this.rgbaToVec4(this.color));
+      this.$emit("update:modelValue", this.rgbaToVec4(this.color));
     },
 
     rgbaToVec4({ r, g, b, a }) {
@@ -200,24 +202,24 @@ export default {
 
     vec4ToRgba([r, g, b, a]) {
       return { r: r * 255, g: g * 255, b: b * 255, a };
-    }
+    },
   },
 
   data() {
     return {
-      color: { r: 0, g: 0, b: 0, a: 1 }
+      color: { r: 0, g: 0, b: 0, a: 1 },
     };
   },
 
   created() {
-    this.color = this.vec4ToRgba(this.value);
+    this.color = this.vec4ToRgba(this.modelValue);
   },
 
   watch: {
-    value(vec4) {
+    modelValue(vec4) {
       this.color = this.vec4ToRgba(vec4);
-    }
-  }
+    },
+  },
 };
 </script>
 

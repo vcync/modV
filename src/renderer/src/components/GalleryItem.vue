@@ -28,7 +28,7 @@ export default {
       activeModule: { meta: {} },
       badModule: false,
       grabbing: false,
-      GalleryItemContextMenu
+      GalleryItemContextMenu,
     };
   },
 
@@ -46,15 +46,15 @@ export default {
         group: "gallery",
         reactToResize: false,
         width: width / 2,
-        height: height / 2
+        height: height / 2,
       },
-      [offscreen]
+      [offscreen],
     );
 
     const module = await this.$modV.store.dispatch("modules/makeActiveModule", {
       moduleName: this.moduleName,
       moduleMeta: { enabled: false, isGallery: true },
-      skipInit: true
+      skipInit: true,
     });
 
     if (!module) {
@@ -68,34 +68,34 @@ export default {
 
     await this.$modV.store.commit("groups/ADD_MODULE_TO_GROUP", {
       moduleId: this.id,
-      groupId: this.groupId
+      groupId: this.groupId,
     });
 
     await this.$modV.store.dispatch("modules/init", {
       moduleId: this.id,
       width: width / 2,
-      height: height / 2
+      height: height / 2,
     });
 
     await this.$modV.store.dispatch("modules/resize", {
       moduleId: this.id,
       width: width / 2,
-      height: height / 2
+      height: height / 2,
     });
 
     // Synthesise a resize event for smooth-dnd's buggy hit detection to work
     window.dispatchEvent(new Event("resize"));
   },
 
-  async beforeDestroy() {
+  async beforeUnmount() {
     await this.$modV.store.dispatch("modules/removeActiveModule", {
-      moduleId: this.id
+      moduleId: this.id,
     });
 
     this.$modV.store.commit("outputs/REMOVE_AUXILLARY", this.outputId);
     this.$modV.store.commit("groups/REMOVE_MODULE_FROM_GROUP", {
       groupId: this.groupId,
-      moduleId: this.id
+      moduleId: this.id,
     });
 
     // ensure listener cleanup
@@ -108,14 +108,14 @@ export default {
         groupId: this.groupId,
         data: {
           drawToCanvasId: this.outputId,
-          enabled: GROUP_ENABLED
-        }
+          enabled: GROUP_ENABLED,
+        },
       });
 
       this.$modV.store.commit("modules/UPDATE_ACTIVE_MODULE_META", {
         id: this.id,
         metaKey: "enabled",
-        data: true
+        data: true,
       });
     },
 
@@ -123,14 +123,14 @@ export default {
       this.$modV.store.commit("modules/UPDATE_ACTIVE_MODULE_META", {
         id: this.id,
         metaKey: "enabled",
-        data: false
+        data: false,
       });
 
       this.$modV.store.commit("groups/UPDATE_GROUP", {
         groupId: this.groupId,
         data: {
-          enabled: GROUP_DISABLED
-        }
+          enabled: GROUP_DISABLED,
+        },
       });
     },
 
@@ -142,15 +142,15 @@ export default {
 
       const module = await this.$modV.store.dispatch(
         "modules/makeActiveModule",
-        { moduleName: this.moduleName }
+        { moduleName: this.moduleName },
       );
 
       this.$modV.store.commit("groups/ADD_MODULE_TO_GROUP", {
         moduleId: module.$id,
         groupId,
         position: this.$modV.store.state.groups.groups.find(
-          group => group.id === groupId
-        ).modules.length
+          (group) => group.id === groupId,
+        ).modules.length,
       });
     },
 
@@ -162,8 +162,8 @@ export default {
     mouseUp() {
       this.grabbing = false;
       window.removeEventListener("mouseup", this.mouseUp);
-    }
-  }
+    },
+  },
 };
 </script>
 

@@ -1,6 +1,10 @@
 <template>
   <div>
-    <TweenControl color="light" v-model="localCache" @input="manageLink" />
+    <TweenControl
+      v-model="localCache"
+      color="light"
+      @update:model-value="manageLink"
+    />
   </div>
 </template>
 
@@ -9,29 +13,47 @@ import TweenControl from "../Controls/TweenControl.vue";
 
 export default {
   components: {
-    TweenControl
+    TweenControl,
   },
 
   props: {
     inputId: {
       type: String,
-      required: true
-    }
+      required: true,
+    },
   },
 
   data() {
     return {
-      localCache: null
+      localCache: null,
     };
   },
 
   computed: {
     hasLink() {
       return !!this.$modV.store.state.inputs.inputLinks[this.inputId];
-    }
+    },
+  },
+
+  watch: {
+    inputId() {
+      this.refreshCache();
+    },
+  },
+
+  mounted() {
+    this.refreshCache();
   },
 
   methods: {
+    refreshCache() {
+      if (this.hasLink) {
+        this.localCache = this.$modV.store.state.tweens.tweens[this.inputId];
+      } else {
+        this.localCache = null;
+      }
+    },
+
     manageLink() {
       if (this.hasLink && this.localCache.data.length) {
         this.removeLink();
@@ -46,32 +68,26 @@ export default {
     async makeLink() {
       const tween = await this.$modV.store.dispatch("dataTypes/createType", {
         type: "tween",
-        args: { id: this.inputId, ...this.localCache }
+        args: {
+          id: this.inputId,
+          ...JSON.parse(JSON.stringify(this.localCache)),
+        },
       });
 
-      this.hasLink = await this.$modV.store.dispatch("inputs/createInputLink", {
+      await this.$modV.store.dispatch("inputs/createInputLink", {
         inputId: this.inputId,
         type: "state",
         location: `tweens.tweens['${tween.id}'].value[0]`,
-        source: "tween"
+        source: "tween",
       });
     },
 
     removeLink() {
       this.$modV.store.dispatch("inputs/removeInputLink", {
-        inputId: this.inputId
+        inputId: this.inputId,
       });
-    }
+    },
   },
-
-  watch: {
-    inputId() {
-      if (this.hasLink) {
-        this.localCache = this.$modV.store.state.tweens.tweens[this.inputId];
-      } else {
-        this.localCache = null;
-      }
-    }
-  }
 };
 </script>
+import { nextTick } from "vue";

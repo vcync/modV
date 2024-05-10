@@ -1,6 +1,6 @@
 <template>
   <CollapsibleControl>
-    <template v-slot:main>
+    <template #main>
       <c span="4">
         <div class="close-grids">
           <grid
@@ -14,9 +14,9 @@
                 :min="-1"
                 :max="1"
                 :strict="true"
-                :value="x"
+                :model-value="x"
                 :step="0.001"
-                @input="emitValue('x', $event)"
+                @update:model-value="emitValue('x', $event)"
               />
             </c>
           </grid>
@@ -31,9 +31,9 @@
                 :min="-1"
                 :max="1"
                 :strict="true"
-                :value="y"
+                :model-value="y"
                 :step="0.001"
-                @input="emitValue('y', $event)"
+                @update:model-value="emitValue('y', $event)"
               />
             </c>
           </grid>
@@ -41,9 +41,11 @@
       </c>
     </template>
 
-    <template v-slot:body>
+    <template #body>
       <grid columns="4">
-        <c span="2+2"><Vec2DXY :value="value" @input="xyInput"/></c>
+        <c span="2+2">
+          <Vec2DXY :model-value="modelValue" @update:model-value="xyInput" />
+        </c>
       </grid>
     </template>
   </CollapsibleControl>
@@ -55,36 +57,38 @@ import RangeControl from "./RangeControl.vue";
 import Vec2DXY from "./Vec2DXY.vue";
 
 export default {
+  components: {
+    CollapsibleControl,
+    RangeControl,
+    Vec2DXY,
+  },
+
   props: {
-    value: {
+    modelValue: {
       type: Array,
-      required: true
+      required: true,
     },
 
     inputId: {
       type: String,
-      required: true
+      required: true,
     },
 
     inputTitle: {
       type: String,
-      required: true
+      required: true,
     },
   },
 
-  components: {
-    CollapsibleControl,
-    RangeControl,
-    Vec2DXY
-  },
+  emits: ["update:modelValue"],
 
   computed: {
     x() {
-      return this.value[0];
+      return this.modelValue[0];
     },
 
     y() {
-      return this.value[1];
+      return this.modelValue[1];
     },
 
     focusedInput() {
@@ -109,7 +113,7 @@ export default {
 
     hasLinkY() {
       return this.$modV.store.state.inputs.inputLinks[`${this.inputId}-1`];
-    }
+    },
   },
 
   methods: {
@@ -118,12 +122,12 @@ export default {
         id: append ? `${this.inputId}-${append}` : this.inputId,
         title: append
           ? `${this.inputTitle}.${label ? label : append}`
-          : this.inputTitle
+          : this.inputTitle,
       });
     },
 
     xyInput(e) {
-      this.$emit("input", e);
+      this.$emit("update:modelValue", e);
     },
 
     emitValue(varName, e) {
@@ -134,16 +138,9 @@ export default {
 
       const value = [vars.x, vars.y];
 
-      this.$emit("input", value);
-    }
+      this.$emit("update:modelValue", value);
+    },
   },
-
-  watch: {
-    value: {
-      deep: true,
-      handler() {}
-    }
-  }
 };
 </script>
 

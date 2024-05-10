@@ -1,32 +1,31 @@
 <template>
   <div
-    class="device-config"
     v-infoView="{ title: iVTitle, body: iVBody, id: 'Media Input Config' }"
     v-searchTerms="{
       terms: ['audio', 'video', 'input'],
       title: 'Audio/Video Input Config',
-      type: 'Panel'
+      type: 'Panel',
     }"
+    class="device-config"
   >
     <div>
       <grid class="borders">
         <c span="1..">
           <grid columns="4">
-            <c span="1">
-              Audio Input
-            </c>
+            <c span="1">Audio Input</c>
             <c span="3">
               <Select
-                class="light"
                 v-model="currentAudioSource"
+                class="light"
                 :disabled="switchingAudio"
               >
                 <option
                   v-for="input in audioInputs"
                   :key="input.deviceId"
                   :value="input.deviceId"
-                  >{{ input.label }}</option
                 >
+                  {{ input.label }}
+                </option>
               </Select>
             </c>
           </grid>
@@ -34,15 +33,13 @@
 
         <c span="1..">
           <grid columns="4">
-            <c span="1">
-              Audio Gain
-            </c>
+            <c span="1">Audio Gain</c>
             <c span="2">
               <Range
+                v-model="gainRangeValue"
                 :min="minGain"
                 :max="maxGain"
-                step="0.01"
-                v-model="gainRangeValue"
+                :step="0.01"
               />
             </c>
             <c>({{ gainRangeValue.toFixed(2) }})</c>
@@ -51,21 +48,20 @@
 
         <c span="1..">
           <grid columns="4">
-            <c span="1">
-              Video Input
-            </c>
+            <c span="1">Video Input</c>
             <c span="3">
               <Select
-                class="light"
                 v-model="currentVideoSource"
+                class="light"
                 :disabled="switchingVideo"
               >
                 <option
                   v-for="input in videoInputs"
                   :key="input.deviceId"
                   :value="input.deviceId"
-                  >{{ input.label }}</option
                 >
+                  {{ input.label }}
+                </option>
               </Select>
             </c>
           </grid>
@@ -91,18 +87,14 @@ export default {
       iVBody: `Configure your audio and video inputs here. Click "Re-scan Devices" to scan for new sources.`,
       switchingAudio: false,
       switchingVideo: false,
-      gainRangeValue: 1
+      gainRangeValue: 1,
     };
-  },
-
-  created() {
-    this.gainRangeValue = this.$modV.gainNode?.gain.value ?? 1;
   },
 
   computed: {
     audioInputs() {
       const audioInputs = Object.values(
-        this.$modV.store.state.mediaStream.audio
+        this.$modV.store.state.mediaStream.audio,
       );
 
       return audioInputs.sort((a, b) => a.label.localeCompare(b.label));
@@ -110,7 +102,7 @@ export default {
 
     videoInputs() {
       const videoInputs = Object.values(
-        this.$modV.store.state.mediaStream.video
+        this.$modV.store.state.mediaStream.video,
       );
 
       return videoInputs.sort((a, b) => a.label.localeCompare(b.label));
@@ -125,7 +117,7 @@ export default {
         this.switchingAudio = true;
         await this.$modV.setupMedia({ audioId: value });
         this.switchingAudio = false;
-      }
+      },
     },
 
     currentVideoSource: {
@@ -137,29 +129,38 @@ export default {
         this.switchingVideo = true;
         this.$modV.setupMedia({ videoId: value });
         this.switchingVideo = false;
-      }
+      },
     },
 
     maxGain() {
-      return this.$modV.gainNode?.gain.maxValue.toPrecision(1 + 2).split("e")[0];
+      const value = this.$modV.gainNode?.gain.maxValue
+        .toPrecision(1 + 2)
+        .split("e")[0];
+
+      return Number(value);
     },
 
     minGain() {
       return 0;
-    }
-  },
-
-  methods: {
-    renumerate() {
-      this.$modV.enumerateDevices();
-    }
+    },
   },
 
   watch: {
     gainRangeValue(value) {
       this.$modV.gainNode.gain.value = value;
-    }
-  }
+    },
+  },
+
+  created() {
+    const value = this.$modV.gainNode?.gain.value ?? 1;
+    this.gainRangeValue = Number(value);
+  },
+
+  methods: {
+    renumerate() {
+      this.$modV.enumerateDevices();
+    },
+  },
 };
 </script>
 

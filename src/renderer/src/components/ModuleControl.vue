@@ -1,12 +1,12 @@
 <template>
   <Control
-    @input="handleInput"
+    @update:modelValue="handleInput"
     :inputTitle="`${moduleName}: ${title}`"
     :activeProp="activeProp"
     :moduleId="id"
     :prop="prop"
     :title="title"
-    :value="value"
+    :modelValue="value"
     v-contextMenu="
       () =>
         ActiveModuleControlContextMenu({ moduleId: id, propName: prop, title })
@@ -17,27 +17,28 @@
 <script>
 import Control from "./Control.vue";
 import { ActiveModuleControlContextMenu } from "../menus/context/activeModuleControlContextMenu.js";
+import { toRaw } from "vue";
 
 export default {
   components: {
-    Control
+    Control,
   },
 
   props: {
     prop: {
       type: String,
-      required: true
+      required: true,
     },
 
     id: {
       type: String,
-      required: true
-    }
+      required: true,
+    },
   },
 
   data() {
     return {
-      ActiveModuleControlContextMenu
+      ActiveModuleControlContextMenu,
     };
   },
 
@@ -69,7 +70,7 @@ export default {
       }
 
       return propData;
-    }
+    },
   },
 
   methods: {
@@ -78,15 +79,15 @@ export default {
       const data = e;
 
       try {
-        await this.$modV.store.dispatch("modules/updateProp", {
+        this.$modV.store.dispatch("modules/updateProp", {
           moduleId,
           prop,
-          data
+          data: JSON.parse(JSON.stringify(data)),
         });
       } catch (e) {
         console.error(e.message);
       }
-    }
-  }
+    },
+  },
 };
 </script>

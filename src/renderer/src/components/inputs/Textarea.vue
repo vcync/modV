@@ -1,22 +1,23 @@
 <template>
   <textarea
-    @input="$emit('input', $event.target.value)"
-    @change="$emit('change', $event.target.value)"
-    :value="value"
+    :value="modelValue"
     :cols="cols"
     :rows="rows"
+    @input="$emit('update:modelValue', $event.target.value)"
+    @change="$emit('change', $event.target.value)"
   />
 </template>
 
 <script>
 export default {
   props: {
-    value: {},
+    modelValue: {},
     cols: {},
     rows: {
-      default: 3
-    }
-  }
+      default: 3,
+    },
+  },
+  emits: ["update:modelValue", "change"],
 };
 </script>
 

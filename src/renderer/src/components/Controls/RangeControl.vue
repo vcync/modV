@@ -2,13 +2,13 @@
   <RightClickNumberInput
     v-bind="$props"
     v-model="inputValue"
-    @input="numberInputHandler"
+    @update:model-value="numberInputHandler"
   >
-    <div class="range-control" ref="container">
+    <div ref="container" class="range-control">
       <canvas
+        ref="canvas"
         @mousedown.left="requestPointerLock"
         @mouseup.left="exitPointerLock"
-        ref="canvas"
       ></canvas>
     </div>
   </RightClickNumberInput>
@@ -22,23 +22,25 @@ export default {
   props: {
     min: {
       type: Number,
-      default: -1
+      default: -1,
     },
     max: {
       type: Number,
-      default: 1
+      default: 1,
     },
     spacing: {
       type: Number,
-      default: 40
+      default: 40,
     },
     step: {
       type: Number,
-      default: 0.001
+      default: 0.001,
     },
-    default: Number,
-    value: Number
+    modelValue: {
+      type: Number,
+    },
   },
+  emits: ["update:modelValue"],
 
   data() {
     return {
@@ -56,7 +58,7 @@ export default {
       hasOverridenMinMax: false,
       fontFamily: "",
       resizeObserver: null,
-      lastBuzzAt: null
+      lastBuzzAt: null,
     };
   },
 
@@ -69,13 +71,37 @@ export default {
 
     spacingCalc() {
       return (this.spacing * this.spacingScale) / this.spacingModifier;
-    }
+    },
+  },
+
+  watch: {
+    modelValue(value) {
+      if (value < this.min || value > this.max) {
+        return false;
+      }
+
+      this.position = -value * this.spacingCalc;
+      this.inputValue = value;
+      requestAnimationFrame(this.draw);
+    },
+
+    min() {
+      requestAnimationFrame(this.draw);
+    },
+
+    max() {
+      requestAnimationFrame(this.draw);
+    },
+
+    inputValue(value) {
+      this.position = -value * this.spacingCalc;
+    },
   },
 
   created() {
-    this.position = -this.value * this.spacingCalc;
-    this.inputValue = this.value;
-    this.lastBuzzAt = this.value;
+    this.position = -this.modelValue * this.spacingCalc;
+    this.inputValue = this.modelValue;
+    this.lastBuzzAt = this.modelValue;
   },
 
   mounted() {
@@ -83,14 +109,14 @@ export default {
     this.context = this.$refs.canvas.getContext("2d");
 
     this.fontFamily = getComputedStyle(
-      document.documentElement
+      document.documentElement,
     ).getPropertyValue("--sansFont");
 
     window.addEventListener("keydown", this.keyDown);
     window.addEventListener("keyup", this.keyUp);
 
     this.resizeObserver = new ResizeObserver(this.resize).observe(
-      this.$refs.container
+      this.$refs.container,
     );
   },
 
@@ -111,11 +137,11 @@ export default {
         context,
         position,
         spacingCalc,
-        value,
+        modelValue,
         baseLineHeight,
         modifiedLineHeight,
         inbetweenLineHeight,
-        fontFamily
+        fontFamily,
       } = this;
 
       context.fillStyle = "#C4C4C4";
@@ -130,8 +156,8 @@ export default {
         maxIndicators += 1;
       }
 
-      const min = Math.round(value - maxIndicators / 2);
-      const max = Math.round(value + maxIndicators / 2);
+      const min = Math.round(modelValue - maxIndicators / 2);
+      const max = Math.round(modelValue + maxIndicators / 2);
 
       for (let i = min; i < max + 1; i += 1) {
         context.strokeStyle = "#fff";
@@ -140,7 +166,7 @@ export default {
           heightMod = modifiedLineHeight;
         }
 
-        if (i === value) {
+        if (i === modelValue) {
           isExact = true;
         }
 
@@ -158,11 +184,11 @@ export default {
           context.beginPath();
           context.moveTo(
             Math.floor(gap + j * inbetweenGap) + 0.5,
-            inbetweenLineHeight
+            inbetweenLineHeight,
           );
           context.lineTo(
             Math.floor(gap + j * inbetweenGap) + 0.5,
-            canvas.height - inbetweenLineHeight
+            canvas.height - inbetweenLineHeight,
           );
           context.stroke();
         }
@@ -171,7 +197,7 @@ export default {
           gap - 5 * dpr,
           Math.floor(canvas.height / 2) - 5 * dpr,
           10 * dpr,
-          10 * dpr
+          10 * dpr,
         );
 
         context.fillStyle = "#000000";
@@ -183,9 +209,13 @@ export default {
 
       if (isExact) {
         context.strokeStyle = "#ff0000";
-        if (this.mouseIsDown && this.lastBuzzAt !== value) {
-          this.lastBuzzAt = value;
-          window.parseInt.vibrate();
+        if (this.mouseIsDown && this.lastBuzzAt !== modelValue) {
+          this.lastBuzzAt = modelValue;
+          try {
+            window.api.vibrate();
+          } catch (e) {
+            // nothing to do
+          }
         }
       } else if (this.mouseIsDown) {
         this.lastBuzzAt = null;
@@ -199,13 +229,13 @@ export default {
 
     requestPointerLock() {
       const {
-        $refs: { canvas }
+        $refs: { canvas },
       } = this;
 
       document.addEventListener(
         "pointerlockchange",
         this.lockChangeAlert,
-        false
+        false,
       );
       canvas.requestPointerLock();
     },
@@ -215,13 +245,13 @@ export default {
       document.removeEventListener(
         "pointerlockchange",
         this.lockChangeAlert,
-        false
+        false,
       );
     },
 
     lockChangeAlert() {
       const {
-        $refs: { canvas }
+        $refs: { canvas },
       } = this;
 
       if (document.pointerLockElement === canvas) {
@@ -242,7 +272,7 @@ export default {
       document.body.style.cursor = this.lastCursor;
 
       this.spacingModifier = 1;
-      this.position = -this.value * this.spacingCalc;
+      this.position = -this.modelValue * this.spacingCalc;
       this.overrideMinMax = false;
       requestAnimationFrame(this.draw);
     },
@@ -283,7 +313,7 @@ export default {
       this.position = newPosition;
       value = -newPosition / this.spacingCalc;
 
-      this.$emit("input", value);
+      this.$emit("update:modelValue", value);
       requestAnimationFrame(this.draw);
     },
 
@@ -297,12 +327,12 @@ export default {
       this.position = -value * this.spacingCalc;
       const newValue = -this.position / this.spacingCalc;
 
-      this.$emit("input", newValue);
+      this.$emit("update:modelValue", newValue);
       requestAnimationFrame(this.draw);
     },
 
     numberInputHandler() {
-      this.$emit("input", this.inputValue);
+      this.$emit("update:modelValue", this.inputValue);
     },
 
     keyDown(e) {
@@ -322,7 +352,7 @@ export default {
         this.hasOverridenMinMax = true;
       }
 
-      this.position = -this.value * this.spacingCalc;
+      this.position = -this.modelValue * this.spacingCalc;
       requestAnimationFrame(this.draw);
     },
 
@@ -339,7 +369,7 @@ export default {
         this.overrideMinMax = false;
       }
 
-      this.position = -this.value * this.spacingCalc;
+      this.position = -this.modelValue * this.spacingCalc;
       requestAnimationFrame(this.draw);
     },
 
@@ -350,32 +380,8 @@ export default {
       this.canvas.height = height * dpr;
 
       this.draw();
-    }
+    },
   },
-
-  watch: {
-    value(value) {
-      if (value < this.min || value > this.max) {
-        return false;
-      }
-
-      this.position = -value * this.spacingCalc;
-      this.inputValue = value;
-      requestAnimationFrame(this.draw);
-    },
-
-    min() {
-      requestAnimationFrame(this.draw);
-    },
-
-    max() {
-      requestAnimationFrame(this.draw);
-    },
-
-    inputValue(value) {
-      this.position = -value * this.spacingCalc;
-    }
-  }
 };
 </script>
 

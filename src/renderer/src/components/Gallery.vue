@@ -5,7 +5,7 @@
     v-searchTerms="{
       terms: ['gallery'],
       title: 'Gallery',
-      type: 'Panel'
+      type: 'Panel',
     }"
   >
     <grid columns="4">
@@ -31,7 +31,7 @@
               behaviour="copy"
               group-name="modules"
               :get-child-payload="
-                e => getChildPayload('modulesByRenderer', e, renderer)
+                (e) => getChildPayload('modulesByRenderer', e, renderer)
               "
               class="fluid"
             >
@@ -51,7 +51,7 @@
                     terms: [name, 'module'],
                     title: name,
                     focusElement: true,
-                    type: 'Module'
+                    type: 'Module',
                   }"
                 />
               </Draggable>
@@ -68,7 +68,7 @@
 </template>
 
 <script>
-import { Container, Draggable } from "vue-smooth-dnd";
+import { Container, Draggable } from "vue3-smooth-dnd";
 import constants from "../application/constants";
 import GalleryItem from "./GalleryItem.vue";
 
@@ -76,7 +76,7 @@ export default {
   components: {
     Container,
     Draggable,
-    GalleryItem
+    GalleryItem,
   },
 
   data() {
@@ -88,7 +88,7 @@ export default {
       searchTerm: "",
       renderers: {},
       renderersToShow: [],
-      modulesToShow: []
+      modulesToShow: [],
     };
   },
 
@@ -101,8 +101,8 @@ export default {
       return Object.keys(this.registeredModules)
         .sort((a, b) =>
           this.registeredModules[a].meta.name.localeCompare(
-            this.registeredModules[b].meta.name
-          )
+            this.registeredModules[b].meta.name,
+          ),
         )
         .reduce((obj, key) => {
           const module = this.registeredModules[key];
@@ -116,7 +116,7 @@ export default {
 
           return obj;
         }, {});
-    }
+    },
   },
 
   async mounted() {
@@ -124,7 +124,7 @@ export default {
       name: constants.GALLERY_GROUP_NAME,
       hidden: true,
       enabled: true,
-      clearing: true
+      clearing: true,
     });
 
     this.groupId = group.id;
@@ -133,16 +133,16 @@ export default {
     window.addEventListener("keydown", this.keyDownListener.bind(this));
   },
 
-  beforeDestroy() {
+  beforeUnmount() {
     // this.$modV.store.commit("groups/REMOVE_GROUP", this.groupId);
     window.removeEventListener("keydown", this.keyDownListener.bind(this));
   },
 
   methods: {
     getChildPayload(group, index, renderer) {
-      const moduleName = this[group][renderer][
-        Object.keys(this[group][renderer])[index]
-      ].meta.name;
+      const moduleName =
+        this[group][renderer][Object.keys(this[group][renderer])[index]].meta
+          .name;
 
       return { moduleName, collection: "gallery" };
     },
@@ -197,28 +197,31 @@ export default {
 
       const module = await this.$modV.store.dispatch(
         "modules/makeActiveModule",
-        { moduleName: moduleIn.meta.name }
+        { moduleName: moduleIn.meta.name },
       );
 
       this.$modV.store.commit("groups/ADD_MODULE_TO_GROUP", {
         moduleId: module.$id,
         groupId,
         position: this.$modV.store.state.groups.groups.find(
-          group => group.id === groupId
-        ).modules.length
+          (group) => group.id === groupId,
+        ).modules.length,
       });
-    }
+    },
   },
 
   watch: {
-    registeredModules() {
-      this.updateModulesAndRenderersToShow();
+    registeredModules: {
+      handler() {
+        this.updateModulesAndRenderersToShow();
+      },
+      deep: true,
     },
 
     searchTerm() {
       this.updateModulesAndRenderersToShow();
-    }
-  }
+    },
+  },
 };
 </script>
 
@@ -281,3 +284,4 @@ div.gallery > grid {
   height: auto;
 }
 </style>
+import { reactive } from "vue";

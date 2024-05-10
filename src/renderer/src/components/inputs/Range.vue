@@ -1,13 +1,15 @@
 <template>
   <RightClickNumberInput
     v-bind="$props"
-    @input="handleNumberInput"
     class="range-control__number"
-    ><input
+    @update:model-value="handleNumberInput"
+  >
+    <input
       type="range"
-      @input="$emit('input', parseFloat($event.target.value, 10))"
       v-bind="$props"
-  /></RightClickNumberInput>
+      @input="$emit('update:modelValue', parseFloat($event.target.value, 10))"
+    />
+  </RightClickNumberInput>
 </template>
 
 <script>
@@ -19,10 +21,11 @@ export default {
     min: {},
     max: {},
     step: {},
-    value: {
-      default: 0
-    }
+    modelValue: {
+      default: 0,
+    },
   },
+  emits: ["update:modelValue"],
 
   methods: {
     handleNumberInput(value) {
@@ -31,9 +34,9 @@ export default {
         valueOut = 0;
       }
 
-      this.$emit("input", valueOut);
-    }
-  }
+      this.$emit("update:modelValue", valueOut);
+    },
+  },
 };
 </script>
 

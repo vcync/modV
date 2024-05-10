@@ -5,7 +5,7 @@
     v-searchTerms="{
       terms: ['plugin', 'plug in', 'addon', 'add-on'],
       title: 'Plugins',
-      type: 'Panel'
+      type: 'Panel',
     }"
   >
     <CollapsibleRow v-for="plugin in plugins" :key="plugin.id">
@@ -18,12 +18,10 @@
           <grid columns="4">
             <c span="1..">
               <grid columns="4">
-                <c span="1">
-                  Enable
-                </c>
+                <c span="1"> Enable </c>
                 <c span="3">
                   <Checkbox
-                    @input="handleEnableInput(plugin.id)"
+                    @update:model-value="handleEnableInput(plugin.id)"
                     :value="plugin.enabled"
                     :emitBoolean="true"
                     class="light"
@@ -55,25 +53,25 @@ export default {
   components: {
     CollapsibleRow,
     Checkbox,
-    PluginControl
+    PluginControl,
   },
 
   data() {
     return {
       iVTitle: "Plugins",
-      iVBody: "The Plugins panel lists all available Plugins."
+      iVBody: "The Plugins panel lists all available Plugins.",
     };
   },
 
   computed: {
     plugins() {
       return this.$modV.store.state.plugins;
-    }
+    },
   },
 
   methods: {
     handleEnableInput(pluginId) {
-      const plugin = this.plugins.find(item => item.id === pluginId);
+      const plugin = this.plugins.find((item) => item.id === pluginId);
 
       if (!plugin) {
         return;
@@ -81,10 +79,10 @@ export default {
 
       this.$modV.store.dispatch("plugins/setEnabled", {
         pluginId,
-        enabled: !plugin.enabled
+        enabled: !plugin.enabled,
       });
-    }
-  }
+    },
+  },
 };
 </script>
 

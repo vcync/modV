@@ -1,10 +1,10 @@
 <template>
   <Control
-    @input="handleInput"
+    @update:model-value="handleInput"
     :inputTitle="`${pluginName}: ${title}`"
     :activeProp="activeProp"
     :title="title"
-    :value="value"
+    :modelValue="value"
   />
 </template>
 
@@ -13,26 +13,26 @@ import Control from "./Control.vue";
 
 export default {
   components: {
-    Control
+    Control,
   },
 
   props: {
     prop: {
       type: String,
-      required: true
+      required: true,
     },
 
     id: {
       type: String,
-      required: true
-    }
+      required: true,
+    },
   },
 
   computed: {
     plugin() {
       const { id } = this;
 
-      return this.$modV.store.state.plugins.find(item => item.id === id);
+      return this.$modV.store.state.plugins.find((item) => item.id === id);
     },
 
     activeProp() {
@@ -62,7 +62,7 @@ export default {
       }
 
       return propData;
-    }
+    },
   },
 
   methods: {
@@ -74,12 +74,12 @@ export default {
         await this.$modV.store.dispatch("plugins/updateProp", {
           pluginId,
           prop,
-          data
+          data,
         });
       } catch (e) {
         console.error(e.message);
       }
-    }
-  }
+    },
+  },
 };
 </script>

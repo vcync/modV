@@ -2,17 +2,20 @@
   <grid columns="4">
     <c span="1..">
       <grid columns="4">
-        <c span="1">
-          Audio Feature
-        </c>
+        <c span="1"> Audio Feature </c>
         <c span="2">
-          <Select v-model="feature" class="light" @input="checkFeature">
+          <Select
+            v-model="feature"
+            class="light"
+            @update:model-value="checkFeature"
+          >
             <option
               v-for="featureValue in features"
               :key="featureValue"
               :value="featureValue"
-              >{{ featureValue }}</option
             >
+              {{ featureValue }}
+            </option>
           </Select>
         </c>
         <c span="1">
@@ -27,15 +30,13 @@
 
     <c span="1..">
       <grid columns="4">
-        <c span="1">
-          Smoothing
-        </c>
+        <c span="1"> Smoothing </c>
         <c span="3">
           <RangeControl
             min="0"
             :max="MAX_SMOOTHING - SMOOTHING_STEP"
             :step="SMOOTHING_STEP"
-            @input="smoothingInput"
+            @update:model-value="smoothingInput"
             :value="invertedInputValue"
           />
         </c>
@@ -51,12 +52,12 @@ export default {
   props: {
     inputId: {
       type: String,
-      required: true
-    }
+      required: true,
+    },
   },
 
   components: {
-    RangeControl
+    RangeControl,
   },
 
   data() {
@@ -80,12 +81,12 @@ export default {
         "spectralSkewness",
         "spectralKurtosis",
         "perceptualSpread",
-        "perceptualSharpness"
+        "perceptualSharpness",
       ],
 
       feature: "none",
       smoothingId: null,
-      smoothingValue: 0
+      smoothingValue: 0,
     };
   },
 
@@ -108,7 +109,7 @@ export default {
 
     invertedInputValue() {
       return this.MAX_SMOOTHING - this.smoothingValue;
-    }
+    },
   },
 
   methods: {
@@ -129,10 +130,10 @@ export default {
           type: "mutation",
           location: "beats.kick",
           match: {
-            type: "beats/SET_KICK"
+            type: "beats/SET_KICK",
           },
           source: "meyda",
-          args: [this.feature]
+          args: [this.feature],
         });
       } else {
         this.$modV.store.dispatch("inputs/createInputLink", {
@@ -140,14 +141,14 @@ export default {
           type: "getter",
           location: "meyda/getFeature",
           source: "meyda",
-          args: [this.feature]
+          args: [this.feature],
         });
       }
     },
 
     removeLink() {
       this.$modV.store.dispatch("inputs/removeInputLink", {
-        inputId: this.inputId
+        inputId: this.inputId,
       });
     },
 
@@ -159,7 +160,7 @@ export default {
       this.$modV.store.dispatch("inputs/updateInputLink", {
         inputId: this.inputId,
         key: "args",
-        value: value
+        value: value,
       });
     },
 
@@ -173,26 +174,26 @@ export default {
       } else {
         this.makeLink();
       }
-    }
+    },
   },
 
   watch: {
     async smoothingValue(value) {
       if (value && !this.smoothingId) {
         this.smoothingId = await this.$modV.store.dispatch(
-          "meyda/getSmoothingId"
+          "meyda/getSmoothingId",
         );
 
         this.updateInputLinkArgs([
           this.feature,
           this.smoothingId,
-          this.smoothingValue
+          this.smoothingValue,
         ]);
       } else if (value && this.smoothingId) {
         this.updateInputLinkArgs([
           this.feature,
           this.smoothingId,
-          this.smoothingValue
+          this.smoothingValue,
         ]);
       } else if (!value && this.smoothingId) {
         this.smoothingId = null;
@@ -209,7 +210,7 @@ export default {
         this.smoothingId = null;
         this.smoothingValue = this.MAX_SMOOTHING - this.SMOOTHING_STEP;
       }
-    }
-  }
+    },
+  },
 };
 </script>

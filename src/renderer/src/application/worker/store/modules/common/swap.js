@@ -1,5 +1,3 @@
-import Vue from "vue";
-
 /*
  * When loading a preset we want to swap the data from the preset with the current state
  * and make sure that only the "allowed" properties are moved, see sharedPropertyRestrictions.
@@ -8,12 +6,12 @@ import Vue from "vue";
  * glitches in the render loop.
  */
 export function SWAP(swap, getDefault, sharedPropertyRestrictions) {
-  return function(state) {
+  return function (state) {
     const stateKeys = Object.keys(state);
 
     if (stateKeys.length) {
       // eslint-disable-next-line
-      stateKeys.forEach(key => {
+      stateKeys.forEach((key) => {
         const isArray = Array.isArray(state[key]);
 
         if (sharedPropertyRestrictions) {
@@ -25,11 +23,11 @@ export function SWAP(swap, getDefault, sharedPropertyRestrictions) {
               state[key] = state[key].filter(sharedPropertyRestrictions[key]);
             } else {
               const restrictedKeys = sharedPropertyRestrictions[key](
-                state[key]
+                state[key],
               );
 
               // eslint-disable-next-line
-              stateChildKeys.forEach(stateChildKey => {
+              stateChildKeys.forEach((stateChildKey) => {
                 if (restrictedKeys.indexOf(stateChildKey) < 0) {
                   delete state[key][stateChildKey];
                 }
@@ -48,7 +46,7 @@ export function SWAP(swap, getDefault, sharedPropertyRestrictions) {
 
     if (swapKeys.length) {
       // eslint-disable-next-line
-      swapKeys.forEach(key => {
+      swapKeys.forEach((key) => {
         const isArray = Array.isArray(swap[key]);
 
         if (sharedPropertyRestrictions) {
@@ -56,29 +54,29 @@ export function SWAP(swap, getDefault, sharedPropertyRestrictions) {
             const swapChildKeys = Object.keys(swap[key]);
 
             if (isArray) {
-              Vue.set(state, key, [...state[key], ...swap[key]]);
+              state[key] = [...state[key], ...swap[key]];
             } else {
               const restrictedKeys = sharedPropertyRestrictions[key](swap[key]);
 
               // eslint-disable-next-line
-              swapChildKeys.forEach(swapChildKey => {
+              swapChildKeys.forEach((swapChildKey) => {
                 if (restrictedKeys.indexOf(swapChildKey) < 0) {
-                  Vue.set(state[key], swapChildKey, swap[key][swapChildKey]);
+                  state[key][swapChildKey] = swap[key][swapChildKey];
                 }
               });
             }
           } else if (sharedPropertyRestrictions[key]) {
             if (isArray) {
-              Vue.set(state, key, [...swap[key]]);
+              state[key] = [...swap[key]];
             } else {
-              Vue.set(state, key, { ...swap[key] });
+              state[key] = { ...swap[key] };
             }
           }
         } else {
           if (isArray) {
-            Vue.set(state, key, [...state[key], ...swap[key]]);
+            state[key] = [...state[key], ...swap[key]];
           } else {
-            Vue.set(state, key, { ...state[key], ...swap[key] });
+            state[key] = { ...state[key], ...swap[key] };
           }
         }
       });

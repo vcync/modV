@@ -1,6 +1,6 @@
 import store from "./worker/store";
 import uiStore from "../ui-store";
-import Vue from "vue";
+import { app } from "../main";
 
 function camelize(str) {
   return str.replace(/(?:^\w|[A-Z]|\b\w|\s+)/g, (match, index) => {
@@ -29,17 +29,17 @@ export default function installPlugin(plugin) {
   }
 
   if ("galleryTabComponent" in plugin) {
-    Vue.component(plugin.galleryTabComponent.name, plugin.galleryTabComponent);
+    app.component(plugin.galleryTabComponent.name, plugin.galleryTabComponent);
   }
 
   if ("controlPanelComponent" in plugin) {
-    Vue.component(
+    app.component(
       plugin.controlPanelComponent.name,
-      plugin.controlPanelComponent
+      plugin.controlPanelComponent,
     );
   }
 
   if ("install" in plugin) {
-    plugin.install(Vue, store, uiStore);
+    plugin.install(app, store, uiStore);
   }
 }

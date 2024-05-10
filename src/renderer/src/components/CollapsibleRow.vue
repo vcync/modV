@@ -1,23 +1,21 @@
 <template>
-  <fragment>
-    <c span="1.." class="label-row" :class="{ disabled }" v-if="hasLabelSlot">
-      <grid columns="4">
-        <c span="1">
-          <slot name="label" />
-        </c>
-        <c span="3">
-          <Button @mousedown="open = !open">
-            <img
-              :class="{ flip: !open }"
-              src="../assets/graphics/Arrow-vertical.svg"
-            />
-          </Button>
-        </c>
-      </grid>
-    </c>
+  <c v-if="hasLabelSlot" span="1.." class="label-row" :class="{ disabled }">
+    <grid columns="4">
+      <c span="1">
+        <slot name="label" />
+      </c>
+      <c span="3">
+        <Button @mousedown="open = !open">
+          <img
+            :class="{ flip: !open }"
+            src="../assets/graphics/Arrow-vertical.svg"
+          />
+        </Button>
+      </c>
+    </grid>
+  </c>
 
-    <slot name="body" v-if="!disabled && open" />
-  </fragment>
+  <slot v-if="!disabled && open" name="body" />
 </template>
 
 <script>
@@ -25,21 +23,21 @@ export default {
   props: {
     disabled: {
       type: Boolean,
-      default: false
-    }
+      default: false,
+    },
   },
 
   data() {
     return {
-      open: false
+      open: false,
     };
   },
 
   computed: {
     hasLabelSlot() {
       return !!this.$slots.label;
-    }
-  }
+    },
+  },
 };
 </script>
 

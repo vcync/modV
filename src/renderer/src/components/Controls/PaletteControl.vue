@@ -6,11 +6,11 @@
       <div class="swatches">
         <label
           class="swatch"
-          v-for="(color, index) in value.data"
+          v-for="(color, index) in modelValue.data"
           :key="index"
           :style="{
             backgroundColor: `rgb(${color[0]},${color[1]},${color[2]})`,
-            transitionDuration: `${modelDuration / value.data.length}ms`
+            transitionDuration: `${modelDuration / modelValue.data.length}ms`,
           }"
           @click.right="removeSwatch(index)"
         >
@@ -32,8 +32,9 @@
           v-for="easing in easings"
           :key="easing.value"
           :value="easing.value"
-          >{{ easing.label }}</option
         >
+          {{ easing.label }}
+        </option>
       </Select>
     </c>
 
@@ -43,7 +44,7 @@
     </c>
 
     <c span="1+1">Use BPM</c>
-    <c><Checkbox v-model="modelUseBpm"/></c>
+    <c><Checkbox v-model="modelUseBpm" /></c>
 
     <c span="1+1"><label :for="`${111}-bpmDivision`">BPM Division</label></c>
     <c span="2">
@@ -87,81 +88,83 @@
 import Color from "color";
 
 export default {
-  props: ["value"],
+  emits: ["update:modelValue"],
+
+  props: ["modelValue"],
 
   created() {
-    this.modelData = JSON.stringify(this.value.data);
+    this.modelData = JSON.stringify(this.modelValue.data);
   },
 
   computed: {
     modelData: {
       get() {
-        return JSON.stringify(this.value.data);
+        return JSON.stringify(this.modelValue.data);
       },
 
       set(value) {
         this.updateValue("data", JSON.parse(value));
-      }
+      },
     },
 
     modelDirection: {
       get() {
-        return this.value.direction;
+        return this.modelValue.direction;
       },
 
       set(value) {
         this.updateValue("direction", value);
-      }
+      },
     },
 
     modelDuration: {
       get() {
-        return this.value.duration;
+        return this.modelValue.duration;
       },
 
       set(value) {
         this.updateValue("duration", value);
-      }
+      },
     },
 
     modelUseBpm: {
       get() {
-        return this.value.useBpm;
+        return this.modelValue.useBpm;
       },
 
       set(value) {
         this.updateValue("useBpm", value);
-      }
+      },
     },
 
     modelEasing: {
       get() {
-        return this.value.easing;
+        return this.modelValue.easing;
       },
 
       set(value) {
         this.updateValue("easing", value);
-      }
+      },
     },
 
     modelBpmDivision: {
       get() {
-        return this.value.bpmDivision;
+        return this.modelValue.bpmDivision;
       },
 
       set(value) {
         this.updateValue("bpmDivision", value);
-      }
+      },
     },
 
     modelDurationAsTotalTime: {
       get() {
-        return this.value.durationAsTotalTime;
+        return this.modelValue.durationAsTotalTime;
       },
 
       set(value) {
         this.updateValue("durationAsTotalTime", value);
-      }
+      },
     },
 
     easings() {
@@ -170,18 +173,18 @@ export default {
 
     modelSteps: {
       get() {
-        return this.value.steps;
+        return this.modelValue.steps;
       },
 
       set(value) {
         return this.updateValue("steps", value);
-      }
-    }
+      },
+    },
   },
 
   methods: {
     updateValue(key, value) {
-      this.$emit("input", { ...this.value, [key]: value });
+      this.$emit("update:modelValue", { ...this.modelValue, [key]: value });
     },
 
     getHexFromRgb(rgbArray) {
@@ -189,29 +192,27 @@ export default {
     },
 
     updateModel(event, index) {
-      const rgb = Color(event.target.value)
-        .rgb()
-        .array();
-      const newColors = this.value.data.slice();
+      const rgb = Color(event.target.value).rgb().array();
+      const newColors = this.modelValue.data.slice();
       newColors[index] = rgb;
 
-      this.$emit("input", { ...this.value, data: newColors });
+      this.$emit("update:modelValue", { ...this.modelValue, data: newColors });
     },
 
     addSwatch() {
-      const newColors = this.value.data.slice();
+      const newColors = this.modelValue.data.slice();
       newColors[newColors.length] = [0, 0, 0];
 
-      this.$emit("input", { ...this.value, data: newColors });
+      this.$emit("update:modelValue", { ...this.modelValue, data: newColors });
     },
 
     removeSwatch(index) {
-      const newColors = this.value.data.slice();
+      const newColors = this.modelValue.data.slice();
       newColors.splice(index, 1);
 
-      this.$emit("input", { ...this.value, data: newColors });
-    }
-  }
+      this.$emit("update:modelValue", { ...this.modelValue, data: newColors });
+    },
+  },
 };
 </script>
 

@@ -23,6 +23,7 @@ function _interopNamespaceDefault(e) {
 const remoteMain__namespace = /* @__PURE__ */ _interopNamespaceDefault(remoteMain);
 const icon = path.join(__dirname, "../../resources/icon.png");
 remoteMain__namespace.initialize();
+let modVReady = false;
 function createWindow() {
   const mainWindow = new electron.BrowserWindow({
     width: 900,
@@ -47,6 +48,9 @@ function createWindow() {
   mainWindow.setTitle("Untitled");
   mainWindow.on("ready-to-show", () => {
     mainWindow.show();
+  });
+  electron.ipcMain.on("modv-ready", () => {
+    modVReady = true;
   });
   mainWindow.webContents.on(
     "new-window",

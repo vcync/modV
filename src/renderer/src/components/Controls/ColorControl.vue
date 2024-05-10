@@ -27,7 +27,7 @@
               :strict="true"
               :value="red"
               :step="0.001"
-              @input="emitValue('red', $event)"
+              @update:model-value="emitValue('red', $event)"
             />
           </c>
         </grid>
@@ -44,7 +44,7 @@
               :strict="true"
               :value="green"
               :step="0.001"
-              @input="emitValue('green', $event)"
+              @update:model-value="emitValue('green', $event)"
             />
           </c>
         </grid>
@@ -61,7 +61,7 @@
               :strict="true"
               :value="blue"
               :step="0.001"
-              @input="emitValue('blue', $event)"
+              @update:model-value="emitValue('blue', $event)"
             />
           </c>
         </grid>
@@ -78,7 +78,7 @@
               :strict="true"
               :value="alpha"
               :step="0.001"
-              @input="emitValue('alpha', $event)"
+              @update:model-value="emitValue('alpha', $event)"
             />
           </c>
         </grid>
@@ -93,59 +93,60 @@ import RangeControl from "./RangeControl.vue";
 
 const { ipcRenderer } = window.electron;
 
-
 export default {
+  emits: ["update:modelValue"],
+
   props: {
-    value: {
+    modelValue: {
       type: String,
-      required: true
+      required: true,
     },
 
     moduleId: {
       type: String,
-      required: true
+      required: true,
     },
 
     inputId: {
       type: String,
-      required: true
+      required: true,
     },
 
     inputTitle: {
       type: String,
-      required: true
+      required: true,
     },
 
     prop: {
       type: String,
-      required: true
-    }
+      required: true,
+    },
   },
 
   components: {
     CollapsibleControl,
-    RangeControl
+    RangeControl,
   },
 
   computed: {
     red() {
-      return this.value.r;
+      return this.modelValue.r;
     },
 
     green() {
-      return this.value.g;
+      return this.modelValue.g;
     },
 
     blue() {
-      return this.value.b;
+      return this.modelValue.b;
     },
 
     alpha() {
-      return this.value.a;
+      return this.modelValue.a;
     },
 
     cssBackground() {
-      const { r, g, b, a } = this.value;
+      const { r, g, b, a } = this.modelValue;
 
       return `rgba(${r * 255}, ${g * 255}, ${b * 255}, ${a})`;
     },
@@ -179,12 +180,12 @@ export default {
 
     hasLinkA() {
       return this.$modV.store.state.inputs.inputLinks[`${this.inputId}-a`];
-    }
+    },
   },
 
   data() {
     return {
-      pickerWindowId: null
+      pickerWindowId: null,
     };
   },
 
@@ -201,7 +202,7 @@ export default {
         ipcRenderer.sendTo(id, "module-info", {
           moduleId: this.moduleId,
           prop: this.prop,
-          data: this.value
+          data: this.modelValue,
         });
 
         this.windowId = id;
@@ -211,7 +212,7 @@ export default {
     focusInput(append) {
       this.$modV.store.dispatch("inputs/setFocusedInput", {
         id: append ? `${this.inputId}-${append}` : this.inputId,
-        title: append ? `${this.inputTitle}.${append}` : this.inputTitle
+        title: append ? `${this.inputTitle}.${append}` : this.inputTitle,
       });
     },
 
@@ -223,8 +224,8 @@ export default {
 
       const value = { r: vars.red, g: vars.green, b: vars.blue, a: vars.alpha };
 
-      this.$emit("input", value);
-    }
+      this.$emit("update:modelValue", value);
+    },
   },
 
   watch: {
@@ -235,12 +236,12 @@ export default {
           ipcRenderer.sendTo(this.windowId, "module-info", {
             moduleId: this.moduleId,
             prop: this.prop,
-            data: this.value
+            data: this.value,
           });
         }
-      }
-    }
-  }
+      },
+    },
+  },
 };
 </script>
 

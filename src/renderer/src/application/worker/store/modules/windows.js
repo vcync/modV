@@ -1,5 +1,3 @@
-import Vue from "vue";
-
 import { v4 as uuidv4 } from "uuid";
 
 const state = {};
@@ -15,24 +13,24 @@ const actions = {
       y: 0,
       fullscreen: false,
       backgroundColor: "#000",
-      outputId: ""
+      outputId: "",
     };
 
     win.id = uuidv4();
     commit("ADD_WINDOW", win);
 
     return win.id;
-  }
+  },
 };
 
 const mutations = {
   ADD_WINDOW(state, window) {
-    Vue.set(state, window.id, window);
+    state[window.id] = window;
   },
 
   UPDATE_WINDOW(state, { id, key, value }) {
-    Vue.set(state[id], key, value);
-  }
+    state[id][key] = value;
+  },
 
   // REMOVE_WINDOW(state, id) {}
 };
@@ -42,5 +40,5 @@ export default {
   state,
   // getters,
   actions,
-  mutations
+  mutations,
 };

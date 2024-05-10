@@ -7,8 +7,9 @@
           :value="tt"
           :key="tt"
           :selected="type === tt"
-          >{{ tt }}</option
         >
+          {{ tt }}
+        </option>
       </Select>
     </c>
 
@@ -16,7 +17,7 @@
       <div v-if="type === 'group'">
         <Select
           v-model="modelCanvasId"
-          @input="setTexture('group')"
+          @update:model-value="setTexture('group')"
           style="width: 100%"
         >
           <option
@@ -32,7 +33,7 @@
       <div v-if="type === 'canvas'">
         <Select
           v-model="modelCanvasId"
-          @input="setTexture('canvas')"
+          @update:model-value="setTexture('canvas')"
           style="width: 100%"
         >
           <optgroup
@@ -44,8 +45,9 @@
               v-for="output in outputs"
               :key="output.id"
               :value="output.id"
-              >{{ output.name }}</option
             >
+              {{ output.name }}
+            </option>
           </optgroup>
         </Select>
       </div>
@@ -53,7 +55,7 @@
       <div v-if="type === 'image'">
         <Select
           v-model="modelImagePath"
-          @input="setTexture('image')"
+          @update:model-value="setTexture('image')"
           :disabled="!images"
           style="width: 100%"
         >
@@ -62,15 +64,16 @@
             v-for="(image, index) in images"
             :key="index"
             :value="image.path"
-            >{{ image.name }}</option
           >
+            {{ image.name }}
+          </option>
         </Select>
       </div>
 
       <div v-if="type === 'video'">
         <Select
           v-model="modelVideoPath"
-          @input="setTexture('video')"
+          @update:model-value="setTexture('video')"
           :disabled="!videos"
           style="width: 100%"
         >
@@ -79,18 +82,19 @@
             v-for="output in videos"
             :key="output.path"
             :value="output.path"
-            >{{ output.name }}</option
           >
+            {{ output.name }}
+          </option>
         </Select>
       </div>
     </c>
 
     <c span="2">
       <VideoControl
-        v-if="type === 'video' && modelVideoPath && value.id"
-        :video-id="value.id"
-        :paused="value.options.paused ?? false"
-        :playbackrate="value.options.playbackrate ?? 1"
+        v-if="type === 'video' && modelVideoPath && modelValue.id"
+        :video-id="modelValue.id"
+        :paused="modelValue.options.paused ?? false"
+        :playbackrate="modelValue.options.playbackrate ?? 1"
         @pause="videoPause"
         @play="videoPlay"
         @ratechange="videoRateChange"
@@ -104,10 +108,11 @@ import constants from "../../application/constants";
 import { VideoControl } from "./VideoControl.vue";
 
 export default {
-  props: ["value"],
+  emits: ["update:modelValue"],
+  props: ["modelValue"],
 
   components: {
-    VideoControl
+    VideoControl,
   },
 
   data() {
@@ -116,20 +121,22 @@ export default {
       type: "",
       modelImagePath: "",
       modelVideoPath: "",
-      modelCanvasId: ""
+      modelCanvasId: "",
     };
   },
 
   created() {
     this.type =
-      this.value.type && this.value.type.length
-        ? this.value.type
+      this.modelValue?.type && this.modelValue?.type.length
+        ? this.modelValue.type
         : this.textureTypes[0];
     this.modelImagePath =
-      (this.value.type === "image" && this.value.options?.path) || "";
+      (this.modelValue?.type === "image" && this.modelValue?.options?.path) ||
+      "";
     this.modelVideoPath =
-      (this.value.type === "video" && this.value.options?.path) || "";
-    this.modelCanvasId = this.value.options?.id || "";
+      (this.modelValue?.type === "video" && this.modelValue?.options?.path) ||
+      "";
+    this.modelCanvasId = this.modelValue?.options?.id || "";
   },
 
   computed: {
@@ -139,9 +146,9 @@ export default {
 
     groupOutputs() {
       return Object.values(this.auxillaries).filter(
-        auxillary =>
+        (auxillary) =>
           auxillary.group === "group" &&
-          auxillary.name !== constants.GALLERY_GROUP_NAME
+          auxillary.name !== constants.GALLERY_GROUP_NAME,
       );
     },
 
@@ -175,7 +182,7 @@ export default {
           this.$modV.store.state.projects.currentProject
         ].video ?? false
       );
-    }
+    },
   },
 
   methods: {
@@ -190,7 +197,7 @@ export default {
       }
 
       if (type === "video") {
-        if (this.modelVideoPath === this.value?.options?.path) {
+        if (this.modelVideoPath === this.modelValue?.options?.path) {
           return;
         }
 
@@ -207,40 +214,40 @@ export default {
         textureDefinition.options.id = this.modelCanvasId;
       }
 
-      this.$emit("input", textureDefinition);
+      this.$emit("update:modelValue", textureDefinition);
     },
 
     updateTextureDefinition(updatedValues) {
-      this.$emit("input", {
-        ...this.value,
-        ...updatedValues
+      this.$emit("update:modelValue", {
+        ...this.modelValue,
+        ...updatedValues,
       });
     },
 
     videoPause() {
       this.updateTextureDefinition({
-        options: { ...this.value.options, paused: true }
+        options: { ...this.modelValue.options, paused: true },
       });
     },
 
     videoPlay() {
       this.updateTextureDefinition({
-        options: { ...this.value.options, paused: false }
+        options: { ...this.modelValue.options, paused: false },
       });
     },
 
     videoRateChange(playbackrate) {
       this.updateTextureDefinition({
-        options: { ...this.value.options, playbackrate }
+        options: { ...this.modelValue.options, playbackrate },
       });
-    }
+    },
   },
 
   watch: {
     type(value) {
       this.setTexture(value);
-    }
-  }
+    },
+  },
 };
 </script>
 

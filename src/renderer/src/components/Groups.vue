@@ -5,7 +5,7 @@
     v-searchTerms="{
       terms: ['groups', 'layers'],
       title: 'Groups',
-      type: 'Panel'
+      type: 'Panel',
     }"
   >
     <Container
@@ -30,7 +30,7 @@
 </template>
 
 <script>
-import { Container, Draggable } from "vue-smooth-dnd";
+import { Container, Draggable } from "vue3-smooth-dnd";
 import Group from "./Group.vue";
 
 const applyDrag = (arr, dragResult) => {
@@ -57,7 +57,7 @@ export default {
   components: {
     Container,
     Draggable,
-    Group
+    Group,
   },
 
   data() {
@@ -66,7 +66,7 @@ export default {
       iVBody:
         "Groups contain Modules. Modules within Groups can be rearranged to change the drawing order. Groups can also be rearranged by dragging their title bar.",
       module: "",
-      group: ""
+      group: "",
     };
   },
 
@@ -74,20 +74,20 @@ export default {
     groups: {
       get() {
         return this.$modV.store.state.groups.groups.filter(
-          group => !group.hidden
+          (group) => !group.hidden,
         );
       },
 
       async set(value) {
         await this.$modV.store.dispatch("groups/orderByIds", {
-          ids: value.map(group => group.id)
+          ids: value.map((group) => group.id),
         });
-      }
+      },
     },
 
     registeredModules() {
       return this.$modV.store.state.modules.registered;
-    }
+    },
   },
 
   methods: {
@@ -97,8 +97,8 @@ export default {
 
     onDrop(e) {
       this.groups = applyDrag(this.groups, e);
-    }
-  }
+    },
+  },
 };
 </script>
 

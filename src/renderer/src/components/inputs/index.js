@@ -1,4 +1,4 @@
-import Vue from "vue";
+/* eslint-disable vue/no-reserved-component-names */
 import Button from "./Button.vue";
 import Checkbox from "./Checkbox.vue";
 import Number from "./Number.vue";
@@ -7,10 +7,12 @@ import Select from "./Select.vue";
 import Textarea from "./Textarea.vue";
 import TextInput from "./TextInput.vue";
 
-Vue.component("Button", Button);
-Vue.component("Checkbox", Checkbox);
-Vue.component("Number", Number);
-Vue.component("Range", Range);
-Vue.component("Select", Select);
-Vue.component("Textarea", Textarea);
-Vue.component("TextInput", TextInput);
+export const installInputs = (app) => {
+  app.component("Button", Button);
+  app.component("Checkbox", Checkbox);
+  app.component("Number", Number);
+  app.component("Range", Range);
+  app.component("Select", Select);
+  app.component("Textarea", Textarea);
+  app.component("TextInput", TextInput);
+};

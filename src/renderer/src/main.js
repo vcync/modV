@@ -11,17 +11,16 @@
 
 ///
 
-import Vue from "vue";
+import { createApp } from "vue";
 // import vgl from "vue-golden-layout";
 import get from "lodash.get";
-import Fragment from "vue-fragment";
 
-import "./components/inputs/index.js";
+import { installInputs } from "./components/inputs/index.js";
 import ElectronLink from "./components/ElectronLink.vue";
-import "./components/directives/InfoView.js";
-import "./components/directives/Search.js";
-import "./components/directives/ValueTooltip.js";
-import "./components/directives/ContextMenu.js";
+import { InfoView } from "./components/directives/InfoView.js";
+import { installSearch } from "./components/directives/Search.js";
+import { installValueTooltip } from "./components/directives/ValueTooltip.js";
+import { installContextMenu } from "./components/directives/ContextMenu.js";
 
 import App from "./App.vue";
 import modV from "./application";
@@ -29,31 +28,24 @@ import store from "./ui-store";
 
 const { ipcRenderer } = window.electron;
 
-Vue.config.ignoredElements = ["grid", "c"];
-Vue.config.productionTip = false;
-// Vue.use(vgl);
-Vue.use(Fragment.Plugin);
-Vue.component("ElectronLink", ElectronLink);
-
 window.modV = modV;
 
-Object.defineProperty(Vue.prototype, "$modV", {
-  get() {
-    return modV;
-  }
-});
+const app = (window.Vue = createApp(App));
+app.use(store);
 
-window.Vue = new Vue({
-  render: h => h(App),
-  store
-});
+app.config.globalProperties.$modV = modV;
 
-// const app = window.Vue = createApp(App);
-// app.use(store);
+// Vue.config.ignoredElements = ["grid", "c"];
+// Vue.use(vgl);
+app.component("ElectronLink", ElectronLink);
 
-// export {
-//   app
-// }
+installInputs(app);
+app.use(InfoView);
+installSearch(app);
+installValueTooltip(app);
+installContextMenu(app);
+
+export { app };
 
 // For Playwright
 window._get = get;
@@ -62,7 +54,6 @@ async function start() {
   ipcRenderer.send("main-window-created");
   const loadingElement = document.getElementById("loading");
 
-  // eslint-disable-next-line no-for-each/no-for-each
   "loading".split("").forEach((char, index) => {
     const span = document.createElement("span");
     span.textContent = char;
@@ -74,7 +65,7 @@ async function start() {
   modV.setup();
 
   loadingElement.remove();
-  window.Vue.$mount("#app");
+  app.mount("#app");
 }
 
 start();

@@ -1,5 +1,4 @@
-import Vue from "vue";
-import Vuex from "vuex";
+import { createStore } from "vuex";
 import createPersistedState from "vuex-persistedstate";
 
 import beats from "./modules/beats.js";
@@ -27,8 +26,6 @@ import tweens from "./modules/tweens.js";
 import videos from "./modules/videos.js";
 import windows from "./modules/windows.js";
 
-Vue.use(Vuex);
-
 const vuexPlugins = [];
 
 // createPersistedState doesn't work in the worker store, so don't run it there.
@@ -37,13 +34,13 @@ const vuexPlugins = [];
 // we'll need to implement something more complex to commit via postMessage.
 if (self.document !== undefined) {
   const dataState = createPersistedState({
-    paths: ["mediaStream"]
+    paths: ["mediaStream"],
   });
 
   vuexPlugins.push(dataState);
 }
 
-export default new Vuex.Store({
+export default createStore({
   modules: {
     beats,
     dataTypes,
@@ -71,5 +68,5 @@ export default new Vuex.Store({
     windows,
   },
   plugins: vuexPlugins,
-  strict: false
+  strict: false,
 });

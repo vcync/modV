@@ -2,7 +2,6 @@ import streamToBlob from "stream-to-blob";
 import fs from "fs";
 import path from "path";
 
-import Vue from "vue";
 import { v4 as uuidv4 } from "uuid";
 
 import store from "../";
@@ -11,7 +10,7 @@ import { conformFilePath } from "../../../utils/conform-file-path";
 const state = {};
 
 const getters = {
-  image: state => id => state[id]
+  image: (state) => (id) => state[id],
 };
 
 const actions = {
@@ -22,17 +21,13 @@ const actions = {
     try {
       joinedFilePath = path.join(
         store.state.media.path,
-        conformFilePath(filePath)
+        conformFilePath(filePath),
       );
     } catch (e) {
       console.log(e);
     }
 
-    try {
-      stream = fs.createReadStream(joinedFilePath);
-    } catch (error) {
-      throw error;
-    }
+    stream = fs.createReadStream(joinedFilePath);
 
     if (!stream) {
       return {};
@@ -44,13 +39,13 @@ const actions = {
     const id = uuidv4();
     commit("SAVE_IMAGE", { id, imageBitmap });
     return { id };
-  }
+  },
 };
 
 const mutations = {
   SAVE_IMAGE(state, { id, imageBitmap }) {
-    Vue.set(state, id, imageBitmap);
-  }
+    state[id] = imageBitmap;
+  },
 };
 
 export default {
@@ -58,5 +53,5 @@ export default {
   state,
   getters,
   actions,
-  mutations
+  mutations,
 };

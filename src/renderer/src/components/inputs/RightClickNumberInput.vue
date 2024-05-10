@@ -1,18 +1,18 @@
 <template>
   <div v-tooltip="{ visible: !editMode }">
-    <div class="slot" v-show="!editMode" @click.right.stop="toggleEditMode">
+    <div v-show="!editMode" class="slot" @click.right.stop="toggleEditMode">
       <slot></slot>
     </div>
 
     <Number
+      v-show="editMode"
+      ref="input"
       v-model="inputValue"
       type="number"
       :step="step"
       @keypress.enter="toggleEditMode"
       @click.right.stop="toggleEditMode"
-      @input="numberInputHandler"
-      v-show="editMode"
-      ref="input"
+      @update:model-value="numberInputHandler"
     />
   </div>
 </template>
@@ -21,30 +21,43 @@
 export default {
   props: {
     min: {
-      default: -1
+      default: -1,
+      type: Number,
     },
     max: {
-      default: 1
+      default: 1,
+      type: Number,
     },
     step: {
-      default: 0.001
+      default: 0.001,
+      type: Number,
     },
   },
 
   data() {
     return {
       editMode: false,
-      inputValue: 0
+      inputValue: 0,
     };
   },
 
+  watch: {
+    modelValue(value) {
+      if (value < this.min || value > this.max) {
+        return false;
+      }
+
+      this.inputValue = value;
+    },
+  },
+
   created() {
-    this.inputValue = this.value;
+    this.inputValue = this.modelValue;
   },
 
   methods: {
     numberInputHandler() {
-      this.$emit("input", this.inputValue);
+      this.$emit("update:modelValue", this.inputValue);
     },
 
     toggleEditMode(e) {
@@ -54,18 +67,8 @@ export default {
       if (this.editMode) {
         this.$refs.input.focus();
       }
-    }
+    },
   },
-
-  watch: {
-    value(value) {
-      if (value < this.min || value > this.max) {
-        return false;
-      }
-
-      this.inputValue = value;
-    }
-  }
 };
 </script>
 

@@ -11,10 +11,10 @@
         'midi',
         'audio feature',
         'expression',
-        'smoothing'
+        'smoothing',
       ],
       title: 'Input Config',
-      type: 'Panel'
+      type: 'Panel',
     }"
   >
     <div v-if="inputConfig">
@@ -24,9 +24,7 @@
         >
         <c span="1..">
           <grid columns="4">
-            <c span="1">
-              Min. Value
-            </c>
+            <c span="1"> Min. Value </c>
             <c span="3">
               <Number v-model.number="min" min="-100" max="100" />
             </c>
@@ -35,9 +33,7 @@
 
         <c span="1..">
           <grid columns="4">
-            <c span="1">
-              Max. Value
-            </c>
+            <c span="1"> Max. Value </c>
             <c span="3">
               <Number v-model.number="max" min="-100" max="100" />
             </c>
@@ -45,11 +41,9 @@
         </c>
 
         <CollapsibleRow :disabled="source && source !== 'meyda'">
-          <template v-slot:label>
-            Audio
-          </template>
+          <template #label>Audio</template>
 
-          <template v-slot:body>
+          <template #body>
             <c span="1..">
               <AudioFeatures :input-id="inputConfig.id" />
             </c>
@@ -57,11 +51,9 @@
         </CollapsibleRow>
 
         <CollapsibleRow :disabled="source && source !== 'midi'">
-          <template v-slot:label>
-            MIDI
-          </template>
+          <template #label>MIDI</template>
 
-          <template v-slot:body>
+          <template #body>
             <c span="1..">
               <MIDI :input-id="inputConfig.id" />
             </c>
@@ -69,11 +61,9 @@
         </CollapsibleRow>
 
         <CollapsibleRow :disabled="source && source !== 'tween'">
-          <template v-slot:label>
-            Tween
-          </template>
+          <template #label>Tween</template>
 
-          <template v-slot:body>
+          <template #body>
             <c span="1..">
               <Tween :input-id="inputConfig.id" />
             </c>
@@ -81,11 +71,9 @@
         </CollapsibleRow>
 
         <CollapsibleRow>
-          <template v-slot:label>
-            Expression
-          </template>
+          <template #label>Expression</template>
 
-          <template v-slot:body>
+          <template #body>
             <c span="1..">
               <Expression :input-id="inputConfig.id" />
             </c>
@@ -93,9 +81,7 @@
         </CollapsibleRow>
       </grid>
     </div>
-    <div v-else>
-      Select a Module control
-    </div>
+    <div v-else>Select a Module control</div>
   </div>
 </template>
 
@@ -112,7 +98,7 @@ export default {
     MIDI,
     Tween,
     Expression,
-    CollapsibleRow
+    CollapsibleRow,
   },
 
   data() {
@@ -120,7 +106,7 @@ export default {
       iVTitle: "Input Config",
       iVBody:
         "The Input Config panel allows creation of Input Links. Select a Module Control in the Module Inspector, then use the Input Config panel to assign an Audio Feature, MIDI control or Tween to automate the Module Control.",
-      value: null
+      value: null,
     };
   },
 
@@ -164,9 +150,9 @@ export default {
         this.$modV.store.commit("inputs/UPDATE_INPUT_LINK", {
           inputId: this.inputConfig.id,
           key: "min",
-          value
+          value,
         });
-      }
+      },
     },
 
     max: {
@@ -178,11 +164,11 @@ export default {
         this.$modV.store.commit("inputs/UPDATE_INPUT_LINK", {
           inputId: this.inputConfig.id,
           key: "max",
-          value
+          value,
         });
-      }
-    }
-  }
+      },
+    },
+  },
 };
 </script>
 

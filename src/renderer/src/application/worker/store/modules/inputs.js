@@ -1,4 +1,3 @@
-import Vue from "vue";
 import { v4 as uuidv4 } from "uuid";
 import { SWAP } from "./common/swap";
 
@@ -10,7 +9,7 @@ import { SWAP } from "./common/swap";
 const InputLinkType = {
   getter: "getter",
   mutation: "mutation",
-  state: "state"
+  state: "state",
 };
 
 /**
@@ -81,7 +80,7 @@ function getDefaultState() {
   return {
     focusedInput: { id: null, title: null },
     inputs: {},
-    inputLinks: {}
+    inputLinks: {},
   };
 }
 
@@ -89,10 +88,10 @@ const state = getDefaultState();
 const swap = getDefaultState();
 
 const getters = {
-  inputsByActiveModuleId: state => moduleId =>
+  inputsByActiveModuleId: (state) => (moduleId) =>
     Object.values(state.inputs).filter(
-      input => input.data.moduleId === moduleId
-    )
+      (input) => input.data.moduleId === moduleId,
+    ),
 };
 
 const actions = {
@@ -106,7 +105,7 @@ const actions = {
 
   addInput(
     { commit },
-    { type, getLocation, location, data, id = uuidv4(), writeToSwap }
+    { type, getLocation, location, data, id = uuidv4(), writeToSwap },
   ) {
     const input = { type, getLocation, location, data, id };
     commit("ADD_INPUT", { input, writeToSwap });
@@ -119,7 +118,7 @@ const actions = {
     if (!writeTo.inputs[inputId]) {
       console.warn(
         "Did not remove input. Could not find input with id",
-        inputId
+        inputId,
       );
 
       return false;
@@ -140,8 +139,8 @@ const actions = {
       max = 1,
       source,
       match,
-      writeToSwap
-    }
+      writeToSwap,
+    },
   ) {
     const writeTo = writeToSwap ? swap : state;
 
@@ -159,12 +158,12 @@ const actions = {
       min,
       max,
       source,
-      match
+      match,
     };
     if (!writeTo.inputs[inputId]) {
       console.warn(
         "Did not create inputLink. Could not find input with id",
-        inputId
+        inputId,
       );
 
       return false;
@@ -211,10 +210,10 @@ const actions = {
       await dispatch("createInputLink", {
         inputId: link.id,
         ...link,
-        writeToSwap: true
+        writeToSwap: true,
       });
     }
-  }
+  },
 };
 
 const mutations = {
@@ -232,13 +231,13 @@ const mutations = {
 
   REMOVE_INPUT(state, { inputId, writeToSwap }) {
     const writeTo = writeToSwap ? swap : state;
-    Vue.delete(writeTo.inputs, inputId);
+    delete writeTo.inputs[inputId];
   },
 
   ADD_INPUT_LINK(state, { inputLink, writeToSwap }) {
     const writeTo = writeToSwap ? swap : state;
 
-    Vue.set(writeTo.inputLinks, inputLink.id, inputLink);
+    writeTo.inputLinks[inputLink.id] = inputLink;
   },
 
   UPDATE_INPUT_LINK(state, { inputId, key, value, writeToSwap }) {
@@ -248,16 +247,16 @@ const mutations = {
       return;
     }
 
-    Vue.set(writeTo.inputLinks[inputId], key, value);
+    writeTo.inputLinks[inputId][key] = value;
   },
 
   REMOVE_INPUT_LINK(state, { inputId, writeToSwap }) {
     const writeTo = writeToSwap ? swap : state;
 
-    Vue.delete(writeTo.inputLinks, inputId);
+    delete writeTo.inputLinks[inputId];
   },
 
-  SWAP: SWAP(swap, getDefaultState)
+  SWAP: SWAP(swap, getDefaultState),
 };
 
 export default {
@@ -265,5 +264,5 @@ export default {
   state,
   getters,
   actions,
-  mutations
+  mutations,
 };

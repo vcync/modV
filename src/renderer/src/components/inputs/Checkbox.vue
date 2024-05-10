@@ -6,63 +6,64 @@
 
 <script>
 export default {
+  emits: ["update:modelValue"],
   props: {
-    value: {
-      required: true
+    modelValue: {
+      required: true,
     },
 
     allowPartial: {
-      default: false
+      default: false,
     },
 
     emitBoolean: {
       type: Boolean,
-      default: false
-    }
+      default: false,
+    },
   },
   data() {
     return {
       classNames: {
         0: "off",
         1: "on",
-        2: "partial"
-      }
+        2: "partial",
+      },
     };
   },
 
   computed: {
     spanClassName() {
-      let inferredValue = this.value;
+      let inferredValue = this.modelValue;
 
       // for backwards compatibility with the old Checkbox control which used true or false only
-      if (this.value === true || this.value === false) {
+      if (this.modelValue === true || this.modelValue === false) {
         inferredValue = Number(inferredValue);
       }
 
       return this.classNames[inferredValue];
-    }
+    },
   },
 
   methods: {
     mousedown(e) {
       const { altKey } = e;
-      let { value } = this;
+      let { modelValue } = this;
 
       if (this.allowPartial && altKey) {
-        value = 2;
-      } else if (value || !value) {
-        value = Number(!value);
-      } else if (value === 2) {
-        value = 0;
+        modelValue = 2;
+      } else if (modelValue || !modelValue) {
+        modelValue = Number(!modelValue);
+      } else if (modelValue === 2) {
+        modelValue = 0;
       }
 
       if (this.emitBoolean) {
-        this.$emit("input", Boolean(value));
+        this.$emit("update:modelValue", Boolean(modelValue));
       } else {
-        this.$emit("input", value);
+        this.$emit("update:modelValue", modelValue);
       }
-    }
-  }
+    },
+  },
 };
 </script>
 

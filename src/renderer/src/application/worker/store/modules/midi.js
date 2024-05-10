@@ -1,15 +1,13 @@
-import Vue from "vue";
-
 const state = {
   devices: {},
-  learning: false
+  learning: false,
 };
 
 const actions = {
   learn({ commit }) {
     let resolve;
-    const promise = new Promise(r => {
-      resolve = message => {
+    const promise = new Promise((r) => {
+      resolve = (message) => {
         commit("SET_LEARNING", false);
         r(message);
       };
@@ -26,12 +24,12 @@ const actions = {
   async loadPresetData({ commit }, newState) {
     commit("SET_STATE", newState);
     return;
-  }
+  },
 };
 
 const mutations = {
   ADD_DEVICE(state, { id, name, manufacturer }) {
-    Vue.set(state.devices, `${id}-${name}-${manufacturer}`, {
+    state.devices[`${id}-${name}-${manufacturer}`] = {
       id,
       name,
       manufacturer,
@@ -39,24 +37,24 @@ const mutations = {
       listenForInput: true,
       listenForClock: false,
       ccLatch: false,
-      noteOnLatch: false
-    });
+      noteOnLatch: false,
+    };
   },
 
   UPDATE_DEVICE(state, { id, key, value }) {
-    Vue.set(state.devices[id], key, value);
+    state.devices[id][key] = value;
   },
 
   WRITE_DATA(state, { id, channel, type, data }) {
     if (!state.devices[id].channelData[channel]) {
-      Vue.set(state.devices[id].channelData, channel, {});
+      state.devices[id].channelData[channel] = {};
     }
 
-    Vue.set(state.devices[id].channelData[channel], type, data);
+    state.devices[id].channelData[channel][type] = data;
   },
 
   SET_LEARNING(state, value) {
-    Vue.set(state, "learning", value);
+    state.learning = value;
   },
 
   SET_STATE(state, newState) {
@@ -67,12 +65,12 @@ const mutations = {
 
       state[key] = newState[key];
     }
-  }
+  },
 };
 
 export default {
   namespaced: true,
   state,
   mutations,
-  actions
+  actions,
 };

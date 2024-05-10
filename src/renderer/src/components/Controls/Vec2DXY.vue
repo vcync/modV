@@ -15,22 +15,26 @@
 <script>
 export default {
   props: {
-    value: {
+    modelValue: {
       default: () => [],
-      required: true
+      required: true,
+      type: Array,
     },
 
     min: {
-      default: -1
+      default: -1,
+      type: Number,
     },
     max: {
-      default: 1
+      default: 1,
+      type: Number,
     },
     step: {
       type: Number,
-      default: 0.01
-    }
+      default: 0.01,
+    },
   },
+  emits: ["update:modelValue"],
   data() {
     return {
       context: null,
@@ -38,7 +42,8 @@ export default {
       currentX: 0,
       currentY: 0,
       inputX: 0,
-      inputY: 0
+      inputY: 0,
+      dpr: 1,
     };
   },
   computed: {
@@ -55,26 +60,38 @@ export default {
     canvasCoords() {
       return [
         (this.currentX / 2 + 0.5) * this.$refs.pad.width,
-        (1 - (this.currentY / 2 + 0.5)) * this.$refs.pad.height
+        (1 - (this.currentY / 2 + 0.5)) * this.$refs.pad.height,
       ];
-    }
+    },
   },
   watch: {
-    value() {
-      this.currentX = this.value[0];
-      this.currentY = this.value[1];
+    modelValue() {
+      this.currentX = this.modelValue[0];
+      this.currentY = this.modelValue[1];
       requestAnimationFrame(this.draw);
-    }
+    },
   },
   mounted() {
-    this.$refs.pad.width = 170;
-    this.$refs.pad.height = 170;
+    this.resize();
+    const { dpr } = this;
+
+    this.$refs.pad.width = 170 * dpr;
+    this.$refs.pad.height = 170 * dpr;
     this.context = this.$refs.pad.getContext("2d");
-    this.currentX = this.value[0];
-    this.currentY = this.value[1];
+    this.currentX = this.modelValue[0];
+    this.currentY = this.modelValue[1];
     requestAnimationFrame(this.draw);
+
+    window.addEventListener("resize", this.resize);
+  },
+  beforeUnmount() {
+    window.removeEventListener("resize", this.resize);
   },
   methods: {
+    resize() {
+      this.dpr = window.devicePixelRatio;
+    },
+
     mouseDown() {
       this.mousePressed = true;
       window.addEventListener("mousemove", this.mouseMove);
@@ -135,7 +152,7 @@ export default {
 
       if (this.mousePressed || clicked) {
         const vals = this.mapValues(x, y);
-        this.$emit("input", vals);
+        this.$emit("update:modelValue", vals);
         this.currentX = vals[0];
         this.currentY = vals[1];
       }
@@ -143,28 +160,32 @@ export default {
     },
 
     mapValues(x, y) {
-      const xOut = 1 + (x / this.$refs.pad.width - 1) * 2;
-      const yOut = -(1 + (y / this.$refs.pad.height - 1) * 2);
+      const { dpr } = this;
+      const xOut = 1 + (x / (this.$refs.pad.width / dpr) - 1) * 2;
+      const yOut = -(1 + (y / (this.$refs.pad.height / dpr) - 1) * 2);
       return [xOut, yOut];
     },
 
     draw() {
+      const { dpr } = this;
       const canvas = this.$refs.pad;
       const context = this.context;
-      const x = this.canvasCoords[0];
-      const y = this.canvasCoords[1];
+      const x = this.canvasCoords[0] * dpr;
+      const y = this.canvasCoords[1] * dpr;
 
       context.fillStyle = "#393939";
       context.fillRect(0, 0, canvas.width, canvas.height);
 
       context.fillStyle = "#fff";
       this.drawGrid();
-      context.fillText(`x: ${this.currentX}`, 5, 10);
-      context.fillText(`y: ${this.currentY}`, 5, 20);
+      context.font = `normal ${10 * dpr}px sans-serif`;
+      context.fillText(`x: ${this.currentX}`, 5 * dpr, 10 * dpr);
+      context.fillText(`y: ${this.currentY}`, 5 * dpr, 20 * dpr);
       this.drawPosition(Math.round(x) + 0.5, Math.round(y) + 0.5);
     },
 
     drawGrid() {
+      const { dpr } = this;
       const canvas = this.$refs.pad;
       const context = this.context;
       const { width, height } = canvas;
@@ -172,7 +193,7 @@ export default {
       context.save();
       context.strokeStyle = "#2c2c2c";
       context.beginPath();
-      context.lineWidth = 1;
+      context.lineWidth = 1 * dpr;
       const sections = 16;
       const step = width / sections;
       for (let i = 1; i < sections; i += 1) {
@@ -197,11 +218,14 @@ export default {
       context.restore();
     },
 
-    drawPosition(x, y) {
+    drawPosition(xIn, yIn) {
+      const { dpr } = this;
+      const x = xIn / dpr;
+      const y = yIn / dpr;
       const canvas = this.$refs.pad;
       const context = this.context;
       const { width, height } = canvas;
-      context.lineWidth = 1;
+      context.lineWidth = 1 * dpr;
       context.strokeStyle = "#ffa600";
 
       if (x < Math.round(width / 2)) {
@@ -231,10 +255,10 @@ export default {
       }
 
       context.beginPath();
-      context.arc(x, y, 6, 0, 2 * Math.PI, true);
+      context.arc(x, y, 6 * dpr, 0, 2 * Math.PI, true);
       context.stroke();
-    }
-  }
+    },
+  },
 };
 </script>
 

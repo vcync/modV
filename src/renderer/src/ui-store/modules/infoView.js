@@ -1,9 +1,8 @@
-import Vue from "vue";
 import { v4 as uuidv4 } from "uuid";
 
 const state = {
   focused: "",
-  dictionary: {}
+  dictionary: {},
 };
 
 const actions = {
@@ -35,7 +34,7 @@ const actions = {
 
   setFocused({ commit }, { id }) {
     commit("SET_FOCUSED", id);
-  }
+  },
 };
 
 const mutations = {
@@ -56,13 +55,13 @@ const mutations = {
       return;
     }
 
-    Vue.delete(state.dictionary, id);
-  }
+    delete state.dictionary[id];
+  },
 };
 
 export default {
   namespaced: true,
   state,
   actions,
-  mutations
+  mutations,
 };
