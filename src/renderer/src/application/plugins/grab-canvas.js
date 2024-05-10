@@ -14,7 +14,7 @@ const mappingContext = mappingCanvas.getContext("2d", {
   alpha: false,
   desynchronized: true,
   imageSmoothingEnabled: false,
-  willReadFrequently: true
+  willReadFrequently: true,
 });
 
 export default {
@@ -26,7 +26,7 @@ export default {
       min: 1,
       max: 1024,
       step: 1,
-      abs: true
+      abs: true,
     },
 
     mappingHeight: {
@@ -35,12 +35,12 @@ export default {
       min: 1,
       max: 1024,
       step: 1,
-      abs: true
+      abs: true,
     },
 
     url: {
       type: "text",
-      default: "ws://localhost:3006/modV"
+      default: "ws://localhost:3006/modV",
     },
 
     reconnectAfter: {
@@ -49,13 +49,13 @@ export default {
       min: 1000,
       max: 60000,
       step: 1,
-      abs: true
+      abs: true,
     },
 
     shouldReconnect: {
       type: "bool",
-      default: true
-    }
+      default: true,
+    },
   },
 
   async init({ store, props }) {
@@ -65,7 +65,7 @@ export default {
         group: "Plugins",
         canvas: mappingCanvas,
         context: mappingContext,
-        reactToResize: false
+        reactToResize: false,
       });
     }
 
@@ -95,7 +95,7 @@ export default {
     connection = new WebSocket(url);
 
     // Listen for errors (e.g. could not connect)
-    connection.addEventListener("error", event => {
+    connection.addEventListener("error", (event) => {
       console.error("grab-canvas: WebSocket: Error:", event);
 
       // Reconnect is allowed
@@ -149,14 +149,14 @@ export default {
       0,
       0,
       props.mappingWidth,
-      props.mappingHeight
+      props.mappingHeight,
     );
 
     const imageData = mappingContext.getImageData(
       0,
       0,
       props.mappingWidth,
-      props.mappingHeight
+      props.mappingHeight,
     );
     const { data } = imageData;
     const arrayData = Array.from(data);
@@ -174,7 +174,7 @@ export default {
     if (connection !== undefined && connection.readyState === 1) {
       const message = {
         _type: "modV",
-        colors: data
+        colors: data,
       };
 
       const messageString = JSON.stringify(message, null, 2);
@@ -182,5 +182,5 @@ export default {
       // Send JSON message
       connection.send(messageString);
     }
-  }
+  },
 };

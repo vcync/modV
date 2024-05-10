@@ -3,11 +3,11 @@ import store from "../index";
 const state = {
   width: 0,
   height: 0,
-  dpr: 1
+  dpr: 1,
 };
 
 const getters = {
-  area: state => state.width * state.height
+  area: (state) => state.width * state.height,
 };
 
 const actions = {
@@ -31,7 +31,7 @@ const actions = {
     }
 
     commit("SET_SIZE", { width, height, dpr });
-  }
+  },
 };
 
 const mutations = {
@@ -39,7 +39,7 @@ const mutations = {
     state.width = width;
     state.height = height;
     state.dpr = dpr;
-  }
+  },
 };
 
 export default {
@@ -47,5 +47,5 @@ export default {
   state,
   getters,
   actions,
-  mutations
+  mutations,
 };

@@ -1,6 +1,6 @@
 const state = {
   pinned: [],
-  lastFocused: null
+  lastFocused: null,
 };
 
 const mutations = {
@@ -26,11 +26,11 @@ const mutations = {
 
   CLEAR_LAST_FOCUSED(state) {
     state.lastFocused = null;
-  }
+  },
 };
 
 export default {
   namespaced: true,
   state,
-  mutations
+  mutations,
 };

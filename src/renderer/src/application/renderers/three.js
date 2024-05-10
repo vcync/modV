@@ -10,13 +10,13 @@ const threeContext = threeCanvas.getContext("webgl2", {
   antialias: true,
   desynchronized: true,
   powerPreference: "high-performance",
-  premultipliedAlpha: false
+  premultipliedAlpha: false,
 });
 
 store.dispatch("outputs/addAuxillaryOutput", {
   name: "three-buffer",
   context: threeContext,
-  group: "buffer"
+  group: "buffer",
 });
 
 const renderer = new THREE.WebGLRenderer({
@@ -24,7 +24,7 @@ const renderer = new THREE.WebGLRenderer({
   antialias: false,
   canvas: threeCanvas,
   powerPreference: "high-performance",
-  premultipliedAlpha: false
+  premultipliedAlpha: false,
 });
 renderer.setPixelRatio(1);
 
@@ -33,7 +33,7 @@ const inputTextureContext = inputTextureCanvas.getContext("2d");
 store.dispatch("outputs/addAuxillaryOutput", {
   name: "three-inputTexture-buffer",
   context: inputTextureContext,
-  group: "buffer"
+  group: "buffer",
 });
 
 const inputTexture = new THREE.CanvasTexture(inputTextureCanvas);
@@ -66,7 +66,7 @@ function render({
   props,
   data,
   fftCanvas,
-  pipeline
+  pipeline,
 }) {
   inputTextureContext.drawImage(canvas, 0, 0, canvas.width, canvas.height);
   inputTexture.image = inputTextureCanvas.transferToImageBitmap();
@@ -88,7 +88,7 @@ function render({
     data: { ...data },
     scene,
     camera,
-    fftCanvas
+    fftCanvas,
   });
 
   renderer.render(scene, camera);
@@ -111,14 +111,14 @@ function updateModule({
   data,
   canvas,
   context,
-  delta
+  delta,
 }) {
   const { scene, camera } = threeModuleData[moduleDefinition.meta.name];
 
   const {
     data: dataUpdated,
     scene: sceneUpdated,
-    camera: cameraUpdated
+    camera: cameraUpdated,
   } = moduleDefinition.update({
     THREE,
     props,
@@ -127,12 +127,12 @@ function updateModule({
     context,
     delta,
     scene,
-    camera
+    camera,
   });
 
   threeModuleData[moduleDefinition.meta.name] = {
     scene: sceneUpdated ?? scene,
-    camera: cameraUpdated ?? camera
+    camera: cameraUpdated ?? camera,
   };
 
   return dataUpdated ?? data;
@@ -144,12 +144,12 @@ async function setupModule(moduleDefinition) {
     inputTexture,
     data: moduleDefinition.data || {},
     width: renderer.domElement.width,
-    height: renderer.domElement.height
+    height: renderer.domElement.height,
   });
 
   threeModuleData[moduleDefinition.meta.name] = {
     scene,
-    camera
+    camera,
   };
 
   moduleDefinition.data = data;
@@ -193,6 +193,6 @@ export default {
   removeModule,
   createPresetData,
   loadPresetData,
-  getModuleData
+  getModuleData,
 };
 export { threeModuleData };

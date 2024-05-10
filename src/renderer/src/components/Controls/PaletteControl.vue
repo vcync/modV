@@ -5,9 +5,9 @@
     <c span="2">
       <div class="swatches">
         <label
-          class="swatch"
           v-for="(color, index) in modelValue.data"
           :key="index"
+          class="swatch"
           :style="{
             backgroundColor: `rgb(${color[0]},${color[1]},${color[2]})`,
             transitionDuration: `${modelDuration / modelValue.data.length}ms`,
@@ -17,8 +17,8 @@
           <input
             type="color"
             :value="getHexFromRgb(color)"
-            @input="updateModel($event, index)"
             class="swatch"
+            @input="updateModel($event, index)"
           />
         </label>
         <button class="swatch add-swatch" @click="addSwatch"></button>
@@ -88,13 +88,8 @@
 import Color from "color";
 
 export default {
+  props: { modelValue: { type: undefined } },
   emits: ["update:modelValue"],
-
-  props: ["modelValue"],
-
-  created() {
-    this.modelData = JSON.stringify(this.modelValue.data);
-  },
 
   computed: {
     modelData: {
@@ -180,6 +175,10 @@ export default {
         return this.updateValue("steps", value);
       },
     },
+  },
+
+  created() {
+    this.modelData = JSON.stringify(this.modelValue.data);
   },
 
   methods: {

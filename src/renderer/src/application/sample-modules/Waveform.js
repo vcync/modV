@@ -6,7 +6,7 @@ export default {
     author: "2xAA",
     version: "1.0.0",
     audioFeatures: ["buffer"],
-    type: "2d"
+    type: "2d",
   },
 
   props: {
@@ -16,7 +16,7 @@ export default {
       min: 1,
       max: 30,
       default: 1,
-      abs: true
+      abs: true,
     },
 
     maxHeight: {
@@ -24,7 +24,7 @@ export default {
       label: "Height",
       min: 1.0,
       max: 100.0,
-      default: 100.0
+      default: 100.0,
     },
 
     maxWidth: {
@@ -32,7 +32,7 @@ export default {
       label: "Width",
       min: 0,
       max: 1.0,
-      default: 1.0
+      default: 1.0,
     },
 
     windowing: {
@@ -44,8 +44,8 @@ export default {
         { label: "Hanning", value: "hanning" },
         { label: "Hamming", value: "hamming" },
         { label: "Blackman", value: "blackman" },
-        { label: "Sine", value: "sine" }
-      ]
+        { label: "Sine", value: "sine" },
+      ],
     },
 
     color: {
@@ -54,12 +54,12 @@ export default {
       default: {
         data: [
           [255, 255, 255],
-          [255, 255, 255]
+          [255, 255, 255],
         ],
         duration: 10000,
-        easing: "linear"
-      }
-    }
+        easing: "linear",
+      },
+    },
   },
 
   draw({ canvas, context, features, meyda, props }) {
@@ -68,7 +68,7 @@ export default {
       maxWidth,
       maxHeight,
       strokeWeight,
-      windowing
+      windowing,
     } = props;
     const { width, height } = canvas;
     const bufferLength = features.buffer.length;
@@ -76,7 +76,7 @@ export default {
 
     context.lineWidth = strokeWeight;
     context.strokeStyle = `rgb(${Math.round(color[0])},${Math.round(
-      color[1]
+      color[1],
     )},${Math.round(color[2])})`;
     context.beginPath();
 
@@ -98,5 +98,5 @@ export default {
 
     context.lineTo(width * maxWidth, height / 2);
     context.stroke();
-  }
+  },
 };

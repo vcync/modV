@@ -36,8 +36,8 @@
             min="0"
             :max="MAX_SMOOTHING - SMOOTHING_STEP"
             :step="SMOOTHING_STEP"
-            @update:model-value="smoothingInput"
             :value="invertedInputValue"
+            @update:model-value="smoothingInput"
           />
         </c>
       </grid>
@@ -49,15 +49,14 @@
 import RangeControl from "../Controls/RangeControl.vue";
 
 export default {
+  components: {
+    RangeControl,
+  },
   props: {
     inputId: {
       type: String,
       required: true,
     },
-  },
-
-  components: {
-    RangeControl,
   },
 
   data() {
@@ -90,10 +89,6 @@ export default {
     };
   },
 
-  created() {
-    this.restoreLinkValues();
-  },
-
   computed: {
     MAX_SMOOTHING() {
       return this.$modV.store.state.meyda.MAX_SMOOTHING;
@@ -110,6 +105,46 @@ export default {
     invertedInputValue() {
       return this.MAX_SMOOTHING - this.smoothingValue;
     },
+  },
+
+  watch: {
+    async smoothingValue(value) {
+      if (value && !this.smoothingId) {
+        this.smoothingId = await this.$modV.store.dispatch(
+          "meyda/getSmoothingId",
+        );
+
+        this.updateInputLinkArgs([
+          this.feature,
+          this.smoothingId,
+          this.smoothingValue,
+        ]);
+      } else if (value && this.smoothingId) {
+        this.updateInputLinkArgs([
+          this.feature,
+          this.smoothingId,
+          this.smoothingValue,
+        ]);
+      } else if (!value && this.smoothingId) {
+        this.smoothingId = null;
+        this.$modV.store.dispatch("meyda/removeSmoothingId", this.smoothingId);
+        this.updateInputLinkArgs([this.feature]);
+      }
+    },
+
+    inputId() {
+      this.restoreLinkValues();
+
+      if (!this.inputLink || this.inputLink.source !== "meyda") {
+        this.feature = "none";
+        this.smoothingId = null;
+        this.smoothingValue = this.MAX_SMOOTHING - this.SMOOTHING_STEP;
+      }
+    },
+  },
+
+  created() {
+    this.restoreLinkValues();
   },
 
   methods: {
@@ -173,42 +208,6 @@ export default {
         this.removeLink();
       } else {
         this.makeLink();
-      }
-    },
-  },
-
-  watch: {
-    async smoothingValue(value) {
-      if (value && !this.smoothingId) {
-        this.smoothingId = await this.$modV.store.dispatch(
-          "meyda/getSmoothingId",
-        );
-
-        this.updateInputLinkArgs([
-          this.feature,
-          this.smoothingId,
-          this.smoothingValue,
-        ]);
-      } else if (value && this.smoothingId) {
-        this.updateInputLinkArgs([
-          this.feature,
-          this.smoothingId,
-          this.smoothingValue,
-        ]);
-      } else if (!value && this.smoothingId) {
-        this.smoothingId = null;
-        this.$modV.store.dispatch("meyda/removeSmoothingId", this.smoothingId);
-        this.updateInputLinkArgs([this.feature]);
-      }
-    },
-
-    inputId() {
-      this.restoreLinkValues();
-
-      if (!this.inputLink || this.inputLink.source !== "meyda") {
-        this.feature = "none";
-        this.smoothingId = null;
-        this.smoothingValue = this.MAX_SMOOTHING - this.SMOOTHING_STEP;
       }
     },
   },

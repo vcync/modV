@@ -9,7 +9,7 @@ const TYPE_CC = 176;
 // create a new audioContext to use intead of modV's
 // existing context - we get timing jitters otherwise
 const audioContext = new window.AudioContext({
-  latencyHint: "playback"
+  latencyHint: "playback",
 });
 
 // hack around chrome's autoplay policy
@@ -23,7 +23,7 @@ window.addEventListener("click", resume);
 function handleInput(message) {
   const {
     data: [type, channel, data],
-    currentTarget: { id, name, manufacturer }
+    currentTarget: { id, name, manufacturer },
   } = message;
 
   const device = store.state.midi.devices[`${id}-${name}-${manufacturer}`];
@@ -57,7 +57,7 @@ function handleInput(message) {
         if (checkDifference > 50) {
           console.warn(
             "MIDI: resetting clock detection as difference was too big",
-            checkDifference
+            checkDifference,
           );
           diffHistory.splice(0, diffHistory.length);
           clockHistory.splice(0, clockHistory.length);
@@ -118,7 +118,7 @@ function handleInput(message) {
         id: `${id}-${name}-${manufacturer}`,
         type: _type,
         channel,
-        data: _data
+        data: _data,
       });
     }
 
@@ -133,7 +133,8 @@ function handleInput(message) {
 
 function handleDevices(inputs) {
   // loop over all available inputs and listen for any MIDI input
-  for(let input of inputs.values()) { // eslint-disable-line
+  for (let input of inputs.values()) {
+    // eslint-disable-line
     // each time there is a midi message call the onMIDIMessage function
     input.removeEventListener("midimessage", handleInput);
     input.addEventListener("midimessage", handleInput);
@@ -141,7 +142,7 @@ function handleDevices(inputs) {
     store.commit("midi/ADD_DEVICE", {
       id: input.id,
       name: input.name,
-      manufacturer: input.manufacturer
+      manufacturer: input.manufacturer,
     });
   }
 }
@@ -154,7 +155,7 @@ async function setupMidi() {
 
     handleDevices.bind(this)(access.inputs);
 
-    access.addEventListener("statechange", e => {
+    access.addEventListener("statechange", (e) => {
       handleDevices(e.currentTarget.inputs);
     });
   } else {

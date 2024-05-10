@@ -1,8 +1,8 @@
 <template>
   <Dialog
     v-if="$store.state.dialogs.open.includes('frameRate')"
-    @close="dialogClosed"
     title="Framerate Options"
+    @close="dialogClosed"
   >
     <grid columns="4">
       <c span="1">
@@ -21,8 +21,9 @@ import Number from "../inputs/Number.vue";
 
 export default {
   components: {
+    // eslint-disable-next-line vue/no-reserved-component-names
     Dialog,
-    Number
+    Number,
   },
 
   computed: {
@@ -33,14 +34,14 @@ export default {
 
       set(fps) {
         this.$modV.store.commit("fps/SET_FPS", { fps });
-      }
-    }
+      },
+    },
   },
 
   methods: {
     dialogClosed() {
       this.$store.commit("dialogs/REMOVE_OPEN", "frameRate");
-    }
-  }
+    },
+  },
 };
 </script>

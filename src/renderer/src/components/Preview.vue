@@ -1,27 +1,24 @@
 <template>
   <grid
-    class="preview"
     ref="container"
     v-searchTerms="{
       terms: ['preview', 'canvas', 'debugger'],
       title: 'Canvas Debugger',
-      type: 'Panel'
+      type: 'Panel',
     }"
+    class="preview"
   >
     <c span="1..">
-      <Select class="light" v-model="debugId">
+      <Select v-model="debugId" class="light">
         <option value="main">Main Output</option>
         <optgroup
           v-for="(outputs, group) in groups"
-          :label="group"
           :key="group"
+          :label="group"
         >
-          <option
-            v-for="output in outputs"
-            :key="output.id"
-            :value="output.id"
-            >{{ output.name }}</option
-          >
+          <option v-for="output in outputs" :key="output.id" :value="output.id">
+            {{ output.name }}
+          </option>
         </optgroup>
       </Select>
     </c>
@@ -36,34 +33,8 @@
 export default {
   data() {
     return {
-      resizeObserver: null
+      resizeObserver: null,
     };
-  },
-
-  mounted() {
-    const { canvas } = this.$refs;
-    const offscreen = canvas.transferControlToOffscreen();
-
-    this.$modV.$worker.postMessage(
-      {
-        type: "dispatch",
-        identifier: "outputs/setDebugContext",
-        payload: offscreen
-      },
-      [offscreen]
-    );
-
-    this.resizeObserver = new ResizeObserver(entries => {
-      requestAnimationFrame(() => {
-        if (!Array.isArray(entries) || !entries.length) {
-          return;
-        }
-
-        this.resize(entries);
-      });
-    }).observe(canvas);
-
-    this.$modV.store.commit("outputs/TOGGLE_DEBUG", true);
   },
 
   computed: {
@@ -94,8 +65,34 @@ export default {
 
       set(value) {
         this.$modV.store.commit("outputs/SET_DEBUG_ID", value);
-      }
-    }
+      },
+    },
+  },
+
+  mounted() {
+    const { canvas } = this.$refs;
+    const offscreen = canvas.transferControlToOffscreen();
+
+    this.$modV.$worker.postMessage(
+      {
+        type: "dispatch",
+        identifier: "outputs/setDebugContext",
+        payload: offscreen,
+      },
+      [offscreen],
+    );
+
+    this.resizeObserver = new ResizeObserver((entries) => {
+      requestAnimationFrame(() => {
+        if (!Array.isArray(entries) || !entries.length) {
+          return;
+        }
+
+        this.resize(entries);
+      });
+    }).observe(canvas);
+
+    this.$modV.store.commit("outputs/TOGGLE_DEBUG", true);
   },
 
   methods: {
@@ -105,13 +102,13 @@ export default {
       this.$modV.$worker.postMessage({
         type: "dispatch",
         identifier: "outputs/resizeDebug",
-        payload: { width }
+        payload: { width },
       });
 
       // this.$refs.canvas.style.width = `${e[0].contentRect.width}px`;
       // this.$refs.canvas.style.height = `${e[0].contentRect.height}px`;
-    }
-  }
+    },
+  },
 };
 </script>
 

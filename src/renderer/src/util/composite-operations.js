@@ -4,121 +4,121 @@ export default [
     children: [
       {
         label: "Normal",
-        value: "normal"
+        value: "normal",
       },
       {
         label: "Multiply",
-        value: "multiply"
+        value: "multiply",
       },
       {
         label: "Overlay",
-        value: "overlay"
+        value: "overlay",
       },
       {
         label: "Darken",
-        value: "darken"
+        value: "darken",
       },
       {
         label: "Lighten",
-        value: "lighten"
+        value: "lighten",
       },
       {
         label: "Color Dodge",
-        value: "color-dodge"
+        value: "color-dodge",
       },
       {
         label: "Color Burn",
-        value: "color-burn"
+        value: "color-burn",
       },
       {
         label: "Hard Light",
-        value: "hard-light"
+        value: "hard-light",
       },
       {
         label: "Soft Light",
-        value: "soft-light"
+        value: "soft-light",
       },
       {
         label: "Difference",
-        value: "difference"
+        value: "difference",
       },
       {
         label: "Exclusion",
-        value: "exclusion"
+        value: "exclusion",
       },
       {
         label: "Hue",
-        value: "hue"
+        value: "hue",
       },
       {
         label: "Saturation",
-        value: "saturation"
+        value: "saturation",
       },
       {
         label: "Color",
-        value: "color"
+        value: "color",
       },
       {
         label: "Luminosity",
-        value: "luminosity"
-      }
-    ]
+        value: "luminosity",
+      },
+    ],
   },
   {
     label: "Composite Modes",
     children: [
       {
         label: "Clear",
-        value: "clear"
+        value: "clear",
       },
       {
         label: "Copy",
-        value: "copy"
+        value: "copy",
       },
       {
         label: "Destination",
-        value: "destination"
+        value: "destination",
       },
       {
         label: "Source Over",
-        value: "source-over"
+        value: "source-over",
       },
       {
         label: "Destination Over",
-        value: "destination-over"
+        value: "destination-over",
       },
       {
         label: "Source In",
-        value: "source-in"
+        value: "source-in",
       },
       {
         label: "Destination In",
-        value: "destination-in"
+        value: "destination-in",
       },
       {
         label: "Source Out",
-        value: "source-out"
+        value: "source-out",
       },
       {
         label: "Destination Out",
-        value: "destination-out"
+        value: "destination-out",
       },
       {
         label: "Source Atop",
-        value: "source-atop"
+        value: "source-atop",
       },
       {
         label: "Destination Atop",
-        value: "destination-atop"
+        value: "destination-atop",
       },
       {
         label: "Xor",
-        value: "xor"
+        value: "xor",
       },
       {
         label: "Lighter",
-        value: "lighter"
-      }
-    ]
-  }
+        value: "lighter",
+      },
+    ],
+  },
 ];

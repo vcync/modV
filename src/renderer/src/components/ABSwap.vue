@@ -10,7 +10,7 @@ export default {
     swap() {
       this.$modV.store.commit("groups/SWAP", {});
       this.$modV.store.commit("modules/SWAP", {});
-    }
-  }
+    },
+  },
 };
 </script>

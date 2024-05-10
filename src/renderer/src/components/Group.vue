@@ -1,6 +1,5 @@
 <template>
   <div
-    class="group"
     :id="`group-${groupId}`"
     v-searchTerms="{
       terms: ['group'],
@@ -9,11 +8,12 @@
       focusElement: true,
     }"
     v-contextMenu="() => GroupContextMenu({ group })"
+    class="group"
     tabindex="0"
+    :class="{ focused }"
     @keydown.self="removeGroup"
     @focus.self="focus"
     @mousedown.self="focus"
-    :class="{ focused }"
   >
     <div
       class="group__controls"
@@ -23,11 +23,11 @@
         <c span="1..">
           <grid
             columns="6"
-            @mousedown="focusInput(group.enabledInputId, 'Enable')"
             :class="{
               'has-link': hasLink(group.enabledInputId),
               focused: isFocused(group.enabledInputId),
             }"
+            @mousedown="focusInput(group.enabledInputId, 'Enable')"
           >
             <c span="2">Enable</c>
           </grid>
@@ -36,11 +36,11 @@
         <c span="1..">
           <grid
             columns="6"
-            @mousedown="focusInput(group.inheritInputId, 'Inherit')"
             :class="{
               'has-link': hasLink(group.inheritInputId),
               focused: isFocused(group.inheritInputId),
             }"
+            @mousedown="focusInput(group.inheritInputId, 'Inherit')"
           >
             <c span="2">Inherit</c>
             <c span="4">
@@ -52,11 +52,11 @@
                 <option :value="-2">Don't Inherit</option>
                 <option :value="-1">Previous Group</option>
                 <option
-                  v-for="group in groups"
-                  :key="group.id"
-                  :value="group.id"
+                  v-for="groupVal in groups"
+                  :key="groupVal.id"
+                  :value="groupVal.id"
                 >
-                  {{ group.name }}
+                  {{ groupVal.name }}
                 </option>
               </Select>
             </c>
@@ -66,11 +66,11 @@
         <c span="1..">
           <grid
             columns="6"
-            @mousedown="focusInput(group.clearingInputId, 'Clearing')"
             :class="{
               'has-link': hasLink(group.clearingInputId),
               focused: isFocused(group.clearingInputId),
             }"
+            @mousedown="focusInput(group.clearingInputId, 'Clearing')"
           >
             <c span="2">Clearing</c>
             <c span="4">
@@ -86,11 +86,11 @@
         <c span="1..">
           <grid
             columns="6"
-            @mousedown="focusInput(group.pipelineInputId, 'Pipeline')"
             :class="{
               'has-link': hasLink(group.pipelineInputId),
               focused: isFocused(group.pipelineInputId),
             }"
+            @mousedown="focusInput(group.pipelineInputId, 'Pipeline')"
           >
             <c span="2">Pipeline</c>
             <c span="4">
@@ -106,20 +106,20 @@
         <c span="1..">
           <grid
             columns="6"
-            @mousedown="focusInput(group.alphaInputId, 'Alpha')"
             :class="{
               'has-link': hasLink(group.alphaInputId),
               focused: isFocused(group.alphaInputId),
             }"
+            @mousedown="focusInput(group.alphaInputId, 'Alpha')"
           >
             <c span="2">Alpha</c>
             <c span="4">
               <Range
+                v-model="alpha"
                 class="group__alphaRange"
                 value="1"
                 max="1"
                 step="0.001"
-                v-model="alpha"
               />
             </c>
           </grid>
@@ -128,13 +128,13 @@
         <c span="1..">
           <grid
             columns="6"
-            @mousedown="
-              focusInput(group.compositeOperationInputId, 'Blend Mode')
-            "
             :class="{
               'has-link': hasLink(group.compositeOperationInputId),
               focused: isFocused(group.compositeOperationInputId),
             }"
+            @mousedown="
+              focusInput(group.compositeOperationInputId, 'Blend Mode')
+            "
           >
             <c span="2">Blend</c>
             <c span="4">
@@ -144,14 +144,14 @@
                 :class="{ light: isFocused(group.compositeOperationInputId) }"
               >
                 <optgroup
-                  v-for="group in compositeOperations"
-                  :label="group.label"
-                  :key="group.label"
+                  v-for="operationGroup in compositeOperations"
+                  :key="operationGroup.label"
+                  :label="operationGroup.label"
                 >
                   <option
-                    v-for="mode in group.children"
-                    :value="mode.value"
+                    v-for="mode in operationGroup.children"
                     :key="mode.label"
+                    :value="mode.value"
                   >
                     {{ mode.label }}
                   </option>
@@ -179,9 +179,9 @@
     </div>
     <div class="group__left">
       <Checkbox
-        class="group__enabledCheckbox"
         v-model="enabled"
-        allowPartial="true"
+        class="group__enabledCheckbox"
+        allow-partial="true"
         title="alt-click to skip drawing to output canvas"
       />
       <button
@@ -203,15 +203,15 @@
           name
         }}</span>
         <TextInput
-          v-model="localName"
-          ref="nameInput"
           v-else
+          ref="nameInput"
+          v-model="localName"
           @keypress.enter="endNameEditable"
         />
       </div>
       <figure
-        class="group__focusIndicator"
         v-show="lastFocusedGroup"
+        class="group__focusIndicator"
         title="Focused Group"
       ></figure>
       <Container
@@ -232,7 +232,7 @@
           <div class="group-module-container">
             <ActiveModule
               :id="moduleId"
-              :groupId="groupId"
+              :group-id="groupId"
               @remove-module="removeModule"
             />
           </div>
@@ -271,17 +271,16 @@ const applyDrag = (arr, dragResult) => {
 };
 
 export default {
+  components: {
+    ActiveModule,
+    Container,
+    Draggable,
+  },
   props: {
     groupId: {
       type: String,
       required: true,
     },
-  },
-
-  components: {
-    ActiveModule,
-    Container,
-    Draggable,
   },
 
   data() {
@@ -296,20 +295,6 @@ export default {
       grabbing: false,
       localModules: [],
     };
-  },
-
-  created() {
-    this.localName = this.name;
-    this.localModules = this.modules;
-    this.inheritanceSelection = !this.inherit ? -2 : this.inheritFrom;
-
-    if (!this.focusedGroup) {
-      this.focus();
-    }
-  },
-
-  beforeUnmount() {
-    window.removeEventListener("mousedown", this.endNameEditable);
   },
 
   computed: {
@@ -452,6 +437,47 @@ export default {
     },
   },
 
+  watch: {
+    name(value) {
+      this.localName = value;
+    },
+
+    modules(value) {
+      this.localModules = value;
+    },
+
+    inheritanceSelection(value) {
+      const inheritFrom = value.length === 2 ? parseInt(value) : value;
+
+      if (inheritFrom === -2) {
+        this.inherit = false;
+      } else {
+        this.inherit = true;
+
+        this.$modV.store.commit("groups/UPDATE_GROUP", {
+          groupId: this.groupId,
+          data: {
+            inheritFrom,
+          },
+        });
+      }
+    },
+  },
+
+  created() {
+    this.localName = this.name;
+    this.localModules = this.modules;
+    this.inheritanceSelection = !this.inherit ? -2 : this.inheritFrom;
+
+    if (!this.focusedGroup) {
+      this.focus();
+    }
+  },
+
+  beforeUnmount() {
+    window.removeEventListener("mousedown", this.endNameEditable);
+  },
+
   methods: {
     async onDrop(e) {
       const { moduleName, collection } = e.payload;
@@ -572,33 +598,6 @@ export default {
     titleMouseUp() {
       this.grabbing = false;
       window.removeEventListener("mouseup", this.titleMouseUp);
-    },
-  },
-
-  watch: {
-    name(value) {
-      this.localName = value;
-    },
-
-    modules(value) {
-      this.localModules = value;
-    },
-
-    inheritanceSelection(value) {
-      const inheritFrom = value.length === 2 ? parseInt(value) : value;
-
-      if (inheritFrom === -2) {
-        this.inherit = false;
-      } else {
-        this.inherit = true;
-
-        this.$modV.store.commit("groups/UPDATE_GROUP", {
-          groupId: this.groupId,
-          data: {
-            inheritFrom,
-          },
-        });
-      }
     },
   },
 };

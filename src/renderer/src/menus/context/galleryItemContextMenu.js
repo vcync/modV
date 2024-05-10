@@ -4,33 +4,33 @@ import constants from "../../application/constants";
 export const GalleryItemContextMenu = ({ moduleName }) => [
   {
     label: moduleName,
-    enabled: false
+    enabled: false,
   },
   {
-    type: "separator"
+    type: "separator",
   },
   {
     label: "Add to Group",
     submenu: modV.store.state.groups.groups
-      .filter(group => group.name !== constants.GALLERY_GROUP_NAME)
+      .filter((group) => group.name !== constants.GALLERY_GROUP_NAME)
       .map(({ name: groupName, id: groupId }) => ({
         label: groupName,
         async click() {
           const { $id: moduleId } = await modV.store.dispatch(
             "modules/makeActiveModule",
             {
-              moduleName
-            }
+              moduleName,
+            },
           );
 
           modV.store.commit("groups/ADD_MODULE_TO_GROUP", {
             moduleId,
             groupId,
             position: modV.store.state.groups.groups.find(
-              group => group.id === groupId
-            ).modules.length
+              (group) => group.id === groupId,
+            ).modules.length,
           });
-        }
-      }))
-  }
+        },
+      })),
+  },
 ];

@@ -30,7 +30,7 @@ function getSmoothedFeature(feature, id, smoothingValue) {
   smoothedFeatures[id] = lerp(
     smoothedFeatures[id] || 0,
     features[feature],
-    smoothingValue
+    smoothingValue,
   );
 
   return smoothedFeatures[id];
@@ -44,5 +44,5 @@ export {
   removeSmoothingId,
   getSmoothedFeature,
   MAX_SMOOTHING,
-  SMOOTHING_STEP
+  SMOOTHING_STEP,
 };

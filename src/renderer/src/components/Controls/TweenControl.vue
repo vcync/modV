@@ -95,7 +95,10 @@
 
 <script>
 export default {
-  props: ["modelValue", "color"],
+  props: {
+    modelValue: { type: undefined },
+    color: { type: undefined },
+  },
   emits: ["update:modelValue"],
 
   data() {

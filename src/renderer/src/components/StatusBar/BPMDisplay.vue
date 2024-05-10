@@ -11,9 +11,9 @@ import { BPMContextMenu } from "../../menus/context/bpmContextMenu";
 export default {
   data() {
     return {
-      BPMContextMenu
+      BPMContextMenu,
     };
-  }
+  },
 };
 </script>
 

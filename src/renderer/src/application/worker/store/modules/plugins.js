@@ -15,13 +15,15 @@ function camelize(str) {
 const state = [];
 
 const getters = {
-  preProcessFrame: state => {
-    return state.filter(plugin => !!plugin.preProcessFrame && plugin.enabled);
+  preProcessFrame: (state) => {
+    return state.filter((plugin) => !!plugin.preProcessFrame && plugin.enabled);
   },
 
-  postProcessFrame: state => {
-    return state.filter(plugin => !!plugin.postProcessFrame && plugin.enabled);
-  }
+  postProcessFrame: (state) => {
+    return state.filter(
+      (plugin) => !!plugin.postProcessFrame && plugin.enabled,
+    );
+  },
 };
 
 const actions = {
@@ -59,7 +61,7 @@ const actions = {
   },
 
   setEnabled({ commit }, { pluginId, enabled }) {
-    const plugin = state.find(item => item.id === pluginId);
+    const plugin = state.find((item) => item.id === pluginId);
 
     if (!plugin) {
       return false;
@@ -79,7 +81,7 @@ const actions = {
   },
 
   async updateProp({ commit }, { pluginId, prop, data }) {
-    const plugin = state.find(item => item.id === pluginId);
+    const plugin = state.find((item) => item.id === pluginId);
 
     if (!plugin) {
       return false;
@@ -116,7 +118,7 @@ const actions = {
     }
 
     commit("UPDATE_PROP", { pluginId, prop, data: dataOut });
-  }
+  },
 };
 
 const mutations = {
@@ -125,7 +127,7 @@ const mutations = {
   },
 
   SET_PLUGIN_ENABLE(state, { pluginId, enabled }) {
-    const plugin = state.find(item => item.id === pluginId);
+    const plugin = state.find((item) => item.id === pluginId);
 
     if (!plugin) {
       return false;
@@ -135,14 +137,14 @@ const mutations = {
   },
 
   UPDATE_PROP(state, { pluginId, prop, data }) {
-    const plugin = state.find(item => item.id === pluginId);
+    const plugin = state.find((item) => item.id === pluginId);
 
     if (!plugin) {
       return false;
     }
 
     plugin.$props[prop] = data;
-  }
+  },
 };
 
 export default {
@@ -150,5 +152,5 @@ export default {
   state,
   getters,
   actions,
-  mutations
+  mutations,
 };

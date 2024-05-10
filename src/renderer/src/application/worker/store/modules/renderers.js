@@ -1,12 +1,12 @@
 const state = {};
 
 const getters = {
-  renderersWithTick: state => {
+  renderersWithTick: (state) => {
     const keys = Object.keys(state);
     return keys
-      .map(key => state[key].tick && state[key])
-      .filter(renderer => renderer);
-  }
+      .map((key) => state[key].tick && state[key])
+      .filter((renderer) => renderer);
+  },
 };
 
 const mutations = {
@@ -15,12 +15,12 @@ const mutations = {
   },
   REMOVE_RENDERER(state, name) {
     delete state[name];
-  }
+  },
 };
 
 export default {
   namespaced: true,
   getters,
   state,
-  mutations
+  mutations,
 };

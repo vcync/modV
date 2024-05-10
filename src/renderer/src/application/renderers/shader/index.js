@@ -8,13 +8,13 @@ const shaderContext = shaderCanvas.getContext("webgl2", {
   antialias: true,
   desynchronized: true,
   powerPreference: "high-performance",
-  premultipliedAlpha: false
+  premultipliedAlpha: false,
 });
 
 store.dispatch("outputs/addAuxillaryOutput", {
   name: "shader-buffer",
   context: shaderContext,
-  group: "buffer"
+  group: "buffer",
 });
 
 const pex = createContext({ gl: shaderContext });
@@ -30,8 +30,8 @@ let fftTexture;
 const clearCmd = {
   pass: pex.pass({
     clearColor: [0, 0, 0, 1],
-    clearDepth: 1
-  })
+    clearDepth: 1,
+  }),
 };
 
 function resize({ width, height }) {
@@ -68,14 +68,14 @@ function generateUniforms(canvasTexture, uniforms, kick = false) {
     u_fftResolution: fftTexture ? fftTexture.width : 1,
     u_delta: time / 1000,
     u_time: time,
-    u_kick: kick
+    u_kick: kick,
   };
 
   return { ...uniforms, ...defaults };
 }
 
 function makeProgram(moduleDefinition) {
-  return new Promise(resolve => {
+  return new Promise((resolve) => {
     let vert = moduleDefinition.vertexShader;
     let frag = moduleDefinition.fragmentShader;
 
@@ -96,7 +96,7 @@ function makeProgram(moduleDefinition) {
     const pipeline = pex.pipeline({
       depthTest: true,
       vert,
-      frag
+      frag,
     });
 
     const shaderUniforms = {};
@@ -122,10 +122,10 @@ function makeProgram(moduleDefinition) {
       pipeline,
       attributes: {
         a_position,
-        position: a_position
+        position: a_position,
       },
       indices,
-      uniforms
+      uniforms,
     };
 
     commands[moduleDefinition.meta.name] = command;
@@ -154,7 +154,7 @@ function render({ module, props, canvas, context, pipeline, kick, fftCanvas }) {
       encoding: pex.Encoding.Linear,
       min: pex.Filter.Linear,
       mag: pex.Filter.Linear,
-      wrap: pex.Wrap.Repeat
+      wrap: pex.Wrap.Repeat,
     });
     fftTexture = pex.texture2D({
       data: fftCanvas.data || fftCanvas,
@@ -162,18 +162,18 @@ function render({ module, props, canvas, context, pipeline, kick, fftCanvas }) {
       height: 1,
       pixelFormat: pex.PixelFormat.RGBA8,
       encoding: pex.Encoding.Linear,
-      wrap: pex.Wrap.Repeat
+      wrap: pex.Wrap.Repeat,
     });
   } else {
     pex.update(canvasTexture, {
       width: canvas.width,
       height: canvas.height,
-      data: canvas.data || canvas
+      data: canvas.data || canvas,
     });
     pex.update(fftTexture, {
       width: fftCanvas.width,
       height: 1,
-      data: fftCanvas.data || fftCanvas
+      data: fftCanvas.data || fftCanvas,
     });
   }
 
@@ -201,7 +201,7 @@ function render({ module, props, canvas, context, pipeline, kick, fftCanvas }) {
   pex.submit(clearCmd);
   pex.submit(command, {
     uniforms,
-    viewport: [0, 0, canvas.width, canvas.height]
+    viewport: [0, 0, canvas.width, canvas.height],
   });
 
   // clear context if we're in pipeline mode
@@ -222,7 +222,7 @@ function updateModule({ module, props, data, canvas, context, delta }) {
     data,
     canvas,
     context,
-    delta
+    delta,
   });
 
   return dataUpdated ?? data;

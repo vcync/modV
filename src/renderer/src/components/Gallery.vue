@@ -1,30 +1,30 @@
 <template>
   <div
-    class="gallery"
     v-infoView="{ title: iVTitle, body: iVBody, id: 'Module Gallery Panel' }"
     v-searchTerms="{
       terms: ['gallery'],
       title: 'Gallery',
       type: 'Panel',
     }"
+    class="gallery"
   >
     <grid columns="4">
       <c span="1..">
         <TextInput
+          ref="searchField"
+          v-model="searchTerm"
           class="gallery-search"
           placeholder="Search"
-          v-model="searchTerm"
-          ref="searchField"
         />
       </c>
       <c span="1.." class="results">
         <grid columns="4">
           <c
             v-for="(modules, renderer) in modulesByRenderer"
+            v-show="renderersToShow.indexOf(renderer) > -1"
             :key="renderer"
             class="renderer"
             span="4"
-            v-show="renderersToShow.indexOf(renderer) > -1"
           >
             <div class="title">{{ renderer }}</div>
             <Container
@@ -37,28 +37,31 @@
             >
               <Draggable
                 v-for="(module, name) in modules"
+                v-show="modulesToShow.indexOf(name) > -1"
                 :key="name"
                 ghost-class="ghost"
-                v-show="modulesToShow.indexOf(name) > -1"
                 tabindex="0"
-                @keydown.native.enter="addModuleToFocusedGroup(module)"
+                @keydown.enter="
+                  /* at the moment this does not work as Draggable doesn't pass through native events */
+                  addModuleToFocusedGroup(module)
+                "
               >
                 <GalleryItem
                   v-if="groupId"
-                  :moduleName="name"
-                  :groupId="groupId"
                   v-searchTerms="{
                     terms: [name, 'module'],
                     title: name,
                     focusElement: true,
                     type: 'Module',
                   }"
+                  :module-name="name"
+                  :group-id="groupId"
                 />
               </Draggable>
             </Container>
           </c>
 
-          <c span="1.." v-show="!renderersToShow.length && searchTerm.length">
+          <c v-show="!renderersToShow.length && searchTerm.length" span="1..">
             <h2>Couldn't find {{ searchTerm }}.</h2>
           </c>
         </grid>
@@ -116,6 +119,19 @@ export default {
 
           return obj;
         }, {});
+    },
+  },
+
+  watch: {
+    registeredModules: {
+      handler() {
+        this.updateModulesAndRenderersToShow();
+      },
+      deep: true,
+    },
+
+    searchTerm() {
+      this.updateModulesAndRenderersToShow();
     },
   },
 
@@ -207,19 +223,6 @@ export default {
           (group) => group.id === groupId,
         ).modules.length,
       });
-    },
-  },
-
-  watch: {
-    registeredModules: {
-      handler() {
-        this.updateModulesAndRenderersToShow();
-      },
-      deep: true,
-    },
-
-    searchTerm() {
-      this.updateModulesAndRenderersToShow();
     },
   },
 };

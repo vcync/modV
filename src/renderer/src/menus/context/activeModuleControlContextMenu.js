@@ -4,7 +4,7 @@ import getPropDefault from "../../application/utils/get-prop-default";
 export const ActiveModuleControlContextMenu = async ({
   moduleId,
   propName,
-  title
+  title,
 }) => {
   const activeModule = modV.store.state.modules.active[moduleId];
   const prop = activeModule.$props[propName];
@@ -17,10 +17,10 @@ export const ActiveModuleControlContextMenu = async ({
   return [
     {
       label: title,
-      enabled: false
+      enabled: false,
     },
     {
-      type: "separator"
+      type: "separator",
     },
     {
       label: `Reset to "${defaultPropValue}"`,
@@ -28,9 +28,9 @@ export const ActiveModuleControlContextMenu = async ({
         modV.store.dispatch("modules/updateProp", {
           moduleId,
           prop: propName,
-          data: defaultPropValue
+          data: defaultPropValue,
         });
-      }
-    }
+      },
+    },
   ];
 };

@@ -6,7 +6,7 @@ export default {
     author: "Mattias",
     version: "1.0.0",
     previewWithOutput: true,
-    type: "shader"
+    type: "shader",
   },
-  fragmentShader: crtFrag
+  fragmentShader: crtFrag,
 };

@@ -1,4 +1,3 @@
-<!-- eslint-disable vue/no-reserved-component-names -->
 <template>
   <grid
     :id="`module-control-${inputId}`"
@@ -94,6 +93,8 @@
 </template>
 
 <script>
+/* eslint-disable vue/no-reserved-component-names */
+
 import RangeControl from "./Controls/RangeControl.vue";
 import Vec2DControl from "./Controls/Vec2DControl.vue";
 import TweenControl from "./Controls/TweenControl.vue";

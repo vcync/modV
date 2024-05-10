@@ -1,12 +1,12 @@
 <template>
   <div
-    class="groups"
     v-infoView="{ title: iVTitle, body: iVBody, id: 'Groups Panel' }"
     v-searchTerms="{
       terms: ['groups', 'layers'],
       title: 'Groups',
       type: 'Panel',
     }"
+    class="groups"
   >
     <Container
       drag-handle-selector=".group__name"
@@ -18,8 +18,8 @@
       class="group-container"
       @drop="onDrop"
     >
-      <Draggable v-for="group in groups" :key="group.id">
-        <Group :groupId="group.id" />
+      <Draggable v-for="groupVal in groups" :key="groupVal.id">
+        <Group :group-id="groupVal.id" />
       </Draggable>
     </Container>
 

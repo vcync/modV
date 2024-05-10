@@ -19,7 +19,7 @@ const actions = {
   async addMedia({ commit }, { project, folder, item }) {
     if (folder === "module" || folder === "isf") {
       const stream = fs.createReadStream(
-        path.join(store.state.media.path, item.path)
+        path.join(store.state.media.path, item.path),
       );
       const blob = await streamToBlob(stream);
 
@@ -51,7 +51,7 @@ const actions = {
     }
 
     commit("ADD", { project, folder, item });
-  }
+  },
 };
 
 const mutations = media.mutations;
@@ -61,5 +61,5 @@ export default {
   state,
   getters,
   actions,
-  mutations
+  mutations,
 };

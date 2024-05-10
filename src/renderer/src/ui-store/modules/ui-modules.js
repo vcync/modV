@@ -2,11 +2,11 @@ import modV from "../../application/index";
 
 const state = {
   focused: null,
-  pinned: []
+  pinned: [],
 };
 
 const getters = {
-  focusedOrPinned: state => {
+  focusedOrPinned: (state) => {
     const arr = [...state.pinned];
 
     if (state.focused && arr.indexOf(state.focused) < 0) {
@@ -14,7 +14,7 @@ const getters = {
     }
 
     return arr;
-  }
+  },
 };
 
 const actions = {
@@ -23,11 +23,11 @@ const actions = {
 
     modV.store.commit("groups/REMOVE_MODULE_FROM_GROUP", {
       moduleId,
-      groupId
+      groupId,
     });
 
     return modV.store.dispatch("modules/removeActiveModule", { moduleId });
-  }
+  },
 };
 
 const mutations = {
@@ -53,7 +53,7 @@ const mutations = {
     if (index > -1) {
       state.pinned.splice(index, 1);
     }
-  }
+  },
 };
 
 export default {
@@ -61,5 +61,5 @@ export default {
   state,
   getters,
   actions,
-  mutations
+  mutations,
 };

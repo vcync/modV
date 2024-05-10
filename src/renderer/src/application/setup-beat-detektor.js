@@ -1,6 +1,6 @@
 import BeatDetektor from "../../../../lib/BeatDetektor.js";
 
-export default function() {
+export default function () {
   const beatDetektor = new BeatDetektor(85, 169);
   const beatDetektorKick = new BeatDetektor.modules.vis.BassKick();
 

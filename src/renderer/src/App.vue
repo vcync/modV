@@ -20,17 +20,17 @@
           <gl-col :width="33" :closable="false" ref="rightColumn">
             <gl-stack title="Module Inspector Stack">
               <gl-component title="hidden">
-                <!-- hack around dynamic components not working correctly. CSS below hides tabs with the title "hidden"
+                 hack around dynamic components not working correctly. CSS below hides tabs with the title "hidden"
               </gl-component> -->
     <div
       v-for="(module, i) in focusedModules"
       :key="i"
+      ref="moduleInspector"
       :title="`${module.meta.name} properties`"
       :closable="false"
-      ref="moduleInspector"
       :state="{ is: 'dynamic' }"
     >
-      <ModuleInspector :moduleId="module.$id" />
+      <ModuleInspector :module-id="module.$id" />
     </div>
     <!-- </gl-stack>
           </gl-col>
@@ -112,7 +112,7 @@ import * as GoldenLayout from "golden-layout";
 const { ipcRenderer } = window.electron;
 
 export default {
-  name: "app",
+  name: "App",
 
   components: {
     Preview,
@@ -167,6 +167,18 @@ export default {
 
     focusedActiveModule() {
       return this.$store.state["uiModules"].focused;
+    },
+  },
+
+  watch: {
+    focusedActiveModule(inspectorId) {
+      const index = this.$store.state["uiModules"].pinned.findIndex(
+        (item) => item === inspectorId,
+      );
+
+      if (index > -1) {
+        this.$refs.moduleInspector[index].focus();
+      }
     },
   },
 
@@ -240,14 +252,12 @@ export default {
           }
         }
 
-        // eslint-disable-next-line no-for-each/no-for-each
         childrenToSplice.forEach((index) => {
           content.splice(index, 1);
           config.activeItemIndex = 0;
         });
 
         if (itemsToSplice.length > 0) {
-          // eslint-disable-next-line no-for-each/no-for-each
           itemsToSplice.forEach((index) => {
             config.content.splice(index, 1);
             config.activeItemIndex = 0;
@@ -309,18 +319,6 @@ export default {
     restartLayout() {
       this.resetGoldenLayoutState();
       this.triggerUiRestart++;
-    },
-  },
-
-  watch: {
-    focusedActiveModule(inspectorId) {
-      const index = this.$store.state["uiModules"].pinned.findIndex(
-        (item) => item === inspectorId,
-      );
-
-      if (index > -1) {
-        this.$refs.moduleInspector[index].focus();
-      }
     },
   },
 };

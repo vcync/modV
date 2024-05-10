@@ -1,7 +1,7 @@
 const state = {
   feature: {
-    moduleId: ["prop"]
-  }
+    moduleId: ["prop"],
+  },
 };
 
 const mutations = {
@@ -26,11 +26,11 @@ const mutations = {
     if (index > -1) {
       state[feature][moduleId].splice(index, 1);
     }
-  }
+  },
 };
 
 export default {
   namespaced: true,
   state,
-  mutations
+  mutations,
 };

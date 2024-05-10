@@ -4,7 +4,7 @@
     v-searchTerms="{
       terms: ['midi', 'clock', 'input'],
       title: 'MIDI Input Config',
-      type: 'Panel'
+      type: 'Panel',
     }"
     columns="4"
     class="device-config"
@@ -19,7 +19,7 @@
         <c>NoteOn Latch</c>
       </grid>
     </c>
-    <c span="1.." v-for="(device, deviceId) in devices" :key="deviceId">
+    <c v-for="(device, deviceId) in devices" :key="deviceId" span="1..">
       <grid columns="5">
         <c>{{ device.name }}</c>
         <c>
@@ -65,14 +65,14 @@ export default {
     return {
       iVTitle: "MIDI Input Config",
       iVBody:
-        "Configure your MIDI inputs here. Use the toggles to accept MIDI inputs (CC/notes) and MIDI Clock per device."
+        "Configure your MIDI inputs here. Use the toggles to accept MIDI inputs (CC/notes) and MIDI Clock per device.",
     };
   },
 
   computed: {
     devices() {
       return this.$modV.store.state.midi.devices;
-    }
+    },
   },
 
   methods: {
@@ -80,7 +80,7 @@ export default {
       this.$modV.store.commit("midi/UPDATE_DEVICE", {
         id,
         key: "listenForInput",
-        value
+        value,
       });
     },
 
@@ -88,7 +88,7 @@ export default {
       this.$modV.store.commit("midi/UPDATE_DEVICE", {
         id,
         key: "listenForClock",
-        value
+        value,
       });
     },
 
@@ -96,7 +96,7 @@ export default {
       this.$modV.store.commit("midi/UPDATE_DEVICE", {
         id,
         key: "ccLatch",
-        value
+        value,
       });
     },
 
@@ -104,9 +104,9 @@ export default {
       this.$modV.store.commit("midi/UPDATE_DEVICE", {
         id,
         key: "noteOnLatch",
-        value
+        value,
       });
-    }
-  }
+    },
+  },
 };
 </script>

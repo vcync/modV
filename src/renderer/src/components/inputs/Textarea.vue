@@ -11,9 +11,10 @@
 <script>
 export default {
   props: {
-    modelValue: {},
-    cols: {},
+    modelValue: { type: undefined },
+    cols: { type: Number },
     rows: {
+      type: Number,
       default: 3,
     },
   },

@@ -6,13 +6,14 @@
 
 <script>
 export default {
-  emits: ["update:modelValue"],
   props: {
     modelValue: {
       required: true,
+      type: undefined,
     },
 
     allowPartial: {
+      type: Boolean,
       default: false,
     },
 
@@ -21,6 +22,7 @@ export default {
       default: false,
     },
   },
+  emits: ["update:modelValue"],
   data() {
     return {
       classNames: {

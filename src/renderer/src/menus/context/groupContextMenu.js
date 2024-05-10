@@ -3,15 +3,15 @@ import modV from "../../application/index";
 export const GroupContextMenu = ({ group: { name, id: groupId } }) => [
   {
     label: name,
-    enabled: false
+    enabled: false,
   },
   {
-    type: "separator"
+    type: "separator",
   },
   {
     label: "Delete",
     async click() {
       modV.store.dispatch("groups/removeGroup", { groupId });
-    }
-  }
+    },
+  },
 ];

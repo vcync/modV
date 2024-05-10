@@ -1,7 +1,7 @@
 <template>
   <div
-    class="info-view"
     v-infoView="{ title: iVTitle, body: iVBody, id: 'Info View Panel' }"
+    class="info-view"
   >
     <grid columns="1">
       <c class="title">{{ focused && focused.title }}</c>
@@ -16,7 +16,7 @@ export default {
     return {
       iVTitle: "Info View",
       iVBody:
-        "The Info view provides a brief description of the user interface element that the mouse is currently over."
+        "The Info view provides a brief description of the user interface element that the mouse is currently over.",
     };
   },
 
@@ -24,8 +24,8 @@ export default {
     focused() {
       const { infoView } = this.$store.state;
       return infoView.dictionary[infoView.focused];
-    }
-  }
+    },
+  },
 };
 </script>
 

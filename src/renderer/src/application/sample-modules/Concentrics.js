@@ -6,7 +6,7 @@ export default {
     author: "2xAA",
     version: "1.0.0",
     audioFeatures: ["zcr", "rms"],
-    type: "2d"
+    type: "2d",
   },
 
   props: {
@@ -14,7 +14,7 @@ export default {
       type: "bool",
       variable: "",
       label: "Use RMS",
-      default: true
+      default: true,
     },
 
     intensity: {
@@ -22,7 +22,7 @@ export default {
       label: "RMS/ZCR Intensity",
       min: 0,
       max: 30,
-      default: 1
+      default: 1,
     },
 
     spacing: {
@@ -30,7 +30,7 @@ export default {
       label: "Circle Spacing",
       min: 0,
       max: 100,
-      default: 5
+      default: 5,
     },
 
     objectDistance: {
@@ -38,7 +38,7 @@ export default {
       label: "Object Distance",
       min: 0,
       max: 200,
-      default: 40
+      default: 40,
     },
 
     strokeWeight: {
@@ -47,12 +47,12 @@ export default {
       min: 1,
       max: 20,
       default: 1,
-      strict: true
-    }
+      strict: true,
+    },
   },
 
   data: {
-    circles: []
+    circles: [],
   },
 
   init({ canvas, data }) {
@@ -76,13 +76,13 @@ export default {
     this.updateCircles({
       circles: data.circles[0],
       x: widthHalf + Math.sin(delta / 1000) * props.objectDistance,
-      y: heightHalf + Math.cos(delta / 1000) * (props.objectDistance / 2)
+      y: heightHalf + Math.cos(delta / 1000) * (props.objectDistance / 2),
     });
 
     this.updateCircles({
       circles: data.circles[1],
       x: widthHalf + -Math.sin(delta / 1000) * props.objectDistance,
-      y: heightHalf + -Math.cos(delta / 1000) * (props.objectDistance / 2)
+      y: heightHalf + -Math.cos(delta / 1000) * (props.objectDistance / 2),
     });
 
     return data;
@@ -105,7 +105,7 @@ export default {
       context,
       amp,
       strokeWeight,
-      spacing
+      spacing,
     });
 
     this.drawCircles({
@@ -113,7 +113,7 @@ export default {
       context,
       amp,
       strokeWeight,
-      spacing
+      spacing,
     });
   },
 
@@ -121,7 +121,7 @@ export default {
     return {
       hue: Math.round(Math.random() * 360),
       x,
-      y
+      y,
     };
   },
 
@@ -144,9 +144,9 @@ export default {
 
     for (let i = 0; i < amp; i += 1) {
       if (i === amp - 1) {
-        context.strokeStyle = `hsl(${circles.hue}, 50%, ${(1 -
-          (amp - Math.round(amp))) *
-          50}%)`;
+        context.strokeStyle = `hsl(${circles.hue}, 50%, ${
+          (1 - (amp - Math.round(amp))) * 50
+        }%)`;
       }
 
       context.beginPath();
@@ -154,5 +154,5 @@ export default {
       context.closePath();
       context.stroke();
     }
-  }
+  },
 };

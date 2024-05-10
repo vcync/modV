@@ -13,7 +13,7 @@ export default {
 
   get AUDIO_BUFFER_SIZE() {
     return 512;
-  }
+  },
 };
 
 export const GROUP_DISABLED = 0;

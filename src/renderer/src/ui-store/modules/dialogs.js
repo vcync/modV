@@ -1,5 +1,5 @@
 const state = {
-  open: []
+  open: [],
 };
 
 const mutations = {
@@ -17,11 +17,11 @@ const mutations = {
     if (index > -1) {
       state.open.splice(index, 1);
     }
-  }
+  },
 };
 
 export default {
   namespaced: true,
   state,
-  mutations
+  mutations,
 };

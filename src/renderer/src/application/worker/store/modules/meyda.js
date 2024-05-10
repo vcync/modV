@@ -4,7 +4,7 @@ import {
   removeSmoothingId,
   getSmoothedFeature,
   MAX_SMOOTHING,
-  SMOOTHING_STEP
+  SMOOTHING_STEP,
 } from "../../audio-features";
 import { v4 as uuidv4 } from "uuid";
 
@@ -23,11 +23,11 @@ const state = {
     "spectralSkewness",
     "spectralKurtosis",
     "perceptualSpread",
-    "perceptualSharpness"
+    "perceptualSharpness",
   ],
   smoothingIds: [],
   MAX_SMOOTHING,
-  SMOOTHING_STEP
+  SMOOTHING_STEP,
 };
 
 const getters = {
@@ -37,7 +37,7 @@ const getters = {
     }
 
     return getFeature(feature);
-  }
+  },
 };
 
 const actions = {
@@ -54,7 +54,7 @@ const actions = {
   // eslint-disable-next-line no-empty-pattern
   removeSmoothingId({}, id) {
     removeSmoothingId(id);
-  }
+  },
 };
 
 const mutations = {
@@ -84,7 +84,7 @@ const mutations = {
     if (index > -1) {
       state.smoothingIds.splice(index, 1);
     }
-  }
+  },
 };
 
 export default {
@@ -92,5 +92,5 @@ export default {
   state,
   getters,
   actions,
-  mutations
+  mutations,
 };

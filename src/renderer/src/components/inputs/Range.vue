@@ -18,10 +18,11 @@ import RightClickNumberInput from "./RightClickNumberInput.vue";
 export default {
   components: { RightClickNumberInput },
   props: {
-    min: {},
-    max: {},
-    step: {},
+    min: { type: Number },
+    max: { type: Number },
+    step: { type: Number },
     modelValue: {
+      type: Number,
       default: 0,
     },
   },

@@ -6,7 +6,7 @@ export default {
     name: "Wobble",
     author: "2xAA",
     version: "1.0.0",
-    previewWithOutput: true
+    previewWithOutput: true,
   },
 
   fragmentShader,
@@ -18,7 +18,7 @@ export default {
       min: 0.0,
       max: 0.05,
       step: 0.001,
-      default: 0.001
+      default: 0.001,
     },
 
     size: {
@@ -27,7 +27,7 @@ export default {
       min: 1.0,
       max: 50.0,
       step: 1.0,
-      default: 1.0
-    }
-  }
+      default: 1.0,
+    },
+  },
 };

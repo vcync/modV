@@ -1,7 +1,7 @@
 <template>
   <dialog ref="dialog">
     <header>
-      <button @click="close" class="close">Close</button>
+      <button class="close" @click="close">Close</button>
       <span>{{ title }}</span>
     </header>
 
@@ -16,9 +16,11 @@ export default {
   props: {
     title: {
       type: String,
-      default: "modV"
-    }
+      default: "modV",
+    },
   },
+
+  emits: ["close"],
 
   mounted() {
     this.$refs.dialog.showModal();
@@ -28,8 +30,8 @@ export default {
     close() {
       this.$emit("close");
       this.$refs.dialog.close();
-    }
-  }
+    },
+  },
 };
 </script>
 

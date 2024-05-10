@@ -3,7 +3,7 @@ const state = {
   video: [],
 
   currentAudioSource: null,
-  currentVideoSource: null
+  currentVideoSource: null,
 };
 
 const mutations = {
@@ -29,11 +29,11 @@ const mutations = {
 
   SET_CURRENT_VIDEO_SOURCE(state, { videoId }) {
     state.currentVideoSource = videoId;
-  }
+  },
 };
 
 export default {
   namespaced: true,
   state,
-  mutations
+  mutations,
 };

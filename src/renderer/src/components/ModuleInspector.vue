@@ -1,8 +1,8 @@
 <template>
   <grid
     v-if="module.props"
-    ref="moduleInspector"
     :id="`module-inspector-${module.$id}`"
+    ref="moduleInspector"
   >
     <c span="1.." class="hidden">
       <button class="pin-button" @click="toggleModulePin(module.$id)">
@@ -16,8 +16,8 @@
       <ModuleControl
         v-for="key in getProps(module.$moduleName)"
         :id="module.$id"
-        :prop="key"
         :key="key"
+        :prop="key"
       />
     </c>
   </grid>
@@ -27,10 +27,17 @@
 import ModuleControl from "./ModuleControl.vue";
 
 export default {
-  props: ["moduleId"],
-
   components: {
     ModuleControl,
+  },
+  props: {
+    moduleId: { type: String },
+  },
+
+  computed: {
+    module() {
+      return this.$modV.store.state.modules.active[this.moduleId];
+    },
   },
 
   mounted() {
@@ -40,12 +47,6 @@ export default {
     //   );
     //   tab.element.append(button);
     // });
-  },
-
-  computed: {
-    module() {
-      return this.$modV.store.state.modules.active[this.moduleId];
-    },
   },
 
   methods: {

@@ -5,7 +5,7 @@ export default {
     version: 0.1,
     meyda: ["zcr", "rms"],
     previewWithOutput: true,
-    type: "2d"
+    type: "2d",
   },
 
   props: {
@@ -15,7 +15,7 @@ export default {
       min: 1,
       max: 20,
       step: 1,
-      default: 10
+      default: 10,
     },
 
     countY: {
@@ -24,7 +24,7 @@ export default {
       min: 1,
       max: 20,
       step: 1,
-      default: 10
+      default: 10,
     },
 
     intensity: {
@@ -32,19 +32,19 @@ export default {
       type: "float",
       min: 0,
       max: 30,
-      default: 15
+      default: 15,
     },
 
     zcr: {
       label: "RMS (unchecked) / ZCR (checked)",
       type: "bool",
-      default: false
-    }
+      default: false,
+    },
   },
 
   data: {
     newCanvas2: null,
-    newCtx2: null
+    newCtx2: null,
   },
 
   init({ canvas, data }) {
@@ -89,11 +89,11 @@ export default {
           i * sliceWidth - analysed,
           j * sliceHeight - analysed,
           sliceWidth + analysed * 2,
-          sliceHeight + analysed * 2
+          sliceHeight + analysed * 2,
         );
       }
     }
 
     context.drawImage(data.newCanvas2, 0, 0, canvas.width, canvas.height);
-  }
+  },
 };

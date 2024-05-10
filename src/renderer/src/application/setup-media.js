@@ -12,7 +12,7 @@ async function enumerateDevices() {
   const devices = await navigator.mediaDevices.enumerateDevices();
   const sources = {
     audio: [],
-    video: []
+    video: [],
   };
 
   for (let i = 0, len = devices.length; i < len; i++) {
@@ -48,7 +48,7 @@ async function getMediaStream({ audioSourceId, videoSourceId }) {
   if (audioSourceId) {
     audioConstraints.audio = {
       echoCancellation: { exact: false },
-      deviceId: audioSourceId
+      deviceId: audioSourceId,
     };
   }
 
@@ -56,15 +56,15 @@ async function getMediaStream({ audioSourceId, videoSourceId }) {
     videoConstraints.video = {
       deviceId: videoSourceId,
       frameRate: {
-        ideal: 60
-      }
+        ideal: 60,
+      },
     };
   }
 
   /* Ask for user media access */
   return [
     audioSourceId && navigator.mediaDevices.getUserMedia(audioConstraints),
-    videoSourceId && navigator.mediaDevices.getUserMedia(videoConstraints)
+    videoSourceId && navigator.mediaDevices.getUserMedia(videoConstraints),
   ];
 }
 
@@ -109,8 +109,8 @@ async function setupMedia({ audioId, videoId, useDefaultDevices = false }) {
   const [audioMediaStream, videoMediaStream] = await Promise.all(
     await getMediaStream({
       audioSourceId,
-      videoSourceId
-    })
+      videoSourceId,
+    }),
   );
 
   // This video element is required to keep the camera alive for the ImageCapture API
@@ -136,7 +136,7 @@ async function setupMedia({ audioId, videoId, useDefaultDevices = false }) {
     }
 
     store.commit("mediaStream/SET_CURRENT_VIDEO_SOURCE", {
-      videoId: videoSourceId
+      videoId: videoSourceId,
     });
   }
 
@@ -147,7 +147,7 @@ async function setupMedia({ audioId, videoId, useDefaultDevices = false }) {
 
     // Create new Audio Context
     this.audioContext = new window.AudioContext({
-      latencyHint: "playback"
+      latencyHint: "playback",
     });
 
     // Create new Audio Analyser
@@ -158,7 +158,7 @@ async function setupMedia({ audioId, videoId, useDefaultDevices = false }) {
     floatFrequencyDataArray = new Float32Array(analyserNode.frequencyBinCount);
     byteFrequencyDataArray = new Uint8Array(analyserNode.frequencyBinCount);
     byteTimeDomainDataArray = new Uint8Array(
-      analyserNode.frequencyBinCount / 2
+      analyserNode.frequencyBinCount / 2,
     );
 
     // Create a gain node
@@ -168,9 +168,8 @@ async function setupMedia({ audioId, videoId, useDefaultDevices = false }) {
     this.gainNode.gain.value = 1;
 
     // Create the audio input stream (audio)
-    this.audioStream = this.audioContext.createMediaStreamSource(
-      audioMediaStream
-    );
+    this.audioStream =
+      this.audioContext.createMediaStreamSource(audioMediaStream);
 
     // Connect the audio stream to the analyser (this is a passthru) (audio->(analyser))
     this.audioStream.connect(analyserNode);
@@ -185,11 +184,11 @@ async function setupMedia({ audioId, videoId, useDefaultDevices = false }) {
       source: this.gainNode,
       bufferSize: constants.AUDIO_BUFFER_SIZE,
       windowingFunction: "rect",
-      featureExtractors: ["complexSpectrum"]
+      featureExtractors: ["complexSpectrum"],
     });
 
     store.commit("mediaStream/SET_CURRENT_AUDIO_SOURCE", {
-      audioId: audioSourceId
+      audioId: audioSourceId,
     });
   }
 
@@ -220,5 +219,5 @@ export {
   setupMedia,
   getFloatFrequencyData,
   getByteFrequencyData,
-  getByteTimeDomainData
+  getByteTimeDomainData,
 };

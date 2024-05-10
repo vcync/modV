@@ -4,8 +4,8 @@
       <Select v-model="type" style="width: 100%">
         <option
           v-for="tt in textureTypes"
-          :value="tt"
           :key="tt"
+          :value="tt"
           :selected="type === tt"
         >
           {{ tt }}
@@ -17,13 +17,13 @@
       <div v-if="type === 'group'">
         <Select
           v-model="modelCanvasId"
-          @update:model-value="setTexture('group')"
           style="width: 100%"
+          @update:model-value="setTexture('group')"
         >
           <option
             v-for="group in groupOutputs"
-            :value="group.id"
             :key="group.id"
+            :value="group.id"
           >
             {{ group.name }}
           </option>
@@ -33,13 +33,13 @@
       <div v-if="type === 'canvas'">
         <Select
           v-model="modelCanvasId"
-          @update:model-value="setTexture('canvas')"
           style="width: 100%"
+          @update:model-value="setTexture('canvas')"
         >
           <optgroup
             v-for="(outputs, group) in allOutputsByGroup"
-            :label="group"
             :key="group"
+            :label="group"
           >
             <option
               v-for="output in outputs"
@@ -55,9 +55,9 @@
       <div v-if="type === 'image'">
         <Select
           v-model="modelImagePath"
-          @update:model-value="setTexture('image')"
           :disabled="!images"
           style="width: 100%"
+          @update:model-value="setTexture('image')"
         >
           <option selected value="">No image</option>
           <option
@@ -73,9 +73,9 @@
       <div v-if="type === 'video'">
         <Select
           v-model="modelVideoPath"
-          @update:model-value="setTexture('video')"
           :disabled="!videos"
           style="width: 100%"
+          @update:model-value="setTexture('video')"
         >
           <option selected value="">No video</option>
           <option
@@ -108,12 +108,13 @@ import constants from "../../application/constants";
 import { VideoControl } from "./VideoControl.vue";
 
 export default {
-  emits: ["update:modelValue"],
-  props: ["modelValue"],
-
   components: {
     VideoControl,
   },
+  props: {
+    modelValue: { type: undefined },
+  },
+  emits: ["update:modelValue"],
 
   data() {
     return {
@@ -123,20 +124,6 @@ export default {
       modelVideoPath: "",
       modelCanvasId: "",
     };
-  },
-
-  created() {
-    this.type =
-      this.modelValue?.type && this.modelValue?.type.length
-        ? this.modelValue.type
-        : this.textureTypes[0];
-    this.modelImagePath =
-      (this.modelValue?.type === "image" && this.modelValue?.options?.path) ||
-      "";
-    this.modelVideoPath =
-      (this.modelValue?.type === "video" && this.modelValue?.options?.path) ||
-      "";
-    this.modelCanvasId = this.modelValue?.options?.id || "";
   },
 
   computed: {
@@ -183,6 +170,26 @@ export default {
         ].video ?? false
       );
     },
+  },
+
+  watch: {
+    type(value) {
+      this.setTexture(value);
+    },
+  },
+
+  created() {
+    this.type =
+      this.modelValue?.type && this.modelValue?.type.length
+        ? this.modelValue.type
+        : this.textureTypes[0];
+    this.modelImagePath =
+      (this.modelValue?.type === "image" && this.modelValue?.options?.path) ||
+      "";
+    this.modelVideoPath =
+      (this.modelValue?.type === "video" && this.modelValue?.options?.path) ||
+      "";
+    this.modelCanvasId = this.modelValue?.options?.id || "";
   },
 
   methods: {
@@ -240,12 +247,6 @@ export default {
       this.updateTextureDefinition({
         options: { ...this.modelValue.options, playbackrate },
       });
-    },
-  },
-
-  watch: {
-    type(value) {
-      this.setTexture(value);
     },
   },
 };

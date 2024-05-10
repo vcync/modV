@@ -5,7 +5,7 @@ const CanvasTextWrapper = ctw.CanvasTextWrapper;
 export default {
   meta: {
     name: "Text",
-    type: "2d"
+    type: "2d",
   },
 
   props: {
@@ -14,7 +14,7 @@ export default {
       default: "",
       set(args) {
         this.drawText(args);
-      }
+      },
     },
 
     size: {
@@ -24,7 +24,7 @@ export default {
       default: 16,
       set(args) {
         this.drawText(args);
-      }
+      },
     },
 
     offsetX: {
@@ -35,7 +35,7 @@ export default {
       step: 1,
       set(args) {
         this.drawText(args);
-      }
+      },
     },
 
     offsetY: {
@@ -46,7 +46,7 @@ export default {
       step: 1,
       set(args) {
         this.drawText(args);
-      }
+      },
     },
 
     strokeSize: {
@@ -57,7 +57,7 @@ export default {
       abs: true,
       set(args) {
         this.drawText(args);
-      }
+      },
     },
 
     font: {
@@ -66,7 +66,7 @@ export default {
       default: "sans-serif",
       set(args) {
         this.drawText(args);
-      }
+      },
     },
 
     weight: {
@@ -74,7 +74,7 @@ export default {
       default: "bold",
       set(args) {
         this.drawText(args);
-      }
+      },
     },
 
     fill: {
@@ -82,7 +82,7 @@ export default {
       default: true,
       set(args) {
         this.drawText(args);
-      }
+      },
     },
 
     fillColor: {
@@ -91,11 +91,11 @@ export default {
         r: 1,
         g: 1,
         b: 1,
-        a: 1
+        a: 1,
       },
       set(args) {
         this.drawText(args);
-      }
+      },
     },
 
     stroke: {
@@ -103,7 +103,7 @@ export default {
       default: false,
       set(args) {
         this.drawText(args);
-      }
+      },
     },
 
     strokeColor: {
@@ -112,12 +112,12 @@ export default {
         r: 1,
         g: 0,
         b: 0,
-        a: 1
+        a: 1,
       },
       set(args) {
         this.drawText(args);
-      }
-    }
+      },
+    },
   },
 
   init({ canvas: { width, height }, data, props }) {
@@ -150,23 +150,25 @@ export default {
       fillColor,
       fill,
       offsetX,
-      offsetY
+      offsetY,
     } = props;
 
     const {
       canvas,
       canvas: { width, height },
-      context
+      context,
     } = data;
 
     if (fill) {
-      context.fillStyle = `rgba(${fillColor.r * 255},${fillColor.g *
-        255},${fillColor.b * 255},${fillColor.a})`;
+      context.fillStyle = `rgba(${fillColor.r * 255},${
+        fillColor.g * 255
+      },${fillColor.b * 255},${fillColor.a})`;
     } else {
       context.fillStyle = "rgba(0,0,0,0)";
     }
-    context.strokeStyle = `rgba(${strokeColor.r * 255},${strokeColor.g *
-      255},${strokeColor.b * 255},${strokeColor.a})`;
+    context.strokeStyle = `rgba(${strokeColor.r * 255},${
+      strokeColor.g * 255
+    },${strokeColor.b * 255},${strokeColor.a})`;
     context.lineWidth = strokeSize;
     context.clearRect(0, 0, width, height);
 
@@ -179,7 +181,7 @@ export default {
       textAlign: "center",
       strokeText: stroke,
       offsetX: calculatedOffsetX,
-      offsetY: calculatedOffsetY
+      offsetY: calculatedOffsetY,
     });
-  }
+  },
 };

@@ -9,7 +9,7 @@ export default function windowHandler() {
       canvas.ownerDocument.body.style.cursor = "none";
     }
 
-    return function() {
+    return function () {
       if (mouseTimer) {
         clearTimeout(mouseTimer);
       }
@@ -22,7 +22,7 @@ export default function windowHandler() {
   function configureWindow({ win, canvas, backgroundColor }) {
     win.document.body.appendChild(canvas);
     win.document.body.style.backgroundColor = backgroundColor;
-    win.addEventListener("beforeunload", ev => {
+    win.addEventListener("beforeunload", (ev) => {
       // Setting any value other than undefined here will prevent the window
       // from closing or reloading
       ev.returnValue = true;
@@ -42,7 +42,7 @@ export default function windowHandler() {
       }
     }
 
-    return function() {
+    return function () {
       if (poll) {
         clearTimeout(poll);
       }
@@ -56,7 +56,7 @@ export default function windowHandler() {
 
     this.store.dispatch("size/setSize", {
       width,
-      height
+      height,
     });
   }
 
@@ -67,14 +67,14 @@ export default function windowHandler() {
       const win = window.open(
         "./output-window.html",
         "modal",
-        `width=${width}, height=${height}, location=no, menubar=no, left=0`
+        `width=${width}, height=${height}, location=no, menubar=no, left=0`,
       );
       win.document.title = title;
 
       if (win === null || typeof win === "undefined") {
         console.log(
           "Could not create Output Window",
-          "modV couldn't open an Output Window. Please check you've allowed pop-ups, then reload"
+          "modV couldn't open an Output Window. Please check you've allowed pop-ups, then reload",
         );
 
         return;
@@ -89,15 +89,15 @@ export default function windowHandler() {
         {
           canvas: offscreen,
           name: `window-${Object.keys(windows).length}`,
-          group: "window"
+          group: "window",
         },
-        [offscreen]
+        [offscreen],
       );
 
       this.store.commit("windows/UPDATE_WINDOW", {
         id,
         key: "outputId",
-        value: outputId
+        value: outputId,
       });
 
       canvas.style.backgroundColor = "transparent";

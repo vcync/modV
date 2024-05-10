@@ -1,5 +1,5 @@
 export function createWebcodecVideo({ id, url, textureDefinition }) {
-  return new Promise(async (resolve, reject) => {
+  return new Promise((resolve, reject) => {
     const video = document.createElement("video");
     video.setAttribute("crossorigin", "anonymous");
     video.setAttribute("loop", true);
@@ -23,9 +23,9 @@ export function createWebcodecVideo({ id, url, textureDefinition }) {
           id,
           stream: frameStream,
           width: video.videoWidth || 256,
-          height: video.videoHeight || 256
+          height: video.videoHeight || 256,
         },
-        [frameStream]
+        [frameStream],
       );
 
       resolve({ id, video, stream });

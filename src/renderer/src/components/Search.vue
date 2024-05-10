@@ -1,33 +1,33 @@
 <template>
-  <div class="search h1" ref="search">
+  <div ref="search" class="search h1">
     <figure
       class="search-highlight"
       :class="{ hide: !showHighlight }"
       :style="searchHighlightStyle"
     ></figure>
 
-    <div class="search-box-container" v-show="showSearch">
+    <div v-show="showSearch" class="search-box-container">
       <input
-        type="text"
         ref="searchBox"
+        v-model="searchTerm"
+        type="text"
         class="search-box"
         :class="{ 'has-results': resultsKeys.length }"
         placeholder="Search"
-        v-model="searchTerm"
         @keypress.enter="selectKeyboardHighlightedItem"
         @keydown.prevent.up="decrementKeyboardIndex"
         @keydown.prevent.down="incrementKeyboardIndex"
       />
 
-      <ul class="results h3" ref="results">
+      <ul ref="results" class="results h3">
         <li
           v-for="(key, index) in resultsKeys"
           :key="key"
-          @mousedown="select(results[key].id)"
-          @mousemove="mouseMoveHandler(results[key].id, index)"
           :class="{
             selected: index === keyboardSelectedIndex,
           }"
+          @mousedown="select(results[key].id)"
+          @mousemove="mouseMoveHandler(results[key].id, index)"
         >
           {{ results[key].type }}: {{ results[key].title }}
         </li>
@@ -53,6 +53,17 @@ export default {
   computed: {
     resultsKeys() {
       return Object.keys(this.results);
+    },
+  },
+
+  watch: {
+    searchTerm(term) {
+      this.results = this.$store.getters["search/search"](term);
+      if (term.length) {
+        this.highlight(this.resultsKeys[this.keyboardSelectedIndex]);
+      } else {
+        this.keyboardSelectedIndex = 0;
+      }
     },
   },
 
@@ -204,17 +215,6 @@ export default {
           selected.scrollIntoView({ block: "nearest" });
         }
       });
-    },
-  },
-
-  watch: {
-    searchTerm(term) {
-      this.results = this.$store.getters["search/search"](term);
-      if (term.length) {
-        this.highlight(this.resultsKeys[this.keyboardSelectedIndex]);
-      } else {
-        this.keyboardSelectedIndex = 0;
-      }
     },
   },
 };

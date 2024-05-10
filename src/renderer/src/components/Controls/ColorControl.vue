@@ -1,18 +1,18 @@
 <template>
   <CollapsibleControl>
-    <template v-slot:main>
+    <template #main>
       <c span="3">
         <div class="color-well">
           <figure
             class="fake-color"
-            @click.prevent="openColorPicker"
             :style="{ backgroundColor: cssBackground }"
+            @click.prevent="openColorPicker"
           ></figure>
         </div>
       </c>
     </template>
 
-    <template v-slot:body>
+    <template #body>
       <div class="close-grids">
         <grid
           columns="4"
@@ -94,7 +94,10 @@ import RangeControl from "./RangeControl.vue";
 const { ipcRenderer } = window.electron;
 
 export default {
-  emits: ["update:modelValue"],
+  components: {
+    CollapsibleControl,
+    RangeControl,
+  },
 
   props: {
     modelValue: {
@@ -122,10 +125,12 @@ export default {
       required: true,
     },
   },
+  emits: ["update:modelValue"],
 
-  components: {
-    CollapsibleControl,
-    RangeControl,
+  data() {
+    return {
+      pickerWindowId: null,
+    };
   },
 
   computed: {
@@ -183,10 +188,19 @@ export default {
     },
   },
 
-  data() {
-    return {
-      pickerWindowId: null,
-    };
+  watch: {
+    value: {
+      deep: true,
+      handler() {
+        if (this.windowId) {
+          ipcRenderer.sendTo(this.windowId, "module-info", {
+            moduleId: this.moduleId,
+            prop: this.prop,
+            data: this.value,
+          });
+        }
+      },
+    },
   },
 
   methods: {
@@ -225,21 +239,6 @@ export default {
       const value = { r: vars.red, g: vars.green, b: vars.blue, a: vars.alpha };
 
       this.$emit("update:modelValue", value);
-    },
-  },
-
-  watch: {
-    value: {
-      deep: true,
-      handler() {
-        if (this.windowId) {
-          ipcRenderer.sendTo(this.windowId, "module-info", {
-            moduleId: this.moduleId,
-            prop: this.prop,
-            data: this.value,
-          });
-        }
-      },
     },
   },
 };

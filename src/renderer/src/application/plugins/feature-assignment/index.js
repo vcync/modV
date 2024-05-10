@@ -28,11 +28,11 @@ export default {
             store.dispatch("modules/updateProp", {
               moduleId,
               prop,
-              data: featureData
+              data: featureData,
             });
           }
         }
       }
     }
-  }
+  },
 };

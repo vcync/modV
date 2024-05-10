@@ -19,8 +19,8 @@
               max="10"
               step="0.01"
               style="width: 100%"
-              @input="playbackRateInput"
               :value="playbackrate"
+              @input="playbackRateInput"
           /></c>
           <c span="3">{{ playbackrate }}</c>
         </grid>
@@ -34,18 +34,18 @@ export const VideoControl = {
   props: {
     videoId: {
       required: true,
-      type: "string"
+      type: "string",
     },
 
     paused: {
       required: true,
-      type: "boolean"
+      type: "boolean",
     },
 
     playbackrate: {
       required: true,
-      type: "number"
-    }
+      type: "number",
+    },
   },
 
   created() {
@@ -83,8 +83,8 @@ export const VideoControl = {
       const playbackRate = parseFloat(e.target.value);
       video.playbackRate = playbackRate;
       this.$emit("ratechange", playbackRate);
-    }
-  }
+    },
+  },
 };
 
 export default VideoControl;

@@ -1,13 +1,13 @@
 <template>
   <div
+    v-if="!badModule"
+    v-contextMenu="() => GalleryItemContextMenu({ moduleName })"
+    class="gallery-item"
+    :class="{ grabbing }"
     @mouseover="focus"
     @mouseleave="blur"
     @dblclick="doubleClick"
     @mousedown="mouseDown"
-    v-if="!badModule"
-    class="gallery-item"
-    v-contextMenu="() => GalleryItemContextMenu({ moduleName })"
-    :class="{ grabbing }"
   >
     <canvas ref="canvas"></canvas>
     <div class="title">{{ moduleName }}</div>
@@ -19,7 +19,10 @@ import { GROUP_ENABLED, GROUP_DISABLED } from "../application/constants.js";
 import { GalleryItemContextMenu } from "../menus/context/galleryItemContextMenu";
 
 export default {
-  props: ["moduleName", "groupId"],
+  props: {
+    moduleName: { type: String },
+    groupId: { type: String },
+  },
 
   data() {
     return {

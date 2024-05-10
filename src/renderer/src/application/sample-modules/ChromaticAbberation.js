@@ -7,7 +7,7 @@ export default {
     version: "1.0.0",
     previewWithOutput: true,
     meyda: [], // returned variables passed to the shader individually as uniforms
-    type: "shader"
+    type: "shader",
   },
   fragmentShader: chromaticAbberationFrag,
 
@@ -18,7 +18,7 @@ export default {
       min: 1.0,
       max: 2.0,
       step: 0.001,
-      default: 1.0
+      default: 1.0,
     },
     gOffset: {
       type: "float",
@@ -26,7 +26,7 @@ export default {
       min: 1.0,
       max: 2.0,
       step: 0.001,
-      default: 1.015
+      default: 1.015,
     },
     bOffset: {
       type: "float",
@@ -34,7 +34,7 @@ export default {
       min: 1.0,
       max: 2.0,
       step: 0.001,
-      default: 1.03
-    }
-  }
+      default: 1.03,
+    },
+  },
 };

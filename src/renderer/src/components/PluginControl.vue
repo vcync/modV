@@ -1,10 +1,10 @@
 <template>
   <Control
-    @update:model-value="handleInput"
-    :inputTitle="`${pluginName}: ${title}`"
-    :activeProp="activeProp"
+    :input-title="`${pluginName}: ${title}`"
+    :active-prop="activeProp"
     :title="title"
-    :modelValue="value"
+    :model-value="value"
+    @update:model-value="handleInput"
   />
 </template>
 

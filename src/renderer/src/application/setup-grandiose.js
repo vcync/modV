@@ -1,11 +1,9 @@
-/* globals __dirname */
-
 import store from "./worker/store/index";
 
 let grandiose = undefined;
 
 export default function setupGrandiose() {
-  console.log('setup grandiose')
+  console.log("setup grandiose");
   if (grandiose === undefined) {
     /* eslint-disable */
     __dirname = `${__dirname}/node_modules/grandiose`;
@@ -18,7 +16,7 @@ export default function setupGrandiose() {
       if (error.message.includes("libndi.so")) {
         store.dispatch("errors/createMessage", {
           message:
-            "libndi is not installed, please see \"Ubuntu/Debian\" in the modV <ElectronLink to='https://github.com/vcync/modV#ubuntudebian'>README</ElectronLink>."
+            "libndi is not installed, please see \"Ubuntu/Debian\" in the modV <ElectronLink to='https://github.com/vcync/modV#ubuntudebian'>README</ElectronLink>.",
         });
       } else {
         console.error(error);

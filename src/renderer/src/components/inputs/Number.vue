@@ -9,7 +9,12 @@
 
 <script>
 export default {
-  props: ["min", "max", "step", "modelValue"],
+  props: {
+    min: { type: Number },
+    max: { type: Number },
+    step: { type: Number },
+    modelValue: { type: Number },
+  },
   emits: ["update:modelValue"],
 
   computed: {

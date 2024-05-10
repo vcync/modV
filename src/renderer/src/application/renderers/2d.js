@@ -5,7 +5,7 @@ const twoDContext = twoDCanvas.getContext("2d");
 store.dispatch("outputs/addAuxillaryOutput", {
   name: "2d-buffer",
   context: twoDContext,
-  group: "buffer"
+  group: "buffer",
 });
 
 /**
@@ -34,7 +34,7 @@ function render({
   bpm,
   kick,
   props,
-  data
+  data,
 }) {
   if (
     twoDCanvas.width !== canvas.width ||
@@ -58,7 +58,7 @@ function render({
     bpm,
     kick,
     props,
-    data
+    data,
   });
   twoDContext.restore();
 
@@ -74,14 +74,14 @@ function updateModule({
   data,
   canvas,
   context,
-  delta
+  delta,
 }) {
   const { data: dataUpdated } = moduleDefinition.update({
     props,
     data,
     canvas,
     context,
-    delta
+    delta,
   });
 
   return dataUpdated ?? data;

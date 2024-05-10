@@ -5,7 +5,7 @@ export default {
     version: "1.0.0",
     audioFeatures: ["zcr", "rms"],
     type: "2d",
-    previewWithOutput: true
+    previewWithOutput: true,
   },
 
   props: {
@@ -15,13 +15,13 @@ export default {
       min: 2,
       max: 30,
       step: 1,
-      default: 5
+      default: 5,
     },
 
     soundReactive: {
       type: "bool",
       label: "Sound Reactive",
-      default: false
+      default: false,
     },
 
     intensity: {
@@ -30,14 +30,14 @@ export default {
       min: 0,
       max: 30,
       step: 1,
-      default: 15
+      default: 15,
     },
 
     soundType: {
       type: "bool",
       label: "RMS (unchecked) / ZCR (checked)",
-      default: false
-    }
+      default: false,
+    },
   },
 
   init({ canvas, data }) {
@@ -89,7 +89,7 @@ export default {
       0,
       0,
       w,
-      h
+      h,
     );
     context.drawImage(
       data.newCanvas2,
@@ -100,8 +100,8 @@ export default {
       0,
       0,
       canvas.width,
-      canvas.height
+      canvas.height,
     );
     context.restore();
-  }
+  },
 };

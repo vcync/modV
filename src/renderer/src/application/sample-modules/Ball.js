@@ -6,7 +6,7 @@ export default {
     author: "2xAA",
     version: "1.0.1",
     audioFeatures: ["zcr", "rms"],
-    type: "2d"
+    type: "2d",
   },
 
   props: {
@@ -18,7 +18,7 @@ export default {
       default: 10,
       // default: [1, 10, 20],
       // random: true,
-      strict: true
+      strict: true,
     },
 
     speed: {
@@ -27,13 +27,13 @@ export default {
       min: 0,
       max: 20,
       step: 0.01,
-      default: 2
+      default: 2,
     },
 
     wrap: {
       label: "Wrap",
       type: "bool",
-      default: false
+      default: false,
     },
 
     size: {
@@ -43,7 +43,7 @@ export default {
       max: 50,
       step: 1,
       default: 2,
-      abs: true
+      abs: true,
     },
 
     intensity: {
@@ -53,13 +53,13 @@ export default {
       max: 30,
       step: 1,
       default: 15,
-      abs: true
+      abs: true,
     },
 
     soundType: {
       label: "RMS (unchecked) / ZCR (checked)",
       type: "bool",
-      default: false
+      default: false,
     },
 
     color: {
@@ -68,12 +68,12 @@ export default {
       default: {
         data: [
           [0, 0, 0],
-          [255, 255, 255]
+          [255, 255, 255],
         ],
         duration: 10000,
-        easing: "linear"
-      }
-    }
+        easing: "linear",
+      },
+    },
   },
 
   data: {
@@ -84,7 +84,7 @@ export default {
     size: 2,
     color: [255, 0, 0, 1],
     speed: 1,
-    balls: []
+    balls: [],
   },
 
   init({ data, canvas }) {
@@ -106,7 +106,7 @@ export default {
         speed,
         wrap,
         canvas,
-        radius: props.size
+        radius: props.size,
       });
     }
 
@@ -135,7 +135,7 @@ export default {
         positionX: Math.floor(Math.random() * canvas.width + 1),
         positionY: Math.floor(Math.random() * canvas.height + 1),
         directionX: Math.round(Math.random()),
-        directionY: Math.round(Math.random())
+        directionY: Math.round(Math.random()),
       });
 
       balls.push(ball);
@@ -150,20 +150,20 @@ export default {
     directionX,
     directionY,
     speed = 0,
-    radius = 0
+    radius = 0,
   }) {
     return {
       radius,
       speed,
       position: { x: positionX, y: positionY },
-      direction: { x: directionX, y: directionY }
+      direction: { x: directionX, y: directionY },
     };
   },
 
   updateBall({ canvas: { width, height }, ball, speed, radius, wrap }) {
     const {
       position: { x, y },
-      direction: { x: directionX, y: directionY }
+      direction: { x: directionX, y: directionY },
     } = ball;
 
     ball.radius = radius;
@@ -214,7 +214,7 @@ export default {
   drawBall({ ball, color, context, analysed }) {
     context.beginPath();
     context.fillStyle = `rgb(${Math.round(color[0])},${Math.round(
-      color[1]
+      color[1],
     )},${Math.round(color[2])})`;
     context.arc(
       ball.position.x,
@@ -222,9 +222,9 @@ export default {
       Math.round(ball.radius + ball.radius * analysed),
       0,
       2 * Math.PI,
-      true
+      true,
     );
     context.fill();
     context.closePath();
-  }
+  },
 };

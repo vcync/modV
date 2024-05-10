@@ -3,11 +3,11 @@ export default {
     name: "Texture 2D",
     type: "2d",
     version: "1.0.0",
-    author: "NERDDISCO"
+    author: "NERDDISCO",
   },
   props: {
     texture: {
-      type: "texture"
+      type: "texture",
     },
     scale: {
       label: "Scale",
@@ -15,7 +15,7 @@ export default {
       default: 1,
       min: 0,
       max: 5,
-      step: 0.001
+      step: 0.001,
     },
     offsetX: {
       label: "Offset X in %",
@@ -23,7 +23,7 @@ export default {
       default: 0,
       min: -100,
       max: 100,
-      step: 1
+      step: 1,
     },
     offsetY: {
       label: "Offset Y in %",
@@ -31,7 +31,7 @@ export default {
       default: 0,
       min: -100,
       max: 100,
-      step: 1
+      step: 1,
     },
     constrain: {
       label: "Constrain",
@@ -40,9 +40,9 @@ export default {
       enum: [
         { label: "None (Scale)", value: "none" },
         { label: "Contain", value: "contain" },
-        { label: "Cover", value: "cover" }
-      ]
-    }
+        { label: "Cover", value: "cover" },
+      ],
+    },
   },
   draw({ canvas: { width, height }, context, props }) {
     const { constrain, offsetX, offsetY, scale, texture } = props;
@@ -100,8 +100,8 @@ export default {
         x + calculatedOffsetX,
         y + calculatedOffsetY,
         imageWidth,
-        imageHeight
+        imageHeight,
       );
     }
-  }
+  },
 };

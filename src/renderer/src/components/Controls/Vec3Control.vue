@@ -1,6 +1,6 @@
 <template>
   <CollapsibleControl>
-    <template v-slot:main>
+    <template #main>
       <c span="4">
         <div class="close-grids">
           <grid
@@ -58,7 +58,7 @@
       </c>
     </template>
 
-    <template v-slot:body>
+    <template #body>
       <grid columns="4">
         <c span="2+2"
           ><Vec2DXY :value="modelValue" @update:model-value="xyInput"
@@ -74,6 +74,11 @@ import RangeControl from "./RangeControl.vue";
 import Vec2DXY from "./Vec2DXY.vue";
 
 export default {
+  components: {
+    CollapsibleControl,
+    RangeControl,
+    Vec2DXY,
+  },
   props: {
     modelValue: {
       type: Array,
@@ -100,12 +105,7 @@ export default {
       required: true,
     },
   },
-
-  components: {
-    CollapsibleControl,
-    RangeControl,
-    Vec2DXY,
-  },
+  emits: ["update:modelValue"],
 
   computed: {
     x() {
@@ -149,6 +149,13 @@ export default {
     },
   },
 
+  watch: {
+    modelValue: {
+      deep: true,
+      handler() {},
+    },
+  },
+
   methods: {
     focusInput(append, label) {
       this.$modV.store.dispatch("inputs/setFocusedInput", {
@@ -172,13 +179,6 @@ export default {
       const value = [vars.x, vars.y, vars.z];
 
       this.$emit("update:modelValue", value);
-    },
-  },
-
-  watch: {
-    modelValue: {
-      deep: true,
-      handler() {},
     },
   },
 };

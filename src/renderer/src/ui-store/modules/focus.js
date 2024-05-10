@@ -1,6 +1,6 @@
 const state = {
   id: null,
-  type: null
+  type: null,
 };
 
 const actions = {
@@ -14,19 +14,19 @@ const actions = {
     }
 
     commit("SET_FOCUS", args);
-  }
+  },
 };
 
 const mutations = {
   SET_FOCUS(state, { id, type }) {
     state.id = id;
     state.type = type;
-  }
+  },
 };
 
 export default {
   namespaced: true,
   state,
   actions,
-  mutations
+  mutations,
 };

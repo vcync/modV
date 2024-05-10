@@ -3,13 +3,13 @@
   <Dialog
     v-if="message"
     :key="messageId"
-    @close="dialogClosed"
     title="Error"
     style="max-width: 420px"
+    @close="dialogClosed"
   >
     <component
       :is="{
-        template: `<span>${this.message}</span>`
+        template: `<span>${message}</span>`,
       }"
     ></component>
   </Dialog>
@@ -20,7 +20,8 @@ import Dialog from "./Dialog.vue";
 
 export default {
   components: {
-    Dialog
+    // eslint-disable-next-line vue/no-reserved-component-names
+    Dialog,
   },
 
   computed: {
@@ -30,13 +31,13 @@ export default {
 
     messageId() {
       return Object.keys(this.$modV.store.state.errors.messages)[0];
-    }
+    },
   },
 
   methods: {
     dialogClosed() {
       this.$modV.store.dispatch("errors/deleteMessage", { id: this.messageId });
-    }
-  }
+    },
+  },
 };
 </script>

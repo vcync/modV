@@ -1,23 +1,22 @@
 <template>
   <Control
-    @update:modelValue="handleInput"
-    :inputTitle="`${moduleName}: ${title}`"
-    :activeProp="activeProp"
-    :moduleId="id"
-    :prop="prop"
-    :title="title"
-    :modelValue="value"
     v-contextMenu="
       () =>
         ActiveModuleControlContextMenu({ moduleId: id, propName: prop, title })
     "
+    :input-title="`${moduleName}: ${title}`"
+    :active-prop="activeProp"
+    :module-id="id"
+    :prop="prop"
+    :title="title"
+    :model-value="value"
+    @update:model-value="handleInput"
   />
 </template>
 
 <script>
 import Control from "./Control.vue";
 import { ActiveModuleControlContextMenu } from "../menus/context/activeModuleControlContextMenu.js";
-import { toRaw } from "vue";
 
 export default {
   components: {

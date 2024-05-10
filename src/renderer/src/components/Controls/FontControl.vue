@@ -3,24 +3,24 @@
     <input
       ref="fontComponentInput"
       :value="searchTerm"
+      :style="{ fontFamily: modelValue }"
       @input="input"
       @focus="openFontList"
       @keypress.enter="selectHighlightedItem"
       @keydown.prevent.up="decrementKeyboardIndex"
       @keydown.prevent.down="incrementKeyboardIndex"
-      :style="{ fontFamily: modelValue }"
     />
 
-    <ul class="searchable-select" v-show="showFontList" ref="fontList">
+    <ul v-show="showFontList" ref="fontList" class="searchable-select">
       <li
         v-for="(font, index) in fontsToShow"
-        :value="font"
         :key="font"
-        @click="clickItem(font)"
+        :value="font"
         :class="{
           selected: modelValue === font || index === keyboardSelectedIndex,
           keyboardSelected: index === keyboardSelectedIndex,
         }"
+        @click="clickItem(font)"
       >
         <span :style="{ fontFamily: font }">{{ font }}</span>
       </li>
@@ -32,14 +32,13 @@
 import Fuse from "fuse.js";
 
 export default {
-  emits: ["update:modelValue"],
-
   props: {
     modelValue: {
       type: String,
       required: true,
     },
   },
+  emits: ["update:modelValue"],
 
   data() {
     return {
@@ -48,19 +47,6 @@ export default {
       keyboardSelectedIndex: -1,
       fuse: null,
     };
-  },
-
-  async created() {
-    this.searchTerm = this.modelValue;
-    this.setupFuse();
-  },
-
-  mounted() {
-    this.scrollSelectedItemIntoView();
-  },
-
-  beforeUnmount() {
-    window.removeEventListener("click", this.checkClick);
   },
 
   computed: {
@@ -79,6 +65,25 @@ export default {
         .sort((a, b) => a.score - b.score)
         .map((result) => result.item);
     },
+  },
+
+  watch: {
+    fonts(fonts) {
+      this.setupFuse(fonts);
+    },
+  },
+
+  async created() {
+    this.searchTerm = this.modelValue;
+    this.setupFuse();
+  },
+
+  mounted() {
+    this.scrollSelectedItemIntoView();
+  },
+
+  beforeUnmount() {
+    window.removeEventListener("click", this.checkClick);
   },
 
   methods: {
@@ -176,15 +181,8 @@ export default {
 
       const fuse = new Fuse([], { includeScore: true });
 
-      // eslint-disable-next-line no-for-each/no-for-each
       fonts.forEach((fontName) => fuse.add(fontName));
       this.fuse = fuse;
-    },
-  },
-
-  watch: {
-    fonts(fonts) {
-      this.setupFuse(fonts);
     },
   },
 };

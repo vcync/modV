@@ -13,8 +13,8 @@ export default {
   props: {
     inputId: {
       type: String,
-      required: true
-    }
+      required: true,
+    },
   },
 
   computed: {
@@ -26,7 +26,7 @@ export default {
       const link = this.$modV.store.state.inputs.inputLinks[this.inputId];
 
       return link && link.source === "midi";
-    }
+    },
   },
 
   methods: {
@@ -40,7 +40,7 @@ export default {
 
     removeLink() {
       this.$modV.store.dispatch("inputs/removeInputLink", {
-        inputId: this.inputId
+        inputId: this.inputId,
       });
 
       this.hasLink = false;
@@ -51,7 +51,7 @@ export default {
 
       const {
         data: [type, channel],
-        currentTarget: { id, name, manufacturer }
+        currentTarget: { id, name, manufacturer },
       } = message;
 
       this.hasLink = await this.$modV.store.dispatch("inputs/createInputLink", {
@@ -64,13 +64,13 @@ export default {
           payload: {
             id: `${id}-${name}-${manufacturer}`,
             channel,
-            type
-          }
+            type,
+          },
         },
         min: 0,
-        max: 1
+        max: 1,
       });
-    }
-  }
+    },
+  },
 };
 </script>

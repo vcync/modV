@@ -3,7 +3,7 @@ import store from "../worker/store";
 import {
   Renderer as ISFRenderer,
   Parser as ISFParser,
-  Upgrader as ISFUpgrader
+  Upgrader as ISFUpgrader,
 } from "interactive-shader-format/src/main.js";
 import { getFeatures } from "../worker/audio-features";
 import constants from "../constants";
@@ -13,12 +13,12 @@ const isfContext = isfCanvas.getContext("webgl2", {
   antialias: true,
   desynchronized: true,
   powerPreference: "high-performance",
-  premultipliedAlpha: false
+  premultipliedAlpha: false,
 });
 store.dispatch("outputs/addAuxillaryOutput", {
   name: "isf-buffer",
   context: isfContext,
-  group: "buffer"
+  group: "buffer",
 });
 
 const renderers = {};
@@ -82,7 +82,7 @@ function updateModule({ module, props, data, canvas, context, delta }) {
     data,
     canvas,
     context,
-    delta
+    delta,
   });
 
   return dataUpdated ?? data;
@@ -117,7 +117,7 @@ async function setupModule(moduleDefinition) {
   const renderer = new ISFRenderer(isfContext, {
     useWebAudio: false,
     fftSize: constants.AUDIO_BUFFER_SIZE,
-    hasAudio: parser.hasAudio
+    hasAudio: parser.hasAudio,
   });
   renderer.loadSource(fragmentShader, vertexShader);
 
@@ -148,7 +148,7 @@ async function setupModule(moduleDefinition) {
           default: typeof input.DEFAULT !== "undefined" ? input.DEFAULT : 0.0,
           min: input.MIN,
           max: input.MAX,
-          step: 0.01
+          step: 0.01,
         });
         break;
 
@@ -156,7 +156,7 @@ async function setupModule(moduleDefinition) {
         addProp(input.NAME, {
           type: "bool",
           label: input.LABEL || input.NAME,
-          default: Boolean(input.DEFAULT)
+          default: Boolean(input.DEFAULT),
         });
         break;
 
@@ -167,8 +167,8 @@ async function setupModule(moduleDefinition) {
           enum: input.VALUES.map((value, idx) => ({
             label: input.LABELS[idx],
             value,
-            selected: value === input.DEFAULT
-          }))
+            selected: value === input.DEFAULT,
+          })),
         });
         break;
 
@@ -176,7 +176,7 @@ async function setupModule(moduleDefinition) {
         addProp(input.NAME, {
           type: "vec4",
           label: input.LABEL || input.NAME,
-          default: input.DEFAULT
+          default: input.DEFAULT,
         });
         break;
 
@@ -186,7 +186,7 @@ async function setupModule(moduleDefinition) {
           label: input.LABEL || input.NAME,
           default: input.DEFAULT || [0.0, 0.0],
           min: input.MIN,
-          max: input.MAX
+          max: input.MAX,
         });
         break;
 
@@ -195,7 +195,7 @@ async function setupModule(moduleDefinition) {
 
         addProp(input.NAME, {
           type: "texture",
-          label: input.LABEL || input.NAME
+          label: input.LABEL || input.NAME,
         });
 
         break;
@@ -203,7 +203,7 @@ async function setupModule(moduleDefinition) {
       case "event":
         addProp(input.NAME, {
           type: "event",
-          label: input.LABEL || input.NAME
+          label: input.LABEL || input.NAME,
         });
         break;
     }
@@ -221,5 +221,5 @@ export default {
   render,
   updateModule,
   resizeModule,
-  resize
+  resize,
 };

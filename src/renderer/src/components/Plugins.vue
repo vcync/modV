@@ -1,19 +1,19 @@
 <template>
   <grid
-    class="borders"
     v-infoView="{ title: iVTitle, body: iVBody, id: 'Plugins Panel' }"
     v-searchTerms="{
       terms: ['plugin', 'plug in', 'addon', 'add-on'],
       title: 'Plugins',
       type: 'Panel',
     }"
+    class="borders"
   >
     <CollapsibleRow v-for="plugin in plugins" :key="plugin.id">
-      <template v-slot:label>
+      <template #label>
         {{ plugin.name }}
       </template>
 
-      <template v-slot:body>
+      <template #body>
         <c span="1..">
           <grid columns="4">
             <c span="1..">
@@ -21,19 +21,19 @@
                 <c span="1"> Enable </c>
                 <c span="3">
                   <Checkbox
-                    @update:model-value="handleEnableInput(plugin.id)"
                     :value="plugin.enabled"
-                    :emitBoolean="true"
+                    :emit-boolean="true"
                     class="light"
+                    @update:model-value="handleEnableInput(plugin.id)"
                   />
                 </c>
               </grid>
             </c>
 
             <c
-              span="1.."
               v-for="(prop, propKey) in plugin.$props"
               :key="propKey"
+              span="1.."
             >
               <PluginControl :id="plugin.id" :prop="propKey" />
             </c>

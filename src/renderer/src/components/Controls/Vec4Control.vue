@@ -1,6 +1,6 @@
 <template>
   <CollapsibleControl>
-    <template v-slot:main>
+    <template #main>
       <c span="4">
         <div class="close-grids">
           <grid
@@ -75,10 +75,10 @@
       </c>
     </template>
 
-    <template v-slot:body>
+    <template #body>
       <grid columns="4">
         <c span="2+2"
-          ><Sketch :value="color" @input="updateValue" ref="picker"
+          ><Sketch ref="picker" :value="color" @input="updateValue"
         /></c>
       </grid>
     </template>
@@ -91,7 +91,11 @@ import RangeControl from "./RangeControl.vue";
 import { Sketch } from "vue-color";
 
 export default {
-  emits: ["update:modelValue"],
+  components: {
+    CollapsibleControl,
+    RangeControl,
+    Sketch,
+  },
 
   props: {
     modelValue: {
@@ -109,11 +113,12 @@ export default {
       required: true,
     },
   },
+  emits: ["update:modelValue"],
 
-  components: {
-    CollapsibleControl,
-    RangeControl,
-    Sketch,
+  data() {
+    return {
+      color: { r: 0, g: 0, b: 0, a: 1 },
+    };
   },
 
   computed: {
@@ -166,6 +171,16 @@ export default {
     },
   },
 
+  watch: {
+    modelValue(vec4) {
+      this.color = this.vec4ToRgba(vec4);
+    },
+  },
+
+  created() {
+    this.color = this.vec4ToRgba(this.modelValue);
+  },
+
   methods: {
     focusInput(append, label) {
       this.$modV.store.dispatch("inputs/setFocusedInput", {
@@ -202,22 +217,6 @@ export default {
 
     vec4ToRgba([r, g, b, a]) {
       return { r: r * 255, g: g * 255, b: b * 255, a };
-    },
-  },
-
-  data() {
-    return {
-      color: { r: 0, g: 0, b: 0, a: 1 },
-    };
-  },
-
-  created() {
-    this.color = this.vec4ToRgba(this.modelValue);
-  },
-
-  watch: {
-    modelValue(vec4) {
-      this.color = this.vec4ToRgba(vec4);
     },
   },
 };

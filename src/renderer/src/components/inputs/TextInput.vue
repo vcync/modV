@@ -1,7 +1,7 @@
 <template>
   <input
-    type="text"
     ref="input"
+    type="text"
     v-bind="attrs"
     :value="modelValue"
     @input="$emit('update:modelValue', $event.target.value)"
@@ -10,13 +10,11 @@
 
 <script>
 export default {
-  emits: ["update:modelValue"],
-  props: ["modelValue"],
-  methods: {
-    focus() {
-      this.$refs.input.focus();
-    },
+  props: {
+    modelValue: { type: undefined },
   },
+
+  emits: ["update:modelValue"],
 
   computed: {
     attrs() {
@@ -25,6 +23,11 @@ export default {
       delete attrs.input;
 
       return attrs;
+    },
+  },
+  methods: {
+    focus() {
+      this.$refs.input.focus();
     },
   },
 };

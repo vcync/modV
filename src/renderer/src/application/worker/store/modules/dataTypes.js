@@ -3,35 +3,35 @@ import { frames, advanceFrame } from "./tweens";
 
 const state = {
   text: {
-    get: value => value
+    get: (value) => value,
   },
   int: {
-    get: value => value
+    get: (value) => value,
   },
   bool: {
-    get: value => value
+    get: (value) => value,
   },
   event: {
-    get: value => value
+    get: (value) => value,
   },
   vec2: {
-    get: value => value,
-    inputs: () => ({ 0: 0, 1: 0 })
+    get: (value) => value,
+    inputs: () => ({ 0: 0, 1: 0 }),
   },
   vec3: {
-    get: value => value,
-    inputs: () => ({ 0: 0, 1: 0, 2: 0 })
+    get: (value) => value,
+    inputs: () => ({ 0: 0, 1: 0, 2: 0 }),
   },
   vec4: {
-    get: value => value,
-    inputs: () => ({ 0: 0, 1: 0, 2: 0, 3: 0 })
+    get: (value) => value,
+    inputs: () => ({ 0: 0, 1: 0, 2: 0, 3: 0 }),
   },
   float: {
-    get: value => value
+    get: (value) => value,
   },
   color: {
-    get: value => value,
-    inputs: () => ({ r: 0, g: 0, b: 0, a: 0 })
+    get: (value) => value,
+    inputs: () => ({ r: 0, g: 0, b: 0, a: 0 }),
   },
   texture: {
     async create(textureDefinition = {}, isGallery, useExistingData = false) {
@@ -44,7 +44,7 @@ const state = {
         let id;
         try {
           ({ id } = await store.dispatch("images/createImageFromPath", {
-            path
+            path,
           }));
         } catch (e) {
           console.error(e);
@@ -59,7 +59,7 @@ const state = {
         try {
           ({ id } = await store.dispatch(
             "videos/createVideoFromPath",
-            textureDefinition
+            textureDefinition,
           ));
         } catch (e) {
           console.error(e);
@@ -81,7 +81,7 @@ const state = {
         enumerable: true,
         get() {
           return store.state.dataTypes.texture.get(textureDefinition);
-        }
+        },
       });
     },
     async destroy(textureDefinition) {
@@ -89,58 +89,58 @@ const state = {
 
       if (type === "video") {
         await store.dispatch("videos/removeVideoById", {
-          id
+          id,
         });
       }
     },
-    get: textureDefinition => {
+    get: (textureDefinition) => {
       if (!textureDefinition.location.length) {
         return false;
       }
 
       return store.getters[textureDefinition.location](textureDefinition.id);
-    }
+    },
   },
   enum: {
-    get: value => value
+    get: (value) => value,
   },
 
   tween: {
     async create(args, isGallery) {
       const tween = await store.dispatch("tweens/createTween", {
         ...args,
-        isGallery
+        isGallery,
       });
       return Object.defineProperty(tween, "value", {
         enumerable: true,
         get() {
           return store.state.dataTypes.tween.get(tween);
-        }
+        },
       });
     },
 
-    get: value => {
+    get: (value) => {
       const tween = store.state.tweens.tweens[value.id];
       const frame = tween.frames[frames[value.id]];
       advanceFrame(value.id);
       return frame;
-    }
-  }
+    },
+  },
 };
 
 const getters = {
-  types: state => Object.keys(state)
+  types: (state) => Object.keys(state),
 };
 
 const actions = {
   createType({ state }, { type, args }) {
     return state[type].create(args);
-  }
+  },
 };
 
 export default {
   namespaced: true,
   state,
   getters,
-  actions
+  actions,
 };

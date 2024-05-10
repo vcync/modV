@@ -79,5 +79,5 @@ export default {
       mainImage(image, gl_FragCoord.xy);
       image.a = 1.;
       outColor = image;
-    }`
+    }`,
 };

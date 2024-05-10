@@ -2,7 +2,7 @@ export default {
   meta: {
     name: "Cube",
     author: "2xAA",
-    type: "three"
+    type: "three",
   },
 
   props: {
@@ -10,21 +10,21 @@ export default {
       type: "vec3",
       default: [0, 0, 0],
       min: 0,
-      max: 1
+      max: 1,
     },
 
     scale: {
       type: "vec3",
       default: [1, 1, 1],
       min: 0,
-      max: 1
+      max: 1,
     },
 
     position: {
       type: "vec3",
       default: [0, 0, 0],
       min: 0,
-      max: 1
+      max: 1,
     },
 
     color: {
@@ -33,18 +33,18 @@ export default {
         r: 1,
         g: 1,
         b: 1,
-        a: 1
-      }
+        a: 1,
+      },
     },
 
     useMap: {
       type: "bool",
-      default: false
-    }
+      default: false,
+    },
   },
 
   data: {
-    cubeMesh: null
+    cubeMesh: null,
   },
 
   setupThree({ THREE, data, width, height, inputTexture }) {
@@ -65,7 +65,7 @@ export default {
     const material = new THREE.MeshStandardMaterial({
       color: "#ffffff",
       roughness: 0.351,
-      map: inputTexture
+      map: inputTexture,
     });
     const cubeMesh = new THREE.Mesh(geometry, material);
 
@@ -88,9 +88,9 @@ export default {
       position,
       rotation,
       color: { r, g, b },
-      useMap
+      useMap,
     },
-    inputTexture
+    inputTexture,
   }) {
     data.cubeMesh.position.x = position[0];
     data.cubeMesh.position.y = position[1];
@@ -115,5 +115,5 @@ export default {
     data.cubeMesh.material.color.r = r;
     data.cubeMesh.material.color.g = g;
     data.cubeMesh.material.color.b = b;
-  }
+  },
 };

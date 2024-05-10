@@ -1,9 +1,9 @@
 const state = {
-  fps: 60
+  fps: 60,
 };
 
 const getters = {
-  interval: state => 1000 / state.fps
+  interval: (state) => 1000 / state.fps,
 };
 
 const actions = {
@@ -13,13 +13,13 @@ const actions = {
     }
 
     commit("SET_FPS", { fps });
-  }
+  },
 };
 
 const mutations = {
   SET_FPS(state, { fps }) {
     state.fps = fps;
-  }
+  },
 };
 
 export default {
@@ -27,5 +27,5 @@ export default {
   state,
   getters,
   mutations,
-  actions
+  actions,
 };

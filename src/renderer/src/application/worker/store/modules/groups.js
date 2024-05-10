@@ -94,14 +94,14 @@ const sharedPropertyRestrictions = {
     // returns a boolean. True to remove, false to keep.
     // Objects return an Array of keys to remove.
     // This keeps gallery group in place
-    group
-  ) => group.name === constants.GALLERY_GROUP_NAME
+    group,
+  ) => group.name === constants.GALLERY_GROUP_NAME,
 };
 
 const getters = {
-  groupIndexRenderOrder: state => {
+  groupIndexRenderOrder: (state) => {
     const galleryGroupIndex = state.groups.findIndex(
-      group => group.name === constants.GALLERY_GROUP_NAME
+      (group) => group.name === constants.GALLERY_GROUP_NAME,
     );
     const indexes = [...state.groups.keys()];
 
@@ -111,7 +111,7 @@ const getters = {
     }
 
     return indexes;
-  }
+  },
 };
 
 const actions = {
@@ -121,7 +121,7 @@ const actions = {
     const inherit = args.inherit === undefined ? true : args.inherit;
 
     const existingGroupIndex = writeTo.groups.findIndex(
-      group => group.id === args.id
+      (group) => group.id === args.id,
     );
 
     if (existingGroupIndex > -1) {
@@ -146,8 +146,8 @@ const actions = {
       context: await store.dispatch("outputs/getAuxillaryOutput", {
         name,
         group: "group",
-        id
-      })
+        id,
+      }),
     };
 
     const inputs = [
@@ -156,7 +156,7 @@ const actions = {
       "clearing",
       "inherit",
       "compositeOperation",
-      "pipeline"
+      "pipeline",
     ];
     for (let i = 0; i < inputs.length; i += 1) {
       const inputName = inputs[i];
@@ -169,7 +169,7 @@ const actions = {
           await store.dispatch("inputs/addInput", {
             type: "commit",
             location: "groups/UPDATE_GROUP_BY_KEY",
-            data: { groupId: group.id, key: inputName }
+            data: { groupId: group.id, key: inputName },
           })
         ).id;
       }
@@ -181,7 +181,7 @@ const actions = {
   },
 
   async removeGroup({ commit }, { groupId, writeToSwap }) {
-    const group = state.groups.find(group => group.id === groupId);
+    const group = state.groups.find((group) => group.id === groupId);
 
     const inputIds = [
       group.alphaInputId,
@@ -189,14 +189,14 @@ const actions = {
       group.clearingInputId,
       group.inheritInputId,
       group.compositeOperationInputId,
-      group.pipelineInputId
+      group.pipelineInputId,
     ];
 
     for (let i = 0; i < inputIds.length; i += 1) {
       const inputId = inputIds[i];
 
       await store.dispatch("inputs/removeInput", {
-        inputId
+        inputId,
       });
     }
 
@@ -210,8 +210,8 @@ const actions = {
   },
 
   orderByIds({ commit }, { ids }) {
-    const newGroups = ids.map(id => {
-      return state.groups.find(group => group.id === id);
+    const newGroups = ids.map((id) => {
+      return state.groups.find((group) => group.id === id);
     });
 
     commit("REPLACE_GROUPS", { groups: newGroups });
@@ -219,8 +219,8 @@ const actions = {
 
   createPresetData() {
     return state.groups
-      .filter(group => group.name !== constants.GALLERY_GROUP_NAME)
-      .map(group => {
+      .filter((group) => group.name !== constants.GALLERY_GROUP_NAME)
+      .map((group) => {
         const clonedGroup = { ...group };
         delete clonedGroup.context;
         return clonedGroup;
@@ -228,20 +228,20 @@ const actions = {
   },
 
   updateGroupName({ commit }, { groupId, name }) {
-    const group = state.groups.find(group => group.id === groupId);
+    const group = state.groups.find((group) => group.id === groupId);
 
     store.commit("outputs/UPDATE_AUXILLARY", {
       auxillaryId: group.context.id,
       data: {
-        name
-      }
+        name,
+      },
     });
 
     commit("UPDATE_GROUP", {
       groupId,
       data: {
-        name
-      }
+        name,
+      },
     });
   },
 
@@ -257,7 +257,7 @@ const actions = {
   updateGroupInput({ commit }, { groupId, key, data, writeToSwap }) {
     let dataOut = data;
 
-    const group = state.groups.find(group => group.id === groupId);
+    const group = state.groups.find((group) => group.id === groupId);
     const inputId = group[`${key}InputId`];
     dataOut = applyExpression({ inputId, value: dataOut });
 
@@ -265,13 +265,13 @@ const actions = {
   },
 
   async duplicateModule({ commit }, { groupId, moduleId }) {
-    const group = state.groups.find(group => group.id === groupId);
+    const group = state.groups.find((group) => group.id === groupId);
     const position =
-      group.modules.findIndex(moduleListId => moduleListId === moduleId) + 1;
+      group.modules.findIndex((moduleListId) => moduleListId === moduleId) + 1;
     const existingModule = store.state.modules.active[moduleId];
 
     const existingInputIds = store.getters["modules/activeModuleInputIds"](
-      existingModule.$id
+      existingModule.$id,
     );
 
     const existingInputLinks = existingInputIds.reduce((obj, id) => {
@@ -282,11 +282,11 @@ const actions = {
     const duplicateModule = await store.dispatch("modules/makeActiveModule", {
       moduleName: existingModule.meta.name,
       existingModule,
-      generateNewIds: true
+      generateNewIds: true,
     });
 
     const newInputIds = store.getters["modules/activeModuleInputIds"](
-      duplicateModule.$id
+      duplicateModule.$id,
     );
 
     for (let i = 0; i < newInputIds.length; i += 1) {
@@ -296,18 +296,17 @@ const actions = {
       if (existingInputLinks[existingInputId]) {
         await store.dispatch("inputs/createInputLink", {
           ...existingInputLinks[existingInputId],
-          inputId: newInputId
+          inputId: newInputId,
         });
       }
 
-      const existingExpression = store.getters["expressions/getByInputId"](
-        existingInputId
-      );
+      const existingExpression =
+        store.getters["expressions/getByInputId"](existingInputId);
 
       if (existingExpression) {
         await store.dispatch("expressions/create", {
           expression: existingExpression.expression,
-          inputId: newInputId
+          inputId: newInputId,
         });
       }
     }
@@ -315,9 +314,9 @@ const actions = {
     commit("ADD_MODULE_TO_GROUP", {
       moduleId: duplicateModule.$id,
       groupId,
-      position
+      position,
     });
-  }
+  },
 };
 
 const mutations = {
@@ -328,7 +327,7 @@ const mutations = {
 
   REMOVE_GROUP(state, { id, writeToSwap }) {
     const writeTo = writeToSwap ? swap : state;
-    const index = writeTo.groups.findIndex(group => group.id === id);
+    const index = writeTo.groups.findIndex((group) => group.id === id);
 
     if (index > -1) {
       writeTo.groups.splice(index, 1);
@@ -351,14 +350,14 @@ const mutations = {
 
     if (!hasWrittenGalleryId) {
       writeTo.groups.push(
-        oldGroups.find(group => group.name === constants.GALLERY_GROUP_NAME)
+        oldGroups.find((group) => group.name === constants.GALLERY_GROUP_NAME),
       );
     }
   },
 
   REPLACE_GROUP_MODULES(state, { groupId, modules, writeToSwap }) {
     const writeTo = writeToSwap ? swap : state;
-    const index = writeTo.groups.findIndex(group => group.id === groupId);
+    const index = writeTo.groups.findIndex((group) => group.id === groupId);
 
     if (index > -1) {
       writeTo.groups[index].modules = modules;
@@ -367,7 +366,9 @@ const mutations = {
 
   ADD_MODULE_TO_GROUP(state, { moduleId, groupId, position, writeToSwap }) {
     const writeTo = writeToSwap ? swap : state;
-    const groupIndex = writeTo.groups.findIndex(group => group.id === groupId);
+    const groupIndex = writeTo.groups.findIndex(
+      (group) => group.id === groupId,
+    );
 
     if (groupIndex < 0) {
       return false;
@@ -382,9 +383,11 @@ const mutations = {
 
   REMOVE_MODULE_FROM_GROUP(state, { moduleId, groupId, writeToSwap }) {
     const writeTo = writeToSwap ? swap : state;
-    const groupIndex = writeTo.groups.findIndex(group => group.id === groupId);
+    const groupIndex = writeTo.groups.findIndex(
+      (group) => group.id === groupId,
+    );
     const moduleIndex = writeTo.groups[groupIndex].modules.findIndex(
-      module => module === moduleId
+      (module) => module === moduleId,
     );
 
     if (groupIndex < 0 || moduleIndex < 0) {
@@ -396,7 +399,7 @@ const mutations = {
 
   UPDATE_GROUP(state, { groupId, data, writeToSwap }) {
     const writeTo = writeToSwap ? swap : state;
-    const index = writeTo.groups.findIndex(group => group.id === groupId);
+    const index = writeTo.groups.findIndex((group) => group.id === groupId);
 
     if (index > -1) {
       const dataKeys = Object.keys(data);
@@ -411,14 +414,14 @@ const mutations = {
 
   UPDATE_GROUP_BY_KEY(state, { groupId, key, data, writeToSwap }) {
     const writeTo = writeToSwap ? swap : state;
-    const index = writeTo.groups.findIndex(group => group.id === groupId);
+    const index = writeTo.groups.findIndex((group) => group.id === groupId);
 
     if (index > -1) {
       writeTo.groups[index][key] = data;
     }
   },
 
-  SWAP: SWAP(swap, getDefaultState, sharedPropertyRestrictions)
+  SWAP: SWAP(swap, getDefaultState, sharedPropertyRestrictions),
 };
 
 export default {
@@ -426,5 +429,5 @@ export default {
   state,
   getters,
   actions,
-  mutations
+  mutations,
 };

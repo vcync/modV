@@ -6,7 +6,7 @@
       title: 'FPS Control',
       type: 'Status Bar Item',
       focusParent: true,
-      isGLElement: false
+      isGLElement: false,
     }"
     @dblclick="openFrameRateDialog"
   >
@@ -19,13 +19,13 @@ export default {
   data() {
     return {
       iVTitle: "FPS Display",
-      iVBody: "Double click to set the target FPS."
+      iVBody: "Double click to set the target FPS.",
     };
   },
   methods: {
     openFrameRateDialog() {
       this.$store.commit("dialogs/ADD_OPEN", "frameRate");
-    }
-  }
+    },
+  },
 };
 </script>

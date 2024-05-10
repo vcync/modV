@@ -1,27 +1,27 @@
 <template>
   <div
-    class="active-module"
-    tabindex="0"
-    @keydown="removeModule"
-    @focus="clickActiveModule"
+    :id="`active-module-${id}`"
     ref="activeModule"
-    :class="{ focused }"
     v-contextMenu="
       () => ActiveModuleContextMenu({ activeModule: module, groupId })
     "
-    :id="`active-module-${id}`"
+    class="active-module"
+    tabindex="0"
+    :class="{ focused }"
+    @keydown="removeModule"
+    @focus="clickActiveModule"
   >
     <div
       class="active-module__name handle"
       :class="{ grabbing }"
+      :title="isDev ? id : ''"
       @mousedown.left="titleMouseDown"
-      :title="isDev ? this.id : ''"
     >
       {{ name }}
 
       <TooltipDisplay
-        class="active-module__status"
         v-if="statusMessages.length"
+        class="active-module__status"
         :message="statusMessages"
         >⚠️</TooltipDisplay
       >
@@ -30,13 +30,13 @@
       <c span="1..">
         <grid
           columns="6"
-          @mousedown="
-            focusInput(module && module.meta.enabledInputId, 'Enable')
-          "
           :class="{
             'has-link': hasLink(module && module.meta.enabledInputId),
             focused: isFocused(module && module.meta.enabledInputId),
           }"
+          @mousedown="
+            focusInput(module && module.meta.enabledInputId, 'Enable')
+          "
         >
           <c span="2">Enable</c>
           <c span="4"><Checkbox v-model="enabled" /></c>
@@ -46,20 +46,20 @@
       <c span="1..">
         <grid
           columns="6"
-          @mousedown="focusInput(module && module.meta.alphaInputId, 'Alpha')"
           :class="{
             'has-link': hasLink(module && module.meta.alphaInputId),
             focused: isFocused(module && module.meta.alphaInputId),
           }"
+          @mousedown="focusInput(module && module.meta.alphaInputId, 'Alpha')"
         >
           <c span="2">Alpha</c>
           <c span="4" class="active-module__alpha-input">
             <Range
+              v-model.number="alpha"
               value="1"
               min="0"
               max="1"
               step="0.001"
-              v-model.number="alpha"
             />
           </c>
         </grid>
@@ -68,31 +68,31 @@
       <c span="1..">
         <grid
           columns="6"
-          @mousedown="
-            focusInput(
-              module && module.meta.compositeOperationInputId,
-              'Blend Mode',
-            )
-          "
           :class="{
             'has-link': hasLink(
               module && module.meta.compositeOperationInputId,
             ),
             focused: isFocused(module && module.meta.compositeOperationInputId),
           }"
+          @mousedown="
+            focusInput(
+              module && module.meta.compositeOperationInputId,
+              'Blend Mode',
+            )
+          "
         >
           <c span="2">Blend</c>
           <c span="4">
             <Select v-model="blendMode">
               <optgroup
                 v-for="group in blendModes"
-                :label="group.label"
                 :key="group.label"
+                :label="group.label"
               >
                 <option
                   v-for="mode in group.children"
-                  :value="mode.value"
                   :key="mode.label"
+                  :value="mode.value"
                 >
                   {{ mode.label }}
                 </option>
@@ -111,11 +111,16 @@ import { ActiveModuleContextMenu } from "../menus/context/activeModuleContextMen
 import TooltipDisplay from "./TooltipDisplay.vue";
 
 export default {
-  props: ["id", "groupId"],
-
   components: {
     TooltipDisplay,
   },
+
+  props: {
+    id: { type: String },
+    groupId: { type: String },
+  },
+
+  emits: ["remove-module"],
 
   data() {
     return {
@@ -124,11 +129,6 @@ export default {
       showMore: false,
       grabbing: false,
     };
-  },
-
-  beforeUnmount() {
-    // ensure listener cleanup
-    this.titleMouseUp();
   },
 
   computed: {
@@ -215,6 +215,11 @@ export default {
 
       return messages;
     },
+  },
+
+  beforeUnmount() {
+    // ensure listener cleanup
+    this.titleMouseUp();
   },
 
   methods: {

@@ -1,7 +1,7 @@
 export default {
   meta: {
     name: "Counter",
-    type: "2d"
+    type: "2d",
   },
 
   props: {
@@ -9,12 +9,12 @@ export default {
       default: 0.5,
       min: 0,
       max: 1,
-      type: "float"
-    }
+      type: "float",
+    },
   },
 
   data: {
-    counter: 0
+    counter: 0,
   },
 
   multiply(value, multiplier) {
@@ -31,5 +31,5 @@ export default {
     context.fillRect(0, 0, width, height);
     context.fillStyle = "black";
     context.fillText(data.counter, width / 2, height / 2);
-  }
+  },
 };

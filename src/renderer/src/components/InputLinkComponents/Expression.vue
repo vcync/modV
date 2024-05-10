@@ -1,5 +1,5 @@
 <template>
-  <grid columns="4" v-infoView="{ title: iVTitle, body: iVBody, id: iVID }">
+  <grid v-infoView="{ title: iVTitle, body: iVBody, id: iVID }" columns="4">
     <c span="1..">
       <grid columns="4">
         <c span="2+2">
@@ -15,8 +15,8 @@ export default {
   props: {
     inputId: {
       type: String,
-      required: true
-    }
+      required: true,
+    },
   },
 
   data() {
@@ -27,8 +27,14 @@ export default {
       iVID: "Expression",
 
       expression: "value",
-      expressionId: null
+      expressionId: null,
     };
+  },
+
+  watch: {
+    inputId(inputId) {
+      this.restoreExpressionValues(inputId);
+    },
   },
 
   created() {
@@ -44,24 +50,23 @@ export default {
           "expressions/update",
           {
             id: expressionId,
-            expression
-          }
+            expression,
+          },
         );
       } else {
         this.expressionId = await this.$modV.store.dispatch(
           "expressions/create",
           {
             expression,
-            inputId
-          }
+            inputId,
+          },
         );
       }
     },
 
     restoreExpressionValues(inputId = this.inputId) {
-      const expressionAssignment = this.$modV.store.getters[
-        "expressions/getByInputId"
-      ](inputId);
+      const expressionAssignment =
+        this.$modV.store.getters["expressions/getByInputId"](inputId);
 
       if (expressionAssignment) {
         this.expression = expressionAssignment.expression;
@@ -70,14 +75,8 @@ export default {
         this.expression = "value";
         this.expressionId = null;
       }
-    }
+    },
   },
-
-  watch: {
-    inputId(inputId) {
-      this.restoreExpressionValues(inputId);
-    }
-  }
 };
 </script>
 

@@ -1,6 +1,5 @@
 <template>
   <div
-    class="input-config"
     v-infoView="{ title: iVTitle, body: iVBody, id: 'Input Config Panel' }"
     v-searchTerms="{
       terms: [
@@ -16,6 +15,7 @@
       title: 'Input Config',
       type: 'Panel',
     }"
+    class="input-config"
   >
     <div v-if="inputConfig">
       <grid class="borders">
