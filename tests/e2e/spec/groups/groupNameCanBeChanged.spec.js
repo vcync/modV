@@ -12,7 +12,7 @@ test("group name can be changed", async () => {
 
   const newGroupName = "Post FX";
 
-  await nameInput.type(newGroupName);
+  await nameInput.fill(newGroupName);
   await nameInput.press("Enter");
 
   await expect(nameDisplay).toHaveText(newGroupName);

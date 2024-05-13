@@ -189,7 +189,7 @@ export default {
                   content: [
                     {
                       type: ItemType.component,
-                      title: "InputConfig",
+                      title: "Input Config",
                       componentType: "input-config",
                     },
                     {

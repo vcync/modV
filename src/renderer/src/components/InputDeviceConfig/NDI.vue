@@ -24,11 +24,11 @@
       >
         <grid columns="4">
           <c span="3">{{ source.name }}</c>
-          <c
-            ><Button class="light" @click="recieve(source)"
-              >Recieve source</Button
-            ></c
-          >
+          <c>
+            <Button class="light" @click="recieve(source)">
+              Recieve source
+            </Button>
+          </c>
         </grid>
       </c>
     </grid>
@@ -112,7 +112,9 @@ export default {
     },
 
     recieve(source) {
-      this.$modV.store.dispatch("ndi/createReceiver", { source });
+      this.$modV.store.dispatch("ndi/createReceiver", {
+        source: JSON.parse(JSON.stringify(source)),
+      });
     },
 
     toggleReceiver(receiver) {

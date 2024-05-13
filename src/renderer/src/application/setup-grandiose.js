@@ -1,13 +1,14 @@
 import store from "./worker/store/index";
+let grandiose = require("grandiose");
 
-let grandiose = undefined;
+// let grandiose = undefined;
 
 export default function setupGrandiose() {
   console.log("setup grandiose");
   if (grandiose === undefined) {
     /* eslint-disable */
-    __dirname = `${__dirname}/node_modules/grandiose`;
-    __dirname = __dirname.replace("app.asar", "app.asar.unpacked");
+    // __dirname = `${__dirname}/node_modules/grandiose`;
+    // __dirname = __dirname.replace("app.asar", "app.asar.unpacked");
     /* eslint-enable */
 
     try {
@@ -24,11 +25,11 @@ export default function setupGrandiose() {
     }
 
     // eslint-disable-next-line
-    __dirname = __dirname.replace("/node_modules/grandiose", "");
+    // __dirname = __dirname.replace("/node_modules/grandiose", "");
   }
 
   // Make sure to set grandiose to undefined as it will be an empty object otherwise
-  if (!grandiose.isSupportedCPU) {
+  if (!grandiose.isSupportedCPU()) {
     grandiose = undefined;
   }
 

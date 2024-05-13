@@ -99,7 +99,7 @@ class ModVApp {
   async evaluateUIState() {
     const { page } = this;
 
-    return page.evaluate(() => window.Vue.$store.state);
+    return page.evaluate(() => window.Vue.config.globalProperties.$store.state);
   }
 
   async evaluateWorkerState(propertyPath) {

@@ -77,6 +77,9 @@ const windowPrefs = {
       };
     },
 
+    /**
+     * @param {Electron.BrowserWindow} window
+     */
     async create(window) {
       require("@electron/remote/main").enable(window.webContents);
 
@@ -85,6 +88,10 @@ const windowPrefs = {
       window.setRepresentedFilename(os.homedir());
       window.setDocumentEdited(true);
       window.setTitle("Untitled");
+
+      window.webContents.on("did-finish-load", () => {
+        window.setTitle("Untitled");
+      });
 
       // Configure child windows to open without a menubar (windows/linux)
       window.webContents.on(
