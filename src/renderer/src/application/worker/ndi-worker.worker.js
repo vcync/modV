@@ -1,4 +1,5 @@
 /* global BigInt */
+/* env node worker */
 import { getGrandioseSender, setupGrandiose } from "../setup-grandiose";
 
 let sender;
@@ -7,10 +8,13 @@ let grandiose;
 const canvas = new OffscreenCanvas(300, 300);
 const context = canvas.getContext("2d");
 
-const timeStart = BigInt(Date.now()) * BigInt(1e6) - process.hrtime.bigint();
+// process.hrtime accessed via global["process"] to bypass the slightly
+//incorrect bundle polyfill
+const timeStart =
+  BigInt(Date.now()) * BigInt(1e6) - global["process"].hrtime.bigint();
 
 function timeNow() {
-  return timeStart + process.hrtime.bigint();
+  return timeStart + global["process"].hrtime.bigint();
 }
 
 const NDI_LIB_FOURCC = (ch0, ch1, ch2, ch3) =>
@@ -51,6 +55,16 @@ const fourCC = {
   grandiose = await setupGrandiose();
   sender = await getGrandioseSender();
 })();
+
+// @TODO add extra handling for Grandiose destroy. self.onclose seems to do
+// nothing. This should allow us to keep one NDI Output name instead of
+// appending the date. Also better for memory as somewhere a reference is kept
+// to the old sender.
+self.onclose = function () {
+  if (sender) {
+    sender.destroy();
+  }
+};
 
 self.onmessage = async function ({ data: { type, payload } }) {
   if (!sender || type !== "imageBitmap") {

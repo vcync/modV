@@ -1,4 +1,3 @@
-import store from "./worker/store/index";
 let grandiose = require("grandiose");
 
 // let grandiose = undefined;
@@ -15,6 +14,7 @@ export async function setupGrandiose() {
       grandiose = require("grandiose");
     } catch (error) {
       if (error.message.includes("libndi.so")) {
+        const store = await import("./worker/store/index");
         store.dispatch("errors/createMessage", {
           message:
             "libndi is not installed, please see \"Ubuntu/Debian\" in the modV <ElectronLink to='https://github.com/vcync/modV#ubuntudebian'>README</ElectronLink>.",
@@ -43,7 +43,7 @@ export async function getGrandioseSender() {
 
   if (!sender) {
     sender = await grandiose.send({
-      name: `modV (${Date.now()})`,
+      name: `modV`,
       clockVideo: false,
       clockAudio: false,
     });
