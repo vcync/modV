@@ -41,10 +41,9 @@ export default {
   },
 
   mounted() {
-    // this.$parent.$on("tab", tab => {
-    //   const button = this.$refs.moduleInspector.querySelector(
-    //     "button.pin-button"
-    //   );
+    // this.$parent.$on("tab", (tab) => {
+    //   const button =
+    //     this.$refs.moduleInspector.querySelector("button.pin-button");
     //   tab.element.append(button);
     // });
   },

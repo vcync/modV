@@ -63,6 +63,17 @@
     </c>
 
     <c span="1+1">
+      <label title="">Loop</label>
+    </c>
+    <c span="2">
+      <Checkbox
+        v-model="modelLoop"
+        :class="color"
+        @update:model-value="updateValue"
+      />
+    </c>
+
+    <c span="1+1">
       <label
         title="If unchecked the duration will be used per step. duration * numberOfSteps"
         >Duration as total time</label
@@ -110,6 +121,7 @@ export default {
       modelBpmDivision: 32,
       modelDurationAsTotalTime: false,
       modelSteps: 0,
+      modelLoop: true,
     };
   },
 
@@ -151,6 +163,7 @@ export default {
       const bpmDivision = this.modelBpmDivision;
       const durationAsTotalTime = this.modelDurationAsTotalTime;
       const steps = this.modelSteps;
+      const loop = this.modelLoop;
 
       this.$emit("update:modelValue", {
         ...this.modelValue,
@@ -161,6 +174,7 @@ export default {
         bpmDivision,
         durationAsTotalTime,
         steps,
+        loop,
       });
     },
 
@@ -172,6 +186,7 @@ export default {
       this.modelBpmDivision = value.bpmDivision;
       this.modelDurationAsTotalTime = value.durationAsTotalTime;
       this.modelSteps = value.steps;
+      this.modelLoop = value.loop;
     },
 
     setDefaultData() {
@@ -183,6 +198,7 @@ export default {
         bpmDivision: 32,
         durationAsTotalTime: false,
         steps: 0,
+        loop: false,
       });
     },
   },

@@ -8,7 +8,7 @@
         <Button @mousedown="open = !open">
           <img
             :class="{ flip: !open }"
-            src="../assets/graphics/Arrow-vertical.svg"
+            src="../assets/graphics/Arrow-vertical.svg?asset"
           />
         </Button>
       </c>

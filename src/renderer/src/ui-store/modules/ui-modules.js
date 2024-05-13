@@ -1,4 +1,4 @@
-import modV from "../../application/index";
+import modV from "../../application/index.js";
 
 const state = {
   focused: null,

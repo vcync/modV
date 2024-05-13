@@ -84,6 +84,7 @@ class ModV {
       if (type === "createWebcodecVideo") {
         const videoContext = await this.createWebcodecVideo(message);
         this.videos[videoContext.id] = videoContext;
+        return;
       }
 
       if (type === "removeWebcodecVideo") {

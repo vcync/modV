@@ -2,10 +2,8 @@ import { test } from "@playwright/test";
 import { modVApp } from "../../pageObjectModel";
 
 test("pipeline state can be toggled beween 0 and 1", async () => {
-  const {
-    groupIndex,
-    groupId
-  } = await modVApp.groups.getFirstUserGroupIdAndIndex();
+  const { groupIndex, groupId } =
+    await modVApp.groups.getFirstUserGroupIdAndIndex();
 
   const { pipelineCheckbox } = modVApp.groups.getLocators(groupId);
 
@@ -15,8 +13,8 @@ test("pipeline state can be toggled beween 0 and 1", async () => {
     await pipelineCheckbox.click();
 
     await modVApp.checkWorkerAndMainState(
-      [[state => state[groupIndex].pipeline, e => e.toBe(i === 0 ? 1 : 0)]],
-      `groups.groups`
+      [[(state) => state[groupIndex].pipeline, (e) => e.toBe(i === 0 ? 1 : 0)]],
+      `groups.groups`,
     );
   }
 });

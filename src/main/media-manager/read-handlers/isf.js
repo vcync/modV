@@ -1,12 +1,12 @@
+import { streamToString } from "../media-manager-utils/stream-to-string";
 const fs = require("fs");
 const path = require("path");
 const util = require("util");
-const webpack = require("webpack-3");
+const webpack = require("webpack");
 
 const readFile = util.promisify(fs.readFile);
 const writeFile = util.promisify(fs.writeFile);
 const mkdir = util.promisify(fs.mkdir);
-const streamToString = require("../media-manager-utils/stream-to-string");
 
 /**
  * @typedef {OutputFileContext}
@@ -32,7 +32,7 @@ export default {
 
   fileTypes: [
     // @todo regex match
-    "fs"
+    "fs",
   ],
 
   ignored: [/isf[\\/]compiled/, /isf[\\/]temp/],
@@ -57,13 +57,13 @@ export default {
   async process({ filePath, fileName, file }) {
     return {
       filePath: await compileModule({ filePath, fileName, file }),
-      folder: "isf/compiled"
+      folder: "isf/compiled",
     };
-  }
+  },
 };
 
 function compileModule({ filePath, fileName, file }) {
-  return new Promise(async resolve => {
+  return new Promise(async (resolve) => {
     // Default vertex shader from ISF that is used when the user didn't specify anything
     let vertexShader = "void main() {isf_vertShaderInit();}";
     let fragmentShader;
@@ -91,16 +91,16 @@ function compileModule({ filePath, fileName, file }) {
         name: fileName.replace(/(\.\/|\.fs)/g, ""),
         author: "",
         version: "1.0.0",
-        type: "isf"
+        type: "isf",
       },
       fragmentShader,
-      vertexShader
+      vertexShader,
     };
 
     const tempFilePath = path.join(
       path.dirname(filePath),
       "temp",
-      path.basename(filePath)
+      path.basename(filePath),
     );
 
     const tempDirectoryPath = path.join(path.dirname(filePath), "temp");
@@ -119,7 +119,7 @@ function compileModule({ filePath, fileName, file }) {
     const compiledFilePath = path.join(
       path.dirname(filePath),
       "compiled",
-      path.basename(filePath)
+      path.basename(filePath),
     );
 
     const compiledDirectoryPath = path.join(path.dirname(filePath), "compiled");
@@ -144,11 +144,11 @@ function compileModule({ filePath, fileName, file }) {
       output: {
         path: compiledDirectoryPath,
         filename: path.basename(filePath),
-        libraryTarget: "var"
+        libraryTarget: "var",
       },
       resolveLoader: {
-        modules: ["node_modules", __dirname + "/node_modules"]
-      }
+        modules: ["node_modules", __dirname + "/node_modules"],
+      },
     };
 
     webpack(webpackConfig, (err, stats) => {

@@ -20,23 +20,28 @@ const actions = {
     commit("ADD", { project, folder, item });
   },
 
+  // only runs in modV worker
   async setState({ commit }, newState) {
-    const store = require("../index.js").default;
+    // const { default: store } = await import(
+    //   "../../../../renderer/src/application/worker/store/index"
+    // );
     commit("CLEAR_MEDIA_STATE");
 
-    const projectKeys = Object.keys(newState);
+    await this.dispatch("media/setMediaDirectoryPath", { path: newState.path });
+
+    const projectKeys = Object.keys(newState.media);
     for (let i = 0, len = projectKeys.length; i < len; i++) {
       const projectKey = projectKeys[i];
 
-      const folderKeys = Object.keys(newState[projectKey]);
+      const folderKeys = Object.keys(newState.media[projectKey]);
       for (let j = 0, len = folderKeys.length; j < len; j++) {
         const folderKey = folderKeys[j];
 
-        const items = Object.values(newState[projectKey][folderKey]);
+        const items = Object.values(newState.media[projectKey][folderKey]);
         for (let k = 0, len = items.length; k < len; k++) {
           const item = items[k];
 
-          await store.dispatch("media/addMedia", {
+          await this.dispatch("media/addMedia", {
             project: projectKey,
             folder: folderKey,
             item,

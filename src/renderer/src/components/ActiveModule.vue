@@ -56,10 +56,10 @@
           <c span="4" class="active-module__alpha-input">
             <Range
               v-model.number="alpha"
-              value="1"
-              min="0"
-              max="1"
-              step="0.001"
+              :value="1"
+              :min="0"
+              :max="1"
+              :step="0.001"
             />
           </c>
         </grid>

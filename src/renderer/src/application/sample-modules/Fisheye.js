@@ -1,4 +1,4 @@
-import fragmentShader from "./Fisheye/fisheye.frag";
+import fragmentShader from "./Fisheye/fisheye.frag?raw";
 
 export default {
   meta: {

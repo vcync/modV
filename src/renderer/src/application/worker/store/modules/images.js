@@ -1,11 +1,10 @@
 import streamToBlob from "stream-to-blob";
-import fs from "fs";
-import path from "path";
-
 import { v4 as uuidv4 } from "uuid";
-
 import store from "../";
 import { conformFilePath } from "../../../utils/conform-file-path";
+
+const fs = require("fs");
+const path = require("path");
 
 const state = {};
 

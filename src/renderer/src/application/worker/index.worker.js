@@ -1,13 +1,14 @@
 /* eslint-env worker */
 import constants from "../constants";
 import registerPromiseWorker from "promise-worker/register";
-import fs from "fs";
 import store from "./store";
 import loop from "./loop";
 import grabCanvasPlugin from "../plugins/grab-canvas";
 import get from "lodash.get";
 import { tick as frameTick } from "./frame-counter";
 import { getFeatures, setFeatures } from "./audio-features";
+
+const fs = require("fs");
 
 let lastKick = false;
 
@@ -160,8 +161,12 @@ async function start() {
     modulesToRegister.push(mod.default);
   }
 
-  const isfModules = import.meta.glob("../sample-modules/isf/*.fs");
-  const isfModulesVs = import.meta.glob("../sample-modules/isf/*.vs");
+  const isfModules = import.meta.glob("../sample-modules/isf/*.fs", {
+    query: "?raw",
+  });
+  const isfModulesVs = import.meta.glob("../sample-modules/isf/*.vs", {
+    query: "?raw",
+  });
 
   const isfModulesVsKeys = Object.keys(isfModulesVs);
 

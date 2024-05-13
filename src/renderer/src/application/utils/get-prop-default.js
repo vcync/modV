@@ -10,7 +10,7 @@ export default async function getPropDefault(
   const { random, type } = prop;
   let defaultValue = prop.default;
 
-  if (type === "enum") {
+  if (!defaultValue && type === "enum") {
     return prop.enum.find((a) => a.selected)?.value;
   }
 

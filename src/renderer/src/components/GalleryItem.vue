@@ -91,6 +91,7 @@ export default {
   },
 
   async beforeUnmount() {
+    console.log(this.moduleName, this.id);
     await this.$modV.store.dispatch("modules/removeActiveModule", {
       moduleId: this.id,
     });

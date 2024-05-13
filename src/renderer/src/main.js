@@ -1,18 +1,4 @@
-// import './assets/main.css'
-
-// import Vue from "vue";
-// import App from './App.vue'
-
-// window.Vue = new Vue({
-//   render: h => h(App),
-// });
-
-// window.Vue.$mount("#app");
-
-///
-
 import { createApp } from "vue";
-// import vgl from "vue-golden-layout";
 import get from "lodash.get";
 
 import { installInputs } from "./components/inputs/index.js";
@@ -35,8 +21,6 @@ app.use(store);
 
 app.config.globalProperties.$modV = modV;
 
-// Vue.config.ignoredElements = ["grid", "c"];
-// Vue.use(vgl);
 app.component("ElectronLink", ElectronLink);
 
 installInputs(app);

@@ -20,6 +20,9 @@
 <script>
 export default {
   props: {
+    modelValue: {
+      type: Number,
+    },
     min: {
       default: -1,
       type: Number,

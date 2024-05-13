@@ -117,9 +117,9 @@
               <Range
                 v-model="alpha"
                 class="group__alphaRange"
-                value="1"
-                max="1"
-                step="0.001"
+                :value="1"
+                :max="1"
+                :step="0.001"
               />
             </c>
           </grid>
@@ -181,7 +181,7 @@
       <Checkbox
         v-model="enabled"
         class="group__enabledCheckbox"
-        allow-partial="true"
+        :allow-partial="true"
         title="alt-click to skip drawing to output canvas"
       />
       <button
@@ -689,7 +689,7 @@ export default {
 }
 
 .group__modules > * + *:not(.smooth-dnd-ghost)::before {
-  background-image: url(../assets/graphics/Arrow.svg);
+  background-image: url(../assets/graphics/Arrow.svg?asset);
   background-repeat: no-repeat;
   background-position: center;
   background-size: 50%;

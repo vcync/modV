@@ -1,4 +1,4 @@
-import plasmaFrag from "./Plasma/plasma.frag";
+import plasmaFrag from "./Plasma/plasma.frag?raw";
 
 export default {
   meta: {

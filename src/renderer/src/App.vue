@@ -5,84 +5,65 @@
       class="hscreen"
       :router="false"
       :config="layoutConfig"
+      @state="updateLayoutState"
     >
-      <template #myTemplate> <h1>okokok</h1> </template>
+      <template #groups>
+        <Groups />
+      </template>
+
+      <template #module-inspector>
+        <div
+          v-for="(module, i) in focusedModules"
+          :key="i"
+          ref="moduleInspector"
+          :title="`${module.meta.name} properties`"
+          :closable="false"
+          :state="{ is: 'dynamic' }"
+        >
+          <ModuleInspector :module-id="module.$id" />
+        </div>
+      </template>
+
+      <template #info-view>
+        <InfoView />
+      </template>
+
+      <template #gallery>
+        <Gallery />
+      </template>
+
+      <template #input-config>
+        <InputConfig />
+      </template>
+
+      <template #avd-config>
+        <AudioVideoDeviceConfig />
+      </template>
+
+      <template #md-config>
+        <MIDIDeviceConfig />
+      </template>
+
+      <template #bpm-config>
+        <BPMConfig />
+      </template>
+
+      <template #ndi-config>
+        <NDIConfig />
+      </template>
+
+      <template #plugins>
+        <Plugins />
+      </template>
+
+      <template #preview>
+        <Preview />
+      </template>
     </golden-layout>
-    <!-- <gl-col>
-        <gl-row>
-          <gl-col :closable="false" :minItemWidth="100" id="lr-col">
-            <gl-stack title="Groups Stack">
-              <gl-component title="Groups" :closable="false"> -->
-    <Groups />
-    <!-- </gl-component>
-            </gl-stack>
-          </gl-col>
-          <gl-col :width="33" :closable="false" ref="rightColumn">
-            <gl-stack title="Module Inspector Stack">
-              <gl-component title="hidden">
-                 hack around dynamic components not working correctly. CSS below hides tabs with the title "hidden"
-              </gl-component> -->
-    <div
-      v-for="(module, i) in focusedModules"
-      :key="i"
-      ref="moduleInspector"
-      :title="`${module.meta.name} properties`"
-      :closable="false"
-      :state="{ is: 'dynamic' }"
-    >
-      <ModuleInspector :module-id="module.$id" />
-    </div>
-    <!-- </gl-stack>
-          </gl-col>
-        </gl-row>
-        <gl-row>
-          <gl-component title="Info View" :closable="false"> -->
-    <InfoView />
-    <!-- </gl-component> -->
-
-    <!-- <gl-component title="Gallery" :closable="false"> -->
-    <Gallery />
-    <!-- </gl-component> -->
-
-    <!-- <gl-stack title="Input Stack">
-            <gl-component title="Input Config" :closable="false"> -->
-    <InputConfig />
-    <!-- </gl-component> -->
-
-    <!-- <gl-stack title="Input Device Config" :closable="false">
-              <gl-component title="Audio/Video" :closable="false"> -->
-    <AudioVideoDeviceConfig />
-    <!-- </gl-component>
-              <gl-component title="MIDI" :closable="false"> -->
-    <MIDIDeviceConfig />
-    <!-- </gl-component>
-              <gl-component title="BPM" :closable="false"> -->
-    <BPMConfig />
-    <!-- </gl-component>
-              <gl-component title="NDI" :closable="false"> -->
-    <NDIConfig />
-    <!-- </gl-component>
-            </gl-stack> -->
-
-    <!-- <gl-component title="Plugins" :closable="false"> -->
-    <Plugins />
-    <!-- </gl-component>
-          </gl-stack> -->
-
-    <!-- <gl-stack title="Preview Stack">
-            <gl-component title="Preview" :closable="false"> -->
-    <Preview />
-    <!-- </gl-component>
-          </gl-stack>
-        </gl-row>
-      </gl-col>
-    </golden-layout> -->
 
     <StatusBar />
     <Search />
-
     <FrameRateDialog />
-
     <ErrorWatcher />
   </main>
 </template>
@@ -109,7 +90,10 @@ import constants from "./application/constants.js";
 
 import { GoldenLayout as GLComponent } from "./v3-gl-ext.es";
 import * as GoldenLayout from "golden-layout";
+import "golden-layout/dist/css/goldenlayout-base.css";
 const { ipcRenderer } = window.electron;
+
+const { ItemType } = GoldenLayout;
 
 export default {
   name: "App",
@@ -139,17 +123,115 @@ export default {
       moduleInspectorIVBody:
         "The properties of the selected Module. This panel can be pinned for easy access.",
       state: null,
-      layoutState: null,
 
       triggerUiRestart: 0,
 
       layoutConfig: {
+        showPopoutIcon: false,
+        showMaximiseIcon: false,
+        showCloseIcon: false,
         root: {
-          type: "component",
-          title: "One tab",
-          header: { show: "top" },
-          isClosable: false,
-          componentType: "myTemplate",
+          type: ItemType.column,
+          content: [
+            {
+              type: ItemType.row,
+              content: [
+                {
+                  type: ItemType.stack,
+                  content: [
+                    {
+                      type: ItemType.component,
+                      title: "Groups",
+                      componentType: "groups",
+                    },
+                  ],
+                },
+                {
+                  type: ItemType.stack,
+                  width: 33,
+                  content: [
+                    {
+                      type: ItemType.component,
+                      title: "Module Inspector",
+                      componentType: "module-inspector",
+                    },
+                  ],
+                },
+              ],
+            },
+            {
+              type: ItemType.row,
+              content: [
+                {
+                  type: ItemType.stack,
+                  width: 20,
+                  content: [
+                    {
+                      type: ItemType.component,
+                      title: "Info View",
+                      componentType: "info-view",
+                    },
+                  ],
+                },
+                {
+                  type: ItemType.stack,
+                  content: [
+                    {
+                      type: ItemType.component,
+                      title: "Gallery",
+                      componentType: "gallery",
+                    },
+                  ],
+                },
+                {
+                  type: ItemType.stack,
+                  width: 30,
+                  content: [
+                    {
+                      type: ItemType.component,
+                      title: "InputConfig",
+                      componentType: "input-config",
+                    },
+                    {
+                      type: ItemType.component,
+                      title: "Input Device Config",
+                      componentType: "avd-config",
+                    },
+                    {
+                      type: ItemType.component,
+                      title: "MIDI",
+                      componentType: "md-config",
+                    },
+                    {
+                      type: ItemType.component,
+                      title: "BPM",
+                      componentType: "bpm-config",
+                    },
+                    {
+                      type: ItemType.component,
+                      title: "NDI",
+                      componentType: "ndi-config",
+                    },
+                    {
+                      type: ItemType.component,
+                      title: "Plugins",
+                      componentType: "plugins",
+                    },
+                  ],
+                },
+                {
+                  type: ItemType.stack,
+                  content: [
+                    {
+                      type: ItemType.component,
+                      title: "Preview",
+                      componentType: "preview",
+                    },
+                  ],
+                },
+              ],
+            },
+          ],
         },
       },
     };
@@ -186,7 +268,7 @@ export default {
     const layoutState = window.localStorage.getItem(constants.LAYOUT_STATE_KEY);
     if (layoutState) {
       try {
-        this.layoutState = JSON.parse(layoutState);
+        this.layoutConfig = JSON.parse(layoutState);
       } catch (e) {
         this.creationError();
       }
@@ -231,46 +313,46 @@ export default {
      * @param {GoldenLayout config}  config
      * @returns {GoldenLayout config}
      */
-    purgeDynamicPanels(config) {
-      if (Array.isArray(config.content)) {
-        const itemsToSplice = [];
+    // purgeDynamicPanels(config) {
+    //   if (Array.isArray(config.content)) {
+    //     const itemsToSplice = [];
 
-        const content = config.content;
-        const childrenToSplice = [];
-        for (let index = 0, len = content.length; index < len; index++) {
-          const item = content[index];
+    //     const content = config.content;
+    //     const childrenToSplice = [];
+    //     for (let index = 0, len = content.length; index < len; index++) {
+    //       const item = content[index];
 
-          if (
-            item.type === "component" &&
-            item.componentState.is === "dynamic"
-          ) {
-            itemsToSplice.push(index);
-          } else {
-            if (this.purgeDynamicPanels(item) === true) {
-              childrenToSplice.push(index);
-            }
-          }
-        }
+    //       if (
+    //         item.type === "component" &&
+    //         item.componentState.is === "dynamic"
+    //       ) {
+    //         itemsToSplice.push(index);
+    //       } else {
+    //         if (this.purgeDynamicPanels(item) === true) {
+    //           childrenToSplice.push(index);
+    //         }
+    //       }
+    //     }
 
-        childrenToSplice.forEach((index) => {
-          content.splice(index, 1);
-          config.activeItemIndex = 0;
-        });
+    //     childrenToSplice.forEach((index) => {
+    //       content.splice(index, 1);
+    //       config.activeItemIndex = 0;
+    //     });
 
-        if (itemsToSplice.length > 0) {
-          itemsToSplice.forEach((index) => {
-            config.content.splice(index, 1);
-            config.activeItemIndex = 0;
-          });
+    //     if (itemsToSplice.length > 0) {
+    //       itemsToSplice.forEach((index) => {
+    //         config.content.splice(index, 1);
+    //         config.activeItemIndex = 0;
+    //       });
 
-          if (config.title === "" && config.type === "stack") {
-            return true;
-          }
-        }
-      }
+    //       if (config.title === "" && config.type === "stack") {
+    //         return true;
+    //       }
+    //     }
+    //   }
 
-      return config;
-    },
+    //   return config;
+    // },
 
     /**
      * @description Called when <golden-layout /> updates its state.
@@ -280,12 +362,9 @@ export default {
      * @param {GoldenLayout config} value
      */
     updateLayoutState(configIn) {
-      const config = GoldenLayout.unminifyConfig(configIn);
-      const cleanedConfig = this.purgeDynamicPanels(config);
-
       window.localStorage.setItem(
         constants.LAYOUT_STATE_KEY,
-        JSON.stringify(GoldenLayout.minifyConfig(cleanedConfig)),
+        JSON.stringify(configIn),
       );
     },
 

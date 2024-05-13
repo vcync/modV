@@ -1,5 +1,5 @@
 import { modVApp } from ".";
-import constants from "../../../src/application/constants";
+import constants from "../../../src/renderer/src/application/constants";
 
 const id = (strings, groupId) => [`#group-${groupId}`, ...strings].join("");
 
@@ -24,23 +24,23 @@ export const groups = {
       clearingCheckbox: page.locator(id`${groupId} .group__clearingCheckbox`),
       pipelineCheckbox: page.locator(id`${groupId} .group__pipelineCheckbox`),
       alphaRange: page.locator(
-        id`${groupId} .group__alphaRange input[type=range]`
+        id`${groupId} .group__alphaRange input[type=range]`,
       ),
       blendModeSelect: page.locator(
-        id`${groupId} .group__blendModeSelect select`
+        id`${groupId} .group__blendModeSelect select`,
       ),
       name: nameLocator,
       nameDisplay: nameLocator.locator("span"),
       nameInput: nameLocator.locator("input[type=text]"),
-      modules: page.locator(id`${groupId} .group__modules`)
+      modules: page.locator(id`${groupId} .group__modules`),
     };
   },
 
   async showControls(groupId) {
     const { controlsButton } = this.getLocators(groupId);
 
-    const controlsHidden = await controlsButton.evaluate(el =>
-      el.classList.contains("group__controlsButton-hidden")
+    const controlsHidden = await controlsButton.evaluate((el) =>
+      el.classList.contains("group__controlsButton-hidden"),
     );
 
     if (controlsHidden) {
@@ -53,14 +53,16 @@ export const groups = {
       ({ groups } = await modVApp.groups.mainState());
     }
 
-    return groups.filter(group => group.name !== constants.GALLERY_GROUP_NAME);
+    return groups.filter(
+      (group) => group.name !== constants.GALLERY_GROUP_NAME,
+    );
   },
 
   async getFirstUserGroupIdAndIndex() {
     const { groups } = await this.mainState();
     const userGroups = await this.getUserGroups();
     const groupId = userGroups[0].id;
-    const groupIndex = groups.findIndex(group => group.id === groupId);
+    const groupIndex = groups.findIndex((group) => group.id === groupId);
 
     return { groupId, groupIndex };
   },
@@ -77,5 +79,5 @@ export const groups = {
   async workerState() {
     const groups = await modVApp.evaluateWorkerState(`groups`);
     return groups;
-  }
+  },
 };

@@ -1,4 +1,4 @@
-import fragmentShader from "./Wobble/wobble.frag";
+import fragmentShader from "./Wobble/wobble.frag?raw";
 
 export default {
   meta: {

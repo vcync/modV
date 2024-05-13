@@ -26,7 +26,7 @@
           <grid columns="4">
             <c span="1"> Min. Value </c>
             <c span="3">
-              <Number v-model.number="min" min="-100" max="100" />
+              <Number v-model.number="min" :min="-100" :max="100" />
             </c>
           </grid>
         </c>
@@ -35,7 +35,7 @@
           <grid columns="4">
             <c span="1"> Max. Value </c>
             <c span="3">
-              <Number v-model.number="max" min="-100" max="100" />
+              <Number v-model.number="max" :min="-100" :max="100" />
             </c>
           </grid>
         </c>

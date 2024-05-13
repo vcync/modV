@@ -2,10 +2,8 @@ import { test } from "@playwright/test";
 import { modVApp } from "../../pageObjectModel";
 
 test("clearing state can be toggled beween 0 and 1", async () => {
-  const {
-    groupIndex,
-    groupId
-  } = await modVApp.groups.getFirstUserGroupIdAndIndex();
+  const { groupIndex, groupId } =
+    await modVApp.groups.getFirstUserGroupIdAndIndex();
 
   const { clearingCheckbox } = modVApp.groups.getLocators(groupId);
 
@@ -15,8 +13,8 @@ test("clearing state can be toggled beween 0 and 1", async () => {
     await clearingCheckbox.click();
 
     await modVApp.checkWorkerAndMainState(
-      [[state => state[groupIndex].clearing, e => e.toBe(Number(!i))]],
-      `groups.groups`
+      [[(state) => state[groupIndex].clearing, (e) => e.toBe(Number(!i))]],
+      `groups.groups`,
     );
   }
 });

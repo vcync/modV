@@ -1,8 +1,9 @@
 import store from "../";
 import streamToBlob from "stream-to-blob";
-import fs from "fs";
-import path from "path";
 import media from "../../../../../../main/media-manager/store/modules/media.js";
+
+const fs = require("fs");
+const path = require("path");
 
 /**
  * Holds processed media
@@ -39,6 +40,7 @@ const actions = {
       } catch (e) {
         console.error(`Could not load module`, item.name);
         console.error(e);
+        return;
       }
 
       try {

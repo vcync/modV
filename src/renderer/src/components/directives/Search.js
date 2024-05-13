@@ -1,3 +1,5 @@
+import store from "../../ui-store/index";
+
 const SEARCH_ID_VAR = "$searchId";
 
 export const installSearch = (app) => {
@@ -5,11 +7,8 @@ export const installSearch = (app) => {
     // When the bound element is inserted into the DOM...
     async inserted(el, binding, vnode) {
       const { value } = binding;
-      const {
-        context: { $store },
-      } = vnode;
 
-      const id = await $store.dispatch("search/addTerms", {
+      const id = await store.dispatch("search/addTerms", {
         ...value,
       });
 
@@ -18,11 +17,7 @@ export const installSearch = (app) => {
     },
 
     async unbind(el, binding, vnode) {
-      const {
-        context: { $store },
-      } = vnode;
-
-      await $store.dispatch("search/removeId", {
+      await store.dispatch("search/removeId", {
         id: vnode[SEARCH_ID_VAR],
       });
     },

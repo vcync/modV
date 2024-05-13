@@ -1,4 +1,7 @@
-import path from "path";
+const path = {
+  posix: { sep: "/" },
+  win32: { sep: "\\" },
+};
 
 export const conformFilePath = (filePath = "") =>
   filePath

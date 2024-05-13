@@ -1,4 +1,4 @@
-import chromaticAbberationFrag from "./ChromaticAbberation/chromaticAbberation.frag";
+import chromaticAbberationFrag from "./ChromaticAbberation/chromaticAbberation.frag?raw";
 
 export default {
   meta: {

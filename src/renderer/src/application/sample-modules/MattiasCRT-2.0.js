@@ -1,4 +1,4 @@
-import crtFrag from "./MattiasCRT/mattiasCrt.frag";
+import crtFrag from "./MattiasCRT/mattiasCrt.frag?raw";
 
 export default {
   meta: {

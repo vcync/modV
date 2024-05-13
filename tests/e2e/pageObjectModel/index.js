@@ -3,7 +3,7 @@ import { expect, test } from "@playwright/test";
 import {
   findLatestBuild,
   ipcRendererInvoke,
-  parseElectronApp
+  parseElectronApp,
 } from "electron-playwright-helpers";
 import { _electron as electron } from "playwright";
 import { groups } from "./groups";
@@ -26,7 +26,7 @@ class ModVApp {
 
     test.beforeAll(async () => {
       // find the latest build in the out directory
-      const latestBuild = findLatestBuild(path.resolve("./dist_electron"));
+      const latestBuild = findLatestBuild(path.resolve("./dist"));
       // parse the directory and find paths and other info
       const appInfo = parseElectronApp(latestBuild);
       // set the CI environment variable to true
@@ -34,21 +34,21 @@ class ModVApp {
 
       this.electronApp = await electron.launch({
         args: [
-          appInfo.main
+          appInfo.main,
           // "--use-fake-device-for-media-stream",
           // "--use-fake-ui-for-media-stream"
         ],
-        executablePath: appInfo.executable
+        executablePath: appInfo.executable,
       });
 
-      this.electronApp.on("window", async page => {
+      this.electronApp.on("window", async (page) => {
         // capture errors
-        page.on("pageerror", error => {
+        page.on("pageerror", (error) => {
           console.error(error);
         });
 
         // capture console messages
-        page.on("console", msg => {
+        page.on("console", (msg) => {
           console.log(msg.text());
         });
       });
@@ -61,7 +61,7 @@ class ModVApp {
 
   async waitUntilModVReady(resolver) {
     if (!resolver) {
-      const promise = new Promise(async resolve => {
+      const promise = new Promise(async (resolve) => {
         resolver = resolve;
 
         this.waitUntilModVReady(resolver);
@@ -88,8 +88,8 @@ class ModVApp {
 
     if (propertyPath) {
       return page.evaluate(
-        propertyPath => window._get(window.modV.store.state, propertyPath),
-        propertyPath
+        (propertyPath) => window._get(window.modV.store.state, propertyPath),
+        propertyPath,
       );
     }
 
@@ -108,8 +108,8 @@ class ModVApp {
 
     if (propertyPath) {
       return worker.evaluate(
-        propertyPath => self._get(self.store.state, propertyPath),
-        propertyPath
+        (propertyPath) => self._get(self.store.state, propertyPath),
+        propertyPath,
       );
     }
 
@@ -128,7 +128,7 @@ class ModVApp {
             } else {
               return check[0](await this.evaluateMainState(propertyPath));
             }
-          })
+          }),
         );
       }
     }

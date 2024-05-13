@@ -1,5 +1,5 @@
 const recursiveDeps = require("recursive-deps");
-const webpack = require("webpack-3");
+const webpack = require("webpack");
 const path = require("path");
 const npm = require("npm");
 const fs = require("fs");
@@ -28,7 +28,7 @@ export default {
 
   fileTypes: [
     // @todo regex match
-    "js"
+    "js",
   ],
 
   ignored: [/module[\\/]compiled/],
@@ -53,9 +53,9 @@ export default {
   async process({ filePath }, { log }) {
     return {
       filePath: await compileModule(filePath, log),
-      folder: "module/compiled"
+      folder: "module/compiled",
     };
-  }
+  },
 };
 
 const ensurePackageJson = ({ dirPath }) => {
@@ -79,11 +79,11 @@ function doWebpack(filePath) {
       output: {
         path: path.join(path.dirname(filePath), "compiled"),
         filename: path.basename(filePath),
-        libraryTarget: "var"
+        libraryTarget: "var",
       },
       resolveLoader: {
-        modules: ["node_modules", __dirname + "/node_modules"]
-      }
+        modules: ["node_modules", __dirname + "/node_modules"],
+      },
     };
 
     webpack(webpackConfig, (err, stats) => {
@@ -100,7 +100,7 @@ function doWebpack(filePath) {
 
       // 4. update modv clients with new file contents (then eval in modv)
       resolve(
-        path.join(path.dirname(filePath), "compiled", path.basename(filePath))
+        path.join(path.dirname(filePath), "compiled", path.basename(filePath)),
       );
     });
   });
@@ -114,7 +114,7 @@ async function compileModule(filePath, log) {
     //
     // Shameless clone of szymonkaliski's awesome Neutron
     // https://github.com/szymonkaliski/Neutron/blob/b8523e0efa3a7cc8bf5fcafc753d3d01b3c5338c/src/index.js#L54
-    recursiveDeps(filePath).then(dependencies => {
+    recursiveDeps(filePath).then((dependencies) => {
       if (!dependencies.length) {
         resolve(doWebpack(filePath));
       }
@@ -130,26 +130,26 @@ async function compileModule(filePath, log) {
           prefix: dirPath,
           progress: true,
           save: true,
-          unicode: false
+          unicode: false,
         },
-        err => {
+        (err) => {
           if (err) {
             reject(err);
           }
 
           npm.commands.ls(dependencies, (_, data) => {
             const installedDeps = Object.keys(data.dependencies).filter(
-              key => data.dependencies[key].missing === undefined
+              (key) => data.dependencies[key].missing === undefined,
             );
 
             const missingDeps = dependencies.filter(
-              dep => installedDeps.indexOf(dep) < 0
+              (dep) => installedDeps.indexOf(dep) < 0,
             );
 
             if (missingDeps.length) {
               log("🛒  Installing", dependencies.join(", "), "for", filePath);
 
-              npm.commands.install(missingDeps, err => {
+              npm.commands.install(missingDeps, (err) => {
                 if (err) {
                   reject(err);
                 }
@@ -161,7 +161,7 @@ async function compileModule(filePath, log) {
               resolve(doWebpack(filePath));
             }
           });
-        }
+        },
       );
     });
   });

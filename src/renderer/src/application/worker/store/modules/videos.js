@@ -1,7 +1,7 @@
 import { v4 as uuidv4 } from "uuid";
-import path from "path";
 import store from "../";
 import { conformFilePath } from "../../../utils/conform-file-path";
+const path = require("path");
 
 const state = {};
 
@@ -16,7 +16,7 @@ const actions = {
       options: { path: filePath },
     } = textureDefinition;
 
-    const url = `modv://${path.join(
+    const url = `modv://.${path.join(
       rootState.media.path,
       conformFilePath(filePath),
     )}`;

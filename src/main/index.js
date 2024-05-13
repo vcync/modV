@@ -1,114 +1,83 @@
-import { app, BrowserWindow, ipcMain } from "electron";
-import { join } from "path";
-import { electronApp, optimizer, is } from "@electron-toolkit/utils";
-import icon from "../../resources/icon.png?asset";
-import * as remoteMain from "@electron/remote/main";
-import os from "node:os";
+import { app, ipcMain, net, protocol } from "electron";
+import { APP_SCHEME } from "./background-constants";
+import { openFile } from "./open-file";
+import { createWindow } from "./windows";
 
-remoteMain.initialize();
+require("@electron/remote/main").initialize();
 
-let modVReady = false;
+const isDevelopment = process.env.NODE_ENV !== "production";
 
-function createWindow() {
-  // Create the browser window.
-  const mainWindow = new BrowserWindow({
-    width: 900,
-    height: 670,
-    show: false,
-    autoHideMenuBar: true,
-    ...(process.platform === "linux" ? { icon } : {}),
-    webPreferences: {
-      preload: join(__dirname, "../preload/index.js"),
-      sandbox: false,
-      nodeIntegrationInWorker: true,
-      nativeWindowOpen: true, // window.open return Window object(like in regular browsers), not BrowserWindowProxy,
-      affinity: "main-window", // main window, and addition windows should work in one process,
+// Scheme must be registered before the app is ready
+protocol.registerSchemesAsPrivileged([
+  {
+    scheme: APP_SCHEME,
+    privileges: {
+      secure: true,
+      standard: true,
+      stream: true,
+      supportFetchAPI: true,
+      bypassCSP: true,
     },
-  });
+  },
+]);
 
-  require("@electron/remote/main").enable(mainWindow.webContents);
+app.on("open-file", (event, filePath) => {
+  event.preventDefault();
 
-  ipcMain.handle("is-modv-ready", () => modVReady);
-
-  mainWindow.setRepresentedFilename(os.homedir());
-  mainWindow.setDocumentEdited(true);
-  mainWindow.setTitle("Untitled");
-
-  mainWindow.on("ready-to-show", () => {
-    mainWindow.show();
-  });
-
-  ipcMain.on("modv-ready", () => {
-    modVReady = true;
-    // mm.start();
-  });
-
-  mainWindow.webContents.on(
-    "new-window",
-    (event, url, frameName, disposition, options) => {
-      if (frameName === "modal") {
-        event.preventDefault();
-        event.newGuest = new BrowserWindow({
-          ...options,
-          autoHideMenuBar: true,
-          closable: false,
-          enableLargerThanScreen: true,
-          title: "",
-        });
-
-        event.newGuest.removeMenu();
-      }
-    },
-  );
-
-  // mainWindow.webContents.setWindowOpenHandler((details) => {
-  //   shell.openExternal(details.url)
-  //   return { action: 'deny' }
-  // })
-
-  // HMR for renderer base on electron-vite cli.
-  // Load the remote URL for development or the local html file for production.
-  if (is.dev && process.env["ELECTRON_RENDERER_URL"]) {
-    mainWindow.loadURL(process.env["ELECTRON_RENDERER_URL"]);
-  } else {
-    mainWindow.loadFile(join(__dirname, "../renderer/index.html"));
-  }
-}
-
-// This method will be called when Electron has finished
-// initialization and is ready to create browser windows.
-// Some APIs can only be used after this event occurs.
-app.whenReady().then(() => {
-  // Set app user model id for windows
-  electronApp.setAppUserModelId("com.electron");
-
-  // Default open or close DevTools by F12 in development
-  // and ignore CommandOrControl + R in production.
-  // see https://github.com/alex8088/electron-toolkit/tree/master/packages/utils
-  app.on("browser-window-created", (_, window) => {
-    optimizer.watchWindowShortcuts(window);
-  });
-
-  // IPC test
-  ipcMain.on("ping", () => console.log("pong"));
-
-  createWindow();
-
-  app.on("activate", function () {
-    // On macOS it's common to re-create a window in the app when the
-    // dock icon is clicked and there are no other windows open.
-    if (BrowserWindow.getAllWindows().length === 0) createWindow();
-  });
+  openFile(filePath);
 });
 
-// Quit when all windows are closed, except on macOS. There, it's common
-// for applications and their menu bar to stay active until the user quits
-// explicitly with Cmd + Q.
+// Quit when all windows are closed.
 app.on("window-all-closed", () => {
+  // On macOS it is common for applications and their menu bar
+  // to stay active until the user quits explicitly with Cmd + Q
   if (process.platform !== "darwin") {
     app.quit();
   }
 });
 
-// In this file you can include the rest of your app"s specific main process
-// code. You can also put them in separate files and require them here.
+app.on("activate", async () => {
+  // On macOS it's common to re-create a window in the app when the
+  // dock icon is clicked and there are no other windows open.
+  createWindow({ windowName: "mainWindow" });
+});
+
+// This method will be called when Electron has finished
+// initialization and is ready to create browser windows.
+// Some APIs can only be used after this event occurs.
+app.on("ready", async () => {
+  protocol.handle(APP_SCHEME, (request) => {
+    const newPath =
+      "file://" +
+      new URL("http://modv.com/" + request.url.slice(`${APP_SCHEME}://`.length))
+        .pathname;
+
+    return net.fetch(newPath);
+  });
+
+  app.commandLine.appendSwitch(
+    "disable-backgrounding-occluded-windows",
+    "true",
+  );
+
+  createWindow({ windowName: "mainWindow" });
+  ipcMain.once("main-window-created", () => {
+    createWindow({ windowName: "splashScreen" });
+    createWindow({ windowName: "colorPicker", options: { show: false } });
+  });
+});
+
+// Exit cleanly on request from parent process in development mode.
+if (isDevelopment) {
+  if (process.platform === "win32") {
+    process.on("message", (data) => {
+      if (data === "graceful-exit") {
+        app.quit();
+      }
+    });
+  } else {
+    process.on("SIGTERM", () => {
+      app.quit();
+    });
+  }
+}

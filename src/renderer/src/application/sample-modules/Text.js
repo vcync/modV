@@ -1,6 +1,4 @@
-import ctw from "canvas-text-wrapper";
-
-const CanvasTextWrapper = ctw.CanvasTextWrapper;
+const { CanvasTextWrapper } = require("canvas-text-wrapper");
 
 export default {
   meta: {

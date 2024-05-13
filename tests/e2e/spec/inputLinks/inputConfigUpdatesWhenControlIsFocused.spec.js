@@ -10,7 +10,7 @@ test("input config updates when control is focused", async () => {
 
   const inspector = modVApp.page.locator(`#module-inspector-${moduleId}`);
   await expect(inspector.locator(".module-inspector__title")).toHaveText(
-    "Ball"
+    "Ball",
   );
 
   const { inputConfig } = modVApp.tabs.getLocators();
@@ -19,11 +19,11 @@ test("input config updates when control is focused", async () => {
   const inputIds = await modVApp.modules.getInputIds(moduleId);
 
   const amountControl = modVApp.page.locator(
-    `#module-control-${inputIds.props.amount}`
+    `#module-control-${inputIds.props.amount}`,
   );
   await amountControl.click();
 
   await expect(modVApp.page.locator(".input-config__title")).toHaveText(
-    "Ball: Amount"
+    "Ball: Amount",
   );
 });

@@ -3,12 +3,12 @@
 }
 
 .lm_goldenlayout {
-  background: #2D2D2D
+  background: #2d2d2d;
 }
 
 .lm_content {
   background: #151515;
-  color:  #ffffff;
+  color: #ffffff;
 }
 
 .lm_content .glComponent {
@@ -16,12 +16,12 @@
 }
 
 .lm_dragProxy .lm_content {
-  box-shadow: 2px 2px 4px rgba(0,0,0,0.2);
+  box-shadow: 2px 2px 4px rgba(0, 0, 0, 0.2);
   box-sizing: border-box;
 }
 
 .lm_dropTargetIndicator {
-  box-shadow: inset 0 0 30px rgba(0,0,0,0.4);
+  box-shadow: inset 0 0 30px rgba(0, 0, 0, 0.4);
   outline: 1px dashed #cccccc;
   margin: 1px;
   transition: all 200ms ease;
@@ -29,12 +29,12 @@
 
 .lm_dropTargetIndicator .lm_inner {
   background: #000000;
-  opacity: .1;
+  opacity: 0.1;
 }
 
 .lm_splitter {
   background: #999999;
-  opacity: .001;
+  opacity: 0.001;
   transition: opacity 200ms ease;
 }
 
@@ -46,7 +46,7 @@
 
 .lm_header {
   height: 20px;
-  z-index:unset;
+  /* z-index:unset; */
 }
 
 .lm_header + .lm_items .lm_header {
@@ -58,7 +58,6 @@
   box-shadow: 0px 0px 10px 1px rgb(0 0 0 / 60%);
 }
 
-
 .lm_header.lm_selectable {
   cursor: pointer;
 }
@@ -67,7 +66,7 @@
   font-family: inherit;
   font-size: 12px;
   background: #484848;
-  color: #FFFFFF;
+  color: #ffffff;
   padding: 2px 8px;
 
   box-shadow: none;
@@ -79,6 +78,13 @@
 .lm_header .lm_tab .lm_title {
   padding-top: 1px;
 }
+
+.lm_controls,
+.lm_header .lm_tab .lm_close_tab {
+  display: none;
+  pointer-events: none;
+}
+
 /*
 .lm_header .lm_tab .lm_close_tab {
   width: 11px;
@@ -97,7 +103,7 @@
 .lm_header .lm_tab.lm_active {
   border-bottom: none;
   background: #151515;
-  color: #FFFFFF;
+  color: #ffffff;
   box-shadow: none;
 }
 

@@ -30,13 +30,13 @@
 
     <c span="1..">
       <grid columns="4">
-        <c span="1"> Smoothing </c>
+        <c span="1">Smoothing</c>
         <c span="3">
           <RangeControl
-            min="0"
+            :min="0"
             :max="MAX_SMOOTHING - SMOOTHING_STEP"
             :step="SMOOTHING_STEP"
-            :value="invertedInputValue"
+            :model-value="invertedInputValue"
             @update:model-value="smoothingInput"
           />
         </c>
