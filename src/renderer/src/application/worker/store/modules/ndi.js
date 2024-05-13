@@ -1,6 +1,6 @@
 import { v4 as uuidv4 } from "uuid";
 import store from "../";
-import grandiose from "../../../setup-grandiose";
+import { setupGrandiose as grandiose } from "../../../setup-grandiose";
 
 const state = {
   discovering: false,
@@ -31,8 +31,8 @@ const state = {
   },
 };
 
-function checkCpu() {
-  if (!grandiose().isSupportedCPU()) {
+async function checkCpu() {
+  if (!(await (await grandiose()).isSupportedCPU())) {
     throw new Error("Your CPU is not supported for NDI");
   }
 }
@@ -85,7 +85,9 @@ const actions = {
     commit("SET_DISCOVERING", true);
 
     try {
-      const result = await grandiose().find({
+      const result = await (
+        await grandiose()
+      ).find({
         ...state.discoveryOptions,
       });
 
@@ -104,10 +106,10 @@ const actions = {
   },
 
   async createReceiver({ commit }, receiverOptions) {
-    receiverOptions.colorFormat = grandiose().COLOR_FORMAT_RGBX_RGBA;
-    receiverOptions.bandwidth = grandiose().BANDWIDTH_LOWEST;
+    receiverOptions.colorFormat = await grandiose().COLOR_FORMAT_RGBX_RGBA;
+    receiverOptions.bandwidth = await grandiose().BANDWIDTH_LOWEST;
 
-    const receiver = await grandiose().receive(receiverOptions);
+    const receiver = await (await grandiose()).receive(receiverOptions);
 
     const outputContext = await store.dispatch("outputs/getAuxillaryOutput", {
       name: receiverOptions.source.name,

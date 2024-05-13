@@ -2,9 +2,9 @@ import store from "./worker/store/index";
 let grandiose = require("grandiose");
 
 // let grandiose = undefined;
+let sender = undefined;
 
-export default function setupGrandiose() {
-  console.log("setup grandiose");
+export async function setupGrandiose() {
   if (grandiose === undefined) {
     /* eslint-disable */
     // __dirname = `${__dirname}/node_modules/grandiose`;
@@ -34,4 +34,20 @@ export default function setupGrandiose() {
   }
 
   return grandiose;
+}
+
+export async function getGrandioseSender() {
+  if (grandiose === undefined) {
+    await setupGrandiose();
+  }
+
+  if (!sender) {
+    sender = await grandiose.send({
+      name: `modV (${Date.now()})`,
+      clockVideo: false,
+      clockAudio: false,
+    });
+  }
+
+  return sender;
 }

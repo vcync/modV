@@ -14,7 +14,7 @@
     "dev": "electron-vite dev",
     "format": "prettier --write .",
     "lint": "eslint . --ext .js,.jsx,.cjs,.mjs,.ts,.tsx,.cts,.mts --fix",
-    "postinstall": "electron-builder install-app-deps && patch-package",
+    "postinstall": "patch-package && electron-builder install-app-deps",
     "start": "electron-vite preview",
     "test:e2e": "npx playwright test"
   },
@@ -32,7 +32,7 @@
     "fluent-ffmpeg": "^2.1.2",
     "fuse.js": "^6.2.1",
     "golden-layout": "^2.6.0",
-    "grandiose": "github:hiddehs/grandiose#ef1d6dd950f48c1e3d67de7516e99aae78828967",
+    "grandiose": "github:rse/grandiose#1143b9473a5e82212fb90fd442b390686ee0d04b",
     "hapticjs": "^1.0.7",
     "interactive-shader-format": "github:vcync/interactive-shader-format-js#78b62b6f4c787b870852df4c8e7b1131e331d8a6",
     "lodash.get": "^4.4.2",
