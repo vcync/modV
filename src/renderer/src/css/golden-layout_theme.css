@@ -11,8 +11,9 @@
   color: #ffffff;
 }
 
-.lm_content .glComponent {
+.glComponent {
   padding: 8px;
+  height: 100%;
 }
 
 .lm_dragProxy .lm_content {
@@ -73,16 +74,24 @@
   line-height: 1;
   border: none;
   margin: 0;
+
+  height: 16px;
+  display: flex;
+  align-items: center;
+  flex-direction: row;
 }
 
-.lm_header .lm_tab .lm_title {
-  padding-top: 1px;
-}
-
-.lm_controls,
+.lm_maximise,
+.lm_close,
+.lm_popout,
 .lm_header .lm_tab .lm_close_tab {
   display: none;
   pointer-events: none;
+}
+
+/* @TODO fixup nth-child selector */
+.hscreen > :nth-child(3) > div {
+  overflow: auto !important;
 }
 
 /*

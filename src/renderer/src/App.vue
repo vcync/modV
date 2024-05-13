@@ -8,56 +8,78 @@
       @state="updateLayoutState"
     >
       <template #groups>
-        <Groups />
+        <div class="glComponent">
+          <Groups />
+        </div>
       </template>
 
       <template #module-inspector>
-        <div
-          v-for="(module, i) in focusedModules"
-          :key="i"
-          ref="moduleInspector"
-          :title="`${module.meta.name} properties`"
-          :closable="false"
-          :state="{ is: 'dynamic' }"
-        >
-          <ModuleInspector :module-id="module.$id" />
+        <div class="glComponent">
+          <div
+            v-for="(module, i) in focusedModules"
+            :key="i"
+            ref="moduleInspector"
+            :title="`${module.meta.name} properties`"
+            :closable="false"
+            :state="{ is: 'dynamic' }"
+          >
+            <ModuleInspector :module-id="module.$id" />
+          </div>
         </div>
       </template>
 
       <template #info-view>
-        <InfoView />
+        <div class="glComponent">
+          <InfoView />
+        </div>
       </template>
 
       <template #gallery>
-        <Gallery />
+        <div class="glComponent">
+          <Gallery />
+        </div>
       </template>
 
       <template #input-config>
-        <InputConfig />
+        <div class="glComponent">
+          <InputConfig />
+        </div>
       </template>
 
       <template #avd-config>
-        <AudioVideoDeviceConfig />
+        <div class="glComponent">
+          <AudioVideoDeviceConfig />
+        </div>
       </template>
 
       <template #md-config>
-        <MIDIDeviceConfig />
+        <div class="glComponent">
+          <MIDIDeviceConfig />
+        </div>
       </template>
 
       <template #bpm-config>
-        <BPMConfig />
+        <div class="glComponent">
+          <BPMConfig />
+        </div>
       </template>
 
       <template #ndi-config>
-        <NDIConfig />
+        <div class="glComponent">
+          <NDIConfig />
+        </div>
       </template>
 
       <template #plugins>
-        <Plugins />
+        <div class="glComponent">
+          <Plugins />
+        </div>
       </template>
 
       <template #preview>
-        <Preview />
+        <div class="glComponent">
+          <Preview />
+        </div>
       </template>
     </golden-layout>
 
@@ -88,7 +110,7 @@ import Plugins from "./components/Plugins.vue";
 import getNextName from "./application/utils/get-next-name.js";
 import constants from "./application/constants.js";
 
-import { GoldenLayout as GLComponent } from "./v3-gl-ext.es";
+import { GoldenLayout as glComponent } from "./v3-gl-ext.es";
 import * as GoldenLayout from "golden-layout";
 import "golden-layout/dist/css/goldenlayout-base.css";
 const { ipcRenderer } = window.electron;
@@ -114,7 +136,7 @@ export default {
     FrameRateDialog,
     ErrorWatcher,
     Plugins,
-    GoldenLayout: GLComponent,
+    GoldenLayout: glComponent,
   },
 
   data() {
