@@ -356,9 +356,8 @@ async function start() {
     if (type === "modv-destroy") {
       console.log("worker got modv-destroy, sending onto ndi worker");
 
-      ndiWorker.addEventListener("message", (e) => {
+      ndiWorker.addEventListener("message", () => {
         console.log("worker got destroyed, sending onto webcontents");
-
         self.postMessage({ type: "destroyed" });
       });
       ndiWorker.postMessage({ type: "destroy" });

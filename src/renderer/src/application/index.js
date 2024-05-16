@@ -261,6 +261,9 @@ class ModV {
     ipcRenderer.send("get-media-manager-state");
 
     window.addEventListener("beforeunload", () => {
+      this.$worker.postMessage({
+        type: "modv-destroy",
+      });
       ipcRenderer.send("modv-destroy");
     });
   }
