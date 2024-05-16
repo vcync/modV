@@ -14,7 +14,7 @@
                 :min="-1"
                 :max="1"
                 :strict="true"
-                :value="x"
+                :model-value="x"
                 :step="0.001"
                 @update:model-value="emitValue('x', $event)"
               />
@@ -31,7 +31,7 @@
                 :min="-1"
                 :max="1"
                 :strict="true"
-                :value="y"
+                :model-value="y"
                 :step="0.001"
                 @update:model-value="emitValue('y', $event)"
               />
@@ -48,7 +48,7 @@
                 :min="-1"
                 :max="1"
                 :strict="true"
-                :value="z"
+                :model-value="z"
                 :step="0.001"
                 @update:model-value="emitValue('z', $event)"
               />
@@ -65,7 +65,7 @@
                 :min="-1"
                 :max="1"
                 :strict="true"
-                :value="w"
+                :model-value="w"
                 :step="0.001"
                 @update:model-value="emitValue('w', $event)"
               />
@@ -78,7 +78,10 @@
     <template #body>
       <grid columns="4">
         <c span="2+2"
-          ><Sketch ref="picker" :value="color" @input="updateValue"
+          ><Sketch
+            ref="picker"
+            :model-value="color"
+            @update:model-value="updateValue"
         /></c>
       </grid>
     </template>
