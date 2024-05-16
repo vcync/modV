@@ -1,4 +1,4 @@
-import { app, ipcMain, net, protocol } from "electron";
+import { MessageChannelMain, app, ipcMain, net, protocol } from "electron";
 import { APP_SCHEME } from "./background-constants";
 import { openFile } from "./open-file";
 import { createWindow } from "./windows";
@@ -42,6 +42,26 @@ app.on("activate", async () => {
   createWindow({ windowName: "mainWindow" });
 });
 
+function setupColorPickerUIMessageChannels(mainWindow, colorPickerWindow) {
+  const {
+    port1: colorPickerUIChannel_mainWindowPort,
+    port2: colorPickerUIChannel_colorPickerPort,
+  } = new MessageChannelMain();
+
+  mainWindow.webContents.postMessage("port:colorPickerUI", null, [
+    colorPickerUIChannel_mainWindowPort,
+  ]);
+
+  colorPickerWindow.webContents.postMessage("port:colorPickerUI", null, [
+    colorPickerUIChannel_colorPickerPort,
+  ]);
+
+  // return {
+  //   colorPickerUIChannel_mainWindowPort: port1,
+  //   colorPickerUIChannel_colorPickerPort: port2,
+  // };
+}
+
 // This method will be called when Electron has finished
 // initialization and is ready to create browser windows.
 // Some APIs can only be used after this event occurs.
@@ -60,10 +80,35 @@ app.on("ready", async () => {
     "true",
   );
 
-  createWindow({ windowName: "mainWindow" });
+  const mainWindow = createWindow({ windowName: "mainWindow" });
   ipcMain.once("main-window-created", () => {
     createWindow({ windowName: "splashScreen" });
-    createWindow({ windowName: "colorPicker", options: { show: false } });
+
+    /////// color picker
+
+    const {
+      port1: colorPickerMainChannel_mainPort,
+      port2: colorPickerMainChannel_colorPickerPort,
+    } = new MessageChannelMain();
+
+    colorPickerMainChannel_mainPort.on("message", (e) => {
+      if (e.data === "create-port:colorPickerUI") {
+        setupColorPickerUIMessageChannels(mainWindow, colorPickerWindow);
+      }
+    });
+
+    const colorPickerWindow = createWindow({
+      windowName: "colorPicker",
+      options: { show: false },
+    });
+
+    colorPickerWindow.once("ready-to-show", () => {
+      setupColorPickerUIMessageChannels(mainWindow, colorPickerWindow);
+
+      colorPickerWindow.webContents.postMessage("port:colorPickerMain", null, [
+        colorPickerMainChannel_colorPickerPort,
+      ]);
+    });
   });
 });
 

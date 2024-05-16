@@ -88,7 +88,7 @@
 <script>
 import CollapsibleControl from "./CollapsibleControl.vue";
 import RangeControl from "./RangeControl.vue";
-import { Sketch } from "vue-color";
+import { Sketch } from "@ckpack/vue-color";
 
 export default {
   components: {

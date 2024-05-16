@@ -1,16 +1,15 @@
 <template>
   <div>
-    <Sketch :value="color" @input="updateValue" ref="picker" />
+    <Sketch ref="picker" v-model="color" />
   </div>
 </template>
 
 <script>
-import { ipcRenderer } from "electron";
-import { Sketch } from "vue-color";
+import { Sketch } from "@ckpack/vue-color";
 
 export default {
   components: {
-    Sketch
+    Sketch,
   },
 
   data() {
@@ -19,33 +18,84 @@ export default {
       moduleId: null,
       prop: null,
       // hex, hsl, hsv, rgba, rgba-ratio
-      returnFormat: "hex"
+      returnFormat: "hex",
     };
   },
 
-  created() {
-    ipcRenderer.on("module-info", (event, { moduleId, prop, data }) => {
-      this.moduleId = moduleId;
-      this.prop = prop;
+  watch: {
+    color(color) {
+      let data = color[this.returnFormat];
 
       if (this.returnFormat === "rgba-ratio") {
-        this.color = {
-          r: data.r * 255,
-          g: data.g * 255,
-          b: data.b * 255,
-          a: data.a
+        data = {
+          r: color.rgba.r / 255,
+          g: color.rgba.g / 255,
+          b: color.rgba.b / 255,
+          a: color.rgba.a,
         };
-      } else {
-        this.color = data;
       }
-    });
 
-    ipcRenderer.on("value", (event, message) => {
-      this.color = message;
-    });
+      window.electronMessagePort.postMessage({
+        type: "input-update",
+        payload: JSON.parse(
+          JSON.stringify({
+            moduleId: this.moduleId,
+            prop: this.prop,
+            data,
+          }),
+        ),
+      });
 
-    ipcRenderer.on("return-format", (event, message) => {
-      this.returnFormat = message;
+      // ipcRenderer.send("input-update", {
+      //   moduleId: this.moduleId,
+      //   prop: this.prop,
+      //   data,
+      // });
+    },
+  },
+
+  created() {
+    window.addEventListener("message", (e) => {
+      if (e.data === "port:colorPickerUI") {
+        // port:colorPickerUI port is available
+        window.electronMessagePort.start();
+
+        window.electronMessagePort.addEventListener(
+          "message",
+          ({ data: messageData }) => {
+            // colorPicker port.addEventListener fired", messageData
+            if (messageData.type === "module-info") {
+              const { moduleId, prop, data } = messageData.payload;
+              this.moduleId = moduleId;
+              this.prop = prop;
+              if (this.returnFormat === "rgba-ratio") {
+                this.color = {
+                  rgba: {
+                    r: data.r * 255,
+                    g: data.g * 255,
+                    b: data.b * 255,
+                    a: data.a,
+                  },
+                };
+              } else {
+                this.color = data;
+              }
+
+              return;
+            }
+
+            if (messageData.type === "value") {
+              this.color = messageData.payload;
+              return;
+            }
+
+            if (messageData.type === "return-format") {
+              this.returnFormat = messageData.payload;
+              return;
+            }
+          },
+        );
+      }
     });
   },
 
@@ -54,7 +104,7 @@ export default {
     this.resize();
   },
 
-  beforeDestroy() {
+  beforeUnmount() {
     window.removeEventListener("resize", this.resize);
   },
 
@@ -66,28 +116,7 @@ export default {
       }
       window.resizeTo(pickerRect.width, pickerRect.height);
     },
-
-    updateValue(color) {
-      this.color = color;
-
-      let data = color[this.returnFormat];
-
-      if (this.returnFormat === "rgba-ratio") {
-        data = {
-          r: color.rgba.r / 255,
-          g: color.rgba.g / 255,
-          b: color.rgba.b / 255,
-          a: color.rgba.a
-        };
-      }
-
-      ipcRenderer.send("input-update", {
-        moduleId: this.moduleId,
-        prop: this.prop,
-        data
-      });
-    }
-  }
+  },
 };
 </script>
 

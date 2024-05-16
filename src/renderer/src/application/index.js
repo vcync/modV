@@ -226,13 +226,23 @@ class ModV {
       this.store.dispatch("windows/createWindow");
     });
 
-    ipcRenderer.on("input-update", (event, { moduleId, prop, data }) => {
-      this.store.dispatch("modules/updateProp", {
-        moduleId,
-        prop,
-        data,
-      });
-    });
+    function messageHandler({ data: messageData }) {
+      if (messageData.type === "input-update") {
+        const { moduleId, prop, data } = messageData.payload;
+        this.store.dispatch("modules/updateProp", {
+          moduleId,
+          prop,
+          data,
+        });
+      }
+    }
+
+    window.electronMessagePort?.start();
+    window.electronMessagePort?.addEventListener(
+      "message",
+      messageHandler.bind(this),
+    );
+    console.log(window.electronMessagePort && "message handler added");
 
     ipcRenderer.send("get-media-manager-state");
 

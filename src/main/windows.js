@@ -1,7 +1,5 @@
 import { BrowserWindow } from "electron";
-// import { createProtocol } from "vue-cli-plugin-electron-builder/lib";
 import { is } from "@electron-toolkit/utils";
-// import { APP_SCHEME } from "./background-constants";
 import { updateMenu } from "./menu-bar";
 import { windowPrefs } from "./window-prefs";
 
@@ -49,14 +47,10 @@ function createWindow({ windowName, options = {} }, event) {
       process.env["ELECTRON_RENDERER_URL"] + windowPrefs[windowName].devPath,
     );
     if (!process.env.IS_TEST) {
-      windows[windowName].webContents.openDevTools();
+      // windows[windowName].webContents.openDevTools();
     }
   } else {
     // Load the index.html when not in development
-    // windows[windowName].loadURL(
-    //   `${APP_SCHEME}://./${windowPrefs[windowName].prodPath}`,
-    // );
-
     windows[windowName].loadFile(
       path.join(__dirname, `../renderer/${windowPrefs[windowName].prodPath}`),
     );
@@ -78,6 +72,8 @@ function createWindow({ windowName, options = {} }, event) {
       });
     });
   }
+
+  return windows[windowName];
 }
 
 function closeWindow({ windowName }) {

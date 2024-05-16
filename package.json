@@ -20,6 +20,7 @@
   },
   "dependencies": {
     "@babel/plugin-syntax-class-properties": "^7.12.13",
+    "@ckpack/vue-color": "^1.5.0",
     "@electron-toolkit/preload": "^3.0.0",
     "@electron-toolkit/utils": "^3.0.0",
     "@electron/remote": "^2.1.2",
@@ -50,7 +51,6 @@
     "three": "^0.131.3",
     "uuid": "^9.0.0",
     "vue": "^3.4.27",
-    "vue-color": "^2.7.1",
     "vue3-smooth-dnd": "^0.0.6",
     "vuex": "^4.1.0",
     "vuex-persistedstate": "^4.0.0-beta.3",

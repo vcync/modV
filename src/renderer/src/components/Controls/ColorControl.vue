@@ -25,7 +25,7 @@
               :min="0"
               :max="1"
               :strict="true"
-              :value="red"
+              :model-value="red"
               :step="0.001"
               @update:model-value="emitValue('red', $event)"
             />
@@ -42,7 +42,7 @@
               :min="0"
               :max="1"
               :strict="true"
-              :value="green"
+              :model-value="green"
               :step="0.001"
               @update:model-value="emitValue('green', $event)"
             />
@@ -59,7 +59,7 @@
               :min="0"
               :max="1"
               :strict="true"
-              :value="blue"
+              :model-value="blue"
               :step="0.001"
               @update:model-value="emitValue('blue', $event)"
             />
@@ -76,7 +76,7 @@
               :min="0"
               :max="1"
               :strict="true"
-              :value="alpha"
+              :model-value="alpha"
               :step="0.001"
               @update:model-value="emitValue('alpha', $event)"
             />
@@ -90,8 +90,7 @@
 <script>
 import CollapsibleControl from "./CollapsibleControl.vue";
 import RangeControl from "./RangeControl.vue";
-
-const { ipcRenderer } = window.electron;
+const { ipcRenderer } = require("electron");
 
 export default {
   components: {
@@ -101,7 +100,7 @@ export default {
 
   props: {
     modelValue: {
-      type: String,
+      type: undefined,
       required: true,
     },
 
@@ -126,12 +125,6 @@ export default {
     },
   },
   emits: ["update:modelValue"],
-
-  data() {
-    return {
-      pickerWindowId: null,
-    };
-  },
 
   computed: {
     red() {
@@ -192,13 +185,16 @@ export default {
     value: {
       deep: true,
       handler() {
-        if (this.windowId) {
-          ipcRenderer.sendTo(this.windowId, "module-info", {
-            moduleId: this.moduleId,
-            prop: this.prop,
-            data: this.value,
-          });
-        }
+        window.electronMessagePort.postMessage({
+          type: "module-info",
+          payload: JSON.parse(
+            JSON.stringify({
+              moduleId: this.moduleId,
+              prop: this.prop,
+              data: this.modelValue,
+            }),
+          ),
+        });
       },
     },
   },
@@ -206,20 +202,21 @@ export default {
   methods: {
     openColorPicker() {
       ipcRenderer.send("open-window", "colorPicker");
-      ipcRenderer.once("window-ready", (event, { window: windowName, id }) => {
-        if (windowName !== "colorPicker") {
-          return;
-        }
 
-        ipcRenderer.sendTo(id, "return-format", "rgba-ratio");
+      window.electronMessagePort.postMessage({
+        type: "return-format",
+        payload: "rgba-ratio",
+      });
 
-        ipcRenderer.sendTo(id, "module-info", {
-          moduleId: this.moduleId,
-          prop: this.prop,
-          data: this.modelValue,
-        });
-
-        this.windowId = id;
+      window.electronMessagePort.postMessage({
+        type: "module-info",
+        payload: JSON.parse(
+          JSON.stringify({
+            moduleId: this.moduleId,
+            prop: this.prop,
+            data: this.modelValue,
+          }),
+        ),
       });
     },
 

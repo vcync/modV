@@ -3,7 +3,7 @@ import os from "node:os";
 import { join } from "path";
 
 import store from "./media-manager/store";
-// import { autoUpdater } from "electron-updater";
+// import { autoUpdater } from "electron-updater"; @TODO add back in updater
 import { checkMediaPermission } from "./check-media-permission";
 import { setProjectNames, setCurrentProject } from "./projects";
 import { closeWindow, createWindow, windows } from "./windows";
@@ -16,14 +16,13 @@ let modVReady = false;
 
 const windowPrefs = {
   colorPicker: {
-    devPath: "colorPicker",
+    devPath: "/color-picker.html",
     prodPath: "color-picker.html",
     options: {
       webPreferences: {
+        preload: join(__dirname, "../preload/colorPicker.js"),
         contextIsolation: false,
-        // Use pluginOptions.nodeIntegration, leave this alone
-        // See nklayman.github.io/vue-cli-plugin-electron-builder/guide/security.html#node-integration for more info
-        nodeIntegration: process.env.ELECTRON_NODE_INTEGRATION,
+        nodeIntegration: false,
       },
       transparent: true,
       frame: false,
@@ -47,7 +46,7 @@ const windowPrefs = {
   },
 
   mainWindow: {
-    devPath: "",
+    devPath: "/index.html",
     prodPath: "index.html",
     options: {
       show: isDevelopment,
@@ -209,14 +208,12 @@ const windowPrefs = {
   },
 
   splashScreen: {
-    devPath: "splashScreen",
+    devPath: "/splash-screen.html",
     prodPath: "splash-screen.html",
     options: {
       show: !isDevelopment,
       webPreferences: {
-        // Use pluginOptions.nodeIntegration, leave this alone
-        // See nklayman.github.io/vue-cli-plugin-electron-builder/guide/security.html#node-integration for more info
-        nodeIntegration: process.env.ELECTRON_NODE_INTEGRATION,
+        nodeIntegration: true,
       },
       transparent: true,
       frame: false,
