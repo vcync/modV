@@ -2,7 +2,7 @@
 import constants from "../constants";
 import registerPromiseWorker from "promise-worker/register";
 import store from "./store";
-import loop from "./loop";
+import loop, { ndiWorker } from "./loop";
 import grabCanvasPlugin from "../plugins/grab-canvas";
 import get from "lodash.get";
 import { tick as frameTick } from "./frame-counter";
@@ -350,6 +350,18 @@ async function start() {
       store.commit("inputs/SWAP");
       store.commit("expressions/SWAP");
 
+      return;
+    }
+
+    if (type === "modv-destroy") {
+      console.log("worker got modv-destroy, sending onto ndi worker");
+
+      ndiWorker.addEventListener("message", (e) => {
+        console.log("worker got destroyed, sending onto webcontents");
+
+        self.postMessage({ type: "destroyed" });
+      });
+      ndiWorker.postMessage({ type: "destroy" });
       return;
     }
 

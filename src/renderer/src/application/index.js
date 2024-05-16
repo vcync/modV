@@ -81,6 +81,12 @@ class ModV {
       //   console.log(`⚙️%c ${type}`, "color: red");
       // }
 
+      if (type === "destroyed") {
+        console.log("webcontents got destroyed, sending onto main");
+        ipcRenderer.send("destroyed");
+        return;
+      }
+
       if (type === "createWebcodecVideo") {
         const videoContext = await this.createWebcodecVideo(message);
         this.videos[videoContext.id] = videoContext;
@@ -224,6 +230,14 @@ class ModV {
 
     ipcRenderer.on("create-output-window", () => {
       this.store.dispatch("windows/createWindow");
+    });
+
+    ipcRenderer.on("modv-destroy", (event, message) => {
+      console.log("webcontents got modv-destroy, sending onto worker");
+
+      this.$worker.postMessage({
+        type: "modv-destroy",
+      });
     });
 
     function messageHandler({ data: messageData }) {

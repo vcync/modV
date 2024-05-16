@@ -9,7 +9,7 @@ const canvas = new OffscreenCanvas(300, 300);
 const context = canvas.getContext("2d", { willReadFrequently: true });
 
 // process.hrtime accessed via global["process"] to bypass the slightly
-//incorrect bundle polyfill
+// incorrect bundle polyfill
 const timeStart =
   BigInt(Date.now()) * BigInt(1e6) - global["process"].hrtime.bigint();
 
@@ -67,7 +67,19 @@ self.onclose = function () {
 };
 
 self.onmessage = async function ({ data: { type, payload } }) {
-  if (!sender || type !== "imageBitmap") {
+  if (!sender || (type !== "imageBitmap" && type !== "destroy")) {
+    return;
+  }
+
+  if (type === "destroy") {
+    console.log(
+      "ndi worker got modv-destroy, doing that and replying destroyed",
+    );
+
+    sender.destroy();
+    self.postMessage("destroyed");
+    sender = null;
+    self.close();
     return;
   }
 

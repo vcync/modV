@@ -167,10 +167,12 @@ const windowPrefs = {
         window.webContents.send("input-update", message);
       });
 
-      if (!isDevelopment && !isTest) {
-        window.on("close", async (e) => {
-          e.preventDefault();
+      window.on("close", async (e) => {
+        // 0 because this is the position of the buttons
+        // in the dialog's buttons array
+        let shouldQuit = 0;
 
+        if (!isDevelopment && !isTest) {
           const { response } = await dialog.showMessageBox(window, {
             type: "question",
             buttons: ["Yes", "No"],
@@ -178,14 +180,28 @@ const windowPrefs = {
             detail: "Are you sure you want to quit?",
           });
 
-          if (response === 0) {
+          shouldQuit = response;
+        }
+
+        if (shouldQuit === 0) {
+          console.log("main sending webcontents modv-destroy");
+          const workerDestruction = new Promise((resolve) => {
+            ipcMain.on("destroyed", resolve);
+          });
+
+          window.webContents.send("modv-destroy");
+
+          await workerDestruction;
+
+          if (!isDevelopment && !isTest) {
+            e.preventDefault();
             // Use .exit instead of .quit to prevent close event firing again.
             // Usually .quit would be preferable, but since we only have one
             //   instance of the main window we can just exit.
             app.exit();
           }
-        });
-      }
+        }
+      });
 
       // Check for updates
       // autoUpdater.checkForUpdatesAndNotify();

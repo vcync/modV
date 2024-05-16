@@ -12,7 +12,7 @@ let bufferCanvas;
 let bufferContext;
 const fallbackByteFrequencyData = Array(constants.AUDIO_BUFFER_SIZE).fill(0);
 
-const ndiWorker = new NdiWorker();
+export const ndiWorker = new NdiWorker();
 
 async function loop(delta, features, fftOutput) {
   if (!bufferCanvas) {
