@@ -6,7 +6,7 @@ let sender;
 let grandiose;
 
 const canvas = new OffscreenCanvas(300, 300);
-const context = canvas.getContext("2d");
+const context = canvas.getContext("2d", { willReadFrequently: true });
 
 // process.hrtime accessed via global["process"] to bypass the slightly
 //incorrect bundle polyfill
