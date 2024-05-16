@@ -16,6 +16,12 @@ function getFilename(path) {
   return path.substring(path.lastIndexOf("/") + 1, path.lastIndexOf("."));
 }
 
+function getTime() {
+  // const hrTime = global["process"]["hrtime"]();
+  //   return hrTime[0] * 1000 + hrTime[1] / 1000000;
+  return global["performance"].now();
+}
+
 async function start() {
   // For Playwright
   self._get = get;
@@ -227,13 +233,13 @@ async function start() {
   let prevTime = 0;
 
   let now;
-  let then = Date.now();
+  let then = getTime();
   let delta;
 
   function looper(rafDelta) {
     raf = requestAnimationFrame(looper);
 
-    now = Date.now();
+    now = getTime();
     delta = now - then;
 
     if (delta > interval) {
