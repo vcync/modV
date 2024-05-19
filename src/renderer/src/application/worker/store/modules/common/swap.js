@@ -5,7 +5,12 @@
  * The idea is that this makes loading presets smooth and the end user will not see any
  * glitches in the render loop.
  */
-export function SWAP(swap, getDefault, sharedPropertyRestrictions) {
+export function SWAP(
+  swap,
+  getDefault,
+  sharedPropertyRestrictions,
+  setDefault = true,
+) {
   return function (state) {
     const stateKeys = Object.keys(state);
 
@@ -29,11 +34,13 @@ export function SWAP(swap, getDefault, sharedPropertyRestrictions) {
               // eslint-disable-next-line
               stateChildKeys.forEach((stateChildKey) => {
                 if (restrictedKeys.indexOf(stateChildKey) < 0) {
+                  swap[key][stateChildKey] = state[key][stateChildKey];
                   delete state[key][stateChildKey];
                 }
               });
             }
           } else if (sharedPropertyRestrictions[key]) {
+            swap[key] = state[key];
             delete state[key];
           }
         } else {
@@ -82,6 +89,8 @@ export function SWAP(swap, getDefault, sharedPropertyRestrictions) {
       });
     }
 
-    Object.assign(swap, getDefault());
+    if (setDefault) {
+      Object.assign(swap, getDefault());
+    }
   };
 }

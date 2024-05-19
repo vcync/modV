@@ -332,16 +332,22 @@ async function start() {
 
       console.log(preset);
 
+      const cleanupFunctionsAfterSwap = [];
+
       const storeModuleKeys = Object.keys(preset);
       for (let i = 0, len = storeModuleKeys.length; i < len; i++) {
         const storeModuleKey = storeModuleKeys[i];
 
         try {
           console.log("Loading from preset…", storeModuleKey);
-          await store.dispatch(
+          const fn = await store.dispatch(
             `${storeModuleKey}/loadPresetData`,
             preset[storeModuleKey],
           );
+
+          if (fn) {
+            cleanupFunctionsAfterSwap.push(fn);
+          }
         } catch (e) {
           console.error(e);
         }
@@ -351,6 +357,8 @@ async function start() {
       store.commit("modules/SWAP");
       store.commit("inputs/SWAP");
       store.commit("expressions/SWAP");
+
+      cleanupFunctionsAfterSwap.forEach((fn) => fn());
 
       return;
     }

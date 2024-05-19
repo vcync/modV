@@ -112,14 +112,16 @@ const actions = {
     return input;
   },
 
-  removeInput({ commit }, { inputId, writeToSwap }) {
+  removeInput({ commit }, { inputId, silent = false, writeToSwap }) {
     const writeTo = writeToSwap ? swap : state;
 
     if (!writeTo.inputs[inputId]) {
-      console.warn(
-        "Did not remove input. Could not find input with id",
-        inputId,
-      );
+      if (!silent) {
+        console.warn(
+          "Did not remove input. Could not find input with id",
+          inputId,
+        );
+      }
 
       return false;
     }

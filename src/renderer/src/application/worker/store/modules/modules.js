@@ -665,6 +665,15 @@ const actions = {
   async loadPresetData({ dispatch }, modules) {
     const moduleValues = Object.values(modules);
 
+    const oldModuleIds = Object.values(state.active)
+      .filter(
+        (module) =>
+          !module.meta.isGallery &&
+          moduleValues.findIndex((newModule) => newModule.$id === module.$id) <
+            0,
+      )
+      .map((module) => module.$id);
+
     for (let i = 0, len = moduleValues.length; i < len; i++) {
       const module = moduleValues[i];
 
@@ -675,21 +684,35 @@ const actions = {
       });
     }
 
-    return;
+    return async function modulesCleanupAfterSwap() {
+      const moduleIds = Object.values(oldModuleIds);
+
+      for (let i = 0, len = moduleIds.length; i < len; i++) {
+        const id = moduleIds[i];
+
+        await dispatch("removeActiveModule", {
+          moduleId: id,
+          writeToSwap: true,
+        });
+      }
+
+      Object.assign(swap, getDefaultState());
+    };
   },
 
   async removeActiveModule({ commit, rootState }, { moduleId, writeToSwap }) {
     const writeTo = writeToSwap ? swap : state;
 
     const module = writeTo.active[moduleId];
-    const {
-      meta,
-      meta: { type },
-    } = module;
 
     if (!module) {
       throw new Error(`No module with id "${moduleId}" found`);
     }
+
+    const {
+      meta,
+      meta: { type },
+    } = module;
 
     const { renderers } = rootState;
     if (renderers[type].removeActiveModule) {
@@ -732,6 +755,8 @@ const actions = {
 
       await store.dispatch("inputs/removeInput", {
         inputId,
+        silent: true,
+        writeToSwap,
       });
 
       // clear up datatypes with multiple inputs
@@ -751,6 +776,8 @@ const actions = {
 
           await store.dispatch("inputs/removeInput", {
             inputId: `${inputId}-${key}`,
+            silent: true,
+            writeToSwap,
           });
         }
       }
@@ -822,7 +849,7 @@ const mutations = {
     }
   },
 
-  SWAP: SWAP(swap, getDefaultState, sharedPropertyRestrictions),
+  SWAP: SWAP(swap, getDefaultState, sharedPropertyRestrictions, false),
 };
 
 export default {
