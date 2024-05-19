@@ -256,7 +256,6 @@ class ModV {
       "message",
       messageHandler.bind(this),
     );
-    console.log(window.electronMessagePort && "message handler added");
 
     ipcRenderer.send("get-media-manager-state");
 
@@ -265,6 +264,12 @@ class ModV {
         type: "modv-destroy",
       });
       ipcRenderer.send("modv-destroy");
+    });
+
+    import.meta.hot.on("vite:beforeFullReload", () => {
+      this.$worker.postMessage({
+        type: "modv-destroy",
+      });
     });
   }
 
