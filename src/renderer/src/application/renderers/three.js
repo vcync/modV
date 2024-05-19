@@ -68,6 +68,7 @@ function render({
   fftCanvas,
   pipeline,
 }) {
+  resize(canvas);
   inputTextureContext.drawImage(canvas, 0, 0, canvas.width, canvas.height);
   inputTexture.image = inputTextureCanvas.transferToImageBitmap();
   inputTexture.needsUpdate = true;

@@ -64,6 +64,13 @@ function render({ module, canvas, context, pipeline, props }) {
     }
   }
 
+  if (isfCanvas.width !== canvas.width || isfCanvas.height !== canvas.height) {
+    // We don't use the resize function as it's very non-performant for
+    // some reason...
+    isfCanvas.width = canvas.width;
+    isfCanvas.height = canvas.height;
+  }
+
   isfContext.clear(isfContext.COLOR_BUFFER_BIT);
   renderer.draw(isfCanvas);
 

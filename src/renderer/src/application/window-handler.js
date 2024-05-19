@@ -19,6 +19,12 @@ export default function windowHandler() {
     };
   }
 
+  /**
+   * @param {Object} args
+   * @param {Window} args.win
+   * @param {HTMLCanvasElement} args.canvas
+   * @param {string} args.backgroundColor
+   */
   function configureWindow({ win, canvas, backgroundColor }) {
     win.document.body.appendChild(canvas);
     win.document.body.style.backgroundColor = backgroundColor;

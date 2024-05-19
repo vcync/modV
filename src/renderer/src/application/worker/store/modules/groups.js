@@ -112,6 +112,10 @@ const getters = {
 
     return indexes;
   },
+
+  getById: (state) => (id) => {
+    return state.groups.find((group) => group.id === id);
+  },
 };
 
 const actions = {
@@ -147,6 +151,7 @@ const actions = {
         name,
         group: "group",
         id,
+        reactToResize: args.reactToResize ?? true,
       }),
     };
 

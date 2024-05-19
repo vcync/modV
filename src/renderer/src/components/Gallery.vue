@@ -7,6 +7,7 @@
       type: 'Panel',
     }"
     class="gallery"
+    @mouseout="clearUpGalleryActiveModules"
   >
     <grid columns="4">
       <c span="1..">
@@ -141,6 +142,7 @@ export default {
       hidden: true,
       enabled: true,
       clearing: true,
+      reactToResize: false,
     });
 
     this.groupId = group.id;
@@ -223,6 +225,22 @@ export default {
           (group) => group.id === groupId,
         ).modules.length,
       });
+    },
+
+    clearUpGalleryActiveModules() {
+      this.$modV.store.state.groups.groups
+        .find((group) => group.name === "modV internal Gallery Group")
+        .modules.filter(
+          (moduleId) =>
+            this.$modV.store.state.modules.active[moduleId].meta.enabled,
+        )
+        .forEach((moduleId) => {
+          this.$modV.store.commit("modules/UPDATE_ACTIVE_MODULE_META", {
+            id: moduleId,
+            metaKey: "enabled",
+            data: false,
+          });
+        });
     },
   },
 };

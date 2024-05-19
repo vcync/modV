@@ -1,6 +1,7 @@
 <template>
   <div
     v-if="!badModule"
+    ref="galleryItem"
     v-contextMenu="() => GalleryItemContextMenu({ moduleName })"
     class="gallery-item"
     :class="{ grabbing }"
@@ -31,6 +32,7 @@ export default {
       activeModule: { meta: {} },
       badModule: false,
       grabbing: false,
+      renderQuality: 1 * window.devicePixelRatio,
       GalleryItemContextMenu,
     };
   },
@@ -48,8 +50,8 @@ export default {
         type: "2d",
         group: "gallery",
         reactToResize: false,
-        width: width / 2,
-        height: height / 2,
+        width: width * this.renderQuality,
+        height: height * this.renderQuality,
       },
       [offscreen],
     );
@@ -76,14 +78,14 @@ export default {
 
     await this.$modV.store.dispatch("modules/init", {
       moduleId: this.id,
-      width: width / 2,
-      height: height / 2,
+      width: width * this.renderQuality,
+      height: height * this.renderQuality,
     });
 
     await this.$modV.store.dispatch("modules/resize", {
       moduleId: this.id,
-      width: width / 2,
-      height: height / 2,
+      width: width * this.renderQuality,
+      height: height * this.renderQuality,
     });
 
     // Synthesise a resize event for smooth-dnd's buggy hit detection to work
@@ -106,17 +108,59 @@ export default {
   },
 
   methods: {
-    focus() {
+    async focus() {
+      const {
+        id,
+        groupId,
+        outputId,
+        $refs: { galleryItem },
+      } = this;
+
+      const newWidth = galleryItem.clientWidth * this.renderQuality;
+      const newHeight = galleryItem.clientHeight * this.renderQuality;
+
+      this.$modV.store.commit("outputs/RESIZE_AUXILLARY", {
+        id: outputId,
+        width: newWidth,
+        height: newHeight,
+      });
+
+      await this.$modV.store.dispatch("modules/resize", {
+        moduleId: id,
+        width: newWidth,
+        height: newHeight,
+      });
+
+      this.$modV.store.commit("outputs/RESIZE_AUXILLARY", {
+        id: this.$modV.store.getters["groups/getById"](groupId).context.id,
+        width: newWidth,
+        height: newHeight,
+      });
+
       this.$modV.store.commit("groups/UPDATE_GROUP", {
-        groupId: this.groupId,
+        groupId,
         data: {
-          drawToCanvasId: this.outputId,
+          drawToCanvasId: outputId,
           enabled: GROUP_ENABLED,
         },
       });
 
+      this.$modV.store.state.groups.groups
+        .find((group) => group.name === "modV internal Gallery Group")
+        .modules.filter(
+          (moduleId) =>
+            this.$modV.store.state.modules.active[moduleId].meta.enabled,
+        )
+        .forEach((moduleId) => {
+          this.$modV.store.commit("modules/UPDATE_ACTIVE_MODULE_META", {
+            id: moduleId,
+            metaKey: "enabled",
+            data: false,
+          });
+        });
+
       this.$modV.store.commit("modules/UPDATE_ACTIVE_MODULE_META", {
-        id: this.id,
+        id,
         metaKey: "enabled",
         data: true,
       });
@@ -182,6 +226,7 @@ canvas {
   justify-content: center;
   align-items: center;
   height: 100%;
+  width: 100%;
 }
 
 .gallery-item.grabbing {
@@ -192,7 +237,7 @@ canvas {
   opacity: 1;
 }
 
-.gallery-item:hover.title {
+.gallery-item:hover .title {
   opacity: 0.3;
 }
 

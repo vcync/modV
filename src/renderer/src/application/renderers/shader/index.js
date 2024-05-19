@@ -45,11 +45,15 @@ function resize({ width, height }) {
 }
 
 function generateUniforms(canvasTexture, uniforms, kick = false) {
-  const { width, height, dpr } = store.state.size;
+  const { dpr } = store.state.size;
 
   const date = new Date();
   const time = performance.now();
-  const resolution = [width, height, dpr];
+  const resolution = [
+    canvasTexture?.width || 0,
+    canvasTexture?.height || 0,
+    dpr,
+  ];
 
   const defaults = {
     iGlobalTime: time / 1000,
@@ -143,7 +147,7 @@ async function setupModule(moduleDefinition) {
 }
 
 function render({ module, props, canvas, context, pipeline, kick, fftCanvas }) {
-  resize({ width: canvas.width, height: canvas.height });
+  resize(canvas);
 
   if (!canvasTexture) {
     canvasTexture = pex.texture2D({
