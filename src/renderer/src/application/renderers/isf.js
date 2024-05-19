@@ -29,9 +29,9 @@ function resize({ width, height }) {
   isfCanvas.height = height;
 }
 
-function render({ module, canvas, context, pipeline, props }) {
-  const renderer = renderers[module.meta.name];
-  const moduleInputs = inputs[module.meta.name];
+async function render({ moduleId, canvas, context, pipeline, props }) {
+  const renderer = renderers[moduleId];
+  const moduleInputs = inputs[moduleId];
 
   // Only update the audio data if the module has audio inputs to improve performance
   // for modules that don't use any audio inputs at all
@@ -99,10 +99,7 @@ function resizeModule({ moduleDefinition, canvas, data, props }) {
   return moduleDefinition.resize({ canvas, data, props });
 }
 
-async function setupModule(moduleDefinition) {
-  let fragmentShader = moduleDefinition.fragmentShader;
-  let vertexShader = moduleDefinition.vertexShader;
-
+function loadISF({ fragmentShader, vertexShader }, parseOnly = true) {
   const parser = new ISFParser();
   parser.parse(fragmentShader, vertexShader);
   if (parser.error) {
@@ -116,21 +113,30 @@ async function setupModule(moduleDefinition) {
     }
   }
 
+  let renderer;
+  if (!parseOnly) {
+    renderer = new ISFRenderer(isfContext, {
+      useWebAudio: false,
+      fftSize: constants.AUDIO_BUFFER_SIZE,
+      hasAudio: parser.hasAudio,
+    });
+    renderer.loadSource(fragmentShader, vertexShader);
+
+    if (!renderer.valid) {
+      throw renderer.errorWithCorrectedLines;
+    }
+  }
+
+  return { renderer, parser };
+}
+
+async function setupModule(moduleDefinition) {
+  const { parser } = loadISF(moduleDefinition);
+
   moduleDefinition.meta.isfVersion = parser.isfVersion;
   moduleDefinition.meta.author = parser.metadata.CREDIT;
   moduleDefinition.meta.description = parser.metadata.DESCRIPTION;
   moduleDefinition.meta.version = parser.metadata.VSN;
-
-  const renderer = new ISFRenderer(isfContext, {
-    useWebAudio: false,
-    fftSize: constants.AUDIO_BUFFER_SIZE,
-    hasAudio: parser.hasAudio,
-  });
-  renderer.loadSource(fragmentShader, vertexShader);
-
-  if (!renderer.valid) {
-    throw renderer.errorWithCorrectedLines;
-  }
 
   function addProp(name, prop) {
     if (!moduleDefinition.props) {
@@ -216,11 +222,20 @@ async function setupModule(moduleDefinition) {
     }
   }
 
-  renderers[moduleDefinition.meta.name] = renderer;
-  inputs[moduleDefinition.meta.name] = moduleInputs;
   moduleDefinition.draw = render;
 
   return moduleDefinition;
+}
+
+function addActiveModule(id, moduleDefinition) {
+  const { renderer, parser } = loadISF(moduleDefinition, false);
+
+  inputs[id] = parser.inputs;
+  renderers[id] = renderer;
+}
+
+function removeActiveModule(id) {
+  delete renderers[id];
 }
 
 export default {
@@ -229,4 +244,6 @@ export default {
   updateModule,
   resizeModule,
   resize,
+  addActiveModule,
+  removeActiveModule,
 };

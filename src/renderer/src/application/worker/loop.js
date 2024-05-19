@@ -258,6 +258,7 @@ async function loop(delta, features, fftOutput) {
         context: drawTo,
         delta,
         module: moduleDefinition,
+        moduleId: module.$id,
         features,
         meyda,
         video,

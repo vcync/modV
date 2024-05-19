@@ -163,7 +163,7 @@ function resizeModule({ moduleDefinition, canvas, data, props }) {
   return moduleDefinition.resize({ canvas, data, props, camera, scene });
 }
 
-function removeModule(module) {
+function removeActiveModule(module) {
   delete threeModuleData[module.meta.name];
 }
 
@@ -191,7 +191,7 @@ export default {
   resize,
   resizeModule,
   setupModule,
-  removeModule,
+  removeActiveModule,
   createPresetData,
   loadPresetData,
   getModuleData,

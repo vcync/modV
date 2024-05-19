@@ -133,7 +133,6 @@ async function start() {
       const {
         render,
         setupModule,
-        removeModule,
         updateModule,
         resizeModule,
         tick,
@@ -141,6 +140,8 @@ async function start() {
         createPresetData,
         loadPresetData,
         getModuleData,
+        addActiveModule,
+        removeActiveModule,
       } = mod.default;
 
       store.commit("renderers/ADD_RENDERER", {
@@ -148,12 +149,13 @@ async function start() {
         render,
         resize,
         setupModule,
-        removeModule,
         updateModule,
         resizeModule,
         createPresetData,
         loadPresetData,
         getModuleData,
+        addActiveModule,
+        removeActiveModule,
         tick,
       });
     });

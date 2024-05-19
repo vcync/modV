@@ -316,6 +316,9 @@ const actions = {
       }
     }
 
+    const { renderers } = rootState;
+    const { type } = module.meta;
+
     if (!existingModule) {
       module.$moduleName = moduleName;
       module.props = {};
@@ -365,9 +368,6 @@ const actions = {
         }
       }
     } else {
-      const { renderers } = rootState;
-      const { type } = module.meta;
-
       if (renderers[type].setupModule) {
         try {
           const newDef = await renderers[type].setupModule(moduleDefinition);
@@ -390,6 +390,16 @@ const actions = {
         writeToSwap,
         generateNewIds,
       );
+    }
+
+    if (renderers[type].addActiveModule) {
+      try {
+        await renderers[type].addActiveModule(module.$id, moduleDefinition);
+      } catch (e) {
+        console.error(
+          `Error in ${type} renderer addActiveModule whilst registering "${module.meta.name}".\n\n${e}`,
+        );
+      }
     }
 
     // We're done setting up the module, we can commit now
