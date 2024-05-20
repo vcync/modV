@@ -3,40 +3,78 @@ import { frames } from "../../worker/frame-counter";
 import store from "../../worker/store";
 import defaultShader from "./default-shader";
 
-const shaderCanvas = new OffscreenCanvas(300, 300);
-const shaderContext = shaderCanvas.getContext("webgl2", {
+function createCanvas(name, contextOptions) {
+  const canvas = new OffscreenCanvas(256, 256);
+  const context = canvas.getContext("webgl2", contextOptions);
+
+  let canvasTexture;
+  let fftTexture;
+
+  const setCanvasTexture = (tex) => (canvasTexture = tex);
+  const setFftTexture = (tex) => (fftTexture = tex);
+
+  const getCanvasTexture = () => canvasTexture;
+  const getFftTexture = () => fftTexture;
+
+  store.dispatch("outputs/addAuxillaryOutput", {
+    name,
+    context,
+    group: "buffer",
+  });
+
+  const pex = createContext({ gl: context });
+
+  const a_position = pex.vertexBuffer([
+    -1, -1, -1, 1, 1, 1, 1, 1, 1, -1, -1, -1,
+  ]);
+  const indices = pex.indexBuffer([0, 1, 2, 3, 4, 5]);
+
+  const commands = {};
+
+  const clearCommand = {
+    pass: pex.pass({
+      clearColor: [0, 0, 0, 1],
+      clearDepth: 1,
+    }),
+  };
+
+  const addCommand = (name, command) => {
+    commands[name] = command;
+  };
+
+  return {
+    pex,
+    canvas,
+    context,
+    commands,
+    addCommand,
+    clearCommand,
+    a_position,
+    indices,
+    setCanvasTexture,
+    setFftTexture,
+    getCanvasTexture,
+    getFftTexture,
+  };
+}
+
+const shaderContext = createCanvas("shader-buffer", {
   antialias: true,
   desynchronized: true,
   powerPreference: "high-performance",
   premultipliedAlpha: false,
 });
 
-store.dispatch("outputs/addAuxillaryOutput", {
-  name: "shader-buffer",
-  context: shaderContext,
-  group: "buffer",
+const shaderContextGallery = createCanvas("shader-buffer-gallery", {
+  antialias: false,
+  desynchronized: true,
+  powerPreference: "high-performance",
+  premultipliedAlpha: false,
 });
 
-const pex = createContext({ gl: shaderContext });
-
-const a_position = pex.vertexBuffer([-1, -1, -1, 1, 1, 1, 1, 1, 1, -1, -1, -1]);
-const indices = pex.indexBuffer([0, 1, 2, 3, 4, 5]);
-
-const commands = {};
-
-let canvasTexture;
-let fftTexture;
-
-const clearCmd = {
-  pass: pex.pass({
-    clearColor: [0, 0, 0, 1],
-    clearDepth: 1,
-  }),
-};
-
-function resize({ width, height }) {
-  shaderCanvas.width = width;
-  shaderCanvas.height = height;
+function resize({ width, height }, canvas) {
+  canvas.width = width;
+  canvas.height = height;
 
   // pex.set({
   //   width,
@@ -44,7 +82,7 @@ function resize({ width, height }) {
   // });
 }
 
-function generateUniforms(canvasTexture, uniforms, kick = false) {
+function generateUniforms(canvasTexture, uniforms, kick = false, fftTexture) {
   const { dpr } = store.state.size;
 
   const date = new Date();
@@ -78,103 +116,141 @@ function generateUniforms(canvasTexture, uniforms, kick = false) {
   return { ...uniforms, ...defaults };
 }
 
-function makeProgram(moduleDefinition) {
-  return new Promise((resolve) => {
-    let vert = moduleDefinition.vertexShader;
-    let frag = moduleDefinition.fragmentShader;
+function makeProgram(moduleDefinition, id, isGallery) {
+  let vert = moduleDefinition.vertexShader;
+  let frag = moduleDefinition.fragmentShader;
 
-    if (!vert) {
-      vert = defaultShader.v;
-    }
+  if (!vert) {
+    vert = defaultShader.v;
+  }
 
-    if (!frag) {
-      frag = defaultShader.f;
-    }
+  if (!frag) {
+    frag = defaultShader.f;
+  }
 
-    if (frag.search("gl_FragColor") < 0) {
-      frag = defaultShader.fWrap.replace(/(%MAIN_IMAGE_INJECT%)/, frag);
+  if (frag.search("gl_FragColor") < 0) {
+    frag = defaultShader.fWrap.replace(/(%MAIN_IMAGE_INJECT%)/, frag);
 
-      vert = defaultShader.v300;
-    }
+    vert = defaultShader.v300;
+  }
 
-    const pipeline = pex.pipeline({
-      depthTest: true,
-      vert,
-      frag,
-    });
+  const rendererContext = isGallery ? shaderContextGallery : shaderContext;
 
-    const shaderUniforms = {};
+  const pipeline = rendererContext.pex.pipeline({
+    depthTest: true,
+    vert,
+    frag,
+  });
 
-    if (moduleDefinition.props) {
-      const modulePropsKeys = Object.keys(moduleDefinition.props);
-      const modulePropsKeysLength = modulePropsKeys.length;
+  const shaderUniforms = {};
 
-      for (let i = 0; i < modulePropsKeysLength; i++) {
-        const key = modulePropsKeys[i];
+  if (moduleDefinition.props) {
+    const modulePropsKeys = Object.keys(moduleDefinition.props);
+    const modulePropsKeysLength = modulePropsKeys.length;
 
-        if (moduleDefinition.props[key].type === "texture") {
-          shaderUniforms[key] = moduleDefinition.props[key].value;
-        } else {
-          shaderUniforms[key] = moduleDefinition.props[key];
-        }
+    for (let i = 0; i < modulePropsKeysLength; i++) {
+      const key = modulePropsKeys[i];
+
+      if (moduleDefinition.props[key].type === "texture") {
+        shaderUniforms[key] = moduleDefinition.props[key].value;
+      } else {
+        shaderUniforms[key] = moduleDefinition.props[key];
       }
     }
+  }
 
-    const uniforms = generateUniforms(canvasTexture, shaderUniforms);
+  const uniforms = generateUniforms(
+    rendererContext.getCanvasTexture(),
+    shaderUniforms,
+    false,
+    rendererContext.fftTexture,
+  );
 
-    const command = {
-      pipeline,
-      attributes: {
-        a_position,
-        position: a_position,
-      },
-      indices,
-      uniforms,
-    };
+  const command = {
+    pipeline,
+    attributes: {
+      a_position: rendererContext.a_position,
+      position: rendererContext.a_position,
+    },
+    indices: rendererContext.indices,
+    uniforms,
+  };
 
-    commands[moduleDefinition.meta.name] = command;
+  rendererContext.addCommand(id, command);
 
-    resolve(moduleDefinition);
-  });
+  return moduleDefinition;
 }
 
 async function setupModule(moduleDefinition) {
+  // try {
+  //   return await makeProgram(moduleDefinition);
+  // } catch (e) {
+  //   throw new Error(e);
+  // }
+
+  return moduleDefinition;
+}
+
+async function addActiveModule(
+  { $id: id, meta: { isGallery } },
+  moduleDefinition,
+) {
   try {
-    return await makeProgram(moduleDefinition);
+    return makeProgram(moduleDefinition, id, isGallery);
   } catch (e) {
     throw new Error(e);
   }
 }
 
-function render({ module, props, canvas, context, pipeline, kick, fftCanvas }) {
-  resize(canvas);
+function render({
+  module,
+  moduleId,
+  props,
+  canvas,
+  context,
+  pipeline,
+  kick,
+  fftCanvas,
+  isGallery,
+}) {
+  const rendererContext = isGallery ? shaderContextGallery : shaderContext;
+  const { pex, setCanvasTexture, setFftTexture } = rendererContext;
 
-  if (!canvasTexture) {
-    canvasTexture = pex.texture2D({
-      data: canvas.data || canvas,
-      width: canvas.width,
-      height: canvas.height,
-      pixelFormat: pex.PixelFormat.RGBA8,
-      encoding: pex.Encoding.Linear,
-      min: pex.Filter.Linear,
-      mag: pex.Filter.Linear,
-      wrap: pex.Wrap.Repeat,
-    });
-    fftTexture = pex.texture2D({
-      data: fftCanvas.data || fftCanvas,
-      width: fftCanvas.width,
-      height: 1,
-      pixelFormat: pex.PixelFormat.RGBA8,
-      encoding: pex.Encoding.Linear,
-      wrap: pex.Wrap.Repeat,
-    });
+  resize(canvas, rendererContext.canvas);
+
+  if (!rendererContext.getCanvasTexture()) {
+    setCanvasTexture(
+      pex.texture2D({
+        data: canvas.data || canvas,
+        width: canvas.width,
+        height: canvas.height,
+        pixelFormat: pex.PixelFormat.RGBA8,
+        encoding: pex.Encoding.Linear,
+        min: pex.Filter.Linear,
+        mag: pex.Filter.Linear,
+        wrap: pex.Wrap.Repeat,
+      }),
+    );
+    debugger;
+
+    setFftTexture(
+      pex.texture2D({
+        data: fftCanvas.data || fftCanvas,
+        width: fftCanvas.width,
+        height: 1,
+        pixelFormat: pex.PixelFormat.RGBA8,
+        encoding: pex.Encoding.Linear,
+        wrap: pex.Wrap.Repeat,
+      }),
+    );
   } else {
-    pex.update(canvasTexture, {
+    pex.update(rendererContext.getCanvasTexture(), {
       width: canvas.width,
       height: canvas.height,
       data: canvas.data || canvas,
     });
-    pex.update(fftTexture, {
+
+    pex.update(rendererContext.getFftTexture(), {
       width: fftCanvas.width,
       height: 1,
       data: fftCanvas.data || fftCanvas,
@@ -198,15 +274,25 @@ function render({ module, props, canvas, context, pipeline, kick, fftCanvas }) {
     }
   }
 
-  const uniforms = generateUniforms(canvasTexture, shaderUniforms, kick);
+  const uniforms = generateUniforms(
+    rendererContext.getCanvasTexture(),
+    shaderUniforms,
+    kick,
+    rendererContext.getFftTexture(),
+  );
 
-  const command = commands[module.meta.name];
+  const command = rendererContext.commands[moduleId];
 
-  pex.submit(clearCmd);
-  pex.submit(command, {
-    uniforms,
-    viewport: [0, 0, canvas.width, canvas.height],
-  });
+  pex.submit(rendererContext.clearCommand);
+  try {
+    pex.submit(command, {
+      uniforms,
+      viewport: [0, 0, canvas.width, canvas.height],
+    });
+  } catch (e) {
+    console.error(e);
+    // nothing
+  }
 
   // clear context if we're in pipeline mode
   if (pipeline) {
@@ -214,7 +300,7 @@ function render({ module, props, canvas, context, pipeline, kick, fftCanvas }) {
   }
 
   // Copy Shader Canvas to Main Canvas
-  context.drawImage(shaderCanvas, 0, 0, canvas.width, canvas.height);
+  context.drawImage(rendererContext.canvas, 0, 0, canvas.width, canvas.height);
 }
 
 /**
@@ -232,4 +318,4 @@ function updateModule({ module, props, data, canvas, context, delta }) {
   return dataUpdated ?? data;
 }
 
-export { setupModule, render, resize, updateModule };
+export { setupModule, render, resize, updateModule, addActiveModule };

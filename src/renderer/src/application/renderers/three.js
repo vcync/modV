@@ -26,7 +26,9 @@ const renderer = new THREE.WebGLRenderer({
   powerPreference: "high-performance",
   premultipliedAlpha: false,
 });
-renderer.setPixelRatio(1);
+
+const { dpr } = store.state.size;
+renderer.setPixelRatio(dpr);
 
 const inputTextureCanvas = new OffscreenCanvas(300, 300);
 const inputTextureContext = inputTextureCanvas.getContext("2d");

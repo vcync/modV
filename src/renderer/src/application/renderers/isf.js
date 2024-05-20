@@ -37,7 +37,7 @@ store.dispatch("outputs/addAuxillaryOutput", {
 const renderers = {};
 const inputs = {};
 
-function resize({ width, height, isGallery }) {
+function resize({ width, height }) {
   isfCanvas.width = width;
   isfCanvas.height = height;
 }
