@@ -17,9 +17,8 @@ function getFilename(path) {
 }
 
 function getTime() {
-  // const hrTime = global["process"]["hrtime"]();
-  //   return hrTime[0] * 1000 + hrTime[1] / 1000000;
-  return global["performance"].now();
+  const hrTime = global["process"].hrtime();
+  return hrTime[0] * 1000000000 + hrTime[1];
 }
 
 async function start() {
@@ -229,8 +228,11 @@ async function start() {
     id: "fft",
   });
 
-  // eslint-disable-next-line
-  let raf = requestAnimationFrame(looper);
+  let raf;
+  if (!raf) {
+    raf = requestAnimationFrame(looper);
+  }
+
   let frames = 0;
   let prevTime = 0;
 
@@ -244,7 +246,9 @@ async function start() {
     now = getTime();
     delta = now - then;
 
-    if (delta > interval) {
+    sendCommitQueue();
+
+    if (delta > interval * 1000000) {
       // update time stuffs
 
       // Just `then = now` is not enough.
@@ -259,14 +263,13 @@ async function start() {
       // by subtracting delta (112) % interval (100).
       // Hope that makes sense.
 
-      then = now - (delta % interval);
+      then = now - (delta % (interval * 1000000));
 
       frameActions(rafDelta);
     }
   }
 
   function frameActions(delta) {
-    sendCommitQueue();
     self.postMessage({
       type: "tick",
       payload: delta,
