@@ -5,6 +5,8 @@ import { createWindow } from "./windows";
 
 require("@electron/remote/main").initialize();
 
+app.commandLine.appendSwitch("max-active-webgl-contexts", 6);
+
 const isDevelopment = process.env.NODE_ENV !== "production";
 
 // Scheme must be registered before the app is ready
