@@ -394,7 +394,7 @@ const actions = {
 
     if (renderers[type].addActiveModule) {
       try {
-        await renderers[type].addActiveModule(module.$id, moduleDefinition);
+        await renderers[type].addActiveModule(module, moduleDefinition);
       } catch (e) {
         console.error(
           `Error in ${type} renderer addActiveModule whilst registering "${module.meta.name}".\n\n${e}`,

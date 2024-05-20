@@ -163,8 +163,9 @@ function resizeModule({ moduleDefinition, canvas, data, props }) {
   return moduleDefinition.resize({ canvas, data, props, camera, scene });
 }
 
-function removeActiveModule(module) {
-  delete threeModuleData[module.meta.name];
+// @TODO create an asset system to reduce duplication of models (etc.) in memory
+function removeActiveModule(/*module*/) {
+  // delete threeModuleData[module.meta.name];
 }
 
 function createPresetData(module) {

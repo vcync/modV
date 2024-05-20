@@ -8,7 +8,7 @@ import {
 import { getFeatures } from "../worker/audio-features";
 import constants from "../constants";
 
-const isfCanvas = new OffscreenCanvas(300, 300);
+const isfCanvas = new OffscreenCanvas(256, 256);
 const isfContext = isfCanvas.getContext("webgl2", {
   antialias: true,
   desynchronized: true,
@@ -21,15 +21,35 @@ store.dispatch("outputs/addAuxillaryOutput", {
   group: "buffer",
 });
 
+const isfCanvasGallery = new OffscreenCanvas(256, 256);
+const isfContextGallery = isfCanvasGallery.getContext("webgl2", {
+  antialias: false,
+  desynchronized: true,
+  powerPreference: "high-performance",
+  premultipliedAlpha: false,
+});
+store.dispatch("outputs/addAuxillaryOutput", {
+  name: "isf-buffer-gallery",
+  context: isfContextGallery,
+  group: "buffer",
+});
+
 const renderers = {};
 const inputs = {};
 
-function resize({ width, height }) {
+function resize({ width, height, isGallery }) {
   isfCanvas.width = width;
   isfCanvas.height = height;
 }
 
-async function render({ moduleId, canvas, context, pipeline, props }) {
+async function render({
+  moduleId,
+  canvas,
+  context,
+  pipeline,
+  props,
+  isGallery,
+}) {
   const renderer = renderers[moduleId];
   const moduleInputs = inputs[moduleId];
 
@@ -64,20 +84,26 @@ async function render({ moduleId, canvas, context, pipeline, props }) {
     }
   }
 
-  if (isfCanvas.width !== canvas.width || isfCanvas.height !== canvas.height) {
+  const resolvedIsfCanvas = isGallery ? isfCanvasGallery : isfCanvas;
+  const resolvedIsfContext = isGallery ? isfContextGallery : isfContext;
+
+  if (
+    resolvedIsfCanvas.width !== canvas.width ||
+    resolvedIsfCanvas.height !== canvas.height
+  ) {
     // We don't use the resize function as it's very non-performant for
     // some reason...
-    isfCanvas.width = canvas.width;
-    isfCanvas.height = canvas.height;
+    resolvedIsfCanvas.width = canvas.width;
+    resolvedIsfCanvas.height = canvas.height;
   }
 
-  isfContext.clear(isfContext.COLOR_BUFFER_BIT);
-  renderer.draw(isfCanvas);
+  resolvedIsfContext.clear(resolvedIsfContext.COLOR_BUFFER_BIT);
+  renderer.draw(resolvedIsfCanvas);
 
   if (pipeline) {
     context.clearRect(0, 0, canvas.width, canvas.height);
   }
-  context.drawImage(isfCanvas, 0, 0, canvas.width, canvas.height);
+  context.drawImage(resolvedIsfCanvas, 0, 0, canvas.width, canvas.height);
 }
 
 /**
@@ -95,11 +121,14 @@ function updateModule({ module, props, data, canvas, context, delta }) {
   return dataUpdated ?? data;
 }
 
-function resizeModule({ moduleDefinition, canvas, data, props }) {
-  return moduleDefinition.resize({ canvas, data, props });
+function resizeModule({ moduleDefinition, canvas, data, props, isGallery }) {
+  return moduleDefinition.resize({ canvas, data, props, isGallery });
 }
 
-function loadISF({ fragmentShader, vertexShader }, parseOnly = true) {
+function loadISF(
+  { fragmentShader, vertexShader, isGallery = false },
+  parseOnly = true,
+) {
   const parser = new ISFParser();
   parser.parse(fragmentShader, vertexShader);
   if (parser.error) {
@@ -113,9 +142,11 @@ function loadISF({ fragmentShader, vertexShader }, parseOnly = true) {
     }
   }
 
+  const resolvedIsfContext = isGallery ? isfContextGallery : isfContext;
+
   let renderer;
   if (!parseOnly) {
-    renderer = new ISFRenderer(isfContext, {
+    renderer = new ISFRenderer(resolvedIsfContext, {
       useWebAudio: false,
       fftSize: constants.AUDIO_BUFFER_SIZE,
       hasAudio: parser.hasAudio,
@@ -227,8 +258,11 @@ async function setupModule(moduleDefinition) {
   return moduleDefinition;
 }
 
-function addActiveModule(id, moduleDefinition) {
-  const { renderer, parser } = loadISF(moduleDefinition, false);
+function addActiveModule({ $id: id, meta: { isGallery } }, moduleDefinition) {
+  const { renderer, parser } = loadISF(
+    { ...moduleDefinition, isGallery },
+    false,
+  );
 
   inputs[id] = parser.inputs;
   renderers[id] = renderer;

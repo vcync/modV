@@ -267,6 +267,7 @@ async function loop(delta, features, fftOutput) {
         pipeline,
         kick,
         fftCanvas: fftOutput.context.canvas,
+        isGallery: isGalleryGroup,
       });
       drawTo.restore();
 
