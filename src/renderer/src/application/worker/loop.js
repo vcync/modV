@@ -385,14 +385,14 @@ async function loop(delta, features, fftOutput) {
   // Gotta transfer after everything else as it transfers ownership of the canvas content
   // i.e. main.canvas goes blank
 
-  const imageBitmap = await main.canvas.transferToImageBitmap();
-  ndiWorker.postMessage(
-    {
-      type: "imageBitmap",
-      payload: { fps: store.state.metrics.fps, imageBitmap },
-    },
-    [imageBitmap],
-  );
+  // const imageBitmap = await main.canvas.transferToImageBitmap();
+  // ndiWorker.postMessage(
+  //   {
+  //     type: "imageBitmap",
+  //     payload: { fps: store.state.metrics.fps, imageBitmap },
+  //   },
+  //   [imageBitmap],
+  // );
 }
 
 export default loop;
