@@ -3,8 +3,8 @@ import get from "lodash.get";
 import store from "./store";
 import map from "../utils/map";
 import constants, { GROUP_DISABLED, GROUP_ENABLED } from "../constants";
-import { applyWindow } from "meyda/dist/esm/utilities";
 import NdiWorker from "./ndi-worker.worker.js?worker";
+import { applyWindow } from "meyda/dist/esm/utilities";
 
 const meyda = { windowing: applyWindow };
 
@@ -385,14 +385,16 @@ async function loop(delta, features, fftOutput) {
   // Gotta transfer after everything else as it transfers ownership of the canvas content
   // i.e. main.canvas goes blank
 
-  // const imageBitmap = await main.canvas.transferToImageBitmap();
-  // ndiWorker.postMessage(
-  //   {
-  //     type: "imageBitmap",
-  //     payload: { fps: store.state.metrics.fps, imageBitmap },
-  //   },
-  //   [imageBitmap],
-  // );
+  if (store.state.ndi.outputEnabled) {
+    const imageBitmap = await main.canvas.transferToImageBitmap();
+    ndiWorker.postMessage(
+      {
+        type: "imageBitmap",
+        payload: { imageBitmap },
+      },
+      [imageBitmap],
+    );
+  }
 }
 
 export default loop;

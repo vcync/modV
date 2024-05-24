@@ -1,8 +1,16 @@
 import { v4 as uuidv4 } from "uuid";
 import store from "../";
-import { setupGrandiose as grandiose } from "../../../setup-grandiose";
+import { setupGrandiose as getGrandiose } from "../../../setup-grandiose";
 
 const state = {
+  outputEnabled: false,
+  outputName: "modV",
+  outputWidth: 1920,
+  outputHeight: 1080,
+  followModVOutputSize: true,
+  followModVFps: true,
+  outputTargetFps: 60,
+
   discovering: false,
   timeout: 30 * 1000,
 
@@ -32,7 +40,7 @@ const state = {
 };
 
 async function checkCpu() {
-  if (!(await (await grandiose()).isSupportedCPU())) {
+  if (!(await (await getGrandiose()).isSupportedCPU())) {
     throw new Error("Your CPU is not supported for NDI");
   }
 }
@@ -86,7 +94,7 @@ const actions = {
 
     try {
       const result = await (
-        await grandiose()
+        await getGrandiose()
       ).find({
         ...state.discoveryOptions,
       });
@@ -106,10 +114,13 @@ const actions = {
   },
 
   async createReceiver({ commit }, receiverOptions) {
-    receiverOptions.colorFormat = await grandiose().COLOR_FORMAT_RGBX_RGBA;
-    receiverOptions.bandwidth = await grandiose().BANDWIDTH_LOWEST;
+    const grandiose = await getGrandiose();
 
-    const receiver = await (await grandiose()).receive(receiverOptions);
+    receiverOptions.colorFormat = grandiose.COLOR_FORMAT_RGBX_RGBA;
+    receiverOptions.bandwidth = grandiose.BANDWIDTH_HIGHEST;
+    receiverOptions.allowVideoFields = false;
+
+    const receiver = await grandiose.receive(receiverOptions);
 
     const outputContext = await store.dispatch("outputs/getAuxillaryOutput", {
       name: receiverOptions.source.name,
@@ -199,6 +210,31 @@ const mutations = {
 
   DELETE_RECIEVER(state, receiverContext) {
     delete state.receivers[receiverContext.id];
+  },
+
+  SET_OUTPUT_ENABLED(state, enabled) {
+    state.outputEnabled = enabled;
+  },
+
+  SET_OUTPUT_NAME(state, name = "modV") {
+    state.outputName = name;
+  },
+
+  SET_OUTPUT_SIZE(state, { width, height }) {
+    state.outputWidth = width ?? state.outputWidth;
+    state.outputHeight = height ?? state.outputHeight;
+  },
+
+  SET_FOLLOW_MODV_OUTPUT_SIZE(state, follow) {
+    state.followModVOutputSize = follow;
+  },
+
+  SET_FOLLOW_MODV_FPS(state, follow) {
+    state.followModVFps = follow;
+  },
+
+  SET_OUTPUT_TARGET_FPS(state, fps) {
+    state.outputTargetFps = fps;
   },
 };
 

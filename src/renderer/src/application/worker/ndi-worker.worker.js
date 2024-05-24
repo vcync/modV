@@ -5,8 +5,11 @@ import { getGrandioseSender, setupGrandiose } from "../setup-grandiose";
 let sender;
 let grandiose;
 
-const canvas = new OffscreenCanvas(300, 300);
-const context = canvas.getContext("2d", { willReadFrequently: true });
+const canvas = new OffscreenCanvas(256, 256);
+const context = canvas.getContext("2d", {
+  alpha: false,
+  willReadFrequently: true,
+});
 
 // process.hrtime accessed via global["process"] to bypass the slightly
 // incorrect bundle polyfill
@@ -16,6 +19,17 @@ const timeStart =
 function timeNow() {
   return timeStart + global["process"].hrtime.bigint();
 }
+
+let buffer;
+let imageData;
+let senderPromise;
+let ndiWidth = 256;
+let ndiHeight = 256;
+let prevTime = performance.now();
+let frames = 0;
+let targetFps = 60;
+let followModVFps = true;
+let actualFps = 0;
 
 const NDI_LIB_FOURCC = (ch0, ch1, ch2, ch3) =>
   ch0.charCodeAt(0) |
@@ -67,8 +81,10 @@ self.onclose = function () {
 };
 
 self.onmessage = async function ({ data: { type, payload } }) {
-  if (!sender || (type !== "imageBitmap" && type !== "destroy")) {
-    return;
+  if (type === "setScale") {
+    const { width, height } = payload;
+    ndiWidth = width;
+    ndiHeight = height;
   }
 
   if (type === "destroy") {
@@ -76,27 +92,35 @@ self.onmessage = async function ({ data: { type, payload } }) {
       "ndi worker got modv-destroy, doing that and replying destroyed",
     );
 
-    sender.destroy();
+    if (senderPromise) {
+      await senderPromise;
+    }
+
+    await sender.destroy();
     self.postMessage("destroyed");
     sender = null;
     self.close();
     return;
   }
 
+  if (!sender || type !== "imageBitmap") {
+    return;
+  }
+
   const {
     imageBitmap,
     imageBitmap: { width, height },
-    fps,
   } = payload;
 
   canvas.width = width;
   canvas.height = height;
 
   context.drawImage(imageBitmap, 0, 0);
+  imageBitmap.close();
 
-  const imageData = context.getImageData(0, 0, width, height);
+  imageData = context.getImageData(0, 0, width, height);
 
-  const buffer = Buffer.from(imageData.data);
+  buffer = Buffer.from(imageData.data);
 
   if (buffer.byteLength % 4 !== 0) {
     return;
@@ -110,15 +134,27 @@ self.onmessage = async function ({ data: { type, payload } }) {
 
     xres: width,
     yres: height,
-    frameRateN: fps * 1000,
+    frameRateN: actualFps * 1000,
     frameRateD: 1000,
     pictureAspectRatio: width / height,
     frameFormatType: grandiose.FORMAT_TYPE_PROGRESSIVE,
     lineStrideBytes: width * bytesForRGBA,
 
-    fourCC: fourCC.FOURCC_RGBA,
+    fourCC: fourCC.FOURCC_RGBX,
     data: buffer,
   };
 
-  sender.video(frame);
+  senderPromise = sender.video(frame);
+  await senderPromise;
+
+  frames += 1;
+
+  const time = performance.now();
+
+  if (time >= prevTime + 1000) {
+    actualFps = (frames * 1000) / (time - prevTime);
+
+    prevTime = time;
+    frames = 0;
+  }
 };

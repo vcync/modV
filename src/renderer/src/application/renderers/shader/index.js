@@ -72,7 +72,9 @@ const shaderContextGallery = createCanvas("shader-buffer-gallery", {
   premultipliedAlpha: false,
 });
 
-function resize({ width, height }, canvas) {
+function resize({ width, height }, canvasIn) {
+  const canvas = canvasIn ?? shaderContext.canvas;
+
   canvas.width = width;
   canvas.height = height;
 
@@ -231,7 +233,6 @@ function render({
         wrap: pex.Wrap.Repeat,
       }),
     );
-    debugger;
 
     setFftTexture(
       pex.texture2D({
