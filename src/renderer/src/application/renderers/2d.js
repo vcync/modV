@@ -35,6 +35,7 @@ function render({
   kick,
   props,
   data,
+  osc,
 }) {
   if (
     twoDCanvas.width !== canvas.width ||
@@ -59,6 +60,7 @@ function render({
     kick,
     props,
     data,
+    osc,
   });
   twoDContext.restore();
 

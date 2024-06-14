@@ -17,6 +17,7 @@ import meyda from "./modules/meyda.js";
 import midi from "./modules/midi.js";
 import modules from "./modules/modules.js";
 import ndi from "./modules/ndi.js";
+import osc from "./modules/osc.js";
 import outputs from "./modules/outputs.js";
 import plugins from "./modules/plugins.js";
 import projects from "./modules/projects.js";
@@ -58,6 +59,7 @@ export default createStore({
     midi,
     modules,
     ndi,
+    osc,
     outputs,
     plugins,
     projects,

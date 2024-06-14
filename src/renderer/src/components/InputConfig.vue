@@ -70,6 +70,16 @@
           </template>
         </CollapsibleRow>
 
+        <CollapsibleRow :disabled="source && source !== 'osc'">
+          <template #label>OSC</template>
+
+          <template #body>
+            <c span="1..">
+              <OSC :input-id="inputConfig.id" />
+            </c>
+          </template>
+        </CollapsibleRow>
+
         <CollapsibleRow>
           <template #label>Expression</template>
 
@@ -91,12 +101,14 @@ import MIDI from "./InputLinkComponents/MIDI.vue";
 import Tween from "./InputLinkComponents/Tween.vue";
 import Expression from "./InputLinkComponents/Expression.vue";
 import CollapsibleRow from "./CollapsibleRow.vue";
+import OSC from "./InputLinkComponents/OSC.vue";
 
 export default {
   components: {
     AudioFeatures,
     MIDI,
     Tween,
+    OSC,
     Expression,
     CollapsibleRow,
   },

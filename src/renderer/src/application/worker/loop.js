@@ -268,6 +268,7 @@ async function loop(delta, features, fftOutput) {
         kick,
         fftCanvas: fftOutput.context.canvas,
         isGallery: isGalleryGroup,
+        osc: store.state.osc.data,
       });
       drawTo.restore();
 

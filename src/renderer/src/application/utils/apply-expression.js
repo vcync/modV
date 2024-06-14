@@ -14,9 +14,10 @@ export function applyExpression({ value, inputId }) {
       value: dataOut,
       time: Date.now(),
       inputValue: get(store.state, input.getLocation),
+      osc: store.state.osc.data,
     };
 
-    dataOut = expressionAssignment.func.evaluate(scope);
+    dataOut = expressionAssignment.func(scope);
   }
 
   return dataOut;

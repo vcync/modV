@@ -126,6 +126,9 @@ const state = {
       return frame;
     },
   },
+  osc: {
+    get: (value) => value,
+  },
 };
 
 const getters = {

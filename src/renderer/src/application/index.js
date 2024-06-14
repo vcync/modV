@@ -109,6 +109,12 @@ class ModV {
       if (type === "worker-setup-complete") {
         // Make the default group
         this.store.dispatch("groups/createGroup", { enabled: GROUP_ENABLED });
+
+        this.store.dispatch("osc/createServer", {
+          host: "0.0.0.0",
+          port: 3333,
+        });
+
         resolver();
         ipcRenderer.send("modv-ready");
         return;

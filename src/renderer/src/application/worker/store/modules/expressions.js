@@ -1,6 +1,5 @@
 import get from "lodash.get";
 import { v4 as uuidv4 } from "uuid";
-import math from "mathjs/dist/math.js";
 import { SWAP } from "./common/swap";
 
 function getDefaultState() {
@@ -27,10 +26,20 @@ function compileExpression(expression, scopeItems = {}) {
   const scope = { value: 0, time: 0, ...scopeItems };
 
   let newFunction;
-  const node = math.parse(expression, scope);
+  try {
+    newFunction = new Function(
+      "scope",
+      `
+      const { ${Object.keys(scope).join(", ")} } = scope;
+      return ${expression};
+    `,
+    );
+  } catch (e) {
+    console.error("error in expression", e);
+    return;
+  }
 
-  newFunction = node.compile();
-  newFunction.evaluate(scope);
+  newFunction(scope);
 
   return newFunction;
 }
@@ -59,6 +68,7 @@ const actions = {
       // for swap, or write a more specific mechanism to look up values in swap
       // state.
       inputValue: writeToSwap ? 0 : get(rootState, input.getLocation),
+      osc: rootState.osc.data,
     });
 
     if (!func) {
@@ -70,6 +80,7 @@ const actions = {
       inputId,
       func,
       expression,
+      evaluateEveryFrame: false,
     };
 
     commit("ADD_EXPRESSION", { assignment, writeToSwap });
@@ -97,6 +108,7 @@ const actions = {
 
     const func = compileExpression(expression, {
       inputValue: get(rootState, input.getLocation),
+      osc: rootState.osc.data,
     });
 
     if (!func) {
@@ -105,6 +117,19 @@ const actions = {
 
     existingExpression.func = func;
     existingExpression.expression = expression;
+
+    commit("ADD_EXPRESSION", { assignment: existingExpression, writeToSwap });
+    return existingExpression.id;
+  },
+
+  updateEvaluation({ commit }, { id, evaluateEveryFrame, writeToSwap }) {
+    const existingExpression = state.assignments[id];
+
+    if (!existingExpression) {
+      throw new Error(`Existing expression with ID ${id} not found`);
+    }
+
+    existingExpression.evaluateEveryFrame = evaluateEveryFrame;
 
     commit("ADD_EXPRESSION", { assignment: existingExpression, writeToSwap });
     return existingExpression.id;
