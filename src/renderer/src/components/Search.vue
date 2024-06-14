@@ -143,11 +143,12 @@ export default {
         return;
       }
 
-      let vnode = el.__vue__;
+      let vnode = el.__vnode;
 
       const { focusElement, isGLElement, focusParent } = this.results[id];
 
       if (!focusElement && isGLElement) {
+        debugger;
         while (!vnode.glObject) {
           vnode = vnode.$parent;
         }
@@ -155,9 +156,9 @@ export default {
         vnode = vnode.$parent;
       }
 
-      vnode.$el.scrollIntoView({ block: "nearest" });
+      vnode.el.scrollIntoView({ block: "nearest" });
 
-      const rect = vnode.$el.getBoundingClientRect();
+      const rect = vnode.el.getBoundingClientRect();
 
       this.showHighlight = !(
         rect.top === 0 &&
