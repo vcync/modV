@@ -34,24 +34,28 @@ export const VideoControl = {
   props: {
     videoId: {
       required: true,
-      type: "string",
+      type: String,
     },
 
     paused: {
       required: true,
-      type: "boolean",
+      type: Boolean,
     },
 
     playbackrate: {
       required: true,
-      type: "number",
+      type: Number,
     },
   },
 
+  emits: ["ratechange", "pause", "play", "timeupdate"],
+
   created() {
     const video = this.$modV.videos[this.videoId]?.video;
-    this.$emit("ratechange", video.playbackrate);
-    this.$emit(video.paused ? "pause" : "play");
+    if (video) {
+      this.$emit("ratechange", video.playbackrate);
+      this.$emit(video.paused ? "pause" : "play");
+    }
   },
 
   methods: {
@@ -90,7 +94,7 @@ export const VideoControl = {
 export default VideoControl;
 </script>
 
-<style>
+<style scoped>
 grid.center-align {
   height: 100%;
 }
