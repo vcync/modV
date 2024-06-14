@@ -11,10 +11,10 @@ function openContextMenu(e, template) {
 
 export const installContextMenu = (app) => {
   app.directive("contextMenu", {
-    inserted(el, { value: template }) {
-      el.addEventListener("contextmenu", async (e) =>
-        openContextMenu(e, await template()),
-      );
+    mounted(el, { value: template }) {
+      el.addEventListener("contextmenu", async (e) => {
+        openContextMenu(e, await template());
+      });
     },
 
     unbind() {

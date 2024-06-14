@@ -152,7 +152,7 @@ function setTooltipVisibility(visible) {
 
 export const installValueTooltip = (app) => {
   app.directive("tooltip", {
-    inserted(el, { value: { visible, mouseover, message } = {} }) {
+    mounted(el, { value: { visible, mouseover, message } = {} }) {
       isVisible = visible ?? true;
 
       if (!mouseover) {
@@ -163,13 +163,13 @@ export const installValueTooltip = (app) => {
       }
     },
 
-    update(el, { value: { visible } }) {
+    updated(el, { value: { visible } }) {
       if (isVisible !== visible) {
         isVisible = visible;
       }
     },
 
-    unbind() {
+    unmounted() {
       cleanUp();
     },
   });

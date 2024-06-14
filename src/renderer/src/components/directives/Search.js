@@ -5,7 +5,7 @@ const SEARCH_ID_VAR = "$searchId";
 export const installSearch = (app) => {
   app.directive("searchTerms", {
     // When the bound element is inserted into the DOM...
-    async inserted(el, binding, vnode) {
+    async mounted(el, binding, vnode) {
       const { value } = binding;
 
       const id = await store.dispatch("search/addTerms", {
