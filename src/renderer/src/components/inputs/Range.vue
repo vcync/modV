@@ -7,6 +7,7 @@
     <input
       type="range"
       v-bind="$props"
+      :value="modelValue"
       @input="$emit('update:modelValue', parseFloat($event.target.value, 10))"
     />
   </RightClickNumberInput>
