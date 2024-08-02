@@ -80,7 +80,7 @@
     "babel-eslint": "^10.0.3",
     "babel-loader": "^9.1.2",
     "core-js": "^3.19.1",
-    "electron": "29.1.5",
+    "electron": "31.3.1",
     "electron-builder": "^22.9.1",
     "electron-notarize": "^1.2.2",
     "electron-playwright-helpers": "^1.5.3",

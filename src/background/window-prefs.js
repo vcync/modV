@@ -77,6 +77,10 @@ const windowPrefs = {
       };
     },
 
+    /**
+     *
+     * @param {BrowserWindow} window
+     */
     async create(window) {
       require("@electron/remote/main").enable(window.webContents);
 
@@ -87,23 +91,35 @@ const windowPrefs = {
       window.setTitle("Untitled");
 
       // Configure child windows to open without a menubar (windows/linux)
-      window.webContents.on(
-        "new-window",
-        (event, url, frameName, disposition, options) => {
-          if (frameName === "modal") {
-            event.preventDefault();
-            event.newGuest = new BrowserWindow({
-              ...options,
-              autoHideMenuBar: true,
-              closable: false,
-              enableLargerThanScreen: true,
-              title: ""
-            });
+      window.webContents.setWindowOpenHandler(({ frameName }) => {
+        if (frameName === "modal") {
+          return {
+            action: "allow",
+            createWindow: options => {
+              const window = new BrowserWindow({
+                ...options,
+                autoHideMenuBar: true,
+                closable: false,
+                enableLargerThanScreen: true,
+                title: ""
+              });
 
-            event.newGuest.removeMenu();
-          }
+              window.webContents.on("dom-ready", () => {
+                // Ugly hack
+                setTimeout(() => {
+                  window.removeMenu();
+                }, 1000);
+              });
+
+              return window.webContents;
+            }
+          };
         }
-      );
+
+        return {
+          action: "deny"
+        };
+      });
 
       const mm = getMediaManager();
 
