@@ -7,10 +7,10 @@
   resolved "https://registry.yarnpkg.com/7zip-bin/-/7zip-bin-5.1.1.tgz#9274ec7460652f9c632c59addf24efb1684ef876"
   integrity sha512-sAP4LldeWNz0lNzmTird3uWfFDWWTeg6V/MsmyyLR9X1idwKBWIgt/ZvinqQldJm3LecKEs1emkbquO6PCiLVQ==
 
-"@achrinza/node-ipc@^9.2.5":
-  version "9.2.6"
-  resolved "https://registry.yarnpkg.com/@achrinza/node-ipc/-/node-ipc-9.2.6.tgz#75c89e95fe38ff9e3dd33a0d2681dc28f1c31f33"
-  integrity sha512-ULSIYPy4ZPM301dfCxRz0l2GJjOwIo/PqmWonIu1bLml7UmnVQmH+juJcoyXp6E8gIRRNAjGYftJnNQlfy4vPg==
+"@achrinza/node-ipc@9.2.7", "@achrinza/node-ipc@^9.2.5":
+  version "9.2.7"
+  resolved "https://registry.yarnpkg.com/@achrinza/node-ipc/-/node-ipc-9.2.7.tgz#cc418f9218d24d9b87f32207e5d6e71c64e241f8"
+  integrity sha512-/EvNkqB4HNxPWCZASmgrjqG8gIdPOolD67LGASvGMp/FY5ne0rbvpYg5o9x8RmgjAl8KdmNQ4YlV1et9DYiW8g==
   dependencies:
     "@node-ipc/js-queue" "2.0.3"
     event-pubsub "4.3.0"
