@@ -108,6 +108,7 @@
     ]
   },
   "resolutions": {
-    "electron-builder": "23.0.2"
+    "electron-builder": "23.0.2",
+    "@achrinza/node-ipc": "9.2.7"
   }
 }
