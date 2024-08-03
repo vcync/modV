@@ -79,6 +79,14 @@ import { applyExpression } from "../../../utils/apply-expression";
  * };
  */
 
+/**
+ * @typedef GroupsState
+ * @prop {Group[]} groups
+ */
+
+/**
+ * @returns {GroupsState}
+ */
 function getDefaultState() {
   return { groups: [] };
 }
@@ -186,7 +194,8 @@ const actions = {
   },
 
   async removeGroup({ commit }, { groupId, writeToSwap }) {
-    const group = state.groups.find((group) => group.id === groupId);
+    const writeTo = writeToSwap ? swap : state;
+    const group = writeTo.groups.find((group) => group.id === groupId);
 
     const inputIds = [
       group.alphaInputId,
@@ -210,6 +219,8 @@ const actions = {
 
       await store.dispatch("modules/removeActiveModule", { moduleId });
     }
+
+    await store.dispatch("outputs/removeAuxillaryOutput", group.id);
 
     commit("REMOVE_GROUP", { id: groupId, writeToSwap });
   },
@@ -251,12 +262,27 @@ const actions = {
   },
 
   async loadPresetData({ dispatch }, groups) {
+    const oldGroupIds = Object.values(state.groups)
+      .filter((group) => group.name !== constants.GALLERY_GROUP_NAME)
+      .map((group) => group.id);
+
     for (let i = 0, len = groups.length; i < len; i++) {
       const group = groups[i];
       await dispatch("createGroup", { ...group, writeToSwap: true });
     }
 
-    return;
+    return async function modulesCleanupAfterSwap() {
+      for (let i = 0, len = oldGroupIds.length; i < len; i++) {
+        const id = oldGroupIds[i];
+
+        await dispatch("removeGroup", {
+          groupId: id,
+          writeToSwap: true,
+        });
+      }
+
+      Object.assign(swap, getDefaultState());
+    };
   },
 
   updateGroupInput({ commit }, { groupId, key, data, writeToSwap }) {
@@ -426,7 +452,7 @@ const mutations = {
     }
   },
 
-  SWAP: SWAP(swap, getDefaultState, sharedPropertyRestrictions),
+  SWAP: SWAP(swap, getDefaultState, sharedPropertyRestrictions, false),
 };
 
 export default {

@@ -13,6 +13,7 @@ export function SWAP(
 ) {
   return function (state) {
     const stateKeys = Object.keys(state);
+    const swapIndexes = {};
 
     if (stateKeys.length) {
       // eslint-disable-next-line
@@ -25,6 +26,13 @@ export function SWAP(
 
             // eslint-disable-next-line
             if (isArray) {
+              swapIndexes[key] = swap[key].length;
+              swap[key].push(
+                ...state[key].filter(
+                  (...args) => !sharedPropertyRestrictions[key](...args),
+                ),
+              );
+
               state[key] = state[key].filter(sharedPropertyRestrictions[key]);
             } else {
               const restrictedKeys = sharedPropertyRestrictions[key](
@@ -61,7 +69,12 @@ export function SWAP(
             const swapChildKeys = Object.keys(swap[key]);
 
             if (isArray) {
-              state[key] = [...state[key], ...swap[key]];
+              state[key] = [
+                ...state[key],
+                ...swap[key].slice(0, swapIndexes[key]),
+              ];
+
+              swap[key] = swap[key].slice(swapIndexes[key], swap[key].length);
             } else {
               const restrictedKeys = sharedPropertyRestrictions[key](swap[key]);
 
