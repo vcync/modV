@@ -92,7 +92,7 @@ function getDefaultState() {
 }
 
 const state = getDefaultState();
-const swap = getDefaultState();
+let swap = getDefaultState();
 
 // Any keys marked false or arrays with keys given
 // will not be moved from the base state when swapped
@@ -193,9 +193,15 @@ const actions = {
     return group;
   },
 
-  async removeGroup({ commit }, { groupId, writeToSwap }) {
-    const writeTo = writeToSwap ? swap : state;
-    const group = writeTo.groups.find((group) => group.id === groupId);
+  async removeGroup({ commit, dispatch }, { groupId }) {
+    await dispatch("cleanUpGroupResources", { groupId });
+
+    commit("REMOVE_GROUP", { id: groupId });
+  },
+
+  async cleanUpGroupResources(state, { groupId, readFromSwap }) {
+    const readFrom = readFromSwap ? swap : state;
+    const group = readFrom.groups.find((group) => group.id === groupId);
 
     const inputIds = [
       group.alphaInputId,
@@ -221,8 +227,6 @@ const actions = {
     }
 
     await store.dispatch("outputs/removeAuxillaryOutput", group.id);
-
-    commit("REMOVE_GROUP", { id: groupId, writeToSwap });
   },
 
   orderByIds({ commit }, { ids }) {
@@ -261,27 +265,34 @@ const actions = {
     });
   },
 
-  async loadPresetData({ dispatch }, groups) {
+  async loadPresetData({ dispatch, commit }, groups) {
     const oldGroupIds = Object.values(state.groups)
       .filter((group) => group.name !== constants.GALLERY_GROUP_NAME)
       .map((group) => group.id);
 
     for (let i = 0, len = groups.length; i < len; i++) {
       const group = groups[i];
-      await dispatch("createGroup", { ...group, writeToSwap: true });
+      await dispatch("createGroup", {
+        ...group,
+        writeToSwap: true,
+      });
     }
 
     return async function modulesCleanupAfterSwap() {
-      for (let i = 0, len = oldGroupIds.length; i < len; i++) {
-        const id = oldGroupIds[i];
+      const groupIds = oldGroupIds.filter(
+        (id) => state.groups.findIndex((group) => group.id === id) < 0,
+      );
 
-        await dispatch("removeGroup", {
+      for (let i = 0, len = groupIds.length; i < len; i++) {
+        const id = groupIds[i];
+
+        await dispatch("cleanUpGroupResources", {
           groupId: id,
-          writeToSwap: true,
+          readFromSwap: true,
         });
       }
 
-      Object.assign(swap, getDefaultState());
+      commit("CLEAR_SWAP");
     };
   },
 
@@ -354,6 +365,7 @@ const mutations = {
   ADD_GROUP(state, { group, writeToSwap }) {
     const writeTo = writeToSwap ? swap : state;
     writeTo.groups.push(group);
+    if (writeToSwap) console.log("written group to swap");
   },
 
   REMOVE_GROUP(state, { id, writeToSwap }) {
@@ -452,7 +464,14 @@ const mutations = {
     }
   },
 
-  SWAP: SWAP(swap, getDefaultState, sharedPropertyRestrictions, false),
+  SWAP: (state) => {
+    console.log("swapping groups");
+    SWAP(swap, getDefaultState, sharedPropertyRestrictions, false)(state);
+  },
+
+  CLEAR_SWAP: () => {
+    swap = getDefaultState();
+  },
 };
 
 export default {
