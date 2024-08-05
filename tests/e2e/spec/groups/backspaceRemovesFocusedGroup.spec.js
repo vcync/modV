@@ -5,7 +5,7 @@ test("backspace removes focused group", async () => {
   const { page } = modVApp;
 
   const {
-    groups: { length: groupsLength }
+    groups: { length: groupsLength },
   } = await modVApp.groups.mainState();
 
   const userGroups = await modVApp.groups.getUserGroups();
@@ -23,10 +23,13 @@ test("backspace removes focused group", async () => {
 
   await modVApp.checkWorkerAndMainState(
     [
-      [state => state.length, e => e.toBe(groupsLength - 1)],
-      [state => state.findIndex(group => group.id === groupId), e => e.toBe(-1)]
+      [(state) => state.length, (e) => e.toBe(groupsLength - 1)],
+      [
+        (state) => state.findIndex((group) => group.id === groupId),
+        (e) => e.toBe(-1),
+      ],
     ],
-    `groups.groups`
+    `groups.groups`,
   );
 
   // Add a group back just in case this test shares the same worker as another

@@ -5,5 +5,5 @@ expect.extend(extensions);
 
 export default defineConfig({
   testDir: "./tests/e2e/spec",
-  workers: process.env.CI ? 1 : 2
+  workers: process.env.CI ? 1 : 2,
 });

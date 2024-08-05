@@ -4,7 +4,7 @@ import { modVApp } from "../../pageObjectModel";
 test("groups can be rearranged", async () => {
   const {
     groups: { elements, getLocators, getUserGroups, newGroupButton },
-    page
+    page,
   } = modVApp;
 
   let groups = await getUserGroups();
@@ -26,14 +26,14 @@ test("groups can be rearranged", async () => {
   await modVApp.checkWorkerAndMainState(
     [
       [
-        async state => (await getUserGroups(state))[0].id,
-        e => e.toBe(groups[1].id)
+        async (state) => (await getUserGroups(state))[0].id,
+        (e) => e.toBe(groups[1].id),
       ],
       [
-        async state => (await getUserGroups(state))[1].id,
-        e => e.toBe(groups[0].id)
-      ]
+        async (state) => (await getUserGroups(state))[1].id,
+        (e) => e.toBe(groups[0].id),
+      ],
     ],
-    `groups.groups`
+    `groups.groups`,
   );
 });
