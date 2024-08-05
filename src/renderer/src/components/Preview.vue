@@ -102,7 +102,7 @@ export default {
       this.$modV.$worker.postMessage({
         type: "dispatch",
         identifier: "outputs/resizeDebug",
-        payload: { width },
+        payload: { width: width * window.devicePixelRatio },
       });
 
       // this.$refs.canvas.style.width = `${e[0].contentRect.width}px`;
