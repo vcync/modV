@@ -29,7 +29,7 @@
     "canvas-text-wrapper": "github:cyberj/canvas-text-wrapper#master",
     "chokidar": "2.1.8",
     "color": "^3.1.2",
-    "electron-updater": "^6.1.7",
+    "electron-updater": "^6.3.0",
     "fluent-ffmpeg": "^2.1.2",
     "fuse.js": "^6.2.1",
     "golden-layout": "^2.6.0",
