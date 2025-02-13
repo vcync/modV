@@ -54,7 +54,7 @@
     "tap-tempo": "^0.1.1",
     "three": "^0.131.3",
     "uuid": "^9.0.0",
-    "vue": "^2.7.14",
+    "vue": "^3.0.0",
     "vue-class-component": "^7.2.3",
     "vue-color": "^2.7.1",
     "vue-fragment": "^1.5.1",
