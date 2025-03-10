@@ -10,12 +10,12 @@ test("generates a preset with expected keys", async () => {
     "inputs",
     "midi",
     "modules",
-    "tweens"
+    "tweens",
   ];
 
   expect(preset).toBeDefined();
   expect(preset).toBeJSON();
   expect(expectedPresetKeys.sort()).toEqual(
-    Object.keys(JSON.parse(preset)).sort()
+    Object.keys(JSON.parse(preset)).sort(),
   );
 });

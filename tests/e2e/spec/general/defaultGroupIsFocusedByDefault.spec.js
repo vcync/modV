@@ -7,7 +7,7 @@ test("default group is focused by default", async () => {
   const firstGroupEl = page.locator(".group").first();
   const firstGroupElId = (await firstGroupEl.getAttribute("id")).replace(
     "group-",
-    ""
+    "",
   );
   const focusIndicator = firstGroupEl.locator(".group__focusIndicator");
 

@@ -1,0 +1,13 @@
+diff --git a/node_modules/golden-layout/dist/esm/ts/controls/tab.js b/node_modules/golden-layout/dist/esm/ts/controls/tab.js
+index c230e60..f511166 100644
+--- a/node_modules/golden-layout/dist/esm/ts/controls/tab.js
++++ b/node_modules/golden-layout/dist/esm/ts/controls/tab.js
+@@ -61,7 +61,7 @@ export class Tab {
+         if (reorderEnabled) {
+             this.enableReorder();
+         }
+-        this._element.addEventListener('click', this._tabClickListener, { passive: true });
++        this._element.addEventListener('pointerdown', this._tabClickListener, { passive: true });
+         this._element.addEventListener('touchstart', this._tabTouchStartListener, { passive: true });
+         if (this._componentItem.isClosable) {
+             this._closeElement.addEventListener('click', this._closeClickListener, { passive: true });

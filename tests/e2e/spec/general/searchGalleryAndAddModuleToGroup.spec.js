@@ -12,14 +12,14 @@ test("search gallery and add module to group", async () => {
   // Double click c:nth-child(2) > .smooth-dnd-container > div > .gallery-item > canvas >> nth=0
   await page
     .locator("c:nth-child(2) > .smooth-dnd-container > div > .gallery-item ", {
-      hasText: "Ball"
+      hasText: "Ball",
     })
     .first()
     .dblclick({
       position: {
         x: 98,
-        y: 27
-      }
+        y: 27,
+      },
     });
 
   await page.waitForSelector(".group__modules .active-module");
