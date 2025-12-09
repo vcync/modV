@@ -5,7 +5,7 @@ const chokidar = require("chokidar");
 const os = require("os");
 
 export default function createWatcher() {
-  return new Promise(resolve => {
+  return new Promise((resolve) => {
     if (this.watcher) {
       this.watcher.close();
     }
@@ -14,23 +14,23 @@ export default function createWatcher() {
       os.platform() === "darwin" ? /(^|[/\\])\../ : undefined,
       /node_modules/,
       "**/package.json",
-      "**/package-lock.json"
+      "**/package-lock.json",
     ].concat(store.getters["readHandlers/ignored"]);
 
     this.watcher = chokidar.watch(this.mediaDirectoryPath, {
-      ignored
+      ignored,
     });
 
     this.watcher
-      .on("add", filePath => {
+      .on("add", (filePath) => {
         log(`➕  File ${filePath} has been added`);
         this.readFile(filePath);
       })
-      .on("change", filePath => {
+      .on("change", (filePath) => {
         log(`🔄  File ${filePath} has been changed`);
         this.readFile(filePath);
       })
-      .on("unlink", filePath => {
+      .on("unlink", (filePath) => {
         log(`➖  File ${filePath} has been removed`);
         this.removeFile(filePath);
       })

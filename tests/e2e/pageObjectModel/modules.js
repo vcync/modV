@@ -22,11 +22,11 @@ export const modules = {
       name: page.locator(id`${moduleId} .active-module__name`),
       alphaRange: page.locator(id`${moduleId} .active-module__alphaRange`),
       enabledCheckbox: page.locator(
-        id`${moduleId} .active-module__enabledCheckbox`
+        id`${moduleId} .active-module__enabledCheckbox`,
       ),
       blendModeSelect: page.locator(
-        id`${moduleId} .active-module__blendModeSelect`
-      )
+        id`${moduleId} .active-module__blendModeSelect`,
+      ),
     };
   },
 
@@ -41,14 +41,14 @@ export const modules = {
       meta: {
         alphaInputId,
         enabledInputId,
-        compositeOperationInputId
-      }
+        compositeOperationInputId,
+      },
     };
 
     inputIds.props = Object.fromEntries(
-      Object.entries($props).map(([propName, value]) => [propName, value.id])
+      Object.entries($props).map(([propName, value]) => [propName, value.id]),
     );
 
     return inputIds;
-  }
+  },
 };

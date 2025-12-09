@@ -7,10 +7,10 @@ const { ipcRenderer } = window.electron;
 
 import {
   setupMedia,
-  enumerateDevices,
   getByteFrequencyData,
   getByteTimeDomainData,
 } from "./setup-media";
+import MediaDeviceManager from "./media-device-manager";
 import setupBeatDetektor from "./setup-beat-detektor";
 import setupMidi from "./setup-midi";
 import store from "./worker/store";
@@ -19,46 +19,50 @@ import use from "./use";
 import { GROUP_ENABLED } from "./constants";
 import ModVWorker from "./worker/index.worker.js?worker";
 
-let imageBitmap;
-const imageBitmapQueue = [];
+// deprecated single-capture buffer kept for compatibility; unused in async pipeline
+// let imageBitmap;
+// const imageBitmapQueue = [];
 
 class ModV {
-  _mediaStream;
-  _imageCapture;
-  setupMedia = setupMedia;
-  enumerateDevices = enumerateDevices;
-  setupBeatDetektor = setupBeatDetektor;
-  setupMidi = setupMidi;
-  windowHandler = windowHandler;
-  createWebcodecVideo = createWebcodecVideo;
-  use = use;
-  debug = false;
-  features = reactive({
-    energy: 0,
-    rms: 0,
-    zcr: 0,
-    spectralCentroid: 0,
-    spectralFlatness: 0,
-    spectralSlope: 0,
-    spectralRolloff: 0,
-    spectralSpread: 0,
-    spectralSkewness: 0,
-    spectralKurtosis: 0,
-    perceptualSpread: 0,
-    perceptualSharpness: 0,
-  });
-  videos = {};
-
-  _store = store;
-  store = {
-    state: store.state,
-  };
+  // Support multiple ImageCapture instances: deviceId -> ImageCapture
+  // (initialized in constructor for parser compatibility)
 
   constructor() {
     let resolver = null;
     this.ready = new Promise((resolve) => {
       resolver = resolve;
     });
+    // Bind subsystems and defaults
+    this.setupMedia = setupMedia;
+    this.mediaDeviceManager = new MediaDeviceManager();
+    this.setupBeatDetektor = setupBeatDetektor;
+    this.setupMidi = setupMidi;
+    this.windowHandler = windowHandler;
+    this.createWebcodecVideo = createWebcodecVideo;
+    this.use = use;
+    this.debug = false;
+    this.features = reactive({
+      energy: 0,
+      rms: 0,
+      zcr: 0,
+      spectralCentroid: 0,
+      spectralFlatness: 0,
+      spectralSlope: 0,
+      spectralRolloff: 0,
+      spectralSpread: 0,
+      spectralSkewness: 0,
+      spectralKurtosis: 0,
+      perceptualSpread: 0,
+      perceptualSharpness: 0,
+    });
+    this.videos = {};
+    this._store = store;
+    this.store = {
+      state: store.state,
+    };
+    // Initialize capture structures
+    this._imageCaptures = {};
+    this._captureState = {};
     this.$worker = new ModVWorker();
     this.$asyncWorker = new PromiseWorker(this.$worker);
 
@@ -96,8 +100,9 @@ class ModV {
       if (type === "removeWebcodecVideo") {
         const { video, stream } = this.videos[message.id];
         video.src = "";
-        // eslint-disable-next-line no-for-each/no-for-each
-        stream.getTracks().forEach((track) => track.stop());
+        for (const track of stream.getTracks()) {
+          track.stop();
+        }
         delete this.videos[message.id];
       }
 
@@ -175,13 +180,27 @@ class ModV {
 
     try {
       await this.setupMedia({ useDefaultDevices: true });
+      // Activate any webcams persisted in local storage (selectedVideoSources)
+      const selected = this.store.state.mediaStream.selectedVideoSources || [];
+      if (selected.length) {
+        const available = new Set(
+          (this.mediaDeviceManager.videoSources || []).map((d) => d.deviceId),
+        );
+        for (let i = 0; i < selected.length; i++) {
+          const deviceId = selected[i];
+          if (available.has(deviceId) && !this._imageCaptures[deviceId]) {
+            // Fire and forget; setupMedia will short-circuit if already active
+            this.setupMedia({ videoId: deviceId }).catch(() => {});
+          }
+        }
+      }
     } catch (e) {
       console.error(e);
     }
 
     // listen to mediastream device changes
     navigator.mediaDevices.ondevicechange = () => {
-      this.enumerateDevices();
+      this.mediaDeviceManager.enumerateDevices();
     };
 
     try {
@@ -238,7 +257,7 @@ class ModV {
       this.store.dispatch("windows/createWindow");
     });
 
-    ipcRenderer.on("modv-destroy", (event, message) => {
+    ipcRenderer.on("modv-destroy", () => {
       console.log("webcontents got modv-destroy, sending onto worker");
 
       this.$worker.postMessage({
@@ -279,39 +298,6 @@ class ModV {
     });
   }
 
-  async inputLoop() {
-    if (
-      this._imageCapture &&
-      this._imageCapture.track.readyState === "live" &&
-      !this._imageCapture.track.muted
-    ) {
-      try {
-        imageBitmap = await this._imageCapture.grabFrame();
-      } catch (e) {
-        if (e) {
-          console.error(e, e.message, this._imageCapture.track.readyState);
-        }
-      }
-
-      if (
-        imageBitmap &&
-        imageBitmap.width &&
-        imageBitmap.height &&
-        !imageBitmapQueue.length
-      ) {
-        imageBitmapQueue.push(imageBitmap);
-      }
-
-      while (imageBitmapQueue.length) {
-        const bitmap = imageBitmapQueue.splice(0, 1)[0];
-
-        this.$worker.postMessage({ type: "videoFrame", payload: bitmap }, [
-          bitmap,
-        ]);
-      }
-    }
-  }
-
   loop(delta) {
     const {
       meyda: { features: featuresToGet },
@@ -338,7 +324,68 @@ class ModV {
 
   tick(delta) {
     this.loop(delta);
-    this.inputLoop(delta);
+  }
+
+  startCaptureForDevice(deviceId) {
+    if (!this._captureState[deviceId]) {
+      this._captureState[deviceId] = { running: false };
+    }
+    const state = this._captureState[deviceId];
+    if (state.running) return;
+    state.running = true;
+
+    const captureNext = () => {
+      if (!state.running) return;
+      const capture = this._imageCaptures?.[deviceId];
+      if (
+        !capture ||
+        !capture.track ||
+        capture.track.readyState !== "live" ||
+        capture.track.muted
+      ) {
+        // Try again on the next animation frame while waiting for live track
+        requestAnimationFrame(captureNext);
+        return;
+      }
+
+      const deviceLabel = (() => {
+        try {
+          const list = this.store.state.mediaStream?.video || [];
+          const match = list.find((d) => d.deviceId === deviceId);
+          return match?.label || deviceId;
+        } catch (_) {
+          return deviceId;
+        }
+      })();
+
+      capture
+        .grabFrame()
+        .then((bitmap) => {
+          if (bitmap && bitmap.width && bitmap.height) {
+            this.$worker.postMessage(
+              {
+                type: "videoFrame",
+                payload: { deviceId, label: deviceLabel, bitmap },
+              },
+              [bitmap],
+            );
+          }
+        })
+        .catch(() => {
+          // Ignore
+        })
+        .finally(() => {
+          if (state.running) captureNext();
+        });
+    };
+
+    captureNext();
+  }
+
+  stopCaptureForDevice(deviceId) {
+    const state = this._captureState[deviceId];
+    if (!state) return;
+    state.running = false;
   }
 
   async generatePreset() {

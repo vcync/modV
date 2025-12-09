@@ -28,6 +28,7 @@ mac:
     - NSMicrophoneUsageDescription: Application requests access to the device's microphone.
     - NSDocumentsFolderUsageDescription: Application requests access to the user's Documents folder.
     - NSDownloadsFolderUsageDescription: Application requests access to the user's Downloads folder.
+    - NSScreenCaptureUsageDescription: Application requests access to the user's screen.
   notarize: true
   singleArchFiles: "node_modules/grandiose/**"
 dmg:

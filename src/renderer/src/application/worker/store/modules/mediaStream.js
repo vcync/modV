@@ -4,6 +4,8 @@ const state = {
 
   currentAudioSource: null,
   currentVideoSource: null,
+  // Multi-select support: list of selected video deviceIds
+  selectedVideoSources: [],
 };
 
 const mutations = {
@@ -29,6 +31,20 @@ const mutations = {
 
   SET_CURRENT_VIDEO_SOURCE(state, { videoId }) {
     state.currentVideoSource = videoId;
+    if (videoId && !state.selectedVideoSources.includes(videoId)) {
+      state.selectedVideoSources.push(videoId);
+    }
+  },
+  SET_SELECTED_VIDEO_SOURCES(state, { videoIds }) {
+    state.selectedVideoSources = Array.isArray(videoIds) ? videoIds : [];
+  },
+  REMOVE_SELECTED_VIDEO_SOURCE(state, { videoId }) {
+    state.selectedVideoSources = state.selectedVideoSources.filter(
+      (id) => id !== videoId,
+    );
+    if (state.currentVideoSource === videoId) {
+      state.currentVideoSource = null;
+    }
   },
 };
 

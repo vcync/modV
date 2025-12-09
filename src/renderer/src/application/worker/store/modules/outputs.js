@@ -3,6 +3,14 @@ import { v4 as uuidv4 } from "uuid";
 const state = {
   main: null,
   webcam: null,
+  // Map of deviceId -> CanvasRenderingContext2D for multi-camera support
+  webcams: {},
+  // Map of deviceId -> auxillary id to enable cleanup
+  webcamAuxByDeviceId: {},
+  // Map of screenId -> CanvasRenderingContext2D for multi-screen capture support
+  screens: {},
+  // Map of screenId -> auxillary id for cleanup
+  screenAuxById: {},
   auxillary: {},
 
   debug: false,
@@ -42,6 +50,30 @@ const actions = {
 
   setWebcamOutput({ commit }, context) {
     commit("SET_WEBCAM_OUTPUT", context);
+  },
+
+  setWebcamOutputForDevice({ commit }, { deviceId, context, auxId }) {
+    commit("SET_WEBCAM_OUTPUT_FOR_DEVICE", { deviceId, context, auxId });
+  },
+
+  removeWebcamOutputForDevice({ commit, state, dispatch }, { deviceId }) {
+    const auxId = state.webcamAuxByDeviceId[deviceId];
+    commit("REMOVE_WEBCAM_OUTPUT_FOR_DEVICE", { deviceId });
+    if (auxId) {
+      dispatch("removeAuxillaryOutput", auxId);
+    }
+  },
+
+  setScreenOutput({ commit }, { screenId, context, auxId }) {
+    commit("SET_SCREEN_OUTPUT", { screenId, context, auxId });
+  },
+
+  removeScreenOutput({ commit, state, dispatch }, { screenId }) {
+    const auxId = state.screenAuxById[screenId];
+    commit("REMOVE_SCREEN_OUTPUT", { screenId });
+    if (auxId) {
+      dispatch("removeAuxillaryOutput", auxId);
+    }
   },
 
   async getAuxillaryOutput(
@@ -120,6 +152,40 @@ const mutations = {
 
   SET_WEBCAM_OUTPUT(state, outputContext) {
     state.webcam = outputContext;
+  },
+
+  SET_WEBCAM_OUTPUT_FOR_DEVICE(state, { deviceId, context, auxId }) {
+    state.webcams[deviceId] = context;
+    if (auxId) {
+      state.webcamAuxByDeviceId[deviceId] = auxId;
+    }
+    // If there's no default webcam set, use the first registered device as default
+    if (!state.webcam) {
+      state.webcam = context;
+    }
+  },
+
+  REMOVE_WEBCAM_OUTPUT_FOR_DEVICE(state, { deviceId }) {
+    delete state.webcams[deviceId];
+    const auxId = state.webcamAuxByDeviceId[deviceId];
+    if (auxId) {
+      delete state.webcamAuxByDeviceId[deviceId];
+    }
+    // If default points to a removed context, unset it (will be set again on next frame/render when needed)
+    if (state.webcam && state.webcam === state.webcams[deviceId]) {
+      state.webcam = null;
+    }
+  },
+
+  SET_SCREEN_OUTPUT(state, { screenId, context, auxId }) {
+    state.screens[screenId] = context;
+    if (auxId) state.screenAuxById[screenId] = auxId;
+  },
+
+  REMOVE_SCREEN_OUTPUT(state, { screenId }) {
+    delete state.screens[screenId];
+    const auxId = state.screenAuxById[screenId];
+    if (auxId) delete state.screenAuxById[screenId];
   },
 
   ADD_AUXILLARY(state, outputContext) {

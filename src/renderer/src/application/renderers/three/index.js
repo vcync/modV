@@ -1,4 +1,5 @@
-import store from "../worker/store";
+import store from "../../worker/store";
+import { resizeCanvas, clearCanvas, copyCanvas } from "../utils";
 import * as THREEimport from "three/build/three.module.js";
 import { GLTFLoader } from "three/examples/jsm/loaders/GLTFLoader";
 
@@ -71,8 +72,12 @@ function render({
   pipeline,
 }) {
   resize(canvas);
-  inputTextureContext.drawImage(canvas, 0, 0, canvas.width, canvas.height);
-  inputTexture.image = inputTextureCanvas.transferToImageBitmap();
+
+  // Optimized: Use shared utility for canvas copying
+  copyCanvas(inputTextureContext, canvas, canvas.width, canvas.height);
+
+  // Optimized: Remove expensive transferToImageBitmap() call
+  // CanvasTexture can work directly with canvas
   inputTexture.needsUpdate = true;
 
   const { scene, camera } = threeModuleData[module.meta.name];
@@ -98,11 +103,11 @@ function render({
 
   // clear context if we're in pipeline mode
   if (pipeline) {
-    context.clearRect(0, 0, canvas.width, canvas.height);
+    clearCanvas(context);
   }
 
-  // Copy three Canvas to Main Canvas
-  context.drawImage(threeCanvas, 0, 0, canvas.width, canvas.height);
+  // Optimized: Use shared utility for canvas copying
+  copyCanvas(context, threeCanvas);
 }
 
 /**
@@ -179,8 +184,8 @@ function loadPresetData(module, data) {
 }
 
 function resize({ width, height }) {
-  inputTextureCanvas.width = width;
-  inputTextureCanvas.height = height;
+  // Optimized: Use shared utility for canvas resizing
+  resizeCanvas(inputTextureCanvas, width, height);
   renderer.setSize(width, height, false);
 }
 

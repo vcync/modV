@@ -23,12 +23,8 @@ function timeNow() {
 let buffer;
 let imageData;
 let senderPromise;
-let ndiWidth = 256;
-let ndiHeight = 256;
 let prevTime = performance.now();
 let frames = 0;
-let targetFps = 60;
-let followModVFps = true;
 let actualFps = 0;
 
 const NDI_LIB_FOURCC = (ch0, ch1, ch2, ch3) =>
@@ -81,12 +77,6 @@ self.onclose = function () {
 };
 
 self.onmessage = async function ({ data: { type, payload } }) {
-  if (type === "setScale") {
-    const { width, height } = payload;
-    ndiWidth = width;
-    ndiHeight = height;
-  }
-
   if (type === "destroy") {
     console.log(
       "ndi worker got modv-destroy, doing that and replying destroyed",

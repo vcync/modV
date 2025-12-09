@@ -23,7 +23,7 @@ export default {
   fileTypes: [
     // @todo regex match
     "mp4",
-    "webv"
+    "webv",
   ],
 
   /**
@@ -43,8 +43,8 @@ export default {
    *                                                  went wrong.
    */
   process() {
-    return new Promise(resolve => {
+    return new Promise((resolve) => {
       resolve(true);
     });
-  }
+  },
 };

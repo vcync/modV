@@ -220,7 +220,15 @@ function render({
 
   resize(canvas, rendererContext.canvas);
 
-  if (!rendererContext.getCanvasTexture()) {
+  const currentCanvasTexture = rendererContext.getCanvasTexture();
+  const currentFftTexture = rendererContext.getFftTexture();
+
+  // Optimized: Only recreate textures when dimensions change
+  if (
+    !currentCanvasTexture ||
+    currentCanvasTexture.width !== canvas.width ||
+    currentCanvasTexture.height !== canvas.height
+  ) {
     setCanvasTexture(
       pex.texture2D({
         data: canvas.data || canvas,
@@ -233,7 +241,16 @@ function render({
         wrap: pex.Wrap.Repeat,
       }),
     );
+  } else {
+    // Just update texture data without recreating
+    pex.update(currentCanvasTexture, {
+      data: canvas.data || canvas,
+      width: canvas.width,
+      height: canvas.height,
+    });
+  }
 
+  if (!currentFftTexture || currentFftTexture.width !== fftCanvas.width) {
     setFftTexture(
       pex.texture2D({
         data: fftCanvas.data || fftCanvas,
@@ -245,16 +262,11 @@ function render({
       }),
     );
   } else {
-    pex.update(rendererContext.getCanvasTexture(), {
-      width: canvas.width,
-      height: canvas.height,
-      data: canvas.data || canvas,
-    });
-
-    pex.update(rendererContext.getFftTexture(), {
-      width: fftCanvas.width,
-      height: 1,
+    // Just update FFT texture data
+    pex.update(currentFftTexture, {
       data: fftCanvas.data || fftCanvas,
+      width: fftCanvas.width,
+      height: fftCanvas.height,
     });
   }
 
@@ -319,4 +331,4 @@ function updateModule({ module, props, data, canvas, context, delta }) {
   return dataUpdated ?? data;
 }
 
-export { setupModule, render, resize, updateModule, addActiveModule };
+export default { setupModule, render, resize, updateModule, addActiveModule };

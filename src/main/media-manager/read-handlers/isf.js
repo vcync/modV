@@ -63,6 +63,7 @@ export default {
 };
 
 function compileModule({ filePath, fileName, file }) {
+  // eslint-disable-next-line no-async-promise-executor
   return new Promise(async (resolve) => {
     // Default vertex shader from ISF that is used when the user didn't specify anything
     let vertexShader = "void main() {isf_vertShaderInit();}";

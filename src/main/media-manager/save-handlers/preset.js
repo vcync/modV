@@ -5,8 +5,8 @@ export default {
   fileTypes: ["json"],
 
   process() {
-    return new Promise(resolve => {
+    return new Promise((resolve) => {
       resolve(true);
     });
-  }
+  },
 };

@@ -9,9 +9,9 @@ export default async function fsCreateProfile(profileName) {
   await mkdirp(path.join(this.mediaDirectoryPath, profileName));
 
   const promises = [
-    ...store.getters["readHandlers/folders"].map(folder =>
-      mkdirp(path.join(this.mediaDirectoryPath, profileName, folder))
-    )
+    ...store.getters["readHandlers/folders"].map((folder) =>
+      mkdirp(path.join(this.mediaDirectoryPath, profileName, folder)),
+    ),
   ];
 
   return Promise.all(promises);

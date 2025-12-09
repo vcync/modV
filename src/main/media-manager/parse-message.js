@@ -16,9 +16,9 @@ export default function parseMessage(message, connection) {
             type: "media/UPDATE",
             payload: {
               media: store.state.media,
-              plugins: store.state.plugins
-            }
-          })
+              plugins: store.state.plugins,
+            },
+          }),
         );
         break;
 
@@ -42,7 +42,7 @@ export default function parseMessage(message, connection) {
           parsed.name,
           parsed.payload,
           parsed.profile,
-          connection
+          connection,
         );
         break;
 
@@ -51,7 +51,7 @@ export default function parseMessage(message, connection) {
           parsed.name,
           parsed.payload,
           parsed.profile,
-          connection
+          connection,
         );
         break;
 
@@ -60,7 +60,7 @@ export default function parseMessage(message, connection) {
           parsed.name,
           parsed.payload,
           parsed.profile,
-          connection
+          connection,
         );
         break;
     }

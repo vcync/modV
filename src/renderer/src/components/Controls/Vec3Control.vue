@@ -9,12 +9,12 @@
             @mousedown.stop="focusInput('0', 'x')"
           >
             <c span="1+1">X</c>
-            <c span="3">
+            <c span="3" class="input">
               <RangeControl
                 :min="-1"
                 :max="1"
                 :strict="true"
-                :value="x"
+                :model-value="x"
                 :step="0.001"
                 @update:model-value="emitValue('x', $event)"
               />
@@ -26,12 +26,12 @@
             @mousedown.stop="focusInput('1', 'y')"
           >
             <c span="1+1">Y</c>
-            <c span="3">
+            <c span="3" class="input">
               <RangeControl
                 :min="-1"
                 :max="1"
                 :strict="true"
-                :value="y"
+                :model-value="y"
                 :step="0.001"
                 @update:model-value="emitValue('y', $event)"
               />
@@ -43,12 +43,12 @@
             @mousedown.stop="focusInput('2', 'z')"
           >
             <c span="1+1">Z</c>
-            <c span="3">
+            <c span="3" class="input">
               <RangeControl
                 :min="-1"
                 :max="1"
                 :strict="true"
-                :value="z"
+                :model-value="z"
                 :step="0.001"
                 @update:model-value="emitValue('z', $event)"
               />
@@ -60,9 +60,9 @@
 
     <template #body>
       <grid columns="4">
-        <c span="2+2"
-          ><Vec2DXY :value="modelValue" @update:model-value="xyInput"
-        /></c>
+        <c span="2+2">
+          <Vec2DXY :model-value="modelValue" @update:model-value="xyInput" />
+        </c>
       </grid>
     </template>
   </CollapsibleControl>

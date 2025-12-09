@@ -52,6 +52,63 @@
         </Select>
       </div>
 
+      <div v-if="type === 'buffer'">
+        <Select
+          v-model="modelCanvasId"
+          style="width: 100%"
+          @update:model-value="setTexture('buffer')"
+        >
+          <option v-if="bufferOutputs.length === 0" selected value="">
+            No buffers
+          </option>
+          <option
+            v-for="output in bufferOutputs"
+            :key="output.id"
+            :value="output.id"
+          >
+            {{ output.name }}
+          </option>
+        </Select>
+      </div>
+
+      <div v-if="type === 'webcam'">
+        <Select
+          v-model="modelCanvasId"
+          style="width: 100%"
+          @update:model-value="setTexture('webcam')"
+        >
+          <option v-if="webcamOutputs.length === 0" selected value="">
+            No webcam
+          </option>
+          <option
+            v-for="output in webcamOutputs"
+            :key="output.id"
+            :value="output.id"
+          >
+            {{ output.name }}
+          </option>
+        </Select>
+      </div>
+
+      <div v-if="type === 'screen'">
+        <Select
+          v-model="modelCanvasId"
+          style="width: 100%"
+          @update:model-value="setTexture('screen')"
+        >
+          <option v-if="screenOutputs.length === 0" selected value="">
+            No screen capture
+          </option>
+          <option
+            v-for="output in screenOutputs"
+            :key="output.id"
+            :value="output.id"
+          >
+            {{ output.name }}
+          </option>
+        </Select>
+      </div>
+
       <div v-if="type === 'image'">
         <Select
           v-model="modelImagePath"
@@ -118,7 +175,16 @@ export default {
 
   data() {
     return {
-      textureTypes: ["inherit", "group", "canvas", "image", "video"],
+      textureTypes: [
+        "inherit",
+        "group",
+        "canvas",
+        "buffer",
+        "webcam",
+        "image",
+        "video",
+        "screen",
+      ],
       type: "",
       modelImagePath: "",
       modelVideoPath: "",
@@ -153,6 +219,24 @@ export default {
       }
 
       return groups;
+    },
+
+    webcamOutputs() {
+      return Object.values(this.auxillaries).filter(
+        (auxillary) => auxillary.group === "input",
+      );
+    },
+
+    screenOutputs() {
+      return Object.values(this.auxillaries).filter(
+        (auxillary) => auxillary.group === "screen",
+      );
+    },
+
+    bufferOutputs() {
+      return Object.values(this.auxillaries).filter(
+        (auxillary) => auxillary.group === "buffer-modules",
+      );
     },
 
     images() {
@@ -195,6 +279,10 @@ export default {
   methods: {
     setTexture(type) {
       const textureDefinition = { type, options: {} };
+      if (type === "webcam" || type === "screen" || type === "buffer") {
+        // Treat webcam, screen, and buffer as canvas sources internally
+        textureDefinition.type = "canvas";
+      }
       if (type === "image") {
         if (!this.modelImagePath) {
           return;
@@ -213,7 +301,13 @@ export default {
         textureDefinition.options.path = this.modelVideoPath;
       }
 
-      if (type === "canvas" || type === "group") {
+      if (
+        type === "canvas" ||
+        type === "group" ||
+        type === "webcam" ||
+        type === "screen" ||
+        type === "buffer"
+      ) {
         if (!this.modelCanvasId) {
           return;
         }

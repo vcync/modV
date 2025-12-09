@@ -24,12 +24,29 @@ export default {
 
   mounted() {
     this.$refs.dialog.showModal();
+    
+    // Listen for native dialog close events
+    this.$refs.dialog.addEventListener('close', this.handleNativeClose);
+    this.$refs.dialog.addEventListener('cancel', this.handleNativeClose);
+  },
+
+  beforeUnmount() {
+    // Clean up event listeners
+    if (this.$refs.dialog) {
+      this.$refs.dialog.removeEventListener('close', this.handleNativeClose);
+      this.$refs.dialog.removeEventListener('cancel', this.handleNativeClose);
+    }
   },
 
   methods: {
     close() {
       this.$emit("close");
       this.$refs.dialog.close();
+    },
+
+    handleNativeClose() {
+      // Emit close event when dialog is closed via ESC or clicking outside
+      this.$emit("close");
     },
   },
 };

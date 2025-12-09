@@ -4,7 +4,7 @@ export default {
     name: "Polygon",
     author: "2xAA",
     audioFeatures: ["rms", "zcr"],
-    version: "0.2.0"
+    version: "0.2.0",
   },
 
   props: {
@@ -14,7 +14,7 @@ export default {
       min: 0,
       max: 30,
       step: 1,
-      default: 15
+      default: 15,
     },
 
     shapeSize: {
@@ -23,7 +23,7 @@ export default {
       min: 0,
       max: 300,
       step: 1,
-      default: 60
+      default: 60,
     },
 
     strokeWeight: {
@@ -33,19 +33,19 @@ export default {
       max: 20,
       step: 1,
       default: 1,
-      strict: true
+      strict: true,
     },
 
     fill: {
       type: "bool",
       label: "Fill",
-      default: false
+      default: false,
     },
 
     rotateToggle: {
       type: "bool",
       label: "Rotate",
-      default: false
+      default: false,
     },
 
     rotateSpeed: {
@@ -54,7 +54,7 @@ export default {
       min: 0.1,
       max: 10.0,
       step: 0.1,
-      default: 5.0
+      default: 5.0,
     },
 
     color: {
@@ -81,16 +81,16 @@ export default {
           [132, 195, 223],
           [82, 127, 162],
           [209, 121, 211],
-          [181, 152, 220]
+          [181, 152, 220],
         ],
         duration: 500,
-        easing: "linear"
-      }
-    }
+        easing: "linear",
+      },
+    },
   },
 
   data: {
-    rotation: 0
+    rotation: 0,
   },
 
   update({ data, props }) {
@@ -111,7 +111,7 @@ export default {
       intensity,
       shapeSize,
       fill,
-      strokeWeight
+      strokeWeight,
     } = props;
     let analysed;
     let rotate = 0;
@@ -127,10 +127,10 @@ export default {
     }
 
     context.strokeStyle = `rgb(${Math.round(color[0])},${Math.round(
-      color[1]
+      color[1],
     )},${Math.round(color[2])})`;
     context.fillStyle = `rgb(${Math.round(color[0])},${Math.round(
-      color[1]
+      color[1],
     )},${Math.round(color[2])})`;
     context.lineWidth = strokeWeight;
 
@@ -141,7 +141,7 @@ export default {
       Math.round(canvas.height / 2),
       analysed + shapeSize,
       3 + Math.round(analysed / 10),
-      rotate * 0.0174533
+      rotate * 0.0174533,
     );
     context.closePath();
     context.stroke();
@@ -169,5 +169,5 @@ export default {
 
     ctx.closePath();
     ctx.restore();
-  }
+  },
 };

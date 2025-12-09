@@ -73,6 +73,7 @@ async function initialiseModuleProperties(
       prop,
       useExistingData,
     );
+    module.$props[propKey].default = module.props[propKey];
 
     if (
       (!isGallery && !useExistingData) ||

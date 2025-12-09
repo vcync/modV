@@ -12,8 +12,14 @@ const fs = require("fs");
 
 let lastKick = false;
 
-function getFilename(path) {
-  return path.substring(path.lastIndexOf("/") + 1, path.lastIndexOf("."));
+// file path is: renderers/2d/index.js
+// this extracts the renderer name from the path (2d)
+function getRendererName(path) {
+  return path.replace(/.*\/(.*)\/index.js/, "$1");
+}
+
+function getIsfModuleName(path) {
+  return path.replace(/.*\/(.*)\.fs/, "$1");
 }
 
 function getTime() {
@@ -123,10 +129,10 @@ async function start() {
 
   store.dispatch("plugins/add", grabCanvasPlugin);
 
-  const rendererModules = import.meta.glob("../renderers/*.js");
+  const rendererModules = import.meta.glob("../renderers/*/index.js");
 
   for (const pathKey in rendererModules) {
-    const rendererName = getFilename(pathKey);
+    const rendererName = getRendererName(pathKey);
 
     rendererModules[pathKey]().then((mod) => {
       const {
@@ -144,7 +150,7 @@ async function start() {
       } = mod.default;
 
       store.commit("renderers/ADD_RENDERER", {
-        name: rendererName.replace(/(\.\/|\.js)/g, ""),
+        name: rendererName.replace(/(\.\/|\.js|\/index\.js)/g, ""),
         render,
         resize,
         setupModule,
@@ -161,17 +167,33 @@ async function start() {
   }
 
   let modulesToRegister = [];
-  const sampleModules = import.meta.glob("../sample-modules/*.js");
 
-  for (const pathKey in sampleModules) {
-    const mod = await sampleModules[pathKey]();
+  // Import 2d modules
+  const twoDModules = import.meta.glob("../renderers/2d/modules/*.js");
+  for (const pathKey in twoDModules) {
+    const mod = await twoDModules[pathKey]();
     modulesToRegister.push(mod.default);
   }
 
-  const isfModules = import.meta.glob("../sample-modules/isf/*.fs", {
+  // Import three.js modules
+  const threeModules = import.meta.glob("../renderers/three/modules/*.js");
+  for (const pathKey in threeModules) {
+    const mod = await threeModules[pathKey]();
+    modulesToRegister.push(mod.default);
+  }
+
+  // Import shader modules
+  const shaderModules = import.meta.glob("../renderers/shader/modules/*.js");
+  for (const pathKey in shaderModules) {
+    const mod = await shaderModules[pathKey]();
+    modulesToRegister.push(mod.default);
+  }
+
+  // Import ISF modules
+  const isfModules = import.meta.glob("../renderers/isf/modules/isf/*.fs", {
     query: "?raw",
   });
-  const isfModulesVs = import.meta.glob("../sample-modules/isf/*.vs", {
+  const isfModulesVs = import.meta.glob("../renderers/isf/modules/isf/*.vs", {
     query: "?raw",
   });
 
@@ -189,7 +211,7 @@ async function start() {
 
     const isfModule = {
       meta: {
-        name: getFilename(isfModuleKeys[i]),
+        name: getIsfModuleName(isfModuleKeys[i]),
         author: "",
         version: "1.0.0",
         type: "isf",
@@ -210,14 +232,7 @@ async function start() {
 
   // store.dispatch("plugins/add", featureAssignmentPlugin);
 
-  const webcamOutput = await store.dispatch("outputs/getAuxillaryOutput", {
-    name: "webcam",
-    reactToResize: false,
-    width: 1920,
-    height: 1080,
-    group: "input",
-  });
-  store.dispatch("outputs/setWebcamOutput", webcamOutput.context);
+  // Default webcam canvas removed; per-device canvases are created on first frame
 
   const fftOutput = await store.dispatch("outputs/getAuxillaryOutput", {
     name: "fft",
@@ -317,14 +332,73 @@ async function start() {
     }
 
     if (type === "videoFrame") {
-      const context = store.state.outputs.webcam;
+      // payload can be a bare ImageBitmap (legacy) or an object { deviceId, bitmap }
+      if (payload && payload.bitmap && payload.deviceId) {
+        const { deviceId, bitmap, label } = payload;
+
+        // Ensure we have a dedicated auxillary output for this device
+        let deviceContext = store.state.outputs.webcams[deviceId];
+        if (!deviceContext) {
+          const output = await store.dispatch("outputs/getAuxillaryOutput", {
+            name: label || `webcam:${deviceId}`,
+            reactToResize: false,
+            width: bitmap.width,
+            height: bitmap.height,
+            group: "input",
+          });
+          store.dispatch("outputs/setWebcamOutputForDevice", {
+            deviceId,
+            context: output.context,
+            auxId: output.id,
+          });
+          deviceContext = output.context;
+        }
+
+        const { canvas } = deviceContext;
+        if (canvas) {
+          canvas.width = bitmap.width;
+          canvas.height = bitmap.height;
+        }
+        deviceContext.drawImage(bitmap, 0, 0);
+      }
+
+      return;
+    }
+
+    if (type === "screenFrame") {
+      const { id: screenId, label, bitmap } = payload;
+      let context = store.state.outputs.screens[screenId];
+      if (!context) {
+        const output = await store.dispatch("outputs/getAuxillaryOutput", {
+          name: label, // Always use the human-readable label
+          reactToResize: false,
+          width: bitmap.width,
+          height: bitmap.height,
+          group: "screen",
+          id: screenId,
+        });
+        store.dispatch("outputs/setScreenOutput", {
+          screenId,
+          context: output.context,
+          auxId: output.id,
+        });
+        context = output.context;
+      }
+
       const { canvas } = context;
-
-      canvas.width = payload.width;
-      canvas.height = payload.height;
-
-      context.drawImage(payload, 0, 0);
-
+      if (canvas) {
+        canvas.width = bitmap.width;
+        canvas.height = bitmap.height;
+      }
+      // Ensure aux entry reflects latest name and connected state
+      const auxId = store.state.outputs.screenAuxById[screenId];
+      if (auxId) {
+        store.commit("outputs/UPDATE_AUXILLARY", {
+          auxillaryId: auxId,
+          data: { name: label, disconnected: false }, // Always use the human-readable label
+        });
+      }
+      context.drawImage(bitmap, 0, 0);
       return;
     }
 

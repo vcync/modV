@@ -1,4 +1,5 @@
-import store from "../worker/store";
+import store from "../../worker/store";
+import { resizeCanvas, clearCanvas, copyCanvas } from "../utils";
 
 const twoDCanvas = new OffscreenCanvas(300, 300);
 const twoDContext = twoDCanvas.getContext("2d");
@@ -36,35 +37,51 @@ function render({
   props,
   data,
   osc,
+  pipeline,
 }) {
-  if (
-    twoDCanvas.width !== canvas.width ||
-    twoDCanvas.height !== canvas.height
-  ) {
-    twoDCanvas.width = canvas.width;
-    twoDCanvas.height = canvas.height;
+  // For pipeline mode, we need the intermediate canvas to avoid feedback loops
+  if (pipeline) {
+    // Optimized: Use shared utility for canvas resizing
+    resizeCanvas(twoDCanvas, canvas.width, canvas.height);
+
+    clearCanvas(twoDContext);
+    copyCanvas(twoDContext, canvas);
+
+    twoDContext.save();
+    module.draw({
+      canvas: twoDCanvas,
+      context: twoDContext,
+      video,
+      features,
+      meyda,
+      delta,
+      bpm,
+      kick,
+      props,
+      data,
+      osc,
+    });
+    twoDContext.restore();
+
+    copyCanvas(context, twoDCanvas, canvas.width, canvas.height);
+  } else {
+    // Optimized: Draw directly to output canvas (no intermediate buffer)
+    context.save();
+    module.draw({
+      canvas: canvas,
+      context: context,
+      video,
+      features,
+      meyda,
+      delta,
+      bpm,
+      kick,
+      props,
+      data,
+      osc,
+    });
+    context.restore();
   }
-
-  twoDContext.clearRect(0, 0, canvas.width, canvas.height);
-  twoDContext.drawImage(canvas, 0, 0, canvas.width, canvas.height);
-
-  twoDContext.save();
-  module.draw({
-    canvas: twoDCanvas,
-    context: twoDContext,
-    video,
-    features,
-    meyda,
-    delta,
-    bpm,
-    kick,
-    props,
-    data,
-    osc,
-  });
-  twoDContext.restore();
-
-  context.drawImage(twoDCanvas, 0, 0, canvas.width, canvas.height);
 }
 
 /**
@@ -84,6 +101,7 @@ function updateModule({
     canvas,
     context,
     delta,
+    store,
   });
 
   return dataUpdated ?? data;
@@ -94,8 +112,29 @@ function resizeModule({ moduleDefinition, canvas, data, props }) {
 }
 
 function resize({ width, height }) {
-  twoDCanvas.width = width;
-  twoDCanvas.height = height;
+  // Optimized: Use shared utility for canvas resizing
+  resizeCanvas(twoDCanvas, width, height);
 }
 
-export default { render, resize, updateModule, resizeModule };
+/**
+ * Setup module lifecycle method
+ */
+async function setupModule(moduleDefinition) {
+  if (moduleDefinition.setupModule) {
+    const result = await moduleDefinition.setupModule({
+      store,
+      moduleId: moduleDefinition.meta?.name || "unknown",
+    });
+
+    if (result && typeof result === "object") {
+      // Update the module definition with any returned data
+      if (result.data) {
+        moduleDefinition.data = { ...moduleDefinition.data, ...result.data };
+      }
+    }
+  }
+
+  return moduleDefinition;
+}
+
+export default { render, resize, updateModule, resizeModule, setupModule };

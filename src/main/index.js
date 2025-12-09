@@ -1,4 +1,12 @@
-import { MessageChannelMain, app, ipcMain, net, protocol } from "electron";
+import {
+  MessageChannelMain,
+  app,
+  ipcMain,
+  net,
+  protocol,
+  session,
+  desktopCapturer,
+} from "electron";
 import { APP_SCHEME } from "./background-constants";
 import { openFile } from "./open-file";
 import { createWindow } from "./windows";
@@ -6,6 +14,10 @@ import { createWindow } from "./windows";
 require("@electron/remote/main").initialize();
 
 app.commandLine.appendSwitch("max-active-webgl-contexts", 6);
+app.commandLine.appendSwitch("disable-backgrounding-occluded-windows", "true");
+app.commandLine.appendSwitch("disable-background-timer-throttling", "true");
+app.commandLine.appendSwitch("disable-renderer-backgrounding", "true");
+app.commandLine.appendSwitch("disable-features", "VizDisplayCompositor");
 
 const isDevelopment = process.env.NODE_ENV !== "production";
 
@@ -81,6 +93,40 @@ app.on("ready", async () => {
     "disable-backgrounding-occluded-windows",
     "true",
   );
+
+  // Use the native/system picker if available for getDisplayMedia; otherwise
+  // provide sources via desktopCapturer (screen + window)
+  try {
+    session.defaultSession.setDisplayMediaRequestHandler(
+      async (request, callback) => {
+        try {
+          const sources = await desktopCapturer.getSources({
+            types: ["screen", "window"],
+            thumbnailSize: { width: 0, height: 0 },
+          });
+
+          // Send the list to the renderer for UI selection if desired.
+          // For now, grant the first source matching the requested surface type.
+          let chosen = sources[0];
+          if (request && request.video && request.video.id) {
+            const match = sources.find((s) => s.id === request.video.id);
+            if (match) chosen = match;
+          }
+
+          callback({
+            video: { source: chosen, frameRate: 60 },
+            audio: "loopback",
+          });
+        } catch (e) {
+          console.error("setDisplayMediaRequestHandler error", e);
+          callback({});
+        }
+      },
+      { useSystemPicker: true },
+    );
+  } catch (e) {
+    console.warn("DisplayMediaRequestHandler not available", e?.message);
+  }
 
   const mainWindow = createWindow({ windowName: "mainWindow" });
   ipcMain.once("main-window-created", () => {

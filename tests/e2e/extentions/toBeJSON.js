@@ -4,12 +4,12 @@ export function toBeJSON(received) {
   if (pass) {
     return {
       message: () => "passed",
-      pass: true
+      pass: true,
     };
   } else {
     return {
       message: () => "failed",
-      pass: false
+      pass: false,
     };
   }
 }

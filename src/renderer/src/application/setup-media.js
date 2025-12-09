@@ -6,41 +6,6 @@ let byteFrequencyDataArray;
 let byteTimeDomainDataArray;
 let analyserNode;
 
-async function enumerateDevices() {
-  const { _store: store } = this;
-
-  const devices = await navigator.mediaDevices.enumerateDevices();
-  const sources = {
-    audio: [],
-    video: [],
-  };
-
-  for (let i = 0, len = devices.length; i < len; i++) {
-    const device = devices[i];
-
-    if (device.kind === "audioinput") {
-      sources.audio.push(device);
-    } else if (device.kind === "videoinput") {
-      sources.video.push(device);
-    }
-  }
-
-  store.commit("mediaStream/CLEAR_AUDIO_SOURCES");
-  store.commit("mediaStream/CLEAR_VIDEO_SOURCES");
-
-  const audioDevices = sources.audio;
-  for (let i = 0, len = audioDevices.length; i < len; i++) {
-    store.commit("mediaStream/ADD_AUDIO_SOURCE", { source: audioDevices[i] });
-  }
-
-  const videoDevices = sources.video;
-  for (let i = 0, len = videoDevices.length; i < len; i++) {
-    store.commit("mediaStream/ADD_VIDEO_SOURCE", { source: videoDevices[i] });
-  }
-
-  return sources;
-}
-
 async function getMediaStream({ audioSourceId, videoSourceId }) {
   const audioConstraints = {};
   const videoConstraints = {};
@@ -69,9 +34,9 @@ async function getMediaStream({ audioSourceId, videoSourceId }) {
 }
 
 async function setupMedia({ audioId, videoId, useDefaultDevices = false }) {
-  const { _store: store } = this;
+  const { mediaDeviceManager } = this;
 
-  const mediaStreamDevices = await enumerateDevices.bind(this)();
+  const mediaStreamDevices = await mediaDeviceManager.enumerateDevices();
 
   let audioSourceId = audioId;
   let videoSourceId = videoId;
@@ -87,11 +52,15 @@ async function setupMedia({ audioId, videoId, useDefaultDevices = false }) {
   const streams = [];
 
   if (audioId) {
+    // When switching audio device, stop the previous audio stream
     streams.push(this._audioMediaStream);
   }
 
-  if (videoId) {
-    streams.push(this._videoMediaStream);
+  // For video, do not stop existing streams when adding a new device
+  // If the requested video device already exists, short-circuit
+  if (videoId && this._imageCaptures && this._imageCaptures[videoSourceId]) {
+    mediaDeviceManager.selectVideoDevice(videoSourceId);
+    return [undefined, undefined];
   }
 
   for (let i = 0, len = streams.length; i < len; i++) {
@@ -116,28 +85,38 @@ async function setupMedia({ audioId, videoId, useDefaultDevices = false }) {
   // This video element is required to keep the camera alive for the ImageCapture API
   // (this._imageCapture, ./index.js)
   if (videoMediaStream) {
-    if (this.videoStream) {
-      this.videoStream.pause();
-      delete this.videoStream;
-    }
-
-    this.videoStream = document.createElement("video");
-    this.videoStream.autoplay = true;
-    this.videoStream.muted = true;
-
-    this.videoStream.srcObject = videoMediaStream;
-    this.videoStream.onloadedmetadata = () => {
-      this.videoStream.play();
+    // Create a hidden video element per device to keep streams alive
+    const videoEl = document.createElement("video");
+    videoEl.autoplay = true;
+    videoEl.muted = true;
+    videoEl.srcObject = videoMediaStream;
+    videoEl.onloadedmetadata = () => {
+      videoEl.play();
     };
 
     const [track] = videoMediaStream.getVideoTracks();
     if (track) {
-      this._imageCapture = new ImageCapture(track);
+      // Store ImageCapture per device
+      if (!this._imageCaptures) this._imageCaptures = {};
+      this._imageCaptures[videoSourceId] = new ImageCapture(track);
+      // Start async capture loop for this deviceId
+      this.startCaptureForDevice && this.startCaptureForDevice(videoSourceId);
     }
 
-    store.commit("mediaStream/SET_CURRENT_VIDEO_SOURCE", {
-      videoId: videoSourceId,
-    });
+    // Keep reference to the video element per deviceId for possible cleanup
+    if (!this.videoStreams) this.videoStreams = {};
+    // Stop and replace any existing stream for the same deviceId
+    if (this.videoStreams[videoSourceId]) {
+      try {
+        this.videoStreams[videoSourceId].pause();
+      } catch (e) {
+        // Ignore
+      }
+      this.videoStreams[videoSourceId].srcObject = null;
+    }
+    this.videoStreams[videoSourceId] = videoEl;
+
+    mediaDeviceManager.selectVideoDevice(videoSourceId);
   }
 
   if (audioMediaStream) {
@@ -187,9 +166,7 @@ async function setupMedia({ audioId, videoId, useDefaultDevices = false }) {
       featureExtractors: ["complexSpectrum"],
     });
 
-    store.commit("mediaStream/SET_CURRENT_AUDIO_SOURCE", {
-      audioId: audioSourceId,
-    });
+    mediaDeviceManager.selectAudioDevice(audioSourceId);
   }
 
   this._audioMediaStream = audioMediaStream || this._audioMediaStream;
@@ -215,7 +192,6 @@ function getByteTimeDomainData() {
 }
 
 export {
-  enumerateDevices,
   setupMedia,
   getFloatFrequencyData,
   getByteFrequencyData,

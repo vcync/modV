@@ -52,6 +52,12 @@
         </div>
       </template>
 
+      <template #screen-config>
+        <div class="glComponent">
+          <ScreenCaptureConfig />
+        </div>
+      </template>
+
       <template #md-config>
         <div class="glComponent">
           <MIDIDeviceConfig />
@@ -86,6 +92,7 @@
     <StatusBar />
     <Search />
     <FrameRateDialog />
+    <ScreenPickerDialog />
     <ErrorWatcher />
   </main>
 </template>
@@ -99,11 +106,13 @@ import AudioVideoDeviceConfig from "./components/InputDeviceConfig/AudioVideo.vu
 import MIDIDeviceConfig from "./components/InputDeviceConfig/MIDI.vue";
 import BPMConfig from "./components/InputDeviceConfig/BPM.vue";
 import NDIConfig from "./components/InputDeviceConfig/NDI.vue";
+import ScreenCaptureConfig from "./components/InputDeviceConfig/ScreenCapture.vue";
 import StatusBar from "./components/StatusBar/index.vue";
 import ModuleInspector from "./components/ModuleInspector.vue";
 import InfoView from "./components/InfoView.vue";
 import Search from "./components/Search.vue";
 import FrameRateDialog from "./components/dialogs/FrameRateDialog.vue";
+import ScreenPickerDialog from "./components/dialogs/ScreenPickerDialog.vue";
 import ErrorWatcher from "./components/ErrorWatcher.vue";
 import Plugins from "./components/Plugins.vue";
 
@@ -129,11 +138,13 @@ export default {
     MIDIDeviceConfig,
     BPMConfig,
     NDIConfig,
+    ScreenCaptureConfig,
     StatusBar,
     InfoView,
     ModuleInspector,
     Search,
     FrameRateDialog,
+    ScreenPickerDialog,
     ErrorWatcher,
     Plugins,
     GoldenLayout: glComponent,
@@ -221,6 +232,11 @@ export default {
                     },
                     {
                       type: ItemType.component,
+                      title: "Screen Capture",
+                      componentType: "screen-config",
+                    },
+                    {
+                      type: ItemType.component,
                       title: "MIDI",
                       componentType: "md-config",
                     },
@@ -262,9 +278,9 @@ export default {
   computed: {
     focusedModules() {
       const focusedOrPinned = this.$store.getters["uiModules/focusedOrPinned"];
-      const modules = focusedOrPinned.map(
-        (id) => this.$modV.store.state.modules.active[id],
-      );
+      const modules = focusedOrPinned
+        .map((id) => this.$modV.store.state.modules.active[id])
+        .filter((module) => module && module.meta); // Filter out undefined modules or modules without meta
 
       return modules;
     },
@@ -291,6 +307,8 @@ export default {
     if (layoutState) {
       try {
         this.layoutConfig = JSON.parse(layoutState);
+        // Migration: ensure Screen Capture panel exists in older saved layouts
+        this.ensureScreenConfig(this.layoutConfig);
       } catch (e) {
         this.creationError();
       }
@@ -307,6 +325,50 @@ export default {
   },
 
   methods: {
+    ensureScreenConfig(config) {
+      // Walk the config tree and insert screen-config beside avd-config if missing
+      let found = false;
+      function traverse(node) {
+        if (!node || found === true) return;
+        const content = node.content;
+        if (Array.isArray(content)) {
+          // If this stack already has screen-config, mark found
+          if (
+            content.some(
+              (c) =>
+                c &&
+                c.type === ItemType.component &&
+                c.componentType === "screen-config",
+            )
+          ) {
+            found = true;
+            return;
+          }
+          // If this stack has avd-config, insert screen-config after it
+          const avdIndex = content.findIndex(
+            (c) =>
+              c &&
+              c.type === ItemType.component &&
+              c.componentType === "avd-config",
+          );
+          if (avdIndex > -1) {
+            content.splice(avdIndex + 1, 0, {
+              type: ItemType.component,
+              title: "Screen Capture",
+              componentType: "screen-config",
+            });
+            found = true;
+            return;
+          }
+          // Recurse
+          for (let i = 0; i < content.length; i++) {
+            traverse(content[i]);
+            if (found) return;
+          }
+        }
+      }
+      traverse(config.root || config);
+    },
     toggleModulePin(id) {
       if (this.isPinned(id)) {
         this.$store.commit("uiModules/REMOVE_PINNED", id);

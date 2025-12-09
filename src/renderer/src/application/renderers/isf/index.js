@@ -1,12 +1,13 @@
-import store from "../worker/store";
+import store from "../../worker/store";
+import { resizeCanvases, clearCanvas, copyCanvas } from "../utils";
 
 import {
   Renderer as ISFRenderer,
   Parser as ISFParser,
   Upgrader as ISFUpgrader,
 } from "interactive-shader-format/src/main.js";
-import { getFeatures } from "../worker/audio-features";
-import constants from "../constants";
+import { getFeatures } from "../../worker/audio-features";
+import constants from "../../constants";
 
 const isfCanvas = new OffscreenCanvas(256, 256);
 const isfContext = isfCanvas.getContext("webgl2", {
@@ -38,8 +39,8 @@ const renderers = {};
 const inputs = {};
 
 function resize({ width, height }) {
-  isfCanvas.width = width;
-  isfCanvas.height = height;
+  // Optimized: Use shared utility for consistent canvas resizing
+  resizeCanvases([isfCanvas, isfCanvasGallery], width, height);
 }
 
 async function render({
@@ -87,23 +88,24 @@ async function render({
   const resolvedIsfCanvas = isGallery ? isfCanvasGallery : isfCanvas;
   const resolvedIsfContext = isGallery ? isfContextGallery : isfContext;
 
+  // Optimized: Use proper resize function instead of manual canvas allocation
   if (
     resolvedIsfCanvas.width !== canvas.width ||
     resolvedIsfCanvas.height !== canvas.height
   ) {
-    // We don't use the resize function as it's very non-performant for
-    // some reason...
-    resolvedIsfCanvas.width = canvas.width;
-    resolvedIsfCanvas.height = canvas.height;
+    resize({ width: canvas.width, height: canvas.height });
   }
 
-  resolvedIsfContext.clear(resolvedIsfContext.COLOR_BUFFER_BIT);
+  // Optimized: Use shared utility for consistent canvas clearing
+  clearCanvas(resolvedIsfContext);
   renderer.draw(resolvedIsfCanvas);
 
   if (pipeline) {
     context.clearRect(0, 0, canvas.width, canvas.height);
   }
-  context.drawImage(resolvedIsfCanvas, 0, 0, canvas.width, canvas.height);
+
+  // Optimized: Use shared utility for canvas copying
+  copyCanvas(context, resolvedIsfCanvas);
 }
 
 /**

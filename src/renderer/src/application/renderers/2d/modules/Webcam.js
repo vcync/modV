@@ -27,8 +27,16 @@ export default {
     },
   },
 
-  draw({ canvas, context, video: { canvas: video }, props }) {
+  draw({
+    canvas,
+    context,
+    video: { canvas: video } = { canvas: null },
+    props,
+  }) {
     const { position, scale, imageSmoothing } = props;
+    if (!video) {
+      return;
+    }
     const { width: videoWidth, height: videoHeight } = video;
     const { width, height } = canvas;
 

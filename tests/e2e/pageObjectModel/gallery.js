@@ -7,15 +7,15 @@ export const gallery = {
 
     await page
       .locator(".gallery-item ", {
-        has: page.locator(`text="${moduleName}"`)
+        has: page.locator(`text="${moduleName}"`),
       })
       .dblclick({
         // position derived from Playwright recording - might not be accurate on
         // different gallery item sizes
         position: {
           x: 98,
-          y: 27
-        }
+          y: 27,
+        },
       });
   },
 
@@ -28,7 +28,7 @@ export const gallery = {
     }
 
     const galleryItem = await page.locator(".gallery-item ", {
-      has: page.locator(`text="${moduleName}"`)
+      has: page.locator(`text="${moduleName}"`),
     });
 
     await galleryItem.scrollIntoViewIfNeeded();
@@ -49,8 +49,8 @@ export const gallery = {
     await expect(groupModules).toHaveCount(numberOfActiveModulesInGroup + 1);
 
     const state = await modVApp.evaluateWorkerState();
-    const group = state.groups.groups.find(group => group.id === groupId);
+    const group = state.groups.groups.find((group) => group.id === groupId);
 
     return group.modules.pop();
-  }
+  },
 };

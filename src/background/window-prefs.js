@@ -22,18 +22,18 @@ const windowPrefs = {
         contextIsolation: false,
         // Use pluginOptions.nodeIntegration, leave this alone
         // See nklayman.github.io/vue-cli-plugin-electron-builder/guide/security.html#node-integration for more info
-        nodeIntegration: process.env.ELECTRON_NODE_INTEGRATION
+        nodeIntegration: process.env.ELECTRON_NODE_INTEGRATION,
       },
       transparent: true,
       frame: false,
       alwaysOnTop: true,
       resizable: false,
       skipTaskbar: true,
-      fullscreenable: false
+      fullscreenable: false,
     },
     unique: true,
     create(window) {
-      window.on("close", e => {
+      window.on("close", (e) => {
         e.preventDefault();
 
         window.hide();
@@ -42,7 +42,7 @@ const windowPrefs = {
       window.on("blur", () => {
         window.hide();
       });
-    }
+    },
   },
 
   mainWindow: {
@@ -59,8 +59,8 @@ const windowPrefs = {
         nodeIntegration: process.env.ELECTRON_NODE_INTEGRATION,
         nodeIntegrationInWorker: true,
         nativeWindowOpen: true, // window.open return Window object(like in regular browsers), not BrowserWindowProxy
-        affinity: "main-window" // main window, and addition windows should work in one process,
-      }
+        affinity: "main-window", // main window, and addition windows should work in one process,
+      },
     },
     unique: true,
 
@@ -72,8 +72,8 @@ const windowPrefs = {
       return {
         options: {
           width,
-          height
-        }
+          height,
+        },
       };
     },
 
@@ -95,13 +95,13 @@ const windowPrefs = {
         if (frameName === "modal") {
           return {
             action: "allow",
-            createWindow: options => {
+            createWindow: (options) => {
               const window = new BrowserWindow({
                 ...options,
                 autoHideMenuBar: true,
                 closable: false,
                 enableLargerThanScreen: true,
-                title: ""
+                title: "",
               });
 
               window.webContents.on("dom-ready", () => {
@@ -112,25 +112,25 @@ const windowPrefs = {
               });
 
               return window.webContents;
-            }
+            },
           };
         }
 
         return {
-          action: "deny"
+          action: "deny",
         };
       });
 
       const mm = getMediaManager();
 
-      mm.update = message => {
+      mm.update = (message) => {
         window.webContents.send("media-manager-update", message);
 
         setProjectNames(mm.$store.getters["media/projects"]);
         updateMenu();
       };
 
-      mm.pathChanged = message => {
+      mm.pathChanged = (message) => {
         window.webContents.send("media-manager-path-changed", message);
       };
 
@@ -151,7 +151,7 @@ const windowPrefs = {
         mm.reset();
       });
 
-      ipcMain.on("get-media-manager-state", event => {
+      ipcMain.on("get-media-manager-state", (event) => {
         event.reply("media-manager-state", store.state.media);
       });
 
@@ -175,14 +175,14 @@ const windowPrefs = {
       });
 
       if (!isDevelopment && !isTest) {
-        window.on("close", async e => {
+        window.on("close", async (e) => {
           e.preventDefault();
 
           const { response } = await dialog.showMessageBox(window, {
             type: "question",
             buttons: ["Yes", "No"],
             message: "modV",
-            detail: "Are you sure you want to quit?"
+            detail: "Are you sure you want to quit?",
           });
 
           if (response === 0) {
@@ -211,7 +211,7 @@ const windowPrefs = {
       ipcMain.removeAllListeners("current-project");
       ipcMain.removeAllListeners("input-update");
       ipcMain.removeHandler("is-modv-ready");
-    }
+    },
   },
 
   splashScreen: {
@@ -222,7 +222,7 @@ const windowPrefs = {
       webPreferences: {
         // Use pluginOptions.nodeIntegration, leave this alone
         // See nklayman.github.io/vue-cli-plugin-electron-builder/guide/security.html#node-integration for more info
-        nodeIntegration: process.env.ELECTRON_NODE_INTEGRATION
+        nodeIntegration: process.env.ELECTRON_NODE_INTEGRATION,
       },
       transparent: true,
       frame: false,
@@ -234,7 +234,7 @@ const windowPrefs = {
       backgroundColor: "#00000000",
       hasShadow: false,
       width: 600,
-      height: 600
+      height: 600,
     },
     unique: true,
 
@@ -247,8 +247,8 @@ const windowPrefs = {
         }
         windows["mainWindow"].maximize();
       });
-    }
-  }
+    },
+  },
 };
 
 export { windowPrefs };

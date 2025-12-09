@@ -43,7 +43,7 @@
     "node-osc": "^9.1.3",
     "npm": "6.14.6",
     "ospath": "^1.2.2",
-    "pex-context": "^2.10.2",
+    "pex-context": "^2.11.0-2",
     "promise-worker": "^2.0.1",
     "promise-worker-transferable": "^1.0.4",
     "recursive-deps": "^1.1.1",

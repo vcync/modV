@@ -30,12 +30,12 @@ export default async function readFile(filePath) {
         file,
         fileName,
         fileType,
-        filePath
+        filePath,
       },
       {
         getStream: () => {},
-        log
-      }
+        log,
+      },
     );
 
     if (processResult && typeof processResult === "boolean") {
@@ -44,8 +44,8 @@ export default async function readFile(filePath) {
         folder,
         item: {
           name: fileName,
-          path: relativePath
-        }
+          path: relativePath,
+        },
       });
     } else if (processResult && typeof processResult === "object") {
       const { filePath: path } = processResult;
@@ -56,8 +56,8 @@ export default async function readFile(filePath) {
         folder,
         item: {
           name: fileName,
-          path: relativePath
-        }
+          path: relativePath,
+        },
       });
     }
   }

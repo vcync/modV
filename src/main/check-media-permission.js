@@ -1,47 +1,49 @@
 import { dialog, systemPreferences } from "electron";
 
-// Asks macOS permission to access media devices
-async function getMediaPermission() {
-  let accessGrantedMicrophone = false;
-  let accessGrantedCamera = false;
-
-  accessGrantedMicrophone = await systemPreferences.askForMediaAccess(
-    "microphone"
-  );
-  accessGrantedCamera = await systemPreferences.askForMediaAccess("camera");
-
-  return accessGrantedMicrophone && accessGrantedCamera;
+/**
+ * Asks for media permission on macOS.
+ * @returns {Promise<boolean>} - True if access is granted, false otherwise.
+ */
+async function getMediaPermissionMacOS() {
+  const microphoneAccess =
+    await systemPreferences.askForMediaAccess("microphone");
+  const cameraAccess = await systemPreferences.askForMediaAccess("camera");
+  return microphoneAccess && cameraAccess;
 }
 
+/**
+ * Checks media permissions on all platforms and shows a dialog if access is denied.
+ */
 export async function checkMediaPermission() {
   const { platform } = process;
+  let hasPermission = false;
 
-  let macOSMediaDialogsAccepted = false;
-  let hasMediaPermission = false;
+  if (platform === "darwin") {
+    const microphoneStatus =
+      systemPreferences.getMediaAccessStatus("microphone");
+    const cameraStatus = systemPreferences.getMediaAccessStatus("camera");
 
-  const microphoneAccessStatus = systemPreferences.getMediaAccessStatus(
-    "microphone"
-  );
-  const cameraAccessStatus = systemPreferences.getMediaAccessStatus("camera");
-
-  hasMediaPermission =
-    microphoneAccessStatus === "granted" && cameraAccessStatus === "granted";
-
-  if (platform === "darwin" && !hasMediaPermission) {
-    macOSMediaDialogsAccepted = await getMediaPermission();
-  } else if (platform === "darwin" && hasMediaPermission) {
-    macOSMediaDialogsAccepted = true;
+    if (microphoneStatus === "granted" && cameraStatus === "granted") {
+      hasPermission = true;
+    } else if (
+      microphoneStatus === "not-determined" ||
+      cameraStatus === "not-determined"
+    ) {
+      hasPermission = await getMediaPermissionMacOS();
+    }
+  } else {
+    // For Windows and Linux, we can't check permissions beforehand.
+    // The browser will prompt the user when media is requested.
+    // We can assume permission will be granted, and handle failures later.
+    hasPermission = true;
   }
 
-  if (
-    (platform === "win32" && !hasMediaPermission) ||
-    (platform === "darwin" && !macOSMediaDialogsAccepted)
-  ) {
+  if (!hasPermission) {
     dialog.showMessageBox({
       type: "warning",
-      message: "modV does not have access to camera or microphone",
+      message: "modV requires access to your camera and microphone.",
       detail:
-        "While modV can still be used without these permissions, some functionality will be limited or broken. Please close modV, update your Security permissions and start modV again."
+        "To enable media features, please grant access in your system's security settings. modV can still be used without these permissions, but some functionality will be limited.",
     });
   }
 }

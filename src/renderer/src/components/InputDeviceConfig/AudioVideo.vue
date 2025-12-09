@@ -48,21 +48,30 @@
 
         <c span="1..">
           <grid columns="4">
-            <c span="1">Video Input</c>
+            <c span="1">Video Inputs</c>
             <c span="3">
-              <Select
-                v-model="currentVideoSource"
-                class="light"
-                :disabled="switchingVideo"
-              >
-                <option
+              <grid columns="3" class="video-inputs-grid">
+                <c
                   v-for="input in videoInputs"
                   :key="input.deviceId"
-                  :value="input.deviceId"
+                  class="video-input-item"
                 >
-                  {{ input.label }}
-                </option>
-              </Select>
+                  <grid columns="2">
+                    <c style="width:16px">
+                      <Checkbox
+                        class="light"
+                        :model-value="selectedVideoSourceIds.includes(input.deviceId)"
+                        :emit-boolean="true"
+                        @update:modelValue="(v) => toggleVideoDevice(input.deviceId, v)"
+                        :disabled="switchingVideo"
+                      />
+                    </c>
+                    <c>
+                      <span class="video-input-label">{{ input.label }}</span>
+                    </c>
+                  </grid>
+                </c>
+              </grid>
             </c>
           </grid>
         </c>
@@ -120,16 +129,13 @@ export default {
       },
     },
 
-    currentVideoSource: {
-      get() {
-        return this.$modV.store.state.mediaStream.currentVideoSource;
-      },
-
-      set(value) {
-        this.switchingVideo = true;
-        this.$modV.setupMedia({ videoId: value });
-        this.switchingVideo = false;
-      },
+    selectedVideoSourceIds() {
+      return (
+        this.$modV.store.state.mediaStream.selectedVideoSources ||
+        (this.$modV.store.state.mediaStream.currentVideoSource
+          ? [this.$modV.store.state.mediaStream.currentVideoSource]
+          : [])
+      );
     },
 
     maxGain() {
@@ -157,6 +163,38 @@ export default {
   },
 
   methods: {
+    toggleVideoDevice(deviceId, enabled) {
+      this.switchingVideo = true;
+      if (enabled) {
+        this.$modV.setupMedia({ videoId: deviceId });
+      } else {
+        // Stop and remove this device stream if present
+        if (this.$modV._imageCaptures && this.$modV._imageCaptures[deviceId]) {
+          try {
+            const track = this.$modV._imageCaptures[deviceId].track;
+            track && track.stop && track.stop();
+          } catch (e) {}
+          delete this.$modV._imageCaptures[deviceId];
+        }
+        if (this.$modV.videoStreams && this.$modV.videoStreams[deviceId]) {
+          try {
+            this.$modV.videoStreams[deviceId].pause();
+          } catch (e) {}
+          this.$modV.videoStreams[deviceId].srcObject = null;
+          delete this.$modV.videoStreams[deviceId];
+        }
+        // Stop capture loop for this device
+        this.$modV.stopCaptureForDevice && this.$modV.stopCaptureForDevice(deviceId);
+        // Inform worker to remove aux for this device if one exists
+        this.$modV.store.dispatch("outputs/removeWebcamOutputForDevice", {
+          deviceId,
+        });
+        this.$modV.store.commit("mediaStream/REMOVE_SELECTED_VIDEO_SOURCE", {
+          videoId: deviceId,
+        });
+      }
+      this.switchingVideo = false;
+    },
     renumerate() {
       this.$modV.enumerateDevices();
     },
