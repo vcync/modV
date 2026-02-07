@@ -63,7 +63,7 @@
     "vue-smooth-dnd": "^0.8.1",
     "vuex": "^3.6.2",
     "vuex-persistedstate": "^4.0.0-beta.3",
-    "webpack": "^5.94.0",
+    "webpack": "^5.104.1",
     "webpack-3": "npm:webpack@3.12.0"
   },
   "devDependencies": {
